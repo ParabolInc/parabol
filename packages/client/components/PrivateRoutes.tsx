@@ -47,6 +47,7 @@ const PrivateRoutes = () => {
   return (
     <Switch>
       <Route path='(/meetings|/me|/newteam|/team|/usage|/new-meeting)' component={DashboardRoot} />
+      <Route path='/activity-library/category/:categoryId' component={ActivityLibraryRoute} />
       <Route path='/activity-library' component={ActivityLibraryRoute} />
       <Route path='/meet/:meetingId' component={MeetingRoot} />
       <Route path='/meeting-series/:meetingId' component={MeetingSeriesRoot} />

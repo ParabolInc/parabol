@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
@@ -6,6 +6,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
+import ReasonToDowngradeEnum from '../types/ReasonToDowngrade'
+import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
 import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
 
 export default {
@@ -15,11 +17,24 @@ export default {
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'the org requesting the upgrade'
+    },
+    reasonsForLeaving: {
+      type: new GraphQLList(ReasonToDowngradeEnum),
+      description: 'the reasons the user is leaving'
+    },
+    otherTool: {
+      type: GraphQLString,
+      description:
+        'the name of the tool they are moving to. only required if anotherTool is selected as a reason to downgrade'
     }
   },
   async resolve(
     _source: unknown,
-    {orgId}: {orgId: string},
+    {
+      orgId,
+      reasonsForLeaving,
+      otherTool
+    }: {orgId: string; reasonsForLeaving?: TReasonToDowngradeEnum[]; otherTool?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -35,6 +50,10 @@ export default {
     }
 
     // VALIDATION
+    if (otherTool && otherTool?.length > 100) {
+      return standardError(new Error('Other tool name is too long'), {userId: viewerId})
+    }
+
     const {stripeSubscriptionId, tier} = await r.table('Organization').get(orgId).run()
 
     if (tier === 'starter') {
@@ -43,7 +62,13 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    await resolveDowngradeToStarter(orgId, stripeSubscriptionId!, viewerId)
+    await resolveDowngradeToStarter(
+      orgId,
+      stripeSubscriptionId!,
+      viewerId,
+      reasonsForLeaving,
+      otherTool
+    )
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const data = {orgId, teamIds}

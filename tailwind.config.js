@@ -41,6 +41,7 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms')({
       strategy: 'class' // only generate classes, overiding global form styles would affect non-tailwind other components
-    })
+    }),
+    require('@tailwindcss/container-queries')
   ]
 }

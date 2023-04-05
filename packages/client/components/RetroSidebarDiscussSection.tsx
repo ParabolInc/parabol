@@ -9,7 +9,7 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import {DeepNonNullable} from '~/types/generics'
 import {
   RetroSidebarDiscussSection_meeting$key,
-  RetroSidebarDiscussSection_meeting
+  RetroSidebarDiscussSection_meeting$data
 } from '~/__generated__/RetroSidebarDiscussSection_meeting.graphql'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
@@ -59,7 +59,7 @@ const ScrollWrapper = styled('div')({
   height: '100%'
 })
 
-type NonNullPhase = DeepNonNullable<RetroSidebarDiscussSection_meeting['phases'][0]>
+type NonNullPhase = DeepNonNullable<RetroSidebarDiscussSection_meeting$data['phases'][0]>
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const atmosphere = useAtmosphere()

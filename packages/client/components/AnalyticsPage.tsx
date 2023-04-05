@@ -11,6 +11,7 @@ import safeIdentify from '~/utils/safeIdentify'
 import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
+import getContentGroup from '../utils/getContentGroup'
 import makeHref from '../utils/makeHref'
 
 const query = graphql`
@@ -19,7 +20,7 @@ const query = graphql`
       id
       segmentId
       email
-      isWatched
+      isPatient0
     }
   }
 `
@@ -93,7 +94,7 @@ const AnalyticsPage = () => {
     if (gaMeasurementId) {
       ReactGA.initialize(gaMeasurementId, {
         gtagOptions: {
-          send_page_view: true
+          debug_mode: !__PRODUCTION__
         }
       })
     }
@@ -110,10 +111,13 @@ const AnalyticsPage = () => {
         const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
         if (!res) return
         const {viewer} = res
-        const {id, segmentId} = viewer
+        const {id, segmentId, isPatient0} = viewer
         ReactGA.set({
           userId: id,
-          clientId: segmentId ?? getAnonymousId()
+          clientId: segmentId ?? getAnonymousId(),
+          user_properties: {
+            is_patient_0: !!isPatient0
+          }
         })
       } else {
         ReactGA.set({
@@ -192,6 +196,7 @@ const AnalyticsPage = () => {
         // See: segmentIo.ts:28 for more information on the next line
         {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}
       )
+      ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
 

@@ -1,12 +1,15 @@
 /**
  * Palette definition from https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A2184&t=waDBAOGfSqB0wtCc-0
  */
+const defaultColors = require('tailwindcss/colors')
 
 export default {
   theme: {
     colors: {
-      white: '#FFFFFF',
-      black: '#000000',
+      transparent: 'transparent',
+      current: 'currentColor',
+      black: defaultColors.black,
+      white: defaultColors.white,
       primary: '#493272',
       tomato: {
         '100': '#FFE2E0',

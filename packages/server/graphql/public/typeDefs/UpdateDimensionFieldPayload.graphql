@@ -12,4 +12,3 @@ type UpdateDimensionFieldSuccess {
 }
 
 union UpdateDimensionFieldPayload = UpdateDimensionFieldSuccess | ErrorPayload
-extend union TeamSubscriptionPayload = UpdateDimensionFieldSuccess

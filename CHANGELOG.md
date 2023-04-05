@@ -5,27 +5,115 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.97.0 2023-Mar-30
+
+### Added
+
+- **team-health**: calculate & write sentiment scores for reflections & retro meetings (#7671)
+- remove proration (#7721)
+
+### Changed
+
+- add libvips to dist (#7911)
+- Migrate MeetingTemplate table (Phase 2 of 3) (#7800)
+
+## 6.96.1 2023-Mar-28
+
+### Fixed
+
+- Stronger RRule validation to prevent NaN interval (#7950)
+
+## 6.96.0 2023-Mar-15
+
+### Added
+
+- feat(checkout-flow): add teams limit warning (#7879)
+- feat(checkout-flow): credit card UI (#7812)
+- feat(retros-in-disguise): Base activity library + stubbed cards (#7836)
+- feat(checkout-flow): implement billing leader UI (#7910)
+- feat(rid): Basic activity library search (#7891)
+- feat(standups): Persist draft responses to localstorage (#7925)
+- feat(checkout-flow): add downgrade logic (#7830)
+
+### Fixed
+
+- fix: various styles after tailwind migration (#7884)
+- fix: position of notification bell badge (#7907)
+- fix: do not run removeOrgUserTaskUpdater for undefined tasks (#7772)
+- fix: fix usage stats charts on small amount of data (#7873)
+- fix(teams-limit): count only teams that have had at least 1 meeting in the last 30 days (#7918)
+- fix(templates): Fix 'Create new template' button error for retros (#7917)
+- fix: changing width to max-width (#7913)
+- fix: slack stats (#7926)
+
+### Changed
+
+- chore(ai-summary): update logging (#7893)
+- chore(tailwind): Add default colors (#7892)
+- chore: add temporary story points update result logging (#7897)
+- chore: node version bump for security updates (#7901)
+- chore: simplify org plans button logic (#7899)
+- chore(metrics): emit is_patient_0 as user properties for GA4 (#7877)
+- chore: consolidate payload types for user sign-up/log-in activities (#7895)
+- chore(relay): createFragmentContainer -> useFragment 6/N (#7874)
+- chore(relay): createFragmentContainer -> useFragment 7/7 (#7875)
+- chore(pipeline): remove any reference to dev environment (#7920)
+- chore(template-limits): add template limit flag to p0 domains (#7921)
+- chore(relay): Remove 'UNSTABLE_renderPolicy: full' (#7919)
+- chore(dx): Add Parabol employees to reviewers to prevent auto-request-review (#7922)
+- chore(teams-limit): change first warning notification text (#7862)
+- chore(tailwind): Fix rename warning (#7924)
+- chore: add $data suffix to relay data fragments (#7928)
+- chore(upgradeRelay): refactor response and variables from relay mutation types (#7929)
+
+## 6.95.1 2023-Mar-09
+
+### Fixed
+
+- Handle SSE and socket done checks (#7903)
+
+## 6.95.0 2023-Mar-07
+
+### Added
+
+- **recurrence**: Stop Recurrence button (#7869)
+
+### Fixed
+
+- **teams-limit**: add missing billing link to 7 days warning email (#7857)
+- **teams-limit**: fix locked message in usage stats (#7861)
+- **Icebreaker** editing is not working properly on Android (#7431)
+
+### Changed
+
+- Add some more **Legitity tests** (#7863)
+- **metrics**: Add content_group in GA4 page_view event (#7848)
+- **pipeline**: Databases backup and restore from CircleCI pipeline (#7806)
+
 ## 6.94.0 2023-Mar-03
 
 ### Fixed
-- align search bar with meeting cards (#7819) 
+
+- align search bar with meeting cards (#7819)
 
 ### Added
-- **checkout-flow**: plans UI (#7793) 
-- **checkout-flow**: plans functionality (#7799) 
-- Add additional retrospective template illustrations (#7849) 
+
+- **checkout-flow**: plans UI (#7793)
+- **checkout-flow**: plans functionality (#7799)
+- Add additional retrospective template illustrations (#7849)
 
 ### Changed
-- Added Tailwind CSS (#7597) 
-- add css extract (#7808) 
+
+- Added Tailwind CSS (#7597)
+- add css extract (#7808)
 - **retros-in-disguise**: Added retros in disguise feature flag and empty route (#7807)
 - **docker**: Redis and RethinkDB dataversions fixed for the development environment. (#7810)
 - **docker-compose**: RethinkDB fixed to v2.4.2
 - **relay**: Fix convertToUseFragment bug (#7839)
 - **relay**: createFragmentContainer -> useFragment 2/N (#7841)
 - **relay**: createFragmentContainer -> useFragment 1/N (#7840)
-- **github**: Don't auto-assign at-mentioned users (#7846) 
-- Added a tailwind preset file (#7809) 
+- **github**: Don't auto-assign at-mentioned users (#7846)
+- Added a tailwind preset file (#7809)
 - **relay**: createFragmentContainer -> useFragment 3/N (#7842)
 - **relay**: createFragmentContainer -> useFragment 4/N (#7844)
 - **relay**: createFragmentContainer -> useFragment 5/N (#7845)
@@ -33,6 +121,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 6.93.0 2023-Feb-22
 
 ### Fixed
+
 - remove font-size 18px declaration on tasks editing status label (#7784)
 - **dashboard**: Meeting card shadow doesn't match card (#7782)
 - **standups**: Autofocus the input in the discussion drawer when opened (#7779)
@@ -41,11 +130,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **emails**: Generate email summaries with facilitator auth (#7805)
 
 ### Added
+
 - **recurrence**: Copy meeting series permalink (#7777)
 - **SAML UI**: Create a verifyDomain mutation (#7686)
 - **SAML UI**: Add UI with disabled state (#7684)
 
 ### Changed
+
 - **deps**: bump undici from 5.18.0 to 5.19.1 (#7787)
 - **tiptap**: Upgrade tiptap to pull in bugfixes (#7790)
 - select best platform for the job (#7786)

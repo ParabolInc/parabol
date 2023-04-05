@@ -8,7 +8,7 @@ enum UserFlagEnum {
   insights
   recurrence
   templateLimit
-  aiSummary
+  noAISummary
   noMeetingHistoryLimit
   checkoutFlow
   retrosInDisguise
@@ -24,7 +24,7 @@ type UserFeatureFlags {
   insights: Boolean!
   recurrence: Boolean!
   templateLimit: Boolean!
-  aiSummary: Boolean!
+  noAISummary: Boolean!
   noMeetingHistoryLimit: Boolean!
   checkoutFlow: Boolean!
   retrosInDisguise: Boolean!
@@ -71,5 +71,3 @@ type UpdateFeatureFlagPayload {
   """
   users: [User]
 }
-
-extend union NotificationSubscriptionPayload = UpdateFeatureFlagPayload

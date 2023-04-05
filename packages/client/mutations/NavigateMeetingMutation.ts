@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {
-  NavigateMeetingMutation_meeting,
+  NavigateMeetingMutation_meeting$data,
   NewMeetingPhaseTypeEnum
 } from '~/__generated__/NavigateMeetingMutation_meeting.graphql'
-import {NavigateMeetingMutation_team} from '~/__generated__/NavigateMeetingMutation_team.graphql'
-import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {NavigateMeetingMutation_team$data} from '~/__generated__/NavigateMeetingMutation_team.graphql'
+import {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
@@ -111,12 +111,12 @@ const mutation = graphql`
   }
 `
 
-export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_team> = (
+export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_team$data> = (
   payload,
   {store}
 ) => {
   const meetingId = safeProxy(payload).getLinkedRecord('meeting').getValue('id')!
-  const meeting = store.get<NavigateMeetingMutation_meeting>(meetingId)
+  const meeting = store.get<NavigateMeetingMutation_meeting$data>(meetingId)
   if (!meeting) return
 
   const viewerStageId = safeProxy(meeting).getLinkedRecord('localStage').getValue('id')
@@ -156,14 +156,14 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     )
     if (!reflectPhase) return
     const prompts =
-      reflectPhase.getLinkedRecords<ReflectionGroup_reflectionGroup[]>('reflectPrompts')
+      reflectPhase.getLinkedRecords<ReflectionGroup_reflectionGroup$data[]>('reflectPrompts')
     if (!prompts) return
     prompts.forEach((reflectPrompt) => {
       reflectPrompt?.setValue([], 'editorIds')
     })
   }
   const reflectionGroups =
-    meeting.getLinkedRecords<ReflectionGroup_reflectionGroup[]>('reflectionGroups')
+    meeting.getLinkedRecords<ReflectionGroup_reflectionGroup$data[]>('reflectionGroups')
   if (!reflectionGroups) return
   const sortedReflectionGroups = reflectionGroups
     .slice()

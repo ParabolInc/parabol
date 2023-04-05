@@ -7,10 +7,7 @@ import {StandardMutation} from '../types/relayMutations'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {
-  CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation,
-  CreateTaskIntegrationMutationVariables
-} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
@@ -93,7 +90,7 @@ const mutation = graphql`
 
 const jiraTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
-  variables: CreateTaskIntegrationMutationVariables
+  variables: TCreateTaskIntegrationMutation['variables']
 ) => {
   const {integrationRepoId, taskId} = variables
   const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
@@ -119,7 +116,7 @@ const jiraTaskIntegrationOptimisticUpdater = (
 
 const githubTaskIntegrationOptimisitcUpdater = (
   store: RecordSourceSelectorProxy,
-  variables: CreateTaskIntegrationMutationVariables
+  variables: TCreateTaskIntegrationMutation['variables']
 ) => {
   const {integrationRepoId, taskId} = variables
   const now = new Date()
@@ -145,7 +142,7 @@ const githubTaskIntegrationOptimisitcUpdater = (
 
 const gitlabTaskIntegrationOptimisitcUpdater = (
   store: RecordSourceSelectorProxy,
-  variables: CreateTaskIntegrationMutationVariables
+  variables: TCreateTaskIntegrationMutation['variables']
 ) => {
   const {integrationRepoId: fullPath, taskId} = variables
   const now = new Date()
@@ -174,7 +171,7 @@ const gitlabTaskIntegrationOptimisitcUpdater = (
 
 const jiraServerTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
-  variables: CreateTaskIntegrationMutationVariables
+  variables: TCreateTaskIntegrationMutation['variables']
 ) => {
   const {taskId} = variables
   const now = new Date()
@@ -196,7 +193,7 @@ const jiraServerTaskIntegrationOptimisticUpdater = (
 
 const azureTaskIntegrationOptimisitcUpdater = (
   store: RecordSourceSelectorProxy,
-  variables: CreateTaskIntegrationMutationVariables
+  variables: TCreateTaskIntegrationMutation['variables']
 ) => {
   const {integrationRepoId: teamProject, taskId} = variables
   const now = new Date()

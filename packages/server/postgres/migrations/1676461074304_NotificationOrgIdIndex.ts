@@ -3,7 +3,10 @@ import connectRethinkDB from '../../database/connectRethinkDB'
 
 export const up = async function () {
   await connectRethinkDB()
-  await r.table('Notification').indexCreate('orgId').run()
+  try {
+    await r.table('Notification').indexCreate('orgId').run()
+  } catch {}
+
   await r.getPoolMaster()?.drain()
 }
 

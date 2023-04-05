@@ -63,9 +63,7 @@ const gqlQuery = graphql`
 
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {menuProps, task: taskRef, queryRef} = props
-  const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef)
   const {viewer} = data
 
   const {closePortal: closeTeamAssigneeMenu} = menuProps

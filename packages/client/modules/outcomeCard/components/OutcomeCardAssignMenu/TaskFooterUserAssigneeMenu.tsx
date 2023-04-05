@@ -60,9 +60,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     `,
     taskRef
   )
-  const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef)
   const {viewer} = data
 
   const {userId, id: taskId} = task

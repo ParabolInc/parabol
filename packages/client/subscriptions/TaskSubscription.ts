@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
-import {RecordSourceSelectorProxy, requestSubscription} from 'relay-runtime'
+import {requestSubscription} from 'relay-runtime'
 import {
   TaskSubscription as TTaskSubscription,
-  TaskSubscriptionVariables
+  TaskSubscription$variables
 } from '~/__generated__/TaskSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
@@ -12,20 +12,40 @@ import {deleteTaskTaskUpdater} from '../mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from '../mutations/EditTaskMutation'
 import {removeOrgUserTaskUpdater} from '../mutations/RemoveOrgUserMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription TaskSubscription {
     taskSubscription {
-      __typename
-      ...RemoveTeamMemberMutation_task @relay(mask: false)
-      ...ChangeTaskTeamMutation_task @relay(mask: false)
-      ...CreateTaskIntegrationMutation_task @relay(mask: false)
-      ...CreateTaskMutation_task @relay(mask: false)
-      ...DeleteTaskMutation_task @relay(mask: false)
-      ...EditTaskMutation_task @relay(mask: false)
-      ...RemoveOrgUserMutation_task @relay(mask: false)
-      ...UpdateTaskMutation_task @relay(mask: false)
-      ...UpdateTaskDueDateMutation_task @relay(mask: false)
+      fieldName
+      RemoveTeamMemberPayload {
+        ...RemoveTeamMemberMutation_task @relay(mask: false)
+      }
+      ChangeTaskTeamPayload {
+        ...ChangeTaskTeamMutation_task @relay(mask: false)
+      }
+      CreateTaskIntegrationPayload {
+        ...CreateTaskIntegrationMutation_task @relay(mask: false)
+      }
+      CreateTaskPayload {
+        ...CreateTaskMutation_task @relay(mask: false)
+      }
+      DeleteTaskPayload {
+        ...DeleteTaskMutation_task @relay(mask: false)
+      }
+      EditTaskPayload {
+        ...EditTaskMutation_task @relay(mask: false)
+      }
+      RemoveOrgUserPayload {
+        ...RemoveOrgUserMutation_task @relay(mask: false)
+      }
+      UpdateTaskPayload {
+        ...UpdateTaskMutation_task @relay(mask: false)
+      }
+      UpdateTaskDueDatePayload {
+        ...UpdateTaskDueDateMutation_task @relay(mask: false)
+      }
     }
   }
 `
@@ -45,29 +65,15 @@ const updateHandlers = {
 
 const TaskSubscription = (
   atmosphere: Atmosphere,
-  variables: TaskSubscriptionVariables,
+  variables: TaskSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TTaskSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('taskSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as keyof typeof updateHandlers
-      const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
-      const updater = updateHandlers[type]
-      updater?.(payload, context)
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {taskSubscription} = result
-      const {__typename: type} = taskSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(taskSubscription as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('taskSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('taskSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(TaskSubscription.name, variables)
     }

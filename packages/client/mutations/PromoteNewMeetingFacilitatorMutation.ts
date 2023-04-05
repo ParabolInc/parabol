@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '../__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
-import {PromoteNewMeetingFacilitatorMutation_meeting} from '../__generated__/PromoteNewMeetingFacilitatorMutation_meeting.graphql'
+import {PromoteNewMeetingFacilitatorMutation_meeting$data} from '../__generated__/PromoteNewMeetingFacilitatorMutation_meeting.graphql'
 
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_meeting on PromoteNewMeetingFacilitatorPayload {
@@ -38,7 +38,7 @@ const mutation = graphql`
 `
 
 export const promoteNewMeetingFacilitatorMeetingOnNext: OnNextHandler<
-  PromoteNewMeetingFacilitatorMutation_meeting
+  PromoteNewMeetingFacilitatorMutation_meeting$data
 > = (payload, {atmosphere}) => {
   const {viewerId} = atmosphere
   const {oldFacilitator, meeting} = payload

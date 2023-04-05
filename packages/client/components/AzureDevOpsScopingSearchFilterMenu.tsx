@@ -5,8 +5,8 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {
-  AzureDevOpsScopingSearchFilterMenu_meeting$key,
-  AzureDevOpsScopingSearchFilterMenu_meeting
+  AzureDevOpsScopingSearchFilterMenu_meeting$data,
+  AzureDevOpsScopingSearchFilterMenu_meeting$key
 } from '../__generated__/AzureDevOpsScopingSearchFilterMenu_meeting.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -37,7 +37,7 @@ interface Props {
 }
 
 type AzureDevOpsSearchQuery = NonNullable<
-  NonNullable<AzureDevOpsScopingSearchFilterMenu_meeting>['azureDevOpsSearchQuery']
+  NonNullable<AzureDevOpsScopingSearchFilterMenu_meeting$data>['azureDevOpsSearchQuery']
 >
 
 const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {

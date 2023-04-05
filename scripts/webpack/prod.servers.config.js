@@ -8,6 +8,7 @@ const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
 const TerserPlugin = require('terser-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -57,9 +58,10 @@ module.exports = ({isDeploy, noDeps}) => ({
   },
   target: 'node',
   externals: [
-    !noDeps && nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/]
-    })
+    !noDeps &&
+      nodeExternals({
+        allowlist: [/parabol-client/, /parabol-server/]
+      })
   ].filter(Boolean),
   optimization: {
     minimize: noDeps,
@@ -108,6 +110,16 @@ module.exports = ({isDeploy, noDeps}) => ({
         },
         basePath: `${getS3BasePath()}server/dist/`,
         directory: distPath
+      }),
+    noDeps &&
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            // copy sharp's libvips to the output
+            from: path.resolve(PROJECT_ROOT, 'node_modules', 'sharp', 'vendor'),
+            to: 'vendor'
+          }
+        ]
       })
   ].filter(Boolean),
   module: {
@@ -131,7 +143,9 @@ module.exports = ({isDeploy, noDeps}) => ({
           {
             loader: 'node-loader',
             options: {
-              name: '[name].[ext]'
+              // sharp's bindings.gyp is hardcoded to look for libvips 2 directories up
+              // rather than do a custom build, we just output it 2 directories down (/node/binaries)
+              name: '/node/binaries/[name].[ext]'
             }
           }
         ]

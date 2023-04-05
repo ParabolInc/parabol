@@ -34,9 +34,7 @@ const query = graphql`
 const SuggestMentionableUsers = (props: Props) => {
   const {active, handleSelect, originCoords, suggestions, setSuggestions, triggerWord, queryRef} =
     props
-  const data = usePreloadedQuery<SuggestMentionableUsersQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<SuggestMentionableUsersQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
   const teamMembers = team ? team.teamMembers : null

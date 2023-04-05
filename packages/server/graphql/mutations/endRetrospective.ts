@@ -13,10 +13,12 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
+import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import generateWholeMeetingSentimentScore from './helpers/generateWholeMeetingSentimentScore'
 import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
@@ -24,20 +26,39 @@ import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
-  const {dataLoader} = context
+  const {dataLoader, authToken} = context
   const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
   const r = await getRethink()
-  const [reflectionGroups, reflections] = await Promise.all([
+  const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    generateWholeMeetingSentimentScore(meetingId, facilitatorUserId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
   const discussionIds = stages.map((stage) => stage.discussionId)
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
+  const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+  if (hasTopicSummary) {
+    const groupsWithMissingTopicSummaries = reflectionGroups.filter((group) => {
+      const reflectionsInGroup = reflections.filter(
+        (reflection) => reflection.reflectionGroupId === group.id
+      )
+      return reflectionsInGroup.length > 1 && !group.summary
+    })
+    if (groupsWithMissingTopicSummaries.length > 0) {
+      const missingGroupIds = groupsWithMissingTopicSummaries.map(({id}) => id).join(', ')
+      const error = new Error('Missing AI topic summary')
+      const viewerId = getUserId(authToken)
+      sendToSentry(error, {
+        userId: viewerId,
+        tags: {missingGroupIds, meetingId}
+      })
+    }
+  }
 
-  await Promise.all([
+  await Promise.allSettled([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     r
       .table('NewMeeting')
@@ -58,7 +79,8 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
             .count()
             .default(0) as unknown as number,
           topicCount: reflectionGroupIds.length,
-          reflectionCount: reflections.length
+          reflectionCount: reflections.length,
+          sentimentScore
         },
         {nonAtomic: true}
       )

@@ -10,7 +10,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps, {getOnCompletedError} from '../../../hooks/useMutationProps'
 import {PALETTE} from '../../../styles/paletteV3'
 import {CompletedHandler} from '../../../types/relayMutations'
-import {UpdateRecurrenceSettingsMutationResponse} from '../../../__generated__/UpdateRecurrenceSettingsMutation.graphql'
+import {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutation} from '../../../__generated__/UpdateRecurrenceSettingsMutation.graphql'
 import DialogContainer from '../../DialogContainer'
 import PlainButton from '../../PlainButton/PlainButton'
 import {RecurrenceSettings} from './RecurrenceSettings'
@@ -115,10 +115,9 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   }))
 
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
-  const onRecurrenceSettingsUpdated: CompletedHandler<UpdateRecurrenceSettingsMutationResponse> = (
-    res,
-    errors
-  ) => {
+  const onRecurrenceSettingsUpdated: CompletedHandler<
+    TUpdateRecurrenceSettingsMutation['response']
+  > = (res, errors) => {
     onCompleted(res as any, errors)
     const error = getOnCompletedError(res as any, errors)
     if (error) {

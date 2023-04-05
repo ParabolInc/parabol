@@ -122,9 +122,7 @@ const query = graphql`
 
 const NewMeeting = (props: Props) => {
   const {teamId, queryRef, onClose} = props
-  const data = usePreloadedQuery<NewMeetingQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<NewMeetingQuery>(query, queryRef)
   const {viewer} = data
   const {teams, featureFlags} = viewer
   const {insights} = featureFlags

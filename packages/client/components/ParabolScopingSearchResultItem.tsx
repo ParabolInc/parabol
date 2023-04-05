@@ -16,7 +16,7 @@ import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import {Threshold} from '../types/constEnums'
 import {ParabolScopingSearchResultItem_task$key} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
-import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import {AreaEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import TaskEditor from './TaskEditor/TaskEditor'
@@ -98,7 +98,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           action: isSelected ? 'DELETE' : 'ADD'
         }
       ]
-    } as UpdatePokerScopeMutationVariables
+    } as TUpdatePokerScopeMutation['variables']
     UpdatePokerScopeMutation(atmosphere, variables, {
       onError,
       onCompleted,

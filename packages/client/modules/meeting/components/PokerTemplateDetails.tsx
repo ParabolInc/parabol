@@ -3,8 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
-import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
-import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.png'
+import {pokerIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
@@ -145,13 +144,8 @@ const PokerTemplateDetails = (props: Props) => {
     )
     gotoTeamTemplates()
   }
-  const defaultIllustrations = {
-    estimatedEffortTemplate: estimatedEffortTemplate,
-    wsjfTemplate: wsjfTemplate
-  } as const
-  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
-    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
-    : customTemplate
+  const headerImg =
+    pokerIllustrations[templateId as keyof typeof pokerIllustrations] ?? customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
   return (

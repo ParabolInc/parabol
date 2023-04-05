@@ -11,7 +11,7 @@ const mutation = graphql`
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID! = ""
+    $invitationToken: ID!
     $segmentId: ID
     $isInvitation: Boolean!
   ) {
@@ -50,7 +50,11 @@ const SignUpWithPasswordMutation: StandardMutation<
       onCompleted({signUpWithPassword}, errors)
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
-        ReactGA.event('sign_up', {isPatient0: user!.isPatient0})
+        ReactGA.event('sign_up', {
+          user_properties: {
+            is_patient_0: user!.isPatient0
+          }
+        })
         handleSuccessfulLogin(signUpWithPassword)
         const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken
         atmosphere.setAuthToken(authToken)

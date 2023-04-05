@@ -1,10 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SimpleMutation} from '../types/relayMutations'
-import {
-  SelectTemplateMutation as TSelectTemplateMutation,
-  SelectTemplateMutationResponse
-} from '../__generated__/SelectTemplateMutation.graphql'
+import {SelectTemplateMutation as TSelectTemplateMutation} from '../__generated__/SelectTemplateMutation.graphql'
 
 graphql`
   fragment SelectTemplateMutation_team on SelectTemplatePayload {
@@ -33,7 +30,7 @@ const mutation = graphql`
   }
 `
 
-type SelectTemplate = NonNullable<SelectTemplateMutationResponse['selectTemplate']>
+type SelectTemplate = NonNullable<TSelectTemplateMutation['response']['selectTemplate']>
 
 const SelectTemplateMutation: SimpleMutation<TSelectTemplateMutation> = (atmosphere, variables) => {
   return commitMutation(atmosphere, {
