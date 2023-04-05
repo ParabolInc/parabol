@@ -113,6 +113,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
         ? RRule.fromString(currentRecurrenceRule)
         : null
   }))
+  const [validationErrors, setValidationErrors] = useState<string[] | undefined>(undefined)
 
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const onRecurrenceSettingsUpdated: CompletedHandler<
@@ -161,7 +162,16 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
     )
   }
 
+  const handleNewRecurrenceSettings = (
+    newRecurrenceSettings: RecurrenceSettings,
+    errors: string[] | undefined
+  ) => {
+    setNewRecurrenceSettings(newRecurrenceSettings)
+    setValidationErrors(errors)
+  }
+
   const canUpdate = useMemo(() => {
+    if (validationErrors?.length) return false
     const isRecurrenceReenabled = !isMeetingSeriesActive && newRecurrenceSettings.rrule
     if (isRecurrenceReenabled) return true
 
@@ -181,7 +191,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
       <RecurrenceSettings
         parentId='updateRecurrenceSettingsModal'
         recurrenceSettings={newRecurrenceSettings}
-        onRecurrenceSettingsUpdated={setNewRecurrenceSettings}
+        onRecurrenceSettingsUpdated={handleNewRecurrenceSettings}
       />
       <StyledCloseButton onClick={closeModal}>
         <CloseIcon />

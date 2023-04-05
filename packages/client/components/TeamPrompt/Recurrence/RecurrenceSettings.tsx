@@ -171,7 +171,10 @@ export interface RecurrenceSettings {
 
 interface Props {
   parentId: PortalId
-  onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
+  onRecurrenceSettingsUpdated: (
+    recurrenceSettings: RecurrenceSettings,
+    validationErrors: string[] | undefined
+  ) => void
   recurrenceSettings: RecurrenceSettings
 }
 
@@ -253,7 +256,7 @@ export const RecurrenceSettings = (props: Props) => {
           })
         : null
 
-    onRecurrenceSettingsUpdated({name, rrule})
+    onRecurrenceSettingsUpdated({name, rrule}, [nameError, intervalError].filter(isNotNull))
   }, [recurrenceDays, recurrenceInterval, recurrenceStartTime, name])
   const hasErrors = !!nameError || !!intervalError
 
