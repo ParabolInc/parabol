@@ -6,6 +6,7 @@ import {Redirect, useHistory} from 'react-router'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {Link} from 'react-router-dom'
 import IconLabel from '../IconLabel'
+import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
 import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
 import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
@@ -32,6 +33,7 @@ import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import FlatPrimaryButton from '../FlatPrimaryButton'
+import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 
 const query = graphql`
   query ActivityDetailsQuery {
@@ -172,6 +174,24 @@ const ActivityDetails = (props: Props) => {
       ? [templateTeam]
       : []
 
+  const handleStartRetro = () => {
+    if (submitting) return
+    SelectTemplateMutation(
+      atmosphere,
+      {selectedTemplateId: templateId, teamId: selectedTeam.id},
+      {
+        onCompleted: () => {
+          StartRetrospectiveMutation(
+            atmosphere,
+            {teamId: selectedTeam.id},
+            {history, onError, onCompleted}
+          )
+        },
+        onError
+      }
+    )
+  }
+
   return (
     <div className='flex h-full bg-white'>
       <div className='mt-4 grow'>
@@ -281,7 +301,7 @@ const ActivityDetails = (props: Props) => {
           <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
           <div className='flex grow flex-col justify-end gap-2'>
             <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-            <FlatPrimaryButton className='h-14'>
+            <FlatPrimaryButton onClick={handleStartRetro} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>
           </div>
