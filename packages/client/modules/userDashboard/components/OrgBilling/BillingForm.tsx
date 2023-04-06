@@ -4,7 +4,6 @@ import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
-import StyledError from '../../../../components/StyledError'
 import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -16,11 +15,6 @@ const ButtonBlock = styled('div')({
   wrap: 'nowrap',
   flexDirection: 'column',
   width: '100%'
-})
-
-const ErrorMessage = styled(StyledError)({
-  width: '100%',
-  textAlign: 'center'
 })
 
 const StyledForm = styled('form')({
@@ -49,11 +43,10 @@ type Props = {
   orgId: string
 }
 
-export default function BillingForm(props: Props) {
+const BillingForm = (props: Props) => {
   const {orgId} = props
   const stripe = useStripe()
   const elements = useElements()
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
@@ -67,10 +60,10 @@ export default function BillingForm(props: Props) {
       elements,
       redirect: 'if_required'
     })
+    setIsLoading(false)
     if (error) return
     const {payment_method: paymentMethodId, status} = setupIntent
-
-    if (!error && status === 'succeeded' && typeof paymentMethodId === 'string') {
+    if (status === 'succeeded' && typeof paymentMethodId === 'string') {
       setIsPaymentSuccessful(true)
       const handleCompleted = () => {}
       UpgradeToTeamTierMutation(
@@ -79,14 +72,12 @@ export default function BillingForm(props: Props) {
         {onError, onCompleted: handleCompleted}
       )
     }
-    setIsLoading(false)
   }
 
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
       <PaymentElement id='payment-element' options={{layout: 'tabs'}} />
       <ButtonBlock>
-        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
           {'Upgrade'}
         </UpgradeButton>
@@ -95,3 +86,5 @@ export default function BillingForm(props: Props) {
     </StyledForm>
   )
 }
+
+export default BillingForm
