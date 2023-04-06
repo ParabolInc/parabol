@@ -72,6 +72,7 @@ export type AnalyticsEvent =
   | 'Meeting Recurrence Stopped'
   | 'Meeting Settings Changed'
   // team
+  | 'Team Name Changed'
   | 'Integration Added'
   | 'Integration Removed'
   | 'Invite Email Sent'
@@ -254,6 +255,21 @@ class Analytics {
   }
 
   // team
+  teamNameChanged = (
+    userId: string,
+    teamId: string,
+    oldName: string,
+    newName: string,
+    isOldNameDefault: boolean
+  ) => {
+    this.track(userId, 'Team Name Changed', {
+      teamId,
+      oldName,
+      newName,
+      isOldNameDefault
+    })
+  }
+
   integrationAdded = (
     userId: string,
     teamId: string,
