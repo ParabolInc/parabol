@@ -8,7 +8,6 @@ import {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.gra
 const List = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  overflowY: 'auto',
   padding: '16px 0px',
   position: 'relative',
   width: '100%'
@@ -17,7 +16,7 @@ const List = styled('div')({
 const DrawerContent = styled('div')({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
-  overflow: 'hidden',
+  overflowY: 'auto',
   padding: 16,
   height: '100vh',
   flexDirection: 'column'
