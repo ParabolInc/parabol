@@ -93,7 +93,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
   }
   analytics.accountCreated(userId, !isOrganic, isPatient0)
 
-  const emailIsVerified = identities[0].isEmailVerified
+  const emailIsVerified = identities[0]?.isEmailVerified
 
   if (emailIsVerified && isOrganic) {
     sendPromptToJoinOrg(email, userId)
