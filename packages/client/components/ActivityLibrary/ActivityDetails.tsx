@@ -176,6 +176,7 @@ const ActivityDetails = (props: Props) => {
 
   const handleStartRetro = () => {
     if (submitting) return
+    submitMutation()
     SelectTemplateMutation(
       atmosphere,
       {selectedTemplateId: templateId, teamId: selectedTeam.id},
@@ -301,7 +302,7 @@ const ActivityDetails = (props: Props) => {
           <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
           <div className='flex grow flex-col justify-end gap-2'>
             <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-            <FlatPrimaryButton onClick={handleStartRetro} className='h-14'>
+            <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>
           </div>
