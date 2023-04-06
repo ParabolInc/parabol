@@ -40,7 +40,7 @@
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
-          "CreatePaymentIntentSuccess": "./types/CreatePaymentIntentSuccess#CreatePaymentIntentSuccessSource",
+          "CreateSetupIntentSuccess": "./types/CreateSetupIntentSuccess#CreateSetupIntentSuccessSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",

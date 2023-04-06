@@ -9,7 +9,7 @@ import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
 import getCCFromCustomer from './getCCFromCustomer'
 
-const upgradeToTeamTierOld = async (
+const upgradeToTeamTier = async (
   orgId: string,
   paymentMethodId: string,
   email: string,
@@ -32,55 +32,58 @@ const upgradeToTeamTierOld = async (
   const manager = getStripeManager()
 
   const customers = await manager.getCustomersByEmail(email)
-  console.log('🚀 ~ customers:', customers)
+  // console.log('🚀 ~ customers:', customers)
   const existingCustomer = customers.data.find((customer) => customer.metadata.orgId === orgId)
   const customer = existingCustomer ?? (await manager.createCustomer(orgId, email))
-  console.log('🚀 ~ customer:', customer)
+  console.log('🚀 ~ customer:', {customer, paymentMethodId, existingCustomer})
   const {id: customerId} = customer
   const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
   console.log('🚀 ~ res:', res)
+  const resDos = await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
+  console.log('🚀 ~ resDos:', resDos)
 
   // const customer = stripeId
   //   ? await manager.updatePayment(stripeId, source)
   //   : await manager.createCustomer(orgId, email, source)
 
   let subscriptionFields = {}
-  if (!stripeSubscriptionId) {
-    const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
-    subscriptionFields = {
-      periodEnd: fromEpochSeconds(subscription.current_period_end),
-      periodStart: fromEpochSeconds(subscription.current_period_start),
-      stripeSubscriptionId: subscription.id
-    }
+  // if (!stripeSubscriptionId) {
+  const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
+  console.log('🚀 ~ subscription:', subscription)
+  subscriptionFields = {
+    periodEnd: fromEpochSeconds(subscription.current_period_end),
+    periodStart: fromEpochSeconds(subscription.current_period_start),
+    stripeSubscriptionId: subscription.id
   }
+  // }
 
-  // await Promise.all([
-  //   r({
-  //     updatedOrg: r
-  //       .table('Organization')
-  //       .get(orgId)
-  //       .update({
-  //         ...subscriptionFields,
-  //         // creditCard: await getCCFromCustomer(customer),
-  //         tier: 'team',
-  //         stripeId: customer.id,
-  //         tierLimitExceededAt: null,
-  //         scheduledLockAt: null,
-  //         lockedAt: null,
-  //         updatedAt: now
-  //       })
-  //   }).run(),
-  //   updateTeamByOrgId(
-  //     {
-  //       isPaid: true,
-  //       tier: 'team'
-  //     },
-  //     orgId
-  //   ),
-  //   removeTeamsLimitObjects(orgId, dataLoader)
-  // ])
+  await Promise.all([
+    r({
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          ...subscriptionFields,
+          // creditCard: await getCCFromCustomer(customer),
+          tier: 'team',
+          stripeId: customer.id,
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: now
+        })
+    }).run(),
+    updateTeamByOrgId(
+      {
+        isPaid: true,
+        tier: 'team'
+      },
+      orgId
+    ),
+    removeTeamsLimitObjects(orgId, dataLoader)
+  ])
 
-  // await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }
 
-export default upgradeToTeamTierOld
+export default upgradeToTeamTier

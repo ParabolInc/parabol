@@ -62,6 +62,7 @@ export default {
     const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer!
     try {
+      // TODO: remove upgradeToTeamTierOld once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
       if (paymentMethodId) {
         await upgradeToTeamTier(orgId, paymentMethodId, email, dataLoader)
       } else if (stripeToken) {

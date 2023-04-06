@@ -5,7 +5,7 @@ import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
-const createPaymentIntent: MutationResolvers['createPaymentIntent'] = async (
+const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
   _source,
   {orgId},
   {authToken, dataLoader}
@@ -37,14 +37,15 @@ const createPaymentIntent: MutationResolvers['createPaymentIntent'] = async (
   // console.log('🚀 ~ customer:', customer)
   // const {id: customerId} = customer
 
-  // const paymentIntent = await manager.createPaymentIntent(price, customerId)
-  const paymentIntent = await manager.createPaymentIntent(price)
-  console.log('🚀 ~ paymentIntent:', paymentIntent)
+  // const paymentIntent = await manager.createSetupIntent(price, customerId)
+  // const paymentIntent = await manager.createSetupIntent(price)
+  const setupIntent = await manager.createSetupIntent()
+  console.log('🚀 ~ setupIntent:', setupIntent)
   // console.log('🚀 ~ paymentIntent:', {paymentIntent, customer})
 
-  const {client_secret: clientSecret} = paymentIntent
+  const {client_secret: clientSecret} = setupIntent
   const data = {clientSecret}
   return data
 }
 
-export default createPaymentIntent
+export default createSetupIntent

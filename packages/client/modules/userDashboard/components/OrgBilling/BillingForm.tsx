@@ -57,24 +57,25 @@ export default function BillingForm(props: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const {onError} = useMutationProps()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!stripe || !elements) return
     setIsLoading(true)
-    const {paymentIntent, error} = await stripe.confirmPayment({
+    const {setupIntent, error} = await stripe.confirmSetup({
       elements,
-      redirect: 'if_required' // https://stripe.com/docs/js/payment_intents/confirm_payment#confirm_payment_intent-options-redirect
+      redirect: 'if_required'
     })
-    const {id: paymentIntentId, status} = paymentIntent
-    console.log('🚀 ~ paymentIntent:', paymentIntent)
-    if (!error && status === 'succeeded' && paymentIntentId) {
+    const {payment_method: paymentMethodId, status} = setupIntent
+    console.log('🚀 ~ setupIntent:', {setupIntent, paymentMethodId, status})
+
+    if (!error && status === 'succeeded' && paymentMethodId) {
       setIsPaymentSuccessful(true)
       const handleCompleted = () => {}
       UpgradeToTeamTierMutation(
         atmosphere,
-        {orgId, paymentMethodId: paymentIntentId},
+        {orgId, paymentMethodId},
         {onError, onCompleted: handleCompleted}
       )
     } else if (error?.type === 'card_error' || error?.type === 'validation_error') {

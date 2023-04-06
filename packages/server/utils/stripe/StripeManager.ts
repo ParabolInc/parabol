@@ -54,14 +54,20 @@ export default class StripeManager {
     })
   }
 
-  // async createPaymentIntent(amount: number, customerId: string) {
-  async createPaymentIntent(amount: number) {
-    return this.stripe.paymentIntents.create({
-      amount,
-      currency: 'usd'
-      // customer: customerId
-      // setup_future_usage: 'off_session'
-      // metadata: {subscription_id: 'your_subscription_id'}
+  // async createSetupIntent(amount: number, customerId: string) {
+  // async createSetupIntent(amount: number) {
+  //   return this.stripe.paymentIntents.create({
+  //     amount,
+  //     currency: 'usd',
+  //     // customer: customerId
+  //     setup_future_usage: 'off_session'
+  //     // metadata: {subscription_id: 'your_subscription_id'}
+  //   })
+  // }
+
+  async createSetupIntent() {
+    return this.stripe.setupIntents.create({
+      payment_method_types: ['card']
     })
   }
 
@@ -79,6 +85,7 @@ export default class StripeManager {
       metadata: {
         orgId
       },
+      expand: ['latest_invoice.payment_intent'],
       items: [
         {
           plan: StripeManager.PARABOL_TEAM_600,
@@ -165,6 +172,12 @@ export default class StripeManager {
 
   async updatePayment(customerId: string, source: string) {
     return this.stripe.customers.update(customerId, {source})
+  }
+
+  async updateDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
+    return this.stripe.customers.update(customerId, {
+      invoice_settings: {default_payment_method: paymentMethodId}
+    })
   }
 
   async updateSubscriptionItemQuantity(stripeSubscriptionItemId: string, quantity: number) {
