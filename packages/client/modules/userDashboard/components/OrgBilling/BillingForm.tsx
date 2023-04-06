@@ -39,7 +39,7 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   marginTop: 16,
   width: '100%',
   elevation: 0,
-  '&:hover': {
+  '&:hover, &:focus': {
     boxShadow: 'none',
     background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
   }
@@ -67,9 +67,10 @@ export default function BillingForm(props: Props) {
       elements,
       redirect: 'if_required'
     })
+    if (error) return
     const {payment_method: paymentMethodId, status} = setupIntent
 
-    if (!error && status === 'succeeded' && paymentMethodId) {
+    if (!error && status === 'succeeded' && typeof paymentMethodId === 'string') {
       setIsPaymentSuccessful(true)
       const handleCompleted = () => {}
       UpgradeToTeamTierMutation(
@@ -77,10 +78,6 @@ export default function BillingForm(props: Props) {
         {orgId, paymentMethodId},
         {onError, onCompleted: handleCompleted}
       )
-    } else if (error?.type === 'card_error' || error?.type === 'validation_error') {
-      setErrorMessage(error.message)
-    } else if (error) {
-      setErrorMessage('An unexpected error occurred.')
     }
     setIsLoading(false)
   }
