@@ -1,14 +1,11 @@
-import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId} from '../../utils/authorization'
-import getPubSub from '../../utils/getPubSub'
-import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPayload'
-import {GQLContext} from './../graphql'
+import getRethink from '../../../database/rethinkDriver'
+import {getUserId} from '../../../utils/authorization'
+import getPubSub from '../../../utils/getPubSub'
+import {SubscriptionResolvers} from '../resolverTypes'
 
-export default {
-  type: new GraphQLNonNull(OrganizationSubscriptionPayload),
-  subscribe: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
+const organizationSubscription: SubscriptionResolvers['organizationSubscription'] = {
+  subscribe: async (_source, _args, {authToken}) => {
     // AUTH
     const viewerId = getUserId(authToken)
     const r = await getRethink()
@@ -26,3 +23,4 @@ export default {
     return getPubSub().subscribe(channelNames)
   }
 }
+export default organizationSubscription

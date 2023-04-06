@@ -47,7 +47,9 @@ const IconGroup = styled('div')({
   alignItems: 'center'
 })
 
-const PencilIcon = styled(Edit)<{isExpanded?: boolean}>(({isExpanded}) => ({
+const PencilIcon = styled(Edit, {
+  shouldForwardProp: (prop) => !['isExpanded'].includes(prop)
+})<{isExpanded?: boolean}>(({isExpanded}) => ({
   color: isExpanded ? '#FFFFFF' : PALETTE.SLATE_600,
   display: 'block',
   height: 18,

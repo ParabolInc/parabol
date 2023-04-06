@@ -30,6 +30,7 @@ const OptionsButton = styled(BaseButton)({
 interface Props {
   meetingRef: TeamPromptOptions_meeting$key
   openRecurrenceSettingsModal: () => void
+  openEndRecurringMeetingModal: () => void
 }
 
 const TeamPromptOptions = (props: Props) => {
@@ -46,7 +47,7 @@ const TeamPromptOptions = (props: Props) => {
     closeTooltip: closeCopiedTooltip,
     originRef: copiedTooltipRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_RIGHT)
-  const {meetingRef, openRecurrenceSettingsModal} = props
+  const {meetingRef, openRecurrenceSettingsModal, openEndRecurringMeetingModal} = props
 
   const meeting = useFragment(
     graphql`
@@ -81,6 +82,7 @@ const TeamPromptOptions = (props: Props) => {
           meetingRef={meeting}
           menuProps={menuProps}
           openRecurrenceSettingsModal={openRecurrenceSettingsModal}
+          openEndRecurringMeetingModal={openEndRecurringMeetingModal}
           popTooltip={popTooltip}
         />
       )}

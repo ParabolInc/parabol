@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {RRule} from 'rrule'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useUsageSnackNag from '~/hooks/useUsageSnackNag'
@@ -24,6 +23,7 @@ import NewMeetingCarousel from './NewMeetingCarousel'
 import {NewMeetingRecurrenceSettings} from './NewMeetingRecurrenceSettings'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
+import {RecurrenceSettings} from './TeamPrompt/Recurrence/RecurrenceSettings'
 
 interface Props {
   teamId?: string | null
@@ -132,7 +132,10 @@ const NewMeeting = (props: Props) => {
     'poker',
     'action'
   ])
-  const [recurrenceRule, setRecurrenceRule] = useState<RRule | null>(null)
+  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
+    name: '',
+    rrule: null
+  })
 
   const {history, location} = useRouter()
   const [idx, setIdx] = useState(0)
@@ -172,7 +175,13 @@ const NewMeeting = (props: Props) => {
     } else if (meetingType === 'teamPrompt') {
       StartTeamPromptMutation(
         atmosphere,
-        {teamId, recurrenceRule: recurrenceRule?.toString()},
+        {
+          teamId,
+          recurrenceSettings: {
+            rrule: recurrenceSettings.rrule?.toString(),
+            name: recurrenceSettings.name
+          }
+        },
         {history, onError, onCompleted}
       )
     }
@@ -205,8 +214,8 @@ const NewMeeting = (props: Props) => {
             />
             {meetingType === 'teamPrompt' && (
               <NewMeetingRecurrenceSettings
-                onRecurrenceRuleUpdated={setRecurrenceRule}
-                recurrenceRule={recurrenceRule}
+                onRecurrenceSettingsUpdated={setRecurrenceSettings}
+                recurrenceSettings={recurrenceSettings}
               />
             )}
           </SettingsRow>

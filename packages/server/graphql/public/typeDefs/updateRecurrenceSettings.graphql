@@ -10,7 +10,11 @@ extend type Mutation {
     ID of the meeting to update recurrence settings for
     """
     meetingId: ID!
-    recurrenceRule: RRule
+
+    """
+    Updated recurrence settings
+    """
+    recurrenceSettings: RecurrenceSettingsInput!
   ): UpdateRecurrenceSettingsPayload!
 }
 
@@ -25,5 +29,3 @@ type UpdateRecurrenceSettingsSuccess {
   """
   meeting: TeamPromptMeeting!
 }
-
-extend union TeamSubscriptionPayload = UpdateRecurrenceSettingsSuccess

@@ -7,7 +7,7 @@ import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
 import {
   MeetingSubscription as TMeetingSubscription,
-  MeetingSubscriptionVariables
+  MeetingSubscription$variables
 } from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
@@ -23,46 +23,118 @@ import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutat
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
-      __typename
-      ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
-      ...SetTaskEstimateMutation_meeting @relay(mask: false)
-      ...SetPokerSpectateMutation_team @relay(mask: false)
-      ...JoinMeetingMutation_meeting @relay(mask: false)
-      ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
-      ...PokerResetDimensionMutation_meeting @relay(mask: false)
-      ...PokerRevealVotesMutation_meeting @relay(mask: false)
-      ...VoteForPokerStoryMutation_meeting @relay(mask: false)
-      ...AddReactjiToReactableMutation_meeting @relay(mask: false)
-      ...AddCommentMutation_meeting @relay(mask: false)
-      ...CreatePollMutation_meeting @relay(mask: false)
-      ...CreateReflectionMutation_meeting @relay(mask: false)
-      ...DeleteCommentMutation_meeting @relay(mask: false)
-      ...DragDiscussionTopicMutation_meeting @relay(mask: false)
-      ...EditCommentingMutation_meeting @relay(mask: false)
-      ...EditReflectionMutation_meeting @relay(mask: false)
-      ...EndDraggingReflectionMutation_meeting @relay(mask: false)
-      ...EndRetrospectiveMutation_meeting @relay(mask: false)
-      ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
-      ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
-      ...RemoveReflectionMutation_meeting @relay(mask: false)
-      ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
-      ...SetPhaseFocusMutation_meeting @relay(mask: false)
-      ...SetStageTimerMutation_meeting @relay(mask: false)
-      ...StartDraggingReflectionMutation_meeting @relay(mask: false)
-      ...SetTaskHighlightMutation_meeting @relay(mask: false)
-      ...UpdateCommentContentMutation_meeting @relay(mask: false)
-      ...UpdateNewCheckInQuestionMutation_meeting @relay(mask: false)
-      ...UpdateDragLocationMutation_meeting @relay(mask: false)
-      ...UpdatePokerScopeMutation_meeting @relay(mask: false)
-      ...UpdateReflectionContentMutation_meeting @relay(mask: false)
-      ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
-      ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
-      ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
-      ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
+      fieldName
+      UpdateMeetingPromptSuccess {
+        ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
+      }
+      SetTaskEstimateSuccess {
+        ...SetTaskEstimateMutation_meeting @relay(mask: false)
+      }
+      SetPokerSpectateSuccess {
+        ...SetPokerSpectateMutation_team @relay(mask: false)
+      }
+      JoinMeetingSuccess {
+        ...JoinMeetingMutation_meeting @relay(mask: false)
+      }
+      PokerAnnounceDeckHoverSuccess {
+        ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
+      }
+      PokerResetDimensionSuccess {
+        ...PokerResetDimensionMutation_meeting @relay(mask: false)
+      }
+      PokerRevealVotesSuccess {
+        ...PokerRevealVotesMutation_meeting @relay(mask: false)
+      }
+      VoteForPokerStorySuccess {
+        ...VoteForPokerStoryMutation_meeting @relay(mask: false)
+      }
+      AddReactjiToReactableSuccess {
+        ...AddReactjiToReactableMutation_meeting @relay(mask: false)
+      }
+      AddCommentSuccess {
+        ...AddCommentMutation_meeting @relay(mask: false)
+      }
+      CreatePollSuccess {
+        ...CreatePollMutation_meeting @relay(mask: false)
+      }
+      CreateReflectionPayload {
+        ...CreateReflectionMutation_meeting @relay(mask: false)
+      }
+      DeleteCommentSuccess {
+        ...DeleteCommentMutation_meeting @relay(mask: false)
+      }
+      DragDiscussionTopicPayload {
+        ...DragDiscussionTopicMutation_meeting @relay(mask: false)
+      }
+      EditCommentingSuccess {
+        ...EditCommentingMutation_meeting @relay(mask: false)
+      }
+      EditReflectionPayload {
+        ...EditReflectionMutation_meeting @relay(mask: false)
+      }
+      EndDraggingReflectionPayload {
+        ...EndDraggingReflectionMutation_meeting @relay(mask: false)
+      }
+      EndRetrospectiveSuccess {
+        ...EndRetrospectiveMutation_meeting @relay(mask: false)
+      }
+      FlagReadyToAdvanceSuccess {
+        ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
+      }
+      PromoteNewMeetingFacilitatorPayload {
+        ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
+      }
+      RemoveReflectionPayload {
+        ...RemoveReflectionMutation_meeting @relay(mask: false)
+      }
+      ResetRetroMeetingToGroupStagePayload {
+        ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
+      }
+      SetPhaseFocusPayload {
+        ...SetPhaseFocusMutation_meeting @relay(mask: false)
+      }
+      SetStageTimerPayload {
+        ...SetStageTimerMutation_meeting @relay(mask: false)
+      }
+      StartDraggingReflectionPayload {
+        ...StartDraggingReflectionMutation_meeting @relay(mask: false)
+      }
+      SetTaskHighlightSuccess {
+        ...SetTaskHighlightMutation_meeting @relay(mask: false)
+      }
+      UpdateCommentContentSuccess {
+        ...UpdateCommentContentMutation_meeting @relay(mask: false)
+      }
+      UpdateNewCheckInQuestionPayload {
+        ...UpdateNewCheckInQuestionMutation_meeting @relay(mask: false)
+      }
+      UpdateDragLocationPayload {
+        ...UpdateDragLocationMutation_meeting @relay(mask: false)
+      }
+      UpdatePokerScopeSuccess {
+        ...UpdatePokerScopeMutation_meeting @relay(mask: false)
+      }
+      UpdateReflectionContentPayload {
+        ...UpdateReflectionContentMutation_meeting @relay(mask: false)
+      }
+      UpdateReflectionGroupTitlePayload {
+        ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
+      }
+      UpdateRetroMaxVotesSuccess {
+        ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
+      }
+      VoteForReflectionGroupPayload {
+        ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
+      }
+      UpsertTeamPromptResponseSuccess {
+        ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
+      }
     }
   }
 `
@@ -90,30 +162,15 @@ const updateHandlers = {
 
 const MeetingSubscription = (
   atmosphere: Atmosphere,
-  variables: MeetingSubscriptionVariables,
+  variables: MeetingSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TMeetingSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('meetingSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as keyof typeof updateHandlers
-      const handler = updateHandlers[type]
-      if (handler) {
-        handler(payload, {atmosphere, store})
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {meetingSubscription} = result
-      const {__typename: type} = meetingSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(meetingSubscription as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('meetingSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('meetingSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(MeetingSubscription.name, variables)
     }

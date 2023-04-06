@@ -79,6 +79,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const user = await getUserByEmail(email)
   if (user) {
     return {
+      userId: user.id,
       authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol})),
       isNewUser: false
     }
@@ -93,11 +94,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   })
 
   const authToken = await bootstrapNewUser(tempUser, !isInvited)
-  const newUser = await dataLoader.get('users').loadNonNull(userId)
   return {
+    userId,
     authToken: encodeAuthToken(authToken),
-    isNewUser: true,
-    isPatient0: newUser.isPatient0
+    isNewUser: true
   }
 }
 

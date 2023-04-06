@@ -2,7 +2,7 @@ import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import MeetingTeamPrompt, {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -28,15 +28,10 @@ const startRecurringTeamPrompt = async (
   const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
-  const formattedDate = new Date().toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  })
-
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
   const nextMeetingStartDate = rrule.after(startTime)
   const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
-    name: `${meetingSeries.title} - ${formattedDate}`,
+    name: createTeamPromptTitle(meetingSeries.title, startTime, rrule.options.tzid ?? 'UTC'),
     scheduledEndTime: nextMeetingStartDate,
     meetingSeriesId: meetingSeries.id
   })

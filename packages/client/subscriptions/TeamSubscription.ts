@@ -35,56 +35,144 @@ import {
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {
   TeamSubscription as TTeamSubscription,
-  TeamSubscriptionVariables
+  TeamSubscription$variables
 } from '../__generated__/TeamSubscription.graphql'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
-      __typename
-      ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
-      ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false)
-      ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)
-      ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
-      ...AcceptTeamInvitationMutation_team @relay(mask: false)
-      ...AddAgendaItemMutation_team @relay(mask: false)
-      ...AddAtlassianAuthMutation_team @relay(mask: false)
-      ...AddReflectTemplateMutation_team @relay(mask: false)
-      ...AddReflectTemplatePromptMutation_team @relay(mask: false)
-      ...AddTeamMutation_team @relay(mask: false)
-      ...ArchiveTeamMutation_team @relay(mask: false)
-      ...DenyPushInvitationMutation_team @relay(mask: false)
-      ...EndCheckInMutation_team @relay(mask: false)
-      ...EndRetrospectiveMutation_team @relay(mask: false)
-      ...EndSprintPokerMutation_team @relay(mask: false)
-      ...EndTeamPromptMutation_team @relay(mask: false)
-      ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
-      ...NavigateMeetingMutation_team @relay(mask: false)
-      ...PromoteToTeamLeadMutation_team @relay(mask: false)
-      ...PushInvitationMutation_team @relay(mask: false)
-      ...ReflectTemplatePromptUpdateGroupColorMutation_team @relay(mask: false)
-      ...RemoveAgendaItemMutation_team @relay(mask: false)
-      ...RemoveOrgUserMutation_team @relay(mask: false)
-      ...RemoveReflectTemplateMutation_team @relay(mask: false)
-      ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
-      ...RemoveTeamMemberMutation_team @relay(mask: false)
-      ...RenameMeetingMutation_team @relay(mask: false)
-      ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
-      ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
-      ...SelectTemplateMutation_team @relay(mask: false)
-      ...SetAppLocationMutation_team @relay(mask: false)
-      ...SetMeetingSettingsMutation_team @relay(mask: false)
-      ...StartCheckInMutation_team @relay(mask: false)
-      ...StartRetrospectiveMutation_team @relay(mask: false)
-      ...StartSprintPokerMutation_team @relay(mask: false)
-      ...StartTeamPromptMutation_team @relay(mask: false)
-      ...UpdateAgendaItemMutation_team @relay(mask: false)
-      ...UpdateCreditCardMutation_team @relay(mask: false)
-      ...UpdateTeamNameMutation_team @relay(mask: false)
-      ...UpdateUserProfileMutation_team @relay(mask: false)
-      ...UpgradeToTeamTierMutation_team @relay(mask: false)
-      ...UpdateIntegrationProviderMutation_team @relay(mask: false)
-      ...AddIntegrationProviderMutation_team @relay(mask: false)
+      fieldName
+      UpdateRecurrenceSettingsSuccess {
+        ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
+      }
+      UpdateDimensionFieldSuccess {
+        ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
+      }
+      UpdateGitHubDimensionFieldSuccess {
+        ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false)
+      }
+      MovePokerTemplateScaleValueSuccess {
+        ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)
+      }
+      AcceptTeamInvitationPayload {
+        ...AcceptTeamInvitationMutation_team @relay(mask: false)
+      }
+      AddAgendaItemPayload {
+        ...AddAgendaItemMutation_team @relay(mask: false)
+      }
+      AddAtlassianAuthPayload {
+        ...AddAtlassianAuthMutation_team @relay(mask: false)
+      }
+      AddReflectTemplatePayload {
+        ...AddReflectTemplateMutation_team @relay(mask: false)
+      }
+      AddReflectTemplatePromptPayload {
+        ...AddReflectTemplatePromptMutation_team @relay(mask: false)
+      }
+      AddTeamPayload {
+        ...AddTeamMutation_team @relay(mask: false)
+      }
+      ArchiveTeamPayload {
+        ...ArchiveTeamMutation_team @relay(mask: false)
+      }
+      DenyPushInvitationPayload {
+        ...DenyPushInvitationMutation_team @relay(mask: false)
+      }
+      EndCheckInSuccess {
+        ...EndCheckInMutation_team @relay(mask: false)
+      }
+      EndRetrospectiveSuccess {
+        ...EndRetrospectiveMutation_team @relay(mask: false)
+      }
+      EndSprintPokerSuccess {
+        ...EndSprintPokerMutation_team @relay(mask: false)
+      }
+      EndTeamPromptSuccess {
+        ...EndTeamPromptMutation_team @relay(mask: false)
+      }
+      MoveReflectTemplatePromptPayload {
+        ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
+      }
+      NavigateMeetingPayload {
+        ...NavigateMeetingMutation_team @relay(mask: false)
+      }
+      PromoteToTeamLeadPayload {
+        ...PromoteToTeamLeadMutation_team @relay(mask: false)
+      }
+      PushInvitationPayload {
+        ...PushInvitationMutation_team @relay(mask: false)
+      }
+      ReflectTemplatePromptUpdateGroupColorPayload {
+        ...ReflectTemplatePromptUpdateGroupColorMutation_team @relay(mask: false)
+      }
+      RemoveAgendaItemPayload {
+        ...RemoveAgendaItemMutation_team @relay(mask: false)
+      }
+      RemoveOrgUserPayload {
+        ...RemoveOrgUserMutation_team @relay(mask: false)
+      }
+      RemoveReflectTemplatePayload {
+        ...RemoveReflectTemplateMutation_team @relay(mask: false)
+      }
+      RemoveReflectTemplatePromptPayload {
+        ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
+      }
+      RemoveTeamMemberPayload {
+        ...RemoveTeamMemberMutation_team @relay(mask: false)
+      }
+      RenameMeetingSuccess {
+        ...RenameMeetingMutation_team @relay(mask: false)
+      }
+      RenameMeetingTemplatePayload {
+        ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
+      }
+      RenameReflectTemplatePromptPayload {
+        ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
+      }
+      SelectTemplatePayload {
+        ...SelectTemplateMutation_team @relay(mask: false)
+      }
+      SetAppLocationSuccess {
+        ...SetAppLocationMutation_team @relay(mask: false)
+      }
+      SetMeetingSettingsPayload {
+        ...SetMeetingSettingsMutation_team @relay(mask: false)
+      }
+      StartCheckInSuccess {
+        ...StartCheckInMutation_team @relay(mask: false)
+      }
+      StartRetrospectiveSuccess {
+        ...StartRetrospectiveMutation_team @relay(mask: false)
+      }
+      StartSprintPokerSuccess {
+        ...StartSprintPokerMutation_team @relay(mask: false)
+      }
+      StartTeamPromptSuccess {
+        ...StartTeamPromptMutation_team @relay(mask: false)
+      }
+      UpdateAgendaItemPayload {
+        ...UpdateAgendaItemMutation_team @relay(mask: false)
+      }
+      UpdateCreditCardPayload {
+        ...UpdateCreditCardMutation_team @relay(mask: false)
+      }
+      UpdateTeamNamePayload {
+        ...UpdateTeamNameMutation_team @relay(mask: false)
+      }
+      UpdateUserProfilePayload {
+        ...UpdateUserProfileMutation_team @relay(mask: false)
+      }
+      UpgradeToTeamTierPayload {
+        ...UpgradeToTeamTierMutation_team @relay(mask: false)
+      }
+      UpdateIntegrationProviderSuccess {
+        ...UpdateIntegrationProviderMutation_team @relay(mask: false)
+      }
+      AddIntegrationProviderSuccess {
+        ...AddIntegrationProviderMutation_team @relay(mask: false)
+      }
     }
   }
 `
@@ -123,30 +211,15 @@ const updateHandlers = {
 
 const TeamSubscription = (
   atmosphere: Atmosphere,
-  variables: TeamSubscriptionVariables,
+  variables: TeamSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TTeamSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('teamSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as string
-      const handler = updateHandlers[type as keyof typeof updateHandlers]
-      if (handler) {
-        handler(payload, {atmosphere, store})
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {teamSubscription} = result
-      const {__typename: type} = teamSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(teamSubscription as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('teamSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('teamSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(TeamSubscription.name, variables)
     }
