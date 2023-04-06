@@ -74,7 +74,6 @@ export default class StripeManager {
       metadata: {
         orgId
       },
-      expand: ['latest_invoice.payment_intent'],
       items: [
         {
           plan: StripeManager.PARABOL_TEAM_600,
