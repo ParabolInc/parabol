@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 
@@ -25,6 +25,13 @@ import GitLabSVG from '../GitLabSVG'
 import AzureDevOpsSVG from '../AzureDevOpsSVG'
 import JiraServerSVG from '../JiraServerSVG'
 import {CATEGORY_ID_TO_NAME} from './ActivityLibrary'
+import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
+import {MenuPosition} from '../../hooks/useCoords'
+import sortByTier from '../../utils/sortByTier'
+import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
+import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
+import FlatPrimaryButton from '../FlatPrimaryButton'
 
 const query = graphql`
   query ActivityDetailsQuery {
@@ -38,6 +45,7 @@ const query = graphql`
             type
             category
             orgId
+            teamId
             isFree
             ...RemoveTemplate_teamTemplates
             ...EditableTemplateName_teamTemplates
@@ -46,7 +54,18 @@ const query = graphql`
         }
       }
       teams {
+        ...NewMeetingTeamPicker_selectedTeam
+        ...NewMeetingTeamPicker_teams
+        ...NewMeetingSettings_selectedTeam
+        ...NewMeetingActionsCurrentMeetings_team
         id
+        lastMeetingType
+        name
+        tier
+        retroSettings: meetingSettings(meetingType: retrospective) {
+          ...NewMeetingSettingsToggleCheckIn_settings
+          ...NewMeetingSettingsToggleAnonymity_settings
+        }
       }
       organizations {
         id
@@ -57,6 +76,7 @@ const query = graphql`
       }
 
       ...makeTemplateDescription_viewer
+      ...NewMeetingSettings_viewer
     }
   }
 `
@@ -137,10 +157,14 @@ const ActivityDetails = (props: Props) => {
 
   const category = selectedTemplate.category as CategoryID
 
+  const [selectedTeam, setSelectedTeam] = useState(
+    teams.find((team) => team.id === selectedTemplate.teamId) ?? sortByTier(teams)[0]!
+  )
+
   return (
     <div className='flex h-full bg-white'>
-      <div className='ml-4 mt-4'>
-        <div className='flex w-max items-center'>
+      <div className='mt-4 grow'>
+        <div className='mb-14 ml-4 flex h-min w-max items-center'>
           <Link
             className='mr-4'
             to={`/activity-library/category/${history.location.state?.prevCategory ?? category}`}
@@ -149,16 +173,14 @@ const ActivityDetails = (props: Props) => {
           </Link>
           <div className='w-max text-xl font-semibold'>Start Activity</div>
         </div>
-      </div>
-      <div className='mt-14 flex w-full justify-center'>
-        <div className='mx-auto flex justify-center'>
+        <div className='mx-auto flex w-min flex-col justify-start xl:flex-row xl:justify-center'>
           <ActivityCard
-            className='h-[200px] w-80'
+            className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
             category={category}
             imageSrc={activityIllustration}
             badge={null}
           />
-          <div className='mx-auto'>
+          <div>
             <div className='mb-10 pl-14'>
               <div className='mb-2 flex min-h-[40px] items-center'>
                 <EditableTemplateName
@@ -224,6 +246,31 @@ const ActivityDetails = (props: Props) => {
             </div>
             <TemplatePromptList isOwner={isOwner} prompts={prompts!} templateId={templateId} />
             {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts!} />}
+          </div>
+        </div>
+      </div>
+      <div className='flex w-96 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14'>
+        <div className='mb-6 text-xl font-semibold'>Settings</div>
+
+        <div className='flex grow flex-col gap-2'>
+          <NewMeetingTeamPicker
+            noModal={true}
+            positionOverride={MenuPosition.UPPER_LEFT}
+            onSelectTeam={(teamId) => {
+              const newTeam = teams.find((team) => team.id === teamId)
+              newTeam && setSelectedTeam(newTeam)
+            }}
+            selectedTeamRef={selectedTeam}
+            teamsRef={teams}
+          />
+
+          <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+          <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+          <div className='flex grow flex-col justify-end gap-2'>
+            <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
+            <FlatPrimaryButton className='h-14'>
+              <div className='text-lg'>Start Activity</div>
+            </FlatPrimaryButton>
           </div>
         </div>
       </div>

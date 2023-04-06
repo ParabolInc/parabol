@@ -26,10 +26,11 @@ const ForumIcon = styled(Forum)({
 
 interface Props {
   team: NewMeetingActionsCurrentMeetings_team$key
+  noModal?: boolean
 }
 
 const NewMeetingActionsCurrentMeetings = (props: Props) => {
-  const {team: teamRef} = props
+  const {team: teamRef, noModal} = props
   const team = useFragment(
     graphql`
       fragment NewMeetingActionsCurrentMeetings_team on Team {
@@ -46,7 +47,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.LOWER_RIGHT,
     {
-      parentId: 'newMeetingRoot',
+      parentId: noModal ? undefined : 'newMeetingRoot',
       isDropdown: true
     }
   )
