@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  This creates a set-up payment intent so that we're able to use Stripe Elements in the client
+  This creates a set-up intent so that we're able to use Stripe Elements in the client
   """
   createSetupIntent: CreateSetupIntentPayload!
 }
@@ -12,7 +12,7 @@ union CreateSetupIntentPayload = ErrorPayload | CreateSetupIntentSuccess
 
 type CreateSetupIntentSuccess {
   """
-  The client secret required to confirm the payment intent
+  The client secret required to confirm the subscription set-up intent
   """
   clientSecret: String!
 }

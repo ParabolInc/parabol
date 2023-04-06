@@ -17,9 +17,7 @@ const upgradeToTeamTier = async (
   const now = new Date()
 
   const organization = await r.table('Organization').get(orgId).run()
-  if (!organization) {
-    throw new Error('Unable to find an organization with that id')
-  }
+  if (!organization) throw new Error('Bad orgId')
 
   const quantity = await r
     .table('OrganizationUser')
