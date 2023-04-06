@@ -37,15 +37,15 @@ const UL = styled('ul')({
   margin: 0
 })
 
-const LI = styled('li')<{isBlue?: boolean}>(({isBlue}) => ({
+const LI = styled('li')({
   fontSize: 16,
   lineHeight: '28px',
-  color: isBlue ? PALETTE.SKY_500 : PALETTE.SLATE_900,
+  color: PALETTE.SLATE_900,
   textTransform: 'none',
   fontWeight: 400,
   textAlign: 'left',
   listStyleType: 'disc'
-}))
+})
 
 const Link = styled('a')({
   color: PALETTE.SKY_500,
@@ -72,7 +72,7 @@ const starterAgileResources = [
   }
 ]
 
-const additionalStarterRewsources = [
+const additionalStarterResources = [
   {
     title: '50+ Retrospective Questions for your Next Meeting',
     url: 'https://www.parabol.co/resources/retrospective-questions/'
@@ -165,7 +165,7 @@ const OrgPlanDrawerContent = (props: Props) => {
           <Subtitle>{'Make the most out of Parabol: '}</Subtitle>
           <UL>
             {starterAgileResources.map((resource) => (
-              <LI isBlue key={resource.url}>
+              <LI key={resource.url}>
                 <Link href={resource.url} target='_blank' rel='noopener noreferrer'>
                   {resource.title}
                 </Link>
@@ -176,8 +176,8 @@ const OrgPlanDrawerContent = (props: Props) => {
         <List>
           <Subtitle>{'Other resources for effective agile teams: '}</Subtitle>
           <UL>
-            {additionalStarterRewsources.map((resource) => (
-              <LI isBlue key={resource.url}>
+            {additionalStarterResources.map((resource) => (
+              <LI key={resource.url}>
                 <Link href={resource.url} target='_blank' rel='noopener noreferrer'>
                   {resource.title}
                 </Link>
@@ -189,13 +189,14 @@ const OrgPlanDrawerContent = (props: Props) => {
     )
   }
 
+  const subtitle = `In addition to the features on the ${
+    tier === 'team' ? 'Starter' : 'Team'
+  } plan, you now have access to: `
   return (
     <DrawerContent>
       <Title>{`🎉 Welcome to the ${upperFirst(tier)} Plan!`}</Title>
       <List>
-        <Subtitle>
-          {'In addition to the Parabol features you’re used to, you now have access to: '}
-        </Subtitle>
+        <Subtitle>{subtitle}</Subtitle>
         <UL>
           {featuresLookup[tier].map((feature) => (
             <LI key={feature}>{feature}</LI>
@@ -203,10 +204,10 @@ const OrgPlanDrawerContent = (props: Props) => {
         </UL>
       </List>
       <List>
-        <Subtitle>{'Make the most out of Parabol:'}</Subtitle>
+        <Subtitle>{'Resources for effective agile teams: '}</Subtitle>
         <UL>
           {agileResources.map((resource) => (
-            <LI isBlue key={resource.title}>
+            <LI key={resource.title}>
               <Link href={resource.url} target='_blank' rel='noopener noreferrer'>
                 {resource.title}
               </Link>
@@ -214,40 +215,34 @@ const OrgPlanDrawerContent = (props: Props) => {
           ))}
         </UL>
       </List>
-      {tier === 'enterprise' && (
-        <List>
-          <Subtitle>{'Make the most out of Parabol:'}</Subtitle>
-          <UL>
-            <LI>
-              {'Cover all of your agile meetings - '}
-              <Link href={enterpriseResources.retros} target='_blank' rel='noopener noreferrer'>
-                {'retros, '}
-              </Link>
-              <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.estimation}>
-                {'estimation'}
-              </Link>
-              {' & '}
-              <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.standups}>
-                {'standups'}
-              </Link>
-            </LI>
-            <LI>
-              <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.templates}>
-                {'40+ Meeting Templates'}
-              </Link>
-            </LI>
-            <LI>
-              <Link
-                target='_blank'
-                rel='noopener noreferrer'
-                href={enterpriseResources.integrations}
-              >
-                {'Integrate with Jira, Slack & More'}
-              </Link>
-            </LI>
-          </UL>
-        </List>
-      )}
+      <List>
+        <Subtitle>{'Make the most out of Parabol:'}</Subtitle>
+        <UL>
+          <LI>
+            {'Cover all of your agile meetings - '}
+            <Link href={enterpriseResources.retros} target='_blank' rel='noopener noreferrer'>
+              {'retros, '}
+            </Link>
+            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.estimation}>
+              {'estimation'}
+            </Link>
+            {' & '}
+            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.standups}>
+              {'standups'}
+            </Link>
+          </LI>
+          <LI>
+            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.templates}>
+              {'40+ Meeting Templates'}
+            </Link>
+          </LI>
+          <LI>
+            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.integrations}>
+              {'Integrate with Jira, Slack & More'}
+            </Link>
+          </LI>
+        </UL>
+      </List>
     </DrawerContent>
   )
 }
