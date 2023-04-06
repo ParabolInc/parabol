@@ -54,17 +54,6 @@ export default class StripeManager {
     })
   }
 
-  // async createSetupIntent(amount: number, customerId: string) {
-  // async createSetupIntent(amount: number) {
-  //   return this.stripe.paymentIntents.create({
-  //     amount,
-  //     currency: 'usd',
-  //     // customer: customerId
-  //     setup_future_usage: 'off_session'
-  //     // metadata: {subscription_id: 'your_subscription_id'}
-  //   })
-  // }
-
   async createSetupIntent() {
     return this.stripe.setupIntents.create({
       payment_method_types: ['card']

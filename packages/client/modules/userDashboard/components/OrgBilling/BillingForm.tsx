@@ -68,7 +68,6 @@ export default function BillingForm(props: Props) {
       redirect: 'if_required'
     })
     const {payment_method: paymentMethodId, status} = setupIntent
-    console.log('🚀 ~ setupIntent:', {setupIntent, paymentMethodId, status})
 
     if (!error && status === 'succeeded' && paymentMethodId) {
       setIsPaymentSuccessful(true)

@@ -5,43 +5,9 @@ import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
-const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
-  _source,
-  {orgId},
-  {authToken, dataLoader}
-) => {
-  const userId = getUserId(authToken)
-  const [user, organizationUser, organizationUsers] = await Promise.all([
-    getUserById(userId),
-    dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId}),
-    dataLoader.get('organizationUsersByOrgId').load(orgId)
-  ])
-  if (!organizationUser) {
-    return standardError(new Error('User is not a part of that org'))
-  }
-  if (!user) {
-    return standardError(new Error('User not found'))
-  }
-
-  // RESOLUTION
-  const {email} = user
+const createSetupIntent: MutationResolvers['createSetupIntent'] = async () => {
   const manager = getStripeManager()
-  const activeOrganizationUsers = organizationUsers.filter(
-    (organizationUser) => !organizationUser.inactive
-  )
-  const price = activeOrganizationUsers.length * MONTHLY_PRICE * 100
-  // const customers = await manager.getCustomersByEmail(email)
-  // console.log('🚀 ~ customers:', customers)
-  // const existingCustomer = customers.data.find((customer) => customer.metadata.orgId === orgId)
-  // const customer = existingCustomer ?? (await manager.createCustomer(orgId, email))
-  // console.log('🚀 ~ customer:', customer)
-  // const {id: customerId} = customer
-
-  // const paymentIntent = await manager.createSetupIntent(price, customerId)
-  // const paymentIntent = await manager.createSetupIntent(price)
   const setupIntent = await manager.createSetupIntent()
-  console.log('🚀 ~ setupIntent:', setupIntent)
-  // console.log('🚀 ~ paymentIntent:', {paymentIntent, customer})
 
   const {client_secret: clientSecret} = setupIntent
   const data = {clientSecret}

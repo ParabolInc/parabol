@@ -159,7 +159,6 @@ const PaymentDetails = (props: Props) => {
     if (tier !== 'starter') return
     const handleCompleted: CompletedHandler<TCreateSetupIntentMutation['response']> = (res) => {
       const {createSetupIntent} = res
-      console.log('🚀 ~ res:', res)
       const {clientSecret} = createSetupIntent
       if (clientSecret) {
         setClientSecret(clientSecret)

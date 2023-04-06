@@ -4,8 +4,8 @@ import {StandardMutation} from '../types/relayMutations'
 import {CreateSetupIntentMutation as TCreateSetupIntentMutation} from '../__generated__/CreateSetupIntentMutation.graphql'
 
 const mutation = graphql`
-  mutation CreateSetupIntentMutation($orgId: ID!) {
-    createSetupIntent(orgId: $orgId) {
+  mutation CreateSetupIntentMutation {
+    createSetupIntent {
       ... on ErrorPayload {
         error {
           message
