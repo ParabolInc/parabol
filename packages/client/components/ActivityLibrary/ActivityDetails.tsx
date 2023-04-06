@@ -47,6 +47,7 @@ const query = graphql`
             orgId
             teamId
             isFree
+            scope
             ...RemoveTemplate_teamTemplates
             ...EditableTemplateName_teamTemplates
             ...ReflectTemplateDetailsTemplate @relay(mask: false)
@@ -62,6 +63,7 @@ const query = graphql`
         lastMeetingType
         name
         tier
+        orgId
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
           ...NewMeetingSettingsToggleAnonymity_settings
@@ -157,9 +159,18 @@ const ActivityDetails = (props: Props) => {
 
   const category = selectedTemplate.category as CategoryID
 
-  const [selectedTeam, setSelectedTeam] = useState(
-    teams.find((team) => team.id === selectedTemplate.teamId) ?? sortByTier(teams)[0]!
-  )
+  const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
+
+  const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(teams)[0]!)
+
+  const availableTeams =
+    selectedTemplate.scope === 'PUBLIC'
+      ? teams
+      : selectedTemplate.scope === 'ORGANIZATION'
+      ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
+      : templateTeam
+      ? [templateTeam]
+      : []
 
   return (
     <div className='flex h-full bg-white'>
@@ -253,16 +264,18 @@ const ActivityDetails = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
-          <NewMeetingTeamPicker
-            noModal={true}
-            positionOverride={MenuPosition.UPPER_LEFT}
-            onSelectTeam={(teamId) => {
-              const newTeam = teams.find((team) => team.id === teamId)
-              newTeam && setSelectedTeam(newTeam)
-            }}
-            selectedTeamRef={selectedTeam}
-            teamsRef={teams}
-          />
+          {availableTeams && (
+            <NewMeetingTeamPicker
+              noModal={true}
+              positionOverride={MenuPosition.UPPER_LEFT}
+              onSelectTeam={(teamId) => {
+                const newTeam = availableTeams.find((team) => team.id === teamId)
+                newTeam && setSelectedTeam(newTeam)
+              }}
+              selectedTeamRef={selectedTeam}
+              teamsRef={availableTeams}
+            />
+          )}
 
           <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
           <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
