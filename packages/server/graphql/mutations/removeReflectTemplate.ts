@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
-import ReflectTemplate from '../../database/types/ReflectTemplate'
 import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -40,20 +39,15 @@ const removeReflectTemplate = {
 
     // VALIDATION
     const {teamId} = template
-    // Will convert to PG by Mar 1, 2023
-    const {templates, settings} = await r({
-      templates: r
-        .table('MeetingTemplate')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true, type: 'retrospective'})
-        .orderBy('name')
-        .coerceTo('array') as unknown as ReflectTemplate[],
-      settings: r
+    const [templates, settings] = await Promise.all([
+      dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
+      r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
         .filter({meetingType: 'retrospective'})
-        .nth(0) as unknown as MeetingSettingsRetrospective
-    }).run()
+        .nth(0)
+        .run() as unknown as MeetingSettingsRetrospective
+    ])
 
     // RESOLUTION
     const {id: settingsId} = settings

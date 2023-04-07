@@ -49,13 +49,8 @@ export default {
       return standardError(new Error('Already archived team'), {userId: viewerId})
     }
 
-    // Will convert to PG by Mar 1, 2023
-    const teamTemplateIds = (await r
-      .table('MeetingTemplate')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})('id')
-      .coerceTo('array')
-      .run()) as string[]
+    const teamTemplates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
+    const teamTemplateIds = teamTemplates.map(({id}) => id)
 
     await removeMeetingTemplatesForTeam(teamId)
 

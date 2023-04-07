@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import updateMeetingTemplateName from '../../postgres/queries/updateMeetingTemplateName'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -25,7 +24,6 @@ const renameMeetingTemplate = {
     {templateId, name}: {templateId: string; name: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = (await dataLoader.get('meetingTemplates').load(templateId)) as MeetingTemplate
@@ -43,12 +41,9 @@ const renameMeetingTemplate = {
     const {teamId} = template
     const trimmedName = name.trim().slice(0, 100)
     const normalizedName = trimmedName || 'Unnamed Template'
-    // Will convert to PG by Mar 1, 2023
-    const allTemplates = await r
-      .table('MeetingTemplate')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true, type: template.type})
-      .run()
+    const allTemplates = await dataLoader
+      .get('meetingTemplatesByType')
+      .load({meetingType: template.type, teamId})
     if (allTemplates.find((template) => template.name === normalizedName)) {
       return standardError(new Error('Duplicate template name'), {userId: viewerId})
     }
