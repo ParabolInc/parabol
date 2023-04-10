@@ -1,12 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
-
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {Link} from 'react-router-dom'
 import IconLabel from '../IconLabel'
-import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
 import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
 import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
@@ -26,14 +24,7 @@ import GitLabSVG from '../GitLabSVG'
 import AzureDevOpsSVG from '../AzureDevOpsSVG'
 import JiraServerSVG from '../JiraServerSVG'
 import {CATEGORY_ID_TO_NAME} from './ActivityLibrary'
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
-import {MenuPosition} from '../../hooks/useCoords'
-import sortByTier from '../../utils/sortByTier'
-import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
-import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
-import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
-import FlatPrimaryButton from '../FlatPrimaryButton'
-import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
+import ActivityDetailsSidebar from './ActivityDetailsSidebar'
 
 const query = graphql`
   query ActivityDetailsQuery {
@@ -50,37 +41,21 @@ const query = graphql`
             teamId
             isFree
             scope
-            ...RemoveTemplate_teamTemplates
+            ...ActivityDetailsSidebar_template
             ...EditableTemplateName_teamTemplates
             ...ReflectTemplateDetailsTemplate @relay(mask: false)
           }
         }
       }
       teams {
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingTeamPicker_teams
-        ...NewMeetingSettings_selectedTeam
-        ...NewMeetingActionsCurrentMeetings_team
         id
-        lastMeetingType
-        name
-        tier
-        orgId
-        retroSettings: meetingSettings(meetingType: retrospective) {
-          ...NewMeetingSettingsToggleCheckIn_settings
-          ...NewMeetingSettingsToggleAnonymity_settings
-        }
+        ...ActivityDetailsSidebar_teams
       }
       organizations {
         id
       }
-      featureFlags {
-        templateLimit
-        retrosInDisguise
-      }
 
       ...makeTemplateDescription_viewer
-      ...NewMeetingSettings_viewer
     }
   }
 `
@@ -160,38 +135,6 @@ const ActivityDetails = (props: Props) => {
   const activityIllustration = templateIllustration ?? customTemplateIllustration
 
   const category = selectedTemplate.category as CategoryID
-
-  const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
-
-  const availableTeams =
-    selectedTemplate.scope === 'PUBLIC'
-      ? teams
-      : selectedTemplate.scope === 'ORGANIZATION'
-      ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-      : templateTeam
-      ? [templateTeam]
-      : []
-
-  const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
-
-  const handleStartRetro = () => {
-    if (submitting) return
-    submitMutation()
-    SelectTemplateMutation(
-      atmosphere,
-      {selectedTemplateId: templateId, teamId: selectedTeam.id},
-      {
-        onCompleted: () => {
-          StartRetrospectiveMutation(
-            atmosphere,
-            {teamId: selectedTeam.id},
-            {history, onError, onCompleted}
-          )
-        },
-        onError
-      }
-    )
-  }
 
   return (
     <div className='flex h-full bg-white'>
@@ -281,33 +224,7 @@ const ActivityDetails = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className='flex w-96 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14'>
-        <div className='mb-6 text-xl font-semibold'>Settings</div>
-
-        <div className='flex grow flex-col gap-2'>
-          {availableTeams && (
-            <NewMeetingTeamPicker
-              noModal={true}
-              positionOverride={MenuPosition.UPPER_LEFT}
-              onSelectTeam={(teamId) => {
-                const newTeam = availableTeams.find((team) => team.id === teamId)
-                newTeam && setSelectedTeam(newTeam)
-              }}
-              selectedTeamRef={selectedTeam}
-              teamsRef={availableTeams}
-            />
-          )}
-
-          <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-          <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-          <div className='flex grow flex-col justify-end gap-2'>
-            <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-            <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
-              <div className='text-lg'>Start Activity</div>
-            </FlatPrimaryButton>
-          </div>
-        </div>
-      </div>
+      <ActivityDetailsSidebar selectedTemplateRef={selectedTemplate} teamsRef={teams} />
     </div>
   )
 }
