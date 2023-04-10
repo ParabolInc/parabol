@@ -8,6 +8,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import RenameMeetingTemplateMutation from '../../../mutations/RenameMeetingTemplateMutation'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplateName_teamTemplates$key} from '../../../__generated__/EditableTemplateName_teamTemplates.graphql'
+import clsx from 'clsx'
 
 interface Props {
   name: string
@@ -24,9 +25,6 @@ const InheritedStyles = styled('div')({
   lineHeight: '24px'
 })
 
-const StyledEditableText = styled(EditableText)({
-  lineHeight: '24px'
-})
 const EditableTemplateName = (props: Props) => {
   const {name, templateId, teamTemplates: teamTemplatesRef, isOwner, className} = props
   const teamTemplates = useFragment(
@@ -76,17 +74,18 @@ const EditableTemplateName = (props: Props) => {
 
   return (
     <InheritedStyles>
-      <StyledEditableText
-        className={className}
-        autoFocus={autoFocus}
-        disabled={!isOwner}
-        error={error ? error.message : undefined}
-        handleSubmit={handleSubmit}
-        initialValue={name}
-        maxLength={100}
-        validate={validate}
-        placeholder={'*New Template'}
-      />
+      <div className={clsx('leading-6', className)}>
+        <EditableText
+          autoFocus={autoFocus}
+          disabled={!isOwner}
+          error={error ? error.message : undefined}
+          handleSubmit={handleSubmit}
+          initialValue={name}
+          maxLength={100}
+          validate={validate}
+          placeholder={'*New Template'}
+        />
+      </div>
     </InheritedStyles>
   )
 }

@@ -159,7 +159,7 @@ const ActivityDetails = (props: Props) => {
             <div className='mb-10 pl-14'>
               <div className='mb-2 flex min-h-[40px] items-center'>
                 <EditableTemplateName
-                  className='text-[32px]'
+                  className='text-[32px] leading-9'
                   key={templateId}
                   name={templateName}
                   templateId={templateId}
