@@ -163,8 +163,6 @@ const ActivityDetails = (props: Props) => {
 
   const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
 
-  const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(teams)[0]!)
-
   const availableTeams =
     selectedTemplate.scope === 'PUBLIC'
       ? teams
@@ -173,6 +171,8 @@ const ActivityDetails = (props: Props) => {
       : templateTeam
       ? [templateTeam]
       : []
+
+  const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
 
   const handleStartRetro = () => {
     if (submitting) return
