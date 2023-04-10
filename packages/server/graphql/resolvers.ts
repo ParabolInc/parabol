@@ -1,11 +1,9 @@
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import AgendaItem from '../database/types/AgendaItem'
 import {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Meeting from '../database/types/Meeting'
-import Notification from '../database/types/Notification'
 import Organization from '../database/types/Organization'
 import Task from '../database/types/Task'
 import TeamMember from '../database/types/TeamMember'
@@ -17,14 +15,6 @@ import {AnyMeeting} from '../postgres/types/Meeting'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
 import {GQLContext} from './graphql'
 import isValid from './isValid'
-
-export const resolveAgendaItem = (
-  {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},
-  _args: unknown,
-  {dataLoader}: GQLContext
-) => {
-  return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
-}
 
 export const resolveNewMeeting = (
   {
@@ -38,14 +28,6 @@ export const resolveNewMeeting = (
   {dataLoader}: GQLContext
 ) => {
   return meetingId ? dataLoader.get('newMeetings').load(meetingId) : meeting
-}
-
-export const resolveNotification = (
-  {notificationId, notification}: {notificationId: string; notification: Notification},
-  _args: unknown,
-  {dataLoader}: GQLContext
-) => {
-  return notificationId ? dataLoader.get('notifications').load(notificationId) : notification
 }
 
 export const resolveMeetingMember = (

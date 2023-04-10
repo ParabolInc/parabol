@@ -23,7 +23,6 @@ import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
-import StripeFailPaymentPayload from './types/StripeFailPaymentPayload'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
@@ -83,7 +82,6 @@ const rootTypes = [
   AzureDevOpsWorkItem,
   JiraDimensionField,
   RenamePokerTemplatePayload,
-  StripeFailPaymentPayload,
   UserTiersCount
 ]
 export default rootTypes

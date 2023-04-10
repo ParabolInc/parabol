@@ -42,6 +42,7 @@
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
+          "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreatePaymentIntentSuccess": "./types/CreatePaymentIntentSuccess#CreatePaymentIntentSuccessSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
