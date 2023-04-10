@@ -148,7 +148,7 @@ const ActivityDetails = (props: Props) => {
           </Link>
           <div className='w-max text-xl font-semibold'>Start Activity</div>
         </div>
-        <div className='mx-auto flex w-min flex-col justify-start xl:flex-row xl:justify-center'>
+        <div className='flex w-full flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14'>
           <ActivityCard
             className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
             category={category}
@@ -178,35 +178,35 @@ const ActivityDetails = (props: Props) => {
                     <DetailsBadge className='bg-grape-700 text-white'>Custom</DetailsBadge>
                   ))}
               </div>
-              <div className='mb-8'>
-                {isOwner ? (
-                  <div className='flex items-center justify-between'>
-                    <div className='w-max rounded-full border border-solid border-slate-400 pl-3'>
-                      <UnstyledTemplateSharing
-                        noModal={true}
-                        isOwner={isOwner}
-                        template={selectedTemplate}
-                      />
-                    </div>
-                    <div className='rounded-full border border-solid border-slate-400'>
-                      <DetailAction
-                        icon={'delete'}
-                        tooltip={'Delete template'}
-                        onClick={removeTemplate}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
-                )}
-              </div>
 
               <div className='w-[480px]'>
+                <div className='mb-8'>
+                  {isOwner ? (
+                    <div className='flex items-center justify-between'>
+                      <div className='w-max rounded-full border border-solid border-slate-400 pl-3'>
+                        <UnstyledTemplateSharing
+                          noModal={true}
+                          isOwner={isOwner}
+                          template={selectedTemplate}
+                        />
+                      </div>
+                      <div className='rounded-full border border-solid border-slate-400'>
+                        <DetailAction
+                          icon={'delete'}
+                          tooltip={'Delete template'}
+                          onClick={removeTemplate}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
+                  )}
+                </div>
                 <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes and
                 vote on the hottest topics. As you <b>discuss topics</b>, create{' '}
                 <b>takeaway tasks</b> that can be integrated with your backlog.
               </div>
-              <div className='mt-[18px] flex items-center'>
+              <div className='mt-[18px] flex min-w-max items-center'>
                 <div className='flex items-center gap-3'>
                   <JiraSVG />
                   <GitHubSVG />
