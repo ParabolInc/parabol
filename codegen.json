@@ -81,6 +81,7 @@
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
+          "RemoveTeamMemberPayload": "./types/RemoveTeamMemberPayload#RemoveTeamMemberPayloadSource",
           "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
