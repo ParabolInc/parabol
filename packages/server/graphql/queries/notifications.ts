@@ -1,13 +1,12 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import {getUserId} from '../../utils/authorization'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
-import {NotificationConnection} from '../types/Notification'
 import NotificationEnum from '../types/NotificationEnum'
 
 export default {
-  type: new GraphQLNonNull(NotificationConnection),
+  type: new GraphQLNonNull(new GraphQLObjectType({name: 'NotificationConnection', fields: {}})),
   args: {
     // currently not used
     first: {
