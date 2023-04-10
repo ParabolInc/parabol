@@ -5,32 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.98.1 2023-Apr-10
+
+### Fixed
+
+- Added missing NotificationMeetingStageTimeLimitEnd to rootTypes
+
 ## 6.98.0 2023-Apr-06
 
 ### Added
 
-- **retros-in-disguise**: Activity categories (#7927) 
-- **retros-in-disguise**: Added activity library cards (#7908) 
-- **recurrence**: Allow changing meeting series name (#7850) 
-- **recurrence**: End Recurring Meeting Confirmation Modal (#7998) 
+- **retros-in-disguise**: Activity categories (#7927)
+- **retros-in-disguise**: Added activity library cards (#7908)
+- **recurrence**: Allow changing meeting series name (#7850)
+- **recurrence**: End Recurring Meeting Confirmation Modal (#7998)
 - pick a fun name for the default team when user signs up (#8000)
 
 ### Changed
 
 - **prompt-to-join-org**: add feature promptToJoin feature flag (#7977)
-- **ai-summary**: invert feature flag (#7985) 
+- **ai-summary**: invert feature flag (#7985)
 - **ai-summary**: replace GPT-3 with ChatGPT (#7958)
-- **ai-summary**: revert chatgpt change (#8001) 
+- **ai-summary**: revert chatgpt change (#8001)
 - **metrics**: Consolidate GA4 sign_up events emission (#7931)
 - Allow super users to archive teams (#7992)
-- upgrade relay (#7880) 
-- remove nx from package (#7993) 
+- upgrade relay (#7880)
+- remove nx from package (#7993)
 
 ### Fixed
 
-- org members panel UI (#7978) 
-- fix non-enterprise usage stats, use teams limit algorithm (#7937) 
-- fix reviewers (#7994) 
+- org members panel UI (#7978)
+- fix non-enterprise usage stats, use teams limit algorithm (#7937)
+- fix reviewers (#7994)
 - **sentiment-analysis**: write undefined as sentimentScore for meetings without reflections with scores (#7999)
 - fix an import error after relay upgrade
 
