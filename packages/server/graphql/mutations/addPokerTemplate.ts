@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
@@ -39,14 +38,9 @@ const addPokerTemplate = {
     }
 
     // VALIDATION
-    // Will convert to PG by Mar 1, 2023
-    const allTemplates = await r
-      .table('MeetingTemplate')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})
-      .filter({type: 'poker'})
-      .run()
-
+    const allTemplates = await dataLoader
+      .get('meetingTemplatesByType')
+      .load({meetingType: 'poker', teamId})
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       return standardError(new Error('Too many templates'), {userId: viewerId})
     }
@@ -77,15 +71,9 @@ const addPokerTemplate = {
         }
       }
       const copyName = `${name} Copy`
-      // Will convert to PG by Mar 1, 2023
-      const existingCopyCount = await r
-        .table('MeetingTemplate')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .filter({type: 'poker'})
-        .filter((row: RDatum) => row('name').match(`^${copyName}`) as any)
-        .count()
-        .run()
+      const existingCopyCount = allTemplates.filter((template) =>
+        template.name.startsWith(copyName)
+      ).length
       const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
       const newTemplate = new PokerTemplate({
         name: newName,

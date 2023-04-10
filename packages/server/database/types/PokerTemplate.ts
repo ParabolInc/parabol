@@ -6,7 +6,7 @@ interface Input {
   scope?: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
-  lastUsedAt?: Date
+  lastUsedAt?: Date | null
 }
 
 export default class PokerTemplate extends MeetingTemplate {

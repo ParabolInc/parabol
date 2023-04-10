@@ -7,6 +7,7 @@ import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
+import getKysely from '../postgres/getKysely'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getApprovedOrganizationDomainsByDomainFromPG from '../postgres/queries/getApprovedOrganizationDomainsByDomainFromPG'
 import getApprovedOrganizationDomainsFromPG from '../postgres/queries/getApprovedOrganizationDomainsFromPG'
@@ -25,8 +26,8 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
-import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
+import normalizeResults from './normalizeResults'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -395,7 +396,6 @@ export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
 export const meetingTemplatesByType = (parent: RootDataLoader) => {
   return new DataLoader<MeetingTemplateKey, MeetingTemplate[], string>(
     async (keys) => {
-      const r = await getRethink()
       const types = {} as Record<MeetingTypeEnum, string[]>
       keys.forEach((key) => {
         const {meetingType} = key
@@ -407,11 +407,14 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
         entries.map((entry) => {
           const [meetingType, teamIds] = entry
           // Will convert to PG by Mar 1, 2023
-          return r
-            .table('MeetingTemplate')
-            .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({type: meetingType, isActive: true})
-            .run()
+          const pg = getKysely()
+          return pg
+            .selectFrom('MeetingTemplate')
+            .selectAll()
+            .where('teamId', 'in', teamIds)
+            .where('isActive', '=', true)
+            .where('type', '=', meetingType)
+            .execute()
         })
       )
       const docs = resultsByType.flat()
@@ -423,6 +426,40 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, MeetingTemplate[], string>(
+    async (orgIds) => {
+      const pg = getKysely()
+      const docs = await pg
+        .selectFrom('MeetingTemplate')
+        .selectAll()
+        .where('orgId', 'in', orgIds)
+        .execute()
+      return orgIds.map((orgId) => docs.filter((doc) => doc.orgId === orgId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const meetingTemplatesByTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<string, MeetingTemplate[], string>(
+    async (teamIds) => {
+      const pg = getKysely()
+      const docs = await pg
+        .selectFrom('MeetingTemplate')
+        .selectAll()
+        .where('teamId', 'in', teamIds)
+        .execute()
+      return teamIds.map((teamId) => docs.filter((doc) => doc.teamId === teamId))
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
