@@ -15,8 +15,6 @@ import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
 import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import JiraDimensionField from './types/JiraDimensionField'
 import MeetingTemplate from './types/MeetingTemplate'
-import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
-import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
 import PokerTemplate from './types/PokerTemplate'
@@ -60,7 +58,6 @@ const rootTypes = [
   TeamPromptResponsesPhase,
   GenericMeetingPhase,
   EstimatePhase,
-  NotificationTeamInvitation,
   NotifyPromoteToOrgLeader,
   ActionMeeting,
   ActionMeetingMember,
@@ -87,7 +84,6 @@ const rootTypes = [
   JiraDimensionField,
   RenamePokerTemplatePayload,
   StripeFailPaymentPayload,
-  UserTiersCount,
-  NotificationMeetingStageTimeLimitEnd
+  UserTiersCount
 ]
 export default rootTypes

@@ -8,12 +8,11 @@ import Task from './Task'
 import TaskInvolvementType from './TaskInvolvementType'
 import Team from './Team'
 import TeamMember from './TeamMember'
-import TeamNotification from './TeamNotification'
 
 const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext>({
   name: 'NotifyTaskInvolves',
   description: 'A notification sent to someone who was just added to a team',
-  interfaces: () => [Notification, TeamNotification],
+  interfaces: () => [Notification],
   isTypeOf: ({type}: {type: NotificationEnumType}) => type === 'TASK_INVOLVES',
   fields: () => ({
     ...notificationInterfaceFields,

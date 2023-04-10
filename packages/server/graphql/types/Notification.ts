@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import connectionDefinitions from '../connectionDefinitions'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NotificationEnum from './NotificationEnum'
 import NotificationStatusEnum from './NotificationStatusEnum'
-import PageInfoDateCursor from './PageInfoDateCursor'
 
 export const notificationInterfaceFields = {
   id: {
@@ -34,24 +32,6 @@ export const notificationInterfaceFields = {
 
 const Notification: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'Notification',
-  fields: () => notificationInterfaceFields
+  fields: () => ({})
 })
-
-const {connectionType, edgeType} = connectionDefinitions({
-  nodeType: Notification,
-  edgeFields: () => ({
-    cursor: {
-      type: GraphQLISO8601Type
-    }
-  }),
-  connectionFields: () => ({
-    pageInfo: {
-      type: PageInfoDateCursor,
-      description: 'Page info with cursors coerced to ISO8601 dates'
-    }
-  })
-})
-
-export const NotificationConnection = connectionType
-export const NotificationEdge = edgeType
 export default Notification
