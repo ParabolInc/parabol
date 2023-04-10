@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -17,7 +17,6 @@ import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput, {CreateTaskInputType} from '../types/CreateTaskInput'
-import CreateTaskPayload from '../types/CreateTaskPayload'
 import createTaskInService from './helpers/createTaskInService'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
 
@@ -131,7 +130,12 @@ export interface CreateTaskIntegrationInput {
 }
 
 export default {
-  type: new GraphQLNonNull(CreateTaskPayload),
+  type: new GraphQLNonNull(
+    new GraphQLObjectType({
+      name: 'CreateTaskPayload',
+      fields: {}
+    })
+  ),
   description: 'Create a new task, triggering a CreateCard for other viewers',
   args: {
     newTask: {

@@ -15,7 +15,6 @@ import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
 import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import JiraDimensionField from './types/JiraDimensionField'
 import MeetingTemplate from './types/MeetingTemplate'
-import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
 import PokerTemplate from './types/PokerTemplate'
 import ReflectPhase from './types/ReflectPhase'
@@ -57,7 +56,6 @@ const rootTypes = [
   TeamPromptResponsesPhase,
   GenericMeetingPhase,
   EstimatePhase,
-  NotifyPromoteToOrgLeader,
   ActionMeeting,
   ActionMeetingMember,
   PokerMeetingSettings,
