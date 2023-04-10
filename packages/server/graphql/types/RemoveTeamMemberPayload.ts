@@ -2,7 +2,6 @@ import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveTasks, resolveTeam, resolveTeamMember, resolveUser} from '../resolvers'
-import NotifyKickedOut from './NotifyKickedOut'
 import StandardMutationError from './StandardMutationError'
 import Task from './Task'
 import Team from './Team'
@@ -36,7 +35,10 @@ const RemoveTeamMemberPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: resolveUser
     },
     kickOutNotification: {
-      type: NotifyKickedOut,
+      type: new GraphQLObjectType({
+        name: 'NotifyKickedOut',
+        fields: {}
+      }),
       description: 'A notification if you were kicked out by the team leader',
       resolve: async ({notificationId}, _args: unknown, {authToken, dataLoader}) => {
         if (!notificationId) return null
