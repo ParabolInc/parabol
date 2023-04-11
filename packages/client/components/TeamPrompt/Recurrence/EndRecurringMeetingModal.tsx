@@ -1,14 +1,14 @@
-import React, {useMemo, useState} from 'react'
-import DialogContainer from '../../DialogContainer'
 import clsx from 'clsx'
-import EndTeamPromptMutation from '../../../mutations/EndTeamPromptMutation'
+import React, {useMemo, useState} from 'react'
+import {RRule} from 'rrule'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useRouter from '../../../hooks/useRouter'
+import EndTeamPromptMutation from '../../../mutations/EndTeamPromptMutation'
 import UpdateRecurrenceSettingsMutation from '../../../mutations/UpdateRecurrenceSettingsMutation'
-import {RRule} from 'rrule'
-import {humanReadableCountdown} from '../../../utils/date/relativeDate'
 import {CompletedHandler} from '../../../types/relayMutations'
+import {humanReadableCountdown} from '../../../utils/date/relativeDate'
+import DialogContainer from '../../DialogContainer'
 
 interface RadioToggleProps {
   checked: boolean
@@ -57,7 +57,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
-        {meetingId, recurrenceRule: null},
+        {meetingId, recurrenceSettings: {name: null, rrule: null}},
         {onError, onCompleted}
       )
     } else {

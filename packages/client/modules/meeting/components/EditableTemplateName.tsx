@@ -14,6 +14,7 @@ interface Props {
   templateId: string
   teamTemplates: EditableTemplateName_teamTemplates$key
   isOwner: boolean
+  className?: string
 }
 
 const InheritedStyles = styled('div')({
@@ -27,7 +28,7 @@ const StyledEditableText = styled(EditableText)({
   lineHeight: '24px'
 })
 const EditableTemplateName = (props: Props) => {
-  const {name, templateId, teamTemplates: teamTemplatesRef, isOwner} = props
+  const {name, templateId, teamTemplates: teamTemplatesRef, isOwner, className} = props
   const teamTemplates = useFragment(
     graphql`
       fragment EditableTemplateName_teamTemplates on MeetingTemplate @relay(plural: true) {
@@ -76,6 +77,7 @@ const EditableTemplateName = (props: Props) => {
   return (
     <InheritedStyles>
       <StyledEditableText
+        className={className}
         autoFocus={autoFocus}
         disabled={!isOwner}
         error={error ? error.message : undefined}
