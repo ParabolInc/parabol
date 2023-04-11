@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import React, {ComponentPropsWithoutRef, PropsWithChildren} from 'react'
-import {MeetingTypeEnum} from '../../__generated__/ActivityLibraryQuery.graphql'
 
 const ActivityCardImage = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {
   const {className, src} = props
@@ -29,28 +28,31 @@ interface CardTheme {
   secondary: string
 }
 
-export const MeetingThemes: Record<MeetingTypeEnum, CardTheme> = {
-  action: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
-  poker: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
+export type CategoryID = 'retrospective' | 'estimation' | 'standup' | 'feedback' | 'strategy'
+
+export const MeetingThemes: Record<CategoryID, CardTheme> = {
+  standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
+  estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
   retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]'},
-  teamPrompt: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'}
+  feedback: {primary: 'bg-jade-400', secondary: 'bg-jade-100'},
+  strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100'}
 }
 
 export interface ActivityCardProps {
   className?: string
-  type: MeetingTypeEnum
-  title: string
+  category: CategoryID
+  title?: string
   imageSrc: string
   badge: React.ReactNode | null
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, type, title, imageSrc, badge} = props
+  const {className, category, title, imageSrc, badge} = props
   return (
     <div
       className={clsx(
         'flex flex-col overflow-hidden rounded-lg',
-        MeetingThemes[type].secondary,
+        MeetingThemes[category].secondary,
         className
       )}
     >
@@ -59,7 +61,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
         <div
           className={clsx(
             'ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full',
-            MeetingThemes[type].primary
+            MeetingThemes[category].primary
           )}
         />
       </div>
@@ -68,7 +70,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       </div>
       <div className='flex flex-shrink-0'>
         <div
-          className={clsx('h-8 w-8 flex-shrink-0 rounded-tr-full', MeetingThemes[type].primary)}
+          className={clsx('h-8 w-8 flex-shrink-0 rounded-tr-full', MeetingThemes[category].primary)}
         />
         <div className='ml-auto'>{badge}</div>
       </div>
