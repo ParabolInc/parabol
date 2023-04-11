@@ -45,6 +45,9 @@ const query = graphql`
       featureFlags {
         retrosInDisguise
       }
+      teams {
+        ...CreateActivityCard_teams
+      }
     }
   }
 `
@@ -82,7 +85,7 @@ export const ActivityLibrary = (props: Props) => {
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {history} = useRouter()
   const {viewer} = data
-  const {featureFlags, availableTemplates} = viewer
+  const {featureFlags, availableTemplates, teams} = viewer
 
   const handleCloseClick = () => {
     history.goBack()
@@ -200,6 +203,7 @@ export const ActivityLibrary = (props: Props) => {
                 <CreateActivityCard
                   className='flex-1 max-sm:hidden'
                   category={selectedCategory as CategoryID}
+                  teamsRef={teams}
                 />
               )}
               {templatesToRender.map((template) => {
