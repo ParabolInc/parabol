@@ -5,6 +5,7 @@ import {PromptToJoinOrgNotification_notification$key} from '~/__generated__/Prom
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 import useAtmosphere from '../hooks/useAtmosphere'
+import RequestToJoinDomainMutation from "../mutations/RequestToJoinDomainMutation";
 
 interface Props {
   notification: PromptToJoinOrgNotification_notification$key
@@ -26,6 +27,7 @@ const PromptToJoinOrgNotification = (props: Props) => {
   const {activeDomain} = notification
 
   const onActionClick = () => {
+    RequestToJoinDomainMutation(atmosphere, {})
     atmosphere.eventEmitter.emit('addSnackbar', {
       key: 'promptToJoinOrgSuccess',
       autoDismiss: 5,
