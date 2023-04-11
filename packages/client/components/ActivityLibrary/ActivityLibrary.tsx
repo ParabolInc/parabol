@@ -39,6 +39,7 @@ const query = graphql`
         edges {
           node {
             ...ActivityLibrary_template @relay(mask: false)
+            ...CreateActivityCard_templates
           }
         }
       }
@@ -204,6 +205,9 @@ export const ActivityLibrary = (props: Props) => {
                   className='flex-1 max-sm:hidden'
                   category={selectedCategory as CategoryID}
                   teamsRef={teams}
+                  templatesRef={availableTemplates.edges
+                    .map((edge) => edge.node)
+                    .filter((template) => template.type === 'retrospective')}
                 />
               )}
               {templatesToRender.map((template) => {
