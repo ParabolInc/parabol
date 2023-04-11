@@ -96,7 +96,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       <div className='mb-6 text-xl font-semibold'>Settings</div>
 
       <div className='flex grow flex-col gap-2'>
-        {availableTeams && (
+        {availableTeams.length > 0 && (
           <NewMeetingTeamPicker
             noModal={true}
             positionOverride={MenuPosition.UPPER_LEFT}
