@@ -6,7 +6,6 @@ import * as ScrollArea from '@radix-ui/react-scroll-area'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {ActivityLibraryCard, ActivityLibraryCardBadge} from './ActivityLibraryCard'
-
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import {activityIllustrations} from './ActivityIllustrations'
 import {Link} from 'react-router-dom'
@@ -16,6 +15,7 @@ import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import clsx from 'clsx'
 import {CategoryID, MeetingThemes} from './ActivityCard'
+import CreateActivityCard from './CreateActivityCard'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -65,6 +65,8 @@ export const CATEGORY_ID_TO_NAME: Record<CategoryID | typeof QUICK_START_CATEGOR
   feedback: 'Feedback',
   strategy: 'Strategy'
 }
+
+const RETRO_CATEGORIES: Array<CategoryID> = ['retrospective', 'feedback', 'strategy']
 
 const CategoryIDToColorClass = {
   [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
@@ -194,6 +196,12 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           ) : (
             <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
+              {RETRO_CATEGORIES.includes(selectedCategory as CategoryID) && (
+                <CreateActivityCard
+                  className='flex-1 max-sm:hidden'
+                  category={selectedCategory as CategoryID}
+                />
+              )}
               {templatesToRender.map((template) => {
                 const templateIllustration =
                   activityIllustrations[template.id as keyof typeof activityIllustrations]
