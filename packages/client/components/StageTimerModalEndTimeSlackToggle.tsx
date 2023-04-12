@@ -1,20 +1,20 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
 import SetSlackNotificationMutation from '../mutations/SetSlackNotificationMutation'
 import {ICON_SIZE} from '../styles/typographyV2'
 import SlackClientManager from '../utils/SlackClientManager'
-import {SetSlackNotificationMutationVariables} from '../__generated__/SetSlackNotificationMutation.graphql'
-import {StageTimerModalEndTimeSlackToggle_facilitator} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
+import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
+import {StageTimerModalEndTimeSlackToggle_facilitator$key} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
-  facilitator: StageTimerModalEndTimeSlackToggle_facilitator
+  facilitator: StageTimerModalEndTimeSlackToggle_facilitator$key
 }
 
 const ButtonRow = styled(PlainButton)({
@@ -59,7 +59,35 @@ const StyledNotificationErrorMessage = styled(NotificationErrorMessage)({
 })
 
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
-  const {facilitator} = props
+  const {facilitator: facilitatorRef} = props
+  const facilitator = useFragment(
+    graphql`
+      fragment StageTimerModalEndTimeSlackToggle_facilitator on TeamMember {
+        teamId
+        integrations {
+          mattermost {
+            auth {
+              isActive
+            }
+          }
+          msTeams {
+            auth {
+              isActive
+            }
+          }
+          slack {
+            isActive
+            defaultTeamChannelId
+            notifications {
+              channelId
+              event
+            }
+          }
+        }
+      }
+    `,
+    facilitatorRef
+  )
   const {integrations, teamId} = facilitator
   const {mattermost, slack, msTeams} = integrations
   const notifications = slack?.notifications ?? []
@@ -83,7 +111,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
         slackChannelId: slackToggleActive ? null : defaultTeamChannelId,
         slackNotificationEvents: ['MEETING_STAGE_TIME_LIMIT_START'],
         teamId
-      } as SetSlackNotificationMutationVariables
+      } as TSetSlackNotificationMutation['variables']
       SetSlackNotificationMutation(atmosphere, variables, {onError, onCompleted})
     } else {
       SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
@@ -104,30 +132,4 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
-  facilitator: graphql`
-    fragment StageTimerModalEndTimeSlackToggle_facilitator on TeamMember {
-      teamId
-      integrations {
-        mattermost {
-          auth {
-            isActive
-          }
-        }
-        msTeams {
-          auth {
-            isActive
-          }
-        }
-        slack {
-          isActive
-          defaultTeamChannelId
-          notifications {
-            channelId
-            event
-          }
-        }
-      }
-    }
-  `
-})
+export default StageTimerModalEndTimeSlackToggle

@@ -2,10 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import {
-  VoteForReflectionGroupMutation as TVoteForReflectionGroupMutation,
-  VoteForReflectionGroupMutationResponse
-} from '../__generated__/VoteForReflectionGroupMutation.graphql'
+import {VoteForReflectionGroupMutation as TVoteForReflectionGroupMutation} from '../__generated__/VoteForReflectionGroupMutation.graphql'
 
 graphql`
   fragment VoteForReflectionGroupMutation_meeting on VoteForReflectionGroupPayload {
@@ -39,10 +36,14 @@ interface Handlers extends BaseLocalHandlers {
 }
 
 type RetrospectiveMeetingMember = NonNullable<
-  NonNullable<VoteForReflectionGroupMutationResponse['voteForReflectionGroup']>['meetingMember']
+  NonNullable<
+    TVoteForReflectionGroupMutation['response']['voteForReflectionGroup']
+  >['meetingMember']
 >
 type RetroReflectionGroup = NonNullable<
-  NonNullable<VoteForReflectionGroupMutationResponse['voteForReflectionGroup']>['reflectionGroup']
+  NonNullable<
+    TVoteForReflectionGroupMutation['response']['voteForReflectionGroup']
+  >['reflectionGroup']
 >
 
 const VoteForReflectionGroupMutation: StandardMutation<

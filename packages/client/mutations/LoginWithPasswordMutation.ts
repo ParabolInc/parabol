@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
+import {handleSuccessfulLogin} from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {LoginWithPasswordMutation as TLoginWithPasswordMutation} from '../__generated__/LoginWithPasswordMutation.graphql'
 import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
@@ -10,18 +10,14 @@ const mutation = graphql`
   mutation LoginWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID! = ""
+    $invitationToken: ID!
     $isInvitation: Boolean!
   ) {
     loginWithPassword(email: $email, password: $password) {
       error {
         message
       }
-      authToken
-      user {
-        tms
-        ...UserAnalyticsFrag @relay(mask: false)
-      }
+      ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)

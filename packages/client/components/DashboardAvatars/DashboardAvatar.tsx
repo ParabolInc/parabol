@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -10,11 +10,11 @@ import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ElementWidth} from '../../types/constEnums'
-import {DashboardAvatar_teamMember} from '../../__generated__/DashboardAvatar_teamMember.graphql'
+import {DashboardAvatar_teamMember$key} from '../../__generated__/DashboardAvatar_teamMember.graphql'
 import Avatar from '../Avatar/Avatar'
 
 interface Props {
-  teamMember: DashboardAvatar_teamMember
+  teamMember: DashboardAvatar_teamMember$key
 }
 
 const AvatarWrapper = styled('div')({
@@ -36,7 +36,25 @@ const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(
 )
 
 const DashboardAvatar = (props: Props) => {
-  const {teamMember} = props
+  const {teamMember: teamMemberRef} = props
+  const teamMember = useFragment(
+    graphql`
+      fragment DashboardAvatar_teamMember on TeamMember {
+        ...TeamMemberAvatarMenu_teamMember
+        ...LeaveTeamModal_teamMember
+        ...PromoteTeamMemberModal_teamMember
+        ...RemoveTeamMemberModal_teamMember
+        id
+        picture
+        teamId
+        preferredName
+        user {
+          isConnected
+        }
+      }
+    `,
+    teamMemberRef
+  )
   const {id: teamMemberId, picture, teamId, preferredName} = teamMember
   const {user} = teamMember
   if (!user) {
@@ -81,20 +99,4 @@ const DashboardAvatar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DashboardAvatar, {
-  teamMember: graphql`
-    fragment DashboardAvatar_teamMember on TeamMember {
-      ...TeamMemberAvatarMenu_teamMember
-      ...LeaveTeamModal_teamMember
-      ...PromoteTeamMemberModal_teamMember
-      ...RemoveTeamMemberModal_teamMember
-      id
-      picture
-      teamId
-      preferredName
-      user {
-        isConnected
-      }
-    }
-  `
-})
+export default DashboardAvatar

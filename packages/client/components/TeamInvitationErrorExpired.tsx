@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {PALETTE} from '../styles/paletteV3'
-import {TeamInvitationErrorExpired_verifiedInvitation} from '../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
+import {TeamInvitationErrorExpired_verifiedInvitation$key} from '../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
 
 interface Props {
-  verifiedInvitation: TeamInvitationErrorExpired_verifiedInvitation
+  verifiedInvitation: TeamInvitationErrorExpired_verifiedInvitation$key
 }
 
 const StyledEmailLink = styled('a')({
@@ -24,7 +24,17 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationErrorExpired = (props: Props) => {
-  const {verifiedInvitation} = props
+  const {verifiedInvitation: verifiedInvitationRef} = props
+  const verifiedInvitation = useFragment(
+    graphql`
+      fragment TeamInvitationErrorExpired_verifiedInvitation on VerifiedInvitationPayload {
+        teamName
+        inviterName
+        inviterEmail
+      }
+    `,
+    verifiedInvitationRef
+  )
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
   useDocumentTitle(`Token Expired | Team Invitation`, 'Team Invitation')
   return (
@@ -46,12 +56,4 @@ const TeamInvitationErrorExpired = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamInvitationErrorExpired, {
-  verifiedInvitation: graphql`
-    fragment TeamInvitationErrorExpired_verifiedInvitation on VerifiedInvitationPayload {
-      teamName
-      inviterName
-      inviterEmail
-    }
-  `
-})
+export default TeamInvitationErrorExpired

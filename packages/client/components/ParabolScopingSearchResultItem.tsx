@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -15,8 +15,8 @@ import {PALETTE} from '~/styles/paletteV3'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import {Threshold} from '../types/constEnums'
-import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
-import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {ParabolScopingSearchResultItem_task$key} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
+import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import {AreaEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import TaskEditor from './TaskEditor/TaskEditor'
@@ -45,13 +45,36 @@ const StyledTaskEditor = styled(TaskEditor)({
 interface Props {
   meetingId: string
   usedServiceTaskIds: Set<string>
-  task: ParabolScopingSearchResultItem_task
+  task: ParabolScopingSearchResultItem_task$key
   teamId: string
   setIsEditing: (isEditing: boolean) => void
 }
 
 const ParabolScopingSearchResultItem = (props: Props) => {
-  const {usedServiceTaskIds, task, meetingId, teamId, setIsEditing} = props
+  const {usedServiceTaskIds, task: taskRef, meetingId, teamId, setIsEditing} = props
+  const task = useFragment(
+    graphql`
+      fragment ParabolScopingSearchResultItem_task on Task {
+        id
+        content
+        plaintextContent
+        # grab title so the optimistic updater can use it to update sidebar
+        title
+        updatedAt
+        integration {
+          ... on JiraIssue {
+            __typename
+            summary
+          }
+          ... on _xGitHubIssue {
+            __typename
+            title
+          }
+        }
+      }
+    `,
+    taskRef
+  )
   const {id: serviceTaskId, content, plaintextContent} = task
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
@@ -75,7 +98,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           action: isSelected ? 'DELETE' : 'ADD'
         }
       ]
-    } as UpdatePokerScopeMutationVariables
+    } as TUpdatePokerScopeMutation['variables']
     UpdatePokerScopeMutation(atmosphere, variables, {
       onError,
       onCompleted,
@@ -158,25 +181,4 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ParabolScopingSearchResultItem, {
-  task: graphql`
-    fragment ParabolScopingSearchResultItem_task on Task {
-      id
-      content
-      plaintextContent
-      # grab title so the optimistic updater can use it to update sidebar
-      title
-      updatedAt
-      integration {
-        ... on JiraIssue {
-          __typename
-          summary
-        }
-        ... on _xGitHubIssue {
-          __typename
-          title
-        }
-      }
-    }
-  `
-})
+export default ParabolScopingSearchResultItem

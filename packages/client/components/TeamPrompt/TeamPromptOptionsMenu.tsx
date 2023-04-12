@@ -40,11 +40,18 @@ interface Props {
   meetingRef: TeamPromptOptionsMenu_meeting$key
   menuProps: MenuProps
   openRecurrenceSettingsModal: () => void
+  openEndRecurringMeetingModal: () => void
   popTooltip: () => void
 }
 
 const TeamPromptOptionsMenu = (props: Props) => {
-  const {meetingRef, menuProps, openRecurrenceSettingsModal, popTooltip} = props
+  const {
+    meetingRef,
+    menuProps,
+    openRecurrenceSettingsModal,
+    openEndRecurringMeetingModal,
+    popTooltip
+  } = props
 
   const meeting = useFragment(
     graphql`
@@ -134,7 +141,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
         }
         onClick={() => {
           menuProps.closePortal()
-          EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, history})
+          if (!hasRecurrenceEnabled) {
+            EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, history})
+          } else {
+            openEndRecurringMeetingModal()
+          }
         }}
       />
     </Menu>

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -10,7 +10,7 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {PromoteTeamMemberModal_teamMember} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
+import {PromoteTeamMemberModal_teamMember$key} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 420
@@ -22,11 +22,28 @@ const StyledButton = styled(PrimaryButton)({
 
 interface Props extends WithMutationProps {
   closePortal: () => void
-  teamMember: PromoteTeamMemberModal_teamMember
+  teamMember: PromoteTeamMemberModal_teamMember$key
 }
 const PromoteTeamMemberModal = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {closePortal, submitMutation, submitting, onError, onCompleted, teamMember} = props
+  const {
+    closePortal,
+    submitMutation,
+    submitting,
+    onError,
+    onCompleted,
+    teamMember: teamMemberRef
+  } = props
+  const teamMember = useFragment(
+    graphql`
+      fragment PromoteTeamMemberModal_teamMember on TeamMember {
+        userId
+        teamId
+        preferredName
+      }
+    `,
+    teamMemberRef
+  )
   const {preferredName, teamId, userId} = teamMember
   const handleClick = () => {
     submitMutation()
@@ -46,12 +63,4 @@ const PromoteTeamMemberModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(PromoteTeamMemberModal), {
-  teamMember: graphql`
-    fragment PromoteTeamMemberModal_teamMember on TeamMember {
-      userId
-      teamId
-      preferredName
-    }
-  `
-})
+export default withMutationProps(PromoteTeamMemberModal)

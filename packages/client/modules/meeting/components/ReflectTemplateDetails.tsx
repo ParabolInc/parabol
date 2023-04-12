@@ -1,21 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
-import dropAddKeepImproveDAKITemplate from '../../../../../static/images/illustrations/dakiTemplate.png'
-import energyLevelsTemplate from '../../../../../static/images/illustrations/energyLevelsTemplate.png'
-import fourLsTemplate from '../../../../../static/images/illustrations/fourLsTemplate.png'
-import gladSadMadTemplate from '../../../../../static/images/illustrations/gladSadMadTemplate.png'
-import leanCoffeeTemplate from '../../../../../static/images/illustrations/leanCoffeeTemplate.png'
-import mountainClimberTemplate from '../../../../../static/images/illustrations/mountainClimberTemplate.png'
-import sailboatTemplate from '../../../../../static/images/illustrations/sailboatTemplate.png'
-import starfishTemplate from '../../../../../static/images/illustrations/starfishTemplate.png'
-import startStopContinueTemplate from '../../../../../static/images/illustrations/startStopContinueTemplate.png'
-import threeLittlePigsTemplate from '../../../../../static/images/illustrations/threeLittlePigsTemplate.png'
-import whatWentWellTemplate from '../../../../../static/images/illustrations/whatWentWellTemplate.png'
-import winningStreakTemplate from '../../../../../static/images/illustrations/winningStreakTemplate.png'
-import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.png'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
@@ -23,8 +10,8 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
-import {ReflectTemplateDetails_viewer} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
+import {ReflectTemplateDetails_settings$key} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
+import {ReflectTemplateDetails_viewer$key} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -32,6 +19,7 @@ import RemoveTemplate from './RemoveTemplate'
 import SelectTemplate from './SelectTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
+import {retroIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -86,12 +74,53 @@ interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
   closePortal: () => void
-  settings: ReflectTemplateDetails_settings
-  viewer: ReflectTemplateDetails_viewer
+  settings: ReflectTemplateDetails_settings$key
+  viewer: ReflectTemplateDetails_viewer$key
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {
+    gotoTeamTemplates,
+    gotoPublicTemplates,
+    closePortal,
+    settings: settingsRef,
+    viewer: viewerRef
+  } = props
+  const settings = useFragment(
+    graphql`
+      fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
+        activeTemplate {
+          ...ReflectTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        selectedTemplate {
+          ...ReflectTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        teamTemplates {
+          ...EditableTemplateName_teamTemplates
+          ...RemoveTemplate_teamTemplates
+        }
+        team {
+          id
+          orgId
+          tier
+        }
+      }
+    `,
+    settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateDetails_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+        ...makeTemplateDescription_viewer
+      }
+    `,
+    viewerRef
+  )
   const {featureFlags} = viewer
   const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
@@ -115,24 +144,8 @@ const ReflectTemplateDetails = (props: Props) => {
     )
     gotoTeamTemplates()
   }
-  const defaultIllustrations = {
-    sailboatTemplate: sailboatTemplate,
-    startStopContinueTemplate: startStopContinueTemplate,
-    workingStuckTemplate: workingStuckTemplate,
-    whatWentWellTemplate: whatWentWellTemplate,
-    dropAddKeepImproveDAKITemplate: dropAddKeepImproveDAKITemplate,
-    leanCoffeeTemplate: leanCoffeeTemplate,
-    starfishTemplate: starfishTemplate,
-    fourLsTemplate: fourLsTemplate,
-    gladSadMadTemplate: gladSadMadTemplate,
-    energyLevelsTemplate: energyLevelsTemplate,
-    mountainClimberTemplate: mountainClimberTemplate,
-    threeLittlePigsTemplate: threeLittlePigsTemplate,
-    winningStreakTemplate: winningStreakTemplate
-  } as const
-  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
-    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
-    : customTemplate
+  const headerImg =
+    retroIllustrations[templateId as keyof typeof retroIllustrations] ?? customTemplate
   const isActiveTemplate = templateId === settings.selectedTemplate.id
   const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
   return (
@@ -163,7 +176,7 @@ const ReflectTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
-        <TemplateSharing teamId={teamId} template={activeTemplate} />
+        <TemplateSharing isOwner={isOwner} template={activeTemplate} />
       </Scrollable>
       {!isActiveTemplate && (
         <SelectTemplate
@@ -193,34 +206,4 @@ graphql`
     teamId
   }
 `
-export default createFragmentContainer(ReflectTemplateDetails, {
-  settings: graphql`
-    fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
-      activeTemplate {
-        ...ReflectTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      selectedTemplate {
-        ...ReflectTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      teamTemplates {
-        ...EditableTemplateName_teamTemplates
-        ...RemoveTemplate_teamTemplates
-      }
-      team {
-        id
-        orgId
-        tier
-      }
-    }
-  `,
-  viewer: graphql`
-    fragment ReflectTemplateDetails_viewer on User {
-      featureFlags {
-        templateLimit
-      }
-      ...makeTemplateDescription_viewer
-    }
-  `
-})
+export default ReflectTemplateDetails

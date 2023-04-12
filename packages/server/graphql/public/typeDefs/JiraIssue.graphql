@@ -50,7 +50,7 @@ type JiraIssue implements TaskIntegration {
   """
   The url to access the issue
   """
-  url: URL!
+  url: String!
 
   """
   The key of the issue as found in Jira
@@ -128,5 +128,3 @@ type JiraIssueEdge {
   node: JiraIssue!
   cursor: DateTime
 }
-
-extend union NotificationSubscriptionPayload = JiraIssue

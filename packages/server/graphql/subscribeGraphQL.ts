@@ -79,31 +79,39 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
   connectionContext.subs[opId] = responseStream
   for await (const payload of responseStream) {
     const {data} = payload as ExecutionResult
-    const notificationType = data?.notificationSubscription?.__typename
-    if (notificationType === 'AuthTokenPayload') {
-      // AuthTokenPayload is sent when a user is added/removed from a team and their JWT is soft invalidated
-      const jwt = data?.notificationSubscription.id
-      connectionContext.authToken = new AuthToken(decode(jwt) as any)
-      // When a JWT is invalidated, so are the subscriptions.
-      // Allow the other subscription payloads to complete, then resubscribe
-      setTimeout(() => {
-        relayUnsubscribeAll(connectionContext, {isResub: true})
-      }, 1000)
-    } else if (notificationType === 'InvalidateSessionsPayload') {
-      // InvalidateSessionsPayload is sent when e.g. a password is reset and the JWT is hard invalidated
-      handleDisconnect(connectionContext, {
-        exitCode: 1011,
-        reason: TrebuchetCloseReason.SESSION_INVALIDATED
-      })
-    }
     if (!data) {
       sendGQLMessage(connectionContext, opId, 'data', false, payload)
-    } else {
-      const subscriptionName = Object.keys(data)[0] ?? ''
-      const subscriptionType = data[subscriptionName].__typename
-      const syn = !reliableSubscriptionPayloadBlackList.includes(subscriptionType)
-      sendGQLMessage(connectionContext, opId, 'data', syn, payload)
+      continue
     }
+    const subscriptionName = Object.keys(data!)[0]!
+    const subscriptionPayload = data[subscriptionName]
+    const {fieldName, __typename} = subscriptionPayload
+    const fields = {
+      fieldName,
+      [fieldName]: subscriptionPayload[fieldName],
+      ...(__typename && {__typename})
+    }
+    if (subscriptionName === 'notificationSubscription') {
+      if (fieldName === 'AuthTokenPayload') {
+        // AuthTokenPayload is sent when a user is added/removed from a team and their JWT is soft invalidated
+        const jwt = fields.AuthTokenPayload?.id
+        connectionContext.authToken = new AuthToken(decode(jwt) as any)
+        // When a JWT is invalidated, so are the subscriptions.
+        // Allow the other subscription payloads to complete, then resubscribe
+        setTimeout(() => {
+          relayUnsubscribeAll(connectionContext, {isResub: true})
+        }, 1000)
+      } else if (fieldName === 'InvalidateSessionsPayload') {
+        // InvalidateSessionsPayload is sent when e.g. a password is reset and the JWT is hard invalidated
+        handleDisconnect(connectionContext, {
+          exitCode: 1011,
+          reason: TrebuchetCloseReason.SESSION_INVALIDATED
+        })
+      }
+    }
+
+    const syn = !reliableSubscriptionPayloadBlackList.includes(fieldName)
+    sendGQLMessage(connectionContext, opId, 'data', syn, payload)
   }
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {

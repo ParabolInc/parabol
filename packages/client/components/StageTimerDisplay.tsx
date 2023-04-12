@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import PhaseCompleteTag from '~/components/Tag/PhaseCompleteTag'
 import UndoableGroupPhaseControl from '~/components/UndoableGroupPhaseControl'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Breakpoint} from '~/types/constEnums'
 import isDemoRoute from '~/utils/isDemoRoute'
-import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
+import {StageTimerDisplay_meeting$key} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 
 interface Props {
-  meeting: StageTimerDisplay_meeting
+  meeting: StageTimerDisplay_meeting$key
   canUndo?: boolean
 }
 
@@ -34,7 +34,31 @@ const PhaseCompleteWrapper = styled('div')({
 
 const StageTimerDisplay = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {meeting, canUndo} = props
+  const {meeting: meetingRef, canUndo} = props
+  const meeting = useFragment(
+    graphql`
+      fragment StageTimerDisplay_meeting on NewMeeting {
+        facilitatorUserId
+        id
+        localPhase {
+          phaseType
+          stages {
+            isComplete
+          }
+        }
+        localStage {
+          ...StageTimerDisplayStage @relay(mask: false)
+        }
+        phases {
+          stages {
+            ...StageTimerDisplayStage @relay(mask: false)
+            isComplete
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {localPhase, localStage, facilitatorUserId} = meeting
   const {localScheduledEndTime, isComplete} = localStage
   const {stages, phaseType} = localPhase
@@ -68,26 +92,4 @@ graphql`
     localScheduledEndTime
   }
 `
-export default createFragmentContainer(StageTimerDisplay, {
-  meeting: graphql`
-    fragment StageTimerDisplay_meeting on NewMeeting {
-      facilitatorUserId
-      id
-      localPhase {
-        phaseType
-        stages {
-          isComplete
-        }
-      }
-      localStage {
-        ...StageTimerDisplayStage @relay(mask: false)
-      }
-      phases {
-        stages {
-          ...StageTimerDisplayStage @relay(mask: false)
-          isComplete
-        }
-      }
-    }
-  `
-})
+export default StageTimerDisplay

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import fromStageIdToUrl from '../../utils/meetings/fromStageIdToUrl'
-import {mapDiscussionMentionedToToast_notification} from '../../__generated__/mapDiscussionMentionedToToast_notification.graphql'
+import {mapDiscussionMentionedToToast_notification$data} from '../../__generated__/mapDiscussionMentionedToToast_notification.graphql'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
@@ -33,7 +33,7 @@ graphql`
 `
 
 const mapDiscussionMentionedToToast = (
-  notification: mapDiscussionMentionedToToast_notification,
+  notification: mapDiscussionMentionedToToast_notification$data,
   {history}: OnNextHistoryContext
 ): Snack | null => {
   if (!notification) return null

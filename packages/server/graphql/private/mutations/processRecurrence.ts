@@ -2,7 +2,7 @@ import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import MeetingTeamPrompt, {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -28,15 +28,10 @@ const startRecurringTeamPrompt = async (
   const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
-  const formattedDate = new Date().toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  })
-
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
   const nextMeetingStartDate = rrule.after(startTime)
   const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
-    name: `${meetingSeries.title} - ${formattedDate}`,
+    name: createTeamPromptTitle(meetingSeries.title, startTime, rrule.options.tzid ?? 'UTC'),
     scheduledEndTime: nextMeetingStartDate,
     meetingSeriesId: meetingSeries.id
   })
@@ -65,9 +60,9 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
     .run()) as MeetingTeamPrompt[]
 
   const res = await Promise.all(
-    teamPromptMeetingsToEnd.map(async (meeting) => {
-      return await safeEndTeamPrompt({meeting, now, context, r, subOptions})
-    })
+    teamPromptMeetingsToEnd.map((meeting) =>
+      safeEndTeamPrompt({meeting, now, context, r, subOptions})
+    )
   )
 
   const meetingsEnded = res.filter((res) => !('error' in res)).length
@@ -101,6 +96,11 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
       // For meetings that should still be active, start the meeting and set its end time.
       // Any subscriptions are handled by the shared meeting start code
       const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+      // technically, RRULE should never return NaN here but there's a bug in the library
+      // https://github.com/jakubroztocil/rrule/issues/321
+      if (isNaN(rrule.options.interval)) {
+        return
+      }
 
       // Only get meetings that should currently be active, i.e. meetings that should have started
       // within the last 24 hours, started after the last meeting in the series, and started before

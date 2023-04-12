@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
-import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
-import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.png'
+import {pokerIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
@@ -12,8 +11,8 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import {PokerTemplateDetails_settings} from '../../../__generated__/PokerTemplateDetails_settings.graphql'
-import {PokerTemplateDetails_viewer} from '../../../__generated__/PokerTemplateDetails_viewer.graphql'
+import {PokerTemplateDetails_settings$key} from '../../../__generated__/PokerTemplateDetails_settings.graphql'
+import {PokerTemplateDetails_viewer$key} from '../../../__generated__/PokerTemplateDetails_viewer.graphql'
 import AddPokerTemplateDimension from './AddPokerTemplateDimension'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -75,12 +74,53 @@ interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
   closePortal: () => void
-  settings: PokerTemplateDetails_settings
-  viewer: PokerTemplateDetails_viewer
+  settings: PokerTemplateDetails_settings$key
+  viewer: PokerTemplateDetails_viewer$key
 }
 
 const PokerTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {
+    gotoTeamTemplates,
+    gotoPublicTemplates,
+    closePortal,
+    settings: settingsRef,
+    viewer: viewerRef
+  } = props
+  const settings = useFragment(
+    graphql`
+      fragment PokerTemplateDetails_settings on PokerMeetingSettings {
+        activeTemplate {
+          ...PokerTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        selectedTemplate {
+          ...PokerTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        teamTemplates {
+          ...EditableTemplateName_teamTemplates
+          ...RemoveTemplate_teamTemplates
+        }
+        team {
+          id
+          orgId
+          tier
+        }
+      }
+    `,
+    settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment PokerTemplateDetails_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+        ...makeTemplateDescription_viewer
+      }
+    `,
+    viewerRef
+  )
   const {featureFlags} = viewer
   const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
@@ -104,13 +144,8 @@ const PokerTemplateDetails = (props: Props) => {
     )
     gotoTeamTemplates()
   }
-  const defaultIllustrations = {
-    estimatedEffortTemplate: estimatedEffortTemplate,
-    wsjfTemplate: wsjfTemplate
-  } as const
-  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
-    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
-    : customTemplate
+  const headerImg =
+    pokerIllustrations[templateId as keyof typeof pokerIllustrations] ?? customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
   return (
@@ -141,7 +176,7 @@ const PokerTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
-        <TemplateSharing teamId={teamId} template={activeTemplate} />
+        <TemplateSharing isOwner={isOwner} template={activeTemplate} />
       </Scrollable>
       {!isActiveTemplate && (
         <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />
@@ -164,34 +199,4 @@ graphql`
     teamId
   }
 `
-export default createFragmentContainer(PokerTemplateDetails, {
-  settings: graphql`
-    fragment PokerTemplateDetails_settings on PokerMeetingSettings {
-      activeTemplate {
-        ...PokerTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      selectedTemplate {
-        ...PokerTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      teamTemplates {
-        ...EditableTemplateName_teamTemplates
-        ...RemoveTemplate_teamTemplates
-      }
-      team {
-        id
-        orgId
-        tier
-      }
-    }
-  `,
-  viewer: graphql`
-    fragment PokerTemplateDetails_viewer on User {
-      featureFlags {
-        templateLimit
-      }
-      ...makeTemplateDescription_viewer
-    }
-  `
-})
+export default PokerTemplateDetails

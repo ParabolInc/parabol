@@ -14,7 +14,7 @@ graphql`
     integration {
       __typename
       ... on _xGitHubIssue {
-        url
+        ghUrl: url
       }
       ... on JiraIssue {
         cloudId

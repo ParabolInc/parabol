@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.92.0",
+  "version": "6.98.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "engines": {
-    "node": "^18.13.0",
+    "node": "^18.14.2",
     "yarn": "^1.22.5"
   },
   "private": true,
@@ -38,15 +38,15 @@
     "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",
     "lint": "nx run-many --target=lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
-    "relay": "node scripts/compileRelay.js",
     "typecheck": "nx run-many --target=typecheck",
     "lintcheck": "nx run-many --target=lint:check",
     "stylecheck": "nx run-many --target=prettier:check",
-    "update-schema": "node scripts/runSchemaUpdater.js",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "precommit": "nx run-many --target=precommit --parallel=1",
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
     "prepare": "husky install",
+    "relay:build": "node scripts/generateGraphQLArtifacts.js",
+    "relay:watch": "node scripts/relayWatch.js",
     "test:client": "yarn workspace parabol-client test",
     "test:server": "yarn workspace parabol-server test"
   },
@@ -84,12 +84,17 @@
     "@graphql-codegen/typescript-operations": "^2.5.1",
     "@graphql-codegen/typescript-resolvers": "^2.7.1",
     "@graphql-tools/executor": "^0.0.11",
+    "@graphql-tools/merge": "^8.3.18",
     "@sucrase/webpack-loader": "^2.0.0",
+    "@tailwindcss/container-queries": "^0.1.0",
+    "@types/dotenv": "^6.1.1",
     "@types/jscodeshift": "^0.11.3",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
+    "@tailwindcss/forms": "^0.5.3",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
+    "copy-webpack-plugin": "^11.0.0",
     "eslint-config-prettier": "^8.5.0",
     "graphql": "15.7.2",
     "html-webpack-plugin": "^5.5.0",
@@ -99,15 +104,14 @@
     "mini-css-extract-plugin": "^2.7.2",
     "minimist": "^1.2.5",
     "node-loader": "^2.0.0",
-    "nx": "14.7.5",
+    "pg-promise": "^11.2.0",
     "postcss": "^8.4.21",
     "postcss-loader": "^7.0.2",
     "prettier": "^2.6.1",
     "prettier-plugin-organize-imports": "^2.3.4",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "raw-loader": "^4.0.2",
-    "relay-compiler": "^12.0.0",
-    "relay-compiler-language-typescript": "^15.0.1",
+    "relay-compiler": "^14.1.0",
     "relay-config": "^12.0.0",
     "sucrase": "^3.23.0",
     "tailwindcss": "^3.2.7",
@@ -119,5 +123,9 @@
     "workbox-webpack-plugin": "^6.5.4",
     "yarn-deduplicate": "^3.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "dotenv": "8.0.0",
+    "dotenv-expand": "5.1.0",
+    "rethinkdb-ts-migrate": "^0.3.6"
+  }
 }

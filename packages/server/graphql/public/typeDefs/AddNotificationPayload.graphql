@@ -4,5 +4,3 @@ Generic notification payload to send when a new notification is added
 type AddNotificationPayload {
   notification: Notification
 }
-
-extend union NotificationSubscriptionPayload = AddNotificationPayload

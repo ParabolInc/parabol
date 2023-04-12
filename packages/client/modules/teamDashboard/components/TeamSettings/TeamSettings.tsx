@@ -62,9 +62,7 @@ const query = graphql`
 
 const TeamSettings = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<TeamSettingsQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<TeamSettingsQuery>(query, queryRef)
   const {viewer} = data
   const {history} = useRouter()
   const {team} = viewer

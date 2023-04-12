@@ -1,93 +1,55 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
 import TeamMember from '../../../database/types/TeamMember'
-import {getUserId, isSuperUser} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
-import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {CompanyResolvers} from '../resolverTypes'
+import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
+import {getTeamsByOrgIds} from './helpers/getTeamsByOrgIds'
+import {DataLoaderWorker} from '../../graphql'
+import AuthToken from '../../../database/types/AuthToken'
+
 export type CompanySource = {id: string}
 
-const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
-
-const getTeamsByOrgIds = async (
-  orgIds: string[],
-  dataLoader: DataLoaderWorker,
-  includeArchived: boolean
+const getSuggestedTierOrganizations = async (
+  domain: string,
+  authToken: AuthToken,
+  dataLoader: DataLoaderWorker
 ) => {
-  const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(errorFilter)
-  const teams = teamsByOrgId.flat()
-  return includeArchived ? teams : teams.filter(({isArchived}) => !isArchived)
+  const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+  const orgIds = organizations.map(({id}) => id)
+  const viewerId = getUserId(authToken)
+  const allOrganizationUsers = (
+    await Promise.all(
+      orgIds.map((orgId) => {
+        return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
+      })
+    )
+  ).filter(isValid)
+  // If suggestedTier === enterprise, that means the user is allowed to see across
+  // all organizations, even the ones they are not a member of!
+  const isViewerAllowedToSeeAll = allOrganizationUsers.some(
+    ({suggestedTier, tier}) => suggestedTier === 'enterprise' || tier === 'enterprise'
+  )
+  if (isViewerAllowedToSeeAll) return organizations
+  // Pro-qualified or unqualified users can only see orgs that they are apart of
+  const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
+  return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
 }
 
 const Company: CompanyResolvers = {
-  activeTeamCount: async ({id: domain}, {after}, {dataLoader}) => {
-    // teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has an max(createdAt, endedAt) newer than 30 days ago
-    const metAfter = after ? new Date(after) : new Date(Date.now() - THIRTY_DAYS)
+  activeTeamCount: async ({id: domain}, _args, {authToken, dataLoader}) => {
     // get the organizations
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     // get unarchivedTeams
     const orgIds = organizations.map(({id}) => id)
-    const unarchivedTeams = await getTeamsByOrgIds(orgIds, dataLoader, false)
-    // for each team, get the team members
-    const teamIds = unarchivedTeams.map(({id}) => id)
-    const teamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
-      .filter(isValid)
-      .flat()
-    // for each team member, get the user
-    const userIds = [...new Set(teamMembers.map(({userId}) => userId))]
-    const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
-    // join the user to the team member
-    const activeTeamMembers = teamMembers.filter((teamMember) => {
-      // coercion on purpose. if this throws an error, our data model is bad & we want to know about it
-      return !users.find((user) => user.id === teamMember.userId)!.inactive
-    })
-    // group team members by teamId
-    const teamMembersByTeamId = activeTeamMembers.reduce((obj, teamMember) => {
-      if (obj[teamMember.teamId]) {
-        obj[teamMember.teamId]!.push(teamMember)
-      } else {
-        obj[teamMember.teamId] = [teamMember]
-      }
-      return obj
-    }, {} as Record<string, [TeamMember, ...TeamMember[]]>)
-    // filter to teams with at least 2 teamMembers where !teamMember.user.inactive
-    const teamsWithSufficientTeamMembers = Object.values(teamMembersByTeamId)
-      .map((teamMembers) => {
-        return {
-          count: teamMembers.length,
-          team: unarchivedTeams.find((team) => team.id === teamMembers[0].teamId)!
-        }
-      })
-      .filter((agg) => agg.count >= 2)
-      .map((agg) => agg.team)
-    // for each filtered team, find a meeting with a lastMetAt newer than metAfter (default 30 days)
-    const r = await getRethink()
-    const lastMetAt = (await Promise.all(
-      teamsWithSufficientTeamMembers.map((team) => {
-        return r
-          .table('NewMeeting')
-          .getAll(team.id, {index: 'teamId'})
-          .merge((meeting: RValue) => ({
-            lastMetAt: meeting('endedAt').default(meeting('createdAt'))
-          }))
-          .filter((meeting: RValue) => meeting('lastMetAt').ge(metAfter))
-          .limit(1)
-          .nth(0)('lastMetAt')
-          .default(null)
-      })
-    )) as unknown as (Date | null)[]
-
-    // filter out teams without a meeting that has been updated within the last 30 days
-    const recentlyMetTeams = teamsWithSufficientTeamMembers.filter((_team, idx) => !!lastMetAt[idx])
-
-    // return length of filtered teams
-    return recentlyMetTeams.length
+    return getActiveTeamCountByOrgIds(orgIds)
   },
 
-  activeUserCount: async ({id: domain}, {after}, {dataLoader}) => {
+  activeUserCount: async ({id: domain}, {after}, {authToken, dataLoader}) => {
     // number of users on an active organization that has logged in within the last 30 days
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds))
       .filter(isValid)
@@ -101,11 +63,11 @@ const Company: CompanyResolvers = {
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size
   },
-  activeOrganizationCount: async ({id: domain}, _args, {dataLoader}) => {
+  activeOrganizationCount: async ({id: domain}, _args, {authToken, dataLoader}) => {
     // organizations with at least 1 unarchived team on it, which has at least 2 team members who have logged in within the last 30 days
 
     // get the organizations
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const allOrgIds = organizations.map(({id}) => id)
     // get the organizationUsers
     const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(allOrgIds))
@@ -153,9 +115,9 @@ const Company: CompanyResolvers = {
     ]
     return orgsIdsWithSufficientTeamMembers.length
   },
-  lastMetAt: async ({id: domain}, _args, {dataLoader}) => {
+  lastMetAt: async ({id: domain}, _args, {authToken, dataLoader}) => {
     const r = await getRethink()
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
     const teamIds = teams.map(({id}) => id)
@@ -169,10 +131,10 @@ const Company: CompanyResolvers = {
     return lastMetAt
   },
 
-  meetingCount: async ({id: domain}, {after}, {dataLoader}) => {
+  meetingCount: async ({id: domain}, {after}, {authToken, dataLoader}) => {
     // number of meetings created by teams on organizations assigned to the domain
     const r = await getRethink()
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
     const teamIds = teams.map(({id}) => id)
@@ -187,9 +149,9 @@ const Company: CompanyResolvers = {
       .run()
   },
 
-  monthlyTeamStreakMax: async ({id: domain}, _args, {dataLoader}) => {
+  monthlyTeamStreakMax: async ({id: domain}, _args, {authToken, dataLoader}) => {
     const r = await getRethink()
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
     const teamIds = teams.map(({id}) => id)
@@ -240,43 +202,7 @@ const Company: CompanyResolvers = {
   },
 
   organizations: async ({id: domain}, _args, {authToken, dataLoader}) => {
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    // only superusers can see across ALL organizations.
-    // users can only see the organizations they are apart of
-    if (isSuperUser(authToken)) return organizations
-    const orgIds = organizations.map(({id}) => id)
-    const viewerId = getUserId(authToken)
-    const allOrganizationUsers = (
-      await Promise.all(
-        orgIds.map((orgId) => {
-          return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
-        })
-      )
-    ).filter(isValid)
-    // If suggestedTier === enterprise, that means the user is allowed to see across
-    // all organizations, even the ones they are not a member of!
-    const isViewerAllowedToSeeAll = allOrganizationUsers.some(
-      ({suggestedTier}) => suggestedTier === 'enterprise'
-    )
-    if (isViewerAllowedToSeeAll) return organizations
-    // Pro-qualified or unqualified users can only see orgs that they are apart of
-    const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
-    return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
-  },
-
-  viewerOrganizations: async ({id: domain}, _args, {authToken, dataLoader}) => {
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const orgIds = organizations.map(({id}) => id)
-    const viewerId = getUserId(authToken)
-    const allOrganizationUsers = (
-      await Promise.all(
-        orgIds.map((orgId) => {
-          return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
-        })
-      )
-    ).filter(isValid)
-    const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
-    return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
+    return getSuggestedTierOrganizations(domain, authToken, dataLoader)
   },
 
   suggestedTier: async ({id: domain}, _args, {dataLoader}) => {
@@ -302,8 +228,8 @@ const Company: CompanyResolvers = {
     return 'starter'
   },
 
-  userCount: async ({id: domain}, _args, {dataLoader}) => {
-    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+  userCount: async ({id: domain}, _args, {authToken, dataLoader}) => {
+    const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const organizationUsersByOrgId = (
       await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds)

@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
+import {EstimatePhaseArea_meeting$key} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 import EstimateDimensionColumn from './EstimateDimensionColumn'
 import PokerCardDeck from './PokerCardDeck'
 
@@ -68,11 +68,32 @@ const containerStyle = {
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
-  meeting: EstimatePhaseArea_meeting
+  meeting: EstimatePhaseArea_meeting$key
 }
 
 const EstimatePhaseArea = (props: Props) => {
-  const {gotoStageId, meeting} = props
+  const {gotoStageId, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment EstimatePhaseArea_meeting on PokerMeeting {
+        ...PokerCardDeck_meeting
+        ...EstimateDimensionColumn_meeting
+        localStage {
+          ...EstimatePhaseAreaStage @relay(mask: false)
+        }
+        phases {
+          ... on EstimatePhase {
+            phaseType
+            stages {
+              ...EstimateDimensionColumn_stage
+              ...EstimatePhaseAreaStage @relay(mask: false)
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {localStage, phases} = meeting
   const {id: localStageId, taskId} = localStage
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
@@ -130,23 +151,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(EstimatePhaseArea, {
-  meeting: graphql`
-    fragment EstimatePhaseArea_meeting on PokerMeeting {
-      ...PokerCardDeck_meeting
-      ...EstimateDimensionColumn_meeting
-      localStage {
-        ...EstimatePhaseAreaStage @relay(mask: false)
-      }
-      phases {
-        ... on EstimatePhase {
-          phaseType
-          stages {
-            ...EstimateDimensionColumn_stage
-            ...EstimatePhaseAreaStage @relay(mask: false)
-          }
-        }
-      }
-    }
-  `
-})
+export default EstimatePhaseArea

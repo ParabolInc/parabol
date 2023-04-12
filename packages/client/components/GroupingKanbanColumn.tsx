@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import useDeepEqual from '~/hooks/useDeepEqual'
 import useSubColumns from '~/hooks/useSubColumns'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
-import {GroupingKanbanColumn_prompt} from '~/__generated__/GroupingKanbanColumn_prompt.graphql'
-import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
+import {GroupingKanbanColumn_meeting$key} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
+import {GroupingKanbanColumn_prompt$key} from '~/__generated__/GroupingKanbanColumn_prompt.graphql'
+import {GroupingKanbanColumn_reflectionGroups$key} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
@@ -81,11 +81,11 @@ interface Props {
   columnsRef: RefObject<HTMLDivElement>
   isAnyEditing: boolean
   isDesktop: boolean
-  meeting: GroupingKanbanColumn_meeting
+  meeting: GroupingKanbanColumn_meeting$key
   openSpotlight: OpenSpotlight
   phaseRef: RefObject<HTMLDivElement>
-  prompt: GroupingKanbanColumn_prompt
-  reflectionGroups: GroupingKanbanColumn_reflectionGroups
+  prompt: GroupingKanbanColumn_prompt$key
+  reflectionGroups: GroupingKanbanColumn_reflectionGroups$key
   reflectPromptsCount: number
   swipeColumn?: SwipeColumn
   showDragHintAnimation?: boolean
@@ -96,15 +96,60 @@ const GroupingKanbanColumn = (props: Props) => {
     columnsRef,
     isAnyEditing,
     isDesktop,
-    meeting,
+    meeting: meetingRef,
     openSpotlight,
-    reflectionGroups,
+    reflectionGroups: reflectionGroupsRef,
     phaseRef,
-    prompt,
+    prompt: promptRef,
     reflectPromptsCount,
     swipeColumn,
     showDragHintAnimation
   } = props
+  const meeting = useFragment(
+    graphql`
+      fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
+        ...ReflectionGroup_meeting
+        id
+        endedAt
+        localStage {
+          isComplete
+          phaseType
+        }
+        phases {
+          stages {
+            isComplete
+            phaseType
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+  const reflectionGroups = useFragment(
+    graphql`
+      fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
+        ...ReflectionGroup_reflectionGroup
+        id
+        reflections {
+          id
+        }
+        sortOrder
+        subColumnIdx
+      }
+    `,
+    reflectionGroupsRef
+  )
+  const prompt = useFragment(
+    graphql`
+      fragment GroupingKanbanColumn_prompt on ReflectPrompt {
+        id
+        question
+        groupColor
+        sortOrder
+      }
+    `,
+    promptRef
+  )
   const {question, id: promptId, groupColor} = prompt
   const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
@@ -199,41 +244,4 @@ const GroupingKanbanColumn = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(GroupingKanbanColumn, {
-  meeting: graphql`
-    fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
-      ...ReflectionGroup_meeting
-      id
-      endedAt
-      localStage {
-        isComplete
-        phaseType
-      }
-      phases {
-        stages {
-          isComplete
-          phaseType
-        }
-      }
-    }
-  `,
-  reflectionGroups: graphql`
-    fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
-      ...ReflectionGroup_reflectionGroup
-      id
-      reflections {
-        id
-      }
-      sortOrder
-      subColumnIdx
-    }
-  `,
-  prompt: graphql`
-    fragment GroupingKanbanColumn_prompt on ReflectPrompt {
-      id
-      question
-      groupColor
-      sortOrder
-    }
-  `
-})
+export default GroupingKanbanColumn

@@ -5,9 +5,10 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   msTeams: ({msTeams}) => !!msTeams,
   insights: ({insights}) => !!insights,
   templateLimit: ({templateLimit}) => !!templateLimit,
-  aiSummary: ({aiSummary}) => !!aiSummary,
+  noAISummary: ({noAISummary}) => !!noAISummary,
   noMeetingHistoryLimit: ({noMeetingHistoryLimit}) => !!noMeetingHistoryLimit,
-  checkoutFlow: ({checkoutFlow}) => !!checkoutFlow
+  checkoutFlow: ({checkoutFlow}) => !!checkoutFlow,
+  retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise
 }
 
 export default UserFeatureFlags

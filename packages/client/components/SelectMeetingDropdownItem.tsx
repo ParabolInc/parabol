@@ -8,12 +8,12 @@ import {
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
-import {SelectMeetingDropdownItem_meeting} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
+import {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -60,11 +60,30 @@ const Action = styled('div')({
 })
 
 interface Props {
-  meeting: SelectMeetingDropdownItem_meeting
+  meeting: SelectMeetingDropdownItem_meeting$key
 }
 
 const SelectMeetingDropdownItem = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment SelectMeetingDropdownItem_meeting on NewMeeting {
+        id
+        name
+        meetingType
+        phases {
+          phaseType
+          stages {
+            isComplete
+          }
+        }
+        team {
+          name
+        }
+      }
+    `,
+    meetingRef
+  )
   const {history} = useRouter()
   const {name, team, id: meetingId, meetingType, phases} = meeting
   if (!team) {
@@ -115,21 +134,4 @@ const SelectMeetingDropdownItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SelectMeetingDropdownItem, {
-  meeting: graphql`
-    fragment SelectMeetingDropdownItem_meeting on NewMeeting {
-      id
-      name
-      meetingType
-      phases {
-        phaseType
-        stages {
-          isComplete
-        }
-      }
-      team {
-        name
-      }
-    }
-  `
-})
+export default SelectMeetingDropdownItem

@@ -3,7 +3,7 @@ import {commitMutation} from 'react-relay'
 import makeEmptyStr from '~/utils/draftjs/makeEmptyStr'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
-import {AddCommentMutation_meeting} from '~/__generated__/AddCommentMutation_meeting.graphql'
+import {AddCommentMutation_meeting$data} from '~/__generated__/AddCommentMutation_meeting.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
@@ -34,7 +34,7 @@ const mutation = graphql`
   }
 `
 
-export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting> = (
+export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting$data> = (
   payload,
   {store}
 ) => {

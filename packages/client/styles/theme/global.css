@@ -68,13 +68,13 @@
     @apply m-0 h-screen w-full bg-slate-200 p-0;
   }
 
-  * {
-    @apply box-border;
-  }
-
-  *::before,
-  *::after {
-    @apply box-border;
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: theme('borderColor.DEFAULT'); 
   }
 
   html {
@@ -146,27 +146,6 @@
     }
   }
 
-  /** Customize draft-js */
-  .draft-blockquote {
-    @apply my-[8px] mx-0 border-l-[2px] border-slate-500 px-[8px] py-0 italic;
-  }
-
-  .draft-codeblock {
-    @apply m-0 border-[1px] border-l-[2px] border-slate-500 bg-slate-200 px-0 py-[8px] font-mono font-[13px] leading-normal;
-  }
-  /* ---------------------------------------------------- */
-
-  /** Customize daypicker styles */
-  .rdp {
-    @apply m-[8px];
-    --rdp-cell-size: 36px;
-    --rdp-accent-color: theme(colors.grape.500);
-    --rdp-background-color: theme(colors.grape.500 / 30%);
-    --rdp-accent-color-dark: theme(colors.grape.500);
-    --rdp-background-color-dark: theme(colors.grape.500 / 30%);
-  }
-  /* ---------------------------------------------------- */
-
   /*::-webkit-scrollbar {
     -webkit-appearance: none;
     width:6px;
@@ -184,4 +163,23 @@
   ::-webkit-scrollbar-thumb:window-inactive {
     background:rgba(0, 0, 0, 0.2);
   }*/
+}
+
+/** Customize daypicker styles */
+.rdp {
+  @apply m-[8px];
+  --rdp-cell-size: 36px;
+  --rdp-accent-color: theme(colors.grape.500);
+  --rdp-background-color: theme(colors.grape.500 / 30%);
+  --rdp-accent-color-dark: theme(colors.grape.500);
+  --rdp-background-color-dark: theme(colors.grape.500 / 30%);
+}
+
+/** Customize draft-js */
+.draft-blockquote {
+  @apply my-[8px] mx-0 border-l-2 border-solid border-l-slate-500 px-[8px] py-0 italic;
+}
+
+.draft-codeblock {
+  @apply m-0 rounded-[1px] border-l-2 border-solid border-l-slate-500 bg-slate-200 py-0 px-[8px] font-mono font-[13px] leading-normal;
 }

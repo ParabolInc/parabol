@@ -1,12 +1,12 @@
-version: '3.7'
+version: "3.7"
 
 services:
   db:
-    image: rethinkdb:latest
+    image: rethinkdb:2.4.2
     ports:
-      - '8080:8080'
-      - '29015:29015'
-      - '28015:28015'
+      - "8080:8080"
+      - "29015:29015"
+      - "28015:28015"
     volumes:
       - rethink-data:/data
     networks:
@@ -16,17 +16,17 @@ services:
     restart: always
     env_file: .env
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - './packages/server/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf'
-      - 'postgres-data:/data'
-    command: 'postgres -c config_file=/usr/local/etc/postgres/postgres.conf'
+      - "./packages/server/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf"
+      - "postgres-data:/data"
+    command: "postgres -c config_file=/usr/local/etc/postgres/postgres.conf"
     networks:
       - parabol-network
   redis:
-    image: redis
+    image: redis:6
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis-data:/data
     networks:
@@ -38,7 +38,7 @@ services:
       target: prod
     env_file: .env
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
       - db
       - redis

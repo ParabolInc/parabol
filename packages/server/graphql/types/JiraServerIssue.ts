@@ -3,7 +3,6 @@ import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {JiraServerIssue as JiraServerRestIssue} from '../../dataloader/jiraServerLoaders'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import GraphQLURLType from './GraphQLURLType'
 import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
 
@@ -50,7 +49,7 @@ const JiraServerIssue = new GraphQLObjectType<JiraServerIssueSource, GQLContext>
       description: 'The parabol userId this issue was fetched for'
     },
     url: {
-      type: new GraphQLNonNull(GraphQLURLType),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The url to access the issue',
       resolve: ({issueKey, self}) => {
         const {origin} = new URL(self)

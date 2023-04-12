@@ -65,7 +65,7 @@ type TimelineEventTeamPromptComplete implements TimelineEvent {
   """
   The meeting that was completed
   """
-  meeting: TeamPromptMeeting
+  meeting: TeamPromptMeeting!
 
   """
   The meetingId that was completed

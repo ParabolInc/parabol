@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import LinkButton from '../../../components/LinkButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimensionMutation from '../../../mutations/AddPokerTemplateDimensionMutation'
 import dndNoise from '../../../utils/dndNoise'
-import {AddPokerTemplateDimension_dimensions} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'
+import {AddPokerTemplateDimension_dimensions$key} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'
 
 const AddDimensionLink = styled(LinkButton)({
   alignItems: 'center',
@@ -29,12 +29,20 @@ const AddDimensionLinkPlus = styled(Add)({
 })
 
 interface Props {
-  dimensions: AddPokerTemplateDimension_dimensions
+  dimensions: AddPokerTemplateDimension_dimensions$key
   templateId: string
 }
 
 const AddPokerTemplateDimension = (props: Props) => {
-  const {dimensions, templateId} = props
+  const {dimensions: dimensionsRef, templateId} = props
+  const dimensions = useFragment(
+    graphql`
+      fragment AddPokerTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
+        sortOrder
+      }
+    `,
+    dimensionsRef
+  )
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -65,10 +73,4 @@ const AddPokerTemplateDimension = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AddPokerTemplateDimension, {
-  dimensions: graphql`
-    fragment AddPokerTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
-      sortOrder
-    }
-  `
-})
+export default AddPokerTemplateDimension

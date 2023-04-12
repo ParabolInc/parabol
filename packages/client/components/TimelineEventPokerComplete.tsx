@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import plural from '../utils/plural'
-import {TimelineEventPokerComplete_timelineEvent} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
+import {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
 import CardsSVG from './CardsSVG'
 import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
@@ -13,7 +13,7 @@ import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
 
 interface Props {
-  timelineEvent: TimelineEventPokerComplete_timelineEvent
+  timelineEvent: TimelineEventPokerComplete_timelineEvent$key
 }
 
 const CountItem = styled('span')({
@@ -25,7 +25,42 @@ const Link = styled(StyledLink)({
 })
 
 const TimelineEventPokerComplete = (props: Props) => {
-  const {timelineEvent} = props
+  const {timelineEvent: timelineEventRef} = props
+  const timelineEvent = useFragment(
+    graphql`
+      fragment TimelineEventPokerComplete_timelineEvent on TimelineEventPokerComplete {
+        ...TimelineEventCard_timelineEvent
+        id
+        meeting {
+          id
+          commentCount
+          storyCount
+          name
+          phases {
+            phaseType
+            ... on EstimatePhase {
+              stages {
+                id
+              }
+            }
+          }
+          locked
+          organization {
+            id
+            viewerOrganizationUser {
+              id
+            }
+          }
+        }
+        team {
+          id
+          name
+          orgId
+        }
+      }
+    `,
+    timelineEventRef
+  )
   const {meeting, team} = timelineEvent
   const {id: meetingId, name: meetingName, commentCount, storyCount, locked, organization} = meeting
   const {name: teamName} = team
@@ -80,37 +115,4 @@ const TimelineEventPokerComplete = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TimelineEventPokerComplete, {
-  timelineEvent: graphql`
-    fragment TimelineEventPokerComplete_timelineEvent on TimelineEventPokerComplete {
-      ...TimelineEventCard_timelineEvent
-      id
-      meeting {
-        id
-        commentCount
-        storyCount
-        name
-        phases {
-          phaseType
-          ... on EstimatePhase {
-            stages {
-              id
-            }
-          }
-        }
-        locked
-        organization {
-          id
-          viewerOrganizationUser {
-            id
-          }
-        }
-      }
-      team {
-        id
-        name
-        orgId
-      }
-    }
-  `
-})
+export default TimelineEventPokerComplete

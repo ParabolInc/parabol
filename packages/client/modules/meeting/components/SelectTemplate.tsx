@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import {Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import StyledError from '../../../components/StyledError'
@@ -13,7 +13,7 @@ import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {BezierCurve} from '../../../types/constEnums'
 import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
-import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
+import {SelectTemplate_template$key} from '../../../__generated__/SelectTemplate_template.graphql'
 
 const fadein = keyframes`
 0% { opacity: 0; }
@@ -51,7 +51,7 @@ const StyledIcon = styled(Check)({
 
 interface Props {
   closePortal: () => void
-  template: SelectTemplate_template
+  template: SelectTemplate_template$key
   teamId: string
   hasFeatureFlag?: boolean
   tier?: TierEnum
@@ -59,7 +59,19 @@ interface Props {
 }
 
 const SelectTemplate = (props: Props) => {
-  const {template, closePortal, teamId, hasFeatureFlag, tier, orgId} = props
+  const {template: templateRef, closePortal, teamId, hasFeatureFlag, tier, orgId} = props
+  const template = useFragment(
+    graphql`
+      fragment SelectTemplate_template on MeetingTemplate {
+        id
+        teamId
+        scope
+        isFree
+        type
+      }
+    `,
+    templateRef
+  )
   const {id: templateId, isFree, type, scope} = template
   const atmosphere = useAtmosphere()
   const history = useHistory()
@@ -96,14 +108,4 @@ const SelectTemplate = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SelectTemplate, {
-  template: graphql`
-    fragment SelectTemplate_template on MeetingTemplate {
-      id
-      teamId
-      scope
-      isFree
-      type
-    }
-  `
-})
+export default SelectTemplate

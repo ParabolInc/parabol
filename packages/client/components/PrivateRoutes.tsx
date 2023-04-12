@@ -37,12 +37,22 @@ const ViewerNotOnTeamRoot = lazy(
   () => import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')
 )
 
+const ActivityLibraryRoute = lazy(
+  () => import(/* webpackChunkName: 'ActivityLibrary' */ './ActivityLibrary/ActivityLibraryRoute')
+)
+const ActivityDetailsRoute = lazy(
+  () => import(/* webpackChunkName: 'ActivityDetails' */ './ActivityLibrary/ActivityDetailsRoute')
+)
+
 const PrivateRoutes = () => {
   useAuthRoute()
   useNoIndex()
   return (
     <Switch>
       <Route path='(/meetings|/me|/newteam|/team|/usage|/new-meeting)' component={DashboardRoot} />
+      <Route path='/activity-library/category/:categoryId' component={ActivityLibraryRoute} />
+      <Route path='/activity-library/details/:templateId' component={ActivityDetailsRoute} />
+      <Route path='/activity-library' component={ActivityLibraryRoute} />
       <Route path='/meet/:meetingId' component={MeetingRoot} />
       <Route path='/meeting-series/:meetingId' component={MeetingSeriesRoot} />
       <Route path='/invoice/:invoiceId' component={Invoice} />

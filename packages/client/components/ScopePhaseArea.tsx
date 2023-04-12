@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.graphql'
+import {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
@@ -24,7 +24,7 @@ import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
 
 interface Props {
-  meeting: ScopePhaseArea_meeting
+  meeting: ScopePhaseArea_meeting$key
 }
 
 const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -81,7 +81,65 @@ const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
 
 const ScopePhaseArea = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ScopePhaseArea_meeting on PokerMeeting {
+        ...StageTimerDisplay_meeting
+        ...StageTimerControl_meeting
+        ...ScopePhaseAreaGitHub_meeting
+        ...ScopePhaseAreaGitLab_meeting
+        ...ScopePhaseAreaJira_meeting
+        ...ScopePhaseAreaJiraServer_meeting
+        ...ScopePhaseAreaParabolScoping_meeting
+        ...ScopePhaseAreaAzureDevOps_meeting
+        endedAt
+        localPhase {
+          ...ScopePhaseArea_phase @relay(mask: false)
+        }
+        localStage {
+          isComplete
+        }
+        phases {
+          ...ScopePhaseArea_phase @relay(mask: false)
+        }
+        showSidebar
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              gitlab {
+                cloudProvider {
+                  clientId
+                }
+                sharedProviders {
+                  clientId
+                }
+              }
+              jiraServer {
+                sharedProviders {
+                  id
+                }
+              }
+              azureDevOps {
+                cloudProvider {
+                  id
+                }
+                sharedProviders {
+                  id
+                }
+              }
+            }
+          }
+          user {
+            featureFlags {
+              azureDevOps
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   const featureFlags = viewerMeetingMember?.user.featureFlags
@@ -197,60 +255,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(ScopePhaseArea, {
-  meeting: graphql`
-    fragment ScopePhaseArea_meeting on PokerMeeting {
-      ...StageTimerDisplay_meeting
-      ...StageTimerControl_meeting
-      ...ScopePhaseAreaGitHub_meeting
-      ...ScopePhaseAreaGitLab_meeting
-      ...ScopePhaseAreaJira_meeting
-      ...ScopePhaseAreaJiraServer_meeting
-      ...ScopePhaseAreaParabolScoping_meeting
-      ...ScopePhaseAreaAzureDevOps_meeting
-      endedAt
-      localPhase {
-        ...ScopePhaseArea_phase @relay(mask: false)
-      }
-      localStage {
-        isComplete
-      }
-      phases {
-        ...ScopePhaseArea_phase @relay(mask: false)
-      }
-      showSidebar
-      viewerMeetingMember {
-        teamMember {
-          integrations {
-            gitlab {
-              cloudProvider {
-                clientId
-              }
-              sharedProviders {
-                clientId
-              }
-            }
-            jiraServer {
-              sharedProviders {
-                id
-              }
-            }
-            azureDevOps {
-              cloudProvider {
-                id
-              }
-              sharedProviders {
-                id
-              }
-            }
-          }
-        }
-        user {
-          featureFlags {
-            azureDevOps
-          }
-        }
-      }
-    }
-  `
-})
+export default ScopePhaseArea

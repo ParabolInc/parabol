@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
+import {GroupingKanbanColumn_reflectionGroups$data} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from './useAtmosphere'
 
 interface SubColumnIdxs {
@@ -10,7 +10,7 @@ interface SubColumnIdxs {
 const useSortNewReflectionGroup = (
   subColumnCount: number,
   subColumnIndexes: number[],
-  reflectionGroups: GroupingKanbanColumn_reflectionGroups
+  reflectionGroups: GroupingKanbanColumn_reflectionGroups$data
 ) => {
   const atmosphere = useAtmosphere()
 

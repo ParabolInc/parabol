@@ -4,7 +4,7 @@
  */
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {CreateReflectionMutation_meeting} from '~/__generated__/CreateReflectionMutation_meeting.graphql'
+import {CreateReflectionMutation_meeting$data} from '~/__generated__/CreateReflectionMutation_meeting.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
@@ -43,10 +43,9 @@ const mutation = graphql`
   }
 `
 
-export const createReflectionMeetingUpdater: SharedUpdater<CreateReflectionMutation_meeting> = (
-  payload,
-  {store}
-) => {
+export const createReflectionMeetingUpdater: SharedUpdater<
+  CreateReflectionMutation_meeting$data
+> = (payload, {store}) => {
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   handleAddReflectionGroups(reflectionGroup, store)
 }
