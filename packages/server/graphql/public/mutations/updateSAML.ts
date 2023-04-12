@@ -4,7 +4,11 @@ import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import getSignOnURL from './helpers/SAMLHelpers/getSignOnURL'
 
-const updateSAML: MutationResolvers['updateSAML'] = async (_source, {orgId, metadata}, {authToken}) => {
+const updateSAML: MutationResolvers['updateSAML'] = async (
+  _source,
+  {orgId, metadata},
+  {authToken}
+) => {
   const r = await getRethink()
   const viewerId = getUserId(authToken)
 
