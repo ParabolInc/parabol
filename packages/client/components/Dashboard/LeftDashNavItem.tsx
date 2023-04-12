@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {
   Add,
   ArrowBack,
+  AutoAwesome,
   CreditScore,
   ExitToApp,
   Forum,
@@ -55,6 +56,7 @@ const Label = styled('div')({
 })
 
 const iconLookup = {
+  magic: <AutoAwesome />,
   arrowBack: <ArrowBack />,
   creditScore: <CreditScore />,
   forum: <Forum />,

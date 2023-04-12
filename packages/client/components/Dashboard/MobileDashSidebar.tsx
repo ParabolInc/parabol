@@ -91,6 +91,7 @@ const MobileDashSidebar = (props: Props) => {
         ...DashNavList_viewer
         featureFlags {
           checkoutFlow
+          retrosInDisguise
         }
         organizations {
           id
@@ -152,6 +153,14 @@ const MobileDashSidebar = (props: Props) => {
               href={'/meetings'}
               label={'Meetings'}
             />
+            {featureFlags.retrosInDisguise && (
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'magic'}
+                href={'/activity-library'}
+                label={'Activity Library'}
+              />
+            )}
             <LeftDashNavItem
               onClick={handleMenuClick}
               icon={'history'}
