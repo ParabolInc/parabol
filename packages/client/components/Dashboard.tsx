@@ -7,6 +7,7 @@ import {Route, Switch, useLocation} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
+import useNewFeatureSnackbar from '~/hooks/useNewFeatureSnackbar'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import useSidebar from '../hooks/useSidebar'
@@ -106,6 +107,7 @@ const Dashboard = (props: Props) => {
           ...MeetingsDash_viewer
           ...MobileDashSidebar_viewer
           ...DashSidebar_viewer
+          ...useNewFeatureSnackbar_viewer
           overLimitCopy
           featureFlags {
             insights
@@ -131,6 +133,7 @@ const Dashboard = (props: Props) => {
   useSnackNag(overLimitCopy)
   useUsageSnackNag(insights)
   useSnacksForNewMeetings(activeMeetings)
+  useNewFeatureSnackbar(viewer)
 
   const location = useLocation<{backgroundLocation?: Location}>()
   const state = location.state
