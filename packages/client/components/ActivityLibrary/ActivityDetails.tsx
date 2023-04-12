@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {ContentCopy} from '@mui/icons-material'
 import React, {useCallback} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
@@ -28,6 +29,7 @@ import ActivityDetailsSidebar from './ActivityDetailsSidebar'
 import CloneTemplate from '../../modules/meeting/components/CloneTemplate'
 import useModal from '../../hooks/useModal'
 import TeamPickerModal from './TeamPickerModal'
+import FlatButton from '../FlatButton'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -221,7 +223,21 @@ const ActivityDetails = (props: Props) => {
                         </div>
                       </div>
                     ) : (
-                      <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
+                      <div className='flex items-center justify-between'>
+                        <div className='py-2 text-sm font-semibold text-slate-600'>
+                          {description}
+                        </div>
+                        <div className='rounded-full border border-solid border-slate-400 text-slate-600'>
+                          <FlatButton
+                            style={{padding: '8px 12px', border: '0'}}
+                            className='flex gap-1 px-12'
+                            onClick={togglePortal}
+                          >
+                            <ContentCopy className='text-slate-600' />
+                            <div className='font-semibold text-slate-700'>Clone & Edit</div>
+                          </FlatButton>
+                        </div>
+                      </div>
                     )}
                   </div>
                   <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes
