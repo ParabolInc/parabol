@@ -15,14 +15,14 @@ import {Threshold} from '../../types/constEnums'
 import {useFragment} from 'react-relay'
 import clsx from 'clsx'
 
-interface TeamPickerModalProps {
+interface Props {
   teamsRef: TeamPickerModal_teams$key
   templatesRef: TeamPickerModal_templates$key
   closePortal: () => void
   category: string
 }
 
-const TeamPickerModal = (props: TeamPickerModalProps) => {
+const TeamPickerModal = (props: Props) => {
   const {teamsRef, templatesRef, closePortal, category} = props
   const teams = useFragment(
     graphql`
