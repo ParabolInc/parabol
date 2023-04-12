@@ -4,6 +4,7 @@ import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapPromptToJoinOrgToToast_notification$data} from '../../__generated__/mapPromptToJoinOrgToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import promptToJoinOrgSuccessToast from "./promptToJoinOrgSuccessToast";
 
 graphql`
   fragment mapPromptToJoinOrgToToast_notification on NotifyPromptToJoinOrg {
@@ -31,12 +32,7 @@ const mapPromptToJoinOrgToToast = (
     action: {
       label: 'Request to Join',
       callback: () => {
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          key: 'promptToJoinOrgSuccess',
-          autoDismiss: 5,
-          showDismissButton: true,
-          message: `🎉 Success! We've let your team know you'd like to join them`
-        })
+        atmosphere.eventEmitter.emit('addSnackbar', promptToJoinOrgSuccessToast)
       }
     }
   }
