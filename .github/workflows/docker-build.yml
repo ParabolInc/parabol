@@ -1,0 +1,84 @@
+name: Build Docker image
+
+on: [push]
+
+env:
+  PARABOL_DOCKERFILE: docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
+  PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    services:
+      rethinkdb:
+        image: rethinkdb:2.4.0
+        ports:
+          - 8080:8080
+          - 28015:28015
+          - 29015:29015
+      redis:
+        image: redis:6.2.6
+        ports:
+          - 6379:6379
+      postgres:
+        image: postgres:12.10-alpine
+        env:
+          POSTGRES_PASSWORD: "temppassword"
+          POSTGRES_USER: "tempuser"
+          POSTGRES_DB: "tempdb"
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - uses: 'docker/login-action@v2'
+        with:
+          registry: ${{ secrets.GCP_DOCKER_REGISTRY }}
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+
+      - name: Build the Docker image
+        run: |
+          docker build --network=host -t ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}} -f ${PARABOL_DOCKERFILE} \
+           --build-arg _NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json) \
+           --build-arg _BUILD_ENV_PATH=${PARABOL_BUILD_ENV_PATH} .
+
+          if [ ${{github.ref_type}} = "tag" ]; then
+            docker tag ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}} ${{ secrets.GCP_AR_PARABOL }}:${{github.ref_name}}
+          else
+            docker tag ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}} ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}
+          fi
+
+      - name: List produced Docker images
+        run: |
+          docker images ${{ secrets.GCP_AR_PARABOL_DEV }}
+          if [ ${{github.ref_type}} = "tag" ]; then
+            docker images ${{ secrets.GCP_AR_PARABOL }}
+          fi
+
+      - name: Push the Docker images
+        run: |
+          docker push ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}
+          if [ ${{github.ref_type}} = "tag" ]; then
+            docker push ${{ secrets.GCP_AR_PARABOL }}:${{github.ref_name}}
+          else
+            docker push ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}
+          fi
