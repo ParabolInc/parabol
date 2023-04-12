@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.99.0 2023-Apr-12
+
+### Added
+
+- **retros-in-disguise**: Activity Details (no sidebar) (#7990)
+- **retros-in-disguise**: Added activity library as a nav item (#8029)
+
+### Changed
+
+- move new feature announcement to main Dashboard (#8028)
+- removed private schema dropdown in graphiql (#7997)
+- bump vm2 from 3.9.11 to 3.9.15 (#8014)
+
+### Fixed
+
+- **recurrence** update recurrenceSettings call (#8019)
+- syntax error when adjusting the user tier with empty list (#7935)
+- missing font styles on inputs, textareas etc (#8031)
+- **sprint-poker**: workaround for adding Parabol tasks (#8032)
+
 ## 6.98.1 2023-Apr-10
 
 ### Fixed
