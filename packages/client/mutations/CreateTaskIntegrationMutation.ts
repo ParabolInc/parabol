@@ -161,7 +161,7 @@ const gitlabTaskIntegrationOptimisitcUpdater = (
     descriptionHtml,
     iid: 0,
     webPath,
-    webUrl: `https://gitlab.com/${webPath}`,
+    webUrl: `${process.env.GITLAB_URL}/${webPath}`,
     updatedAt: now.toJSON()
   } as const
   const integration = createProxyRecord(store, '_xGitLabIssue', optimisticIntegration)
