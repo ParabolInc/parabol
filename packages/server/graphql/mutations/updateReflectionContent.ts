@@ -16,6 +16,7 @@ import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import OpenAIServerManager from '../../utils/OpenAIServerManager'
 
 export default {
   type: UpdateReflectionContentPayload,
@@ -35,6 +36,7 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const manager = new OpenAIServerManager()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
@@ -99,7 +101,9 @@ export default {
       .filter({isActive: true})
       .run()) as Reflection[]
 
-    const newTitle = getGroupSmartTitle(reflectionsInGroup)
+    const newTitle =
+      (await manager.getReflectionGroupTitle(reflectionsInGroup)) ??
+      getGroupSmartTitle(reflectionsInGroup)
     await updateSmartGroupTitle(reflectionGroupId, newTitle)
 
     const data = {meetingId, reflectionId}

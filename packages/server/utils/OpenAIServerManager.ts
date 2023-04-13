@@ -34,6 +34,40 @@ class OpenAIServerManager {
     })
   }
 
+  async getReflectionGroupTitle(reflections: Reflection[]) {
+    if (!this.openAIApi) return null
+    const prompt = `Below are lines of texts possibly talking about the same topic. Summarize all of the content in less than 3 simple words, with a leading emoji if possible. If you cannot generate a meaningful summary title, simply return "NO_RESPONSE" with nothing else instead. You will be penalized if your return exceeds 3 words of length, or the language of your output does not match the majority language of the input.
+    Text: """
+    ${reflections.map(({plaintextContent}) => plaintextContent).join('\n')}
+    """`
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      const summary = response.choices[0]?.message?.content?.trim()
+      if (summary && !summary.includes('NO_RESPONSE')) {
+        return summary
+      } else {
+        return null
+      }
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
+
   async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
     if (!this.openAIApi) return null
     // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM

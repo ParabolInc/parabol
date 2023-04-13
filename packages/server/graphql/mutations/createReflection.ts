@@ -21,6 +21,7 @@ import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import {analytics} from '../../utils/analytics/analytics'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
 import {RawDraftContentState} from 'draft-js'
+import OpenAIServerManager from '../../utils/OpenAIServerManager'
 
 export default {
   type: CreateReflectionPayload,
@@ -37,6 +38,7 @@ export default {
   ) {
     const r = await getRethink()
     const pg = getKysely()
+    const manager = new OpenAIServerManager()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
@@ -119,7 +121,8 @@ export default {
       updatedAt: now
     })
 
-    const smartTitle = getGroupSmartTitle([reflection])
+    const smartTitle =
+      (await manager.getReflectionGroupTitle([reflection])) ?? getGroupSmartTitle([reflection])
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
       smartTitle,

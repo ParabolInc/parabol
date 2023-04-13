@@ -6,6 +6,7 @@ import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
+import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 
 const addReflectionToGroup = async (
   reflectionId: string,
@@ -15,6 +16,7 @@ const addReflectionToGroup = async (
 ) => {
   const r = await getRethink()
   const pg = getKysely()
+  const manager = new OpenAIServerManager()
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
@@ -73,7 +75,10 @@ const addReflectionToGroup = async (
         .coerceTo('array') as unknown as Reflection[]
     }).run()
 
-    const nextTitle = smartTitle ?? getGroupSmartTitle(nextReflections)
+    const nextTitle =
+      smartTitle ??
+      (await manager.getReflectionGroupTitle(nextReflections)) ??
+      getGroupSmartTitle(nextReflections)
     const oldGroupHasSingleReflectionCustomTitle =
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
