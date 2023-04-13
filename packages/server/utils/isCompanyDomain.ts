@@ -4,7 +4,8 @@ const GENERIC_DOMAINS = new Set([
   'googlemail.com',
   'hotmail.com',
   'outlook.com',
-  'mail.com'
+  'mail.com',
+  'icloud.com'
 ])
 
 const isCompanyDomain = (domain: string) => !GENERIC_DOMAINS.has(domain)
