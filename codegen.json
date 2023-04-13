@@ -36,18 +36,17 @@
         "contextType": "../graphql#GQLContext",
         "mappers": {
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
-          "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
+          "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreatePaymentIntentSuccess": "./types/CreatePaymentIntentSuccess#CreatePaymentIntentSuccessSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
-          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
-          "MeetingTemplate": "../../database/types/MeetingTemplate#default",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
+          "MeetingTemplate": "../../database/types/MeetingTemplate#default",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "NotificationMeetingStageTimeLimitEnd": "../../database/types/NotificationMeetingStageTimeLimitEnd#default as NotificationMeetingStageTimeLimitEndDB",
           "NotificationTeamInvitation": "../../database/types/NotificationTeamInvitation#default as NotificationTeamInvitationDB",
@@ -64,6 +63,7 @@
           "RRule": "rrule#RRule",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
+          "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamMember": "../../database/types/TeamMember#default as TeamMemberDB",
@@ -78,7 +78,8 @@
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
-          "User": "../../postgres/types/IUser#default as IUser"
+          "User": "../../postgres/types/IUser#default as IUser",
+          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],

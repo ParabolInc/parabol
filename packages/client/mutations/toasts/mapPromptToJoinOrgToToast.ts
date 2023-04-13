@@ -5,6 +5,7 @@ import {mapPromptToJoinOrgToToast_notification$data} from '../../__generated__/m
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import promptToJoinOrgSuccessToast from './promptToJoinOrgSuccessToast'
+import RequestToJoinDomainMutation from '../RequestToJoinDomainMutation'
 
 graphql`
   fragment mapPromptToJoinOrgToToast_notification on NotifyPromptToJoinOrg {
@@ -32,6 +33,7 @@ const mapPromptToJoinOrgToToast = (
     action: {
       label: 'Request to Join',
       callback: () => {
+        RequestToJoinDomainMutation(atmosphere, {})
         SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
           snackbarType: 'promptToJoinOrg'
         })

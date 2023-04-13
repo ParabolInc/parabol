@@ -1,0 +1,18 @@
+extend type Mutation {
+  """
+  Sends the request to the appropriate organizations on the viewer's domain
+  """
+  requestToJoinDomain: RequestToJoinDomainPayload!
+}
+
+"""
+Return value for requestToJoinDomain, which could be an error
+"""
+union RequestToJoinDomainPayload = ErrorPayload | RequestToJoinDomainSuccess
+
+type RequestToJoinDomainSuccess {
+  """
+  Was the request created successfully
+  """
+  success: Boolean!
+}
