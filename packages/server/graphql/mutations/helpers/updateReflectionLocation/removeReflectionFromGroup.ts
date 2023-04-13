@@ -6,6 +6,7 @@ import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from '../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
+import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
@@ -70,7 +71,9 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
     .filter({isActive: true})
     .run()
 
-  const nextTitle = getGroupSmartTitle([reflection])
+  const manager = new OpenAIServerManager()
+  const nextTitle =
+    (await manager.getReflectionGroupTitle([reflection])) ?? getGroupSmartTitle([reflection])
   await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
   if (oldReflections.length > 0) {
