@@ -4,7 +4,7 @@ import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapPromptToJoinOrgToToast_notification$data} from '../../__generated__/mapPromptToJoinOrgToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 import makeNotificationToastKey from './makeNotificationToastKey'
-import promptToJoinOrgSuccessToast from "./promptToJoinOrgSuccessToast";
+import promptToJoinOrgSuccessToast from './promptToJoinOrgSuccessToast'
 
 graphql`
   fragment mapPromptToJoinOrgToToast_notification on NotifyPromptToJoinOrg {
@@ -24,14 +24,17 @@ const mapPromptToJoinOrgToToast = (
     showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
     message: `Your teammates at ${activeDomain} are loving Parabol! Do you want to join them?`,
-    onManualDismiss: () => {
-      SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
+    onShow: () => {
+      SendClientSegmentEventMutation(atmosphere, 'Snackbar Viewed', {
         snackbarType: 'promptToJoinOrg'
       })
     },
     action: {
       label: 'Request to Join',
       callback: () => {
+        SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
+          snackbarType: 'promptToJoinOrg'
+        })
         atmosphere.eventEmitter.emit('addSnackbar', promptToJoinOrgSuccessToast)
       }
     }
