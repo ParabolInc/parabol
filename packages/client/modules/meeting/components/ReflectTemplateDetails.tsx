@@ -176,7 +176,7 @@ const ReflectTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
-        <TemplateSharing teamId={teamId} template={activeTemplate} />
+        <TemplateSharing isOwner={isOwner} template={activeTemplate} />
       </Scrollable>
       {!isActiveTemplate && (
         <SelectTemplate

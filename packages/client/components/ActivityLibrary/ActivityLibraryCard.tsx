@@ -23,7 +23,7 @@ export const ActivityLibraryCardBadge = (props: ActivityLibraryCardBadgeProps) =
 }
 
 export const ActivityLibraryCard = (props: ActivityCardProps) => {
-  const {className, type, ...rest} = props
+  const {className, category, ...rest} = props
 
   return (
     <ActivityCard
@@ -31,7 +31,7 @@ export const ActivityLibraryCard = (props: ActivityCardProps) => {
         'group transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-md motion-reduce:transition-none',
         className
       )}
-      type={type}
+      category={category}
       {...rest}
     />
   )
