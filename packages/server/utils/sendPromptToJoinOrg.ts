@@ -7,7 +7,7 @@ const sendPromptToJoinOrg = async (email, userId) => {
 
   const activeDomain = email.split('@')[1]
 
-  if (!(await isRequestToJoinDomainAllowed(activeDomain))) {
+  if (!(await isRequestToJoinDomainAllowed(activeDomain, userId))) {
     return
   }
 
