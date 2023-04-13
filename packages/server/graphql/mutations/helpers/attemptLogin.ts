@@ -29,6 +29,7 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
       .table('FailedAuthRequest')
       .getAll(ip, {index: 'ip'})
       .filter({email})
+      .filter((row: RDatum) => row('time').ge(yesterday))
       .count()
       .ge(Threshold.MAX_ACCOUNT_PASSWORD_ATTEMPTS) as unknown as boolean,
     failOnTime: r
