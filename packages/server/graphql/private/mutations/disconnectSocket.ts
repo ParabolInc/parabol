@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import PROD from '../../../PROD'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
@@ -10,15 +9,13 @@ import {MutationResolvers} from '../resolverTypes'
 
 const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   _source,
-  _args,
-  {authToken, dataLoader, socketId}
+  {userId},
+  {dataLoader, socketId}
 ) => {
-  // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
   const redis = getRedis()
 
   // AUTH
   if (!socketId) return undefined
-  const userId = getUserId(authToken)
 
   // RESOLUTION
   const [user, userPresence] = await Promise.all([
