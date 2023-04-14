@@ -180,6 +180,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           isActive: true,
           sortOrder: 0,
           updatedAt: nowISO,
+          title: '🤖🤔 Thinking...',
           voterIds: []
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
@@ -196,6 +197,9 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
         updateProxyRecord(reflection, {
           sortOrder: maxSortOrder + 1 + dndNoise(),
           reflectionGroupId
+        })
+        updateProxyRecord(reflectionGroupProxy, {
+          title: '🤖🤔 Thinking...'
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
