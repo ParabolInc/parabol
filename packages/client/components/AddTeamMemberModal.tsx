@@ -7,12 +7,12 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
+import {AddTeamMemberModal_teamMembers$key} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import {CompletedHandler} from '../types/relayMutations'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
-import {AddTeamMemberModal_teamMembers$key} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
@@ -199,7 +199,10 @@ const AddTeamMemberModal = (props: Props) => {
 
           onError(
             new Error(
-              `Could not send an invitation to the above ${plural(badInvitees.length, 'email')}`
+              `Could not send an invitation to the above ${plural(
+                badInvitees.length,
+                'email'
+              )}. Try sharing the link`
             )
           )
           setInvitees(badInvitees)
