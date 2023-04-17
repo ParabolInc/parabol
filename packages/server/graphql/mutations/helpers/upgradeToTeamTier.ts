@@ -31,10 +31,9 @@ const upgradeToTeamTier = async (
   const existingCustomer = customers.data.find((customer) => customer.metadata.orgId === orgId)
   const customer = existingCustomer ?? (await manager.createCustomer(orgId, email))
   const {id: customerId} = customer
-  await Promise.all([
-    manager.attachPaymentToCustomer(customerId, paymentMethodId),
-    manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
-  ])
+  await manager.attachPaymentToCustomer(customerId, paymentMethodId)
+  // wait until the payment is attached to the customer before updating the default payment method
+  await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
   const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
   const subscriptionFields = {
     periodEnd: fromEpochSeconds(subscription.current_period_end),
