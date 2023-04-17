@@ -200,7 +200,7 @@ const PaymentDetails = (props: Props) => {
             <Divider />
             <TotalBlock>
               <Subtitle>{'Total'}</Subtitle>
-              <Subtitle>{`$${price}.00`}</Subtitle>
+              <Subtitle>{`$${price.toFixed(2)}`}</Subtitle>
             </TotalBlock>
             <InfoText>{'All prices are in USD'}</InfoText>
           </Content>

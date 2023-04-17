@@ -39,6 +39,13 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   }
 }))
 
+const ConfettiWrapper = styled('div')({
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)'
+})
+
 type Props = {
   orgId: string
 }
@@ -82,7 +89,9 @@ const BillingForm = (props: Props) => {
           {'Upgrade'}
         </UpgradeButton>
       </ButtonBlock>
-      <Confetti active={isPaymentSuccessful} />
+      <ConfettiWrapper>
+        <Confetti active={isPaymentSuccessful} />
+      </ConfettiWrapper>
     </StyledForm>
   )
 }
