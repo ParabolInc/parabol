@@ -40,7 +40,7 @@ const removeReflectTemplate = {
     // VALIDATION
     const {teamId} = template
     const [templates, settings] = await Promise.all([
-      dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
+      dataLoader.get('meetingTemplatesByType').load({meetingType: 'retrospective', teamId}),
       r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})

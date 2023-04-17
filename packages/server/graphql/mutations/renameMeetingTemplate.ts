@@ -44,6 +44,7 @@ const renameMeetingTemplate = {
     const allTemplates = await dataLoader
       .get('meetingTemplatesByType')
       .load({meetingType: template.type, teamId})
+    dataLoader.get('meetingTemplatesByType').clearAll()
     if (allTemplates.find((template) => template.name === normalizedName)) {
       return standardError(new Error('Duplicate template name'), {userId: viewerId})
     }

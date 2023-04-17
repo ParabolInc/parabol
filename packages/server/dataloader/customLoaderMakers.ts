@@ -406,7 +406,6 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry
-          // Will convert to PG by Mar 1, 2023
           const pg = getKysely()
           return pg
             .selectFrom('MeetingTemplate')
