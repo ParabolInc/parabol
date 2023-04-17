@@ -101,6 +101,7 @@ export type AnalyticsEvent =
   | 'Summary Email Setting Changed'
   // snackbar
   | 'Snackbar Clicked'
+  | 'Snackbar Viewed'
 
 /**
  * Provides a unified inteface for sending all the analytics events

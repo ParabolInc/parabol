@@ -1,12 +1,13 @@
 import {GraphQLEnumType} from 'graphql'
 
-export type SnackbarTypeEnumType = 'teamsLimitExceeded' | 'teamsLimitReminder'
+export type SnackbarTypeEnumType = 'teamsLimitExceeded' | 'teamsLimitReminder' | 'promptToJoinOrg'
 
 const SnackbarTypeEnum = new GraphQLEnumType({
   name: 'SnackbarTypeEnum',
   values: {
     teamsLimitExceeded: {},
-    teamsLimitReminder: {}
+    teamsLimitReminder: {},
+    promptToJoinOrg: {}
   }
 })
 

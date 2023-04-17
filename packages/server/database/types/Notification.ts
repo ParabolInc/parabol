@@ -14,6 +14,7 @@ export type NotificationEnum =
   | 'TEAM_INVITATION'
   | 'TEAMS_LIMIT_EXCEEDED'
   | 'TEAMS_LIMIT_REMINDER'
+  | 'PROMPT_TO_JOIN_ORG'
 
 export interface NotificationInput {
   type: NotificationEnum
