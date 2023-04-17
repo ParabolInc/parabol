@@ -6,6 +6,7 @@ import {DataLoaderWorker} from '../../graphql'
 import createNewMeetingPhases from './createNewMeetingPhases'
 
 const safeCreateTeamPrompt = async (
+  name: string,
   teamId: string,
   facilitatorId: string,
   r: ParabolR,
@@ -31,6 +32,7 @@ const safeCreateTeamPrompt = async (
   )
   return new MeetingTeamPrompt({
     id: meetingId,
+    name,
     teamId,
     meetingCount,
     phases,
