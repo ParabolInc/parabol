@@ -18,7 +18,7 @@ const terminateSubscription = async (orgId: string) => {
             stripeSubscriptionId: null
           },
           {returnChanges: true}
-        )('changes')(0)('old_val')
+        )('changes')(0)('old_val')('stripeSubscriptionId')
         .default(null) as unknown as string
     }).run(),
     updateTeamByOrgId({isPaid: false}, orgId)
@@ -32,7 +32,7 @@ const terminateSubscription = async (orgId: string) => {
     try {
       await manager.deleteSubscription(stripeSubscriptionId)
     } catch (e) {
-      // noop
+      console.error(`cannot delete subscription ${stripeSubscriptionId}`, e)
     }
   }
   return stripeSubscriptionId
