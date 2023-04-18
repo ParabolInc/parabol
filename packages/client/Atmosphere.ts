@@ -308,7 +308,7 @@ export default class Atmosphere extends Environment {
       ? {
           next: (value) => {
             if (value.errors) {
-              throw new Error(value.errors[0]?.message)
+              console.error(value.errors)
             }
             return sink.next(value)
           },

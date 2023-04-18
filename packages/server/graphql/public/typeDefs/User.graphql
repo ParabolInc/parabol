@@ -1,3 +1,9 @@
+enum CanAccessEntity {
+  Team
+  Meeting
+  Organization
+}
+
 """
 The user account profile
 """
@@ -326,6 +332,21 @@ type User {
     """
     includeUnassigned: Boolean = false
   ): TaskConnection!
+
+  """
+  Check whether the viewer can access a given entity. This can be used to distinguish errors from unauthorized access which requires an invite.
+  """
+  canAccess(
+    """
+    the entity to check
+    """
+    entity: CanAccessEntity!
+
+    """
+    the id of the entity
+    """
+    id: ID!
+  ): Boolean!
 
   """
   A query for a team

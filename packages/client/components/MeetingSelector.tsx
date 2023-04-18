@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
+import {Redirect} from 'react-router'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
-import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
@@ -11,6 +11,7 @@ import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import lazyPreload from '../utils/lazyPreload'
 import {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
+
 interface Props {
   meetingId: string
   queryRef: PreloadedQuery<MeetingSelectorQuery>
@@ -28,13 +29,13 @@ const meetingLookup = {
 const MeetingSelector = (props: Props) => {
   const {meetingId, queryRef} = props
 
-  const {history} = useRouter()
   const atmosphere = useAtmosphere()
   const data = usePreloadedQuery<MeetingSelectorQuery>(
     graphql`
       query MeetingSelectorQuery($meetingId: ID!) {
         viewer {
           isConnected
+          canAccessMeeting: canAccess(entity: Meeting, id: $meetingId)
           meeting(meetingId: $meetingId) {
             ...MeetingSelector_meeting @relay(mask: false)
           }
@@ -45,15 +46,7 @@ const MeetingSelector = (props: Props) => {
   )
 
   const {viewer} = data
-  const {isConnected, meeting} = viewer
-  useEffect(() => {
-    if (!meeting) {
-      history.replace({
-        pathname: `/invitation-required`,
-        search: `?redirectTo=${encodeURIComponent(window.location.pathname)}&meetingId=${meetingId}`
-      })
-    }
-  }, [])
+  const {isConnected, meeting, canAccessMeeting} = viewer
 
   useEffect(() => {
     if (!meetingId || !isConnected) return
@@ -71,7 +64,25 @@ const MeetingSelector = (props: Props) => {
   useSubscription('MeetingSelector', OrganizationSubscription)
   useSubscription('MeetingSelector', TaskSubscription)
   useSubscription('MeetingSelector', TeamSubscription)
-  if (!meeting) return null
+
+  if (!canAccessMeeting) {
+    return (
+      <Redirect
+        to={{
+          pathname: `/invitation-required`,
+          search: `?redirectTo=${encodeURIComponent(
+            window.location.pathname
+          )}&meetingId=${meetingId}`
+        }}
+      />
+    )
+  } else if (!meeting) {
+    // We know that a null meeting while we should have access is an error.
+    // We could render here an error component here. For that we'd need to create an error, store it in state, log it to Sentry and render the component.
+    // This is pretty much what the ErrorBoundary will do if we just throw here.
+    throw new Error('Meeting was null')
+  }
+
   const {meetingType} = meeting
   const Meeting = meetingLookup[meetingType]
   return <Meeting meeting={meeting as any} />

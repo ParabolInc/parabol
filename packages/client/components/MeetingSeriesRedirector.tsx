@@ -16,6 +16,7 @@ const MeetingSeriesRedirector = (props: Props) => {
       query MeetingSeriesRedirectorQuery($meetingId: ID!) {
         viewer {
           isConnected
+          canAccessMeeting: canAccess(entity: Meeting, id: $meetingId)
           meeting(meetingId: $meetingId) {
             ... on TeamPromptMeeting {
               meetingSeries {
@@ -32,9 +33,9 @@ const MeetingSeriesRedirector = (props: Props) => {
   )
 
   const {viewer} = data
-  const {meeting} = viewer
+  const {meeting, canAccessMeeting} = viewer
 
-  if (!meeting) {
+  if (!canAccessMeeting) {
     return (
       <Redirect
         to={{
@@ -45,6 +46,11 @@ const MeetingSeriesRedirector = (props: Props) => {
         }}
       />
     )
+  } else if (!meeting) {
+    // We know that a null meeting while we should have access is an error.
+    // We could render here an error component here. For that we'd need to create an error, store it in state, log it to Sentry and render the component.
+    // This is pretty much what the ErrorBoundary will do if we just throw here.
+    throw new Error('Meeting was null')
   } else {
     const {meetingSeries} = meeting
     if (!meetingSeries) {
