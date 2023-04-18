@@ -52,7 +52,7 @@ const CreateActivityCard = (props: Props) => {
         >
           <div className='mx-10 flex flex-1 flex-col items-center justify-center text-center font-semibold'>
             <div className='h-12 w-12'>
-              <AddIcon style={{width: '100%', height: '100%'}} className='text-slate-700' />
+              <AddIcon className='h-full w-full text-slate-700' />
             </div>
             Create Custom {CATEGORY_ID_TO_NAME[category]} Activity
           </div>
