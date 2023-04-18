@@ -20,13 +20,9 @@ export default {
     _source: unknown,
     {teamId},
     {authToken, dataLoader}: GQLContext,
-    {schema, operation}: GraphQLResolveInfo
+    {operation}: GraphQLResolveInfo
   ) {
-    // only allow superuser access if we're querying the private schema, otherwise it will mess up the invite logic for superusers
-    if (
-      !isTeamMember(authToken, teamId) &&
-      !(isSuperUser(authToken) && (await isPrivateSchema(schema)))
-    ) {
+    if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
       const viewerId = getUserId(authToken)
       if (!HANDLED_OPS.includes(operation.name.value)) {
         standardError(new Error('Team not found'), {userId: viewerId})

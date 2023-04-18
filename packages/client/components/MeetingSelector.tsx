@@ -65,7 +65,7 @@ const MeetingSelector = (props: Props) => {
   useSubscription('MeetingSelector', TaskSubscription)
   useSubscription('MeetingSelector', TeamSubscription)
 
-  if (!canAccessMeeting) {
+  if (!canAccessMeeting && !meeting) {
     return (
       <Redirect
         to={{

@@ -1,4 +1,3 @@
-import {GraphQLSchema} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
@@ -83,12 +82,4 @@ export const isOrgLeaderOfUser = async (authToken: AuthToken, userId: string) =>
   const uniques = new Set(viewerOrgIds.concat(userOrgIds))
   const total = viewerOrgIds.length + userOrgIds.length
   return uniques.size < total
-}
-
-let privateSchema: GraphQLSchema | undefined = undefined
-export const isPrivateSchema = async (schema: GraphQLSchema) => {
-  if (!privateSchema) {
-    privateSchema = (await import('../graphql/private/rootSchema')).default
-  }
-  return schema === privateSchema
 }
