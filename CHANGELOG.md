@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.99.1 2023-Apr-17
+
+### Fixed
+
+- More strict for sending email invites from temp email services
+
 ## 6.99.0 2023-Apr-12
 
 ### Added
