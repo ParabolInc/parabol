@@ -3,6 +3,7 @@ import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 import getKysely from '../../../postgres/getKysely'
 import isRequestToJoinDomainAllowed from '../../../utils/isRequestToJoinDomainAllowed'
+import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 
 const REQUEST_EXPIRATION_DAYS = 30
 
@@ -14,7 +15,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const pg = getKysely()
   const viewerId = getUserId(authToken)
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  const domain = viewer.email.split('@')[1]
+  const domain = getDomainFromEmail(viewer.email)
   const now = new Date()
 
   if (!(await isRequestToJoinDomainAllowed(domain))) {
