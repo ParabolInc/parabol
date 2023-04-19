@@ -35,7 +35,7 @@ export const removeAgendaItemUpdater: SharedUpdater<RemoveAgendaItemMutation_tea
   {store}
 ) => {
   const agendaItemId = payload.getLinkedRecord('agendaItem').getValue('id')
-  const meetingId = payload.getLinkedRecord('meeting').getValue('id')
+  const meetingId = payload.getLinkedRecord('meeting')?.getValue('id')
   handleRemoveAgendaItems(agendaItemId, store, meetingId)
 }
 

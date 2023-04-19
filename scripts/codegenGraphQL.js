@@ -4,9 +4,16 @@
   as well as from integrations.
   Reruns whenever the underlying schema file changes
 */
+require('sucrase/register')
+const {generate} = require('@graphql-codegen/cli')
+const path = require('path')
+const config = require('../codegen.json')
+const waitForFileExists = require('./waitForFileExists').default
+
 const codegenGraphQL = async () => {
-  const {generate} = require('@graphql-codegen/cli')
-  const config = require('../codegen.json')
+  const schemaPath = path.join(__dirname, '../packages/server/graphql/public/schema.graphql')
+  const schemaExists = await waitForFileExists(schemaPath, 20000)
+  if (!schemaExists) throw Error('GraphQL Schema Not Available. Run `yarn relay:build`')
   const watch = process.argv.find((arg) => arg === '--watch')
   if (watch) {
     // watches the `schema` files and re-runs if it changes

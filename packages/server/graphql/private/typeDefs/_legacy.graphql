@@ -240,7 +240,12 @@ type Mutation {
   """
   a server-side mutation called when a client connects
   """
-  connectSocket: User!
+  connectSocket(
+    """
+    The ID of the server this socket is connected to
+    """
+    socketServerId: ID!
+  ): User!
 
   """
   profile the CPU
@@ -250,7 +255,12 @@ type Mutation {
   """
   a server-side mutation called when a client disconnects
   """
-  disconnectSocket: DisconnectSocketPayload
+  disconnectSocket(
+    """
+    the userId to disconnect
+    """
+    userId: ID
+  ): DisconnectSocketPayload
 
   """
   Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license
@@ -346,21 +356,6 @@ type Mutation {
     """
     message: String
   ): Boolean!
-
-  """
-  Log in using SAML single sign on (SSO)
-  """
-  loginSAML(
-    """
-    The querystring provided by the IdP including SAMLResponse and RelayState
-    """
-    queryString: String!
-
-    """
-    The name of the SAML identifier. The slug used in the redirect URL
-    """
-    samlName: ID!
-  ): LoginSAMLPayload!
 
   """
   Send a message to all authorised Slack users
@@ -1086,7 +1081,7 @@ type JiraServerIssue implements TaskIntegration {
   """
   The url to access the issue
   """
-  url: URL!
+  url: String!
 
   """
   The plaintext summary of the jira issue
@@ -1661,6 +1656,7 @@ enum NotificationEnum {
   MEETING_STAGE_TIME_LIMIT_END
   TEAMS_LIMIT_EXCEEDED
   TEAMS_LIMIT_REMINDER
+  PROMPT_TO_JOIN_ORG
 }
 
 """
@@ -2048,25 +2044,6 @@ type FlagConversionModalPayload {
 
 type DeleteUserPayload {
   error: StandardMutationError
-}
-
-type LoginSAMLPayload {
-  error: StandardMutationError
-
-  """
-  The new JWT
-  """
-  authToken: ID
-
-  """
-  if a new user is created
-  """
-  isNewUser: Boolean
-
-  """
-  if the user is patient 0
-  """
-  isPatient0: Boolean
 }
 
 type ErrorPayload {

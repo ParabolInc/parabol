@@ -46,7 +46,7 @@ interface UpdaterContext {
 }
 
 export interface SharedUpdater<T> {
-  (payload: RecordProxy<Omit<T, ' $refType'>>, context: UpdaterContext): void
+  (payload: RecordProxy<Omit<T, ' $fragmentType'>>, context: UpdaterContext): void
 }
 
 export interface OnNextBaseContext {
@@ -58,9 +58,11 @@ export interface OnNextHistoryContext extends OnNextBaseContext {
 }
 
 export type OnNextHandler<TSubResponse, C = OnNextBaseContext> = (
-  payload: undefined extends TSubResponse
-    ? Omit<NonNullable<TSubResponse>, ' $refType'> | undefined
-    : Omit<TSubResponse, ' $refType'>,
+  payload: null extends TSubResponse
+    ? Omit<NonNullable<TSubResponse>, ' $fragmentType'> | null
+    : undefined extends TSubResponse
+    ? Omit<NonNullable<TSubResponse>, ' $fragmentType'> | undefined
+    : Omit<TSubResponse, ' $fragmentType'>,
   context: C
 ) => void
 

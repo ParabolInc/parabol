@@ -9,12 +9,14 @@ import {Disposable} from 'react-relay'
 import {RouterProps} from 'react-router'
 import {
   CacheConfig,
+  ConcreteRequest,
   Environment,
   FetchFunction,
   fetchQuery,
   GraphQLResponse,
   GraphQLTaggedNode,
   Network,
+  NormalizationLinkedField,
   Observable,
   OperationType,
   RecordSource,
@@ -33,7 +35,7 @@ import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
-import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
+import {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
@@ -76,7 +78,7 @@ export interface AtmosphereEvents {
   removeSnackbar: (filterFn: SnackbarRemoveFn) => void
   focusAgendaInput: () => void
   inviteToTeam: (
-    notification: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>
+    notification: NonNullable<InviteToTeamMutation_notification$data['teamInvitationNotification']>
   ) => void
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void
@@ -100,6 +102,9 @@ export default class Atmosphere extends Environment {
   } = {}
   retries = new Set<() => void>()
   subscriptions: Subscriptions = {}
+  // Our server only sends a single field per subscription, but relay requires every requested field
+  // This object makes the server response whole without increasing the payload size
+  subscriptionInterfaces = {} as Record<string, Record<string, null>>
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
   queryCache = {} as {[key: string]: GraphQLResponse}
   upgradeTransportPromise: Promise<void> | null = null
@@ -194,6 +199,26 @@ export default class Atmosphere extends Environment {
 
   handleSubscribe: SubscribeFunction = (operation, variables, _cacheConfig) => {
     return Observable.create((sink) => {
+      const _next = sink.next
+      sink.next = (value: any) => {
+        const {data} = value
+        const subscriptionName = data ? Object.keys(data)[0] : undefined
+        const nullObj = this.subscriptionInterfaces[subscriptionName!]
+        const nextObj =
+          nullObj && subscriptionName
+            ? {
+                ...value,
+                data: {
+                  ...data,
+                  [subscriptionName]: {
+                    ...nullObj,
+                    ...data[subscriptionName]
+                  }
+                }
+              }
+            : value
+        _next(nextObj)
+      }
       this.handleSubscribePromise(operation, variables, _cacheConfig, sink).catch()
     })
   }
@@ -276,6 +301,7 @@ export default class Atmosphere extends Environment {
       } catch (e) {
         return
       }
+      if (!data) console.error('QueryMap is incomplete. Run `yarn clean`')
     }
     const transport = uploadables ? this.baseHTTPTransport : this.transport
     return transport.fetch(
@@ -399,6 +425,13 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.push({queryKey, subKey})
   }
 
+  registerSubscription(subscriptionRequest: GraphQLTaggedNode) {
+    const request: ConcreteRequest = (subscriptionRequest as any).default ?? subscriptionRequest
+    const payload = request.operation.selections[0] as NormalizationLinkedField
+    const {selections, name} = payload
+    const nullObj = Object.fromEntries(selections.map(({name}: any) => [name, null]))
+    this.subscriptionInterfaces[name] = nullObj
+  }
   /*
    * When a subscription encounters an error, it affects the subscription itself,
    * the queries that depend on that subscription to stay valid,

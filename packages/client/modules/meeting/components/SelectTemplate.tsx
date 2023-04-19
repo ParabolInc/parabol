@@ -75,9 +75,13 @@ const SelectTemplate = (props: Props) => {
   const {id: templateId, isFree, type, scope} = template
   const atmosphere = useAtmosphere()
   const history = useHistory()
-  const {submitting, error} = useMutationProps()
+  const {submitting, error, onCompleted, onError} = useMutationProps()
   const selectTemplate = () => {
-    SelectTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
+    SelectTemplateMutation(
+      atmosphere,
+      {selectedTemplateId: templateId, teamId},
+      {onCompleted, onError}
+    )
     closePortal()
   }
   const goToBilling = () => {

@@ -42,16 +42,13 @@ type AcceptTeamInvitationPayload {
   The new team member on the team
   """
   teamMember: TeamMember
-  notifications: NotificationTeamInvitation
+  notifications: [NotificationTeamInvitation!]
 
   """
   For payloads going to the team leader that got new suggested actions
   """
   teamLead: User
 }
-
-extend union NotificationSubscriptionPayload = AcceptTeamInvitationPayload
-extend union TeamSubscriptionPayload = AcceptTeamInvitationPayload
 
 """
 The reason the invitation failed

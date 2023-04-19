@@ -35,6 +35,8 @@ export type PortalId =
   | 'newMeetingRecurrenceSettings'
   | 'updateRecurrenceSettingsModal'
   | 'recurrenceStartTimePicker'
+  | 'endRecurringMeetingModal'
+  | 'templateTeamPickerModal'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void

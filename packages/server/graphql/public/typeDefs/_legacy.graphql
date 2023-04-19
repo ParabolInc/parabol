@@ -10638,52 +10638,6 @@ type RemoveTeamMemberIntegrationAuthSuccess {
   user: User!
 }
 
-type Subscription {
-  meetingSubscription(meetingId: ID!): MeetingSubscriptionPayload!
-  notificationSubscription: NotificationSubscriptionPayload!
-  organizationSubscription: OrganizationSubscriptionPayload!
-  taskSubscription: TaskSubscriptionPayload!
-  teamSubscription: TeamSubscriptionPayload!
-}
-
-union MeetingSubscriptionPayload =
-    AddCommentSuccess
-  | CreatePollSuccess
-  | AddReactjiToReflectionSuccess
-  | AddReactjiToReactableSuccess
-  | AutoGroupReflectionsPayload
-  | CreateReflectionPayload
-  | DeleteCommentSuccess
-  | DragDiscussionTopicPayload
-  | DragEstimatingTaskSuccess
-  | EditCommentingSuccess
-  | EditReflectionPayload
-  | EndDraggingReflectionPayload
-  | FlagReadyToAdvanceSuccess
-  | NewMeetingCheckInPayload
-  | PromoteNewMeetingFacilitatorPayload
-  | RemoveReflectionPayload
-  | ResetRetroMeetingToGroupStagePayload
-  | SetPhaseFocusPayload
-  | SetStageTimerPayload
-  | StartDraggingReflectionPayload
-  | SetTaskHighlightSuccess
-  | UpdateCommentContentSuccess
-  | UpdateDragLocationPayload
-  | UpdateNewCheckInQuestionPayload
-  | UpdateReflectionContentPayload
-  | UpdateReflectionGroupTitlePayload
-  | UpdateRetroMaxVotesSuccess
-  | UpdatePokerScopeSuccess
-  | VoteForReflectionGroupPayload
-  | VoteForPokerStorySuccess
-  | PokerRevealVotesSuccess
-  | PokerResetDimensionSuccess
-  | PokerAnnounceDeckHoverSuccess
-  | JoinMeetingSuccess
-  | SetPokerSpectateSuccess
-  | SetTaskEstimateSuccess
-
 type AddReactjiToReflectionSuccess {
   """
   the reflection with the updated list of reactjis
@@ -10699,28 +10653,6 @@ type UpdateDragLocationPayload {
   userId: ID!
 }
 
-union NotificationSubscriptionPayload =
-    AddNewFeaturePayload
-  | AddOrgPayload
-  | AddTeamPayload
-  | ArchiveTimelineEventSuccess
-  | SetNotificationStatusPayload
-  | CreateTaskPayload
-  | DeleteTaskPayload
-  | DisconnectSocketPayload
-  | EndCheckInSuccess
-  | EndNewMeetingPayload
-  | EndRetrospectiveSuccess
-  | InvalidateSessionsPayload
-  | InviteToTeamPayload
-  | MeetingStageTimeLimitPayload
-  | RemoveOrgUserPayload
-  | StripeFailPaymentPayload
-  | PersistJiraSearchQuerySuccess
-  | User
-  | AuthTokenPayload
-  | PersistGitHubSearchQuerySuccess
-
 type AddNewFeaturePayload {
   """
   the new feature broadcast
@@ -10733,34 +10665,6 @@ type DisconnectSocketPayload {
   The user that disconnected
   """
   user: User
-}
-
-type EndNewMeetingPayload {
-  error: StandardMutationError
-
-  """
-  true if the meeting was killed (ended before reaching last stage)
-  """
-  isKill: Boolean
-  team: Team
-  meeting: NewMeeting
-
-  """
-  The ID of the suggestion to try a retro meeting, if tried
-  """
-  removedSuggestedActionId: ID
-  removedTaskIds: [ID!]
-
-  """
-  An event that is important to the viewer, e.g. an ended meeting
-  """
-  timelineEvent: TimelineEvent
-  updatedTaskIds: [ID!]
-
-  """
-  Any tasks that were updated during the meeting
-  """
-  updatedTasks: [Task!]
 }
 
 type MeetingStageTimeLimitPayload {
@@ -10854,19 +10758,6 @@ type AuthTokenPayload {
   id: ID!
 }
 
-union OrganizationSubscriptionPayload =
-    AddOrgPayload
-  | ArchiveOrganizationPayload
-  | DowngradeToStarterPayload
-  | PayLaterPayload
-  | RemoveOrgUserPayload
-  | SetOrgUserRoleAddedPayload
-  | SetOrgUserRoleRemovedPayload
-  | UpdateCreditCardPayload
-  | UpdateOrgPayload
-  | UpgradeToTeamTierPayload
-  | UpdateTemplateScopeSuccess
-
 type SetOrgUserRoleAddedPayload implements SetOrgUserRolePayload {
   error: StandardMutationError
   organization: Organization
@@ -10882,91 +10773,6 @@ type SetOrgUserRoleRemovedPayload implements SetOrgUserRolePayload {
   error: StandardMutationError
   organization: Organization
   updatedOrgMember: OrganizationUser
-}
-
-union TaskSubscriptionPayload =
-    ChangeTaskTeamPayload
-  | CreateTaskIntegrationPayload
-  | CreateTaskPayload
-  | DeleteTaskPayload
-  | EditTaskPayload
-  | RemoveOrgUserPayload
-  | RemoveTeamMemberPayload
-  | UpdateTaskPayload
-  | UpdateTaskDueDatePayload
-
-union TeamSubscriptionPayload =
-    AddAgendaItemPayload
-  | AddAtlassianAuthPayload
-  | AddGitHubAuthPayload
-  | AddIntegrationProviderSuccess
-  | AddSlackAuthPayload
-  | AddTeamPayload
-  | ArchiveTeamPayload
-  | DenyPushInvitationPayload
-  | DowngradeToStarterPayload
-  | EndCheckInSuccess
-  | EndNewMeetingPayload
-  | EndRetrospectiveSuccess
-  | EndSprintPokerSuccess
-  | NavigateMeetingPayload
-  | PushInvitationPayload
-  | PromoteToTeamLeadPayload
-  | RemoveAgendaItemPayload
-  | RemoveOrgUserPayload
-  | RemoveTeamMemberPayload
-  | RenameMeetingSuccess
-  | SelectTemplatePayload
-  | StartCheckInSuccess
-  | StartNewMeetingPayload
-  | StartRetrospectiveSuccess
-  | StartSprintPokerSuccess
-  | UpdateAgendaItemPayload
-  | UpdateCreditCardPayload
-  | UpdateTeamNamePayload
-  | UpgradeToTeamTierPayload
-  | AddReflectTemplatePayload
-  | AddPokerTemplatePayload
-  | AddReflectTemplatePromptPayload
-  | AddPokerTemplateDimensionPayload
-  | AddPokerTemplateScalePayload
-  | AddPokerTemplateScaleValuePayload
-  | MoveReflectTemplatePromptPayload
-  | MovePokerTemplateDimensionPayload
-  | ReflectTemplatePromptUpdateDescriptionPayload
-  | PokerTemplateDimensionUpdateDescriptionPayload
-  | ReflectTemplatePromptUpdateGroupColorPayload
-  | RemoveAtlassianAuthPayload
-  | RemoveGitHubAuthPayload
-  | RemoveSlackAuthPayload
-  | RemoveReflectTemplatePayload
-  | RemovePokerTemplatePayload
-  | RemoveReflectTemplatePromptPayload
-  | RemovePokerTemplateDimensionPayload
-  | RemovePokerTemplateScalePayload
-  | RenameMeetingTemplatePayload
-  | RenamePokerTemplatePayload
-  | RenameReflectTemplatePromptPayload
-  | RenamePokerTemplateDimensionPayload
-  | RenamePokerTemplateScalePayload
-  | RemovePokerTemplateScaleValuePayload
-  | SetMeetingSettingsPayload
-  | SetSlackNotificationPayload
-  | UpdatePokerTemplateDimensionScalePayload
-  | UpdatePokerTemplateScaleValuePayload
-  | UpdateUserProfilePayload
-  | PersistJiraSearchQuerySuccess
-  | MovePokerTemplateScaleValueSuccess
-  | SetDefaultSlackChannelSuccess
-  | SetAppLocationSuccess
-  | UpdateGitHubDimensionFieldSuccess
-  | UpdateIntegrationProviderSuccess
-
-type StartNewMeetingPayload {
-  error: StandardMutationError
-  team: Team
-  meetingId: ID
-  meeting: NewMeeting
 }
 
 type RenamePokerTemplatePayload {

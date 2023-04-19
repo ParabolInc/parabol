@@ -5,7 +5,7 @@
  *  - GitHub and GitLab schemas
  */
 import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
-import {GraphQLSchema} from 'graphql'
+import {GraphQLObjectType, GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
 import githubSchema from '../../utils/githubSchema.graphql'
@@ -16,7 +16,6 @@ import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import mutation from '../rootMutation'
 import query from '../rootQuery'
-import subscription from '../rootSubscription'
 import rootTypes from '../rootTypes'
 import permissions from './permissions'
 // Resolvers from SDL first definitions
@@ -26,7 +25,8 @@ import resolvers from './resolvers'
 const legacyParabolSchema = new GraphQLSchema({
   query,
   mutation,
-  subscription,
+  // defining a placeholder subscription because there's a bug in nest-graphql-schema that prefixes to _xGitHubSubscription if missing
+  subscription: new GraphQLObjectType({name: 'Subscription', fields: {}}),
   types: rootTypes
 })
 

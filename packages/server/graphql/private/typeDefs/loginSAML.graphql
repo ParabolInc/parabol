@@ -1,0 +1,16 @@
+extend type Mutation {
+  """
+  Log in using SAML single sign on (SSO)
+  """
+  loginSAML(
+    """
+    The querystring provided by the IdP including SAMLResponse and RelayState
+    """
+    queryString: String!
+
+    """
+    The name of the SAML identifier. The slug used in the redirect URL
+    """
+    samlName: ID!
+  ): UserLogInPayload!
+}

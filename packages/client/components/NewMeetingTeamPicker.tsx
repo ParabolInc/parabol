@@ -5,8 +5,7 @@ import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingT
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PortalStatus} from '../hooks/usePortal'
-import useRouter from '../hooks/useRouter'
+import {PortalId, PortalStatus} from '../hooks/usePortal'
 import lazyPreload from '../utils/lazyPreload'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
@@ -22,15 +21,17 @@ const SelectTeamDropdown = lazyPreload(
 interface Props {
   selectedTeamRef: NewMeetingTeamPicker_selectedTeam$key
   teamsRef: NewMeetingTeamPicker_teams$key
+  onSelectTeam: (teamId: string) => void
+  parentId?: PortalId
+  positionOverride?: MenuPosition
 }
 
 const NewMeetingTeamPicker = (props: Props) => {
-  const {selectedTeamRef, teamsRef} = props
-  const {history} = useRouter()
+  const {selectedTeamRef, teamsRef, onSelectTeam, parentId, positionOverride} = props
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
-    MenuPosition.LOWER_RIGHT,
+    positionOverride ?? MenuPosition.LOWER_RIGHT,
     {
-      parentId: 'newMeetingRoot',
+      parentId: parentId,
       isDropdown: true
     }
   )
@@ -57,9 +58,6 @@ const NewMeetingTeamPicker = (props: Props) => {
   )
 
   const {name} = selectedTeam
-  const handleSelect = (teamId: string) => {
-    history.replace(`/new-meeting/${teamId}`)
-  }
   return (
     <>
       <NewMeetingDropdown
@@ -73,7 +71,7 @@ const NewMeetingTeamPicker = (props: Props) => {
         opened={[PortalStatus.Entering, PortalStatus.Entered].includes(portalStatus)}
       />
       {menuPortal(
-        <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={handleSelect} />
+        <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={onSelectTeam} />
       )}
     </>
   )

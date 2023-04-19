@@ -2,6 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  important: '#root',
   corePlugins: {
     preflight: false
   },
@@ -38,5 +39,10 @@ module.exports = {
       }
     }
   },
-  plugins: []
+  plugins: [
+    require('@tailwindcss/forms')({
+      strategy: 'class' // only generate classes, overiding global form styles would affect non-tailwind other components
+    }),
+    require('@tailwindcss/container-queries')
+  ]
 }

@@ -10,6 +10,7 @@ graphql`
       meetingSeriesId
       meetingSeries {
         id
+        title
         recurrenceRule
         duration
         cancelledAt
@@ -20,8 +21,11 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateRecurrenceSettingsMutation($meetingId: ID!, $recurrenceRule: RRule) {
-    updateRecurrenceSettings(meetingId: $meetingId, recurrenceRule: $recurrenceRule) {
+  mutation UpdateRecurrenceSettingsMutation(
+    $meetingId: ID!
+    $recurrenceSettings: RecurrenceSettingsInput!
+  ) {
+    updateRecurrenceSettings(meetingId: $meetingId, recurrenceSettings: $recurrenceSettings) {
       ... on ErrorPayload {
         error {
           message

@@ -79,6 +79,7 @@ const DashSidebar = (props: Props) => {
         ...DashNavList_viewer
         featureFlags {
           checkoutFlow
+          retrosInDisguise
         }
         organizations {
           id
@@ -129,6 +130,9 @@ const DashSidebar = (props: Props) => {
         <Contents>
           <NavItemsWrap>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
+            {featureFlags.retrosInDisguise && (
+              <NavItem icon={'magic'} href={'/activity-library'} label={'Activity Library'} />
+            )}
             <NavItem icon={'history'} href={'/me'} label={'History'} />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </NavItemsWrap>
