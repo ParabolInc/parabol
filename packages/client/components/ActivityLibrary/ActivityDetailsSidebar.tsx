@@ -98,7 +98,6 @@ const ActivityDetailsSidebar = (props: Props) => {
       <div className='flex grow flex-col gap-2'>
         {availableTeams.length > 0 && (
           <NewMeetingTeamPicker
-            noModal={true}
             positionOverride={MenuPosition.UPPER_LEFT}
             onSelectTeam={(teamId) => {
               const newTeam = availableTeams.find((team) => team.id === teamId)

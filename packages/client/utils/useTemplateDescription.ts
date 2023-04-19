@@ -1,19 +1,34 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData, useFragment} from 'react-relay'
-import {makeTemplateDescription_template$key} from '../__generated__/makeTemplateDescription_template.graphql'
-import {makeTemplateDescription_viewer$key} from '../__generated__/makeTemplateDescription_viewer.graphql'
+import {useTemplateDescription_template$key} from '../__generated__/useTemplateDescription_template.graphql'
+import {useTemplateDescription_viewer$key} from '../__generated__/useTemplateDescription_viewer.graphql'
 import {TierEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
 import relativeDate from './date/relativeDate'
 
-const makeTemplateDescription = (
+const useTemplateDescription = (
   lowestScope: string,
-  templateRef: makeTemplateDescription_template$key,
-  viewerRef?: makeTemplateDescription_viewer$key | null,
+  templateRef?: useTemplateDescription_template$key,
+  viewerRef?: useTemplateDescription_viewer$key | null,
   tier?: TierEnum
 ) => {
+  const viewer = useFragment(
+    graphql`
+      fragment useTemplateDescription_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+      }
+    `,
+    viewerRef ?? null
+  )
+
+  if (!templateRef) {
+    return null
+  }
+
   const template = readInlineData(
     graphql`
-      fragment makeTemplateDescription_template on MeetingTemplate @inline {
+      fragment useTemplateDescription_template on MeetingTemplate @inline {
         lastUsedAt
         scope
         isFree
@@ -24,16 +39,7 @@ const makeTemplateDescription = (
     `,
     templateRef
   )
-  const viewer = useFragment(
-    graphql`
-      fragment makeTemplateDescription_viewer on User {
-        featureFlags {
-          templateLimit
-        }
-      }
-    `,
-    viewerRef ?? null
-  )
+
   const showTemplateLimit = viewer?.featureFlags.templateLimit
   const {lastUsedAt, team, isFree} = template
   const {name: teamName} = team
@@ -47,4 +53,4 @@ const makeTemplateDescription = (
   return `Created by ${teamName}`
 }
 
-export default makeTemplateDescription
+export default useTemplateDescription

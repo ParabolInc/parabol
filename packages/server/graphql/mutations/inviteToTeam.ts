@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import util from 'util'
@@ -22,12 +22,16 @@ import {GQLContext} from '../graphql'
 import getIsEmailApprovedByOrg from '../public/mutations/helpers/getIsEmailApprovedByOrg'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
-import InviteToTeamPayload from '../types/InviteToTeamPayload'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
 export default {
-  type: new GraphQLNonNull(InviteToTeamPayload),
+  type: new GraphQLNonNull(
+    new GraphQLObjectType({
+      name: 'InviteToTeamPayload',
+      fields: {}
+    })
+  ),
   description: 'Send a team invitation to an email address',
   args: {
     meetingId: {

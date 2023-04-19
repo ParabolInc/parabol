@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
@@ -6,10 +6,12 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import NotificationStatusEnum, {NotificationStatusEnumType} from '../types/NotificationStatusEnum'
-import SetNotificationStatusPayload from '../types/SetNotificationStatusPayload'
 
 export default {
-  type: SetNotificationStatusPayload,
+  type: new GraphQLObjectType({
+    name: 'SetNotificationStatusPayload',
+    fields: {}
+  }),
   description: 'set the interaction status of a notifcation',
   args: {
     notificationId: {

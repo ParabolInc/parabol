@@ -30,8 +30,12 @@ const startRecurringTeamPrompt = async (
 
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
   const nextMeetingStartDate = rrule.after(startTime)
-  const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
-    name: createTeamPromptTitle(meetingSeries.title, startTime, rrule.options.tzid ?? 'UTC'),
+  const meetingName = createTeamPromptTitle(
+    meetingSeries.title,
+    startTime,
+    rrule.options.tzid ?? 'UTC'
+  )
+  const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, r, dataLoader, {
     scheduledEndTime: nextMeetingStartDate,
     meetingSeriesId: meetingSeries.id
   })

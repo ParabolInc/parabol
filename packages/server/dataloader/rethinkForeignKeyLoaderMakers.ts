@@ -165,33 +165,6 @@ export const retroReflectionGroupsByMeetingId = new RethinkForeignKeyLoaderMaker
   }
 )
 
-export const meetingTemplatesByOrgId = new RethinkForeignKeyLoaderMaker(
-  'meetingTemplates',
-  'orgId',
-  async (orgId) => {
-    const r = await getRethink()
-    // Will convert to PG by Mar 1, 2023
-    return r
-      .table('MeetingTemplate')
-      .getAll(r.args(orgId), {index: 'orgId'})
-      .filter({isActive: true})
-      .run()
-  }
-)
-export const meetingTemplatesByTeamId = new RethinkForeignKeyLoaderMaker(
-  'meetingTemplates',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    // Will convert to PG by Mar 1, 2023
-    return r
-      .table('MeetingTemplate')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isActive: true})
-      .run()
-  }
-)
-
 export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
   'templateScales',
   'teamId',

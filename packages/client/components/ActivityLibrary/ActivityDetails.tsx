@@ -11,7 +11,7 @@ import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePromp
 import {ActivityCard, CategoryID, MeetingThemes} from './ActivityCard'
 import {activityIllustrations} from './ActivityIllustrations'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
-import makeTemplateDescription from '../../utils/makeTemplateDescription'
+import useTemplateDescription from '../../utils/useTemplateDescription'
 import clsx from 'clsx'
 import {UnstyledTemplateSharing} from '../../modules/meeting/components/TemplateSharing'
 import DetailAction from '../DetailAction'
@@ -55,7 +55,7 @@ const query = graphql`
         id
       }
 
-      ...makeTemplateDescription_viewer
+      ...useTemplateDescription_viewer
     }
   }
 `
@@ -109,26 +109,27 @@ const ActivityDetails = (props: Props) => {
     )
   }, [templateId, submitting, submitMutation, onError, onCompleted])
 
+  const teamIds = teams.map((team) => team.id)
+  const orgIds = organizations.map((org) => org.id)
+
+  const isOwner = !!selectedTemplate && teamIds.includes(selectedTemplate.teamId)
+
+  const teamTemplates = availableTemplates.edges
+    .map((edge) => edge.node)
+    .filter((edge) => edge.teamId === selectedTemplate?.teamId)
+
+  const lowestScope = isOwner
+    ? 'TEAM'
+    : selectedTemplate && orgIds.includes(selectedTemplate.orgId)
+    ? 'ORGANIZATION'
+    : 'PUBLIC'
+  const description = useTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
+
   if (!selectedTemplate) {
     return <Redirect to='/activity-library' />
   }
 
   const {name: templateName, prompts} = selectedTemplate
-  const teamIds = teams.map((team) => team.id)
-  const orgIds = organizations.map((org) => org.id)
-
-  const isOwner = teamIds.includes(selectedTemplate.teamId!)
-
-  const teamTemplates = availableTemplates.edges
-    .map((edge) => edge.node)
-    .filter((edge) => edge.teamId === selectedTemplate.teamId)
-
-  const lowestScope = isOwner
-    ? 'TEAM'
-    : orgIds.includes(selectedTemplate.orgId)
-    ? 'ORGANIZATION'
-    : 'PUBLIC'
-  const description = makeTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
 
   const templateIllustration =
     activityIllustrations[selectedTemplate.id as keyof typeof activityIllustrations]
