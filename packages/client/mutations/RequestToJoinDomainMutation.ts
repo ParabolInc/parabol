@@ -3,12 +3,6 @@ import {commitMutation} from 'react-relay'
 import {SimpleMutation} from '../types/relayMutations'
 import {RequestToJoinDomainMutation as TRequestToJoinDomainMutation} from '../__generated__/RequestToJoinDomainMutation.graphql'
 
-graphql`
-  fragment RequestToJoinDomainMutation_part on RequestToJoinDomainSuccess {
-    success
-  }
-`
-
 const mutation = graphql`
   mutation RequestToJoinDomainMutation {
     requestToJoinDomain {
@@ -17,7 +11,7 @@ const mutation = graphql`
           message
         }
       }
-      ...RequestToJoinDomainMutation_part @relay(mask: false)
+      success
     }
   }
 `
