@@ -11,7 +11,9 @@ const mutation = graphql`
           message
         }
       }
-      success
+      ... on RequestToJoinDomainSuccess {
+        success
+      }
     }
   }
 `
