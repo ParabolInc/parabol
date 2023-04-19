@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.100.0 2023-Apr-19
+
+### Added
+
+- **retros-in-disguise**: Retro Details Sidebar (#8008)
+- **metrics**: Add icloud.com as another generic domain (#8049)
+- user presence supports k8s (#7208)
+- **deps**: bump vm2 from 3.9.15 to 3.9.16 (#8035)
+- **prompt-to-join**: Add "would you like to join org" notification (#8003)
+- **retros-in-disguise**: Create retro template from retro categories view (#8027)
+- improve tailwind classes specificity (#8064)
+- **checkout-flow**: right drawer (#8004)
+
+### Fixed
+
+- ensure task exists (#8042)
+- ensure teamMembers exist in payload (#8043)
+- when user leaves team, do not remove estimate stages they created (#8045)
+- add args to dd-trace (#7766)
+- expire failed login attempts (#8038)
+- Rename makeTemplateDescription -> useTemplateDescription to satisfy hooks rules (#8066)
+- prevent repeating date in stanudps name (#8059)
+
 ## 6.99.1 2023-Apr-17
 
 ### Fixed
