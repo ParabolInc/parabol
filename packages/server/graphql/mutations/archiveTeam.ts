@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {maybeRemoveRestrictions} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
@@ -10,10 +10,14 @@ import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
 export default {
-  type: new GraphQLNonNull(ArchiveTeamPayload),
+  type: new GraphQLNonNull(
+    new GraphQLObjectType({
+      name: 'ArchiveTeamPayload',
+      fields: {}
+    })
+  ),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
