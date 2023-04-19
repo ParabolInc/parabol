@@ -137,25 +137,25 @@ test.describe('retrospective-demo / discuss page', () => {
       }
 
       // Emoji reactions do not appear on mobile devices
-      // if (!isMobile) {
-      //   for await (const emoji of emojis) {
-      //     await expect(page.locator(`text=${emoji}`)).toBeVisible({
-      //       timeout: 30_000
-      //     })
-      //   }
-      // }
+      if (!isMobile) {
+        for await (const emoji of emojis) {
+          await expect(page.locator(`text=${emoji}`)).toBeVisible({
+            timeout: 30_000
+          })
+        }
+      }
 
-      // for await (const task of tasks || []) {
-      //   await expect(page.locator(`[data-cy=task-wrapper] :text('${task}')`)).toBeVisible({
-      //     timeout: 30_000
-      //   })
-      // }
+      for await (const task of tasks || []) {
+        await expect(page.locator(`[data-cy=task-wrapper] :text('${task}')`)).toBeVisible({
+          timeout: 30_000
+        })
+      }
 
-      // for await (const comment of comments || []) {
-      //   await expect(page.locator(`[data-cy=comment-wrapper] :text('${comment}')`)).toBeVisible({
-      //     timeout: 30_000
-      //   })
-      // }
+      for await (const comment of comments || []) {
+        await expect(page.locator(`[data-cy=comment-wrapper] :text('${comment}')`)).toBeVisible({
+          timeout: 30_000
+        })
+      }
     })
   }
 
