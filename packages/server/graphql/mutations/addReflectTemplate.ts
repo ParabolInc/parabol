@@ -81,7 +81,9 @@ const addReflectTemplate = {
         name: newName,
         teamId,
         orgId: viewerTeam.orgId,
-        parentTemplateId
+        parentTemplateId,
+        illustrationUrl: parentTemplate.illustrationUrl,
+        mainCategory: parentTemplate.mainCategory
       })
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(parentTemplate.id)
       const activePrompts = prompts.filter(({removedAt}: RetrospectivePrompt) => !removedAt)

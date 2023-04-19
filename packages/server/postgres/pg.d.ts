@@ -60,6 +60,15 @@ export interface Discussion {
   summary: string | null
 }
 
+export interface DomainJoinRequest {
+  id: Generated<number>
+  createdBy: string
+  domain: string
+  expiresAt: Timestamp | null
+  createdAt: Generated<Timestamp>
+  updatedAt: Generated<Timestamp>
+}
+
 export interface GitHubAuth {
   accessToken: string
   createdAt: Generated<Timestamp>
@@ -172,6 +181,15 @@ export interface MeetingTemplate {
   type: 'action' | 'poker' | 'retrospective' | 'teamPrompt'
   isStarter: Generated<boolean>
   isFree: Generated<boolean>
+  illustrationUrl: string | null
+  hideStartingAt: Timestamp | null
+  hideEndingAt: Timestamp | null
+  mainCategory: string | null
+}
+
+export interface MeetingTemplateUserFavorite {
+  userId: string
+  templateId: string
 }
 
 export interface OrganizationApprovedDomain {
@@ -317,6 +335,7 @@ export interface DB {
   AtlassianAuth: AtlassianAuth
   AzureDevOpsDimensionFieldMap: AzureDevOpsDimensionFieldMap
   Discussion: Discussion
+  DomainJoinRequest: DomainJoinRequest
   GitHubAuth: GitHubAuth
   GitHubDimensionFieldMap: GitHubDimensionFieldMap
   GitLabDimensionFieldMap: GitLabDimensionFieldMap
@@ -326,6 +345,7 @@ export interface DB {
   JiraServerDimensionFieldMap: JiraServerDimensionFieldMap
   MeetingSeries: MeetingSeries
   MeetingTemplate: MeetingTemplate
+  MeetingTemplateUserFavorite: MeetingTemplateUserFavorite
   OrganizationApprovedDomain: OrganizationApprovedDomain
   OrganizationUserAudit: OrganizationUserAudit
   Poll: Poll
