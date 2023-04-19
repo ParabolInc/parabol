@@ -104,6 +104,12 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
 
   const emailIsVerified = identities[0]?.isEmailVerified
 
+  console.log('bootstrapNewUser email:', email, userId)
+  console.log('identities', identities)
+  console.log('emailIsVerified', emailIsVerified)
+  console.log('isOrganic', isOrganic)
+  console.log('tier', tier)
+
   if (emailIsVerified && isOrganic && tier !== 'enterprise') {
     sendPromptToJoinOrg(email, userId)
   }
