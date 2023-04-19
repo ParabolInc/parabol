@@ -38,33 +38,28 @@ export const MeetingThemes: Record<CategoryID, CardTheme> = {
   strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100'}
 }
 
+const DefaultTheme = {primary: 'bg-slate-500', secondary: 'bg-slate-200'}
+
 export interface ActivityCardProps {
   className?: string
-  category: CategoryID
+  category?: CategoryID
+  titleAs?: React.ElementType
   title?: string
   imageSrc?: string
-  badge: React.ReactNode | null
+  badge?: React.ReactNode
   children?: React.ReactNode
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, category, title, imageSrc, badge, children} = props
+  const {className, category, title, titleAs, imageSrc, badge, children} = props
+  const theme = category ? MeetingThemes[category] : DefaultTheme
+  const Title = titleAs ?? ActivityCardTitle
+
   return (
-    <div
-      className={clsx(
-        'flex flex-col overflow-hidden rounded-lg',
-        MeetingThemes[category].secondary,
-        className
-      )}
-    >
+    <div className={clsx('flex flex-col overflow-hidden rounded-lg', theme.secondary, className)}>
       <div className='flex flex-shrink-0'>
-        <ActivityCardTitle>{title}</ActivityCardTitle>
-        <div
-          className={clsx(
-            'ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full',
-            MeetingThemes[category].primary
-          )}
-        />
+        <Title>{title}</Title>
+        <div className={clsx('ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full', theme.primary)} />
       </div>
       {imageSrc && (
         <div className='my-1 flex flex-1 items-center justify-center px-4'>
@@ -73,9 +68,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       )}
       {children}
       <div className='flex flex-shrink-0'>
-        <div
-          className={clsx('h-8 w-8 flex-shrink-0 rounded-tr-full', MeetingThemes[category].primary)}
-        />
+        <div className={clsx('h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} />
         <div className='ml-auto'>{badge}</div>
       </div>
     </div>

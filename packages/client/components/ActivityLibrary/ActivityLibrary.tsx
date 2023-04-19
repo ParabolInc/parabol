@@ -3,9 +3,15 @@ import React, {useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
-import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
-import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
-import {ActivityLibraryCard, ActivityLibraryCardBadge} from './ActivityLibraryCard'
+import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {
+  ActivityLibraryHeader,
+  ActivityLibraryHeaderCloseButton,
+  ActivityLibraryHeaderTitle,
+  ActivityLibraryMobileHeader
+} from './ActivityLibraryHeader'
+import {ActivityLibraryCard} from './ActivityLibraryCard'
+import {ActivityBadge} from './ActivityBadge'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import {activityIllustrations} from './ActivityIllustrations'
 import {Link} from 'react-router-dom'
@@ -16,6 +22,7 @@ import halloweenRetrospectiveTemplate from '../../../../static/images/illustrati
 import clsx from 'clsx'
 import {CategoryID, MeetingThemes} from './ActivityCard'
 import CreateActivityCard from './CreateActivityCard'
+import LogoBlock from '../LogoBlock/LogoBlock'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -96,7 +103,7 @@ export const ActivityLibrary = (props: Props) => {
     () => [
       {
         id: 'action',
-        type: 'action',
+        type: 'action' as MeetingTypeEnum,
         name: 'Check-in',
         team: {name: 'Parabol'},
         category: 'standup',
@@ -105,7 +112,7 @@ export const ActivityLibrary = (props: Props) => {
       } as const,
       {
         id: 'teamPrompt',
-        type: 'teamPrompt',
+        type: 'teamPrompt' as MeetingTypeEnum,
         name: 'Standup',
         team: {name: 'Parabol'},
         category: 'standup',
@@ -151,10 +158,22 @@ export const ActivityLibrary = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
-      <ActivityLibraryHeader className='hidden md:flex' onClose={handleCloseClick}>
+      <ActivityLibraryHeader
+        className='hidden md:flex'
+        leftNavigation={
+          <>
+            <LogoBlock className='flex-shrink-0' />
+            <ActivityLibraryHeaderTitle>Start Activity</ActivityLibraryHeaderTitle>
+          </>
+        }
+        rightNavigation={<ActivityLibraryHeaderCloseButton onClick={handleCloseClick} />}
+      >
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryHeader>
-      <ActivityLibraryMobileHeader className='flex md:hidden' onClose={handleCloseClick}>
+      <ActivityLibraryMobileHeader
+        className='flex md:hidden'
+        rightNavigation={<ActivityLibraryHeaderCloseButton onClick={handleCloseClick} />}
+      >
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryMobileHeader>
 
@@ -232,7 +251,9 @@ export const ActivityLibrary = (props: Props) => {
                       imageSrc={activityIllustration}
                       badge={
                         !template.isFree ? (
-                          <ActivityLibraryCardBadge>Premium</ActivityLibraryCardBadge>
+                          <ActivityBadge className='bg-gold-300 text-grape-700'>
+                            Premium
+                          </ActivityBadge>
                         ) : null
                       }
                     />

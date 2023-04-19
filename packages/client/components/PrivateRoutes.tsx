@@ -43,6 +43,12 @@ const ActivityLibraryRoute = lazy(
 const ActivityDetailsRoute = lazy(
   () => import(/* webpackChunkName: 'ActivityDetails' */ './ActivityLibrary/ActivityDetailsRoute')
 )
+const CreateNewActivityRoute = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'CreateNewActivityRoute' */ './ActivityLibrary/CreateNewActivity/CreateNewActivityRoute'
+    )
+)
 
 const PrivateRoutes = () => {
   useAuthRoute()
@@ -50,6 +56,7 @@ const PrivateRoutes = () => {
   return (
     <Switch>
       <Route path='(/meetings|/me|/newteam|/team|/usage|/new-meeting)' component={DashboardRoot} />
+      <Route path='/activity-library/new-activity' component={CreateNewActivityRoute} />
       <Route path='/activity-library/category/:categoryId' component={ActivityLibraryRoute} />
       <Route path='/activity-library/details/:templateId' component={ActivityDetailsRoute} />
       <Route path='/activity-library' component={ActivityLibraryRoute} />

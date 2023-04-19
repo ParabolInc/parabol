@@ -1,7 +1,8 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {CategoryID} from './ActivityCard'
-import {ActivityLibraryCard, ActivityLibraryCardBadge} from './ActivityLibraryCard'
+import {ActivityLibraryCard} from './ActivityLibraryCard'
+import {ActivityBadge} from './ActivityBadge'
 import {Add as AddIcon} from '@mui/icons-material'
 import {CATEGORY_ID_TO_NAME} from './ActivityLibrary'
 import clsx from 'clsx'
@@ -48,7 +49,7 @@ const CreateActivityCard = (props: Props) => {
         <ActivityLibraryCard
           className={clsx('cursor-pointer', className)}
           category={category}
-          badge={<ActivityLibraryCardBadge>Premium</ActivityLibraryCardBadge>}
+          badge={<ActivityBadge className='bg-gold-300 text-grape-700'>Premium</ActivityBadge>}
         >
           <div className='mx-10 flex flex-1 flex-col items-center justify-center text-center font-semibold'>
             <div className='h-12 w-12'>

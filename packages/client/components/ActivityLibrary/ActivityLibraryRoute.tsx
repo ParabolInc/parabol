@@ -11,7 +11,7 @@ import TaskSubscription from '../../subscriptions/TaskSubscription'
 import NotificationSubscription from '../../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../../subscriptions/OrganizationSubscription'
 
-const ActivityLibaryRoute = () => {
+const ActivityLibraryRoute = () => {
   useSubscription('ActivityLibraryRoute', NotificationSubscription)
   useSubscription('ActivityLibraryRoute', OrganizationSubscription)
   useSubscription('ActivityLibraryRoute', TaskSubscription)
@@ -26,4 +26,4 @@ const ActivityLibaryRoute = () => {
   )
 }
 
-export default ActivityLibaryRoute
+export default ActivityLibraryRoute
