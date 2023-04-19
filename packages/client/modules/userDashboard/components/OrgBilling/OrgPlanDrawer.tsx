@@ -84,7 +84,7 @@ const OrgPlanDrawer = (props: Props) => {
   )
   const {id: orgId, tier, showDrawer} = organization
   const atmosphere = useAtmosphere()
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const isDesktop = useBreakpoint(Breakpoint.ORG_DRAWER)
 
   const toggleSidebar = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -98,6 +98,7 @@ const OrgPlanDrawer = (props: Props) => {
   return (
     <ResponsiveDashSidebar
       isOpen={showDrawer}
+      isDesktop={isDesktop}
       onToggle={toggleSidebar}
       isRightDrawer
       sidebarWidth={DiscussionThreadEnum.WIDTH}
