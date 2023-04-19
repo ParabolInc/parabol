@@ -37,11 +37,12 @@ module.exports = ({isDeploy, noDeps}) => ({
     web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
-    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')]
+    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
+    migrateImages: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/migrateImages.ts')]
   },
   output: {
     filename: '[name].js',
-    path: path.join(PROJECT_ROOT, 'dist')
+    path: distPath
   },
   resolve: {
     alias: {
@@ -127,12 +128,30 @@ module.exports = ({isDeploy, noDeps}) => ({
       ...transformRules(PROJECT_ROOT),
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: [
+        oneOf: [
           {
-            loader: 'file-loader',
-            options: {
-              publicPath
-            }
+            // Put templates in their own directory that will get pushed to the CDN & stored in PG
+            test: /Template.png$/,
+            include: [path.resolve(PROJECT_ROOT, 'static/images/illustrations')],
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '/templates/[name].[ext]',
+                  publicPath: distPath
+                }
+              }
+            ]
+          },
+          {
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  publicPath
+                }
+              }
+            ]
           }
         ]
       },
