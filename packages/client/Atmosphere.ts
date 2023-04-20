@@ -306,17 +306,12 @@ export default class Atmosphere extends Environment {
     const transport = uploadables ? this.baseHTTPTransport : this.transport
     const errorCheckerSink: Sink<any> | undefined = sink
       ? {
+          ...sink,
           next: (value) => {
             if (value.errors) {
               console.error(value.errors)
             }
             return sink.next(value)
-          },
-          error: (error: Error, isUncaughtThrownError?: boolean) =>
-            sink.error(error, isUncaughtThrownError),
-          complete: () => sink.complete(),
-          get closed() {
-            return sink.closed
           }
         }
       : undefined
