@@ -91,13 +91,11 @@ export const CreateNewActivity = (props: Props) => {
   return (
     <div className='h-full w-full flex-col bg-white'>
       <ActivityLibraryHeader
+        title='Create New Activity'
         leftNavigation={
-          <>
-            <Link className='mx-4' to={`/activity-library/`}>
-              <IconLabel icon={'arrow_back'} iconLarge />
-            </Link>
-            <div className='py-4 pr-2 text-xl font-semibold'>Create New Activity</div>
-          </>
+          <Link className='mx-4' to={`/activity-library/`} replace={true}>
+            <IconLabel icon={'arrow_back'} iconLarge />
+          </Link>
         }
       />
       <div className='flex flex-col items-center gap-y-8'>

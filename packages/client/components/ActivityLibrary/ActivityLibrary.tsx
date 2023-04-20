@@ -1,15 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React, {useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
+
 import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
-import {
-  ActivityLibraryHeader,
-  ActivityLibraryHeaderCloseButton,
-  ActivityLibraryHeaderTitle,
-  ActivityLibraryMobileHeader
-} from './ActivityLibraryHeader'
+import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityBadge} from './ActivityBadge'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
@@ -19,10 +16,11 @@ import useRouter from '../../hooks/useRouter'
 import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import clsx from 'clsx'
+
 import {CategoryID, MeetingThemes} from './ActivityCard'
 import CreateActivityCard from './CreateActivityCard'
 import LogoBlock from '../LogoBlock/LogoBlock'
+import {Close} from '@mui/icons-material'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -91,13 +89,8 @@ const CategoryIDToColorClass = {
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
-  const {history} = useRouter()
   const {viewer} = data
   const {featureFlags, availableTemplates, teams} = viewer
-
-  const handleCloseClick = () => {
-    history.goBack()
-  }
 
   const templates = useMemo(
     () => [
@@ -160,19 +153,23 @@ export const ActivityLibrary = (props: Props) => {
     <div className='flex h-full w-full flex-col bg-white'>
       <ActivityLibraryHeader
         className='hidden md:flex'
-        leftNavigation={
-          <>
-            <LogoBlock className='flex-shrink-0' />
-            <ActivityLibraryHeaderTitle>Start Activity</ActivityLibraryHeaderTitle>
-          </>
+        title='Start Activity'
+        leftNavigation={<LogoBlock className='flex-shrink-0 border-none' />}
+        rightNavigation={
+          <Link className='p-2' to={`/`} replace={true}>
+            <Close className='m-auto h-8 w-8' />
+          </Link>
         }
-        rightNavigation={<ActivityLibraryHeaderCloseButton onClick={handleCloseClick} />}
       >
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryHeader>
       <ActivityLibraryMobileHeader
         className='flex md:hidden'
-        rightNavigation={<ActivityLibraryHeaderCloseButton onClick={handleCloseClick} />}
+        rightNavigation={
+          <Link className='rounded-full p-2 hover:bg-slate-200' to={`/`} replace={true}>
+            <Close className='m-auto h-8 w-8' />
+          </Link>
+        }
       >
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryMobileHeader>
