@@ -7,6 +7,7 @@ import Confetti from '../../../../components/Confetti'
 import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import StyledError from '../../../../components/StyledError'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -46,6 +47,11 @@ const ConfettiWrapper = styled('div')({
   transform: 'translate(-50%, -50%)'
 })
 
+const ErrorMsg = styled(StyledError)({
+  paddingTop: 8,
+  textTransform: 'none'
+})
+
 type Props = {
   orgId: string
 }
@@ -57,27 +63,28 @@ const BillingForm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError} = useMutationProps()
+  const {onError, onCompleted} = useMutationProps()
+  const [errorMsg, setErrorMsg] = useState<null | string>()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!stripe || !elements) return
     setIsLoading(true)
+    if (errorMsg) setErrorMsg(null)
     const {setupIntent, error} = await stripe.confirmSetup({
       elements,
       redirect: 'if_required'
     })
     setIsLoading(false)
-    if (error) return
+    console.log('🚀 ~ error:', error)
+    if (error) {
+      setErrorMsg(error.message)
+      return
+    }
     const {payment_method: paymentMethodId, status} = setupIntent
     if (status === 'succeeded' && typeof paymentMethodId === 'string') {
       setIsPaymentSuccessful(true)
-      const handleCompleted = () => {}
-      UpgradeToTeamTierMutation(
-        atmosphere,
-        {orgId, paymentMethodId},
-        {onError, onCompleted: handleCompleted}
-      )
+      UpgradeToTeamTierMutation(atmosphere, {orgId, paymentMethodId}, {onError, onCompleted})
     }
   }
 
@@ -85,6 +92,7 @@ const BillingForm = (props: Props) => {
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
       <PaymentElement id='payment-element' options={{layout: 'tabs'}} />
       <ButtonBlock>
+        {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
           {'Upgrade'}
         </UpgradeButton>
