@@ -17,35 +17,6 @@ import {ActivityLibraryHeader} from '../ActivityLibraryHeader'
 import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
 import sortByTier from '../../../utils/sortByTier'
 
-const CategoryTitle = (props: ComponentPropsWithoutRef<'div'>) => {
-  const {children, className, ...rest} = props
-
-  return (
-    <div
-      className={clsx('p-4 text-lg font-semibold leading-5 text-slate-700', className)}
-      {...rest}
-    >
-      {children}
-    </div>
-  )
-}
-const query = graphql`
-  query CreateNewActivityQuery {
-    viewer {
-      featureFlags {
-        retrosInDisguise
-      }
-      teams {
-        id
-        tier
-        name
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingTeamPicker_teams
-      }
-    }
-  }
-`
-
 const CATEGORIES = [
   {
     title: 'Process Feedback',
@@ -76,6 +47,36 @@ const CATEGORIES = [
     ]
   }
 ]
+
+const CategoryTitle = (props: ComponentPropsWithoutRef<'div'>) => {
+  const {children, className, ...rest} = props
+
+  return (
+    <div
+      className={clsx('p-4 text-lg font-semibold leading-5 text-slate-700', className)}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+}
+
+const query = graphql`
+  query CreateNewActivityQuery {
+    viewer {
+      featureFlags {
+        retrosInDisguise
+      }
+      teams {
+        id
+        tier
+        name
+        ...NewMeetingTeamPicker_selectedTeam
+        ...NewMeetingTeamPicker_teams
+      }
+    }
+  }
+`
 
 interface Props {
   queryRef: PreloadedQuery<CreateNewActivityQuery>
