@@ -7,9 +7,7 @@ import {BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
 
-const Container = styled('div')({
-  padding: '0px 48px 24px 48px'
-})
+const Container = styled('section')({})
 
 const OrgPlansAndBilling = lazy(
   () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBilling')
@@ -39,7 +37,7 @@ const OrgPage = (props: Props) => {
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
 
   return (
-    <Container>
+    <Container className={'px-[16px] md:px-[48px]'}>
       <OrgNav organizationRef={organization} />
       <Switch>
         <Route

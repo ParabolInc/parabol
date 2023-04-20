@@ -30,6 +30,7 @@ const StyledRow = styled(Row)({
   padding: '12px 16px',
   display: 'flex',
   flex: 1,
+  alignItems: 'inherit',
   ':first-of-type': {
     paddingTop: 16
   },
@@ -38,14 +39,15 @@ const StyledRow = styled(Row)({
   }
 })
 
-const PlanTitle = styled('div')({
-  color: PALETTE.SLATE_800,
+const PlanTitle = styled('h6')({
+  color: PALETTE.SLATE_700,
   fontSize: 22,
   fontWeight: 600,
   lineHeight: '30px',
   textTransform: 'capitalize',
   textAlign: 'center',
   display: 'flex',
+  margin: 0,
   width: '100%',
   paddingBottom: 8,
   justifyContent: 'center'
@@ -61,9 +63,9 @@ const HeadingBlock = styled('div')({
 
 const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   color: PALETTE.SLATE_800,
-  fontSize: 18,
+  fontSize: 16,
   width: '100%',
-  lineHeight: '30px',
+  lineHeight: '24px',
   textTransform: 'none',
   display: 'flex',
   alignItems: 'center',
@@ -82,26 +84,30 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   textAlign: 'center',
   display: 'flex',
   flex: 1,
-  margin: '0 8px',
-  flexWrap: 'wrap',
-  justifyContent: 'flex-start',
+  flexDirection: 'column',
+  alignItems: 'center',
   padding: '16px 8px',
-  height: 440,
   borderRadius: 4,
-  border: `2px solid transparent`,
+  border: '2px solid white',
+  outline: '2px solid transparent',
+  transition: 'all ease 0.5s',
   '&:hover': {
-    border: `2px solid ${
+    cursor: 'pointer',
+    outline: `2px solid ${
       tier === 'starter'
         ? PALETTE.GRAPE_500
         : tier === 'team'
         ? PALETTE.AQUA_400
-        : PALETTE.TOMATO_200
+        : PALETTE.TOMATO_500
     }`
   }
 }))
 
 const UL = styled('ul')({
-  margin: 0
+  margin: '0 0 16px 0',
+  height: '100%',
+  padding: 0,
+  width: '80%'
 })
 
 const LI = styled('li')({
@@ -113,7 +119,7 @@ const LI = styled('li')({
   textAlign: 'left'
 })
 
-const StyledIcon = styled('div')({
+const StyledIcon = styled('span')({
   width: 18,
   height: 18,
   color: PALETTE.SLATE_600,
@@ -125,21 +131,11 @@ const StyledIcon = styled('div')({
   }
 })
 
-const Content = styled('div')({})
-
-const ButtonBlock = styled('div')({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  position: 'relative'
-})
-
 const CTAButton = styled(BaseButton)<{
   buttonStyle: 'disabled' | 'primary' | 'secondary'
 }>(({buttonStyle}) => ({
   width: '80%',
   boxShadow: buttonStyle === 'primary' ? Elevation.Z8 : Elevation.Z0,
-  position: 'absolute',
   bottom: 0,
   fontWeight: 600,
   borderRadius: Radius.BUTTON_PILL,
@@ -156,14 +152,16 @@ const CTAButton = styled(BaseButton)<{
       ? PALETTE.SLATE_900
       : PALETTE.SLATE_600,
   border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none',
+  transition: 'all ease 0.5s',
   ':hover': {
     cursor: buttonStyle === 'disabled' ? 'default' : 'pointer',
     background:
       buttonStyle === 'primary'
         ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
         : buttonStyle === 'secondary'
-        ? PALETTE.SLATE_100
-        : PALETTE.SLATE_300
+        ? PALETTE.TOMATO_100
+        : PALETTE.SLATE_300,
+    borderColor: buttonStyle === 'secondary' ? PALETTE.TOMATO_500 : 'none'
   }
 }))
 
@@ -266,48 +264,48 @@ const OrgPlans = (props: Props) => {
           {showNudge && <LimitExceededWarning organizationRef={organization} />}
           <OrgStats organizationRef={organization} />
         </StyledRow>
-        <StyledRow>
+        <StyledRow className={'flex-col md:flex-row'}>
           {plans.map((plan) => (
-            <Plan key={plan.tier} tier={plan.tier}>
-              <Content>
-                <HeadingBlock>
-                  <PlanTitle>{plan.tier}</PlanTitle>
-                  {plan.tier === 'team' ? (
-                    <>
-                      <PlanSubtitle>
-                        {'$6 per active user '}
-                        <StyledIcon
-                          ref={originRef}
-                          onMouseOver={openTooltip}
-                          onMouseOut={closeTooltip}
-                        >
-                          {<Info />}
-                        </StyledIcon>
-                      </PlanSubtitle>
-                      <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
-                      {tooltipPortal(
-                        'Active users are anyone who uses Parabol within a billing period'
-                      )}
-                    </>
-                  ) : (
-                    <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
-                  )}
-                </HeadingBlock>
-                <UL>
-                  {plan.details.map((detail) => (
-                    <LI key={detail}>{detail}</LI>
-                  ))}
-                </UL>
-              </Content>
-              <ButtonBlock>
-                <CTAButton
-                  onClick={() => handleClick(plan.buttonLabel)}
-                  buttonStyle={plan.buttonStyle}
-                  size='medium'
-                >
-                  {plan.buttonLabel}
-                </CTAButton>
-              </ButtonBlock>
+            <Plan
+              key={plan.tier}
+              tier={plan.tier}
+              className={'mb-[8px] last:mb-0 md:mb-0 md:mr-[8px] last:md:mr-0'}
+            >
+              <HeadingBlock>
+                <PlanTitle>{plan.tier}</PlanTitle>
+                {plan.tier === 'team' ? (
+                  <>
+                    <PlanSubtitle>
+                      {'$6 per active user '}
+                      <StyledIcon
+                        ref={originRef}
+                        onMouseOver={openTooltip}
+                        onMouseOut={closeTooltip}
+                      >
+                        {<Info />}
+                      </StyledIcon>
+                    </PlanSubtitle>
+                    <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+                    {tooltipPortal(
+                      'Active users are anyone who uses Parabol within a billing period'
+                    )}
+                  </>
+                ) : (
+                  <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
+                )}
+              </HeadingBlock>
+              <UL>
+                {plan.details.map((detail) => (
+                  <LI key={detail}>{detail}</LI>
+                ))}
+              </UL>
+              <CTAButton
+                onClick={() => handleClick(plan.buttonLabel)}
+                buttonStyle={plan.buttonStyle}
+                size='medium'
+              >
+                {plan.buttonLabel}
+              </CTAButton>
             </Plan>
           ))}
         </StyledRow>
