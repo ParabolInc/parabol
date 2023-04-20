@@ -1,7 +1,9 @@
+import {Insertable} from 'kysely'
 import generateUID from '../../generateUID'
+import {MeetingTemplate as MeetingTemplateDB} from '../../postgres/pg'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 
-export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM'
+export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM' | 'USER'
 
 interface Input {
   name: string
@@ -9,25 +11,25 @@ interface Input {
   scope?: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
-  lastUsedAt?: Date
+  lastUsedAt?: Date | null
   type: MeetingTypeEnum
   isStarter?: boolean
   isFree?: boolean
 }
 
-export default class MeetingTemplate {
+export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
   id: string
   createdAt: Date
   isActive: boolean
   updatedAt: Date
   name: string
   teamId: string
-  lastUsedAt: Date | undefined
+  lastUsedAt: Date | null
   scope: SharingScopeEnum
   orgId: string
-  parentTemplateId?: string
+  parentTemplateId: string | null
   type: MeetingTypeEnum
-  isStarter?: boolean
+  isStarter: boolean
   isFree: boolean
 
   constructor(input: Input) {
@@ -42,8 +44,8 @@ export default class MeetingTemplate {
     this.updatedAt = now
     this.scope = scope || 'TEAM'
     this.orgId = orgId
-    this.parentTemplateId = parentTemplateId
-    this.lastUsedAt = lastUsedAt ?? undefined
+    this.parentTemplateId = parentTemplateId || null
+    this.lastUsedAt = lastUsedAt || null
     this.type = type
     this.isStarter = isStarter || false
     this.isFree = isFree || false
