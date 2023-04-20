@@ -2,12 +2,12 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  important: '#root',
+  important: 'body',
   corePlugins: {
     preflight: false
   },
   presets: [require('./packages/client/tailwind.preset.js')],
-  content: ['./packages/client/**/*.{ts,tsx,js,jsx,html}'],
+  content: ['./packages/client/**/*.{ts,tsx,js,jsx,html}', './template.html'],
   theme: {
     fontFamily: {
       sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
