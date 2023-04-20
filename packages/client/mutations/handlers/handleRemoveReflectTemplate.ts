@@ -1,4 +1,4 @@
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getReflectTemplateOrgConn from '../connections/getReflectTemplateOrgConn'
@@ -19,6 +19,11 @@ const handleRemoveReflectTemplate = (
   const publicConn = getReflectTemplatePublicConn(settings)
   safeRemoveNodeFromConn(templateId, orgConn)
   safeRemoveNodeFromConn(templateId, publicConn)
+
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const allAvailableConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')
+  safeRemoveNodeFromConn(templateId, allAvailableConn)
 }
 
 const handleRemoveReflectTemplates = pluralizeHandler(handleRemoveReflectTemplate)

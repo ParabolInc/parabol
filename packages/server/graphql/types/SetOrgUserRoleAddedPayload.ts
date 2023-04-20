@@ -1,8 +1,7 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLInterfaceType, GraphQLList, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
-import Notification from './Notification'
 import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
 
 const SetOrgUserRoleAddedPayload: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<
@@ -14,7 +13,12 @@ const SetOrgUserRoleAddedPayload: GraphQLObjectType<any, GQLContext> = new Graph
   fields: () => ({
     ...setOrgUserRoleFields,
     notificationsAdded: {
-      type: new GraphQLList(Notification),
+      type: new GraphQLList(
+        new GraphQLInterfaceType({
+          name: 'Notification',
+          fields: () => ({})
+        })
+      ),
       description: 'If promoted, notify them and give them all other admin notifications',
       resolve: async ({notificationIdsAdded}, _args: unknown, {authToken, dataLoader}) => {
         if (!notificationIdsAdded) return []

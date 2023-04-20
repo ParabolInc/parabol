@@ -1,4 +1,4 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
@@ -14,7 +14,6 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import UpdateTaskInput from '../types/UpdateTaskInput'
-import UpdateTaskPayload from '../types/UpdateTaskPayload'
 import {validateTaskUserIsTeamMember} from './createTask'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
 import publishChangeNotifications from './helpers/publishChangeNotifications'
@@ -33,7 +32,10 @@ type UpdateTaskMutationVariables = {
   area?: TAreaEnum | null
 }
 export default {
-  type: UpdateTaskPayload,
+  type: new GraphQLObjectType({
+    name: 'UpdateTaskPayload',
+    fields: {}
+  }),
   description: 'Update a task with a change in content, ownership, or status',
   args: {
     area: {

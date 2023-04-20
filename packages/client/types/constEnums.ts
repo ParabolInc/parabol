@@ -42,7 +42,7 @@ export const enum Breakpoint {
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
   VOTE_PHASE = 800,
   FUZZY_TABLET = 700,
-  BIG_DISPLAY = 1900
+  ORG_DRAWER = 1680
 }
 
 export const enum Card {

@@ -9,7 +9,7 @@ import SendClientSegmentEventMutation from '../../../mutations/SendClientSegment
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
-import makeTemplateDescription from '../../../utils/makeTemplateDescription'
+import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateItem_template$key} from '../../../__generated__/ReflectTemplateItem_template.graphql'
 import {ReflectTemplateItem_viewer$key} from '../../../__generated__/ReflectTemplateItem_viewer.graphql'
@@ -78,7 +78,7 @@ const ReflectTemplateItem = (props: Props) => {
       fragment ReflectTemplateItem_template on ReflectTemplate {
         #get the details here so we can show them in the details view
         ...ReflectTemplateDetailsTemplate
-        ...makeTemplateDescription_template
+        ...useTemplateDescription_template
         id
         name
         lastUsedAt
@@ -91,13 +91,13 @@ const ReflectTemplateItem = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment ReflectTemplateItem_viewer on User {
-        ...makeTemplateDescription_viewer
+        ...useTemplateDescription_viewer
       }
     `,
     viewerRef ?? null
   )
   const {id: templateId, name: templateName, scope, isFree} = template
-  const description = makeTemplateDescription(lowestScope, template, viewer, tier)
+  const description = useTemplateDescription(lowestScope, template, viewer, tier)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive, true)
