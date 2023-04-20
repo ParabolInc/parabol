@@ -27,6 +27,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - expire failed login attempts (#8038)
 - Rename makeTemplateDescription -> useTemplateDescription to satisfy hooks rules (#8066)
 - prevent repeating date in stanudps name (#8059)
+- remove tailwind selector strategy (#8068)
 
 ## 6.99.1 2023-Apr-17
 
