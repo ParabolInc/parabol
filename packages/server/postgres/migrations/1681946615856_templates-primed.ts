@@ -134,14 +134,6 @@ export async function up() {
   )
 
   // set seasonal dates
-
-  /*
-  Can query these templates using something like this:
-  SELECT * FROM "MeetingTemplate"
-  WHERE make_date(2020 , extract(month from current_date), extract(day from current_date)) between "hideEndingAt" and "hideStartingAt"
-  or make_date(2019 , extract(month from current_date), extract(day from current_date)) between "hideEndingAt" and "hideStartingAt"
-  */
-
   await Promise.all(
     Object.entries(seasonalTemplates).map(async ([templateId, dates]) => {
       const [hideStartingAt, hideEndingAt] = dates
