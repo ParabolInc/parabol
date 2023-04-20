@@ -42,12 +42,13 @@ export interface ActivityCardProps {
   className?: string
   category: CategoryID
   title?: string
-  imageSrc: string
+  imageSrc?: string
   badge: React.ReactNode | null
+  children?: React.ReactNode
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, category, title, imageSrc, badge} = props
+  const {className, category, title, imageSrc, badge, children} = props
   return (
     <div
       className={clsx(
@@ -65,9 +66,12 @@ export const ActivityCard = (props: ActivityCardProps) => {
           )}
         />
       </div>
-      <div className='my-1 flex flex-1 items-center justify-center px-4'>
-        <ActivityCardImage src={imageSrc} />
-      </div>
+      {imageSrc && (
+        <div className='my-1 flex flex-1 items-center justify-center px-4'>
+          <ActivityCardImage src={imageSrc} />
+        </div>
+      )}
+      {children}
       <div className='flex flex-shrink-0'>
         <div
           className={clsx('h-8 w-8 flex-shrink-0 rounded-tr-full', MeetingThemes[category].primary)}

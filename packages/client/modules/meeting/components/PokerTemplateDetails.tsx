@@ -10,7 +10,7 @@ import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutatio
 import {PALETTE} from '../../../styles/paletteV3'
 import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
-import makeTemplateDescription from '../../../utils/makeTemplateDescription'
+import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {PokerTemplateDetails_settings$key} from '../../../__generated__/PokerTemplateDetails_settings.graphql'
 import {PokerTemplateDetails_viewer$key} from '../../../__generated__/PokerTemplateDetails_viewer.graphql'
 import AddPokerTemplateDimension from './AddPokerTemplateDimension'
@@ -116,7 +116,7 @@ const PokerTemplateDetails = (props: Props) => {
         featureFlags {
           templateLimit
         }
-        ...makeTemplateDescription_viewer
+        ...useTemplateDescription_viewer
       }
     `,
     viewerRef
@@ -129,7 +129,7 @@ const PokerTemplateDetails = (props: Props) => {
   const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, activeTemplate, viewer)
+  const description = useTemplateDescription(lowestScope, activeTemplate, viewer)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -189,7 +189,7 @@ graphql`
   fragment PokerTemplateDetailsTemplate on PokerTemplate {
     ...TemplateSharing_template
     ...getTemplateList_template
-    ...makeTemplateDescription_template
+    ...useTemplateDescription_template
     id
     name
     dimensions {

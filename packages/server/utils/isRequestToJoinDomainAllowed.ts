@@ -14,6 +14,7 @@ export const getEligibleOrgIdsByDomain = async (
   }
 
   const r = await getRethink()
+
   return r
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})

@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useCallback} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
-
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {Link} from 'react-router-dom'
 import IconLabel from '../IconLabel'
@@ -12,7 +11,7 @@ import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePromp
 import {ActivityCard, CategoryID, MeetingThemes} from './ActivityCard'
 import {activityIllustrations} from './ActivityIllustrations'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
-import makeTemplateDescription from '../../utils/makeTemplateDescription'
+import useTemplateDescription from '../../utils/useTemplateDescription'
 import clsx from 'clsx'
 import {UnstyledTemplateSharing} from '../../modules/meeting/components/TemplateSharing'
 import DetailAction from '../DetailAction'
@@ -25,6 +24,7 @@ import GitLabSVG from '../GitLabSVG'
 import AzureDevOpsSVG from '../AzureDevOpsSVG'
 import JiraServerSVG from '../JiraServerSVG'
 import {CATEGORY_ID_TO_NAME} from './ActivityLibrary'
+import ActivityDetailsSidebar from './ActivityDetailsSidebar'
 
 const query = graphql`
   query ActivityDetailsQuery {
@@ -38,8 +38,10 @@ const query = graphql`
             type
             category
             orgId
+            teamId
             isFree
-            ...RemoveTemplate_teamTemplates
+            scope
+            ...ActivityDetailsSidebar_template
             ...EditableTemplateName_teamTemplates
             ...ReflectTemplateDetailsTemplate @relay(mask: false)
           }
@@ -47,16 +49,13 @@ const query = graphql`
       }
       teams {
         id
+        ...ActivityDetailsSidebar_teams
       }
       organizations {
         id
       }
-      featureFlags {
-        templateLimit
-        retrosInDisguise
-      }
 
-      ...makeTemplateDescription_viewer
+      ...useTemplateDescription_viewer
     }
   }
 `
@@ -110,26 +109,27 @@ const ActivityDetails = (props: Props) => {
     )
   }, [templateId, submitting, submitMutation, onError, onCompleted])
 
+  const teamIds = teams.map((team) => team.id)
+  const orgIds = organizations.map((org) => org.id)
+
+  const isOwner = !!selectedTemplate && teamIds.includes(selectedTemplate.teamId)
+
+  const teamTemplates = availableTemplates.edges
+    .map((edge) => edge.node)
+    .filter((edge) => edge.teamId === selectedTemplate?.teamId)
+
+  const lowestScope = isOwner
+    ? 'TEAM'
+    : selectedTemplate && orgIds.includes(selectedTemplate.orgId)
+    ? 'ORGANIZATION'
+    : 'PUBLIC'
+  const description = useTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
+
   if (!selectedTemplate) {
     return <Redirect to='/activity-library' />
   }
 
   const {name: templateName, prompts} = selectedTemplate
-  const teamIds = teams.map((team) => team.id)
-  const orgIds = organizations.map((org) => org.id)
-
-  const isOwner = teamIds.includes(selectedTemplate.teamId!)
-
-  const teamTemplates = availableTemplates.edges
-    .map((edge) => edge.node)
-    .filter((edge) => edge.teamId === selectedTemplate.teamId)
-
-  const lowestScope = isOwner
-    ? 'TEAM'
-    : orgIds.includes(selectedTemplate.orgId)
-    ? 'ORGANIZATION'
-    : 'PUBLIC'
-  const description = makeTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
 
   const templateIllustration =
     activityIllustrations[selectedTemplate.id as keyof typeof activityIllustrations]
@@ -139,8 +139,8 @@ const ActivityDetails = (props: Props) => {
 
   return (
     <div className='flex h-full bg-white'>
-      <div className='ml-4 mt-4'>
-        <div className='flex w-max items-center'>
+      <div className='mt-4 grow'>
+        <div className='mb-14 ml-4 flex h-min w-max items-center'>
           <Link
             className='mr-4'
             to={`/activity-library/category/${history.location.state?.prevCategory ?? category}`}
@@ -149,20 +149,18 @@ const ActivityDetails = (props: Props) => {
           </Link>
           <div className='w-max text-xl font-semibold'>Start Activity</div>
         </div>
-      </div>
-      <div className='mt-14 flex w-full justify-center'>
-        <div className='mx-auto flex justify-center'>
+        <div className='flex w-full flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14'>
           <ActivityCard
-            className='h-[200px] w-80'
+            className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
             category={category}
             imageSrc={activityIllustration}
             badge={null}
           />
-          <div className='mx-auto'>
+          <div>
             <div className='mb-10 pl-14'>
               <div className='mb-2 flex min-h-[40px] items-center'>
                 <EditableTemplateName
-                  className='text-[32px]'
+                  className='text-[32px] leading-9'
                   key={templateId}
                   name={templateName}
                   templateId={templateId}
@@ -181,35 +179,35 @@ const ActivityDetails = (props: Props) => {
                     <DetailsBadge className='bg-grape-700 text-white'>Custom</DetailsBadge>
                   ))}
               </div>
-              <div className='mb-8'>
-                {isOwner ? (
-                  <div className='flex items-center justify-between'>
-                    <div className='w-max rounded-full border border-solid border-slate-400 pl-3'>
-                      <UnstyledTemplateSharing
-                        noModal={true}
-                        isOwner={isOwner}
-                        template={selectedTemplate}
-                      />
-                    </div>
-                    <div className='rounded-full border border-solid border-slate-400'>
-                      <DetailAction
-                        icon={'delete'}
-                        tooltip={'Delete template'}
-                        onClick={removeTemplate}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
-                )}
-              </div>
 
               <div className='w-[480px]'>
+                <div className='mb-8'>
+                  {isOwner ? (
+                    <div className='flex items-center justify-between'>
+                      <div className='w-max rounded-full border border-solid border-slate-400 pl-3'>
+                        <UnstyledTemplateSharing
+                          noModal={true}
+                          isOwner={isOwner}
+                          template={selectedTemplate}
+                        />
+                      </div>
+                      <div className='rounded-full border border-solid border-slate-400'>
+                        <DetailAction
+                          icon={'delete'}
+                          tooltip={'Delete template'}
+                          onClick={removeTemplate}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
+                  )}
+                </div>
                 <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes and
                 vote on the hottest topics. As you <b>discuss topics</b>, create{' '}
                 <b>takeaway tasks</b> that can be integrated with your backlog.
               </div>
-              <div className='mt-[18px] flex items-center'>
+              <div className='mt-[18px] flex min-w-max items-center'>
                 <div className='flex items-center gap-3'>
                   <JiraSVG />
                   <GitHubSVG />
@@ -227,6 +225,7 @@ const ActivityDetails = (props: Props) => {
           </div>
         </div>
       </div>
+      <ActivityDetailsSidebar selectedTemplateRef={selectedTemplate} teamsRef={teams} />
     </div>
   )
 }

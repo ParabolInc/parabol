@@ -204,7 +204,12 @@ const NewMeeting = (props: Props) => {
         />
         <TeamAndSettings>
           <SettingsFirstRow>
-            <NewMeetingTeamPicker selectedTeamRef={selectedTeam} teamsRef={teams} />
+            <NewMeetingTeamPicker
+              onSelectTeam={(teamId) => history.replace(`/new-meeting/${teamId}`)}
+              selectedTeamRef={selectedTeam}
+              teamsRef={teams}
+              parentId='newMeetingRoot'
+            />
           </SettingsFirstRow>
           <SettingsRow>
             <NewMeetingSettings

@@ -114,7 +114,6 @@ const removeTeamMember = async (
   // if a new meeting was currently running, remove them from it
   const filterFn = (stage: CheckInStage | UpdatesStage | EstimateStage | AgendaItemsStage) =>
     (stage as CheckInStage | UpdatesStage).teamMemberId === teamMemberId ||
-    (stage as EstimateStage).creatorUserId === userId ||
     agendaItemIds.includes((stage as AgendaItemsStage).agendaItemId)
   removeSlackAuths(userId, teamId)
   await removeStagesFromMeetings(filterFn, teamId, dataLoader)

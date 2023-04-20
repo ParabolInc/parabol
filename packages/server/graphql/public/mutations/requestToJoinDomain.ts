@@ -7,6 +7,7 @@ import getTeamIdsByOrgIds from '../../../postgres/queries/getTeamIdsByOrgIds'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationRequestToJoinOrg from '../../../database/types/NotificationRequestToJoinOrg'
 import publishNotification from './helpers/publishNotification'
+import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 
 const REQUEST_EXPIRATION_DAYS = 30
 
@@ -21,7 +22,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const pg = getKysely()
   const viewerId = getUserId(authToken)
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  const domain = viewer.email.split('@')[1]
+  const domain = getDomainFromEmail(viewer.email)
   const now = new Date()
 
   const orgIds = await getEligibleOrgIdsByDomain(domain, viewerId)
