@@ -35,7 +35,7 @@ const MeetingSeriesRedirector = (props: Props) => {
   const {viewer} = data
   const {meeting, canAccessMeeting} = viewer
 
-  if (!canAccessMeeting) {
+  if (!canAccessMeeting && !meeting) {
     return (
       <Redirect
         to={{
