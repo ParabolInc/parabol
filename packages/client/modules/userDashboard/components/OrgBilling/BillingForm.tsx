@@ -76,7 +76,6 @@ const BillingForm = (props: Props) => {
       redirect: 'if_required'
     })
     setIsLoading(false)
-    console.log('🚀 ~ error:', error)
     if (error) {
       setErrorMsg(error.message)
       return
