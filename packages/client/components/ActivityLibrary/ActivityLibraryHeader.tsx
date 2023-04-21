@@ -15,9 +15,9 @@ export const ActivityLibraryHeader = (props: Props) => {
 
   return (
     <div className={clsx('mx-1', className)}>
-      <div className='flex basis-[15%] items-center justify-start px-2'>
+      <div className='flex basis-[15%] items-center justify-start px-2 py-4'>
         {leftNavigation}
-        <div className='hidden shrink-0 py-4 pr-2 text-lg font-semibold lg:text-xl xl:block'>
+        <div className='hidden shrink-0 pr-2 text-lg font-semibold lg:text-xl xl:block'>
           {title}
         </div>
       </div>

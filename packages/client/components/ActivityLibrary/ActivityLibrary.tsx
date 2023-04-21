@@ -220,7 +220,7 @@ export const ActivityLibrary = (props: Props) => {
           ) : (
             <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
               {CREATE_CUSTOM_ACTIVITY_ALLOW_LIST.includes(selectedCategory) && (
-                <CreateActivityCard className='flex-1 max-sm:hidden' category={selectedCategory} />
+                <CreateActivityCard category={selectedCategory} />
               )}
               {templatesToRender.map((template) => {
                 const templateIllustration =

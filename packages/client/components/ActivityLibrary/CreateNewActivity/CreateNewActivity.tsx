@@ -23,6 +23,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
+import BaseButton from '../../BaseButton'
 
 type ActivityType = 'retrospective' | 'poker'
 
@@ -32,6 +33,7 @@ const SUPPORTED_CUSTOM_ACTIVITIES = [
     type: 'retrospective' as ActivityType,
     includedCategories: ['retrospective', 'feedback', 'strategy'],
     image: newTemplate,
+    isEnabled: true,
     badges: [
       {category: 'retrospective', theme: 'bg-grape-500 text-white', title: 'Retrospective'},
       {category: 'feedback', theme: 'bg-jade-400 text-white', title: 'Feedback'},
@@ -50,6 +52,7 @@ const SUPPORTED_CUSTOM_ACTIVITIES = [
     type: 'poker' as ActivityType,
     includedCategories: ['estimation'],
     image: estimatedEffortTemplate,
+    isEnabled: false,
     badges: [{category: 'estimation', theme: 'bg-tomato-500 text-white', title: 'Esimation'}],
     phases: [
       {title: 'Select', description: 'or create issues to score'},
@@ -177,16 +180,16 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   return (
-    <div className='h-full w-full flex-col bg-white'>
+    <div className='flex h-full w-full flex-col bg-white'>
       <ActivityLibraryHeader
         title='Create New Activity'
         leftNavigation={
-          <Link className='mx-4' to={`/activity-library/`} replace={true}>
+          <Link className='mx-2' to={`/activity-library/`} replace={true}>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
         }
       />
-      <div className='flex flex-col items-center gap-y-8'>
+      <div className='flex flex-1 flex-col items-center gap-y-8'>
         <h1 className='text-lg font-normal'>
           Choose an <span className='font-semibold'>Activity Format:</span>
         </h1>
@@ -200,8 +203,9 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={category.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 bg-transparent'
+                className='disabled:user-select-none group flex cursor-pointer flex-col items-start space-y-3 bg-transparent disabled:cursor-not-allowed disabled:opacity-50'
                 value={category.type}
+                disabled={!category.isEnabled}
               >
                 <ActivityCard
                   className='w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
@@ -244,10 +248,15 @@ export const CreateNewActivity = (props: Props) => {
             />
           </div>
         </div>
-        <button className='hidden' onClick={createCustomActivityLookup[selectedActivity.type]}>
-          Create template
-        </button>
-        {error && <div className='text-tomato-500'>{error}</div>}
+        {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
+        <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
+          <BaseButton
+            className='mx-auto h-12 rounded-full bg-gradient-to-r from-[#ED4C56] to-[#ED4C86] text-lg font-semibold text-white'
+            onClick={createCustomActivityLookup[selectedActivity.type]}
+          >
+            Create template
+          </BaseButton>
+        </div>
       </div>
     </div>
   )
