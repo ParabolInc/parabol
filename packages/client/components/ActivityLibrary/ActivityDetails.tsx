@@ -8,7 +8,7 @@ import IconLabel from '../IconLabel'
 import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
 import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
 import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
-import {ActivityCard, CategoryID, MeetingThemes} from './ActivityCard'
+import {ActivityCard, CategoryID, CategoryThemes} from './ActivityCard'
 import {activityIllustrations} from './ActivityIllustrations'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import useTemplateDescription from '../../utils/useTemplateDescription'
@@ -169,7 +169,7 @@ const ActivityDetails = (props: Props) => {
                 />
               </div>
               <div className='mb-4 flex gap-2'>
-                <DetailsBadge className={clsx(MeetingThemes[category].primary, 'text-white')}>
+                <DetailsBadge className={clsx(CategoryThemes[category].primary, 'text-white')}>
                   {CATEGORY_ID_TO_NAME[category]}
                 </DetailsBadge>
                 {!selectedTemplate.isFree &&

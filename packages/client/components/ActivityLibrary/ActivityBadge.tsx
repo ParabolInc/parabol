@@ -10,7 +10,7 @@ export const ActivityBadge = (props: Props) => {
   const {className, children} = props
 
   return (
-    <div className={clsx('m-2 rounded-full px-2 py-1 text-xs font-semibold', className)}>
+    <div className={clsx('rounded-full px-2 py-1 text-xs font-semibold', className)}>
       {children}
     </div>
   )

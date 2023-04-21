@@ -4,6 +4,7 @@ import React, {useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
+import {Link} from 'react-router-dom'
 
 import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
@@ -11,13 +12,11 @@ import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityBadge} from './ActivityBadge'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import {activityIllustrations} from './ActivityIllustrations'
-import {Link} from 'react-router-dom'
 import useRouter from '../../hooks/useRouter'
 import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-
-import {CategoryID, MeetingThemes} from './ActivityCard'
+import {CategoryID, CategoryThemes} from './ActivityCard'
 import CreateActivityCard from './CreateActivityCard'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {Close} from '@mui/icons-material'
@@ -44,15 +43,11 @@ const query = graphql`
         edges {
           node {
             ...ActivityLibrary_template @relay(mask: false)
-            ...CreateActivityCard_templates
           }
         }
       }
       featureFlags {
         retrosInDisguise
-      }
-      teams {
-        ...CreateActivityCard_teams
       }
     }
   }
@@ -75,12 +70,20 @@ export const CATEGORY_ID_TO_NAME: Record<CategoryID | typeof QUICK_START_CATEGOR
   strategy: 'Strategy'
 }
 
-const RETRO_CATEGORIES: Array<CategoryID> = ['retrospective', 'feedback', 'strategy']
+/**
+ * Defines the list of categories where the 'Create Custom Activity' card is allowed to appear
+ */
+const CREATE_CUSTOM_ACTIVITY_ALLOW_LIST: Array<typeof QUICK_START_CATEGORY_ID | CategoryID> = [
+  QUICK_START_CATEGORY_ID,
+  'retrospective',
+  'feedback',
+  'strategy'
+]
 
 const CategoryIDToColorClass = {
   [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
   ...Object.fromEntries(
-    Object.entries(MeetingThemes).map(([key, value]) => {
+    Object.entries(CategoryThemes).map(([key, value]) => {
       return [key, value.primary]
     })
   )
@@ -90,7 +93,7 @@ export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {featureFlags, availableTemplates, teams} = viewer
+  const {featureFlags, availableTemplates} = viewer
 
   const templates = useMemo(
     () => [
@@ -126,7 +129,7 @@ export const ActivityLibrary = (props: Props) => {
 
   const {match} = useRouter<{categoryId?: string}>()
   const {params} = match
-  const {categoryId: selectedCategory} = params
+  const selectedCategory = params.categoryId as CategoryID
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
@@ -216,15 +219,8 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           ) : (
             <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-              {RETRO_CATEGORIES.includes(selectedCategory as CategoryID) && (
-                <CreateActivityCard
-                  className='flex-1 max-sm:hidden'
-                  category={selectedCategory as CategoryID}
-                  teamsRef={teams}
-                  templatesRef={availableTemplates.edges
-                    .map((edge) => edge.node)
-                    .filter((template) => template.type === 'retrospective')}
-                />
+              {CREATE_CUSTOM_ACTIVITY_ALLOW_LIST.includes(selectedCategory) && (
+                <CreateActivityCard className='flex-1 max-sm:hidden' category={selectedCategory} />
               )}
               {templatesToRender.map((template) => {
                 const templateIllustration =
@@ -248,7 +244,7 @@ export const ActivityLibrary = (props: Props) => {
                       imageSrc={activityIllustration}
                       badge={
                         !template.isFree ? (
-                          <ActivityBadge className='bg-gold-300 text-grape-700'>
+                          <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>
                             Premium
                           </ActivityBadge>
                         ) : null

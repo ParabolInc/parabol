@@ -28,17 +28,22 @@ interface CardTheme {
   secondary: string
 }
 
-export type CategoryID = 'retrospective' | 'estimation' | 'standup' | 'feedback' | 'strategy'
+export type CategoryID =
+  | 'recommended'
+  | 'retrospective'
+  | 'estimation'
+  | 'standup'
+  | 'feedback'
+  | 'strategy'
 
-export const MeetingThemes: Record<CategoryID, CardTheme> = {
+export const CategoryThemes: Record<CategoryID, CardTheme> = {
+  recommended: {primary: 'bg-slate-500', secondary: 'bg-slate-200'},
   standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
   estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
   retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]'},
   feedback: {primary: 'bg-jade-400', secondary: 'bg-jade-100'},
   strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100'}
 }
-
-const DefaultTheme = {primary: 'bg-slate-500', secondary: 'bg-slate-200'}
 
 export interface ActivityCardProps {
   className?: string
@@ -52,7 +57,7 @@ export interface ActivityCardProps {
 
 export const ActivityCard = (props: ActivityCardProps) => {
   const {className, category, title, titleAs, imageSrc, badge, children} = props
-  const theme = category ? MeetingThemes[category] : DefaultTheme
+  const theme = category ? CategoryThemes[category] : CategoryThemes.recommended
   const Title = titleAs ?? ActivityCardTitle
 
   return (
@@ -68,7 +73,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       )}
       {children}
       <div className='flex flex-shrink-0'>
-        <div className={clsx('h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} />
+        <div className={clsx('mt-auto h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} />
         <div className='ml-auto'>{badge}</div>
       </div>
     </div>
