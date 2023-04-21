@@ -12,6 +12,11 @@ import FlatButton from '../../../../components/FlatButton'
 import RowInfo from '../../../../components/Row/RowInfo'
 import {useFragment} from 'react-relay'
 import IconLabel from '../../../../components/IconLabel'
+import useModal from '../../../../hooks/useModal'
+import lazyPreload from '../../../../utils/lazyPreload'
+import useMenu from '../../../../hooks/useMenu'
+import BillingLeaderMenu from '../../../../components/BillingLeaderMenu'
+import {MenuPosition} from '../../../../hooks/useCoords'
 
 const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
   padding: '12px 16px',
@@ -36,6 +41,13 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
+const BillingLeaderActionMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu'
+    )
+)
+
 type Props = {
   billingLeaderRef: BillingLeader_user$key
   isFirstRow: boolean
@@ -43,6 +55,9 @@ type Props = {
 
 const BillingLeader = (props: Props) => {
   const {billingLeaderRef, isFirstRow} = props
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
+  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   const billingLeader = useFragment(
     graphql`
       fragment BillingLeader_user on User {
@@ -52,6 +67,15 @@ const BillingLeader = (props: Props) => {
     `,
     billingLeaderRef
   )
+  // const organizationUsers = useFragment(
+  //   graphql`
+  //     fragment BillingLeader_user on User {
+  //       preferredName
+  //       picture
+  //     }
+  //   `,
+  //   billingLeaderRef
+  // )
   const {preferredName, picture} = billingLeader
 
   return (
@@ -65,9 +89,26 @@ const BillingLeader = (props: Props) => {
       <RowActions>
         <ActionsBlock>
           <MenuToggleBlock>
-            <StyledButton>
-              <IconLabel icon='more_vert' />
-            </StyledButton>
+            <MenuToggleBlock>
+              <StyledButton
+                onClick={togglePortal}
+                onMouseEnter={BillingLeaderActionMenu.preload}
+                ref={originRef}
+              >
+                <IconLabel icon='more_vert' />
+              </StyledButton>
+            </MenuToggleBlock>
+            {menuPortal(
+              <BillingLeaderMenu
+                menuProps={menuProps}
+                // // isViewerLastBillingLeader={isViewerLastBillingLeader}
+                // isViewerLastBillingLeader={true}
+                // organizationUser={billingLeader}
+                // organization={organization}
+                // toggleLeave={toggleLeave}
+                // toggleRemove={toggleRemove}
+              />
+            )}
           </MenuToggleBlock>
         </ActionsBlock>
       </RowActions>
