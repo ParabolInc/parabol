@@ -34,4 +34,9 @@ type NotifyRequestToJoinOrg implements Notification {
   Picture of the user who made the request
   """
   picture: URL!
+
+  """
+  Request created by
+  """
+  requestCreatedBy: ID!
 }
