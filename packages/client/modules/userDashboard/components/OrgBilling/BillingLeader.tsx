@@ -61,6 +61,7 @@ const BillingLeader = (props: Props) => {
   const billingLeader = useFragment(
     graphql`
       fragment BillingLeader_user on User {
+        ...BillingLeaderMenu_user
         preferredName
         picture
       }
@@ -101,6 +102,7 @@ const BillingLeader = (props: Props) => {
             {menuPortal(
               <BillingLeaderMenu
                 menuProps={menuProps}
+                billingLeaderRef={billingLeader}
                 // // isViewerLastBillingLeader={isViewerLastBillingLeader}
                 // isViewerLastBillingLeader={true}
                 // organizationUser={billingLeader}

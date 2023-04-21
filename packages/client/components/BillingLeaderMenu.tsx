@@ -6,14 +6,14 @@ import {MenuProps} from '../hooks/useMenu'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import {BillingLeaderActionMenu_organization$key} from '../__generated__/BillingLeaderActionMenu_organization.graphql'
-import {BillingLeaderActionMenu_organizationUser$key} from '../__generated__/BillingLeaderActionMenu_organizationUser.graphql'
+import {BillingLeaderMenu_user$key} from '../__generated__/ BillingLeaderMenu_user.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 
 interface Props extends WithMutationProps {
   menuProps: MenuProps
   // isViewerLastBillingLeader: boolean
-  // organizationUser: BillingLeaderActionMenu_organizationUser$key
+  billingLeaderRef: BillingLeaderMenu_user$key
   // organization: BillingLeaderActionMenu_organization$key
   // toggleLeave: () => void
   // toggleRemove: () => void
@@ -21,7 +21,8 @@ interface Props extends WithMutationProps {
 
 const BillingLeaderMenu = (props: Props) => {
   const {
-    menuProps
+    menuProps,
+    billingLeaderRef
     // isViewerLastBillingLeader,
     // organizationUser: organizationUserRef,
     // submitting,
@@ -54,9 +55,17 @@ const BillingLeaderMenu = (props: Props) => {
   //   organizationUserRef
   // )
   const atmosphere = useAtmosphere()
+  const billingLeader = useFragment(
+    graphql`
+      fragment BillingLeaderMenu_user on User {
+        id
+      }
+    `,
+    billingLeaderRef
+  )
   // const {id: orgId, tier} = organization
   const {viewerId} = atmosphere
-  const userId = 'test'
+  const {id: userId} = billingLeader
   // const {newUserUntil, role, user} = organizationUser
   // const isBillingLeader = role === 'BILLING_LEADER'
   // const {id: userId} = user
