@@ -23,7 +23,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
-import BaseButton from '../../BaseButton'
+import PrimaryButton from '../../PrimaryButton'
 
 type ActivityType = 'retrospective' | 'poker'
 
@@ -184,7 +184,7 @@ export const CreateNewActivity = (props: Props) => {
       <ActivityLibraryHeader
         title='Create New Activity'
         leftNavigation={
-          <Link className='mx-2' to={`/activity-library/`} replace={true}>
+          <Link className='p-4' to={`/activity-library/`} replace={true}>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
         }
@@ -250,12 +250,12 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          <BaseButton
-            className='mx-auto h-12 rounded-full bg-gradient-to-r from-[#ED4C56] to-[#ED4C86] text-lg font-semibold text-white'
+          <PrimaryButton
+            className='mx-auto h-12 text-lg font-semibold'
             onClick={createCustomActivityLookup[selectedActivity.type]}
           >
             Create template
-          </BaseButton>
+          </PrimaryButton>
         </div>
       </div>
     </div>
