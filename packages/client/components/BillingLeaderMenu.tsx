@@ -59,16 +59,20 @@ const BillingLeaderMenu = (props: Props) => {
     graphql`
       fragment BillingLeaderMenu_user on User {
         id
+        organizationUser(orgId: $orgId) {
+          id
+          newUserUntil
+          tier
+        }
       }
     `,
     billingLeaderRef
   )
   // const {id: orgId, tier} = organization
   const {viewerId} = atmosphere
-  const {id: userId} = billingLeader
-  // const {newUserUntil, role, user} = organizationUser
-  // const isBillingLeader = role === 'BILLING_LEADER'
-  // const {id: userId} = user
+  const {id: userId, organizationUser} = billingLeader
+  console.log('🚀 ~ billingLeader:', billingLeader)
+  const {newUserUntil, tier} = organizationUser
 
   const setRole =
     (role: string | null = null) =>
@@ -92,12 +96,7 @@ const BillingLeaderMenu = (props: Props) => {
         {/* )} */}
         {viewerId !== userId && (
           <MenuItem
-            label={
-              // tier === 'team' && new Date(newUserUntil) > new Date()
-              // ? 'Refund and Remove'
-              // : 'Remove from Organization'
-              'Remove from Organization'
-            }
+            label={tier === 'team' && new Date(newUserUntil) > new Date()}
             // onClick={toggleRemove}
           />
         )}
