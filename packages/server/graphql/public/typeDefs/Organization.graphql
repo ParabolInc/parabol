@@ -171,4 +171,5 @@ type OrganizationFeatureFlags {
   teamsLimit: Boolean!
   SAMLUI: Boolean!
   promptToJoinOrg: Boolean!
+  publicTeams: Boolean!
 }

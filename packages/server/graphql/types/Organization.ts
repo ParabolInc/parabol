@@ -73,9 +73,13 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'all the teams the viewer is on in the organization',
       resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        return isSuperUser(authToken)
-          ? allTeamsOnOrg
-          : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+        const org = await dataLoader.get('organizations').load(orgId)
+
+        if (isSuperUser(authToken)) return allTeamsOnOrg
+        else if (org?.featureFlags?.includes('publicTeams')) {
+          return allTeamsOnOrg
+        }
+        return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       }
     },
     tier: {

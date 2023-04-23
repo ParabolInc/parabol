@@ -562,11 +562,27 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const viewerId = getUserId(authToken)
         const user = (await dataLoader.get('users').load(userId))!
-        const teamIds =
-          viewerId === userId || isSuperUser(authToken)
-            ? user.tms
-            : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+        const organizationsForUser = await dataLoader.get('organizationUsersByUserId').load(userId)
+        const orgIds = organizationsForUser.map(({orgId}: OrganizationUserType) => orgId)
+
+        const orgsWithPublicTeam = []
+
+        for (const orgId of orgIds) {
+          const org = await dataLoader.get('organizations').load(orgId)
+          if (org.featureFlags?.includes('publicTeams')) {
+            const tms = await dataLoader.get('teamsByOrgIds').load(org.id)
+            orgsWithPublicTeam.push(...tms.filter((team) => !user.tms.includes(team.id)))
+          }
+        }
+
+        const isViewerOrSuperUser = viewerId === userId || isSuperUser(authToken)
+
+        const teamIds = isViewerOrSuperUser
+          ? user.tms
+          : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+
         const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+        teams.push(...orgsWithPublicTeam)
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
       }
