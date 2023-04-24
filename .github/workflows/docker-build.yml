@@ -3,7 +3,7 @@ name: Build Docker image
 on: [push]
 
 env:
-  PARABOL_DOCKERFILE: docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
+  PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 
 jobs:
@@ -82,7 +82,7 @@ jobs:
         with:
           network: host
           allow: network.host
-          #file: ${PARABOL_DOCKERFILE}
+          file: ${PARABOL_DOCKERFILE}
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
