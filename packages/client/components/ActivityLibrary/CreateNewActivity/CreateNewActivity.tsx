@@ -117,8 +117,8 @@ export const CreateNewActivity = (props: Props) => {
     const categoryId = params.categoryId
     if (!categoryId) return defaultActivity
 
-    const selectedActivity = SUPPORTED_CUSTOM_ACTIVITIES.find((category) =>
-      category.includedCategories.includes(categoryId)
+    const selectedActivity = SUPPORTED_CUSTOM_ACTIVITIES.find((activity) =>
+      activity.includedCategories.includes(categoryId)
     )
     if (!selectedActivity) return defaultActivity
     return selectedActivity
@@ -175,7 +175,7 @@ export const CreateNewActivity = (props: Props) => {
 
   const handleActivitySelection = (activityType: ActivityType) => {
     setSelectedActivity(
-      SUPPORTED_CUSTOM_ACTIVITIES.find((category) => category.type === activityType)!
+      SUPPORTED_CUSTOM_ACTIVITIES.find((acitivty) => acitivty.type === activityType)!
     )
   }
 
@@ -199,29 +199,29 @@ export const CreateNewActivity = (props: Props) => {
           value={selectedActivity?.type}
           onValueChange={handleActivitySelection}
         >
-          {SUPPORTED_CUSTOM_ACTIVITIES.map((category) => {
+          {SUPPORTED_CUSTOM_ACTIVITIES.map((activity) => {
             return (
               <RadioGroup.Item
-                key={category.title}
+                key={activity.title}
                 className='disabled:user-select-none group flex cursor-pointer flex-col items-start space-y-3 bg-transparent disabled:cursor-not-allowed disabled:opacity-50'
-                value={category.type}
-                disabled={!category.isEnabled}
+                value={activity.type}
+                disabled={!activity.isEnabled}
               >
                 <ActivityCard
                   className='w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
-                  title={category.title}
+                  title={activity.title}
                   titleAs={CategoryTitle}
-                  imageSrc={category.image}
+                  imageSrc={activity.image}
                 />
                 <div className='flex gap-x-3 p-3'>
-                  {category.badges.map((badge) => (
+                  {activity.badges.map((badge) => (
                     <ActivityBadge key={badge.category} className={badge.theme}>
                       {badge.title}
                     </ActivityBadge>
                   ))}
                 </div>
                 <div className='mx-5 space-y-2 text-left'>
-                  {category.phases.map((phase) => (
+                  {activity.phases.map((phase) => (
                     <div key={phase.title}>
                       <span className='font-semibold text-slate-800'>{phase.title}</span>{' '}
                       {phase.description}
