@@ -4,6 +4,7 @@ import {MutationResolvers} from '../resolverTypes'
 import getKysely from '../../../postgres/getKysely'
 import isRequestToJoinDomainAllowed from '../../../utils/isRequestToJoinDomainAllowed'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import standardError from '../../../utils/standardError'
 
 const REQUEST_EXPIRATION_DAYS = 30
 
@@ -19,10 +20,10 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const now = new Date()
 
   if (!(await isRequestToJoinDomainAllowed(domain))) {
-    return {success: false}
+    return standardError(new Error('No relevant organizations in the domain were found'))
   }
 
-  const insertResult = await pg
+  await pg
     .insertInto('DomainJoinRequest')
     .values({
       createdBy: viewerId,
@@ -32,10 +33,6 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
     .onConflict((oc) => oc.columns(['createdBy', 'domain']).doNothing())
     .returning('id')
     .executeTakeFirst()
-
-  if (!insertResult) {
-    return {success: false}
-  }
 
   return {success: true}
 }
