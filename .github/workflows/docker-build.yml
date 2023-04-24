@@ -44,6 +44,9 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          buildkitd-flags: '--allow-insecure-entitlement network.host'
+          driver-opts: network=host
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -78,6 +81,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           network: host
+          allow: network.host
           #file: ${PARABOL_DOCKERFILE}
           context: .
           build-args: |
