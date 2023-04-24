@@ -55,7 +55,6 @@ class GoogleClientManager extends GoogleManager {
         popup && popup.close()
         onCompleted(...args)
       }
-      console.log(`returned 'code' from Google is: ${code}`)
       LoginWithGoogleMutation(
         atmosphere,
         {code, segmentId, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
