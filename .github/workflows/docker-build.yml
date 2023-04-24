@@ -76,16 +76,16 @@ jobs:
           network: host
           file: ${PARABOL_DOCKERFILE}
           context: .
-          build-args:
-            - "_NODE_VERSION=${NODE_VERSION}"
-            - "_BUILD_ENV_PATH=${PARABOL_BUILD_ENV_PATH}"
-            - "_SECURITY_ENABLED=${BUILD_WITH_SECURITY}"
+          build-args: |
+            "_NODE_VERSION=${NODE_VERSION}"
+            "_BUILD_ENV_PATH=${PARABOL_BUILD_ENV_PATH}"
+            "_SECURITY_ENABLED=${BUILD_WITH_SECURITY}"
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${DOCKER_REPOSITORY_FOR_REF}:${{github.ref_name}}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref="${{ secrets.GCP_AR_PARABOL_DEV }}"
+          cache-to: type=registry,ref="${{ secrets.GCP_AR_PARABOL_DEV }}",mode=max
 
       - name: List produced Docker images
         run: |
