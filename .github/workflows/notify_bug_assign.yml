@@ -18,7 +18,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
           # custom message to send to slack
-          args: '{\"channel\":\"${{ secrets.SLACK_PR_CHANNEL_ID }}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Bug got assigned:* ${{ github.event.issue.title }}\"}}]}' 
+          args: '{\"channel\":\"${{ secrets.SLACK_BUG_CHANNEL_ID }}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Bug got assigned:* ${{ github.event.issue.title }}\"}}]}' 
         
         # Pick up events even if the job is success.
         if: success()
