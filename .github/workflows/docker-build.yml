@@ -13,16 +13,6 @@ jobs:
       contents: 'read'
       id-token: 'write'
     services:
-      rethinkdb:
-        image: rethinkdb:2.4.0
-        ports:
-          - 8080:8080
-          - 28015:28015
-          - 29015:29015
-      redis:
-        image: redis:6.2.6
-        ports:
-          - 6379:6379
       postgres:
         image: postgres:12.10-alpine
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
@@ -38,6 +28,16 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      rethinkdb:
+        image: rethinkdb:2.4.0
+        ports:
+          - 8080:8080
+          - 28015:28015
+          - 29015:29015
+      redis:
+        image: redis:6.2.6
+        ports:
+          - 6379:6379
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -73,6 +73,12 @@ jobs:
           fi
 
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
+
+      - name: Testing envs
+        run: |
+          env
+
+          echo ${{ env }}
 
       - name: Build and push
         uses: docker/build-push-action@v4
