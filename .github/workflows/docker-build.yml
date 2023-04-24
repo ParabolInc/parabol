@@ -78,7 +78,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           network: host
-          file: ${PARABOL_DOCKERFILE}
+          #file: ${PARABOL_DOCKERFILE}
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
