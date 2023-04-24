@@ -7,7 +7,7 @@ import {
 } from '~/mutations/ArchiveOrganizationMutation'
 import {
   OrganizationSubscription as TOrganizationSubscription,
-  OrganizationSubscriptionVariables
+  OrganizationSubscription$variables
 } from '~/__generated__/OrganizationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
@@ -20,21 +20,43 @@ import {
   setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
 import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
-      __typename
-      ...AddOrgMutation_organization @relay(mask: false)
-      ...ArchiveOrganizationMutation_organization @relay(mask: false)
-      ...PayLaterMutation_organization @relay(mask: false)
-      ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
-      ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
-      ...UpdateCreditCardMutation_organization @relay(mask: false)
-      ...UpdateOrgMutation_organization @relay(mask: false)
-      ...UpgradeToTeamTierMutation_organization @relay(mask: false)
-      ...RemoveOrgUserMutation_organization @relay(mask: false)
-      ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
+      fieldName
+      AddOrgPayload {
+        ...AddOrgMutation_organization @relay(mask: false)
+      }
+      ArchiveOrganizationPayload {
+        ...ArchiveOrganizationMutation_organization @relay(mask: false)
+      }
+      PayLaterPayload {
+        ...PayLaterMutation_organization @relay(mask: false)
+      }
+      SetOrgUserRoleAddedPayload {
+        ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
+      }
+      SetOrgUserRoleRemovedPayload {
+        ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
+      }
+      UpdateCreditCardPayload {
+        ...UpdateCreditCardMutation_organization @relay(mask: false)
+      }
+      UpdateOrgPayload {
+        ...UpdateOrgMutation_organization @relay(mask: false)
+      }
+      UpgradeToTeamTierPayload {
+        ...UpgradeToTeamTierMutation_organization @relay(mask: false)
+      }
+      RemoveOrgUserPayload {
+        ...RemoveOrgUserMutation_organization @relay(mask: false)
+      }
+      UpdateTemplateScopeSuccess {
+        ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
+      }
     }
   }
 `
@@ -55,30 +77,15 @@ const updateHandlers = {
 
 const OrganizationSubscription = (
   atmosphere: Atmosphere,
-  variables: OrganizationSubscriptionVariables,
+  variables: OrganizationSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TOrganizationSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('organizationSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as keyof typeof updateHandlers
-      const handler = updateHandlers[type]
-      if (handler) {
-        handler(payload, {atmosphere, store})
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {organizationSubscription} = result
-      const {__typename: type} = organizationSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(organizationSubscription as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('organizationSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('organizationSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(OrganizationSubscription.name, variables)
     }

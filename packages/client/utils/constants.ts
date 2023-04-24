@@ -166,7 +166,16 @@ export const TeamBenefits = [
   'Premium templates',
   'Custom templates',
   'Unlimited meeting history',
-  'Priority customer support'
+  'Priority customer support',
+  'AI Summaries'
+]
+
+export const EnterpriseBenefits = [
+  'Enhanced security',
+  'Priority customer support',
+  'SAML Single Sign-On (SSO)',
+  'Uptime SLA',
+  'Jira Server Integration'
 ]
 
 export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [

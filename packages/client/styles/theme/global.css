@@ -74,7 +74,7 @@
     box-sizing: border-box;
     border-width: 0;
     border-style: solid;
-    border-color: theme('borderColor.DEFAULT'); 
+    border-color: theme('borderColor.DEFAULT');
   }
 
   html {
@@ -96,12 +96,16 @@
     text-decoration: none;
   }
 
-  input {
-    @apply antialiased;
-  }
-
+  button,
+  input,
+  select,
   textarea {
     @apply antialiased;
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
   }
 
   img {

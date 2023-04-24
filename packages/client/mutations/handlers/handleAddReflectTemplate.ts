@@ -1,5 +1,6 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
+import {putTemplateInConnection} from '../UpdateReflectTemplateScopeMutation'
 
 const handleAddReflectTemplate = (
   newNode: RecordProxy | null,
@@ -14,6 +15,14 @@ const handleAddReflectTemplate = (
   })
   if (!meetingSettings) return
   addNodeToArray(newNode, meetingSettings, 'teamTemplates', 'name')
+
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const allTemplatesDetailsConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityDetails_availableTemplates')
+  putTemplateInConnection(newNode, allTemplatesDetailsConn, store)
+  const allTemplatesLibraryConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')
+  putTemplateInConnection(newNode, allTemplatesLibraryConn, store)
 }
 
 export default handleAddReflectTemplate

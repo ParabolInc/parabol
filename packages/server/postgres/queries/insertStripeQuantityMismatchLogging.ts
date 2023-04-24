@@ -3,7 +3,8 @@ import getPg from '../getPg'
 import {insertStripeQuantityMismatchLoggingQuery} from './generated/insertStripeQuantityMismatchLoggingQuery'
 
 const insertStripeQuantityMismatchLogging = async (
-  userId: string,
+  orgId: string,
+  userId: string | null,
   eventTime: Date,
   eventType: string,
   stripePreviousQuantity: number,
@@ -12,6 +13,7 @@ const insertStripeQuantityMismatchLogging = async (
 ) => {
   return insertStripeQuantityMismatchLoggingQuery.run(
     {
+      orgId,
       userId,
       eventTime,
       eventType,

@@ -25,6 +25,8 @@ import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
+import useModal from '../hooks/useModal'
+import {EndRecurringMeetingModal} from './TeamPrompt/Recurrence/EndRecurringMeetingModal'
 
 const CardWrapper = styled('div')<{
   maybeTabletPlus: boolean
@@ -233,6 +235,7 @@ const MeetingCard = (props: Props) => {
             id
             title
             cancelledAt
+            recurrenceRule
           }
         }
       }
@@ -258,6 +261,10 @@ const MeetingCard = (props: Props) => {
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
+
+  const {togglePortal: toggleEndRecurringMeetingModal, modalPortal: endRecurringMeetingModal} =
+    useModal({id: 'endRecurringMeetingModal'})
+
   if (!team) {
     // 95% sure there's a bug in relay causing this
     const errObj = {id: meetingId} as any
@@ -329,9 +336,18 @@ const MeetingCard = (props: Props) => {
               teamId={teamId}
               menuProps={menuProps}
               popTooltip={popTooltip}
+              openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
             />
           )}
           {tooltipPortal('Copied!')}
+          {meeting &&
+            endRecurringMeetingModal(
+              <EndRecurringMeetingModal
+                meetingId={meetingId}
+                recurrenceRule={isRecurring ? meetingSeries.recurrenceRule : undefined}
+                closeModal={toggleEndRecurringMeetingModal}
+              />
+            )}
         </InnerCard>
       </InnerCardWrapper>
     </CardWrapper>

@@ -54,14 +54,9 @@ const useInitialSafeRoute = (
   useEffect(
     () => {
       const meetingPath = getMeetingPathParams()
-      const {phaseSlug, stageIdxSlug, meetingId: pathMeetingId} = meetingPath
+      const {phaseSlug, stageIdxSlug} = meetingPath
       if (!meeting) {
-        history.replace({
-          pathname: `/invitation-required`,
-          search: `?redirectTo=${encodeURIComponent(
-            window.location.pathname
-          )}&meetingId=${pathMeetingId}`
-        })
+        // We should not reach this as we should filter out inaccessible meetings in MeetingSelector
         setSafeRoute(false)
         return
       }

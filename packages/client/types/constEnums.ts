@@ -42,7 +42,7 @@ export const enum Breakpoint {
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
   VOTE_PHASE = 800,
   FUZZY_TABLET = 700,
-  BIG_DISPLAY = 1900
+  ORG_DRAWER = 1680
 }
 
 export const enum Card {
@@ -405,6 +405,15 @@ export const enum Threshold {
   VERIFY_TOKEN_LIFESPAN = 2592000000, // 30 days
   UPCOMING_INVOICE_EMAIL_WARNING = 345600000, // 4 days
   UPCOMING_INVOICE_TIME_VALID = 120000 // 2 minutes
+}
+
+// Use these values for easier testing of team limits and usage stats
+export const enum ThresholdTest {
+  MIN_STICKY_TEAM_MEETING_ATTENDEES = 0,
+  MIN_STICKY_TEAM_MEETINGS = 0,
+  MAX_STARTER_TIER_TEAMS = 0,
+  STARTER_TIER_LOCK_AFTER_DAYS = 0,
+  STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
 }
 
 export const enum Times { // ms

@@ -5,47 +5,151 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.96.0 2023-Mar-15
+## 6.100.0 2023-Apr-19
+
 ### Added
 
-- feat(checkout-flow): add teams limit warning (#7879)
-- feat(checkout-flow): credit card UI (#7812)
-- feat(retros-in-disguise): Base activity library + stubbed cards (#7836)
-- feat(checkout-flow): implement billing leader UI (#7910)
-- feat(rid): Basic activity library search (#7891)
-- feat(standups): Persist draft responses to localstorage (#7925)
-- feat(checkout-flow): add downgrade logic (#7830)
+- **retros-in-disguise**: Retro Details Sidebar (#8008)
+- **metrics**: Add icloud.com as another generic domain (#8049)
+- user presence supports k8s (#7208)
+- **deps**: bump vm2 from 3.9.15 to 3.9.16 (#8035)
+- **prompt-to-join**: Add "would you like to join org" notification (#8003)
+- **retros-in-disguise**: Create retro template from retro categories view (#8027)
+- improve tailwind classes specificity (#8064)
+- **checkout-flow**: right drawer (#8004)
 
 ### Fixed
 
-- fix: various styles after tailwind migration (#7884)
-- fix: position of notification bell badge (#7907)
-- fix: do not run removeOrgUserTaskUpdater for undefined tasks (#7772)
-- fix: fix usage stats charts on small amount of data (#7873)
-- fix(teams-limit): count only teams that have had at least 1 meeting in the last 30 days (#7918)
-- fix(templates): Fix 'Create new template' button error for retros (#7917)
-- fix: changing width to max-width (#7913)
-- fix: slack stats (#7926)
+- ensure task exists (#8042)
+- ensure teamMembers exist in payload (#8043)
+- when user leaves team, do not remove estimate stages they created (#8045)
+- add args to dd-trace (#7766)
+- expire failed login attempts (#8038)
+- Rename makeTemplateDescription -> useTemplateDescription to satisfy hooks rules (#8066)
+- prevent repeating date in stanudps name (#8059)
+- remove tailwind selector strategy (#8068)
+
+## 6.99.1 2023-Apr-17
+
+### Fixed
+
+- More strict for sending email invites from temp email services
+
+## 6.99.0 2023-Apr-12
+
+### Added
+
+- **retros-in-disguise**: Activity Details (no sidebar) (#7990)
+- **retros-in-disguise**: Added activity library as a nav item (#8029)
 
 ### Changed
 
-- chore(ai-summary): update logging (#7893)
-- chore(tailwind): Add default colors (#7892)
-- chore: add temporary story points update result logging (#7897)
-- chore: node version bump for security updates (#7901)
-- chore: simplify org plans button logic (#7899)
-- chore(metrics): emit is_patient_0 as user properties for GA4 (#7877)
-- chore: consolidate payload types for user sign-up/log-in activities (#7895)
-- chore(relay): createFragmentContainer -> useFragment 6/N (#7874)
-- chore(relay): createFragmentContainer -> useFragment 7/7 (#7875)
-- chore(pipeline): remove any reference to dev environment (#7920)
-- chore(template-limits): add template limit flag to p0 domains (#7921)
-- chore(relay): Remove 'UNSTABLE_renderPolicy: full' (#7919)
-- chore(dx): Add Parabol employees to reviewers to prevent auto-request-review (#7922)
-- chore(teams-limit): change first warning notification text (#7862)
-- chore(tailwind): Fix rename warning (#7924)
-- chore: add $data suffix to relay data fragments (#7928)
-- chore(upgradeRelay): refactor response and variables from relay mutation types (#7929)
+- move new feature announcement to main Dashboard (#8028)
+- removed private schema dropdown in graphiql (#7997)
+- bump vm2 from 3.9.11 to 3.9.15 (#8014)
+
+### Fixed
+
+- **recurrence** update recurrenceSettings call (#8019)
+- syntax error when adjusting the user tier with empty list (#7935)
+- missing font styles on inputs, textareas etc (#8031)
+- **sprint-poker**: workaround for adding Parabol tasks (#8032)
+
+## 6.98.1 2023-Apr-10
+
+### Fixed
+
+- Added missing NotificationMeetingStageTimeLimitEnd to rootTypes
+
+## 6.98.0 2023-Apr-06
+
+### Added
+
+- **retros-in-disguise**: Activity categories (#7927)
+- **retros-in-disguise**: Added activity library cards (#7908)
+- **recurrence**: Allow changing meeting series name (#7850)
+- **recurrence**: End Recurring Meeting Confirmation Modal (#7998)
+- pick a fun name for the default team when user signs up (#8000)
+
+### Changed
+
+- **prompt-to-join-org**: add feature promptToJoin feature flag (#7977)
+- **ai-summary**: invert feature flag (#7985)
+- **ai-summary**: replace GPT-3 with ChatGPT (#7958)
+- **ai-summary**: revert chatgpt change (#8001)
+- **metrics**: Consolidate GA4 sign_up events emission (#7931)
+- Allow super users to archive teams (#7992)
+- upgrade relay (#7880)
+- remove nx from package (#7993)
+
+### Fixed
+
+- org members panel UI (#7978)
+- fix non-enterprise usage stats, use teams limit algorithm (#7937)
+- fix reviewers (#7994)
+- **sentiment-analysis**: write undefined as sentimentScore for meetings without reflections with scores (#7999)
+- fix an import error after relay upgrade
+
+## 6.97.0 2023-Mar-30
+
+### Added
+
+- **team-health**: calculate & write sentiment scores for reflections & retro meetings (#7671)
+- remove proration (#7721)
+
+### Changed
+
+- add libvips to dist (#7911)
+- Migrate MeetingTemplate table (Phase 2 of 3) (#7800)
+
+## 6.96.1 2023-Mar-28
+
+### Fixed
+
+- Stronger RRule validation to prevent NaN interval (#7950)
+
+## 6.96.0 2023-Mar-15
+
+### Added
+
+- **checkout-flow**: add teams limit warning (#7879)
+- **checkout-flow**: credit card UI (#7812)
+- **retros-in-disguise**: Base activity library + stubbed cards (#7836)
+- **checkout-flow**: implement billing leader UI (#7910)
+- **rid**: Basic activity library search (#7891)
+- **standups**: Persist draft responses to localstorage (#7925)
+- **checkout-flow**: add downgrade logic (#7830)
+
+### Fixed
+
+- various styles after tailwind migration (#7884)
+- position of notification bell badge (#7907)
+- do not run removeOrgUserTaskUpdater for undefined tasks (#7772)
+- fix usage stats charts on small amount of data (#7873)
+- **teams-limit**: count only teams that have had at least 1 meeting in the last 30 days (#7918)
+- **templates**: Fix 'Create new template' button error for retros (#7917)
+- changing width to max-width (#7913)
+- slack stats (#7926)
+
+### Changed
+
+- **ai-summary**: update logging (#7893)
+- **tailwind**: Add default colors (#7892)
+- add temporary story points update result logging (#7897)
+- node version bump for security updates (#7901)
+- simplify org plans button logic (#7899)
+- **metrics**: emit is_patient_0 as user properties for GA4 (#7877)
+- consolidate payload types for user sign-up/log-in activities (#7895)
+- **relay**: createFragmentContainer -> useFragment 6/N (#7874)
+- **relay**: createFragmentContainer -> useFragment 7/7 (#7875)
+- **pipeline**: remove any reference to dev environment (#7920)
+- **template-limits**: add template limit flag to p0 domains (#7921)
+- **relay**: Remove 'UNSTABLE_renderPolicy: full' (#7919)
+- **dx**: Add Parabol employees to reviewers to prevent auto-request-review (#7922)
+- **teams-limit**: change first warning notification text (#7862)
+- **tailwind**: Fix rename warning (#7924)
+- add $data suffix to relay data fragments (#7928)
+- **upgradeRelay**: refactor response and variables from relay mutation types (#7929)
 
 ## 6.95.1 2023-Mar-09
 

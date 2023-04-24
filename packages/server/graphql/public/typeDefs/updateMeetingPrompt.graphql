@@ -28,5 +28,3 @@ type UpdateMeetingPromptSuccess {
   """
   meeting: TeamPromptMeeting!
 }
-
-extend union MeetingSubscriptionPayload = UpdateMeetingPromptSuccess

@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import util from 'util'
@@ -16,18 +16,23 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
+import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import getIsEmailApprovedByOrg from '../public/mutations/helpers/getIsEmailApprovedByOrg'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
-import InviteToTeamPayload from '../types/InviteToTeamPayload'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
 export default {
-  type: new GraphQLNonNull(InviteToTeamPayload),
+  type: new GraphQLNonNull(
+    new GraphQLObjectType({
+      name: 'InviteToTeamPayload',
+      fields: {}
+    })
+  ),
   description: 'Send a team invitation to an email address',
   args: {
     meetingId: {
@@ -63,6 +68,35 @@ export default {
       }
 
       // RESOLUTION
+      const getInviteTrustScore = async (userId: string, teamId: string) => {
+        // hardcoded list of trouble domains. we can move to a DB table later if needed
+        const untrustedDomains = ['tempmail.cn']
+        const user = await dataLoader.get('users').loadNonNull(userId)
+        const {email} = user
+        const userDomain = getDomainFromEmail(email).toLowerCase()
+        const isUntrustedDomain = untrustedDomains.includes(userDomain)
+        if (isUntrustedDomain) return 0.05
+        const [total, pending] = await Promise.all([
+          r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
+          r
+            .table('TeamInvitation')
+            .getAll(teamId, {index: 'teamId'})
+            .filter({acceptedAt: null})
+            .count()
+            .run()
+        ])
+        // trust their first 10 invites
+        if (total <= 10) return 0.95
+        const accepted = total - pending
+        // if no one has accepted one of their 10+ invites, don't trust them
+        if (accepted === 0) return 0.05
+        // the more folks accept their invite, the more trust they get
+        return accepted / total
+      }
+
+      const trustScore = await getInviteTrustScore(viewerId, teamId)
+      if (trustScore < 0.15)
+        return {error: {message: 'Cannot invite by email. Try using invite link'}, invitees: []}
       const subOptions = {mutatorId, operationId}
       const [users, team, inviter] = await Promise.all([
         getUsersByEmails(invitees),

@@ -53,6 +53,8 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     timelineEventRef
   )
 
+  const atmosphere = useAtmosphere()
+
   const {meeting, team} = timelineEvent
   if (!meeting) {
     return null
@@ -71,7 +73,6 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
 
-  const atmosphere = useAtmosphere()
   const onUpgrade = () => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'timelineHistoryLock',

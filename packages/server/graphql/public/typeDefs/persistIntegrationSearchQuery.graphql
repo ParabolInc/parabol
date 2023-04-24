@@ -20,5 +20,3 @@ type PersistIntegrationSearchQuerySuccess {
 }
 
 union PersistIntegrationSearchQueryPayload = PersistIntegrationSearchQuerySuccess | ErrorPayload
-
-extend union NotificationSubscriptionPayload = PersistIntegrationSearchQuerySuccess

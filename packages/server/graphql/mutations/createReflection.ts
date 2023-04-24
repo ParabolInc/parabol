@@ -17,6 +17,7 @@ import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
+import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 
 export default {
   type: CreateReflectionPayload,
@@ -42,12 +43,15 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
+    const {question} = reflectPrompt
     const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const {tier} = team
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
@@ -57,7 +61,10 @@ export default {
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
-    const entities = await getReflectionEntities(plaintextContent)
+    const [entities, sentimentScore] = await Promise.all([
+      getReflectionEntities(plaintextContent),
+      tier !== 'starter' ? getReflectionSentimentScore(question, plaintextContent) : undefined
+    ])
     const reflectionGroupId = generateUID()
 
     const reflection = new Reflection({
@@ -65,6 +72,7 @@ export default {
       content: normalizedContent,
       plaintextContent,
       entities,
+      sentimentScore,
       meetingId,
       promptId,
       reflectionGroupId,

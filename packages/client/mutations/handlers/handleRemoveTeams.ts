@@ -5,6 +5,7 @@ import pluralizeHandler from './pluralizeHandler'
 const handleRemoveTeam = (teamId: string, store: RecordSourceSelectorProxy<any>) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')!
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
+  viewer.setValue(false, 'canAccess', {entity: 'Team', id: teamId})
 }
 
 const handleRemoveTeams = pluralizeHandler(handleRemoveTeam)

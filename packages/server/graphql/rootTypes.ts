@@ -4,6 +4,7 @@ import ActionMeetingSettings from './types/ActionMeetingSettings'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
+import AzureDevOpsWorkItem from './types/AzureDevOpsWorkItem'
 import CheckInPhase from './types/CheckInPhase'
 import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
@@ -12,12 +13,12 @@ import GenericMeetingPhase from './types/GenericMeetingPhase'
 import IntegrationProviderOAuth1 from './types/IntegrationProviderOAuth1'
 import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
 import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
+import JiraDimensionField from './types/JiraDimensionField'
 import MeetingTemplate from './types/MeetingTemplate'
-import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
 import PokerTemplate from './types/PokerTemplate'
 import ReflectPhase from './types/ReflectPhase'
+import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
@@ -36,6 +37,7 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
+import UserTiersCount from './types/UserTiersCount'
 
 const rootTypes = [
   IntegrationProviderOAuth1,
@@ -54,8 +56,6 @@ const rootTypes = [
   TeamPromptResponsesPhase,
   GenericMeetingPhase,
   EstimatePhase,
-  NotificationTeamInvitation,
-  NotifyPromoteToOrgLeader,
   ActionMeeting,
   ActionMeetingMember,
   PokerMeetingSettings,
@@ -76,6 +76,10 @@ const rootTypes = [
   TeamPromptMeeting,
   TeamPromptMeetingMember,
   TeamPromptMeetingSettings,
-  Comment
+  Comment,
+  AzureDevOpsWorkItem,
+  JiraDimensionField,
+  RenamePokerTemplatePayload,
+  UserTiersCount
 ]
 export default rootTypes
