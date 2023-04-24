@@ -25,11 +25,11 @@ import lazyPreload from '../../../../utils/lazyPreload'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
-const UserDashTeamMenu = lazyPreload(
+const TeamFilterMenu = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'UserDashTeamMenu' */
-      '../../../../components/UserDashTeamMenu'
+      /* webpackChunkName: 'TeamFilterMenu' */
+      '../../../../components/TeamFilterMenu'
     )
 )
 
@@ -89,7 +89,7 @@ const UserTasksHeader = (props: Props) => {
     graphql`
       fragment UserTasksHeader_viewer on User {
         id
-        ...UserDashTeamMenu_viewer
+        ...TeamFilterMenu_viewer
         ...UserDashTeamMemberMenu_viewer
         teams {
           id
@@ -169,13 +169,13 @@ const UserTasksHeader = (props: Props) => {
         <StyledDashFilterToggle
           label='Team'
           onClick={teamFilterTogglePortal}
-          onMouseEnter={UserDashTeamMenu.preload}
+          onMouseEnter={TeamFilterMenu.preload}
           ref={teamFilterOriginRef}
           value={teamFilterName}
           iconText='group'
           dataCy='team-filter'
         />
-        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+        {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
 
         {/* Filter by Owner */}
         <StyledDashFilterToggle

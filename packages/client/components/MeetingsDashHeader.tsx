@@ -19,11 +19,11 @@ import useAtmosphere from '../hooks/useAtmosphere'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
-const UserDashTeamMenu = lazyPreload(
+const TeamFilterMenu = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'MeetingsDashTeamMenu' */
-      './UserDashTeamMenu'
+      /* webpackChunkName: 'TeamFilterMenu' */
+      './TeamFilterMenu'
     )
 )
 
@@ -53,7 +53,7 @@ const MeetingsDashHeader = (props: Props) => {
     graphql`
       fragment MeetingsDashHeader_viewer on User {
         id
-        ...UserDashTeamMenu_viewer
+        ...TeamFilterMenu_viewer
         teams {
           id
           name
@@ -91,13 +91,13 @@ const MeetingsDashHeader = (props: Props) => {
         <StyledDashFilterToggle
           label='Team'
           onClick={teamFilterTogglePortal}
-          onMouseEnter={UserDashTeamMenu.preload}
+          onMouseEnter={TeamFilterMenu.preload}
           ref={teamFilterOriginRef}
           value={teamFilterName}
           iconText='group'
           dataCy='team-filter'
         />
-        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+        {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
       </MeetingsDashHeaderDashSectionControls>
     </DashSectionHeader>
   )
