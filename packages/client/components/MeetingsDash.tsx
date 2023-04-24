@@ -15,6 +15,8 @@ import MeetingsDashEmpty from './MeetingsDashEmpty'
 import MeetingsDashHeader from './MeetingsDashHeader'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
+import {useUserTaskFilters} from '../utils/useUserTaskFilters'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -45,9 +47,6 @@ const MeetingsDash = (props: Props) => {
       fragment MeetingsDash_viewer on User {
         id
         dashSearch
-        teamFilter {
-          id
-        }
         preferredName
         teams {
           ...MeetingsDashActiveMeetings @relay(mask: false)
@@ -57,7 +56,9 @@ const MeetingsDash = (props: Props) => {
     `,
     viewerRef
   )
-  const {teams = [], preferredName = '', dashSearch, teamFilter} = viewer ?? {}
+  const atmosphere = useAtmosphere()
+  const {teamIds} = useUserTaskFilters(atmosphere.viewerId)
+  const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
   const activeMeetings = useMemo(() => {
     const sortedMeetings = teams
       .flatMap((team) => team.activeMeetings)
@@ -83,15 +84,15 @@ const MeetingsDash = (props: Props) => {
     const searchedMeetings = dashSearch
       ? sortedMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
       : sortedMeetings
-    const filteredMeetings = teamFilter
-      ? searchedMeetings.filter(({teamId}) => teamId === teamFilter.id)
-      : searchedMeetings
+    const filteredMeetings = searchedMeetings.filter((node) =>
+      teamIds ? teamIds.includes(node.teamId) : true
+    )
     return filteredMeetings.map((meeting, displayIdx) => ({
       ...meeting,
       key: meeting.id,
       displayIdx
     }))
-  }, [teams, dashSearch, teamFilter])
+  }, [teams, dashSearch, teamIds])
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
@@ -122,7 +123,7 @@ const MeetingsDash = (props: Props) => {
           <MeetingsDashEmpty
             name={preferredName}
             message={
-              dashSearch || teamFilter
+              dashSearch
                 ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS
                 : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS
             }

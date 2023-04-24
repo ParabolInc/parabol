@@ -30,6 +30,7 @@ class GoogleClientManager extends GoogleManager {
     })
     const uri = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
     submitMutation()
+    console.log(`uri = ${uri}`)
     const popup = window.open(
       uri,
       'OAuth',
@@ -55,6 +56,7 @@ class GoogleClientManager extends GoogleManager {
         popup && popup.close()
         onCompleted(...args)
       }
+      console.log(`returned 'code' from Google is: ${code}`)
       LoginWithGoogleMutation(
         atmosphere,
         {code, segmentId, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
