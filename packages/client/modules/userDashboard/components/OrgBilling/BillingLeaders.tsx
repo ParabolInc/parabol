@@ -73,6 +73,7 @@ const BillingLeaders = (props: Props) => {
     organizationRef
   )
   const {billingLeaders} = organization
+  const billingLeaderCount = billingLeaders.length
 
   return (
     <StyledPanel label={plural(billingLeaders.length, 'Billing Leader')}>
@@ -88,6 +89,7 @@ const BillingLeaders = (props: Props) => {
           key={billingLeader.id}
           billingLeaderRef={billingLeader}
           isFirstRow={idx === 0}
+          billingLeaderCount={billingLeaderCount}
         />
       ))}
       <StyledRow>

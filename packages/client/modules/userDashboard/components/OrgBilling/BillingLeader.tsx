@@ -51,10 +51,11 @@ const BillingLeaderActionMenu = lazyPreload(
 type Props = {
   billingLeaderRef: BillingLeader_user$key
   isFirstRow: boolean
+  billingLeaderCount: number
 }
 
 const BillingLeader = (props: Props) => {
-  const {billingLeaderRef, isFirstRow} = props
+  const {billingLeaderRef, isFirstRow, billingLeaderCount} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
   const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
@@ -103,7 +104,7 @@ const BillingLeader = (props: Props) => {
               <BillingLeaderMenu
                 menuProps={menuProps}
                 billingLeaderRef={billingLeader}
-                // // isViewerLastBillingLeader={isViewerLastBillingLeader}
+                billingLeaderCount={billingLeaderCount}
                 // isViewerLastBillingLeader={true}
                 // organizationUser={billingLeader}
                 // organization={organization}

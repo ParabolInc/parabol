@@ -14,6 +14,7 @@ interface Props extends WithMutationProps {
   menuProps: MenuProps
   // isViewerLastBillingLeader: boolean
   billingLeaderRef: BillingLeaderMenu_user$key
+  billingLeaderCount: number
   // organization: BillingLeaderActionMenu_organization$key
   // toggleLeave: () => void
   // toggleRemove: () => void
@@ -22,7 +23,8 @@ interface Props extends WithMutationProps {
 const BillingLeaderMenu = (props: Props) => {
   const {
     menuProps,
-    billingLeaderRef
+    billingLeaderRef,
+    billingLeaderCount
     // isViewerLastBillingLeader,
     // organizationUser: organizationUserRef,
     // submitting,
@@ -73,6 +75,8 @@ const BillingLeaderMenu = (props: Props) => {
   const {id: userId, organizationUser} = billingLeader
   console.log('🚀 ~ billingLeader:', billingLeader)
   const {newUserUntil, tier} = organizationUser
+  const isViewer = viewerId === userId
+  const isViewerLastBillingLeader = isViewer && billingLeaderCount === 1
 
   const setRole =
     (role: string | null = null) =>
@@ -86,17 +90,17 @@ const BillingLeaderMenu = (props: Props) => {
   return (
     <>
       <Menu ariaLabel={'Select your action'} {...menuProps}>
-        <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
-        {/* {!isBillingLeader && (
-          <MenuItem label='Promote to Billing Leader' onClick={setRole('BILLING_LEADER')} />
-        )} */}
-        {/* {viewerId === userId && !isViewerLastBillingLeader && ( */}
-        {/* <MenuItem label='Leave Organization' onClick={toggleLeave} /> */}
-        <MenuItem label='Leave Organization' />
-        {/* )} */}
-        {viewerId !== userId && (
+        {!isViewerLastBillingLeader && (
+          <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
+        )}
+        {isViewer && !isViewerLastBillingLeader && <MenuItem label='Leave Organization' />}
+        {!isViewer && (
           <MenuItem
-            label={tier === 'team' && new Date(newUserUntil) > new Date()}
+            label={
+              tier === 'team' && new Date(newUserUntil) > new Date()
+                ? 'Refund and Remove'
+                : 'Remove from Organization'
+            }
             // onClick={toggleRemove}
           />
         )}
