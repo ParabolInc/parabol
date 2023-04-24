@@ -19,6 +19,9 @@ export async function up() {
     
     CREATE UNIQUE INDEX IF NOT EXISTS "DomainJoinRequest_createdBy_domain_unique"
     ON "DomainJoinRequest" ("createdBy", "domain");
+    
+    DROP TRIGGER IF EXISTS "update_DomainJoinRequest_updatedAt" ON "DomainJoinRequest";
+    CREATE TRIGGER "update_DomainJoinRequest_updatedAt" BEFORE UPDATE ON "DomainJoinRequest" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
   `)
   await client.end()
 }
