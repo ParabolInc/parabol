@@ -30,7 +30,6 @@ class GoogleClientManager extends GoogleManager {
     })
     const uri = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
     submitMutation()
-    console.log(`uri = ${uri}`)
     const popup = window.open(
       uri,
       'OAuth',
