@@ -26,9 +26,9 @@ const CreateActivityCard = (props: Props) => {
   const {category, className} = props
 
   return (
-    <Link className='flex' to={`/activity-library/new-activity/${category}`}>
+    <Link className={clsx('flex', className)} to={`/activity-library/new-activity/${category}`}>
       <ActivityLibraryCard
-        className={clsx('flex-1 cursor-pointer', className)}
+        className={'flex-1 cursor-pointer'}
         theme={CREATE_ACTIVITY_CARD_THEMES[category]}
         badge={<ActivityBadge className='mx-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>}
       >

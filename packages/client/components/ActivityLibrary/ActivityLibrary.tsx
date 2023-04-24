@@ -207,8 +207,11 @@ export const ActivityLibrary = (props: Props) => {
                   Try tapping a category above, using a different search, or creating exactly what
                   you have in mind.
                 </div>
-                {/* :TODO: (jmtaber129): Add the "create custom activity" card */}
-                <div className='mt-0.5'>TODO: create custom activity</div>
+                <div className='h-40 w-64'>
+                  {CREATE_CUSTOM_ACTIVITY_ALLOW_LIST.includes(selectedCategory) && (
+                    <CreateActivityCard category={selectedCategory} className='h-full' />
+                  )}
+                </div>
               </div>
             </div>
           ) : (
