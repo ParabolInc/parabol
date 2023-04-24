@@ -9,7 +9,7 @@ import newTemplate from '../../../../../static/images/illustrations/newTemplate.
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 
 import {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
-import {ActivityCard, CATEGORY_THEMES, CategoryID} from '../ActivityCard'
+import {ActivityCard} from '../ActivityCard'
 import {ActivityBadge} from '../ActivityBadge'
 
 import IconLabel from '../../IconLabel'
@@ -24,7 +24,7 @@ import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMut
 import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
 import PrimaryButton from '../../PrimaryButton'
-import {CATEGORY_ID_TO_NAME} from '../ActivityLibrary'
+import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
 
 type ActivityType = 'retrospective' | 'poker'
 
@@ -213,6 +213,7 @@ export const CreateNewActivity = (props: Props) => {
               >
                 <ActivityCard
                   className='w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
+                  theme={DEFAULT_CARD_THEME}
                   title={activity.title}
                   titleAs={CategoryTitle}
                   imageSrc={activity.image}

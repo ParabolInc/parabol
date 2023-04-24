@@ -3,7 +3,7 @@ import React from 'react'
 import {ActivityCard, ActivityCardProps} from './ActivityCard'
 
 export const ActivityLibraryCard = (props: ActivityCardProps) => {
-  const {className, category, ...rest} = props
+  const {className, ...rest} = props
 
   return (
     <ActivityCard
@@ -11,7 +11,6 @@ export const ActivityLibraryCard = (props: ActivityCardProps) => {
         'group transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-md motion-reduce:transition-none',
         className
       )}
-      category={category}
       {...rest}
     />
   )

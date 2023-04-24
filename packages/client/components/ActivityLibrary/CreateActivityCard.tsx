@@ -1,15 +1,25 @@
 import React from 'react'
-import {CategoryID} from './ActivityCard'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityBadge} from './ActivityBadge'
 import {Add as AddIcon} from '@mui/icons-material'
-import {CATEGORY_ID_TO_NAME} from './ActivityLibrary'
 import clsx from 'clsx'
 import {Link} from 'react-router-dom'
+import {
+  QUICK_START_CATEGORY_ID,
+  DEFAULT_CARD_THEME,
+  CATEGORY_THEMES,
+  CategoryID,
+  CATEGORY_ID_TO_NAME
+} from './Categories'
+
+const CREATE_ACTIVITY_CARD_THEMES = {
+  [QUICK_START_CATEGORY_ID]: DEFAULT_CARD_THEME,
+  ...CATEGORY_THEMES
+}
 
 interface Props {
   className?: string
-  category: CategoryID
+  category: CategoryID | typeof QUICK_START_CATEGORY_ID
 }
 
 const CreateActivityCard = (props: Props) => {
@@ -19,7 +29,7 @@ const CreateActivityCard = (props: Props) => {
     <Link className='flex' to={`/activity-library/new-activity/${category}`}>
       <ActivityLibraryCard
         className={clsx('flex-1 cursor-pointer', className)}
-        category={category}
+        theme={CREATE_ACTIVITY_CARD_THEMES[category]}
         badge={<ActivityBadge className='mx-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>}
       >
         <div className='flex flex-1 flex-col items-center justify-center text-center font-semibold md:mx-10'>

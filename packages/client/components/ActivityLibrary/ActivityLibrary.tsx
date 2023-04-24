@@ -16,10 +16,15 @@ import useRouter from '../../hooks/useRouter'
 import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {CategoryID, CATEGORY_THEMES} from './ActivityCard'
 import CreateActivityCard from './CreateActivityCard'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {Close} from '@mui/icons-material'
+import {
+  CATEGORY_ID_TO_NAME,
+  CATEGORY_THEMES,
+  CategoryID,
+  QUICK_START_CATEGORY_ID
+} from './Categories'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -58,17 +63,6 @@ interface Props {
 }
 
 const getTemplateValue = (template: {name: string}) => template.name
-
-const QUICK_START_CATEGORY_ID = 'recommended'
-
-export const CATEGORY_ID_TO_NAME: Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string> = {
-  [QUICK_START_CATEGORY_ID]: 'Quick Start',
-  retrospective: 'Retrospective',
-  estimation: 'Estimation',
-  standup: 'Standup',
-  feedback: 'Feedback',
-  strategy: 'Strategy'
-}
 
 /**
  * Defines the list of categories where the 'Create Custom Activity' card is allowed to appear
@@ -129,7 +123,7 @@ export const ActivityLibrary = (props: Props) => {
 
   const {match} = useRouter<{categoryId?: string}>()
   const {params} = match
-  const selectedCategory = params.categoryId as CategoryID
+  const selectedCategory = params.categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
@@ -239,7 +233,7 @@ export const ActivityLibrary = (props: Props) => {
                     <ActivityLibraryCard
                       className='flex-1'
                       key={template.id}
-                      category={template.category as CategoryID}
+                      theme={CATEGORY_THEMES[template.category as CategoryID]}
                       title={template.name}
                       imageSrc={activityIllustration}
                       badge={

@@ -1,6 +1,11 @@
 import clsx from 'clsx'
 import React, {ComponentPropsWithoutRef, PropsWithChildren} from 'react'
 
+export interface CardTheme {
+  primary: string
+  secondary: string
+}
+
 const ActivityCardImage = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {
   const {className, src} = props
 
@@ -23,31 +28,9 @@ const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
   )
 }
 
-interface CardTheme {
-  primary: string
-  secondary: string
-}
-
-export type CategoryID =
-  | 'recommended'
-  | 'retrospective'
-  | 'estimation'
-  | 'standup'
-  | 'feedback'
-  | 'strategy'
-
-export const CATEGORY_THEMES: Record<CategoryID, CardTheme> = {
-  recommended: {primary: 'bg-slate-500', secondary: 'bg-slate-200'},
-  standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
-  estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
-  retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]'},
-  feedback: {primary: 'bg-jade-400', secondary: 'bg-jade-100'},
-  strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100'}
-}
-
 export interface ActivityCardProps {
   className?: string
-  category?: CategoryID
+  theme: CardTheme
   titleAs?: React.ElementType
   title?: string
   imageSrc?: string
@@ -56,8 +39,7 @@ export interface ActivityCardProps {
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, category, title, titleAs, imageSrc, badge, children} = props
-  const theme = category ? CATEGORY_THEMES[category] : CATEGORY_THEMES.recommended
+  const {className, theme, title, titleAs, imageSrc, badge, children} = props
   const Title = titleAs ?? ActivityCardTitle
 
   return (
