@@ -16,7 +16,7 @@ import useRouter from '../../hooks/useRouter'
 import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {CategoryID, CategoryThemes} from './ActivityCard'
+import {CategoryID, CATEGORY_THEMES} from './ActivityCard'
 import CreateActivityCard from './CreateActivityCard'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {Close} from '@mui/icons-material'
@@ -83,7 +83,7 @@ const CREATE_CUSTOM_ACTIVITY_ALLOW_LIST: Array<typeof QUICK_START_CATEGORY_ID | 
 const CategoryIDToColorClass = {
   [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
   ...Object.fromEntries(
-    Object.entries(CategoryThemes).map(([key, value]) => {
+    Object.entries(CATEGORY_THEMES).map(([key, value]) => {
       return [key, value.primary]
     })
   )

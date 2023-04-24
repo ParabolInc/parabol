@@ -9,7 +9,7 @@ import newTemplate from '../../../../../static/images/illustrations/newTemplate.
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 
 import {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
-import {ActivityCard} from '../ActivityCard'
+import {ActivityCard, CATEGORY_THEMES, CategoryID} from '../ActivityCard'
 import {ActivityBadge} from '../ActivityBadge'
 
 import IconLabel from '../../IconLabel'
@@ -24,21 +24,26 @@ import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMut
 import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
 import PrimaryButton from '../../PrimaryButton'
+import {CATEGORY_ID_TO_NAME} from '../ActivityLibrary'
 
 type ActivityType = 'retrospective' | 'poker'
 
-const SUPPORTED_CUSTOM_ACTIVITIES = [
+type SupportedActivity = {
+  title: string
+  type: ActivityType
+  includedCategories: CategoryID[]
+  image: string
+  isEnabled: boolean
+  phases: {title: string; description: string}[]
+}
+
+const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
   {
     title: 'Process Feedback',
-    type: 'retrospective' as ActivityType,
+    type: 'retrospective',
     includedCategories: ['retrospective', 'feedback', 'strategy'],
     image: newTemplate,
     isEnabled: true,
-    badges: [
-      {category: 'retrospective', theme: 'bg-grape-500 text-white', title: 'Retrospective'},
-      {category: 'feedback', theme: 'bg-jade-400 text-white', title: 'Feedback'},
-      {category: 'strategy', theme: 'bg-rose-500 text-white', title: 'Strategy'}
-    ],
     phases: [
       {title: 'Add', description: 'comments'},
       {title: 'Group', description: 'comments'},
@@ -49,11 +54,10 @@ const SUPPORTED_CUSTOM_ACTIVITIES = [
   },
   {
     title: 'Estimate Items',
-    type: 'poker' as ActivityType,
+    type: 'poker',
     includedCategories: ['estimation'],
     image: estimatedEffortTemplate,
     isEnabled: false,
-    badges: [{category: 'estimation', theme: 'bg-tomato-500 text-white', title: 'Esimation'}],
     phases: [
       {title: 'Select', description: 'or create issues to score'},
       {title: 'Vote', description: 'on 1 or many scoring dimensions'},
@@ -114,7 +118,7 @@ export const CreateNewActivity = (props: Props) => {
 
   const [selectedActivity, setSelectedActivity] = useState(() => {
     const defaultActivity = SUPPORTED_CUSTOM_ACTIVITIES[0]!
-    const categoryId = params.categoryId
+    const categoryId = params.categoryId as CategoryID
     if (!categoryId) return defaultActivity
 
     const selectedActivity = SUPPORTED_CUSTOM_ACTIVITIES.find((activity) =>
@@ -214,9 +218,12 @@ export const CreateNewActivity = (props: Props) => {
                   imageSrc={activity.image}
                 />
                 <div className='flex gap-x-3 p-3'>
-                  {activity.badges.map((badge) => (
-                    <ActivityBadge key={badge.category} className={badge.theme}>
-                      {badge.title}
+                  {activity.includedCategories.map((badge) => (
+                    <ActivityBadge
+                      key={badge}
+                      className={clsx('text-white', CATEGORY_THEMES[badge].primary)}
+                    >
+                      {CATEGORY_ID_TO_NAME[badge]}
                     </ActivityBadge>
                   ))}
                 </div>

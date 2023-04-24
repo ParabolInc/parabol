@@ -36,7 +36,7 @@ export type CategoryID =
   | 'feedback'
   | 'strategy'
 
-export const CategoryThemes: Record<CategoryID, CardTheme> = {
+export const CATEGORY_THEMES: Record<CategoryID, CardTheme> = {
   recommended: {primary: 'bg-slate-500', secondary: 'bg-slate-200'},
   standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
   estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
@@ -57,7 +57,7 @@ export interface ActivityCardProps {
 
 export const ActivityCard = (props: ActivityCardProps) => {
   const {className, category, title, titleAs, imageSrc, badge, children} = props
-  const theme = category ? CategoryThemes[category] : CategoryThemes.recommended
+  const theme = category ? CATEGORY_THEMES[category] : CATEGORY_THEMES.recommended
   const Title = titleAs ?? ActivityCardTitle
 
   return (
