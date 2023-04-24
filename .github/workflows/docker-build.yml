@@ -82,7 +82,7 @@ jobs:
         with:
           network: host
           allow: network.host
-          file: ${PARABOL_DOCKERFILE}
+          file: docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
