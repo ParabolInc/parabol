@@ -5,7 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateCreditCardPayload from '../types/UpdateCreditCardPayload'
-import upgradeToTeamTier from './helpers/upgradeToTeamTier'
+import upgradeToTeamTierOld from './helpers/upgradeToTeamTierOld'
 
 export default {
   type: UpdateCreditCardPayload,
@@ -37,7 +37,7 @@ export default {
     // RESOLUTION
     const viewer = (await dataLoader.get('users').load(viewerId))! // authenticated user
     try {
-      await upgradeToTeamTier(orgId, stripeToken, viewer.email, dataLoader)
+      await upgradeToTeamTierOld(orgId, stripeToken, viewer.email, dataLoader)
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e
