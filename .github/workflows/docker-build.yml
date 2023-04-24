@@ -74,12 +74,6 @@ jobs:
 
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
 
-      - name: Testing envs
-        run: |
-          env
-
-          echo ${{ env }}
-
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
