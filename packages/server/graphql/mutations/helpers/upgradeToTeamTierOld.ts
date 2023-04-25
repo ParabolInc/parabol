@@ -6,10 +6,11 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
+import getCCFromCustomer from './getCCFromCustomer'
 
-const upgradeToTeamTier = async (
+const upgradeToTeamTierOld = async (
   orgId: string,
-  paymentMethodId: string,
+  source: string,
   email: string,
   dataLoader: DataLoaderWorker
 ) => {
@@ -19,6 +20,7 @@ const upgradeToTeamTier = async (
   const organization = await r.table('Organization').get(orgId).run()
   if (!organization) throw new Error('Bad orgId')
 
+  const {stripeId, stripeSubscriptionId} = organization
   const quantity = await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
@@ -27,18 +29,18 @@ const upgradeToTeamTier = async (
     .run()
 
   const manager = getStripeManager()
-  const customers = await manager.getCustomersByEmail(email)
-  const existingCustomer = customers.data.find((customer) => customer.metadata.orgId === orgId)
-  const customer = existingCustomer ?? (await manager.createCustomer(orgId, email))
-  const {id: customerId} = customer
-  await manager.attachPaymentToCustomer(customerId, paymentMethodId)
-  // wait until the payment is attached to the customer before updating the default payment method
-  await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
-  const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
-  const subscriptionFields = {
-    periodEnd: fromEpochSeconds(subscription.current_period_end),
-    periodStart: fromEpochSeconds(subscription.current_period_start),
-    stripeSubscriptionId: subscription.id
+  const customer = stripeId
+    ? await manager.updatePayment(stripeId, source)
+    : await manager.createCustomer(orgId, email, source)
+
+  let subscriptionFields = {}
+  if (!stripeSubscriptionId) {
+    const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
+    subscriptionFields = {
+      periodEnd: fromEpochSeconds(subscription.current_period_end),
+      periodStart: fromEpochSeconds(subscription.current_period_start),
+      stripeSubscriptionId: subscription.id
+    }
   }
 
   await Promise.all([
@@ -48,6 +50,7 @@ const upgradeToTeamTier = async (
         .get(orgId)
         .update({
           ...subscriptionFields,
+          creditCard: await getCCFromCustomer(customer),
           tier: 'team',
           stripeId: customer.id,
           tierLimitExceededAt: null,
@@ -69,4 +72,4 @@ const upgradeToTeamTier = async (
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }
 
-export default upgradeToTeamTier
+export default upgradeToTeamTierOld
