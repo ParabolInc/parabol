@@ -9,6 +9,7 @@ import NotificationRequestToJoinOrg from '../../../database/types/NotificationRe
 import publishNotification from './helpers/publishNotification'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import standardError from '../../../utils/standardError'
+import generateUID from '../../../generateUID'
 
 const REQUEST_EXPIRATION_DAYS = 30
 
@@ -35,6 +36,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const insertResult = await pg
     .insertInto('DomainJoinRequest')
     .values({
+      id: generateUID(),
       createdBy: viewerId,
       domain,
       expiresAt: new Date(now.getTime() + ms(`${REQUEST_EXPIRATION_DAYS}d`))

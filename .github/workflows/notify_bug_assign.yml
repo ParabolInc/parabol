@@ -1,0 +1,24 @@
+name: Bug Notifier
+run-name: Notifying Slack that bugs got assigned.
+on:
+  issues:
+    types: [labeled]
+jobs: 
+  notify-parabol:
+    name: Notify on Slack
+    runs-on: ubuntu-latest
+
+    # Only run this workflow if it target is main branch on pull_request event
+    if: ${{ contains(github.event.issue.labels.*.name, 'bug') && (github.event.label.name == 'Squad 1' || github.event.label.name == 'Squad 2')}}
+    
+    steps:
+      - uses: pullreminders/slack-action@master
+        env:
+          # required
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          # custom message to send to slack
+          args: '{\"channel\":\"${{ secrets.SLACK_BUG_CHANNEL_ID }}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Bug got assigned:* ${{ github.event.issue.title }}\"}}]}' 
+        
+        # Pick up events even if the job is success.
+        if: success()
