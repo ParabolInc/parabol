@@ -34,7 +34,7 @@ RUN cd parabol && \
         rm -rf .circleci .dockerignore .github .gitignore .husky .vscode build docker docs node_modules packages; \
     else \
         yarn build; \
-    fi \
+    fi && \
     chown -R node:1000 /home/node/parabol && \
     rm -rf .env
 
