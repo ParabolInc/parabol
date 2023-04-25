@@ -8,6 +8,7 @@ import getRethink from '../../../database/rethinkDriver'
 import NotificationRequestToJoinOrg from '../../../database/types/NotificationRequestToJoinOrg'
 import publishNotification from './helpers/publishNotification'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import standardError from '../../../utils/standardError'
 
 const REQUEST_EXPIRATION_DAYS = 30
 
@@ -28,7 +29,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const orgIds = await getEligibleOrgIdsByDomain(domain, viewerId)
 
   if (!orgIds.length) {
-    return {success: false}
+    return standardError(new Error('No relevant organizations in the domain were found'))
   }
 
   const insertResult = await pg
@@ -43,7 +44,8 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
     .executeTakeFirst()
 
   if (!insertResult) {
-    return {success: false}
+    // Request is already exists, lets return success without sending duplicate notifications
+    return {success: true}
   }
 
   const teamIds = await getTeamIdsByOrgIds(orgIds)
