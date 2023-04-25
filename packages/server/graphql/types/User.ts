@@ -554,37 +554,41 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     },
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
-      description: 'all the teams the user is on that the viewer can see.',
+      description: 'all the teams visible to the user',
       resolve: async (
         {id: userId}: {id: string},
         _args: unknown,
         {authToken, dataLoader}: GQLContext
       ) => {
         const viewerId = getUserId(authToken)
-        const user = (await dataLoader.get('users').load(userId))!
-        const organizationsForUser = await dataLoader.get('organizationUsersByUserId').load(userId)
-        const orgIds = organizationsForUser.map(({orgId}: OrganizationUserType) => orgId)
+        const [user, organizationUsers] = await Promise.all([
+          dataLoader.get('users').load(userId),
+          dataLoader.get('organizationUsersByUserId').load(userId)
+        ])
+        const orgIds = organizationUsers.map(({orgId}) => orgId)
 
-        const orgsWithPublicTeam = []
+        const organizationTmsWithPublicFlag = []
 
         for (const orgId of orgIds) {
-          const org = await dataLoader.get('organizations').load(orgId)
-          if (org.featureFlags?.includes('publicTeams')) {
-            const tms = await dataLoader.get('teamsByOrgIds').load(org.id)
-            orgsWithPublicTeam.push(...tms.filter((team) => !user.tms.includes(team.id)))
+          const organization = await dataLoader.get('organizations').load(orgId)
+          if (organization.featureFlags?.includes('publicTeams')) {
+            const tms = await dataLoader.get('teamsByOrgIds').load(organization.id)
+            organizationTmsWithPublicFlag.push(
+              ...tms.filter((team) => !user?.tms.includes(team.id))
+            )
           }
         }
 
         const isViewerOrSuperUser = viewerId === userId || isSuperUser(authToken)
 
         const teamIds = isViewerOrSuperUser
-          ? user.tms
-          : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+          ? user!.tms
+          : user!.tms.filter((teamId) => authToken.tms.includes(teamId))
 
         const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
-        teams.push(...orgsWithPublicTeam)
-        teams.sort((a, b) => (a.name > b.name ? 1 : -1))
-        return teams
+        const allVisibleTeams = [...teams, ...organizationTmsWithPublicFlag]
+        allVisibleTeams.sort((a, b) => (a.name > b.name ? 1 : -1))
+        return allVisibleTeams
       }
     },
     teamMember: {

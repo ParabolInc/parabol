@@ -76,7 +76,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         const org = await dataLoader.get('organizations').load(orgId)
 
         if (isSuperUser(authToken)) return allTeamsOnOrg
-        else if (org?.featureFlags?.includes('publicTeams')) {
+        else if (org.featureFlags?.includes('publicTeams')) {
           return allTeamsOnOrg
         }
         return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
