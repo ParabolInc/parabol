@@ -18,7 +18,7 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
-const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
+const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams: string) => {
   const {
     id: userId,
     createdAt,
@@ -43,7 +43,15 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     user.featureFlags.includes('templateLimit')
   )
   const addTemplateFlag = !stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasFlag)
-  const experimentalFlags = addTemplateFlag ? [...featureFlags, 'templateLimit'] : featureFlags
+  const experimentalFlags = [...featureFlags]
+  if (addTemplateFlag) {
+    experimentalFlags.push('templateLimit')
+  }
+
+  const params = new URLSearchParams(searchParams)
+  if (Boolean(params.get('rid'))) {
+    experimentalFlags.push('retrosInDisguise')
+  }
 
   await Promise.all([
     r({
