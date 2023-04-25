@@ -5,7 +5,6 @@ import {PromptToJoinOrgNotification_notification$key} from '~/__generated__/Prom
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 import useAtmosphere from '../hooks/useAtmosphere'
-import promptToJoinOrgSuccessToast from '../mutations/toasts/promptToJoinOrgSuccessToast'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import RequestToJoinDomainMutation from '../mutations/RequestToJoinDomainMutation'
 
@@ -37,7 +36,6 @@ const PromptToJoinOrgNotification = (props: Props) => {
 
   const onActionClick = () => {
     RequestToJoinDomainMutation(atmosphere, {})
-    atmosphere.eventEmitter.emit('addSnackbar', promptToJoinOrgSuccessToast)
   }
 
   return (

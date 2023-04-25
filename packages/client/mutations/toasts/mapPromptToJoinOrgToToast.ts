@@ -4,7 +4,6 @@ import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapPromptToJoinOrgToToast_notification$data} from '../../__generated__/mapPromptToJoinOrgToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 import makeNotificationToastKey from './makeNotificationToastKey'
-import promptToJoinOrgSuccessToast from './promptToJoinOrgSuccessToast'
 import RequestToJoinDomainMutation from '../RequestToJoinDomainMutation'
 
 graphql`
@@ -37,7 +36,6 @@ const mapPromptToJoinOrgToToast = (
         SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
           snackbarType: 'promptToJoinOrg'
         })
-        atmosphere.eventEmitter.emit('addSnackbar', promptToJoinOrgSuccessToast)
       }
     }
   }
