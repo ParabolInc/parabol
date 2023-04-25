@@ -17,6 +17,10 @@ export default class StripeManager {
     }
   }
 
+  async attachPaymentToCustomer(customerId: string, paymentMethodId: string) {
+    return this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+  }
+
   async createCustomer(orgId: string, email: string, source?: string) {
     return this.stripe.customers.create({
       email,
@@ -50,14 +54,9 @@ export default class StripeManager {
     })
   }
 
-  async createPaymentIntent(amount: number) {
-    return this.stripe.paymentIntents.create({
-      amount,
-      currency: 'usd',
-      automatic_payment_methods: {
-        // TODO: change this when we're handling webhooks for selected payments
-        enabled: true
-      }
+  async createSetupIntent() {
+    return this.stripe.setupIntents.create({
+      payment_method_types: ['card']
     })
   }
 
@@ -86,6 +85,10 @@ export default class StripeManager {
 
   async deleteSubscription(stripeSubscriptionId: string) {
     return this.stripe.subscriptions.del(stripeSubscriptionId)
+  }
+
+  async getCustomersByEmail(email: string) {
+    return this.stripe.customers.list({email})
   }
 
   async getSubscriptionItem(subscriptionId: string) {
@@ -157,6 +160,12 @@ export default class StripeManager {
 
   async updatePayment(customerId: string, source: string) {
     return this.stripe.customers.update(customerId, {source})
+  }
+
+  async updateDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
+    return this.stripe.customers.update(customerId, {
+      invoice_settings: {default_payment_method: paymentMethodId}
+    })
   }
 
   async updateSubscriptionItemQuantity(stripeSubscriptionItemId: string, quantity: number) {

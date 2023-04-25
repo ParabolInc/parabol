@@ -6,7 +6,7 @@ export async function up() {
   await client.connect()
   await client.query(`
     CREATE TABLE IF NOT EXISTS "DomainJoinRequest" (
-      "id" SERIAL PRIMARY KEY,
+      "id" TEXT PRIMARY KEY,
       "createdBy" VARCHAR(100) NOT NULL,
       "domain" VARCHAR(100) CHECK (lower(domain) = domain) NOT NULL,
       "expiresAt" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
