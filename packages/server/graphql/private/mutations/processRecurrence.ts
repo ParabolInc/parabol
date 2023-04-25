@@ -11,7 +11,7 @@ import standardError from '../../../utils/standardError'
 import {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
+import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safeCreateTeamPrompt'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -39,7 +39,7 @@ const startRecurringTeamPrompt = async (
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, r, dataLoader, {
     scheduledEndTime: nextMeetingStartDate,
     meetingSeriesId: meetingSeries.id,
-    meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : undefined
+    meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : DEFAULT_PROMPT
   })
 
   await r.table('NewMeeting').insert(meeting).run()
