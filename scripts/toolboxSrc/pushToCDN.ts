@@ -1,8 +1,12 @@
 import fs from 'fs'
+import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
 import path from 'path'
-import getFileStoreManager from '../../packages/server/fileStorage/getFileStoreManager'
 
-const migrateImages = async () => {
+/* Today, this just syncs meeting template illustrations.
+   In the future, we can use this to push an entire client build to a CDN.
+   That way each PPMI can function without access to our cloud CDN. #8101
+*/
+const pushToCDN = async () => {
   const collector = {}
   const context = (require as any).context(
     '../../static/images/illustrations',
@@ -32,4 +36,4 @@ const migrateImages = async () => {
   }
 }
 
-migrateImages()
+pushToCDN()

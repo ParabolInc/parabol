@@ -38,7 +38,7 @@ module.exports = ({isDeploy, noDeps}) => ({
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
     migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
-    migrateImages: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/migrateImages.ts')]
+    pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')]
   },
   output: {
     filename: '[name].js',
@@ -100,6 +100,7 @@ module.exports = ({isDeploy, noDeps}) => ({
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
     }),
     isDeploy &&
+      // #8101 Eventually this will be replaced with pushToCDN to decouple the push from the build
       new S3Plugin({
         s3Options: {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
