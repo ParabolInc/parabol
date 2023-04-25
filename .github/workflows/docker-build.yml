@@ -76,26 +76,23 @@ jobs:
           fi
 
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
+          echo "NO_DEPS=true" >> $GITHUB_ENV
 
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           network: host
           allow: network.host
-          #file: docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
             "_BUILD_ENV_PATH=${{ env.PARABOL_BUILD_ENV_PATH }}"
             "_SECURITY_ENABLED=${{ env.BUILD_WITH_SECURITY }}"
+            "_NO_DEPS=${{ env.NO_DEPS }}"
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{github.ref_name}}"
           cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}
           cache-to: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }},mode=max
-
-      - name: List produced Docker images
-        run: |
-          docker images

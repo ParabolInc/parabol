@@ -3,6 +3,7 @@ ARG _NODE_VERSION=${_NODE_VERSION}
 FROM node:${_NODE_VERSION} as base
 
 ARG _BUILD_ENV_PATH=environments/local-buildenv
+ARG _NO_DEPS="false"
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 
 WORKDIR /home/node
@@ -28,9 +29,15 @@ RUN cd parabol && \
     yarn db:migrate && \
     yarn pg:migrate up && \
     yarn pg:build && \
-    yarn build && \
+    if [ "$_NO_DEPS" = "true" ]; then \
+        yarn build --no-deps && \
+        rm -rf .circleci .dockerignore .github .gitignore .husky .vscode build docker docs node_modules packages; \
+    else \
+        yarn build; \
+    fi \
     chown -R node:1000 /home/node/parabol && \
     rm -rf .env
+
 
 #final image - copies in parabol build and applies all security configurations to container if enabled
 FROM redhat/ubi8:8.6
