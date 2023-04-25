@@ -62,21 +62,24 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
+      # 1.- Only images produced on tags are built with addiotional security. It takes about 2 more minutes to build.
+      # 2.- Change the NO_DEPS for tags to true whenenver we want to start building using the --no-deps option. It requires more memory than what is available in the free runners and it also takes more time to build.
       - name: Setup Docker build args
         run: |
           NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
           echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
 
           if [ ${{github.ref_type}} = "tag" ]; then
+            echo "NO_DEPS=false" >> $GITHUB_ENV
             echo "BUILD_WITH_SECURITY=true" >> $GITHUB_ENV
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
           else
+            echo "NO_DEPS=false" >> $GITHUB_ENV
             echo "BUILD_WITH_SECURITY=false" >> $GITHUB_ENV
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           fi
 
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-          echo "NO_DEPS=true" >> $GITHUB_ENV
 
       - name: Build and push
         uses: docker/build-push-action@v4
