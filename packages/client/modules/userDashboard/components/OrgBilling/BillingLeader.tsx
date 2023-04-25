@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../../../../components/Avatar/Avatar'
 import React from 'react'
 import {BillingLeader_user$key} from '../../../../__generated__/BillingLeader_user.graphql'
+import {BillingLeader_organization$key} from '../../../../__generated__/BillingLeader_organization.graphql'
 import Row from '../../../../components/Row/Row'
 import {ElementWidth} from '../../../../types/constEnums'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
@@ -12,11 +13,11 @@ import FlatButton from '../../../../components/FlatButton'
 import RowInfo from '../../../../components/Row/RowInfo'
 import {useFragment} from 'react-relay'
 import IconLabel from '../../../../components/IconLabel'
-import useModal from '../../../../hooks/useModal'
 import lazyPreload from '../../../../utils/lazyPreload'
 import useMenu from '../../../../hooks/useMenu'
 import BillingLeaderMenu from '../../../../components/BillingLeaderMenu'
 import {MenuPosition} from '../../../../hooks/useCoords'
+import useTooltip from '../../../../hooks/useTooltip'
 
 const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
   padding: '12px 16px',
@@ -52,13 +53,12 @@ type Props = {
   billingLeaderRef: BillingLeader_user$key
   isFirstRow: boolean
   billingLeaderCount: number
+  organizationRef: BillingLeader_organization$key
 }
 
 const BillingLeader = (props: Props) => {
-  const {billingLeaderRef, isFirstRow, billingLeaderCount} = props
+  const {billingLeaderRef, isFirstRow, billingLeaderCount, organizationRef} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
-  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   const billingLeader = useFragment(
     graphql`
       fragment BillingLeader_user on User {
@@ -69,16 +69,29 @@ const BillingLeader = (props: Props) => {
     `,
     billingLeaderRef
   )
-  // const organizationUsers = useFragment(
-  //   graphql`
-  //     fragment BillingLeader_user on User {
-  //       preferredName
-  //       picture
-  //     }
-  //   `,
-  //   billingLeaderRef
-  // )
+  const organization = useFragment(
+    graphql`
+      fragment BillingLeader_organization on Organization {
+        isViewerBillingLeader: isBillingLeader
+      }
+    `,
+    organizationRef
+  )
+  const {isViewerBillingLeader} = organization
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+
   const {preferredName, picture} = billingLeader
+  const isViewerLastBillingLeader = isViewerBillingLeader && billingLeaderCount === 1
+
+  const handleClick = () => {
+    togglePortal()
+    closeTooltip()
+  }
 
   return (
     <StyledRow isFirstRow={isFirstRow}>
@@ -91,15 +104,27 @@ const BillingLeader = (props: Props) => {
       <RowActions>
         <ActionsBlock>
           <MenuToggleBlock>
-            <MenuToggleBlock>
-              <StyledButton
-                onClick={togglePortal}
-                onMouseEnter={BillingLeaderActionMenu.preload}
-                ref={originRef}
-              >
-                <IconLabel icon='more_vert' />
-              </StyledButton>
-            </MenuToggleBlock>
+            {isViewerBillingLeader && (
+              <MenuToggleBlock>
+                <StyledButton
+                  onClick={handleClick}
+                  onMouseEnter={BillingLeaderActionMenu.preload}
+                  onMouseOver={openTooltip}
+                  onMouseOut={closeTooltip}
+                  ref={originRef}
+                  disabled={isViewerLastBillingLeader}
+                >
+                  <IconLabel icon='more_vert' ref={tooltipRef} />
+                </StyledButton>
+                {tooltipPortal(
+                  <div>
+                    {'You need to promote another Billing Leader'}
+                    <br />
+                    {'before you can remove this role.'}
+                  </div>
+                )}
+              </MenuToggleBlock>
+            )}
             {menuPortal(
               <BillingLeaderMenu
                 menuProps={menuProps}

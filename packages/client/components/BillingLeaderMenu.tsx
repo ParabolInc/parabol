@@ -90,10 +90,8 @@ const BillingLeaderMenu = (props: Props) => {
   return (
     <>
       <Menu ariaLabel={'Select your action'} {...menuProps}>
-        {!isViewerLastBillingLeader && (
-          <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
-        )}
-        {isViewer && !isViewerLastBillingLeader && <MenuItem label='Leave Organization' />}
+        <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
+        {isViewer && <MenuItem label='Leave Organization' />}
         {!isViewer && (
           <MenuItem
             label={

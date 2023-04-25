@@ -64,6 +64,7 @@ const BillingLeaders = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment BillingLeaders_organization on Organization {
+        ...BillingLeader_organization
         billingLeaders {
           id
           ...BillingLeader_user
@@ -90,6 +91,7 @@ const BillingLeaders = (props: Props) => {
           billingLeaderRef={billingLeader}
           isFirstRow={idx === 0}
           billingLeaderCount={billingLeaderCount}
+          organizationRef={organization}
         />
       ))}
       <StyledRow>
