@@ -5,6 +5,7 @@ import getKysely from '../../../postgres/getKysely'
 import isRequestToJoinDomainAllowed from '../../../utils/isRequestToJoinDomainAllowed'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import standardError from '../../../utils/standardError'
+import generateUID from '../../../generateUID'
 
 const REQUEST_EXPIRATION_DAYS = 30
 
@@ -26,6 +27,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   await pg
     .insertInto('DomainJoinRequest')
     .values({
+      id: generateUID(),
       createdBy: viewerId,
       domain,
       expiresAt: new Date(now.getTime() + ms(`${REQUEST_EXPIRATION_DAYS}d`))
