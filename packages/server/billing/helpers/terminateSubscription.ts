@@ -27,8 +27,6 @@ const terminateSubscription = async (orgId: string) => {
   const {organization} = rethinkResult
   const {stripeSubscriptionId} = organization
 
-  // stripe already does this for us (per account settings) but we do it here so we don't have to wait an hour
-  // if this function is called by a paymentFailed hook, then the sub may not exist, so catch and release
   if (stripeSubscriptionId) {
     const manager = getStripeManager()
     try {
