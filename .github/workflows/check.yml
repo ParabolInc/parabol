@@ -78,6 +78,7 @@ jobs:
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
+          yarn pg:generate
       - name: Build Assets
         run: yarn build
       - name: Check
