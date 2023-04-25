@@ -1,7 +1,7 @@
 import Notification from './Notification'
 
 interface Input {
-  domainJoinRequestId: number
+  domainJoinRequestId: string
   email: string
   name: string
   picture: string
@@ -10,7 +10,7 @@ interface Input {
 }
 
 export default class NotificationRequestToJoinOrg extends Notification {
-  domainJoinRequestId: number
+  domainJoinRequestId: string
   email: string
   name: string
   picture: string
