@@ -26,45 +26,15 @@ import useRouter from '../../../hooks/useRouter'
 import PrimaryButton from '../../PrimaryButton'
 import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
 
-type ActivityType = 'retrospective' | 'poker'
+const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
+  const {children, className, ...rest} = props
 
-type SupportedActivity = {
-  title: string
-  type: ActivityType
-  includedCategories: CategoryID[]
-  image: string
-  isEnabled: boolean
-  phases: {title: string; description: string}[]
+  return (
+    <span className={clsx('font-semibold text-slate-800', className)} {...rest}>
+      {children}
+    </span>
+  )
 }
-
-const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
-  {
-    title: 'Process Feedback',
-    type: 'retrospective',
-    includedCategories: ['retrospective', 'feedback', 'strategy'],
-    image: newTemplate,
-    isEnabled: true,
-    phases: [
-      {title: 'Add', description: 'comments'},
-      {title: 'Group', description: 'comments'},
-      {title: 'Discuss', description: 'topics'},
-      {title: 'Vote', description: 'on topics'},
-      {title: 'Create', description: 'takeaway tasks'}
-    ]
-  },
-  {
-    title: 'Estimate Items',
-    type: 'poker',
-    includedCategories: ['estimation'],
-    image: estimatedEffortTemplate,
-    isEnabled: false,
-    phases: [
-      {title: 'Select', description: 'or create issues to score'},
-      {title: 'Vote', description: 'on 1 or many scoring dimensions'},
-      {title: 'Push', description: 'esimations to your backlog'}
-    ]
-  }
-]
 
 const CategoryTitle = (props: ComponentPropsWithoutRef<'div'>) => {
   const {children, className, ...rest} = props
@@ -78,6 +48,66 @@ const CategoryTitle = (props: ComponentPropsWithoutRef<'div'>) => {
     </div>
   )
 }
+
+type ActivityType = 'retrospective' | 'poker'
+
+type SupportedActivity = {
+  title: string
+  type: ActivityType
+  includedCategories: CategoryID[]
+  image: string
+  isEnabled: boolean
+  phases: React.ReactNode
+}
+
+const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
+  {
+    title: 'Process Feedback',
+    type: 'retrospective',
+    includedCategories: ['retrospective', 'feedback', 'strategy'],
+    image: newTemplate,
+    isEnabled: true,
+    phases: (
+      <>
+        <div>
+          <Bold>Add</Bold> comments
+        </div>
+        <div>
+          <Bold>Group</Bold> comments
+        </div>
+        <div>
+          <Bold>Discuss</Bold> topics
+        </div>
+        <div>
+          <Bold>Vote</Bold> on topics
+        </div>
+        <div>
+          <Bold>Create</Bold> takeaway tasks
+        </div>
+      </>
+    )
+  },
+  {
+    title: 'Estimate Items',
+    type: 'poker',
+    includedCategories: ['estimation'],
+    image: estimatedEffortTemplate,
+    isEnabled: false,
+    phases: (
+      <>
+        <div>
+          <Bold>Select</Bold> or create issues to score
+        </div>
+        <div>
+          <Bold>Vote</Bold> on 1 or many scoring dimensions
+        </div>
+        <div>
+          <Bold>Push</Bold> esimations to your backlog
+        </div>
+      </>
+    )
+  }
+]
 
 const query = graphql`
   query CreateNewActivityQuery {
@@ -118,11 +148,11 @@ export const CreateNewActivity = (props: Props) => {
 
   const [selectedActivity, setSelectedActivity] = useState(() => {
     const defaultActivity = SUPPORTED_CUSTOM_ACTIVITIES[0]!
-    const categoryId = params.categoryId as CategoryID
-    if (!categoryId) return defaultActivity
+    const categoryId = params.categoryId
+    if (!params.categoryId) return defaultActivity
 
     const selectedActivity = SUPPORTED_CUSTOM_ACTIVITIES.find((activity) =>
-      activity.includedCategories.includes(categoryId)
+      activity.includedCategories.includes(categoryId as CategoryID)
     )
     if (!selectedActivity) return defaultActivity
     return selectedActivity
@@ -228,14 +258,7 @@ export const CreateNewActivity = (props: Props) => {
                     </ActivityBadge>
                   ))}
                 </div>
-                <div className='mx-5 space-y-2 text-left'>
-                  {activity.phases.map((phase) => (
-                    <div key={phase.title}>
-                      <span className='font-semibold text-slate-800'>{phase.title}</span>{' '}
-                      {phase.description}
-                    </div>
-                  ))}
-                </div>
+                <div className='mx-5 space-y-2 text-left'>{activity.phases}</div>
               </RadioGroup.Item>
             )
           })}
