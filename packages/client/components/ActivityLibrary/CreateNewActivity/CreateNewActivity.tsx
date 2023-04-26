@@ -23,8 +23,8 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
-import PrimaryButton from '../../PrimaryButton'
 import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
+import BaseButton from '../../BaseButton'
 
 const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
@@ -281,12 +281,12 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          <PrimaryButton
-            className='mx-auto h-12 text-lg font-semibold'
+          <BaseButton
+            className='mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
             onClick={createCustomActivityLookup[selectedActivity.type]}
           >
-            Create template
-          </PrimaryButton>
+            Confirm Format & Team
+          </BaseButton>
         </div>
       </div>
     </div>
