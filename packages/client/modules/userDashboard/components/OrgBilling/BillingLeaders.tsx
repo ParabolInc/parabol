@@ -65,6 +65,7 @@ const BillingLeaders = (props: Props) => {
     graphql`
       fragment BillingLeaders_organization on Organization {
         ...BillingLeader_organization
+        isViewerBillingLeader: isBillingLeader
         billingLeaders {
           id
           ...BillingLeader_user
@@ -73,7 +74,7 @@ const BillingLeaders = (props: Props) => {
     `,
     organizationRef
   )
-  const {billingLeaders} = organization
+  const {billingLeaders, isViewerBillingLeader} = organization
   const billingLeaderCount = billingLeaders.length
 
   return (
@@ -94,18 +95,20 @@ const BillingLeaders = (props: Props) => {
           organizationRef={organization}
         />
       ))}
-      <StyledRow>
-        <ButtonWrapper>
-          <StyledButton>
-            <IconLabel iconLarge icon='add' />
-          </StyledButton>
-          <RowInfo>
-            <RowInfoHeader>
-              <BillingLeaderLabel>Add Billing Leader</BillingLeaderLabel>
-            </RowInfoHeader>
-          </RowInfo>
-        </ButtonWrapper>
-      </StyledRow>
+      {isViewerBillingLeader && (
+        <StyledRow>
+          <ButtonWrapper>
+            <StyledButton>
+              <IconLabel iconLarge icon='add' />
+            </StyledButton>
+            <RowInfo>
+              <RowInfoHeader>
+                <BillingLeaderLabel>Add Billing Leader</BillingLeaderLabel>
+              </RowInfoHeader>
+            </RowInfo>
+          </ButtonWrapper>
+        </StyledRow>
+      )}
     </StyledPanel>
   )
 }

@@ -93,6 +93,12 @@ const BillingLeader = (props: Props) => {
     closeTooltip()
   }
 
+  const handleMouseOver = () => {
+    if (isViewerLastBillingLeader) {
+      openTooltip()
+    }
+  }
+
   return (
     <StyledRow isFirstRow={isFirstRow}>
       <Avatar hasBadge={false} picture={picture} size={ElementWidth.BILLING_AVATAR} />
@@ -105,16 +111,16 @@ const BillingLeader = (props: Props) => {
         <ActionsBlock>
           <MenuToggleBlock>
             {isViewerBillingLeader && (
-              <MenuToggleBlock>
+              <MenuToggleBlock ref={tooltipRef}>
                 <StyledButton
                   onClick={handleClick}
                   onMouseEnter={BillingLeaderActionMenu.preload}
-                  onMouseOver={openTooltip}
-                  onMouseOut={closeTooltip}
+                  onMouseOver={handleMouseOver}
+                  onMouseLeave={closeTooltip}
                   ref={originRef}
                   disabled={isViewerLastBillingLeader}
                 >
-                  <IconLabel icon='more_vert' ref={tooltipRef} />
+                  <IconLabel icon='more_vert' />
                 </StyledButton>
                 {tooltipPortal(
                   <div>
