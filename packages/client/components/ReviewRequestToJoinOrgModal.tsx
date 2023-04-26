@@ -71,14 +71,13 @@ const TeamsList = (props: TeamListProps) => {
         }
 
         return (
-          <div className='mb-2 flex items-center text-base' key={teamId}>
+          <div className='mb-2 flex items-center text-base' key={teamId} onClick={handleClick}>
             <Checkbox
               active={active}
               disabled={disabled}
-              onClick={handleClick}
               color={active && !disabled ? PALETTE.SKY_500 : undefined}
             />
-            <label className={`ml-2 ${disabled ? 'opacity-[.38]' : ''}`}>
+            <label className={`ml-2 cursor-pointer ${disabled ? 'opacity-[.38]' : ''}`}>
               {teamName} | {orgName}
             </label>
           </div>
