@@ -35,7 +35,11 @@ export default async function makeUpcomingInvoice(
   const subscription = stripeInvoice.lines.data.find(
     ({plan}) => plan?.id === StripeManager.PARABOL_TEAM_600
   )
-  if (subscription && subscription.quantity !== quantity) {
+  if (
+    subscription &&
+    subscription.plan?.tiers_mode !== 'volume' &&
+    subscription.quantity !== quantity
+  ) {
     const {subscription_item: lineitemId} = subscription
     await manager.updateSubscriptionItemQuantity(lineitemId!, quantity)
     stripeInvoice = await manager.retrieveUpcomingInvoice(stripeId)
