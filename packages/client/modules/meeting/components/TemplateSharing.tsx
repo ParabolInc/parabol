@@ -142,7 +142,7 @@ export const UnstyledTemplateSharing = (props: Props) => {
     <>
       <DropdownBlock
         onMouseEnter={SelectSharingScopeDropdown.preload}
-        onClick={isLead ? togglePortal : undefined}
+        onClick={isLead && !readOnly ? togglePortal : undefined}
         ref={isLead ? originRef : tooltipRef}
         disabled={!isLead}
         onMouseOver={openTooltip}
