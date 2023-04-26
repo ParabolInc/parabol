@@ -6,13 +6,8 @@
  - Is the variable a string? Create a string union & pass in a plain string to get type safety
 */
 import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
 import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
-
-/**
- * Big stuff:
- */
-export const APP_CDN_USER_ASSET_SUBDIR = '/store'
+import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
