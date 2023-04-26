@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {ContentCopy} from '@mui/icons-material'
-import React, {useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -142,6 +142,8 @@ const ActivityDetails = (props: Props) => {
     : 'PUBLIC'
   const description = useTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
 
+  const [isEditing, setIsEditing] = useState(false)
+
   if (!selectedTemplate) {
     return <Redirect to='/activity-library' />
   }
@@ -183,7 +185,7 @@ const ActivityDetails = (props: Props) => {
                     name={templateName}
                     templateId={templateId}
                     teamTemplates={teamTemplates}
-                    isOwner={isOwner}
+                    isOwner={isOwner && isEditing}
                   />
                 </div>
                 <div className='mb-4 flex gap-2'>
@@ -202,24 +204,42 @@ const ActivityDetails = (props: Props) => {
                   <div className='mb-8'>
                     {isOwner ? (
                       <div className='flex items-center justify-between'>
-                        <div className='w-max rounded-full border border-solid border-slate-400 pl-3'>
+                        <div
+                          className={clsx(
+                            'w-max',
+                            isEditing && 'rounded-full border border-solid border-slate-400 pl-3'
+                          )}
+                        >
                           <UnstyledTemplateSharing
                             noModal={true}
                             isOwner={isOwner}
                             template={selectedTemplate}
+                            readOnly={!isEditing}
                           />
                         </div>
                         <div className='flex gap-2'>
-                          <div className='rounded-full border border-solid border-slate-400'>
-                            <DetailAction
-                              icon={'delete'}
-                              tooltip={'Delete template'}
-                              onClick={removeTemplate}
-                            />
-                          </div>
-                          <div className='rounded-full border border-solid border-slate-400'>
-                            <CloneTemplate canClone={true} onClick={togglePortal} />
-                          </div>
+                          {isEditing ? (
+                            <div className='rounded-full border border-solid border-slate-400'>
+                              <DetailAction
+                                icon={'delete'}
+                                tooltip={'Delete template'}
+                                onClick={removeTemplate}
+                              />
+                            </div>
+                          ) : (
+                            <>
+                              <div className='rounded-full border border-solid border-slate-400'>
+                                <DetailAction
+                                  icon={'edit'}
+                                  tooltip={'Edit template'}
+                                  onClick={() => setIsEditing(true)}
+                                />
+                              </div>
+                              <div className='rounded-full border border-solid border-slate-400'>
+                                <CloneTemplate canClone={true} onClick={togglePortal} />
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     ) : (
@@ -257,8 +277,14 @@ const ActivityDetails = (props: Props) => {
                   </div>
                 </div>
               </div>
-              <TemplatePromptList isOwner={isOwner} prompts={prompts!} templateId={templateId} />
-              {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts!} />}
+              <TemplatePromptList
+                isOwner={isOwner && isEditing}
+                prompts={prompts!}
+                templateId={templateId}
+              />
+              {isOwner && isEditing && (
+                <AddTemplatePrompt templateId={templateId} prompts={prompts!} />
+              )}
             </div>
           </div>
         </div>

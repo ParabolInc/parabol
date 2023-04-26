@@ -53,23 +53,26 @@ const DropdownIcon = styled('div')({
   width: 24
 })
 
-const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
-  color: PALETTE.SLATE_700,
-  cursor: disabled ? 'not-allowed' : 'pointer',
-  alignItems: 'center',
-  display: 'flex',
-  fontSize: 16,
-  lineHeight: '24px',
-  userSelect: 'none',
-  ':hover': {
-    color: disabled ? undefined : PALETTE.SLATE_900
-  }
-}))
+const DropdownBlock = styled('div')<{disabled: boolean; readOnly?: boolean}>(
+  ({disabled, readOnly}) => ({
+    color: PALETTE.SLATE_700,
+    cursor: disabled ? 'not-allowed' : readOnly ? undefined : 'pointer',
+    alignItems: 'center',
+    display: 'flex',
+    fontSize: 16,
+    lineHeight: '24px',
+    userSelect: 'none',
+    ':hover': {
+      color: disabled ? undefined : PALETTE.SLATE_900
+    }
+  })
+)
 
 interface Props {
   isOwner: boolean
   template: TemplateSharing_template$key
   noModal?: boolean
+  readOnly?: boolean
 }
 
 const TemplateSharing = (props: Props) => {
@@ -88,7 +91,7 @@ const TemplateSharing = (props: Props) => {
 }
 
 export const UnstyledTemplateSharing = (props: Props) => {
-  const {template: templateRef, isOwner, noModal} = props
+  const {template: templateRef, isOwner, noModal, readOnly} = props
   const template = useFragment(
     graphql`
       fragment TemplateSharing_template on MeetingTemplate {
@@ -144,14 +147,14 @@ export const UnstyledTemplateSharing = (props: Props) => {
         disabled={!isLead}
         onMouseOver={openTooltip}
         onMouseLeave={closeTooltip}
+        readOnly={readOnly}
       >
         <DropdownDecoratorIcon>
           <ShareIcon />
         </DropdownDecoratorIcon>
         <DropdownLabel>{label}</DropdownLabel>
-        <DropdownIcon>
-          <ExpandMoreIcon />
-        </DropdownIcon>
+
+        <DropdownIcon>{!readOnly && <ExpandMoreIcon />}</DropdownIcon>
       </DropdownBlock>
       {menuPortal(<SelectSharingScopeDropdown menuProps={menuProps} template={template} />)}
       {tooltipPortal(<div>Must be Team Lead to change</div>)}
