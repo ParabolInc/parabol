@@ -9,7 +9,6 @@ import SecondaryButton from './SecondaryButton'
 import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import Checkbox from './Checkbox'
-import {PALETTE} from '../styles/paletteV3'
 
 const query = graphql`
   query ReviewRequestToJoinOrgModalQuery {
@@ -67,7 +66,7 @@ const TeamsList = (props: TeamListProps) => {
             <Checkbox
               active={active}
               disabled={disabled}
-              color={active && !disabled ? PALETTE.SKY_500 : undefined}
+              className={active && !disabled ? `text-sky-500` : undefined}
             />
             <label className={`ml-2 cursor-pointer ${disabled ? 'opacity-[.38]' : ''}`}>
               {teamName} | {orgName}
