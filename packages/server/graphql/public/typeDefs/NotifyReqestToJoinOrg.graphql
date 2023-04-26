@@ -36,7 +36,7 @@ type NotifyRequestToJoinOrg implements Notification {
   picture: URL!
 
   """
-  Request created by
+  Request created by userId
   """
   requestCreatedBy: ID!
 }
