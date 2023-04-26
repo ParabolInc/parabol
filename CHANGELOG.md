@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.101.0 2023-Apr-26
+
+### Added
+
+- Throw and catch GraphQL errors on the client (#7932)
+- **retros-in-disguise**: Clone template (#8036)
+- Create new Github Action - Notify on bug assignment (#8058)
+- Create updateSAML mutation (#7685)
+- **checkout-flow**: handle credit card functionality (#8005)
+- **recurrence**: Use the prompt from the most recent meeting in the series (#8095)
+- **prompt-to-join**: Add request to join domain mutation (#8040)
+
+### Changed
+
+- refactor MeetingTemplate reads to PG (#8015)
+- refactor notifications to SDL (example PR) (#8018)
+- bump vm2 from 3.9.16 to 3.9.17 (#8078)
+
+### Fixed
+
+- Fix duplicate charge on failed payment (#8072)
+- Fix default standup name (#8079)
+
 ## 6.100.0 2023-Apr-19
 
 ### Added
