@@ -122,8 +122,9 @@ export const ActivityLibrary = (props: Props) => {
   } = useSearchFilter(templates, getTemplateValue)
 
   const {match} = useRouter<{categoryId?: string}>()
-  const {params} = match
-  const selectedCategory = params.categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
+  const {
+    params: {categoryId}
+  } = match
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
@@ -132,19 +133,21 @@ export const ActivityLibrary = (props: Props) => {
     }
 
     return filteredTemplates.filter((template) =>
-      selectedCategory === QUICK_START_CATEGORY_ID
+      categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
-        : template.category === selectedCategory
+        : template.category === categoryId
     )
-  }, [searchQuery, filteredTemplates, selectedCategory])
-
-  if (!selectedCategory || !Object.keys(CATEGORY_ID_TO_NAME).includes(selectedCategory)) {
-    return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
-  }
+  }, [searchQuery, filteredTemplates, categoryId])
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
   }
+
+  if (!categoryId || !Object.keys(CATEGORY_ID_TO_NAME).includes(categoryId)) {
+    return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
+  }
+
+  const selectedCategory = categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
