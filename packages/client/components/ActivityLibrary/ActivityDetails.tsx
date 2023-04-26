@@ -301,12 +301,14 @@ const ActivityDetails = (props: Props) => {
               </div>
             </div>
           </div>
-          {!isEditing && (
-            <ActivityDetailsSidebar selectedTemplateRef={selectedTemplate} teamsRef={teams} />
-          )}
+          <ActivityDetailsSidebar
+            selectedTemplateRef={selectedTemplate}
+            teamsRef={teams}
+            isOpen={!isEditing}
+          />
         </div>
         {isEditing && (
-          <div className='flex h-20 items-center justify-center bg-slate-200'>
+          <div className='absolute bottom-0 flex h-20 w-full items-center justify-center bg-slate-200'>
             <button
               onClick={() => setIsEditing(false)}
               className='w-max cursor-pointer rounded-full bg-sky-500 px-10 py-3 text-center font-sans text-base text-lg font-semibold text-white hover:bg-sky-600'

@@ -15,14 +15,16 @@ import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import {useHistory} from 'react-router'
+import clsx from 'clsx'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
+  isOpen: boolean
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef} = props
+  const {selectedTemplateRef, teamsRef, isOpen} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -92,7 +94,12 @@ const ActivityDetailsSidebar = (props: Props) => {
   }
 
   return (
-    <div className='flex w-96 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14'>
+    <div
+      className={clsx(
+        'flex w-96 translate-x-0 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14 transition-all',
+        !isOpen && 'w-0 overflow-hidden opacity-0'
+      )}
+    >
       <div className='mb-6 text-xl font-semibold'>Settings</div>
 
       <div className='flex grow flex-col gap-2'>
