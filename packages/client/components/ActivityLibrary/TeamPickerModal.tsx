@@ -23,7 +23,7 @@ interface Props {
   templatesRef: TeamPickerModal_templates$key
   closePortal: () => void
   category: string
-  parentTemplateId?: string
+  parentTemplateId: string
 }
 
 const TeamPickerModal = (props: Props) => {
@@ -73,10 +73,6 @@ const TeamPickerModal = (props: Props) => {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
-    if (!parentTemplateId && teamTemplates.find((template) => template.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
-      return
-    }
 
     submitMutation()
     AddReflectTemplateMutation(
@@ -102,8 +98,7 @@ const TeamPickerModal = (props: Props) => {
     <div className='w-[440px] bg-white p-6'>
       <div className='flex flex-col gap-4'>
         <div>
-          <b>Select the team</b> to manage this{' '}
-          {parentTemplateId ? 'cloned template' : 'new activity template'}:
+          <b>Select the team</b> to manage this cloned template
         </div>
         <NewMeetingTeamPicker
           parentId='templateTeamPickerModal'
@@ -117,17 +112,15 @@ const TeamPickerModal = (props: Props) => {
         />
         {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
         <div className='flex gap-2.5 self-end'>
-          {parentTemplateId && (
-            <button
-              className={clsx(
-                ACTION_BUTTON_CLASSES,
-                'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-200'
-              )}
-              onClick={closePortal}
-            >
-              Cancel
-            </button>
-          )}
+          <button
+            className={clsx(
+              ACTION_BUTTON_CLASSES,
+              'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-200'
+            )}
+            onClick={closePortal}
+          >
+            Cancel
+          </button>
           <button
             className={clsx(
               ACTION_BUTTON_CLASSES,
@@ -136,7 +129,7 @@ const TeamPickerModal = (props: Props) => {
             )}
             onClick={handleSelectTeam}
           >
-            {parentTemplateId ? 'Clone Template' : 'Select Team'}
+            Clone Template
           </button>
         </div>
       </div>
