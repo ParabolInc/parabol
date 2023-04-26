@@ -237,7 +237,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='disabled:user-select-none group flex cursor-pointer flex-col items-start space-y-3 bg-transparent disabled:cursor-not-allowed disabled:opacity-50'
+                className='disabled:user-select-none group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none focus:ring-2 focus:ring-offset-8 disabled:cursor-not-allowed disabled:opacity-50'
                 value={activity.type}
                 disabled={!activity.isEnabled}
               >
