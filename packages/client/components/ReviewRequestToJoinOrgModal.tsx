@@ -27,7 +27,6 @@ const query = graphql`
         name
         teamMembers(sortBy: "preferredName") {
           userId
-          preferredName
         }
         organization {
           name
@@ -54,11 +53,11 @@ const TeamsList = (props: TeamListProps) => {
   return (
     <div>
       {sortedTeams.map((team) => {
-        const {id: teamId, name: teamName, organization} = team
+        const {id: teamId, name: teamName, organization, teamMembers} = team
         const {name: orgName} = organization
 
         // TODO: implement filter on API side
-        const disabled = !!team.teamMembers.find((member) => member.userId === requestCreatedBy)
+        const disabled = !!teamMembers.find((member) => member.userId === requestCreatedBy)
         const active = selectedTeams.includes(teamId) || disabled
 
         const handleClick = () => {
