@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState, Suspense} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -11,13 +10,6 @@ import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestTo
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import Checkbox from './Checkbox'
 import {PALETTE} from '../styles/paletteV3'
-
-const ButtonGroup = styled('div')({
-  marginTop: '24px',
-  display: 'flex',
-  width: '100%',
-  justifyContent: 'flex-end'
-})
 
 const query = graphql`
   query ReviewRequestToJoinOrgModalQuery {
@@ -109,14 +101,14 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
           {queryRef && <TeamsList requestCreatedBy={requestCreatedBy} queryRef={queryRef} />}
         </Suspense>
 
-        <ButtonGroup>
+        <div className={'mt-6 flex w-full justify-end'}>
           <div className={'mr-2'}>
             <SecondaryButton onClick={closePortal} size='small'>
               Cancel
             </SecondaryButton>
           </div>
           <PrimaryButton size='small'>Add to teams</PrimaryButton>
-        </ButtonGroup>
+        </div>
       </DialogContent>
     </DialogContainer>
   )
