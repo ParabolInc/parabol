@@ -56,18 +56,6 @@ const ButtonWrapper = styled('div')({
   }
 })
 
-const NewIssueInput = styled('input')({
-  appearance: 'none',
-  background: 'transparent',
-  border: 'none',
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  margin: 0,
-  padding: '0px 8px 0px 0px',
-  outline: 0,
-  width: '100%'
-})
-
 type Props = {
   organizationRef: BillingLeaders_organization$key
 }
@@ -93,6 +81,10 @@ const BillingLeaders = (props: Props) => {
 
   const handleClick = () => {
     setIsAddingBillingLeader(true)
+  }
+
+  const removeInput = () => {
+    setIsAddingBillingLeader(false)
   }
 
   return (
@@ -127,7 +119,7 @@ const BillingLeaders = (props: Props) => {
           </ButtonWrapper>
         </StyledRow>
       )}
-      {isAddingBillingLeader && <NewBillingLeaderInput />}
+      {isAddingBillingLeader && <NewBillingLeaderInput removeInput={removeInput} />}
     </StyledPanel>
   )
 }

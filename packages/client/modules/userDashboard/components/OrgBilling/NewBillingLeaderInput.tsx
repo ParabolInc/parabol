@@ -77,8 +77,8 @@ const Item = styled('div')({
   cursor: 'pointer',
   display: 'flex',
   paddingLeft: 16,
-  paddingTop: 16,
-  paddingBottom: 16,
+  paddingTop: 8,
+  paddingBottom: 8,
   alignItems: 'center',
   width: '100%'
 })
@@ -113,14 +113,16 @@ interface Props {
   meetingId: string
   setIsEditing: (isEditing: boolean) => void
   viewerRef: NewGitLabIssueInput_viewer$key
+
+  removeInput: () => void
 }
 
 const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
-const NewGitLabIssueInput = (props: Props) => {
-  const {isEditing, meetingId, setIsEditing, viewerRef} = props
+const NewBillingLeaderInput = (props: Props) => {
+  const {isEditing, meetingId, setIsEditing, viewerRef, removeInput} = props
   // const viewer = useFragment(
   //   graphql`
   //     fragment NewGitLabIssueInput_viewer on User {
@@ -170,7 +172,7 @@ const NewGitLabIssueInput = (props: Props) => {
   // const {onCompleted, onError} = useMutationProps()
   // const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
-    newIssue: {
+    newLeader: {
       getDefault: () => '',
       validate: validateIssue
     }
@@ -180,18 +182,22 @@ const NewGitLabIssueInput = (props: Props) => {
     {isDropdown: true}
   )
   const ref = useRef<HTMLInputElement>(null)
-  const {dirty, error} = fields.newIssue
+  const {dirty, error} = fields.newLeader
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
       ref.current?.focus()
     }
   }, [portalStatus])
 
-  const handleCreateNewIssue = (e: FormEvent) => {
-    // e.preventDefault()
+  const handleCreateNewLeader = (e: FormEvent) => {
+    e.preventDefault()
     // if (portalStatus !== PortalStatus.Exited || !selectedFullPath) return
-    // const {newIssue: newIssueRes} = validateField()
-    // const {value: newIssueTitle, error} = newIssueRes
+    const {newLeader: newLeaderRes} = validateField()
+    const {value: newLeaderTitle, error} = newLeaderRes
+    if (!newLeaderTitle.length) {
+      removeInput()
+    }
+
     // if (error) {
     //   setDirtyField()
     //   return
@@ -242,10 +248,10 @@ const NewGitLabIssueInput = (props: Props) => {
       <Item>
         <StyledIcon />
         <Wrapper>
-          <Form onSubmit={handleCreateNewIssue}>
+          <Form onSubmit={handleCreateNewLeader}>
             <NewLeaderInput
               autoFocus
-              onBlur={handleCreateNewIssue}
+              onBlur={handleCreateNewLeader}
               onChange={onChange}
               maxLength={255}
               name='newIssue'
@@ -268,4 +274,4 @@ const NewGitLabIssueInput = (props: Props) => {
   )
 }
 
-export default NewGitLabIssueInput
+export default NewBillingLeaderInput
