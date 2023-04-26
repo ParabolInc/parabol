@@ -1,17 +1,18 @@
 import getRethink from '../../../database/rethinkDriver'
 import {getUserId} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import {GQLContext} from '../../graphql'
 import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import {MutationResolvers} from '../resolverTypes'
 
 const autogroup: MutationResolvers['autogroup'] = async (
   _source,
   {meetingId}: {meetingId: string},
-  {authToken, dataLoader, socketId: mutatorId}
+  context: GQLContext
 ) => {
-  const viewerId = getUserId(authToken)
-  console.log('🚀 ~ autogroup....:', {viewerId, meetingId})
-  const now = new Date()
+  // const
+  // const viewerId = getUserId(authToken)
+  console.log('🚀 ~ autogroup....:', {meetingId})
   const r = await getRethink()
 
   // VALIDATION
@@ -22,42 +23,58 @@ const autogroup: MutationResolvers['autogroup'] = async (
     .orderBy('createdAt')
     .run()
 
-  const reflectionText = reflections.map((reflection) => reflection.plaintextContent)
+  const reflectionText = reflections.map(({plaintextContent}) => plaintextContent)
+  console.log('🚀 ~ reflectionText:', reflectionText)
   const manager = new OpenAIServerManager()
+
   const groupedReflections = await manager.groupReflections(reflectionText)
-  console.log('🚀 ~ groupedReflections:', groupedReflections)
-  groupedReflections.forEach(async (group, index) => {
+
+  for (const group of groupedReflections) {
     const reflectionsTextInGroup = Object.values(group).flat()
     const smartTitle = Object.keys(group).join(', ')
-    console.log('🚀 ~ reflectionsTextInGroup:', {reflectionsTextInGroup, smartTitle})
+
+    console.log('🚀 ~ reflectionsTextInGroup:', {
+      reflectionsTextInGroup,
+      smartTitle,
+      firstOne: reflectionsTextInGroup[0]
+    })
+
     if (reflectionsTextInGroup.length === 1) {
       console.log('only one')
-      return
+      continue
     }
-    const firstReflection = reflections.find(
-      (reflection) => reflection.plaintextContent === reflectionsTextInGroup[0]
+
+    const [firstReflection] = reflections.filter(
+      ({plaintextContent}) => reflectionsTextInGroup[0] === plaintextContent
     )
-    console.log('🚀 ~ firstReflection:', firstReflection)
-    const promises = reflectionsTextInGroup.slice(1).map((reflectionTextInGroup) => {
+
+    if (!firstReflection) {
+      console.log('🚀 ~ firstReflection:', {firstReflection, firstText: reflectionsTextInGroup[0]})
+    }
+
+    for (const reflectionTextInGroup of reflectionsTextInGroup.slice(1)) {
       const originalReflection = reflections.find(
-        (reflection) => reflectionTextInGroup === reflection.plaintextContent
+        ({plaintextContent}) => plaintextContent === reflectionTextInGroup
       )
-      console.log('🚀 ~ originalReflection:', originalReflection)
-      if (!originalReflection || !firstReflection) return null
-      return addReflectionToGroup(
-        originalReflection.id,
-        firstReflection.reflectionGroupId,
-        {
-          dataLoader
-        } as any,
-        smartTitle
-      )
-    })
-    await Promise.all(promises)
-  })
+      // console.log('🚀 ~ originalReflection:', originalReflection)
+
+      if (!originalReflection || !firstReflection) continue
+
+      try {
+        await addReflectionToGroup(
+          originalReflection.id,
+          firstReflection.reflectionGroupId,
+          context,
+          smartTitle
+        )
+      } catch (error) {
+        console.error('Error adding reflection to group:', error)
+      }
+    }
+  }
 
   // RESOLUTION
-  const data = {}
+  const data = {success: true}
   return data
 }
 

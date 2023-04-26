@@ -18,6 +18,18 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
+import PrimaryButton from './PrimaryButton'
+import styled from '@emotion/styled'
+import AutogroupMutation from '../mutations/AutogroupMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+
+const ButtonWrapper = styled('div')({
+  display: 'flex',
+  width: '100%',
+  paddingBottom: 32,
+  paddingLeft: 338 // TODO: super hacky, only for demo
+})
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroGroupPhase_meeting$key
@@ -31,6 +43,7 @@ const RetroGroupPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...StageTimerDisplay_meeting
         ...GroupingKanban_meeting
+        id
         endedAt
         showSidebar
       }
@@ -38,7 +51,15 @@ const RetroGroupPhase = (props: Props) => {
     meetingRef
   )
   const [callbackRef, phaseRef] = useCallbackRef()
-  const {endedAt, showSidebar} = meeting
+  const atmosphere = useAtmosphere()
+
+  const {onError, onCompleted} = useMutationProps()
+
+  const {id: meetingId, endedAt, showSidebar} = meeting
+
+  const handleAutoGroupClick = () => {
+    AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
+  }
 
   return (
     <MeetingContent ref={callbackRef}>
@@ -53,6 +74,9 @@ const RetroGroupPhase = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} canUndo={true} />
+          <ButtonWrapper>
+            <PrimaryButton onClick={handleAutoGroupClick}>{'Auto Group ✨'}</PrimaryButton>
+          </ButtonWrapper>
           <MeetingPhaseWrapper>
             <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>

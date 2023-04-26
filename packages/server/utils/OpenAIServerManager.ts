@@ -87,12 +87,13 @@ class OpenAIServerManager {
           presence_penalty: 0
         },
         {
-          timeout: 30000
+          timeout: 60000
         }
       )
       const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      // const  /^No\.*$/i.test(answer) ? null : answer
-      return JSON.parse(answer)
+      const nullableAnswer = /^No\.*$/i.test(answer) ? null : answer
+      if (!nullableAnswer) return null
+      return JSON.parse(nullableAnswer)
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
