@@ -40,6 +40,65 @@ class OpenAIServerManager {
       return null
     }
   }
+
+  async groupReflections(text: string | string[]) {
+    if (!this.openAIApi) return null
+    try {
+      const response = await this.openAIApi.createChatCompletion(
+        {
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'user',
+              content: `You are given a list of reflections from a meeting, separated by commas. Your task is to group these reflections into similar topics and return an array of JavaScript objects, where each object represents a topic and contains an array of reflections that belong to that topic.
+
+      Example Input:
+      ['The retreat went well', 'The project might not be ready in time', 'The deadline is really tight', 'I liked that the length of the retreat', 'I enjoyed the hotel', 'Feeling overworked']
+
+      Example Output:
+      [
+        {
+          "The Retreat": [
+            "The retreat went well",
+            "I liked that the length of the retreat",
+            "I enjoyed the hotel"
+          ]
+        },
+        {
+          "Deadlines": [
+            "Feeling overworked",
+            "The project might not be ready in time",
+            "The deadline is really tight"
+          ]
+        }
+      ]
+
+      In the output, "The Retreat" and "Deadlines" are example topic names that you can create to group the reflections.
+
+      Here is the list of reflections: """
+      ${text}
+      """
+      `
+            }
+          ],
+          temperature: 0.7,
+          top_p: 1,
+          frequency_penalty: 0,
+          presence_penalty: 0
+        },
+        {
+          timeout: 30000
+        }
+      )
+      const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      // const  /^No\.*$/i.test(answer) ? null : answer
+      return JSON.parse(answer)
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
 }
 
 export default OpenAIServerManager

@@ -9,7 +9,8 @@ import updateSmartGroupTitle from './updateSmartGroupTitle'
 const addReflectionToGroup = async (
   reflectionId: string,
   reflectionGroupId: string,
-  {dataLoader}: GQLContext
+  {dataLoader}: GQLContext,
+  smartTitle?: string
 ) => {
   const r = await getRethink()
   const now = new Date()
@@ -70,7 +71,7 @@ const addReflectionToGroup = async (
         .coerceTo('array') as unknown as Reflection[]
     }).run()
 
-    const nextTitle = getGroupSmartTitle(nextReflections)
+    const nextTitle = smartTitle ?? getGroupSmartTitle(nextReflections)
     const oldGroupHasSingleReflectionCustomTitle =
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
