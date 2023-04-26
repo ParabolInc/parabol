@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useState} from 'react'
 import BillingLeader from './BillingLeader'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
@@ -14,6 +14,7 @@ import {useFragment} from 'react-relay'
 import {BillingLeaders_organization$key} from '../../../../__generated__/BillingLeaders_organization.graphql'
 import IconLabel from '../../../../components/IconLabel'
 import plural from '../../../../utils/plural'
+import NewBillingLeaderInput from './NewBillingLeaderInput'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -55,6 +56,18 @@ const ButtonWrapper = styled('div')({
   }
 })
 
+const NewIssueInput = styled('input')({
+  appearance: 'none',
+  background: 'transparent',
+  border: 'none',
+  color: PALETTE.SLATE_700,
+  fontSize: 16,
+  margin: 0,
+  padding: '0px 8px 0px 0px',
+  outline: 0,
+  width: '100%'
+})
+
 type Props = {
   organizationRef: BillingLeaders_organization$key
 }
@@ -74,8 +87,13 @@ const BillingLeaders = (props: Props) => {
     `,
     organizationRef
   )
+  const [isAddingBillingLeader, setIsAddingBillingLeader] = useState(false)
   const {billingLeaders, isViewerBillingLeader} = organization
   const billingLeaderCount = billingLeaders.length
+
+  const handleClick = () => {
+    setIsAddingBillingLeader(true)
+  }
 
   return (
     <StyledPanel label={plural(billingLeaders.length, 'Billing Leader')}>
@@ -95,9 +113,9 @@ const BillingLeaders = (props: Props) => {
           organizationRef={organization}
         />
       ))}
-      {isViewerBillingLeader && (
+      {isViewerBillingLeader && !isAddingBillingLeader && (
         <StyledRow>
-          <ButtonWrapper>
+          <ButtonWrapper onClick={handleClick}>
             <StyledButton>
               <IconLabel iconLarge icon='add' />
             </StyledButton>
@@ -109,6 +127,7 @@ const BillingLeaders = (props: Props) => {
           </ButtonWrapper>
         </StyledRow>
       )}
+      {isAddingBillingLeader && <NewBillingLeaderInput />}
     </StyledPanel>
   )
 }
