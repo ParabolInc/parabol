@@ -85,6 +85,7 @@ interface Props {
   email: string
 }
 
+// TODO: Create generic dialog components using tailwind https://github.com/ParabolInc/parabol/issues/8107
 const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {closePortal, email, requestCreatedBy} = props
 
