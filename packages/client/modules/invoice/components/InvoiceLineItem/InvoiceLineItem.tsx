@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {
   InvoiceLineItemEnum,
-  InvoiceLineItem_item
+  InvoiceLineItem_item$key
 } from '~/__generated__/InvoiceLineItem_item.graphql'
 import plural from '../../../../utils/plural'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
@@ -17,11 +17,25 @@ const descriptionMaker = {
 } as const
 
 interface Props {
-  item: InvoiceLineItem_item
+  item: InvoiceLineItem_item$key
 }
 
 const InvoiceLineItem = (props: Props) => {
-  const {item} = props
+  const {item: itemRef} = props
+  const item = useFragment(
+    graphql`
+      fragment InvoiceLineItem_item on InvoiceLineItem {
+        amount
+        description
+        details {
+          ...InvoiceLineItemDetails_details
+        }
+        quantity
+        type
+      }
+    `,
+    itemRef
+  )
   const {quantity, details} = item
   const type = item.type as Exclude<InvoiceLineItemEnum, 'OTHER_ADJUSTMENTS'>
   const amount = invoiceLineFormat(item.amount)
@@ -33,16 +47,4 @@ const InvoiceLineItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(InvoiceLineItem, {
-  item: graphql`
-    fragment InvoiceLineItem_item on InvoiceLineItem {
-      amount
-      description
-      details {
-        ...InvoiceLineItemDetails_details
-      }
-      quantity
-      type
-    }
-  `
-})
+export default InvoiceLineItem

@@ -12,7 +12,7 @@ import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import {UpdatePokerTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdatePokerTemplateScopeMutation.graphql'
 import {
   SharingScopeEnum,
-  UpdatePokerTemplateScopeMutation_organization
+  UpdatePokerTemplateScopeMutation_organization$data
 } from '../__generated__/UpdatePokerTemplateScopeMutation_organization.graphql'
 import getPokerTemplateOrgConn from './connections/getPokerTemplateOrgConn'
 
@@ -130,7 +130,7 @@ const handleUpdateTemplateScope = (
 }
 
 export const updateTemplateScopeOrganizationUpdater: SharedUpdater<
-  UpdatePokerTemplateScopeMutation_organization
+  UpdatePokerTemplateScopeMutation_organization$data
 > = (payload: any, {store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return

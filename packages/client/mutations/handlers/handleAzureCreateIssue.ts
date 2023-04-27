@@ -1,11 +1,11 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
-import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
+import {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
 import getAzureWorkItemsConn from '../connections/getAzureWorkItemsConn'
 
 const handleAzureCreateIssue = (
-  task: RecordProxy<NonNullable<CreateTaskMutationResponse['createTask']['task']>>,
+  task: RecordProxy<NonNullable<CreateTaskMutation['response']['createTask']['task']>>,
   store: RecordSourceSelectorProxy
 ) => {
   const integration = task.getLinkedRecord('integration')

@@ -1,7 +1,7 @@
-const connectionFromTemplateArray = (
-  scoredTemplates: {createdAt: Date; id: string}[],
+const connectionFromTemplateArray = <T extends {createdAt: Date; id: string}>(
+  scoredTemplates: T[],
   first: number,
-  after: string
+  after?: string | null
 ) => {
   const startIdx = after ? scoredTemplates.findIndex((template) => template.id === after) : 0
   const safeStartIdx = startIdx === -1 ? 0 : startIdx
@@ -16,7 +16,8 @@ const connectionFromTemplateArray = (
     pageInfo: {
       startCursor: firstEdge && firstEdge.cursor,
       endCursor: firstEdge ? edges[edges.length - 1]!.cursor : '',
-      hasNextPage: scoredTemplates.length > nodes.length
+      hasNextPage: scoredTemplates.length > nodes.length,
+      hasPreviousPage: false
     }
   }
 }

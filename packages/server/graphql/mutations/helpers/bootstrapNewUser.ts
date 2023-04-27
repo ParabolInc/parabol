@@ -14,19 +14,42 @@ import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
 import isPatientZero from './isPatientZero'
+import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
+import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
+import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
-  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
+  const {
+    id: userId,
+    createdAt,
+    preferredName,
+    email,
+    featureFlags,
+    tier,
+    segmentId,
+    identities
+  } = newUser
   const domain = email.split('@')[1]
-  const isPatient0 = await isPatientZero(domain)
+  const [isPatient0, usersWithDomain] = await Promise.all([
+    isPatientZero(domain),
+    getUsersbyDomain(domain)
+  ])
   const r = await getRethink()
   const joinEvent = new TimelineEventJoinedParabol({userId})
+
+  // TODO: remove the following after templateLimit experiment is complete: https://github.com/ParabolInc/parabol/issues/7712
+  const stopTemplateLimitsP0Experiment = !!process.env.STOP_TEMPLATE_LIMITS_P0_EXPERIMENT
+  const domainUserHasFlag = usersWithDomain.some((user) =>
+    user.featureFlags.includes('templateLimit')
+  )
+  const addTemplateFlag = !stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasFlag)
+  const experimentalFlags = addTemplateFlag ? [...featureFlags, 'templateLimit'] : featureFlags
 
   await Promise.all([
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
     }).run(),
-    insertUser({...newUser, isPatient0})
+    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags})
   ])
 
   // Identify the user so user properties are set before any events are sent
@@ -37,7 +60,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
       email,
       name: preferredName,
       isActive: true,
-      featureFlags,
+      featureFlags: experimentalFlags,
       highestTier: tier,
       isPatient0
     },
@@ -52,7 +75,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     const validNewTeam = {
       id: teamId,
       orgId,
-      name: `${preferredName}’s Team`,
+      name: makeDefaultTeamName(teamId),
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`
@@ -78,6 +101,12 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
       .run()
   }
   analytics.accountCreated(userId, !isOrganic, isPatient0)
+
+  const emailIsVerified = identities[0]?.isEmailVerified
+
+  if (emailIsVerified && isOrganic && tier !== 'enterprise') {
+    sendPromptToJoinOrg(email, userId)
+  }
 
   return new AuthToken({sub: userId, tms})
 }

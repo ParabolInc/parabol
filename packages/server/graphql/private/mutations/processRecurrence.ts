@@ -2,7 +2,7 @@ import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import MeetingTeamPrompt, {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -11,12 +11,13 @@ import standardError from '../../../utils/standardError'
 import {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
+import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safeCreateTeamPrompt'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 
 const startRecurringTeamPrompt = async (
   meetingSeries: MeetingSeries,
+  lastMeeting: MeetingTeamPrompt | null,
   startTime: Date,
   dataLoader: DataLoaderWorker,
   r: ParabolR,
@@ -28,17 +29,17 @@ const startRecurringTeamPrompt = async (
   const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
-  const formattedDate = new Date().toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  })
-
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
   const nextMeetingStartDate = rrule.after(startTime)
-  const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
-    name: `${meetingSeries.title} - ${formattedDate}`,
+  const meetingName = createTeamPromptTitle(
+    meetingSeries.title,
+    startTime,
+    rrule.options.tzid ?? 'UTC'
+  )
+  const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, r, dataLoader, {
     scheduledEndTime: nextMeetingStartDate,
-    meetingSeriesId: meetingSeries.id
+    meetingSeriesId: meetingSeries.id,
+    meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : DEFAULT_PROMPT
   })
 
   await r.table('NewMeeting').insert(meeting).run()
@@ -65,9 +66,9 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
     .run()) as MeetingTeamPrompt[]
 
   const res = await Promise.all(
-    teamPromptMeetingsToEnd.map(async (meeting) => {
-      return await safeEndTeamPrompt({meeting, now, context, r, subOptions})
-    })
+    teamPromptMeetingsToEnd.map((meeting) =>
+      safeEndTeamPrompt({meeting, now, context, r, subOptions})
+    )
   )
 
   const meetingsEnded = res.filter((res) => !('error' in res)).length
@@ -89,18 +90,23 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
         return
       }
 
-      const lastMeeting = await r
+      const lastMeeting = (await r
         .table('NewMeeting')
         .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
         .filter({meetingType: 'teamPrompt'})
         .orderBy(r.desc('createdAt'))
         .nth(0)
         .default(null)
-        .run()
+        .run()) as MeetingTeamPrompt | null
 
       // For meetings that should still be active, start the meeting and set its end time.
       // Any subscriptions are handled by the shared meeting start code
       const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+      // technically, RRULE should never return NaN here but there's a bug in the library
+      // https://github.com/jakubroztocil/rrule/issues/321
+      if (isNaN(rrule.options.interval)) {
+        return
+      }
 
       // Only get meetings that should currently be active, i.e. meetings that should have started
       // within the last 24 hours, started after the last meeting in the series, and started before
@@ -112,6 +118,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
       for (const startTime of newMeetingsStartTimes) {
         const err = await startRecurringTeamPrompt(
           meetingSeries,
+          lastMeeting,
           startTime,
           dataLoader,
           r,

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {MoveReflectTemplatePromptMutation as TMoveReflectTemplatePromptMutation} from '~/__generated__/MoveReflectTemplatePromptMutation.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import {MoveReflectTemplatePromptMutation_team} from '../__generated__/MoveReflectTemplatePromptMutation_team.graphql'
+import {MoveReflectTemplatePromptMutation_team$data} from '../__generated__/MoveReflectTemplatePromptMutation_team.graphql'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
 interface Context {
   templateId: string
@@ -29,7 +29,7 @@ const mutation = graphql`
 `
 
 export const moveReflectTemplatePromptTeamUpdater: SharedUpdater<
-  MoveReflectTemplatePromptMutation_team
+  MoveReflectTemplatePromptMutation_team$data
 > = (payload, {store}) => {
   if (!payload) return
   const templateId = payload.getLinkedRecord('prompt').getValue('templateId')

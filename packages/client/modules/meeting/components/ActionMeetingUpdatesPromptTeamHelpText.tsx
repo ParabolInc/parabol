@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember.graphql'
+import {ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember$key} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember.graphql'
 
 const AgendaControl = styled('span')({
   color: PALETTE.SKY_500,
@@ -15,11 +15,24 @@ const AgendaControl = styled('span')({
 })
 
 interface Props {
-  currentMeetingMember: ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember
+  currentMeetingMember: ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember$key
 }
 
 const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
-  const {currentMeetingMember} = props
+  const {currentMeetingMember: currentMeetingMemberRef} = props
+  const currentMeetingMember = useFragment(
+    graphql`
+      fragment ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember on ActionMeetingMember {
+        user {
+          isConnected
+        }
+        teamMember {
+          preferredName
+        }
+      }
+    `,
+    currentMeetingMemberRef
+  )
   const atmosphere = useAtmosphere()
   const handleAgendaControl = () => {
     atmosphere.eventEmitter.emit('focusAgendaInput')
@@ -36,15 +49,4 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ActionMeetingUpdatesPromptTeamHelpText, {
-  currentMeetingMember: graphql`
-    fragment ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember on ActionMeetingMember {
-      user {
-        isConnected
-      }
-      teamMember {
-        preferredName
-      }
-    }
-  `
-})
+export default ActionMeetingUpdatesPromptTeamHelpText

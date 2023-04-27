@@ -44,9 +44,7 @@ const query = graphql`
 
 const PokerTemplateListPublic = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<PokerTemplateListPublicQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<PokerTemplateListPublicQuery>(query, queryRef)
   const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team

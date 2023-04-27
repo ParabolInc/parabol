@@ -12,7 +12,7 @@ import extractTextFromDraftString from '../utils/draftjs/extractTextFromDraftStr
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
-import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
+import {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
@@ -54,15 +54,18 @@ const mutation = graphql`
   }
 `
 
-export const updateTaskTaskOnNext: OnNextHandler<UpdateTaskMutation_task, OnNextHistoryContext> = (
-  payload,
-  {atmosphere, history}
-) => {
+export const updateTaskTaskOnNext: OnNextHandler<
+  UpdateTaskMutation_task$data,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload || !payload.addedNotification) return
   popInvolvementToast(payload.addedNotification, {atmosphere, history})
 }
 
-export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (payload, {store}) => {
+export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task$data> = (
+  payload,
+  {store}
+) => {
   const task = payload.getLinkedRecord('task')!
   handleUpsertTasks(task as any, store as any)
 

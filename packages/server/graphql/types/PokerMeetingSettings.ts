@@ -7,6 +7,7 @@ import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
+import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../utils/getTemplateScore'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -30,7 +31,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const templates = await dataLoader
           .get('meetingTemplatesByType')
           .load({teamId, meetingType: 'poker'})
-        const scoredTemplates = await getScoredTemplates(templates, 0.9)
+        const scoredTemplates = await getScoredTemplates(templates, TEAM_HOTNESS_FACTOR)
         return scoredTemplates
       }
     },
@@ -54,7 +55,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
           (template: MeetingTemplate) =>
             template.scope !== 'TEAM' && template.teamId !== teamId && template.type === 'poker'
         )
-        const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
+        const scoredTemplates = await getScoredTemplates(organizationTemplates, ORG_HOTNESS_FACTOR)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
     },

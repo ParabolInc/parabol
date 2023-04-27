@@ -1,23 +1,39 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerTemplateScopeMutation from '../mutations/UpdatePokerTemplateScopeMutation'
 import UpdateReflectTemplateScopeMutation from '../mutations/UpdateReflectTemplateScopeMutation'
-import {SelectSharingScopeDropdown_template} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
+import {SelectSharingScopeDropdown_template$key} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 
 interface Props {
   menuProps: MenuProps
-  template: SelectSharingScopeDropdown_template
+  template: SelectSharingScopeDropdown_template$key
 }
 
 const SelectSharingScopeDropdown = (props: Props) => {
-  const {menuProps, template} = props
+  const {menuProps, template: templateRef} = props
+  const template = useFragment(
+    graphql`
+      fragment SelectSharingScopeDropdown_template on MeetingTemplate {
+        id
+        scope
+        type
+        team {
+          name
+          organization {
+            name
+          }
+        }
+      }
+    `,
+    templateRef
+  )
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {id: templateId, scope, team, type} = template
@@ -66,18 +82,4 @@ const SelectSharingScopeDropdown = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SelectSharingScopeDropdown, {
-  template: graphql`
-    fragment SelectSharingScopeDropdown_template on MeetingTemplate {
-      id
-      scope
-      type
-      team {
-        name
-        organization {
-          name
-        }
-      }
-    }
-  `
-})
+export default SelectSharingScopeDropdown

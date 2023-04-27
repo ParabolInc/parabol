@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import {AccountCircle, ChangeHistory, GroupAdd, GroupWork, History, Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
+import {TimelineEventCard_timelineEvent$key} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
 import TimelineEventDate from './TimelineEventDate'
 import TimelineEventHeaderMenuToggle from './TimelineEventHeaderMenuToggle'
 
@@ -15,7 +15,7 @@ interface Props {
   iconName?: string
   IconSVG?: ReactNode
   title: ReactNode
-  timelineEvent: TimelineEventCard_timelineEvent
+  timelineEvent: TimelineEventCard_timelineEvent$key
 }
 
 const Surface = styled('div')({
@@ -66,7 +66,17 @@ const GrapeLock = styled(Lock)({
 })
 
 const TimelineEventCard = (props: Props) => {
-  const {children, iconName, IconSVG, title, timelineEvent} = props
+  const {children, iconName, IconSVG, title, timelineEvent: timelineEventRef} = props
+  const timelineEvent = useFragment(
+    graphql`
+      fragment TimelineEventCard_timelineEvent on TimelineEvent {
+        id
+        createdAt
+        type
+      }
+    `,
+    timelineEventRef
+  )
   const {id: timelineEventId, createdAt, type} = timelineEvent
   return (
     <Surface>
@@ -104,12 +114,4 @@ const TimelineEventCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TimelineEventCard, {
-  timelineEvent: graphql`
-    fragment TimelineEventCard_timelineEvent on TimelineEvent {
-      id
-      createdAt
-      type
-    }
-  `
-})
+export default TimelineEventCard

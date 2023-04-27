@@ -12,13 +12,12 @@ import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
-  serverId: string
+  socketServerId: string
   socketId: string
 }
-const {SERVER_ID} = process.env
 const connectSocket: MutationResolvers['connectSocket'] = async (
   _source,
-  _args,
+  {socketServerId},
   {authToken, dataLoader, socketId}
 ) => {
   const r = await getRethink()
@@ -60,7 +59,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   }
   const socketCount = await redis.rpush(
     `presence:${userId}`,
-    JSON.stringify({lastSeenAtURL: null, serverId: SERVER_ID, socketId} as UserPresence)
+    JSON.stringify({lastSeenAtURL: null, socketServerId, socketId} as UserPresence)
   )
 
   // If this is the first socket, tell everyone they're online

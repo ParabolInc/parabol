@@ -1,21 +1,36 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import Menu from '../components/Menu'
 import MenuItem from '../components/MenuItem'
 import MenuItemLabel from '../components/MenuItemLabel'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
-import {FacilitatorMenu_meeting} from '../__generated__/FacilitatorMenu_meeting.graphql'
+import {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
 
 interface Props {
   menuProps: MenuProps
-  meeting: FacilitatorMenu_meeting
+  meeting: FacilitatorMenu_meeting$key
 }
 
 const FacilitatorMenu = (props: Props) => {
-  const {menuProps, meeting} = props
+  const {menuProps, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment FacilitatorMenu_meeting on NewMeeting {
+        id
+        facilitatorUserId
+        meetingMembers {
+          user {
+            id
+            isConnected
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, facilitatorUserId, meetingMembers} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -52,17 +67,4 @@ const FacilitatorMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(FacilitatorMenu, {
-  meeting: graphql`
-    fragment FacilitatorMenu_meeting on NewMeeting {
-      id
-      facilitatorUserId
-      meetingMembers {
-        user {
-          id
-          isConnected
-        }
-      }
-    }
-  `
-})
+export default FacilitatorMenu

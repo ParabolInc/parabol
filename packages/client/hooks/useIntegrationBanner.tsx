@@ -1,14 +1,14 @@
 import {EditorState} from 'draft-js'
 import React from 'react'
 import linkify from '../utils/linkify'
-import {Integration} from './useIntegrationProviders'
+import {Integration} from '../components/TaskEditor/IntegrationBanner'
 
 const useIntegrationBanner = (editorState: EditorState, integrationProviders?: Integration[]) => {
   const [integration, setIntegration] = React.useState<Integration | undefined>()
+  const plainTextValue = editorState.getCurrentContent().getPlainText()
 
   React.useEffect(() => {
-    const text = editorState.getCurrentContent().getPlainText()
-    const links = linkify.match(text)
+    const links = linkify.match(plainTextValue)
     const url = links?.[0]?.url.trim()
 
     if (url && integrationProviders) {
@@ -20,7 +20,7 @@ const useIntegrationBanner = (editorState: EditorState, integrationProviders?: I
     }
 
     setIntegration(undefined)
-  }, [editorState.getCurrentContent().getPlainText(), integrationProviders])
+  }, [plainTextValue])
 
   return integration
 }

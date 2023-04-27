@@ -6,7 +6,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useTimeout from '~/hooks/useTimeout'
 import SetNotificationStatusMutation from '~/mutations/SetNotificationStatusMutation'
 import {
-  NotificationDropdown_query,
+  NotificationDropdown_query$data,
   NotificationDropdown_query$key
 } from '~/__generated__/NotificationDropdown_query.graphql'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
@@ -35,7 +35,7 @@ const NoNotifications = styled('div')({
   width: '100%'
 })
 
-const defaultViewer = {notifications: {edges: []}} as unknown as NotificationDropdown_query
+const defaultViewer = {notifications: {edges: []}} as unknown as NotificationDropdown_query$data
 
 const NotificationDropdown = (props: Props) => {
   const {queryRef, menuProps, parentRef} = props

@@ -1,20 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {memo, RefObject, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {memo, RefObject, lazy} from 'react'
+import {useFragment} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {PALETTE} from '~/styles/paletteV3'
-import {LocalStorageKey} from '~/types/constEnums'
-import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
+import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
-import IntegrationBanner from '../../../../components/TaskEditor/IntegrationBanner'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
-import useIntegrationBanner from '../../../../hooks/useIntegrationBanner'
-import useIntegrationProviders, {Integration} from '../../../../hooks/useIntegrationProviders'
 import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -25,6 +21,13 @@ import isTempId from '../../../../utils/relay/isTempId'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
+
+const IntegrationBannerRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'IntegrationBannerRoot '*/ '../../../../components/TaskEditor/IntegrationBannerRoot'
+    )
+)
 
 const RootCard = styled('div')<{
   isTaskHovered: boolean
@@ -68,7 +71,7 @@ interface Props {
   handleCardUpdate: () => void
   isAgenda: boolean
   isDraggingOver: TaskStatusEnum | undefined
-  task: OutcomeCard_task
+  task: OutcomeCard_task$key
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
   dataCy: string
@@ -84,11 +87,34 @@ const OutcomeCard = memo((props: Props) => {
     handleCardUpdate,
     isAgenda,
     isDraggingOver,
-    task,
+    task: taskRef,
     setEditorState,
     useTaskChild,
     dataCy
   } = props
+  const task = useFragment(
+    graphql`
+      fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
+        ...IntegratedTaskContent_task
+        id
+        integration {
+          __typename
+          ...TaskIntegrationLink_integration
+        }
+        status
+        tags
+        team {
+          id
+        }
+        # grab userId to ensure sorting on connections works
+        userId
+        isHighlighted(meetingId: $meetingId)
+        ...EditingStatus_task
+        ...TaskFooter_task
+      }
+    `,
+    taskRef
+  )
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
   const {integration, status, id: taskId, team, isHighlighted} = task
@@ -101,62 +127,9 @@ const OutcomeCard = memo((props: Props) => {
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
   }`
-  const intergrationProviders = useIntegrationProviders(teamId)
-  const activeIntegration = useIntegrationBanner(editorState, intergrationProviders)
-
-  const dismissedIntergrations: string | null = localStorage.getItem(
-    LocalStorageKey.DISMISSED_INTERGRATIONS
-  )
-
-  const [showBanner, setShowBanner] = useState<boolean>(false)
-
-  const handleOnDismiss = () => {
-    const defaultValue = {integrations: []}
-    const dismissedIntergrationsString = dismissedIntergrations ?? JSON.stringify(defaultValue)
-    const savedIntegrations = JSON.parse(dismissedIntergrationsString)
-
-    savedIntegrations.integrations.push(activeIntegration)
-
-    localStorage.setItem(LocalStorageKey.DISMISSED_INTERGRATIONS, JSON.stringify(savedIntegrations))
-
-    setShowBanner(false)
-  }
-
-  React.useEffect(() => {
-    setShowBanner(shouldShowBanner(dismissedIntergrations, activeIntegration))
-  }, [activeIntegration])
-
-  function shouldShowBanner(
-    dismissedIntegrations: string | null,
-    integrations?: Integration | null
-  ): boolean {
-    if (!dismissedIntegrations) {
-      return !activeIntegration?.connected
-    }
-
-    const dismissedIntegrationsList = JSON.parse(dismissedIntegrations)
-
-    const isDismissed = dismissedIntegrationsList.integrations.some(
-      (dismissedIntegration: Integration) => {
-        return dismissedIntegration.name === integrations?.name
-      }
-    )
-
-    if (isDismissed) {
-      return false
-    }
-
-    return true
-  }
 
   const renderIntegrationBanner = () => {
-    return showBanner && activeIntegration ? (
-      <IntegrationBanner
-        integration={activeIntegration}
-        onDismiss={handleOnDismiss}
-        teamId={teamId}
-      />
-    ) : null
+    return <IntegrationBannerRoot teamId={teamId} editorState={editorState} />
   }
 
   return (
@@ -216,25 +189,4 @@ const OutcomeCard = memo((props: Props) => {
   )
 })
 
-export default createFragmentContainer(OutcomeCard, {
-  task: graphql`
-    fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
-      ...IntegratedTaskContent_task
-      id
-      integration {
-        __typename
-        ...TaskIntegrationLink_integration
-      }
-      status
-      tags
-      team {
-        id
-      }
-      # grab userId to ensure sorting on connections works
-      userId
-      isHighlighted(meetingId: $meetingId)
-      ...EditingStatus_task
-      ...TaskFooter_task
-    }
-  `
-})
+export default OutcomeCard

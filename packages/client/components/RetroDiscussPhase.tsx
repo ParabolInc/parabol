@@ -3,10 +3,10 @@ import {ThumbUp} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
-import {RetroDiscussPhase_meeting} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
+import {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
@@ -28,7 +28,7 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 interface Props extends RetroMeetingPhaseProps {
-  meeting: RetroDiscussPhase_meeting
+  meeting: RetroDiscussPhase_meeting$key
 }
 
 const maxWidth = '114rem'
@@ -135,7 +135,32 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const RetroDiscussPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
+        ...DiscussPhaseReflectionGrid_meeting
+        ...DiscussPhaseSqueeze_meeting
+        ...StageTimerControl_meeting
+        ...ReflectionGroup_meeting
+        ...StageTimerDisplay_meeting
+        endedAt
+        organization {
+          ...DiscussPhaseSqueeze_organization
+        }
+        showSidebar
+        phases {
+          stages {
+            ...RetroDiscussPhase_stage @relay(mask: false)
+          }
+        }
+        localStage {
+          ...RetroDiscussPhase_stage @relay(mask: false)
+        }
+      }
+    `,
+    meetingRef
+  )
   const [callbackRef, phaseRef] = useCallbackRef()
   const {endedAt, localStage, showSidebar, organization} = meeting
   const {reflectionGroup, discussionId} = localStage
@@ -250,27 +275,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(RetroDiscussPhase, {
-  meeting: graphql`
-    fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
-      ...DiscussPhaseReflectionGrid_meeting
-      ...DiscussPhaseSqueeze_meeting
-      ...StageTimerControl_meeting
-      ...ReflectionGroup_meeting
-      ...StageTimerDisplay_meeting
-      endedAt
-      organization {
-        ...DiscussPhaseSqueeze_organization
-      }
-      showSidebar
-      phases {
-        stages {
-          ...RetroDiscussPhase_stage @relay(mask: false)
-        }
-      }
-      localStage {
-        ...RetroDiscussPhase_stage @relay(mask: false)
-      }
-    }
-  `
-})
+export default RetroDiscussPhase

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndTeamPromptMutation_team} from '~/__generated__/EndTeamPromptMutation_team.graphql'
+import {EndTeamPromptMutation_team$data} from '~/__generated__/EndTeamPromptMutation_team.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -55,7 +55,7 @@ const mutation = graphql`
 `
 
 export const endTeamPromptTeamOnNext: OnNextHandler<
-  EndTeamPromptMutation_team,
+  EndTeamPromptMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
   const {meeting} = payload
@@ -67,7 +67,7 @@ export const endTeamPromptTeamOnNext: OnNextHandler<
   }
 }
 
-export const endTeamPromptTeamUpdater: SharedUpdater<EndTeamPromptMutation_team> = (
+export const endTeamPromptTeamUpdater: SharedUpdater<EndTeamPromptMutation_team$data> = (
   payload,
   {store}
 ) => {

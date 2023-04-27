@@ -1,10 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import relativeDate from '~/utils/date/relativeDate'
-import {ThreadedCommentHeader_comment} from '~/__generated__/ThreadedCommentHeader_comment.graphql'
+import {
+  ThreadedCommentHeader_comment$key,
+  ThreadedCommentHeader_comment$data
+} from '~/__generated__/ThreadedCommentHeader_comment.graphql'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
@@ -23,7 +26,7 @@ const AddReactji = styled(AddReactjiButton)({
 })
 
 interface Props {
-  comment: ThreadedCommentHeader_comment
+  comment: ThreadedCommentHeader_comment$key
   editComment: () => void
   onToggleReactji: (emojiId: string) => void
   onReply: () => void
@@ -31,7 +34,7 @@ interface Props {
   meetingId: string
 }
 
-const getName = (comment: ThreadedCommentHeader_comment) => {
+const getName = (comment: ThreadedCommentHeader_comment$data) => {
   const {isActive, createdByUserNullable, isViewerComment} = comment
   if (!isActive) return 'Message Deleted'
   if (createdByUserNullable?.preferredName) return createdByUserNullable.preferredName
@@ -39,7 +42,24 @@ const getName = (comment: ThreadedCommentHeader_comment) => {
 }
 
 const ThreadedCommentHeader = (props: Props) => {
-  const {comment, onReply, editComment, onToggleReactji, dataCy, meetingId} = props
+  const {comment: commentRef, onReply, editComment, onToggleReactji, dataCy, meetingId} = props
+  const comment = useFragment(
+    graphql`
+      fragment ThreadedCommentHeader_comment on Comment {
+        id
+        createdByUserNullable: createdByUser {
+          preferredName
+        }
+        isActive
+        isViewerComment
+        reactjis {
+          id
+        }
+        updatedAt
+      }
+    `,
+    commentRef
+  )
   const {id: commentId, isActive, isViewerComment, reactjis, updatedAt} = comment
   const name = getName(comment)
   const hasReactjis = reactjis.length > 0
@@ -67,19 +87,4 @@ const ThreadedCommentHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ThreadedCommentHeader, {
-  comment: graphql`
-    fragment ThreadedCommentHeader_comment on Comment {
-      id
-      createdByUserNullable: createdByUser {
-        preferredName
-      }
-      isActive
-      isViewerComment
-      reactjis {
-        id
-      }
-      updatedAt
-    }
-  `
-})
+export default ThreadedCommentHeader

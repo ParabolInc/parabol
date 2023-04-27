@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
@@ -8,7 +8,10 @@ import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {MenuProps} from '../hooks/useMenu'
-import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
+import {
+  UserDashTeamMemberMenu_viewer$key,
+  UserDashTeamMemberMenu_viewer$data
+} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -17,17 +20,34 @@ import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  viewer: UserDashTeamMemberMenu_viewer | null
+  viewer: UserDashTeamMemberMenu_viewer$key | null
 }
 
 const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
-  const {menuProps, viewer} = props
+  const {menuProps, viewer: viewerRef} = props
+
+  const viewer = useFragment(
+    graphql`
+      fragment UserDashTeamMemberMenu_viewer on User {
+        id
+        teams {
+          id
+          name
+          teamMembers(sortBy: "preferredName") {
+            userId
+            preferredName
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
 
   const atmosphere = useAtmosphere()
   const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
 
-  const oldTeamsRef = useRef<UserDashTeamMemberMenu_viewer['teams']>([])
+  const oldTeamsRef = useRef<UserDashTeamMemberMenu_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams
@@ -106,18 +126,4 @@ const UserDashTeamMemberMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(UserDashTeamMemberMenu, {
-  viewer: graphql`
-    fragment UserDashTeamMemberMenu_viewer on User {
-      id
-      teams {
-        id
-        name
-        teamMembers(sortBy: "preferredName") {
-          userId
-          preferredName
-        }
-      }
-    }
-  `
-})
+export default UserDashTeamMemberMenu

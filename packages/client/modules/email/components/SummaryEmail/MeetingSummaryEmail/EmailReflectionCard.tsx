@@ -3,12 +3,12 @@ import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {EmailReflectionCard_reflection} from 'parabol-client/__generated__/EmailReflectionCard_reflection.graphql'
+import {EmailReflectionCard_reflection$key} from 'parabol-client/__generated__/EmailReflectionCard_reflection.graphql'
 import React, {useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 
 interface Props {
-  reflection: EmailReflectionCard_reflection
+  reflection: EmailReflectionCard_reflection$key
 }
 
 const contentStyle = {
@@ -40,7 +40,18 @@ const reflectionCardFooter = {
 }
 
 const EmailReflectionCard = (props: Props) => {
-  const {reflection} = props
+  const {reflection: reflectionRef} = props
+  const reflection = useFragment(
+    graphql`
+      fragment EmailReflectionCard_reflection on RetroReflection {
+        content
+        prompt {
+          question
+        }
+      }
+    `,
+    reflectionRef
+  )
   const {content, prompt} = reflection
   const {question} = prompt
   const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
@@ -86,13 +97,4 @@ const EmailReflectionCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EmailReflectionCard, {
-  reflection: graphql`
-    fragment EmailReflectionCard_reflection on RetroReflection {
-      content
-      prompt {
-        question
-      }
-    }
-  `
-})
+export default EmailReflectionCard

@@ -1,55 +1,60 @@
 import fs from 'fs'
 import path from 'path'
-import checkTeamEq from '../../../postgres/utils/checkTeamEq'
-import checkUserEq from '../../../postgres/utils/checkUserEq'
+import getRethink from '../../../database/rethinkDriver'
+import getMeetingTemplatesByIds from '../../../postgres/queries/getMeetingTemplatesByIds'
+import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
+import {
+  compareDateAlmostEqual,
+  compareRValUndefinedAsFalse,
+  compareRValUndefinedAsNull,
+  defaultEqFn
+} from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
 
-const tableResolvers = {
-  User: checkUserEq,
-  Team: checkTeamEq
-} as {
-  [key: string]: (
-    pageSize?: number,
-    startPage?: number,
-    slice?: boolean
-  ) => Promise<{[key: string]: any}>
-}
-
-const checkEqAndWriteOutput = async (
+const handleResult = async (
   tableName: string,
-  fileLocation: string,
-  maxErrors = 10
-): Promise<void> => {
-  const errors = await tableResolvers[tableName]!(maxErrors)
-  await fs.promises.writeFile(fileLocation, JSON.stringify(errors))
+  rowCountResult: string,
+  errors: any[],
+  writeToFile: boolean | undefined | null
+) => {
+  const result = [rowCountResult, ...errors]
+  const resultStr = JSON.stringify(result)
+  if (!writeToFile) return resultStr
+
+  const fileName = `${tableName}-${new Date()}`
+  const fileDir = path.join(process.cwd(), '__rethinkEquality__')
+  const fileLocation = path.join(fileDir, fileName)
+  await fs.promises.mkdir(fileDir, {recursive: true})
+  await fs.promises.writeFile(fileLocation, resultStr)
+  return `Result written to ${fileLocation}`
 }
 
 const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = async (
   _source,
-  {tableName, maxErrors, writeToFile},
-  {authToken}
+  {tableName, writeToFile}
 ) => {
-  // VALIDATION
-  const tableResolver = tableResolvers[tableName]
-  if (!tableResolver) {
-    return `That table name either doesn't exist or hasn't yet been implemented.`
-  }
+  const r = await getRethink()
 
-  // RESOLUTION
-  if (!writeToFile) {
-    const errors = await tableResolver(maxErrors)
-    return JSON.stringify(errors)
+  if (tableName === 'MeetingTemplate') {
+    const rowCountResult = await checkRowCount(tableName)
+    const rethinkQuery = r.table('MeetingTemplate').orderBy('updatedAt', {index: 'updatedAt'})
+    const errors = await checkTableEq(rethinkQuery, getMeetingTemplatesByIds, {
+      createdAt: defaultEqFn,
+      isActive: defaultEqFn,
+      name: defaultEqFn,
+      teamId: defaultEqFn,
+      updatedAt: compareDateAlmostEqual,
+      scope: defaultEqFn,
+      orgId: defaultEqFn,
+      parentTemplateId: compareRValUndefinedAsNull,
+      lastUsedAt: compareRValUndefinedAsNull,
+      type: defaultEqFn,
+      isStarter: compareRValUndefinedAsFalse,
+      isFree: compareRValUndefinedAsFalse
+    })
+    return handleResult(tableName, rowCountResult, errors, writeToFile)
   }
-  const fileName = `${tableName}-${new Date()}`
-  const fileLocation = path.join(
-    process.cwd(),
-    'packages/server/graphql/private/mutations',
-    '__output__',
-    fileName
-  )
-  await fs.promises.mkdir(path.dirname(fileLocation), {recursive: true})
-  checkEqAndWriteOutput(tableName, fileLocation, maxErrors)
-  return `Please check ${fileLocation} for output results, it will appear in a few mins.`
+  return 'Table not found'
 }
 
 export default checkRethinkPgEquality

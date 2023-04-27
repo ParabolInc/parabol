@@ -63,8 +63,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    queryRef
   )
 
   const paginationRes = usePaginationFragment<

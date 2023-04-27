@@ -134,7 +134,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       SubscriptionChannel.NOTIFICATION,
       teamLeadUserIdWithNewActions,
       'AcceptTeamInvitationPayload',
-      {teamLeadId: teamLeadUserIdWithNewActions},
+      {...data, teamLeadId: teamLeadUserIdWithNewActions},
       subOptions
     )
   }

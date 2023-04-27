@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {SummaryAvatarHeader_meetingMember} from 'parabol-client/__generated__/SummaryAvatarHeader_meetingMember.graphql'
+import {SummaryAvatarHeader_meetingMember$key} from 'parabol-client/__generated__/SummaryAvatarHeader_meetingMember.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 
 const avatarCell = {
   paddingTop: 24
@@ -22,11 +22,22 @@ const nameStyle = {
 }
 
 interface Props {
-  meetingMember: SummaryAvatarHeader_meetingMember
+  meetingMember: SummaryAvatarHeader_meetingMember$key
 }
 
 const SummaryAvatarHeader = (props: Props) => {
-  const {meetingMember} = props
+  const {meetingMember: meetingMemberRef} = props
+  const meetingMember = useFragment(
+    graphql`
+      fragment SummaryAvatarHeader_meetingMember on MeetingMember {
+        user {
+          rasterPicture
+          preferredName
+        }
+      }
+    `,
+    meetingMemberRef
+  )
   const {user} = meetingMember
   const {rasterPicture, preferredName} = user
   return (
@@ -45,13 +56,4 @@ const SummaryAvatarHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SummaryAvatarHeader, {
-  meetingMember: graphql`
-    fragment SummaryAvatarHeader_meetingMember on MeetingMember {
-      user {
-        rasterPicture
-        preferredName
-      }
-    }
-  `
-})
+export default SummaryAvatarHeader

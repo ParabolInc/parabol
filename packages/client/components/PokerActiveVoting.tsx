@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import {Check as CheckIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {BezierCurve, PokerCards} from '../types/constEnums'
-import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
-import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
+import {PokerActiveVoting_meeting$key} from '../__generated__/PokerActiveVoting_meeting.graphql'
+import {PokerActiveVoting_stage$key} from '../__generated__/PokerActiveVoting_stage.graphql'
 import AvatarList from './AvatarList'
 import CircularProgress from './CircularProgress'
 import MiniPokerCard from './MiniPokerCard'
@@ -90,13 +90,40 @@ const MiniCardWrapper = styled('div')({
 
 interface Props {
   isClosing: boolean
-  meeting: PokerActiveVoting_meeting
-  stage: PokerActiveVoting_stage
+  meeting: PokerActiveVoting_meeting$key
+  stage: PokerActiveVoting_stage$key
   isInitialStageRender: boolean
 }
 
 const PokerActiveVoting = (props: Props) => {
-  const {isClosing, meeting, stage, isInitialStageRender} = props
+  const {isClosing, meeting: meetingRef, stage: stageRef, isInitialStageRender} = props
+  const stage = useFragment(
+    graphql`
+      fragment PokerActiveVoting_stage on EstimateStage {
+        id
+        scores {
+          userId
+          user {
+            ...AvatarList_users
+          }
+        }
+      }
+    `,
+    stageRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment PokerActiveVoting_meeting on PokerMeeting {
+        facilitatorUserId
+        id
+        meetingMembers {
+          id
+          isSpectating
+        }
+      }
+    `,
+    meetingRef
+  )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {facilitatorUserId, id: meetingId, meetingMembers} = meeting
@@ -164,26 +191,4 @@ const PokerActiveVoting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerActiveVoting, {
-  stage: graphql`
-    fragment PokerActiveVoting_stage on EstimateStage {
-      id
-      scores {
-        userId
-        user {
-          ...AvatarList_users
-        }
-      }
-    }
-  `,
-  meeting: graphql`
-    fragment PokerActiveVoting_meeting on PokerMeeting {
-      facilitatorUserId
-      id
-      meetingMembers {
-        id
-        isSpectating
-      }
-    }
-  `
-})
+export default PokerActiveVoting

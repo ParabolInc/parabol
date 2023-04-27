@@ -3,21 +3,21 @@ import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
-import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
+import {TemplateScaleValueItem_scale$key} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
 import {PALETTE} from '../../../styles/paletteV3'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
-import {TemplateScaleValueItem_scaleValue} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
+import {TemplateScaleValueItem_scaleValue$key} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
 
 interface Props {
   isDragging: boolean
-  scale: TemplateScaleValueItem_scale
-  scaleValue: TemplateScaleValueItem_scaleValue
+  scale: TemplateScaleValueItem_scale$key
+  scaleValue: TemplateScaleValueItem_scaleValue$key
   dragProvided?: DraggableProvided
 }
 
@@ -58,7 +58,28 @@ const ScaleAndDescription = styled('div')({
 })
 
 const TemplateScaleValueItem = (props: Props) => {
-  const {dragProvided, isDragging, scale, scaleValue} = props
+  const {dragProvided, isDragging, scale: scaleRef, scaleValue: scaleValueRef} = props
+  const scale = useFragment(
+    graphql`
+      fragment TemplateScaleValueItem_scale on TemplateScale {
+        id
+        ...EditableTemplateScaleValueLabel_scale
+        ...EditableTemplateScaleValueColor_scale
+      }
+    `,
+    scaleRef
+  )
+  const scaleValue = useFragment(
+    graphql`
+      fragment TemplateScaleValueItem_scaleValue on TemplateScaleValue {
+        ...EditableTemplateScaleValueLabel_scaleValue
+        id
+        label
+        color
+      }
+    `,
+    scaleValueRef
+  )
   const {id: scaleId} = scale
   const {label, color} = scaleValue
   const [isHover, setIsHover] = useState(false)
@@ -102,20 +123,4 @@ const TemplateScaleValueItem = (props: Props) => {
     </ScaleValueItem>
   )
 }
-export default createFragmentContainer(TemplateScaleValueItem, {
-  scale: graphql`
-    fragment TemplateScaleValueItem_scale on TemplateScale {
-      id
-      ...EditableTemplateScaleValueLabel_scale
-      ...EditableTemplateScaleValueColor_scale
-    }
-  `,
-  scaleValue: graphql`
-    fragment TemplateScaleValueItem_scaleValue on TemplateScaleValue {
-      ...EditableTemplateScaleValueLabel_scaleValue
-      id
-      label
-      color
-    }
-  `
-})
+export default TemplateScaleValueItem

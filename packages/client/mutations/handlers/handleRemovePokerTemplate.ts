@@ -1,5 +1,5 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {PokerTemplateList_settings} from '~/__generated__/PokerTemplateList_settings.graphql'
+import {PokerTemplateList_settings$data} from '~/__generated__/PokerTemplateList_settings.graphql'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getPokerTemplateOrgConn from '../connections/getPokerTemplateOrgConn'
@@ -12,7 +12,7 @@ const handleRemovePokerTemplate = (
   store: RecordSourceSelectorProxy<any>
 ) => {
   const team = store.get(teamId)!
-  const settings = team.getLinkedRecord<PokerTemplateList_settings>('meetingSettings', {
+  const settings = team.getLinkedRecord<PokerTemplateList_settings$data>('meetingSettings', {
     meetingType: 'poker'
   })
   safeRemoveNodeFromArray(templateId, settings, 'teamTemplates')

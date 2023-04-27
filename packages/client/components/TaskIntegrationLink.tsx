@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {parseWebPath} from '~/utils/parseWebPath'
 import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
-import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import JiraIssueLink from './JiraIssueLink'
 
 const StyledLink = styled('a')({
@@ -21,7 +21,7 @@ const StyledLink = styled('a')({
 })
 
 interface Props {
-  integration: TaskIntegrationLink_integration | null
+  integration: TaskIntegrationLink_integration$key | null
   dataCy: string
   className?: string
   children?: ReactNode
@@ -29,7 +29,20 @@ interface Props {
 }
 
 const TaskIntegrationLink = (props: Props) => {
-  const {integration, dataCy, className, children, showJiraLabelPrefix} = props
+  const {integration: integrationRef, dataCy, className, children, showJiraLabelPrefix} = props
+  const integration = useFragment(
+    graphql`
+      fragment TaskIntegrationLink_integration on TaskIntegration {
+        __typename
+        ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationAzure @relay(mask: false)
+      }
+    `,
+    integrationRef
+  )
   if (!integration) return null
   if (integration.__typename === 'JiraIssue') {
     const {issueKey, projectKey, cloudName} = integration
@@ -155,15 +168,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(TaskIntegrationLink, {
-  integration: graphql`
-    fragment TaskIntegrationLink_integration on TaskIntegration {
-      __typename
-      ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
-      ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
-      ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
-      ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false)
-      ...TaskIntegrationLinkIntegrationAzure @relay(mask: false)
-    }
-  `
-})
+export default TaskIntegrationLink

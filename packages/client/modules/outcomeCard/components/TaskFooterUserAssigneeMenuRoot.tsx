@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
@@ -8,19 +8,30 @@ import {renderLoader} from '../../../utils/relay/renderLoader'
 import taskFooterUserAssigneeMenuQuery, {
   TaskFooterUserAssigneeMenuQuery
 } from '../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
-import {TaskFooterUserAssigneeMenuRoot_task} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
+import {TaskFooterUserAssigneeMenuRoot_task$key} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
 import {AreaEnum} from '../../../__generated__/UpdateTaskMutation.graphql'
 import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
 
 interface Props {
   area: string
   menuProps: MenuProps
-  task: TaskFooterUserAssigneeMenuRoot_task
+  task: TaskFooterUserAssigneeMenuRoot_task$key
   useTaskChild: UseTaskChild
 }
 
 const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
-  const {area, menuProps, task, useTaskChild} = props
+  const {area, menuProps, task: taskRef, useTaskChild} = props
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterUserAssigneeMenuRoot_task on Task {
+        ...TaskFooterUserAssigneeMenu_task
+        team {
+          id
+        }
+      }
+    `,
+    taskRef
+  )
   const {team} = task
   const {id: teamId} = team
   useTaskChild('userAssignee')
@@ -42,13 +53,4 @@ const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskFooterUserAssigneeMenuRoot, {
-  task: graphql`
-    fragment TaskFooterUserAssigneeMenuRoot_task on Task {
-      ...TaskFooterUserAssigneeMenu_task
-      team {
-        id
-      }
-    }
-  `
-})
+export default TaskFooterUserAssigneeMenuRoot

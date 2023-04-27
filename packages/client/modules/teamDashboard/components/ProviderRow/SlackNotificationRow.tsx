@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import StyledError from '../../../../components/StyledError'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -10,13 +10,13 @@ import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotifica
 import {MeetingLabels} from '../../../../types/constEnums'
 import {
   SlackNotificationEventEnum,
-  SlackNotificationRow_viewer
+  SlackNotificationRow_viewer$key
 } from '../../../../__generated__/SlackNotificationRow_viewer.graphql'
 
 interface Props {
   event: SlackNotificationEventEnum
   localChannelId: string | null
-  viewer: SlackNotificationRow_viewer
+  viewer: SlackNotificationRow_viewer$key
   teamId: string
 }
 
@@ -40,7 +40,24 @@ const Label = styled('span')({
 })
 
 const SlackNotificationRow = (props: Props) => {
-  const {event, localChannelId, teamId, viewer} = props
+  const {event, localChannelId, teamId, viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment SlackNotificationRow_viewer on User {
+        teamMember(teamId: $teamId) {
+          integrations {
+            slack {
+              notifications {
+                channelId
+                event
+              }
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {slack} = integrations
@@ -76,19 +93,4 @@ const SlackNotificationRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SlackNotificationRow, {
-  viewer: graphql`
-    fragment SlackNotificationRow_viewer on User {
-      teamMember(teamId: $teamId) {
-        integrations {
-          slack {
-            notifications {
-              channelId
-              event
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default SlackNotificationRow

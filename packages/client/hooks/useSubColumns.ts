@@ -2,7 +2,7 @@ import {RefObject, useMemo, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import getBBox from '~/components/RetroReflectPhase/getBBox'
 import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
-import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
+import {GroupingKanbanColumn_reflectionGroups$data} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 import useResizeObserver from './useResizeObserver'
@@ -17,7 +17,7 @@ const useSubColumns = (
   columnBodyRef: RefObject<HTMLDivElement>,
   phaseRef: RefObject<HTMLDivElement>,
   reflectPromptsCount: number,
-  reflectionGroups: GroupingKanbanColumn_reflectionGroups,
+  reflectionGroups: GroupingKanbanColumn_reflectionGroups$data,
   columnsRef: RefObject<HTMLDivElement>
 ) => {
   const atmosphere = useAtmosphere()

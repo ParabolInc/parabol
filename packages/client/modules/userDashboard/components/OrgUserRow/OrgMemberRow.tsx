@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, Ref} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton, {FlatButtonProps} from '../../../../components/FlatButton'
@@ -23,8 +23,8 @@ import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {OrgMemberRow_organization} from '../../../../__generated__/OrgMemberRow_organization.graphql'
-import {OrgMemberRow_organizationUser} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
+import {OrgMemberRow_organization$key} from '../../../../__generated__/OrgMemberRow_organization.graphql'
+import {OrgMemberRow_organizationUser$key} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
 
 const AvatarBlock = styled('div')({
   display: 'none',
@@ -58,8 +58,8 @@ const MenuToggleBlock = styled('div')({
 
 interface Props extends WithMutationProps {
   billingLeaderCount: number
-  organizationUser: OrgMemberRow_organizationUser
-  organization: OrgMemberRow_organization
+  organizationUser: OrgMemberRow_organizationUser$key
+  organization: OrgMemberRow_organization$key
 }
 
 const StyledButton = styled(FlatButton)({
@@ -97,7 +97,38 @@ const RemoveFromOrgModal = lazyPreload(
 
 const OrgMemberRow = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {billingLeaderCount, organizationUser, organization} = props
+  const {
+    billingLeaderCount,
+    organizationUser: organizationUserRef,
+    organization: organizationRef
+  } = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgMemberRow_organization on Organization {
+        isViewerBillingLeader: isBillingLeader
+        orgId: id
+        ...BillingLeaderActionMenu_organization
+      }
+    `,
+    organizationRef
+  )
+  const organizationUser = useFragment(
+    graphql`
+      fragment OrgMemberRow_organizationUser on OrganizationUser {
+        user {
+          userId: id
+          email
+          inactive
+          picture
+          preferredName
+        }
+        role
+        newUserUntil
+        ...BillingLeaderActionMenu_organizationUser
+      }
+    `,
+    organizationUserRef
+  )
   const {orgId, isViewerBillingLeader} = organization
   const {newUserUntil, user, role} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
@@ -188,26 +219,4 @@ const OrgMemberRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(OrgMemberRow), {
-  organization: graphql`
-    fragment OrgMemberRow_organization on Organization {
-      isViewerBillingLeader: isBillingLeader
-      orgId: id
-      ...BillingLeaderActionMenu_organization
-    }
-  `,
-  organizationUser: graphql`
-    fragment OrgMemberRow_organizationUser on OrganizationUser {
-      user {
-        userId: id
-        email
-        inactive
-        picture
-        preferredName
-      }
-      role
-      newUserUntil
-      ...BillingLeaderActionMenu_organizationUser
-    }
-  `
-})
+export default withMutationProps(OrgMemberRow)

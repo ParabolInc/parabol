@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
-import {NewMeetingSidebar_meeting} from '~/__generated__/NewMeetingSidebar_meeting.graphql'
+import {NewMeetingSidebar_meeting$key} from '~/__generated__/NewMeetingSidebar_meeting.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
@@ -73,11 +73,31 @@ interface Props {
   children: ReactNode
   handleMenuClick: () => void
   toggleSidebar: () => void
-  meeting: NewMeetingSidebar_meeting
+  meeting: NewMeetingSidebar_meeting$key
 }
 
 const NewMeetingSidebar = (props: Props) => {
-  const {children, handleMenuClick, toggleSidebar, meeting} = props
+  const {children, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment NewMeetingSidebar_meeting on NewMeeting {
+        ...Facilitator_meeting
+        id
+        endedAt
+        facilitatorUserId
+        name
+        team {
+          id
+          name
+          organization {
+            id
+            tierLimitExceededAt
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
   const {id: teamId, name: teamName, organization} = team
   const {id: orgId, tierLimitExceededAt} = organization
@@ -126,22 +146,4 @@ const NewMeetingSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingSidebar, {
-  meeting: graphql`
-    fragment NewMeetingSidebar_meeting on NewMeeting {
-      ...Facilitator_meeting
-      id
-      endedAt
-      facilitatorUserId
-      name
-      team {
-        id
-        name
-        organization {
-          id
-          tierLimitExceededAt
-        }
-      }
-    }
-  `
-})
+export default NewMeetingSidebar

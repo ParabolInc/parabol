@@ -2,15 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import {MeetingLabels} from '../types/constEnums'
 import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
-import {StageTimerModalEndTime_facilitator} from '../__generated__/StageTimerModalEndTime_facilitator.graphql'
-import {StageTimerModalEndTime_stage} from '../__generated__/StageTimerModalEndTime_stage.graphql'
+import {StageTimerModalEndTime_facilitator$key} from '../__generated__/StageTimerModalEndTime_facilitator.graphql'
+import {StageTimerModalEndTime_stage$key} from '../__generated__/StageTimerModalEndTime_stage.graphql'
 import SecondaryButton from './SecondaryButton'
 import StageTimerModalEndTimeDate from './StageTimerModalEndTimeDate'
 import StageTimerModalEndTimeHour from './StageTimerModalEndTimeHour'
@@ -18,9 +18,9 @@ import StageTimerModalEndTimeSlackToggle from './StageTimerModalEndTimeSlackTogg
 
 interface Props {
   closePortal: () => void
-  facilitator: StageTimerModalEndTime_facilitator
+  facilitator: StageTimerModalEndTime_facilitator$key
   meetingId: string
-  stage: StageTimerModalEndTime_stage
+  stage: StageTimerModalEndTime_stage$key
 }
 
 const Row = styled('div')({
@@ -50,7 +50,24 @@ const DEFAULT_DURATION = ms('1d')
 const TOMORROW = roundDateToNearestHalfHour(new Date(Date.now() + DEFAULT_DURATION))
 
 const StageTimerModalEndTime = (props: Props) => {
-  const {closePortal, facilitator, meetingId, stage} = props
+  const {closePortal, facilitator: facilitatorRef, meetingId, stage: stageRef} = props
+  const facilitator = useFragment(
+    graphql`
+      fragment StageTimerModalEndTime_facilitator on TeamMember {
+        ...StageTimerModalEndTimeSlackToggle_facilitator
+      }
+    `,
+    facilitatorRef
+  )
+  const stage = useFragment(
+    graphql`
+      fragment StageTimerModalEndTime_stage on NewMeetingStage {
+        suggestedEndTime
+        scheduledEndTime
+      }
+    `,
+    stageRef
+  )
   const scheduledEndTime = stage.scheduledEndTime as string | null
   const suggestedEndTime = stage.suggestedEndTime as string | null
   const [endTime, setEndTime] = useState(new Date(scheduledEndTime || suggestedEndTime || TOMORROW))
@@ -94,16 +111,4 @@ const StageTimerModalEndTime = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(StageTimerModalEndTime, {
-  facilitator: graphql`
-    fragment StageTimerModalEndTime_facilitator on TeamMember {
-      ...StageTimerModalEndTimeSlackToggle_facilitator
-    }
-  `,
-  stage: graphql`
-    fragment StageTimerModalEndTime_stage on NewMeetingStage {
-      suggestedEndTime
-      scheduledEndTime
-    }
-  `
-})
+export default StageTimerModalEndTime

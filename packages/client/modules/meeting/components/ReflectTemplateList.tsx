@@ -108,20 +108,20 @@ const ReflectTemplateList = (props: Props) => {
     graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
         ...ReflectTemplateSearchBar_settings
-        ...ReflectTemplateListTeam_settings
         id
+        templateSearchQuery
         team {
           ...AddNewReflectTemplate_team
+          ...ReflectTemplateListTeam_team
           id
         }
         activeTemplate {
           ...getTemplateList_template
           id
-          teamId
-          orgId
         }
         teamTemplates {
           ...AddNewReflectTemplate_reflectTemplates
+          ...ReflectTemplateListTeam_teamTemplates
           id
         }
       }
@@ -137,7 +137,7 @@ const ReflectTemplateList = (props: Props) => {
     `,
     viewerRef
   )
-  const {id: settingsId, team, teamTemplates} = settings
+  const {id: settingsId, team, teamTemplates, templateSearchQuery} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
   const readyToScrollSmooth = useReadyToSmoothScroll(activeTemplateId)
@@ -231,8 +231,9 @@ const ReflectTemplateList = (props: Props) => {
           <ReflectTemplateListTeam
             activeTemplateId={activeTemplateId}
             showPublicTemplates={() => goToTab('PUBLIC')}
-            settingsRef={settings}
-            teamId={teamId}
+            templateSearchQuery={templateSearchQuery ?? ''}
+            teamRef={team}
+            teamTemplatesRef={teamTemplates}
             isActive={activeIdx === 0}
             viewerRef={viewer}
           />

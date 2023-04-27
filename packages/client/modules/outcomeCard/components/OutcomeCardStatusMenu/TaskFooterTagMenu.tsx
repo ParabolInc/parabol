@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
@@ -18,7 +18,7 @@ import {TaskStatus} from '../../../../types/constEnums'
 import addContentTag from '../../../../utils/draftjs/addContentTag'
 import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
-import {TaskFooterTagMenu_task} from '../../../../__generated__/TaskFooterTagMenu_task.graphql'
+import {TaskFooterTagMenu_task$key} from '../../../../__generated__/TaskFooterTagMenu_task.graphql'
 import TaskFooterTagMenuStatusItem from './TaskFooterTagMenuStatusItem'
 
 const statusItems = [TaskStatus.DONE, TaskStatus.ACTIVE, TaskStatus.STUCK, TaskStatus.FUTURE]
@@ -30,12 +30,24 @@ interface Props {
   // TODO make area enum more fine grained to get rid of isAgenda
   isAgenda: boolean
   mutationProps: MenuMutationProps
-  task: TaskFooterTagMenu_task
+  task: TaskFooterTagMenu_task$key
   useTaskChild: UseTaskChild
 }
 
 const TaskFooterTagMenu = (props: Props) => {
-  const {area, menuProps, editorState, isAgenda, task, useTaskChild} = props
+  const {area, menuProps, editorState, isAgenda, task: taskRef, useTaskChild} = props
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterTagMenu_task on Task {
+        ...TaskFooterTagMenuStatusItem_task
+        id
+        content
+        status
+        tags
+      }
+    `,
+    taskRef
+  )
   useTaskChild('tag')
   const atmosphere = useAtmosphere()
   const {id: taskId, status: taskStatus, tags, content} = task
@@ -103,14 +115,4 @@ const TaskFooterTagMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskFooterTagMenu, {
-  task: graphql`
-    fragment TaskFooterTagMenu_task on Task {
-      ...TaskFooterTagMenuStatusItem_task
-      id
-      content
-      status
-      tags
-    }
-  `
-})
+export default TaskFooterTagMenu

@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {BezierCurve} from '../types/constEnums'
-import {AvatarListUser_user} from '../__generated__/AvatarListUser_user.graphql'
+import {AvatarListUser_user$key} from '../__generated__/AvatarListUser_user.graphql'
 import Avatar from './Avatar/Avatar'
 
 const Wrapper = styled('div')<{offset: number; isColumn?: boolean}>(({offset, isColumn}) => ({
@@ -42,7 +42,7 @@ interface Props {
   isAnimated: boolean
   onTransitionEnd?: () => void
   status?: TransitionStatus
-  user: AvatarListUser_user
+  user: AvatarListUser_user$key
   width: number
   onClick?: () => void
   borderColor?: string
@@ -52,7 +52,7 @@ const AvatarListUser = (props: Props) => {
   const {
     className,
     isColumn,
-    user,
+    user: userRef,
     onTransitionEnd,
     status,
     offset,
@@ -61,6 +61,15 @@ const AvatarListUser = (props: Props) => {
     onClick,
     borderColor
   } = props
+  const user = useFragment(
+    graphql`
+      fragment AvatarListUser_user on User {
+        picture
+        preferredName
+      }
+    `,
+    userRef
+  )
   const {picture, preferredName} = user
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
@@ -89,11 +98,4 @@ const AvatarListUser = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AvatarListUser, {
-  user: graphql`
-    fragment AvatarListUser_user on User {
-      picture
-      preferredName
-    }
-  `
-})
+export default AvatarListUser

@@ -2,10 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
 import {SimpleMutation} from '../types/relayMutations'
-import {
-  UpdateNewCheckInQuestionMutation as TUpdateNewCheckInQuestionMutation,
-  UpdateNewCheckInQuestionMutationResponse
-} from '../__generated__/UpdateNewCheckInQuestionMutation.graphql'
+import {UpdateNewCheckInQuestionMutation as TUpdateNewCheckInQuestionMutation} from '../__generated__/UpdateNewCheckInQuestionMutation.graphql'
 graphql`
   fragment UpdateNewCheckInQuestionMutation_meeting on UpdateNewCheckInQuestionPayload {
     meeting {
@@ -30,7 +27,7 @@ const mutation = graphql`
 `
 
 type CheckInPhase = NonNullable<
-  NonNullable<UpdateNewCheckInQuestionMutationResponse['updateNewCheckInQuestion']>['meeting']
+  NonNullable<TUpdateNewCheckInQuestionMutation['response']['updateNewCheckInQuestion']>['meeting']
 >['phases'][0]
 
 const UpdateNewCheckInQuestionMutation: SimpleMutation<TUpdateNewCheckInQuestionMutation> = (

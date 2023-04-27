@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useGotoStageId from '../hooks/useGotoStageId'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
-import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
+import {ActionSidebarAgendaItemsSection_meeting$key} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 const StyledRoot = styled(MeetingSidebarPhaseItemChild)({
@@ -15,11 +15,25 @@ const StyledRoot = styled(MeetingSidebarPhaseItemChild)({
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  meeting: ActionSidebarAgendaItemsSection_meeting
+  meeting: ActionSidebarAgendaItemsSection_meeting$key
 }
 
 const ActionSidebarAgendaItemsSection = (props: Props) => {
-  const {gotoStageId, handleMenuClick, meeting} = props
+  const {gotoStageId, handleMenuClick, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
+        ...AgendaListAndInput_meeting
+        phases {
+          ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
+        }
+        team {
+          ...AgendaListAndInput_team
+        }
+      }
+    `,
+    meetingRef
+  )
   const {team} = meeting
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
@@ -53,16 +67,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
-  meeting: graphql`
-    fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
-      ...AgendaListAndInput_meeting
-      phases {
-        ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
-      }
-      team {
-        ...AgendaListAndInput_team
-      }
-    }
-  `
-})
+export default ActionSidebarAgendaItemsSection

@@ -2,19 +2,19 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DayModifiers, DayPicker} from 'react-day-picker'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
 import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {DueDatePicker_task} from '../__generated__/DueDatePicker_task.graphql'
+import {DueDatePicker_task$key} from '../__generated__/DueDatePicker_task.graphql'
 import Menu from './Menu'
 
 interface Props {
   menuProps: MenuProps
-  task: DueDatePicker_task
+  task: DueDatePicker_task$key
   useTaskChild: UseTaskChild
 }
 
@@ -37,7 +37,16 @@ const Hint = styled('div')({
 })
 
 const DueDatePicker = (props: Props) => {
-  const {menuProps, task, useTaskChild} = props
+  const {menuProps, task: taskRef, useTaskChild} = props
+  const task = useFragment(
+    graphql`
+      fragment DueDatePicker_task on Task {
+        id
+        dueDate
+      }
+    `,
+    taskRef
+  )
   const {id: taskId, dueDate} = task
   useTaskChild('dueDate')
   const atmosphere = useAtmosphere()
@@ -73,11 +82,4 @@ const DueDatePicker = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DueDatePicker, {
-  task: graphql`
-    fragment DueDatePicker_task on Task {
-      id
-      dueDate
-    }
-  `
-})
+export default DueDatePicker

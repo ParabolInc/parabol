@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import {
   DraftEditorCommand,
   DraftHandleValue,
@@ -6,12 +7,15 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {MutableRefObject, useRef} from 'react'
+import React, {MutableRefObject, Suspense, useRef} from 'react'
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 import useMarkdown from '../hooks/useMarkdown'
 import {SetEditorState} from '../types/draft'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
+import isAndroid from '../utils/draftjs/isAndroid'
+import isRichDraft from '../utils/draftjs/isRichDraft'
+import lazyPreload from '../utils/lazyPreload'
 import blockStyleFn from './TaskEditor/blockStyleFn'
 import './TaskEditor/Draft.css'
 
@@ -27,6 +31,7 @@ interface Props extends Handlers {
   setEditorState: SetEditorState
   readOnly: boolean
   placeholder: string
+  setEditorStateFallback?: () => void
 }
 
 interface EntityPasteOffset {
@@ -34,9 +39,27 @@ interface EntityPasteOffset {
   anchorKey: string
 }
 
+const AndroidEditorFallback = lazyPreload(
+  () => import(/* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback')
+)
+
+const EditorFallback = styled(AndroidEditorFallback)({
+  padding: 0,
+  fontSize: 24,
+  lineHeight: '32px'
+})
+
 const EditorInputWrapper = (props: Props) => {
-  const {ariaLabel, setEditorState, editorState, editorRef, handleReturn, placeholder, readOnly} =
-    props
+  const {
+    ariaLabel,
+    setEditorState,
+    editorState,
+    editorRef,
+    handleReturn,
+    placeholder,
+    readOnly,
+    setEditorStateFallback
+  } = props
   const entityPasteStartRef = useRef<EntityPasteOffset | undefined>(undefined)
   const ks = useKeyboardShortcuts(editorState, setEditorState, {
     handleKeyCommand: props.handleKeyCommand,
@@ -125,22 +148,55 @@ const EditorInputWrapper = (props: Props) => {
     return 'not-handled'
   }
 
+  const onKeyDownFallback = (e: React.KeyboardEvent<Element>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+  }
+
+  // Update question on blur of the editor field.
+  const handleBlur = () => {
+    if (isAndroid && setEditorStateFallback) {
+      setEditorStateFallback()
+    }
+  }
+
+  const useFallback = isAndroid && !readOnly
+  const showFallback = useFallback && !isRichDraft(editorState)
+
+  // Make use of AndroidEditorFallback for android users.
+  // Usage Reference {@see ./TaskEditor/CommentEditor.tsx}
   return (
-    <Editor
-      spellCheck
-      ariaLabel={ariaLabel}
-      blockStyleFn={blockStyleFn}
-      editorState={editorState}
-      handleBeforeInput={onBeforeInput}
-      handleKeyCommand={nextKeyCommand}
-      handlePastedText={onPastedText}
-      handleReturn={onReturn}
-      keyBindingFn={onKeyBindingFn}
-      onChange={onChange}
-      placeholder={placeholder}
-      readOnly={readOnly}
-      ref={editorRef as any}
-    />
+    <>
+      {showFallback ? (
+        <Suspense fallback={<div />}>
+          <EditorFallback
+            ariaLabel={ariaLabel}
+            editorState={editorState}
+            placeholder={placeholder}
+            onKeyDown={onKeyDownFallback}
+            onPastedText={onPastedText}
+            editorRef={editorRef as any}
+            onBlur={handleBlur}
+          />
+        </Suspense>
+      ) : (
+        <Editor
+          spellCheck
+          ariaLabel={ariaLabel}
+          blockStyleFn={blockStyleFn}
+          editorState={editorState}
+          handleBeforeInput={onBeforeInput}
+          handleKeyCommand={nextKeyCommand}
+          handlePastedText={onPastedText}
+          handleReturn={onReturn}
+          keyBindingFn={onKeyBindingFn}
+          onChange={onChange}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          ref={editorRef as any}
+        />
+      )}
+    </>
   )
 }
 

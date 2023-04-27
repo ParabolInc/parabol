@@ -2,20 +2,20 @@ import styled from '@emotion/styled'
 import {TimerOff} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {MeetingLabels} from '../types/constEnums'
-import {StageTimerModalEditTimeLimit_stage} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
+import {StageTimerModalEditTimeLimit_stage$key} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
 import MenuItemHR from './MenuItemHR'
 import PlainButton from './PlainButton/PlainButton'
 import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'
 
 interface Props {
   meetingId: string
-  stage: StageTimerModalEditTimeLimit_stage
+  stage: StageTimerModalEditTimeLimit_stage$key
   closePortal: () => void
 }
 
@@ -48,7 +48,15 @@ const StyledIcon = styled(TimerOff)({
 })
 
 const StageTimerModalEditTimeLimit = (props: Props) => {
-  const {meetingId, closePortal, stage} = props
+  const {meetingId, closePortal, stage: stageRef} = props
+  const stage = useFragment(
+    graphql`
+      fragment StageTimerModalEditTimeLimit_stage on NewMeetingStage {
+        ...StageTimerModalTimeLimit_stage
+      }
+    `,
+    stageRef
+  )
   const atmosphere = useAtmosphere()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const endTimer = () => {
@@ -74,10 +82,4 @@ const StageTimerModalEditTimeLimit = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(StageTimerModalEditTimeLimit, {
-  stage: graphql`
-    fragment StageTimerModalEditTimeLimit_stage on NewMeetingStage {
-      ...StageTimerModalTimeLimit_stage
-    }
-  `
-})
+export default StageTimerModalEditTimeLimit

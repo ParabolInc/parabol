@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import {
-  ActionMeetingSidebar_meeting,
+  ActionMeetingSidebar_meeting$key,
   NewMeetingPhaseTypeEnum
 } from '../__generated__/ActionMeetingSidebar_meeting.graphql'
 import ActionSidebarPhaseListItemChildren from './ActionSidebarPhaseListItemChildren'
@@ -18,14 +18,48 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   toggleSidebar: () => void
-  meeting: ActionMeetingSidebar_meeting
+  meeting: ActionMeetingSidebar_meeting$key
 }
 
 const blackList: NewMeetingPhaseTypeEnum[] = ['firstcall', 'lastcall']
 const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates', 'agendaitems']
 
 const ActionMeetingSidebar = (props: Props) => {
-  const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
+  const {gotoStageId, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ActionMeetingSidebar_meeting on ActionMeeting {
+        ...ActionSidebarPhaseListItemChildren_meeting
+        ...NewMeetingSidebar_meeting
+        settings {
+          phaseTypes
+        }
+        facilitatorUserId
+        facilitatorStageId
+        localPhase {
+          phaseType
+        }
+        localStage {
+          id
+        }
+        phases {
+          phaseType
+          stages {
+            id
+            isComplete
+            isNavigable
+            isNavigableByFacilitator
+          }
+        }
+        team {
+          agendaItems {
+            id
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {team, settings} = meeting
@@ -94,36 +128,4 @@ const ActionMeetingSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ActionMeetingSidebar, {
-  meeting: graphql`
-    fragment ActionMeetingSidebar_meeting on ActionMeeting {
-      ...ActionSidebarPhaseListItemChildren_meeting
-      ...NewMeetingSidebar_meeting
-      settings {
-        phaseTypes
-      }
-      facilitatorUserId
-      facilitatorStageId
-      localPhase {
-        phaseType
-      }
-      localStage {
-        id
-      }
-      phases {
-        phaseType
-        stages {
-          id
-          isComplete
-          isNavigable
-          isNavigableByFacilitator
-        }
-      }
-      team {
-        agendaItems {
-          id
-        }
-      }
-    }
-  `
-})
+export default ActionMeetingSidebar

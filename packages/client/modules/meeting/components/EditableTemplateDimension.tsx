@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -9,7 +9,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
 import Legitity from '../../../validation/Legitity'
-import {EditableTemplateDimension_dimensions} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
+import {EditableTemplateDimension_dimensions$key} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
 
 const StyledEditableText = styled(EditableText)({
   fontFamily: PALETTE.SLATE_700,
@@ -24,11 +24,27 @@ interface Props {
   isHover: boolean
   dimensionName: string
   dimensionId: string
-  dimensions: EditableTemplateDimension_dimensions
+  dimensions: EditableTemplateDimension_dimensions$key
 }
 
 const EditableTemplateDimension = (props: Props) => {
-  const {dimensionId, dimensions} = props
+  const {
+    dimensionId,
+    dimensions: dimensionsRef,
+    isOwner,
+    isHover,
+    isEditingDescription,
+    dimensionName
+  } = props
+  const dimensions = useFragment(
+    graphql`
+      fragment EditableTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
+        id
+        name
+      }
+    `,
+    dimensionsRef
+  )
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -64,7 +80,6 @@ const EditableTemplateDimension = (props: Props) => {
     return res
   }
 
-  const {isOwner, isHover, isEditingDescription, dimensionName} = props
   const autoFocus = dimensionName.startsWith('*New Dimension #')
   const ref = useRef<HTMLDivElement>(null)
   useScrollIntoView(ref, autoFocus)
@@ -84,11 +99,4 @@ const EditableTemplateDimension = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EditableTemplateDimension, {
-  dimensions: graphql`
-    fragment EditableTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
-      id
-      name
-    }
-  `
-})
+export default EditableTemplateDimension

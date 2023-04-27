@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndRetrospectiveMutation_notification} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
-import {EndRetrospectiveMutation_team} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
+import {EndRetrospectiveMutation_notification$data} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
+import {EndRetrospectiveMutation_team$data} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
 import {RetroDemo} from '../types/constEnums'
 import {
   HistoryMaybeLocalHandler,
@@ -89,7 +89,7 @@ const mutation = graphql`
 `
 
 export const endRetrospectiveTeamOnNext: OnNextHandler<
-  EndRetrospectiveMutation_team,
+  EndRetrospectiveMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
   const {isKill, meeting} = payload
@@ -124,13 +124,13 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
 }
 
 export const endRetrospectiveNotificationUpdater: SharedUpdater<
-  EndRetrospectiveMutation_notification
+  EndRetrospectiveMutation_notification$data
 > = (payload, {store}) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation_team> = (
+export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation_team$data> = (
   payload,
   {store}
 ) => {

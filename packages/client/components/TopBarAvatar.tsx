@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-import {TopBarAvatar_viewer} from '~/__generated__/TopBarAvatar_viewer.graphql'
+import {TopBarAvatar_viewer$key} from '~/__generated__/TopBarAvatar_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
 import Avatar from './Avatar/Avatar'
@@ -31,11 +31,20 @@ const StandardHubUserMenu = lazyPreload(
 )
 
 interface Props {
-  viewer: TopBarAvatar_viewer | null
+  viewer: TopBarAvatar_viewer$key | null
 }
 
 const TopBarAvatar = (props: Props) => {
-  const {viewer} = props
+  const {viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment TopBarAvatar_viewer on User {
+        picture
+        ...StandardHubUserMenu_viewer
+      }
+    `,
+    viewerRef
+  )
   const userAvatar = viewer?.picture ?? defaultUserAvatar
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT
@@ -56,11 +65,4 @@ const TopBarAvatar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TopBarAvatar, {
-  viewer: graphql`
-    fragment TopBarAvatar_viewer on User {
-      picture
-      ...StandardHubUserMenu_viewer
-    }
-  `
-})
+export default TopBarAvatar

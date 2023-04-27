@@ -1,8 +1,20 @@
 version: "3.7"
 
 services:
+  datadog:
+    image: gcr.io/datadoghq/agent:7
+    restart: unless-stopped
+    env_file: ../.env
+    ports:
+      - "8126:8126"
+    networks:
+      - parabol-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
   db:
-    image: rethinkdb:latest
+    image: rethinkdb:2.4.2
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -39,7 +51,7 @@ services:
       - parabol-network
     restart: unless-stopped
   redis:
-    image: redis:latest
+    image: redis:6
     restart: unless-stopped
     ports:
       - "6379:6379"

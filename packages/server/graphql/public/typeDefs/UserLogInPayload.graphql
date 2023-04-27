@@ -1,0 +1,21 @@
+"""
+Generic payload to send when user signs up
+"""
+type UserLogInPayload {
+  error: StandardMutationError
+
+  """
+  The new auth token
+  """
+  authToken: ID
+  userId: ID
+  """
+  if a new user is created
+  """
+  isNewUser: Boolean
+
+  """
+  the newly created user, or the existing user
+  """
+  user: User
+}

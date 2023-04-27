@@ -3,7 +3,7 @@ import {commitMutation} from 'react-relay'
 import {DiscriminateProxy} from '../types/generics'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {GitHubFieldMenu_stage} from '../__generated__/GitHubFieldMenu_stage.graphql'
+import {GitHubFieldMenu_stage$data} from '../__generated__/GitHubFieldMenu_stage.graphql'
 import {UpdateGitHubDimensionFieldMutation as TUpdateGitHubDimensionFieldMutation} from '../__generated__/UpdateGitHubDimensionFieldMutation.graphql'
 
 graphql`
@@ -61,7 +61,7 @@ const UpdateGitHubDimensionFieldMutation: StandardMutation<TUpdateGitHubDimensio
       const phases = meeting.getLinkedRecords('phases')
       if (!phases) return
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
-      const stages = estimatePhase.getLinkedRecords<GitHubFieldMenu_stage[]>('stages')
+      const stages = estimatePhase.getLinkedRecords<GitHubFieldMenu_stage$data[]>('stages')
       stages.forEach((stage) => {
         const dimensionRef = stage.getLinkedRecord('dimensionRef')
         const dimensionRefName = dimensionRef.getValue('name')

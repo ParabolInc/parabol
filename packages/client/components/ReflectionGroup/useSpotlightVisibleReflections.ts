@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
-import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
 
 const useSpotlightVisibleReflections = (
-  reflections: ReflectionGroup_reflectionGroup['reflections'],
+  reflections: ReflectionGroup_reflectionGroup$data['reflections'],
   spotlightSearchQuery?: string | null,
   reflectionIdsToHide?: string[] | null
 ) => {

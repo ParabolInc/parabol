@@ -1,18 +1,52 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import getSafeRegex from '~/utils/getSafeRegex'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-import {TeamColumnsContainer_viewer} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
+import {TeamColumnsContainer_viewer$key} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
 
 interface Props {
-  viewer: TeamColumnsContainer_viewer
+  viewer: TeamColumnsContainer_viewer$key
 }
 
 const TeamColumnsContainer = (props: Props) => {
-  const {viewer} = props
+  const {viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment TeamColumnsContainer_viewer on User {
+        dashSearch
+        team(teamId: $teamId) {
+          id
+          teamMemberFilter {
+            id
+          }
+          teamMembers(sortBy: "preferredName") {
+            id
+            picture
+            preferredName
+          }
+          tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+            edges {
+              node {
+                ...TaskColumns_tasks
+                # grab these so we can sort correctly
+                id
+                content
+                plaintextContent
+                status
+                sortOrder
+                teamId
+                userId
+              }
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {dashSearch, team} = viewer
   const {id: teamId, tasks, teamMembers, teamMemberFilter} = team!
   const atmosphere = useAtmosphere()
@@ -46,36 +80,4 @@ const TeamColumnsContainer = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamColumnsContainer, {
-  viewer: graphql`
-    fragment TeamColumnsContainer_viewer on User {
-      dashSearch
-      team(teamId: $teamId) {
-        id
-        teamMemberFilter {
-          id
-        }
-        teamMembers(sortBy: "preferredName") {
-          id
-          picture
-          preferredName
-        }
-        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-          edges {
-            node {
-              ...TaskColumns_tasks
-              # grab these so we can sort correctly
-              id
-              content
-              plaintextContent
-              status
-              sortOrder
-              teamId
-              userId
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default TeamColumnsContainer

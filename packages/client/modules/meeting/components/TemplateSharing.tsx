@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
 import {PALETTE} from '../../../styles/paletteV3'
 import lazyPreload from '../../../utils/lazyPreload'
-import {TemplateSharing_template} from '../../../__generated__/TemplateSharing_template.graphql'
+import {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 
 const SelectSharingScopeDropdown = lazyPreload(
   () =>
@@ -29,7 +29,7 @@ const HR = styled('hr')({
 })
 
 const DropdownDecoratorIcon = styled('div')({
-  margin: '8px 16px',
+  marginRight: '16px',
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
   svg: {
@@ -60,7 +60,6 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
   display: 'flex',
   fontSize: 16,
   lineHeight: '24px',
-  margin: '8px auto 8px 0',
   userSelect: 'none',
   ':hover': {
     color: disabled ? undefined : PALETTE.SLATE_900
@@ -68,22 +67,54 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
 }))
 
 interface Props {
-  teamId: string
-  template: TemplateSharing_template
+  isOwner: boolean
+  template: TemplateSharing_template$key
+  noModal?: boolean
 }
 
 const TemplateSharing = (props: Props) => {
-  const {template, teamId} = props
+  const {isOwner} = props
+
+  if (!isOwner) return null
+
+  return (
+    <>
+      <HR />
+      <div className='pr-auto ly-2 ml-4 py-2 pl-0'>
+        <UnstyledTemplateSharing {...props} />
+      </div>
+    </>
+  )
+}
+
+export const UnstyledTemplateSharing = (props: Props) => {
+  const {template: templateRef, isOwner, noModal} = props
+  const template = useFragment(
+    graphql`
+      fragment TemplateSharing_template on MeetingTemplate {
+        ...SelectSharingScopeDropdown_template
+        id
+        scope
+        team {
+          isLead
+          name
+          organization {
+            name
+          }
+        }
+      }
+    `,
+    templateRef
+  )
   const {scope, team} = template
   const {name: teamName, organization, isLead} = team
   const {name: orgName} = organization
-  const isOwner = teamId === template.teamId
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_LEFT,
     {
       isDropdown: true,
       id: 'sharingScopeDropdown',
-      parentId: 'templateModal',
+      parentId: noModal ? undefined : 'templateModal',
       menuContentStyles: {
         minWidth: 320
       }
@@ -106,7 +137,6 @@ const TemplateSharing = (props: Props) => {
       : 'Sharing publicly'
   return (
     <>
-      <HR />
       <DropdownBlock
         onMouseEnter={SelectSharingScopeDropdown.preload}
         onClick={isLead ? togglePortal : undefined}
@@ -129,20 +159,4 @@ const TemplateSharing = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TemplateSharing, {
-  template: graphql`
-    fragment TemplateSharing_template on MeetingTemplate {
-      ...SelectSharingScopeDropdown_template
-      id
-      scope
-      teamId
-      team {
-        isLead
-        name
-        organization {
-          name
-        }
-      }
-    }
-  `
-})
+export default TemplateSharing

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
@@ -10,7 +10,7 @@ import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
-import {PokerTemplateScalePicker_dimension} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
+import {PokerTemplateScalePicker_dimension$key} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
 
 const SelectScaleDropdown = lazyPreload(
   () =>
@@ -60,12 +60,24 @@ const MenuToggleLabel = styled('div')({
 })
 
 interface Props {
-  dimension: PokerTemplateScalePicker_dimension
+  dimension: PokerTemplateScalePicker_dimension$key
   isOwner: boolean
 }
 
 const PokerTemplateScalePicker = (props: Props) => {
-  const {dimension, isOwner} = props
+  const {dimension: dimensionRef, isOwner} = props
+  const dimension = useFragment(
+    graphql`
+      fragment PokerTemplateScalePicker_dimension on TemplateDimension {
+        ...SelectScaleDropdown_dimension
+        id
+        selectedScale {
+          name
+        }
+      }
+    `,
+    dimensionRef
+  )
   const {selectedScale} = dimension
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
@@ -104,14 +116,4 @@ const PokerTemplateScalePicker = (props: Props) => {
     </>
   )
 }
-export default createFragmentContainer(PokerTemplateScalePicker, {
-  dimension: graphql`
-    fragment PokerTemplateScalePicker_dimension on TemplateDimension {
-      ...SelectScaleDropdown_dimension
-      id
-      selectedScale {
-        name
-      }
-    }
-  `
-})
+export default PokerTemplateScalePicker

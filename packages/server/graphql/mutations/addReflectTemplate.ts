@@ -2,11 +2,10 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember, isUserInOrg} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -41,13 +40,9 @@ const addReflectTemplate = {
     }
 
     // VALIDATION
-    // Will convert to PG by Mar 1, 2023
-    const allTemplates = await r
-      .table('MeetingTemplate')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})
-      .filter({type: 'retrospective'})
-      .run()
+    const allTemplates = await dataLoader
+      .get('meetingTemplatesByType')
+      .load({meetingType: 'retrospective', teamId})
 
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       return standardError(new Error('Too many templates'), {userId: viewerId})
@@ -73,20 +68,17 @@ const addReflectTemplate = {
           return standardError(new Error('Template is scoped to team'), {userId: viewerId})
       } else if (scope === 'ORGANIZATION') {
         const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
-        if (viewerTeam.orgId !== parentTemplateTeam?.orgId) {
+        const isInOrg =
+          parentTemplateTeam &&
+          (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader))
+        if (!isInOrg) {
           return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
         }
       }
       const copyName = `${name} Copy`
-      // Will convert to PG by Mar 1, 2023
-      const existingCopyCount = await r
-        .table('MeetingTemplate')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .filter({type: 'retrospective'})
-        .filter((row: RDatum) => row('name').match(`^${copyName}`) as any)
-        .count()
-        .run()
+      const existingCopyCount = allTemplates.filter((template) =>
+        template.name.startsWith(copyName)
+      ).length
       const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
       const newTemplate = new ReflectTemplate({
         name: newName,

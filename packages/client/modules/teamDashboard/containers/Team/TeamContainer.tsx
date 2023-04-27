@@ -35,6 +35,7 @@ const TeamContainer = (props: Props) => {
     graphql`
       query TeamContainerQuery($teamId: ID!) {
         viewer {
+          canAccessTeam: canAccess(entity: Team, id: $teamId)
           team(teamId: $teamId) {
             ...Team_team
             ...TeamArchive_team
@@ -43,16 +44,15 @@ const TeamContainer = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    queryRef
   )
   const {viewer} = data
-  const {team} = viewer
+  const {team, canAccessTeam} = viewer
   const {history, match} = useRouter()
   const {location} = window
   const {pathname} = location
   useEffect(() => {
-    if (!team) {
+    if (!canAccessTeam && !team) {
       history.replace({
         pathname: `/invitation-required`,
         search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`

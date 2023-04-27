@@ -1,17 +1,28 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {AddScaleValueButtonInput_scale} from '~/__generated__/AddScaleValueButtonInput_scale.graphql'
+import {useFragment} from 'react-relay'
+import {AddScaleValueButtonInput_scale$key} from '~/__generated__/AddScaleValueButtonInput_scale.graphql'
 import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateScaleValue from './AddPokerTemplateScaleValue'
 import NewTemplateScaleValueLabelInput from './NewTemplateScaleValueLabelInput'
 
 interface Props {
-  scale: AddScaleValueButtonInput_scale
+  scale: AddScaleValueButtonInput_scale$key
 }
 
 const AddScaleValueButtonInput = (props: Props) => {
-  const {scale} = props
+  const {scale: scaleRef} = props
+  const scale = useFragment(
+    graphql`
+      fragment AddScaleValueButtonInput_scale on TemplateScale {
+        ...NewTemplateScaleValueLabelInput_scale
+        values {
+          label
+        }
+      }
+    `,
+    scaleRef
+  )
   const [isAdding, setIsAdding] = useState(false)
   const {values} = scale
   if (values.length >= Threshold.MAX_POKER_SCALE_VALUES) return null
@@ -24,13 +35,4 @@ const AddScaleValueButtonInput = (props: Props) => {
   return <AddPokerTemplateScaleValue onClick={() => setIsAdding(true)} />
 }
 
-export default createFragmentContainer(AddScaleValueButtonInput, {
-  scale: graphql`
-    fragment AddScaleValueButtonInput_scale on TemplateScale {
-      ...NewTemplateScaleValueLabelInput_scale
-      values {
-        label
-      }
-    }
-  `
-})
+export default AddScaleValueButtonInput

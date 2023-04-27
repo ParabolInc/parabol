@@ -109,6 +109,7 @@ const DashTopBar = (props: Props) => {
   const gotoHome = () => {
     history.push('/meetings')
   }
+
   return (
     <Wrapper>
       <LeftNavHeader>

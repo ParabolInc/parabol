@@ -27,15 +27,9 @@ const DemoMeetingRoot = () => {
   useSubscription('DemoMeetingRoot', TaskSubscription)
   useSubscription('DemoMeetingRoot', TeamSubscription)
   useSubscription('DemoMeetingRoot', MeetingSubscription, {meetingId: RetroDemo.MEETING_ID})
-  const data = useLazyLoadQuery<DemoMeetingRootQuery>(
-    query,
-    {
-      meetingId: RetroDemo.MEETING_ID
-    },
-    {
-      UNSTABLE_renderPolicy: 'full'
-    }
-  )
+  const data = useLazyLoadQuery<DemoMeetingRootQuery>(query, {
+    meetingId: RetroDemo.MEETING_ID
+  })
   if (!data?.viewer?.meeting) return null
   return <RetroMeeting meeting={data.viewer.meeting} />
 }

@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 import Legitity from '../../../validation/Legitity'
-import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
+import {EditableTemplatePrompt_prompts$key} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 
 const StyledEditableText = styled(EditableText)({
   fontSize: 16,
@@ -21,11 +21,20 @@ interface Props {
   isHover: boolean
   question: string
   promptId: string
-  prompts: EditableTemplatePrompt_prompts
+  prompts: EditableTemplatePrompt_prompts$key
 }
 
 const EditableTemplatePrompt = (props: Props) => {
-  const {isOwner, promptId, isHover, question, isEditingDescription} = props
+  const {isOwner, promptId, isHover, question, isEditingDescription, prompts: promptsRef} = props
+  const prompts = useFragment(
+    graphql`
+      fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
+        id
+        question
+      }
+    `,
+    promptsRef
+  )
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -38,7 +47,6 @@ const EditableTemplatePrompt = (props: Props) => {
   }
 
   const legitify = (value: string) => {
-    const {promptId, prompts} = props
     return new Legitity(value)
       .trim()
       .required('Please enter a prompt question')
@@ -76,11 +84,4 @@ const EditableTemplatePrompt = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EditableTemplatePrompt, {
-  prompts: graphql`
-    fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
-      id
-      question
-    }
-  `
-})
+export default EditableTemplatePrompt

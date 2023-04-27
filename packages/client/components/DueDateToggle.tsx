@@ -3,7 +3,7 @@ import {AccessTime} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -11,7 +11,7 @@ import {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {PALETTE} from '../styles/paletteV3'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
-import {DueDateToggle_task} from '../__generated__/DueDateToggle_task.graphql'
+import {DueDateToggle_task$key} from '../__generated__/DueDateToggle_task.graphql'
 import CardButton from './CardButton'
 
 interface StyleProps {
@@ -100,7 +100,7 @@ const DateString = styled('span')({
 
 interface Props {
   cardIsActive: boolean
-  task: DueDateToggle_task
+  task: DueDateToggle_task$key
   useTaskChild: UseTaskChild
   isArchived?: boolean
 }
@@ -134,7 +134,16 @@ const DueDatePicker = lazyPreload(
 )
 
 const DueDateToggle = (props: Props) => {
-  const {cardIsActive, task, useTaskChild, isArchived} = props
+  const {cardIsActive, task: taskRef, useTaskChild, isArchived} = props
+  const task = useFragment(
+    graphql`
+      fragment DueDateToggle_task on Task {
+        dueDate
+        ...DueDatePicker_task
+      }
+    `,
+    taskRef
+  )
   const {dueDate} = task
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const {
@@ -174,11 +183,4 @@ const DueDateToggle = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DueDateToggle, {
-  task: graphql`
-    fragment DueDateToggle_task on Task {
-      dueDate
-      ...DueDatePicker_task
-    }
-  `
-})
+export default DueDateToggle

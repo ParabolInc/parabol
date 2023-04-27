@@ -190,9 +190,7 @@ const query = graphql`
 
 const Invoice = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<InvoiceQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<InvoiceQuery>(query, queryRef)
   const {viewer} = data
   const {invoiceDetails} = viewer
   const endAt = invoiceDetails && invoiceDetails.endAt

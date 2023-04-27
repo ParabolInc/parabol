@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import Legitity from '../validation/Legitity'
-import {EditableOrgName_organization} from '../__generated__/EditableOrgName_organization.graphql'
+import {EditableOrgName_organization$key} from '../__generated__/EditableOrgName_organization.graphql'
 import EditableText from './EditableText'
 
 interface Props extends WithMutationProps {
-  organization: EditableOrgName_organization
+  organization: EditableOrgName_organization$key
 }
 
 const EditableOrgText = styled(EditableText)({
@@ -20,8 +20,19 @@ const EditableOrgText = styled(EditableText)({
 
 const EditableOrgName = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const {organization: organizationRef, error} = props
+  const organization = useFragment(
+    graphql`
+      fragment EditableOrgName_organization on Organization {
+        id
+        name
+      }
+    `,
+    organizationRef
+  )
+
   const handleSubmit = (rawName: string) => {
-    const {onError, onCompleted, setDirty, submitMutation, submitting, organization} = props
+    const {onError, onCompleted, setDirty, submitMutation, submitting} = props
     if (submitting) return
     setDirty()
     const {error, value: name} = validate(rawName)
@@ -51,7 +62,6 @@ const EditableOrgName = (props: Props) => {
     return res
   }
 
-  const {error, organization} = props
   const {name} = organization
   return (
     <EditableOrgText
@@ -65,11 +75,4 @@ const EditableOrgName = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(EditableOrgName), {
-  organization: graphql`
-    fragment EditableOrgName_organization on Organization {
-      id
-      name
-    }
-  `
-})
+export default withMutationProps(EditableOrgName)

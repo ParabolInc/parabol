@@ -8,6 +8,7 @@ const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
 const TerserPlugin = require('terser-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -36,11 +37,12 @@ module.exports = ({isDeploy, noDeps}) => ({
     web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
-    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')]
+    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
+    pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')]
   },
   output: {
     filename: '[name].js',
-    path: path.join(PROJECT_ROOT, 'dist')
+    path: distPath
   },
   resolve: {
     alias: {
@@ -57,9 +59,10 @@ module.exports = ({isDeploy, noDeps}) => ({
   },
   target: 'node',
   externals: [
-    !noDeps && nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/]
-    })
+    !noDeps &&
+      nodeExternals({
+        allowlist: [/parabol-client/, /parabol-server/]
+      })
   ].filter(Boolean),
   optimization: {
     minimize: noDeps,
@@ -97,6 +100,7 @@ module.exports = ({isDeploy, noDeps}) => ({
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
     }),
     isDeploy &&
+      // #8101 Eventually this will be replaced with pushToCDN to decouple the push from the build
       new S3Plugin({
         s3Options: {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -108,6 +112,16 @@ module.exports = ({isDeploy, noDeps}) => ({
         },
         basePath: `${getS3BasePath()}server/dist/`,
         directory: distPath
+      }),
+    noDeps &&
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            // copy sharp's libvips to the output
+            from: path.resolve(PROJECT_ROOT, 'node_modules', 'sharp', 'vendor'),
+            to: 'vendor'
+          }
+        ]
       })
   ].filter(Boolean),
   module: {
@@ -115,12 +129,30 @@ module.exports = ({isDeploy, noDeps}) => ({
       ...transformRules(PROJECT_ROOT),
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: [
+        oneOf: [
           {
-            loader: 'file-loader',
-            options: {
-              publicPath
-            }
+            // Put templates in their own directory that will get pushed to the CDN & stored in PG
+            test: /Template.png$/,
+            include: [path.resolve(PROJECT_ROOT, 'static/images/illustrations')],
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '/templates/[name].[ext]',
+                  publicPath: distPath
+                }
+              }
+            ]
+          },
+          {
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  publicPath
+                }
+              }
+            ]
           }
         ]
       },
@@ -131,7 +163,9 @@ module.exports = ({isDeploy, noDeps}) => ({
           {
             loader: 'node-loader',
             options: {
-              name: '[name].[ext]'
+              // sharp's bindings.gyp is hardcoded to look for libvips 2 directories up
+              // rather than do a custom build, we just output it 2 directories down (/node/binaries)
+              name: '/node/binaries/[name].[ext]'
             }
           }
         ]

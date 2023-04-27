@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import TierTag from '../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import lazyPreload from '../../../utils/lazyPreload'
 import sortByTier from '../../../utils/sortByTier'
-import {NewTeamOrgPicker_organizations} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
+import {NewTeamOrgPicker_organizations$key} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',
@@ -28,7 +28,7 @@ interface Props {
   disabled: boolean
   onChange: (orgId: string) => void
   orgId: string
-  organizations: NewTeamOrgPicker_organizations
+  organizations: NewTeamOrgPicker_organizations$key
 }
 
 const NO_ORGS = 'No organizations available'
@@ -42,7 +42,18 @@ const NewTeamOrgDropdown = lazyPreload(
 )
 
 const NewTeamOrgPicker = (props: Props) => {
-  const {disabled, onChange, organizations, orgId} = props
+  const {disabled, onChange, organizations: organizationsRef, orgId} = props
+  const organizations = useFragment(
+    graphql`
+      fragment NewTeamOrgPicker_organizations on Organization @relay(plural: true) {
+        ...NewTeamOrgDropdown_organizations
+        id
+        name
+        tier
+      }
+    `,
+    organizationsRef
+  )
   const sortedOrgs = useMemo(() => sortByTier(organizations), [organizations])
   useEffect(
     () => {
@@ -90,13 +101,4 @@ const NewTeamOrgPicker = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewTeamOrgPicker, {
-  organizations: graphql`
-    fragment NewTeamOrgPicker_organizations on Organization @relay(plural: true) {
-      ...NewTeamOrgDropdown_organizations
-      id
-      name
-      tier
-    }
-  `
-})
+export default NewTeamOrgPicker

@@ -75,6 +75,10 @@ export default class StripeClientManager {
     })
   }
 
+  normalizeCardName = (name: string) => {
+    return name.trim()
+  }
+
   normalizeCardNumber = (number: string) => {
     return normalizeNumeric(number)
   }
@@ -85,6 +89,10 @@ export default class StripeClientManager {
 
   normalizeCVC = (cvc: string) => {
     return normalizeNumeric(cvc)
+  }
+
+  validateCardName = (name: string) => {
+    return new Legitity(name).trim().required()
   }
 
   validateCardNumber = (number: string) => {

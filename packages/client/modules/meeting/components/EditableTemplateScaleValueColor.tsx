@@ -2,17 +2,17 @@ import styled from '@emotion/styled'
 import {ArrowDropDown as ArrowDropDownIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {BezierCurve} from '~/types/constEnums'
-import {EditableTemplateScaleValueColor_scale} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
+import {EditableTemplateScaleValueColor_scale$key} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
 import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 
 interface Props {
-  scale: EditableTemplateScaleValueColor_scale
+  scale: EditableTemplateScaleValueColor_scale$key
   scaleValueLabel: string
   scaleValueColor: string
   setScaleValueColor?: (scaleValueColor: string) => void
@@ -57,7 +57,15 @@ const DropdownIcon = styled('div')({
 })
 
 const EditableTemplateScaleValueColor = (props: Props) => {
-  const {scaleValueLabel, scaleValueColor, scale, setScaleValueColor} = props
+  const {scaleValueLabel, scaleValueColor, scale: scaleRef, setScaleValueColor} = props
+  const scale = useFragment(
+    graphql`
+      fragment EditableTemplateScaleValueColor_scale on TemplateScale {
+        ...ScaleValuePalettePicker_scale
+      }
+    `,
+    scaleRef
+  )
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_LEFT,
     {parentId: 'templateModal'}
@@ -81,10 +89,4 @@ const EditableTemplateScaleValueColor = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EditableTemplateScaleValueColor, {
-  scale: graphql`
-    fragment EditableTemplateScaleValueColor_scale on TemplateScale {
-      ...ScaleValuePalettePicker_scale
-    }
-  `
-})
+export default EditableTemplateScaleValueColor

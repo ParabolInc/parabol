@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
-import {InvoiceRow_invoice} from '~/__generated__/InvoiceRow_invoice.graphql'
+import {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
@@ -68,12 +68,27 @@ const PayURL = styled('a')({
 })
 
 interface Props {
-  invoice: InvoiceRow_invoice
+  invoice: InvoiceRow_invoice$key
 }
 const InvoiceRow = (props: Props) => {
-  const {
-    invoice: {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status}
-  } = props
+  const {invoice: invoiceRef} = props
+  const invoice = useFragment(
+    graphql`
+      fragment InvoiceRow_invoice on Invoice {
+        id
+        amountDue
+        creditCard {
+          brand
+        }
+        endAt
+        paidAt
+        payUrl
+        status
+      }
+    `,
+    invoiceRef
+  )
+  const {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status} = invoice
   const isEstimate = status === 'UPCOMING'
   return (
     <Row>
@@ -122,18 +137,4 @@ const InvoiceRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(InvoiceRow, {
-  invoice: graphql`
-    fragment InvoiceRow_invoice on Invoice {
-      id
-      amountDue
-      creditCard {
-        brand
-      }
-      endAt
-      paidAt
-      payUrl
-      status
-    }
-  `
-})
+export default InvoiceRow

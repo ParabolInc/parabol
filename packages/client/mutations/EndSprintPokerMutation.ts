@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndSprintPokerMutation_team} from '~/__generated__/EndSprintPokerMutation_team.graphql'
+import {EndSprintPokerMutation_team$data} from '~/__generated__/EndSprintPokerMutation_team.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -45,7 +45,7 @@ const mutation = graphql`
 `
 
 export const endSprintPokerTeamOnNext: OnNextHandler<
-  EndSprintPokerMutation_team,
+  EndSprintPokerMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
   const {isKill, meeting} = payload
@@ -62,7 +62,7 @@ export const endSprintPokerTeamOnNext: OnNextHandler<
   }
 }
 
-export const endSprintPokerTeamUpdater: SharedUpdater<EndSprintPokerMutation_team> = (
+export const endSprintPokerTeamUpdater: SharedUpdater<EndSprintPokerMutation_team$data> = (
   payload,
   {store}
 ) => {

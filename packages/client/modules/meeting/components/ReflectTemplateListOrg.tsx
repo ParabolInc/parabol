@@ -80,9 +80,7 @@ const query = graphql`
 
 const ReflectTemplateListOrg = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<ReflectTemplateListOrgQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<ReflectTemplateListOrgQuery>(query, queryRef)
   const atmosphere = useAtmosphere()
   const history = useHistory()
   const {viewer} = data

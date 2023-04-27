@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndCheckInMutation_notification} from '~/__generated__/EndCheckInMutation_notification.graphql'
-import {EndCheckInMutation_team} from '~/__generated__/EndCheckInMutation_team.graphql'
+import {EndCheckInMutation_notification$data} from '~/__generated__/EndCheckInMutation_notification.graphql'
+import {EndCheckInMutation_team$data} from '~/__generated__/EndCheckInMutation_team.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -79,10 +79,10 @@ const mutation = graphql`
     }
   }
 `
-export const endCheckInTeamOnNext: OnNextHandler<EndCheckInMutation_team, OnNextHistoryContext> = (
-  payload,
-  context
-) => {
+export const endCheckInTeamOnNext: OnNextHandler<
+  EndCheckInMutation_team$data,
+  OnNextHistoryContext
+> = (payload, context) => {
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
@@ -97,7 +97,7 @@ export const endCheckInTeamOnNext: OnNextHandler<EndCheckInMutation_team, OnNext
   }
 }
 
-export const endCheckInNotificationUpdater: SharedUpdater<EndCheckInMutation_notification> = (
+export const endCheckInNotificationUpdater: SharedUpdater<EndCheckInMutation_notification$data> = (
   payload,
   {store}
 ) => {
@@ -105,7 +105,10 @@ export const endCheckInNotificationUpdater: SharedUpdater<EndCheckInMutation_not
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-export const endCheckInTeamUpdater: SharedUpdater<EndCheckInMutation_team> = (payload, {store}) => {
+export const endCheckInTeamUpdater: SharedUpdater<EndCheckInMutation_team$data> = (
+  payload,
+  {store}
+) => {
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
   const removedTaskIds = payload.getValue('removedTaskIds')
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy

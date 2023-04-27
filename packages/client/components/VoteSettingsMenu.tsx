@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateRetroMaxVotesMutation from '~/mutations/UpdateRetroMaxVotesMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import {MeetingSettingsThreshold} from '~/types/constEnums'
-import {VoteSettingsMenu_meeting} from '~/__generated__/VoteSettingsMenu_meeting.graphql'
+import {VoteSettingsMenu_meeting$key} from '~/__generated__/VoteSettingsMenu_meeting.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import StyledError from './StyledError'
@@ -15,7 +15,7 @@ import VoteStepper from './VoteSettingsStepper'
 
 interface Props {
   menuProps: MenuProps
-  meeting: VoteSettingsMenu_meeting
+  meeting: VoteSettingsMenu_meeting$key
 }
 
 const VoteOption = styled('div')({
@@ -35,7 +35,17 @@ const Error = styled(StyledError)({
 })
 
 const VoteSettingsMenu = (props: Props) => {
-  const {menuProps, meeting} = props
+  const {menuProps, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment VoteSettingsMenu_meeting on RetrospectiveMeeting {
+        id
+        totalVotes
+        maxVotesPerGroup
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, totalVotes, maxVotesPerGroup} = meeting
   const {error, onError, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -95,12 +105,4 @@ const VoteSettingsMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(VoteSettingsMenu, {
-  meeting: graphql`
-    fragment VoteSettingsMenu_meeting on RetrospectiveMeeting {
-      id
-      totalVotes
-      maxVotesPerGroup
-    }
-  `
-})
+export default VoteSettingsMenu

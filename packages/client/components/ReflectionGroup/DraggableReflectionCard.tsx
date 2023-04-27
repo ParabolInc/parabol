@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
-import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
-import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
-import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
+import {DraggableReflectionCard_meeting$key} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
+import {DraggableReflectionCard_reflection$key} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
+import {DraggableReflectionCard_staticReflections$key} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
 import {SwipeColumn} from '../GroupingKanban'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
@@ -49,11 +49,11 @@ export type ReflectionDragState = ReturnType<typeof makeDragState>
 interface Props {
   isClipped?: boolean
   isDraggable?: boolean
-  meeting: DraggableReflectionCard_meeting
+  meeting: DraggableReflectionCard_meeting$key
   openSpotlight?: OpenSpotlight
-  reflection: DraggableReflectionCard_reflection
+  reflection: DraggableReflectionCard_reflection$key
   staticIdx?: number
-  staticReflections: DraggableReflectionCard_staticReflections | null
+  staticReflections: DraggableReflectionCard_staticReflections$key | null
   swipeColumn?: SwipeColumn
   dataCy?: string
   isSpotlightEntering?: boolean
@@ -71,10 +71,10 @@ export interface TargetBBox {
 const DraggableReflectionCard = (props: Props) => {
   const {
     isClipped,
-    reflection,
+    reflection: reflectionRef,
     staticIdx = 0,
-    staticReflections,
-    meeting,
+    staticReflections: staticReflectionsRef,
+    meeting: meetingRef,
     openSpotlight,
     isDraggable,
     swipeColumn,
@@ -82,6 +82,64 @@ const DraggableReflectionCard = (props: Props) => {
     isSpotlightEntering,
     showDragHintAnimation
   } = props
+  const staticReflections = useFragment(
+    graphql`
+      fragment DraggableReflectionCard_staticReflections on RetroReflection @relay(plural: true) {
+        id
+        reflectionGroupId
+      }
+    `,
+    staticReflectionsRef
+  )
+  const reflection = useFragment(
+    graphql`
+      fragment DraggableReflectionCard_reflection on RetroReflection {
+        ...ReflectionCard_reflection
+        ...RemoteReflection_reflection
+        id
+        isEditing
+        promptId
+        isViewerDragging
+        isViewerCreator
+        isDropping
+        reflectionGroupId
+        remoteDrag {
+          dragUserId
+          dragUserName
+          isSpotlight
+          targetId
+        }
+      }
+    `,
+    reflectionRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
+        ...ReflectionCard_meeting
+        ...RemoteReflection_meeting
+        ...useSpotlightResults_meeting
+        id
+        teamId
+        localStage {
+          isComplete
+          phaseType
+        }
+        phases {
+          stages {
+            isComplete
+            phaseType
+          }
+        }
+        spotlightGroup {
+          id
+        }
+        spotlightReflectionId
+        spotlightSearchQuery
+      }
+    `,
+    meetingRef
+  )
   const {teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
   const {id: reflectionId, isDropping, isEditing, remoteDrag} = reflection
@@ -146,54 +204,4 @@ const DraggableReflectionCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DraggableReflectionCard, {
-  staticReflections: graphql`
-    fragment DraggableReflectionCard_staticReflections on RetroReflection @relay(plural: true) {
-      id
-      reflectionGroupId
-    }
-  `,
-  reflection: graphql`
-    fragment DraggableReflectionCard_reflection on RetroReflection {
-      ...ReflectionCard_reflection
-      ...RemoteReflection_reflection
-      id
-      isEditing
-      promptId
-      isViewerDragging
-      isViewerCreator
-      isDropping
-      reflectionGroupId
-      remoteDrag {
-        dragUserId
-        dragUserName
-        isSpotlight
-        targetId
-      }
-    }
-  `,
-  meeting: graphql`
-    fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
-      ...ReflectionCard_meeting
-      ...RemoteReflection_meeting
-      ...useSpotlightResults_meeting
-      id
-      teamId
-      localStage {
-        isComplete
-        phaseType
-      }
-      phases {
-        stages {
-          isComplete
-          phaseType
-        }
-      }
-      spotlightGroup {
-        id
-      }
-      spotlightReflectionId
-      spotlightSearchQuery
-    }
-  `
-})
+export default DraggableReflectionCard

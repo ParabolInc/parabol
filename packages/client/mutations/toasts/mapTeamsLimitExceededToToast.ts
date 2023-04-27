@@ -1,9 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import {mapTeamsLimitExceededToToast_notification} from '../../__generated__/mapTeamsLimitExceededToToast_notification.graphql'
+import {mapTeamsLimitExceededToToast_notification$data} from '../../__generated__/mapTeamsLimitExceededToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import {Threshold} from '../../types/constEnums'
 
 graphql`
   fragment mapTeamsLimitExceededToToast_notification on NotifyTeamsLimitExceeded {
@@ -13,15 +14,16 @@ graphql`
 `
 
 const mapTeamsLimitExceededToToast = (
-  notification: mapTeamsLimitExceededToToast_notification,
+  notification: mapTeamsLimitExceededToToast_notification$data,
   {history, atmosphere}: OnNextHistoryContext
 ): Snack => {
   const {id: notificationId, orgName} = notification
 
   return {
     autoDismiss: 0,
+    showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
-    message: `Your account is on a roll! Check out "${orgName}"'s usage`,
+    message: `"${orgName}" is over the limit of ${Threshold.MAX_STARTER_TIER_TEAMS} free teams. Action is needed.`,
     onManualDismiss: () => {
       SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
         snackbarType: 'teamsLimitExceeded'

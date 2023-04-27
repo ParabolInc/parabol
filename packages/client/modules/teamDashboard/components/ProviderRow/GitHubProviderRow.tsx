@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import GitHubConfigMenu from '../../../../components/GitHubConfigMenu'
 import GitHubProviderLogo from '../../../../components/GitHubProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -9,16 +9,30 @@ import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import GitHubClientManager from '../../../../utils/GitHubClientManager'
-import {GitHubProviderRow_viewer} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
+import {GitHubProviderRow_viewer$key} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
 
 interface Props {
   teamId: string
-  viewer: GitHubProviderRow_viewer
+  viewer: GitHubProviderRow_viewer$key
 }
 
 const GitHubProviderRow = (props: Props) => {
-  const {viewer, teamId} = props
+  const {viewer: viewerRef, teamId} = props
+  const viewer = useFragment(
+    graphql`
+      fragment GitHubProviderRow_viewer on User {
+        teamMember(teamId: $teamId) {
+          integrations {
+            github {
+              ...GitHubProviderRowGitHubIntegration @relay(mask: false)
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
@@ -57,16 +71,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(GitHubProviderRow, {
-  viewer: graphql`
-    fragment GitHubProviderRow_viewer on User {
-      teamMember(teamId: $teamId) {
-        integrations {
-          github {
-            ...GitHubProviderRowGitHubIntegration @relay(mask: false)
-          }
-        }
-      }
-    }
-  `
-})
+export default GitHubProviderRow

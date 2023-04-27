@@ -20,7 +20,7 @@ import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateInteg
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
-import {AddIntegrationProviderMutationResponse} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
+import {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key
@@ -153,7 +153,7 @@ const MattermostPanel = (props: Props) => {
         {onError, onCompleted}
       )
     } else {
-      const handleCompleted = (res: AddIntegrationProviderMutationResponse) => {
+      const handleCompleted = (res: TAddIntegrationProviderMutation['response']) => {
         const {addIntegrationProvider} = res
         const {provider} = addIntegrationProvider
         if (!provider) return

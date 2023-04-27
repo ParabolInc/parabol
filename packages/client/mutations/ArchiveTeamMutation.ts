@@ -11,7 +11,7 @@ import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
-import {ArchiveTeamMutation_team} from '../__generated__/ArchiveTeamMutation_team.graphql'
+import {ArchiveTeamMutation_team$data} from '../__generated__/ArchiveTeamMutation_team.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -47,7 +47,7 @@ const mutation = graphql`
   }
 `
 
-const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistoryContext> = (
+const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team$data, OnNextHistoryContext> = (
   payload,
   {history, atmosphere}
 ) => {
@@ -87,7 +87,7 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
   }
 }
 
-export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team> = (
+export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team$data> = (
   payload,
   {store}
 ) => {
@@ -105,7 +105,7 @@ export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team> = (
 }
 
 export const archiveTeamTeamOnNext: OnNextHandler<
-  ArchiveTeamMutation_team,
+  ArchiveTeamMutation_team$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   popTeamArchivedToast(payload, {atmosphere, history})

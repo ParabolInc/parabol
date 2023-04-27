@@ -181,7 +181,7 @@ const TeamPromptResponseCard = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const {teamMember, meetingId, meeting, discussion, response, teamId} = responseStage
+  const {id: stageId, teamMember, meetingId, meeting, discussion, response, teamId} = responseStage
   const {picture, preferredName, userId} = teamMember
 
   const contentJSON: JSONContent | null = useMemo(
@@ -265,6 +265,7 @@ const TeamPromptResponseCard = (props: Props) => {
               content={contentJSON}
               readOnly={!isViewerResponse || isMeetingEnded}
               placeholder={viewerEmptyResponsePlaceholder}
+              draftStorageKey={`draftResponse:${stageId}`}
             />
             {!!plaintextContent && (
               <ResponseCardFooter>

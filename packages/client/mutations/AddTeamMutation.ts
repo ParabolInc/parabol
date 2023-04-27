@@ -9,8 +9,8 @@ import {
 } from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
-import {AddTeamMutation_notification} from '../__generated__/AddTeamMutation_notification.graphql'
-import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
+import {AddTeamMutation_notification$data} from '../__generated__/AddTeamMutation_notification.graphql'
+import {AddTeamMutation_team$data} from '../__generated__/AddTeamMutation_team.graphql'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -43,7 +43,7 @@ const mutation = graphql`
   }
 `
 
-const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team, OnNextHistoryContext> = (
+const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team$data, OnNextHistoryContext> = (
   payload,
   {atmosphere, history}
 ) => {
@@ -58,15 +58,14 @@ const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team, OnNextHistoryCont
   history && history.push(`/team/${teamId}`)
 }
 
-export const addTeamTeamUpdater: SharedUpdater<AddTeamMutation_team> = (payload, {store}) => {
+export const addTeamTeamUpdater: SharedUpdater<AddTeamMutation_team$data> = (payload, {store}) => {
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store)
 }
 
-export const addTeamMutationNotificationUpdater: SharedUpdater<AddTeamMutation_notification> = (
-  payload,
-  {store}
-) => {
+export const addTeamMutationNotificationUpdater: SharedUpdater<
+  AddTeamMutation_notification$data
+> = (payload, {store}) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }

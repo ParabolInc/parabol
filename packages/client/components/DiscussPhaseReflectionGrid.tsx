@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {MeetingControlBarEnum} from '~/types/constEnums'
-import {DiscussPhaseReflectionGrid_meeting} from '~/__generated__/DiscussPhaseReflectionGrid_meeting.graphql'
+import {DiscussPhaseReflectionGrid_meeting$key} from '~/__generated__/DiscussPhaseReflectionGrid_meeting.graphql'
 import {meetingGridMinWidth} from '../styles/meeting'
 import MasonryCSSGrid from './MasonryCSSGrid'
 import ReflectionCard from './ReflectionCard/ReflectionCard'
@@ -17,11 +17,41 @@ const GridWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 }))
 
 interface Props {
-  meeting: DiscussPhaseReflectionGrid_meeting
+  meeting: DiscussPhaseReflectionGrid_meeting$key
 }
 
 const DiscussPhaseReflectionGrid = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment DiscussPhaseReflectionGrid_meeting on RetrospectiveMeeting {
+        ...ReflectionCard_meeting
+        localStage {
+          ... on RetroDiscussStage {
+            reflectionGroup {
+              reflections {
+                ...ReflectionCard_reflection
+                id
+              }
+            }
+          }
+        }
+        phases {
+          stages {
+            ... on RetroDiscussStage {
+              reflectionGroup {
+                reflections {
+                  ...ReflectionCard_reflection
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {localStage} = meeting
   const {reflectionGroup} = localStage
   const {reflections} = reflectionGroup!
@@ -45,32 +75,4 @@ const DiscussPhaseReflectionGrid = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DiscussPhaseReflectionGrid, {
-  meeting: graphql`
-    fragment DiscussPhaseReflectionGrid_meeting on RetrospectiveMeeting {
-      ...ReflectionCard_meeting
-      localStage {
-        ... on RetroDiscussStage {
-          reflectionGroup {
-            reflections {
-              ...ReflectionCard_reflection
-              id
-            }
-          }
-        }
-      }
-      phases {
-        stages {
-          ... on RetroDiscussStage {
-            reflectionGroup {
-              reflections {
-                ...ReflectionCard_reflection
-                id
-              }
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default DiscussPhaseReflectionGrid

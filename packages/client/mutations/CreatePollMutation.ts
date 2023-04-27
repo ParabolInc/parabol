@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {CreatePollMutation_meeting} from '~/__generated__/CreatePollMutation_meeting.graphql'
+import {CreatePollMutation_meeting$data} from '~/__generated__/CreatePollMutation_meeting.graphql'
 import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {CreatePollMutation as TCreatePollMutation} from '../__generated__/CreatePollMutation.graphql'
-import {ThreadedPollBase_poll} from '../__generated__/ThreadedPollBase_poll.graphql'
+import {ThreadedPollBase_poll$data} from '../__generated__/ThreadedPollBase_poll.graphql'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 
@@ -35,7 +35,7 @@ const mutation = graphql`
   }
 `
 
-export const createPollMeetingUpdater: SharedUpdater<CreatePollMutation_meeting> = (
+export const createPollMeetingUpdater: SharedUpdater<CreatePollMutation_meeting$data> = (
   payload,
   {store}
 ) => {
@@ -52,7 +52,7 @@ export const createPollMeetingUpdater: SharedUpdater<CreatePollMutation_meeting>
 }
 
 interface Handlers extends LocalHandlers {
-  localPoll: ThreadedPollBase_poll
+  localPoll: ThreadedPollBase_poll$data
 }
 
 const CreatePollMutation: StandardMutation<TCreatePollMutation, Handlers> = (

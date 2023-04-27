@@ -23,10 +23,7 @@ const OrgBilling = (props: Props) => {
         ...OrgBilling_query
       }
     `,
-    queryRef,
-    {
-      UNSTABLE_renderPolicy: 'full'
-    }
+    queryRef
   )
   const [queryData, refetch] = useRefetchableFragment<OrgBillingRefetchQuery, OrgBilling_query$key>(
     graphql`

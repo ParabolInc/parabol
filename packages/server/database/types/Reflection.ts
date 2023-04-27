@@ -10,6 +10,7 @@ export interface ReflectionInput {
   content: string
   plaintextContent?: string // the plaintext version of content
   entities: GoogleAnalyzedEntity[]
+  sentimentScore?: number
   meetingId: string
   reactjis?: Reactji[]
   reflectionGroupId?: string
@@ -26,6 +27,7 @@ export default class Reflection {
   content: string
   plaintextContent: string
   entities: GoogleAnalyzedEntity[]
+  sentimentScore?: number
   isActive: boolean
   meetingId: string
   reactjis: Reactji[]
@@ -40,6 +42,7 @@ export default class Reflection {
       createdAt,
       creatorId,
       entities,
+      sentimentScore,
       id,
       meetingId,
       reactjis,
@@ -55,6 +58,7 @@ export default class Reflection {
     this.content = content
     this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.entities = entities
+    this.sentimentScore = sentimentScore
     this.isActive = true
     this.meetingId = meetingId
     this.reactjis = reactjis || []

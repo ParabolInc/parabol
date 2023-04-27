@@ -25,6 +25,12 @@ interface ExecutionArgs {
 
 interface Config {
   /**
+   * A record where the key is the operationName and the value is
+   * an array of variables to exclude.
+   * Useful for excluding private variables like passwords
+   */
+  excludeArgs?: Record<string, string[]>
+  /**
    * Whether to collapse list items into a single element. (i.e. single
    * `users.*.name` span instead of `users.0.name`, `users.1.name`, etc)
    *
@@ -79,6 +85,20 @@ export function tracedCompileQuery(tracer: Tracer, config: Config) {
 
 type PatchedMarker = {
   _datadog_patched?: boolean
+}
+
+function addVariableTags(
+  variables: {[key: string]: any} | null | undefined,
+  fieldName: string | undefined,
+  excludeArgs: Config['excludeArgs']
+) {
+  if (!variables) return
+  return Object.fromEntries(
+    Object.keys(variables).map((key) => {
+      const sanitizedValue = excludeArgs?.[fieldName!]?.includes(key) ? '******' : variables[key]
+      return [`graphql.variables.${key}`, sanitizedValue]
+    })
+  )
 }
 
 /**
@@ -220,7 +240,8 @@ function wrappedResolve(
     }
 
     const field = assertField(tracer, context, info, path)
-
+    const tags = addVariableTags(args, info.fieldName, config.excludeArgs)
+    if (tags) field.span.addTags(tags)
     const scope = (field.span.tracer() as Tracer).scope()
     try {
       const result = await scope.activate(field.span, () => resolve(source, args, context, info))

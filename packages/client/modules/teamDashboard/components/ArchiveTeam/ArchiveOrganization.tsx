@@ -1,15 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ArchiveOrganization_organization} from '~/__generated__/ArchiveOrganization_organization.graphql'
+import {useFragment} from 'react-relay'
+import {ArchiveOrganization_organization$key} from '~/__generated__/ArchiveOrganization_organization.graphql'
 import IconLabel from '../../../../components/IconLabel'
 import LinkButton from '../../../../components/LinkButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import ArchiveOrganizationForm from './ArchiveOrganizationForm'
 
 interface Props {
-  organization: ArchiveOrganization_organization
+  organization: ArchiveOrganization_organization$key
 }
 
 const Hint = styled('div')({
@@ -19,7 +19,15 @@ const Hint = styled('div')({
 })
 
 const ArchiveOrganization = (props: Props) => {
-  const {organization} = props
+  const {organization: organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment ArchiveOrganization_organization on Organization {
+        ...ArchiveOrganizationForm_organization
+      }
+    `,
+    organizationRef
+  )
   const [showConfirmationField, setShowConfirmationField] = useState(false)
   const handleClick = () => {
     setShowConfirmationField(true)
@@ -49,10 +57,4 @@ const ArchiveOrganization = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ArchiveOrganization, {
-  organization: graphql`
-    fragment ArchiveOrganization_organization on Organization {
-      ...ArchiveOrganizationForm_organization
-    }
-  `
-})
+export default ArchiveOrganization

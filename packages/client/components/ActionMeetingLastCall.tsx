@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -13,7 +13,7 @@ import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeadi
 import {AGENDA_ITEM_LABEL} from '../utils/constants'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
-import {ActionMeetingLastCall_meeting} from '../__generated__/ActionMeetingLastCall_meeting.graphql'
+import {ActionMeetingLastCall_meeting$key} from '../__generated__/ActionMeetingLastCall_meeting.graphql'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import ErrorBoundary from './ErrorBoundary'
 import MeetingContent from './MeetingContent'
@@ -22,7 +22,7 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PrimaryButton from './PrimaryButton'
 
 interface Props extends ActionMeetingPhaseProps {
-  meeting: ActionMeetingLastCall_meeting
+  meeting: ActionMeetingLastCall_meeting$key
 }
 
 const LastCallWrapper = styled('div')({
@@ -35,7 +35,28 @@ const LastCallWrapper = styled('div')({
 })
 
 const ActionMeetingLastCall = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ActionMeetingLastCall_meeting on ActionMeeting {
+        id
+        endedAt
+        showSidebar
+        id
+        facilitatorUserId
+        facilitator {
+          preferredName
+        }
+        phases {
+          phaseType
+          stages {
+            isComplete
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -118,23 +139,4 @@ const ActionMeetingLastCall = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ActionMeetingLastCall, {
-  meeting: graphql`
-    fragment ActionMeetingLastCall_meeting on ActionMeeting {
-      id
-      endedAt
-      showSidebar
-      id
-      facilitatorUserId
-      facilitator {
-        preferredName
-      }
-      phases {
-        phaseType
-        stages {
-          isComplete
-        }
-      }
-    }
-  `
-})
+export default ActionMeetingLastCall

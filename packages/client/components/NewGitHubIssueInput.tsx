@@ -19,7 +19,7 @@ import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {CompletedHandler} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
-import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
+import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import NewGitHubIssueMenu from './NewGitHubIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
@@ -188,7 +188,7 @@ const NewGitHubIssueInput = (props: Props) => {
         serviceProjectHash: selectedNameWithOwner
       }
     }
-    const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
+    const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
       const integration = res.createTask?.task?.integration ?? null
       if (!integration) return
       if (integration.__typename !== '_xGitHubIssue') return

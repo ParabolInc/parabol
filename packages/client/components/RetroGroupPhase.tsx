@@ -4,9 +4,9 @@ import graphql from 'babel-plugin-relay/macro'
  *
  */
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
-import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
+import {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
@@ -20,11 +20,23 @@ import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props extends RetroMeetingPhaseProps {
-  meeting: RetroGroupPhase_meeting
+  meeting: RetroGroupPhase_meeting$key
 }
 
 const RetroGroupPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment RetroGroupPhase_meeting on RetrospectiveMeeting {
+        ...StageTimerControl_meeting
+        ...StageTimerDisplay_meeting
+        ...GroupingKanban_meeting
+        endedAt
+        showSidebar
+      }
+    `,
+    meetingRef
+  )
   const [callbackRef, phaseRef] = useCallbackRef()
   const {endedAt, showSidebar} = meeting
 
@@ -50,14 +62,4 @@ const RetroGroupPhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(RetroGroupPhase, {
-  meeting: graphql`
-    fragment RetroGroupPhase_meeting on RetrospectiveMeeting {
-      ...StageTimerControl_meeting
-      ...StageTimerDisplay_meeting
-      ...GroupingKanban_meeting
-      endedAt
-      showSidebar
-    }
-  `
-})
+export default RetroGroupPhase

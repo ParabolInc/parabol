@@ -3,7 +3,7 @@ reviewers:
     developers:
       - jmtaber129
       - igorlesnenko
-      - nickoferral
+      - nickoferrall
       - BartoszJarocki
     maintainers:
       - mattkrick
@@ -14,6 +14,9 @@ reviewers:
     designers:
       - ackernaut
       - enriquesanchez
+    devops:
+      - rafaelromcar-parabol
+      - adaniels-parabol
     none:
 
   per_author:
@@ -24,6 +27,8 @@ reviewers:
     data:
       - none
     designers:
+      - none
+    devops:
       - none
 
   defaults:

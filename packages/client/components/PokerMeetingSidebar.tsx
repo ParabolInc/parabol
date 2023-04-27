@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {
   NewMeetingPhaseTypeEnum,
-  PokerMeetingSidebar_meeting
+  PokerMeetingSidebar_meeting$key
 } from '~/__generated__/PokerMeetingSidebar_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
@@ -19,7 +19,7 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   toggleSidebar: () => void
-  meeting: PokerMeetingSidebar_meeting
+  meeting: PokerMeetingSidebar_meeting$key
 }
 
 const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'ESTIMATE']
@@ -28,7 +28,42 @@ const PokerMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {viewerId} = atmosphere
-  const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
+  const {gotoStageId, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment PokerMeetingSidebar_meeting on PokerMeeting {
+        ...PokerSidebarPhaseListItemChildren_meeting
+        ...NewMeetingSidebar_meeting
+        showSidebar
+        settings {
+          phaseTypes
+        }
+        id
+        endedAt
+        facilitatorUserId
+        facilitatorStageId
+        localPhase {
+          phaseType
+        }
+        localStage {
+          id
+        }
+        phases {
+          phaseType
+          stages {
+            id
+            isComplete
+            isNavigable
+            isNavigableByFacilitator
+            ... on EstimateStage {
+              taskId
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {
     id: meetingId,
     endedAt,
@@ -113,37 +148,4 @@ const PokerMeetingSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerMeetingSidebar, {
-  meeting: graphql`
-    fragment PokerMeetingSidebar_meeting on PokerMeeting {
-      ...PokerSidebarPhaseListItemChildren_meeting
-      ...NewMeetingSidebar_meeting
-      showSidebar
-      settings {
-        phaseTypes
-      }
-      id
-      endedAt
-      facilitatorUserId
-      facilitatorStageId
-      localPhase {
-        phaseType
-      }
-      localStage {
-        id
-      }
-      phases {
-        phaseType
-        stages {
-          id
-          isComplete
-          isNavigable
-          isNavigableByFacilitator
-          ... on EstimateStage {
-            taskId
-          }
-        }
-      }
-    }
-  `
-})
+export default PokerMeetingSidebar

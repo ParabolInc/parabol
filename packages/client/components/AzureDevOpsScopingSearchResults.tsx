@@ -68,8 +68,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    queryRef
   )
 
   const meeting = useFragment(

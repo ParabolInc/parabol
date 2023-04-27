@@ -1,16 +1,18 @@
 import getRethink from '../../../database/rethinkDriver'
 import Organization from '../../../database/types/Organization'
-import User from '../../../database/types/User'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
+import {ReasonToDowngradeEnum} from '../../public/resolverTypes'
 
 const resolveDowngradeToStarter = async (
   orgId: string,
   stripeSubscriptionId: string,
-  userId: string
+  userId: string,
+  reasonsForLeaving?: ReasonToDowngradeEnum[],
+  otherTool?: string
 ) => {
   const now = new Date()
   const manager = getStripeManager()
@@ -21,9 +23,8 @@ const resolveDowngradeToStarter = async (
     console.log(e)
   }
 
-  const [org, user] = await Promise.all([
+  const [org] = await Promise.all([
     r.table('Organization').get(orgId).run() as unknown as Organization,
-    r.table('User').get(userId).run() as unknown as User,
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
         tier: 'starter',
@@ -48,7 +49,8 @@ const resolveDowngradeToStarter = async (
     orgName: org.name,
     oldTier: 'team',
     newTier: 'starter',
-    billingLeaderEmail: user.email
+    reasonsForLeaving,
+    otherTool
   })
 }
 

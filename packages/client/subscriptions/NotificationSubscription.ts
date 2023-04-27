@@ -1,13 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
-import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
-import {InvalidateSessionsMutation_notification} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
-import {NotificationSubscription_meetingStageTimeLimitEnd} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
-import {NotificationSubscription_paymentRejected} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
+import {InvalidateSessionsMutation_notification$data} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
+import {NotificationSubscription_meetingStageTimeLimitEnd$data} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
+import {NotificationSubscription_paymentRejected$data} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
 import Atmosphere from '../Atmosphere'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
@@ -29,11 +28,9 @@ import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToa
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
-import {
-  NotificationSubscription as TNotificationSubscription,
-  NotificationSubscriptionResponse,
-  NotificationSubscriptionVariables
-} from '../__generated__/NotificationSubscription.graphql'
+import {NotificationSubscription as TNotificationSubscription} from '../__generated__/NotificationSubscription.graphql'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -67,54 +64,84 @@ graphql`
 const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
-      __typename
-      ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
-      ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
-      ...AddOrgMutation_notification @relay(mask: false)
-      ...AddTeamMutation_notification @relay(mask: false)
-      ...ArchiveTimelineEventMutation_notification @relay(mask: false)
-      ...SetNotificationStatusMutation_notification @relay(mask: false)
-      ...CreateTaskMutation_notification @relay(mask: false)
-      ...EndCheckInMutation_notification @relay(mask: false)
-      ...EndRetrospectiveMutation_notification @relay(mask: false)
-      ...InviteToTeamMutation_notification @relay(mask: false)
-      ...RemoveOrgUserMutation_notification @relay(mask: false)
-      ...InvalidateSessionsMutation_notification @relay(mask: false)
-      ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
-      ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
-
-      ... on AddedNotification {
+      fieldName
+      AddedNotification {
         addedNotification {
           ...NotificationPicker_notification @relay(mask: false)
         }
+        ...popNotificationToast_notification @relay(mask: false)
       }
-
-      ... on UpdatedNotification {
+      UpdatedNotification {
         updatedNotification {
           ...NotificationPicker_notification @relay(mask: false)
         }
+        ...updateNotificationToast_notification @relay(mask: false)
       }
 
-      ...popNotificationToast_notification @relay(mask: false)
-      ...updateNotificationToast_notification @relay(mask: false)
+      RemoveIntegrationSearchQuerySuccess {
+        ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
+      }
+      PersistGitHubSearchQuerySuccess {
+        ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
+      }
+      AddOrgPayload {
+        ...AddOrgMutation_notification @relay(mask: false)
+      }
+      AddTeamPayload {
+        ...AddTeamMutation_notification @relay(mask: false)
+      }
+      ArchiveTimelineEventSuccess {
+        ...ArchiveTimelineEventMutation_notification @relay(mask: false)
+      }
+      SetNotificationStatusPayload {
+        ...SetNotificationStatusMutation_notification @relay(mask: false)
+      }
+      CreateTaskPayload {
+        ...CreateTaskMutation_notification @relay(mask: false)
+      }
+      EndCheckInSuccess {
+        ...EndCheckInMutation_notification @relay(mask: false)
+      }
+      EndRetrospectiveSuccess {
+        ...EndRetrospectiveMutation_notification @relay(mask: false)
+      }
+      InviteToTeamPayload {
+        ...InviteToTeamMutation_notification @relay(mask: false)
+      }
+      RemoveOrgUserPayload {
+        ...RemoveOrgUserMutation_notification @relay(mask: false)
+      }
+      InvalidateSessionsPayload {
+        ...InvalidateSessionsMutation_notification @relay(mask: false)
+      }
+      PersistJiraSearchQuerySuccess {
+        ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
+      }
+      PersistIntegrationSearchQuerySuccess {
+        ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
+      }
 
-      ... on AuthTokenPayload {
+      AuthTokenPayload {
         id
       }
+      MeetingStageTimeLimitPayload {
+        # ScheduledJob Result
+        ...NotificationSubscription_meetingStageTimeLimitEnd @relay(mask: false)
+      }
 
-      # ScheduledJob Result
-      ...NotificationSubscription_meetingStageTimeLimitEnd @relay(mask: false)
-      ...NotificationSubscription_paymentRejected @relay(mask: false)
+      StripeFailPaymentPayload {
+        ...NotificationSubscription_paymentRejected @relay(mask: false)
+      }
 
       # ConnectSocket
-      ... on User {
+      User {
         id
         isConnected
         lastSeenAt
       }
 
       # DisconnectSocket
-      ... on DisconnectSocketPayload {
+      DisconnectSocketPayload {
         user {
           id
           isConnected
@@ -122,7 +149,7 @@ const subscription = graphql`
       }
 
       # Feature flags
-      ... on UpdateFeatureFlagPayload {
+      UpdateFeatureFlagPayload {
         user {
           id
           # add flag here
@@ -130,7 +157,7 @@ const subscription = graphql`
       }
 
       # New Feature Broadcasts
-      ... on AddNewFeaturePayload {
+      AddNewFeaturePayload {
         newFeature {
           id
           actionButtonCopy
@@ -139,7 +166,7 @@ const subscription = graphql`
         }
       }
 
-      ... on JiraIssue {
+      JiraIssue {
         id
         summary
         descriptionHTML
@@ -149,12 +176,12 @@ const subscription = graphql`
 `
 
 type NextHandler = OnNextHandler<
-  NotificationSubscriptionResponse['notificationSubscription'],
+  TNotificationSubscription['response']['notificationSubscription']['AuthTokenPayload'],
   OnNextHistoryContext
 >
 
 const stripeFailPaymentNotificationOnNext: OnNextHandler<
-  NotificationSubscription_paymentRejected,
+  NotificationSubscription_paymentRejected$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return
@@ -177,7 +204,7 @@ const stripeFailPaymentNotificationOnNext: OnNextHandler<
 
 // there's a bug in relay compiler that only shows part of the discriminated union
 const meetingStageTimeLimitOnNext: OnNextHandler<
-  NotificationSubscription_meetingStageTimeLimitEnd,
+  NotificationSubscription_meetingStageTimeLimitEnd$data,
   OnNextHistoryContext
 > = (payload: any, {atmosphere, history}) => {
   if (!payload || payload.__typename !== 'MeetingStageTimeLimitPayload') return
@@ -221,7 +248,7 @@ const authTokenNotificationOnNext: NextHandler = (payload, {atmosphere}) => {
 }
 
 const invalidateSessionsNotificationOnNext: OnNextHandler<
-  InvalidateSessionsMutation_notification,
+  InvalidateSessionsMutation_notification$data,
   OnNextHistoryContext
 > = (_payload, {atmosphere, history}) => {
   window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
@@ -235,6 +262,28 @@ const invalidateSessionsNotificationOnNext: OnNextHandler<
     history.replace('/')
   })
 }
+
+const addedNotificationUpdater: SharedUpdater<any> = (payload, context) => {
+  const notification = payload.getLinkedRecord('addedNotification')
+  if (!notification) return
+  handleAddNotifications(notification, context.store)
+}
+
+const updateHandlers = {
+  AcceptTeamInvitationPayload: acceptTeamInvitationNotificationUpdater,
+  AddNewFeaturePayload: addNewFeatureNotificationUpdater,
+  AddOrgPayload: addOrgMutationNotificationUpdater,
+  AddTeamPayload: addTeamMutationNotificationUpdater,
+  AddedNotification: addedNotificationUpdater,
+  CreateTaskPayload: createTaskNotificationUpdater,
+  EndCheckInSuccess: endCheckInNotificationUpdater,
+  EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
+  InviteToTeamPayload: inviteToTeamNotificationUpdater,
+  MeetingStageTimeLimitPayload: meetingStageTimeLimitUpdater,
+  RemoveOrgUserPayload: removeOrgUserNotificationUpdater,
+  StripeFailPaymentPayload: stripeFailPaymentNotificationUpdater,
+  ArchiveTimelineEventSuccess: archiveTimelineEventNotificationUpdater
+} as const
 
 const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
@@ -250,78 +299,15 @@ const onNextHandlers = {
 
 const NotificationSubscription = (
   atmosphere: Atmosphere,
-  variables: NotificationSubscriptionVariables,
+  variables: TNotificationSubscription['variables'],
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TNotificationSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('notificationSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename')
-      const context = {store: store as RecordSourceSelectorProxy<any>, atmosphere}
-      switch (type as string) {
-        case 'AcceptTeamInvitationPayload':
-          acceptTeamInvitationNotificationUpdater(payload, context)
-          break
-        case 'UpdateFeatureFlagPayload':
-          break
-        case 'AddNewFeaturePayload':
-          addNewFeatureNotificationUpdater(payload, context)
-          break
-        case 'AddOrgPayload':
-          addOrgMutationNotificationUpdater(payload, context)
-          break
-        case 'AddTeamPayload':
-          addTeamMutationNotificationUpdater(payload, context)
-          break
-        case 'CreateTaskPayload':
-          createTaskNotificationUpdater(payload as any, context)
-          break
-        case 'DisconnectSocketPayload':
-          break
-        case 'EndCheckInSuccess':
-          endCheckInNotificationUpdater(payload, context)
-          break
-        case 'EndRetrospectiveSuccess':
-          endRetrospectiveNotificationUpdater(payload, context)
-          break
-        case 'InviteToTeamPayload':
-          inviteToTeamNotificationUpdater(payload, context)
-          break
-        case 'User':
-          break
-        case 'MeetingStageTimeLimitPayload':
-          meetingStageTimeLimitUpdater(payload, context)
-          break
-        case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, context)
-          break
-        case 'StripeFailPaymentPayload':
-          stripeFailPaymentNotificationUpdater(payload, context)
-          break
-        case 'ArchiveTimelineEventSuccess':
-          archiveTimelineEventNotificationUpdater(payload, context)
-          break
-        case 'AddedNotification':
-          const notification = payload.getLinkedRecord('addedNotification' as any)
-          if (!notification) break
-          handleAddNotifications(notification, context.store)
-          break
-        default:
-          console.error('NotificationSubscription case fail', type)
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {notificationSubscription} = result
-      const {__typename: type} = notificationSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(notificationSubscription as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('notificationSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('notificationSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(NotificationSubscription.name, variables)
     }

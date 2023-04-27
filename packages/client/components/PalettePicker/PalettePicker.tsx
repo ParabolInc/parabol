@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import ReflectTemplatePromptUpdateGroupColorMutation from '~/mutations/ReflectTemplatePromptUpdateGroupColorMutation'
-import {PalettePicker_prompt} from '~/__generated__/PalettePicker_prompt.graphql'
-import {PalettePicker_prompts} from '~/__generated__/PalettePicker_prompts.graphql'
+import {PalettePicker_prompt$key} from '~/__generated__/PalettePicker_prompt.graphql'
+import {PalettePicker_prompts$key} from '~/__generated__/PalettePicker_prompts.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuProps} from '../../hooks/useMenu'
 import palettePickerOptions from '../../styles/palettePickerOptions'
@@ -12,8 +12,8 @@ import Menu from '../Menu'
 import PaletteColor from '../PaletteColor/PaletteColor'
 
 interface Props {
-  prompt: PalettePicker_prompt
-  prompts: PalettePicker_prompts
+  prompt: PalettePicker_prompt$key
+  prompts: PalettePicker_prompts$key
   menuProps: MenuProps
 }
 
@@ -33,7 +33,25 @@ const PaletteList = styled('ul')({
 })
 
 const PalettePicker = (props: Props) => {
-  const {prompt, prompts, menuProps} = props
+  const {prompt: promptRef, prompts: promptsRef, menuProps} = props
+  const prompts = useFragment(
+    graphql`
+      fragment PalettePicker_prompts on ReflectPrompt @relay(plural: true) {
+        id
+        groupColor
+      }
+    `,
+    promptsRef
+  )
+  const prompt = useFragment(
+    graphql`
+      fragment PalettePicker_prompt on ReflectPrompt {
+        id
+        groupColor
+      }
+    `,
+    promptRef
+  )
   const {closePortal} = menuProps
   const {id: promptId, groupColor} = prompt
   const atmosphere = useAtmosphere()
@@ -62,17 +80,4 @@ const PalettePicker = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PalettePicker, {
-  prompts: graphql`
-    fragment PalettePicker_prompts on ReflectPrompt @relay(plural: true) {
-      id
-      groupColor
-    }
-  `,
-  prompt: graphql`
-    fragment PalettePicker_prompt on ReflectPrompt {
-      id
-      groupColor
-    }
-  `
-})
+export default PalettePicker

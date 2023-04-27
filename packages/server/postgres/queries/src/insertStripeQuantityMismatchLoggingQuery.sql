@@ -2,6 +2,7 @@
   @name insertStripeQuantityMismatchLoggingQuery
 */
 INSERT INTO "StripeQuantityMismatchLogging" (
+    "orgId",
     "userId",
     "eventTime",
     "eventType",
@@ -9,6 +10,7 @@ INSERT INTO "StripeQuantityMismatchLogging" (
     "stripeNextQuantity",
     "orgUsers"
 ) VALUES (
+    :orgId,
     :userId,
     :eventTime,
     :eventType,

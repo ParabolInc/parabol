@@ -2,17 +2,17 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
 import {TEMPLATE_DIMENSION} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
-import {TemplateDimensionList_dimensions} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
+import {TemplateDimensionList_dimensions$key} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
 import TemplateDimensionItem from './TemplateDimensionItem'
 
 interface Props {
   isOwner: boolean
-  dimensions: TemplateDimensionList_dimensions
+  dimensions: TemplateDimensionList_dimensions$key
   templateId: string
 }
 
@@ -23,7 +23,18 @@ const DimensionList = styled('div')({
 })
 
 const TemplateDimensionList = (props: Props) => {
-  const {isOwner, dimensions, templateId} = props
+  const {isOwner, dimensions: dimensionsRef, templateId} = props
+  const dimensions = useFragment(
+    graphql`
+      fragment TemplateDimensionList_dimensions on TemplateDimension @relay(plural: true) {
+        id
+        sortOrder
+        ...TemplateDimensionItem_dimension
+        ...TemplateDimensionItem_dimensions
+      }
+    `,
+    dimensionsRef
+  )
   const atmosphere = useAtmosphere()
 
   const onDragEnd = (result: DropResult) => {
@@ -99,13 +110,4 @@ const TemplateDimensionList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TemplateDimensionList, {
-  dimensions: graphql`
-    fragment TemplateDimensionList_dimensions on TemplateDimension @relay(plural: true) {
-      id
-      sortOrder
-      ...TemplateDimensionItem_dimension
-      ...TemplateDimensionItem_dimensions
-    }
-  `
-})
+export default TemplateDimensionList

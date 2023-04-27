@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {AzureDevOpsScopingSearchInput_meeting} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
+import {AzureDevOpsScopingSearchInput_meeting$key} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -42,11 +42,23 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
 }
 
 interface Props {
-  meeting: AzureDevOpsScopingSearchInput_meeting
+  meeting: AzureDevOpsScopingSearchInput_meeting$key
 }
 
 const AzureDevOpsScopingSearchInput = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment AzureDevOpsScopingSearchInput_meeting on PokerMeeting {
+        id
+        azureDevOpsSearchQuery {
+          queryString
+          isWIQL
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, azureDevOpsSearchQuery} = meeting
   const {isWIQL, queryString} = azureDevOpsSearchQuery
   const isEmpty = !queryString
@@ -66,14 +78,4 @@ const AzureDevOpsScopingSearchInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AzureDevOpsScopingSearchInput, {
-  meeting: graphql`
-    fragment AzureDevOpsScopingSearchInput_meeting on PokerMeeting {
-      id
-      azureDevOpsSearchQuery {
-        queryString
-        isWIQL
-      }
-    }
-  `
-})
+export default AzureDevOpsScopingSearchInput

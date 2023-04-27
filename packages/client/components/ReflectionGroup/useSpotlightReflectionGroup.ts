@@ -1,12 +1,12 @@
 import {useMemo} from 'react'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
-import {ReflectionGroup_meeting} from '~/__generated__/ReflectionGroup_meeting.graphql'
-import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {ReflectionGroup_meeting$data} from '~/__generated__/ReflectionGroup_meeting.graphql'
+import {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
 import useSpotlightVisibleReflections from './useSpotlightVisibleReflections'
 
 const useSpotlightReflectionGroup = (
-  meeting: ReflectionGroup_meeting,
-  reflectionGroup: ReflectionGroup_reflectionGroup,
+  meeting: ReflectionGroup_meeting$data,
+  reflectionGroup: ReflectionGroup_reflectionGroup$data,
   isBehindSpotlight: boolean,
   reflectionIdsToHide?: string[] | null
 ) => {

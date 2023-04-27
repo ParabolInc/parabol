@@ -3,13 +3,13 @@ import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import {TemplatePromptItem_prompts} from '~/__generated__/TemplatePromptItem_prompts.graphql'
+import {TemplatePromptItem_prompts$key} from '~/__generated__/TemplatePromptItem_prompts.graphql'
 import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
+import {TemplatePromptItem_prompt$key} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import EditableTemplateDescription from './EditableTemplateDescription'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 import EditableTemplatePromptColor from './EditableTemplatePromptColor'
@@ -17,8 +17,8 @@ import EditableTemplatePromptColor from './EditableTemplatePromptColor'
 interface Props {
   isOwner: boolean
   isDragging: boolean
-  prompt: TemplatePromptItem_prompt
-  prompts: TemplatePromptItem_prompts
+  prompt: TemplatePromptItem_prompt$key
+  prompts: TemplatePromptItem_prompts$key
   dragProvided: DraggableProvided
 }
 
@@ -64,7 +64,27 @@ const PromptAndDescription = styled('div')({
 })
 
 const TemplatePromptItem = (props: Props) => {
-  const {dragProvided, isDragging, isOwner, prompt, prompts} = props
+  const {dragProvided, isDragging, isOwner, prompt: promptRef, prompts: promptsRef} = props
+  const prompts = useFragment(
+    graphql`
+      fragment TemplatePromptItem_prompts on ReflectPrompt @relay(plural: true) {
+        ...EditableTemplatePromptColor_prompts
+        ...EditableTemplatePrompt_prompts
+      }
+    `,
+    promptsRef
+  )
+  const prompt = useFragment(
+    graphql`
+      fragment TemplatePromptItem_prompt on ReflectPrompt {
+        ...EditableTemplatePromptColor_prompt
+        id
+        question
+        description
+      }
+    `,
+    promptRef
+  )
   const {id: promptId, description, question} = prompt
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
@@ -123,19 +143,4 @@ const TemplatePromptItem = (props: Props) => {
     </PromptItem>
   )
 }
-export default createFragmentContainer(TemplatePromptItem, {
-  prompts: graphql`
-    fragment TemplatePromptItem_prompts on ReflectPrompt @relay(plural: true) {
-      ...EditableTemplatePromptColor_prompts
-      ...EditableTemplatePrompt_prompts
-    }
-  `,
-  prompt: graphql`
-    fragment TemplatePromptItem_prompt on ReflectPrompt {
-      ...EditableTemplatePromptColor_prompt
-      id
-      question
-      description
-    }
-  `
-})
+export default TemplatePromptItem

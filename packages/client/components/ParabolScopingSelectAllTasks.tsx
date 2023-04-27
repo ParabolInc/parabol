@@ -2,13 +2,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {ParabolScopingSelectAllTasks_tasks} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
+import {ParabolScopingSelectAllTasks_tasks$key} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -23,12 +23,24 @@ const Title = styled('div')({
 })
 interface Props {
   meetingId: string
-  tasks: ParabolScopingSelectAllTasks_tasks
+  tasks: ParabolScopingSelectAllTasks_tasks$key
   usedServiceTaskIds: Set<string>
 }
 
 const ParabolScopingSelectAllTasks = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, tasks} = props
+  const {meetingId, usedServiceTaskIds, tasks: tasksRef} = props
+  const tasks = useFragment(
+    graphql`
+      fragment ParabolScopingSelectAllTasks_tasks on TaskEdge @relay(plural: true) {
+        node {
+          id
+          plaintextContent
+          integrationHash
+        }
+      }
+    `,
+    tasksRef
+  )
   const taskIds = tasks.map((taskEdge) => taskEdge.node.id)
   const atmosphere = useAtmosphere()
   const [unusedTasks, allSelected] = useUnusedRecords(taskIds, usedServiceTaskIds)
@@ -71,14 +83,4 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ParabolScopingSelectAllTasks, {
-  tasks: graphql`
-    fragment ParabolScopingSelectAllTasks_tasks on TaskEdge @relay(plural: true) {
-      node {
-        id
-        plaintextContent
-        integrationHash
-      }
-    }
-  `
-})
+export default ParabolScopingSelectAllTasks

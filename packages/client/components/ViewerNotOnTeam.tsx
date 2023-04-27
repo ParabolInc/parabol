@@ -36,9 +36,7 @@ const query = graphql`
 
 const ViewerNotOnTeam = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<ViewerNotOnTeamQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<ViewerNotOnTeamQuery>(query, queryRef)
   const {viewer} = data
   const {
     teamInvitation: {teamInvitation, meetingId, teamId}

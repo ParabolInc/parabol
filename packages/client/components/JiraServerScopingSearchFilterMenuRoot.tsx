@@ -48,7 +48,6 @@ const JiraServerScopingSearchFilterMenuRoot = (props: Props) => {
       meetingId
     },
     {
-      UNSTABLE_renderPolicy: 'full',
       fetchPolicy: 'store-or-network'
     }
   )

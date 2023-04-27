@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {OrganizationRow_organization} from '~/__generated__/OrganizationRow_organization.graphql'
+import {useFragment} from 'react-relay'
+import {OrganizationRow_organization$key} from '~/__generated__/OrganizationRow_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton from '../../../../components/FlatButton'
 import Row from '../../../../components/Row/Row'
@@ -84,11 +84,26 @@ const StyledRowInfoCopy = styled(RowInfoCopy)({
 })
 
 interface Props {
-  organization: OrganizationRow_organization
+  organization: OrganizationRow_organization$key
 }
 
 const OrganizationRow = (props: Props) => {
-  const {organization} = props
+  const {organization: organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrganizationRow_organization on Organization {
+        id
+        name
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
+        picture
+        tier
+      }
+    `,
+    organizationRef
+  )
   const {history} = useRouter()
   const {
     id: orgId,
@@ -149,17 +164,4 @@ const OrganizationRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(OrganizationRow, {
-  organization: graphql`
-    fragment OrganizationRow_organization on Organization {
-      id
-      name
-      orgUserCount {
-        activeUserCount
-        inactiveUserCount
-      }
-      picture
-      tier
-    }
-  `
-})
+export default OrganizationRow

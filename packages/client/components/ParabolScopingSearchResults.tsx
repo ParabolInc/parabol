@@ -40,10 +40,7 @@ const ParabolScopingSearchResults = (props: Props) => {
         ...ParabolScopingSearchResults_query
       }
     `,
-    queryRef,
-    {
-      UNSTABLE_renderPolicy: 'full'
-    }
+    queryRef
   )
 
   const meeting = useFragment(

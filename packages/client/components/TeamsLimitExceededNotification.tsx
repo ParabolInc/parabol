@@ -6,6 +6,7 @@ import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import {TeamsLimitExceededNotification_notification$key} from '~/__generated__/TeamsLimitExceededNotification_notification.graphql'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
+import {Threshold} from '../types/constEnums'
 
 interface Props {
   notification: TeamsLimitExceededNotification_notification$key
@@ -34,7 +35,7 @@ const TeamsLimitExceededNotification = (props: Props) => {
   return (
     <NotificationTemplate
       avatar={orgPicture || defaultOrgAvatar}
-      message={`Your account is on a roll! Check out "${orgName}"'s usage`}
+      message={`"${orgName}" is over the limit of ${Threshold.MAX_STARTER_TIER_TEAMS} free teams. Action is needed.`}
       action={<NotificationAction label={'See Usage'} onClick={onActionClick} />}
       notification={notification}
     />

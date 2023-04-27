@@ -20,9 +20,7 @@ const query = graphql`
 `
 function TeamInvitation(props: Props) {
   const {queryRef} = props
-  const data = usePreloadedQuery<TeamInvitationQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<TeamInvitationQuery>(query, queryRef)
 
   const {verifiedInvitation} = data
   const {meetingType} = verifiedInvitation

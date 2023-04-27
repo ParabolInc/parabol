@@ -56,6 +56,7 @@ module.exports = {
       'webhooks',
       'graphql',
       'intranet-graphql',
+      'self-hosted',
       // important terminating / so saml-redirect doesn't get targeted, too
       'saml/'
     ].reduce((obj, name) => {

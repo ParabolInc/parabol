@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useCallback} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {NavigateMeetingMutationVariables} from '~/__generated__/NavigateMeetingMutation.graphql'
+import {NavigateMeetingMutation as TNavigateMeetingMutation} from '~/__generated__/NavigateMeetingMutation.graphql'
 import {useGotoStageId_meeting$key} from '~/__generated__/useGotoStageId_meeting.graphql'
 import {demoTeamId} from '../modules/demo/initDB'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
@@ -66,7 +66,7 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
         const variables = {
           meetingId,
           facilitatorStageId: stageId
-        } as NavigateMeetingMutationVariables
+        } as TNavigateMeetingMutation['variables']
         if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
           variables.completedStageId = facilitatorStageId
         }

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useFragment, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
 import {SearchMenuItem} from '~/components/SearchMenuItem'
 import useSearchFilter from '~/hooks/useSearchFilter'
@@ -16,7 +16,7 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {TaskFooterUserAssigneeMenuQuery} from '../../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
-import {TaskFooterUserAssigneeMenu_task} from '../../../../__generated__/TaskFooterUserAssigneeMenu_task.graphql'
+import {TaskFooterUserAssigneeMenu_task$key} from '../../../../__generated__/TaskFooterUserAssigneeMenu_task.graphql'
 
 const StyledPreferredName = styled('div')({
   whiteSpace: 'nowrap',
@@ -27,7 +27,7 @@ interface Props {
   area: AreaEnum
   menuProps: MenuProps
   queryRef: PreloadedQuery<TaskFooterUserAssigneeMenuQuery>
-  task: TaskFooterUserAssigneeMenu_task
+  task: TaskFooterUserAssigneeMenu_task$key
 }
 
 const gqlQuery = graphql`
@@ -47,10 +47,20 @@ const gqlQuery = graphql`
   }
 `
 const TaskFooterUserAssigneeMenu = (props: Props) => {
-  const {area, menuProps, task, queryRef} = props
-  const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const {area, menuProps, task: taskRef, queryRef} = props
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterUserAssigneeMenu_task on Task {
+        id
+        userId
+        team {
+          id
+        }
+      }
+    `,
+    taskRef
+  )
+  const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef)
   const {viewer} = data
 
   const {userId, id: taskId} = task
@@ -111,14 +121,4 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskFooterUserAssigneeMenu, {
-  task: graphql`
-    fragment TaskFooterUserAssigneeMenu_task on Task {
-      id
-      userId
-      team {
-        id
-      }
-    }
-  `
-})
+export default TaskFooterUserAssigneeMenu

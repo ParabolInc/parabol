@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import {PALETTE} from '~/styles/paletteV3'
-import {EditableTemplateScaleValueLabel_scale} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
-import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
+import {EditableTemplateScaleValueLabel_scale$key} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
+import {EditableTemplateScaleValueLabel_scaleValue$key} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -22,12 +22,35 @@ const StyledEditableText = styled(EditableText)<{disabled: boolean | undefined}>
 
 interface Props {
   isHover: boolean
-  scale: EditableTemplateScaleValueLabel_scale
-  scaleValue: EditableTemplateScaleValueLabel_scaleValue
+  scale: EditableTemplateScaleValueLabel_scale$key
+  scaleValue: EditableTemplateScaleValueLabel_scaleValue$key
 }
 
 const EditableTemplateScaleValueLabel = (props: Props) => {
-  const {isHover, scaleValue, scale} = props
+  const {isHover, scaleValue: scaleValueRef, scale: scaleRef} = props
+  const scale = useFragment(
+    graphql`
+      fragment EditableTemplateScaleValueLabel_scale on TemplateScale {
+        id
+        values {
+          id
+          label
+          color
+        }
+      }
+    `,
+    scaleRef
+  )
+  const scaleValue = useFragment(
+    graphql`
+      fragment EditableTemplateScaleValueLabel_scaleValue on TemplateScaleValue {
+        id
+        label
+        color
+      }
+    `,
+    scaleValueRef
+  )
   const {id: scaleId} = scale
   const {id: scaleValueId, label, color} = scaleValue
   const atmosphere = useAtmosphere()
@@ -89,22 +112,4 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EditableTemplateScaleValueLabel, {
-  scale: graphql`
-    fragment EditableTemplateScaleValueLabel_scale on TemplateScale {
-      id
-      values {
-        id
-        label
-        color
-      }
-    }
-  `,
-  scaleValue: graphql`
-    fragment EditableTemplateScaleValueLabel_scaleValue on TemplateScaleValue {
-      id
-      label
-      color
-    }
-  `
-})
+export default EditableTemplateScaleValueLabel

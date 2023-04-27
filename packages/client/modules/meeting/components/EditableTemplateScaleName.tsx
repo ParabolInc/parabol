@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
 import Legitity from '../../../validation/Legitity'
-import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
+import {EditableTemplateScaleName_scales$key} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 
 interface Props {
   name: string
   scaleId: string
-  scales: EditableTemplateScaleName_scales | undefined
+  scales: EditableTemplateScaleName_scales$key
   isOwner: boolean
 }
 
@@ -29,7 +29,16 @@ const StyledEditableText = styled(EditableText)({
 })
 
 const EditableTemplateScaleName = (props: Props) => {
-  const {name, scaleId, scales, isOwner} = props
+  const {name, scaleId, scales: scalesRef, isOwner} = props
+  const scales = useFragment(
+    graphql`
+      fragment EditableTemplateScaleName_scales on TemplateScale @relay(plural: true) {
+        id
+        name
+      }
+    `,
+    scalesRef
+  )
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -81,11 +90,4 @@ const EditableTemplateScaleName = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EditableTemplateScaleName, {
-  scales: graphql`
-    fragment EditableTemplateScaleName_scales on TemplateScale @relay(plural: true) {
-      id
-      name
-    }
-  `
-})
+export default EditableTemplateScaleName

@@ -1,6 +1,6 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
-import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
+import {ActionMeeting_meeting$data} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {AgendaItem_agendaItem$data} from '~/__generated__/AgendaItem_agendaItem.graphql'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import pluralizeHandler from './pluralizeHandler'
 
@@ -9,14 +9,14 @@ const handleRemoveAgendaItem = (
   store: RecordSourceSelectorProxy,
   meetingId?: string
 ) => {
-  const agendaItem = store.get<AgendaItem_agendaItem>(agendaItemId)
+  const agendaItem = store.get<AgendaItem_agendaItem$data>(agendaItemId)
   if (!agendaItem) return
   const teamId = agendaItem.getValue('id').split('::')[0]
   if (!teamId) return
   const team = store.get(teamId)
   safeRemoveNodeFromArray(agendaItemId, team, 'agendaItems')
   if (meetingId) {
-    const meeting = store.get<ActionMeeting_meeting>(meetingId)
+    const meeting = store.get<ActionMeeting_meeting$data>(meetingId)
     if (!meeting) return
     const phases = meeting.getLinkedRecords('phases')
     if (!phases) return
@@ -26,7 +26,8 @@ const handleRemoveAgendaItem = (
     if (!stages) return
     const stageToRemove = stages.find(
       (stage) =>
-        stage.getLinkedRecord<AgendaItem_agendaItem>('agendaItem')?.getValue('id') === agendaItemId
+        stage.getLinkedRecord<AgendaItem_agendaItem$data>('agendaItem')?.getValue('id') ===
+        agendaItemId
     )
     if (!stageToRemove) return
     const stageId = stageToRemove.getValue('id') as string

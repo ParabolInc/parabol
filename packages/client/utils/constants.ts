@@ -6,11 +6,8 @@
  - Is the variable a string? Create a string union & pass in a plain string to get type safety
 */
 import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-
-/**
- * Big stuff:
- */
-export const APP_CDN_USER_ASSET_SUBDIR = '/store'
+import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
+import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
@@ -158,3 +155,39 @@ export const MAX_SPOTLIGHT_COLUMNS = 3
 export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
 
 export const PARABOL_AI_USER_ID = 'parabolAIUser'
+
+export const TeamBenefits = [
+  'Unlimited teams',
+  'Premium templates',
+  'Custom templates',
+  'Unlimited meeting history',
+  'Priority customer support',
+  'AI Summaries'
+]
+
+export const EnterpriseBenefits = [
+  'Enhanced security',
+  'Priority customer support',
+  'SAML Single Sign-On (SSO)',
+  'Uptime SLA',
+  'Jira Server Integration'
+]
+
+export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [
+  'Parabol is too expensive',
+  'Budget changes',
+  'Missing key features',
+  `Not using Parabol's paid features`,
+  'Moving to another tool (please specify)'
+]
+
+export const reasonsToDowngradeLookup: Record<
+  ReadableReasonToDowngradeEnum,
+  ReasonToDowngradeEnum
+> = {
+  'Parabol is too expensive': 'tooExpensive',
+  'Budget changes': 'budgetChanges',
+  'Missing key features': 'missingKeyFeatures',
+  "Not using Parabol's paid features": 'notUsingPaidFeatures',
+  'Moving to another tool (please specify)': 'anotherTool'
+}

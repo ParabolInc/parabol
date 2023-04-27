@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {InvoiceHeader_invoice} from '~/__generated__/InvoiceHeader_invoice.graphql'
+import {useFragment} from 'react-relay'
+import {InvoiceHeader_invoice$key} from '~/__generated__/InvoiceHeader_invoice.graphql'
 import TierTag from '../../../../components/Tag/TierTag'
 import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
@@ -60,11 +60,22 @@ const StyledTierTag = styled(TierTag)({
 })
 
 interface Props {
-  invoice: InvoiceHeader_invoice
+  invoice: InvoiceHeader_invoice$key
 }
 
 const InvoiceHeader = (props: Props) => {
-  const {invoice} = props
+  const {invoice: invoiceRef} = props
+  const invoice = useFragment(
+    graphql`
+      fragment InvoiceHeader_invoice on Invoice {
+        orgName
+        billingLeaderEmails
+        picture
+        tier
+      }
+    `,
+    invoiceRef
+  )
   const {orgName, billingLeaderEmails, picture, tier} = invoice
   return (
     <Header>
@@ -82,13 +93,4 @@ const InvoiceHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(InvoiceHeader, {
-  invoice: graphql`
-    fragment InvoiceHeader_invoice on Invoice {
-      orgName
-      billingLeaderEmails
-      picture
-      tier
-    }
-  `
-})
+export default InvoiceHeader

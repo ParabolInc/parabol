@@ -2,10 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
-import {
-  ResetRetroMeetingToGroupStageMutation as TResetRetroMeetingToGroupStageMutation,
-  ResetRetroMeetingToGroupStageMutationVariables
-} from '../__generated__/ResetRetroMeetingToGroupStageMutation.graphql'
+import {ResetRetroMeetingToGroupStageMutation as TResetRetroMeetingToGroupStageMutation} from '../__generated__/ResetRetroMeetingToGroupStageMutation.graphql'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 
 graphql`
@@ -68,7 +65,7 @@ export const resetRetroMeetingToGroupStageUpdater: SharedUpdater<
 
 const ResetRetroMeetingToGroupStageMutation: SimpleMutation<
   TResetRetroMeetingToGroupStageMutation
-> = (atmosphere: Atmosphere, variables: ResetRetroMeetingToGroupStageMutationVariables) => {
+> = (atmosphere: Atmosphere, variables: TResetRetroMeetingToGroupStageMutation['variables']) => {
   return commitMutation<TResetRetroMeetingToGroupStageMutation>(atmosphere, {
     mutation,
     updater: (store) => {

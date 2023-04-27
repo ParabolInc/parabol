@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-import {RetroVoteMetaHeader_meeting} from '~/__generated__/RetroVoteMetaHeader_meeting.graphql'
+import {RetroVoteMetaHeader_meeting$key} from '~/__generated__/RetroVoteMetaHeader_meeting.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
@@ -91,11 +91,25 @@ const TeamVotesCountLabel = styled(VoteCountLabel)({
 })
 
 interface Props {
-  meeting: RetroVoteMetaHeader_meeting
+  meeting: RetroVoteMetaHeader_meeting$key
 }
 
 const RetroVoteMetaHeader = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment RetroVoteMetaHeader_meeting on RetrospectiveMeeting {
+        ...VoteSettingsMenu_meeting
+        endedAt
+        facilitatorUserId
+        viewerMeetingMember {
+          votesRemaining
+        }
+        votesRemaining
+      }
+    `,
+    meetingRef
+  )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {viewerMeetingMember, endedAt, facilitatorUserId} = meeting
@@ -134,16 +148,4 @@ const RetroVoteMetaHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(RetroVoteMetaHeader, {
-  meeting: graphql`
-    fragment RetroVoteMetaHeader_meeting on RetrospectiveMeeting {
-      ...VoteSettingsMenu_meeting
-      endedAt
-      facilitatorUserId
-      viewerMeetingMember {
-        votesRemaining
-      }
-      votesRemaining
-    }
-  `
-})
+export default RetroVoteMetaHeader

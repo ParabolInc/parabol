@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {
   NewMeetingPhaseTypeEnum,
-  PokerMeeting_meeting
+  PokerMeeting_meeting$key
 } from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -15,7 +15,7 @@ import PokerMeetingSidebar from './PokerMeetingSidebar'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 
 interface Props {
-  meeting: PokerMeeting_meeting
+  meeting: PokerMeeting_meeting$key
 }
 
 const phaseLookup = {
@@ -35,7 +35,35 @@ export interface PokerMeetingPhaseProps {
 }
 
 const PokerMeeting = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment PokerMeeting_meeting on PokerMeeting {
+        ...useMeeting_meeting
+        ...PokerMeetingSidebar_meeting
+        ...NewMeetingCheckIn_meeting
+        ...NewMeetingAvatarGroup_meeting
+        ...MeetingControlBar_meeting
+        ...ScopePhase_meeting
+        ...PokerEstimatePhase_meeting
+        ...MeetingLockedOverlay_meeting
+        id
+        # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
+        init: id @__clientField(handle: "localPoker")
+        localPhase {
+          phaseType
+        }
+        phases {
+          phaseType
+          stages {
+            id
+          }
+        }
+        showSidebar
+      }
+    `,
+    meetingRef
+  )
   const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} =
     useMeeting(meeting)
   const {showSidebar, localPhase} = meeting
@@ -71,30 +99,4 @@ const PokerMeeting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerMeeting, {
-  meeting: graphql`
-    fragment PokerMeeting_meeting on PokerMeeting {
-      ...useMeeting_meeting
-      ...PokerMeetingSidebar_meeting
-      ...NewMeetingCheckIn_meeting
-      ...NewMeetingAvatarGroup_meeting
-      ...MeetingControlBar_meeting
-      ...ScopePhase_meeting
-      ...PokerEstimatePhase_meeting
-      ...MeetingLockedOverlay_meeting
-      id
-      # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
-      init: id @__clientField(handle: "localPoker")
-      localPhase {
-        phaseType
-      }
-      phases {
-        phaseType
-        stages {
-          id
-        }
-      }
-      showSidebar
-    }
-  `
-})
+export default PokerMeeting

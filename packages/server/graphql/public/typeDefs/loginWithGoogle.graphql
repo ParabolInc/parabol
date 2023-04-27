@@ -17,24 +17,5 @@ extend type Mutation {
     if present, the user is also joining a team
     """
     invitationToken: ID
-  ): LoginWithGooglePayload!
-}
-
-type LoginWithGooglePayload {
-  error: StandardMutationError
-
-  """
-  The new auth token
-  """
-  authToken: ID
-  userId: ID
-  """
-  if a new user is created
-  """
-  isNewUser: Boolean
-
-  """
-  the newly created user, or the existing user
-  """
-  user: User
+  ): UserLogInPayload!
 }

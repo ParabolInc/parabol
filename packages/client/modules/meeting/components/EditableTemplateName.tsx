@@ -1,19 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RenameMeetingTemplateMutation from '../../../mutations/RenameMeetingTemplateMutation'
 import Legitity from '../../../validation/Legitity'
-import {EditableTemplateName_teamTemplates} from '../../../__generated__/EditableTemplateName_teamTemplates.graphql'
+import {EditableTemplateName_teamTemplates$key} from '../../../__generated__/EditableTemplateName_teamTemplates.graphql'
+import clsx from 'clsx'
 
 interface Props {
   name: string
   templateId: string
-  teamTemplates: EditableTemplateName_teamTemplates
+  teamTemplates: EditableTemplateName_teamTemplates$key
   isOwner: boolean
+  className?: string
 }
 
 const InheritedStyles = styled('div')({
@@ -23,11 +25,17 @@ const InheritedStyles = styled('div')({
   lineHeight: '24px'
 })
 
-const StyledEditableText = styled(EditableText)({
-  lineHeight: '24px'
-})
 const EditableTemplateName = (props: Props) => {
-  const {name, templateId, teamTemplates, isOwner} = props
+  const {name, templateId, teamTemplates: teamTemplatesRef, isOwner, className} = props
+  const teamTemplates = useFragment(
+    graphql`
+      fragment EditableTemplateName_teamTemplates on MeetingTemplate @relay(plural: true) {
+        id
+        name
+      }
+    `,
+    teamTemplatesRef
+  )
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
   const autoFocus = name === '*New Template' || name.endsWith(' Copy')
@@ -66,25 +74,20 @@ const EditableTemplateName = (props: Props) => {
 
   return (
     <InheritedStyles>
-      <StyledEditableText
-        autoFocus={autoFocus}
-        disabled={!isOwner}
-        error={error ? error.message : undefined}
-        handleSubmit={handleSubmit}
-        initialValue={name}
-        maxLength={100}
-        validate={validate}
-        placeholder={'*New Template'}
-      />
+      <div className={clsx('leading-6', className)}>
+        <EditableText
+          autoFocus={autoFocus}
+          disabled={!isOwner}
+          error={error ? error.message : undefined}
+          handleSubmit={handleSubmit}
+          initialValue={name}
+          maxLength={100}
+          validate={validate}
+          placeholder={'*New Template'}
+        />
+      </div>
     </InheritedStyles>
   )
 }
 
-export default createFragmentContainer(EditableTemplateName, {
-  teamTemplates: graphql`
-    fragment EditableTemplateName_teamTemplates on MeetingTemplate @relay(plural: true) {
-      id
-      name
-    }
-  `
-})
+export default EditableTemplateName

@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import {Event as EventIcon, Timer as TimerIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {StageTimerModal_facilitator} from '../__generated__/StageTimerModal_facilitator.graphql'
-import {StageTimerModal_stage} from '../__generated__/StageTimerModal_stage.graphql'
+import {StageTimerModal_facilitator$key} from '../__generated__/StageTimerModal_facilitator.graphql'
+import {StageTimerModal_stage$key} from '../__generated__/StageTimerModal_stage.graphql'
 import StageTimerModalEditTimeEnd from './StageTimerModalEditTimeEnd'
 import StageTimerModalEditTimeLimit from './StageTimerModalEditTimeLimit'
 import StageTimerModalEndTime from './StageTimerModalEndTime'
@@ -21,9 +21,9 @@ interface Props {
   defaultTimeLimit: number
   defaultToAsync: boolean
   meetingId: string
-  stage: StageTimerModal_stage
+  stage: StageTimerModal_stage$key
   menuProps: MenuProps
-  facilitator: StageTimerModal_facilitator
+  facilitator: StageTimerModal_facilitator$key
 }
 
 const FullTab = styled(Tab)({
@@ -51,7 +51,36 @@ const StyledTabsBar = styled(Tabs)({
 })
 
 const StageTimerModal = (props: Props) => {
-  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage, facilitator} = props
+  const {
+    defaultTimeLimit,
+    defaultToAsync,
+    meetingId,
+    menuProps,
+    stage: stageRef,
+    facilitator: facilitatorRef
+  } = props
+  const facilitator = useFragment(
+    graphql`
+      fragment StageTimerModal_facilitator on TeamMember {
+        ...StageTimerModalEndTime_facilitator
+        ...StageTimerModalEditTimeEnd_facilitator
+      }
+    `,
+    facilitatorRef
+  )
+  const stage = useFragment(
+    graphql`
+      fragment StageTimerModal_stage on NewMeetingStage {
+        ...StageTimerModalTimeLimit_stage
+        ...StageTimerModalEditTimeLimit_stage
+        ...StageTimerModalEndTime_stage
+        ...StageTimerModalEditTimeEnd_stage
+        isAsync
+        suggestedTimeLimit
+      }
+    `,
+    stageRef
+  )
   const {isAsync} = stage
   const [activeIdx, setActiveIdx] = useState(defaultToAsync ? 1 : 0)
   const {closePortal} = menuProps
@@ -102,21 +131,4 @@ const StageTimerModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(StageTimerModal, {
-  facilitator: graphql`
-    fragment StageTimerModal_facilitator on TeamMember {
-      ...StageTimerModalEndTime_facilitator
-      ...StageTimerModalEditTimeEnd_facilitator
-    }
-  `,
-  stage: graphql`
-    fragment StageTimerModal_stage on NewMeetingStage {
-      ...StageTimerModalTimeLimit_stage
-      ...StageTimerModalEditTimeLimit_stage
-      ...StageTimerModalEndTime_stage
-      ...StageTimerModalEditTimeEnd_stage
-      isAsync
-      suggestedTimeLimit
-    }
-  `
-})
+export default StageTimerModal

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, ReactNode, RefObject} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
-import {DiscussionThreadList_discussion} from '~/__generated__/DiscussionThreadList_discussion.graphql'
-import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
-import {DiscussionThreadList_viewer} from '~/__generated__/DiscussionThreadList_viewer.graphql'
+import {DiscussionThreadList_discussion$key} from '~/__generated__/DiscussionThreadList_discussion.graphql'
+import {DiscussionThreadList_threadables$key} from '~/__generated__/DiscussionThreadList_threadables.graphql'
+import {DiscussionThreadList_viewer$key} from '~/__generated__/DiscussionThreadList_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import CommentingStatusText from './CommentingStatusText'
 import LabelHeading from './LabelHeading/LabelHeading'
@@ -52,10 +52,10 @@ export type DiscussionThreadables = 'task' | 'comment' | 'poll'
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   editorRef: RefObject<HTMLTextAreaElement>
-  discussion: DiscussionThreadList_discussion
+  discussion: DiscussionThreadList_discussion$key
   preferredNames: string[] | null
-  threadables: DiscussionThreadList_threadables
-  viewer: DiscussionThreadList_viewer
+  threadables: DiscussionThreadList_threadables$key
+  viewer: DiscussionThreadList_viewer$key
   dataCy: string
   header?: ReactNode
   emptyState?: ReactNode
@@ -65,14 +65,42 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {
     allowedThreadables,
     editorRef,
-    discussion,
-    threadables,
+    discussion: discussionRef,
+    threadables: threadablesRef,
     dataCy,
     preferredNames,
-    viewer,
+    viewer: viewerRef,
     header,
     emptyState
   } = props
+  const viewer = useFragment(
+    graphql`
+      fragment DiscussionThreadList_viewer on User {
+        ...ThreadedItem_viewer
+      }
+    `,
+    viewerRef
+  )
+  const discussion = useFragment(
+    graphql`
+      fragment DiscussionThreadList_discussion on Discussion {
+        ...ThreadedItem_discussion
+      }
+    `,
+    discussionRef
+  )
+  const threadables = useFragment(
+    graphql`
+      fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
+        ...ThreadedItem_threadable
+        ... on Poll {
+          updatedAt
+        }
+        id
+      }
+    `,
+    threadablesRef
+  )
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
   if (isEmpty && emptyState) {
@@ -108,24 +136,4 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   )
 })
 
-export default createFragmentContainer(DiscussionThreadList, {
-  viewer: graphql`
-    fragment DiscussionThreadList_viewer on User {
-      ...ThreadedItem_viewer
-    }
-  `,
-  discussion: graphql`
-    fragment DiscussionThreadList_discussion on Discussion {
-      ...ThreadedItem_discussion
-    }
-  `,
-  threadables: graphql`
-    fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
-      ...ThreadedItem_threadable
-      ... on Poll {
-        updatedAt
-      }
-      id
-    }
-  `
-})
+export default DiscussionThreadList

@@ -8,10 +8,7 @@ import getNonNullEdges from '~/utils/getNonNullEdges'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {
-  GitLabScopingSearchFilterMenuQuery,
-  GitLabScopingSearchFilterMenuQueryResponse
-} from '../__generated__/GitLabScopingSearchFilterMenuQuery.graphql'
+import {GitLabScopingSearchFilterMenuQuery} from '../__generated__/GitLabScopingSearchFilterMenuQuery.graphql'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -36,7 +33,9 @@ interface Props {
 }
 
 type GitLabSearchQuery = NonNullable<
-  NonNullable<GitLabScopingSearchFilterMenuQueryResponse['viewer']['meeting']>['gitlabSearchQuery']
+  NonNullable<
+    GitLabScopingSearchFilterMenuQuery['response']['viewer']['meeting']
+  >['gitlabSearchQuery']
 >
 
 const MAX_PROJECTS = 10
@@ -91,8 +90,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    queryRef
   )
 
   const nullableEdges =

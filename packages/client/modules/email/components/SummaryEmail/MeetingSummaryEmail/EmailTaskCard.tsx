@@ -4,14 +4,14 @@ import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {taskStatusColors} from 'parabol-client/utils/taskStatus'
-import {EmailTaskCard_task} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
+import {EmailTaskCard_task$key} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import React, {useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 
 interface Props {
-  task: EmailTaskCard_task | null
+  task: EmailTaskCard_task$key | null
   maxWidth?: number
 }
 
@@ -54,7 +54,16 @@ const deletedTask = {
 } as const
 
 const EmailTaskCard = (props: Props) => {
-  const {task, maxWidth} = props
+  const {task: taskRef, maxWidth} = props
+  const task = useFragment(
+    graphql`
+      fragment EmailTaskCard_task on Task {
+        content
+        status
+      }
+    `,
+    taskRef
+  )
   const {content, status} = task || deletedTask
   const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
   const editorStateRef = useRef<EditorState>()
@@ -107,11 +116,4 @@ const EmailTaskCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EmailTaskCard, {
-  task: graphql`
-    fragment EmailTaskCard_task on Task {
-      content
-      status
-    }
-  `
-})
+export default EmailTaskCard

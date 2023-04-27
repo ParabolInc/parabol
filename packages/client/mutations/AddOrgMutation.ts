@@ -8,8 +8,8 @@ import {
 } from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
-import {AddOrgMutation_notification} from '../__generated__/AddOrgMutation_notification.graphql'
-import {AddOrgMutation_organization} from '../__generated__/AddOrgMutation_organization.graphql'
+import {AddOrgMutation_notification$data} from '../__generated__/AddOrgMutation_notification.graphql'
+import {AddOrgMutation_organization$data} from '../__generated__/AddOrgMutation_organization.graphql'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -54,7 +54,7 @@ const mutation = graphql`
   }
 `
 
-const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_organization> = (
+const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_organization$data> = (
   payload,
   {atmosphere}
 ) => {
@@ -68,7 +68,7 @@ const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_organization> = 
   })
 }
 
-export const addOrgMutationOrganizationUpdater: SharedUpdater<AddOrgMutation_organization> = (
+export const addOrgMutationOrganizationUpdater: SharedUpdater<AddOrgMutation_organization$data> = (
   payload,
   {store}
 ) => {
@@ -79,7 +79,7 @@ export const addOrgMutationOrganizationUpdater: SharedUpdater<AddOrgMutation_org
   handleAddTeams(team, store)
 }
 
-export const addOrgMutationNotificationUpdater: SharedUpdater<AddOrgMutation_notification> = (
+export const addOrgMutationNotificationUpdater: SharedUpdater<AddOrgMutation_notification$data> = (
   payload,
   {store}
 ) => {

@@ -72,9 +72,7 @@ const query = graphql`
 `
 const PokerTemplateListOrg = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<PokerTemplateListOrgQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<PokerTemplateListOrgQuery>(query, queryRef)
   const {viewer} = data
   const team = viewer.team!
   const featureFlags = viewer.featureFlags!
