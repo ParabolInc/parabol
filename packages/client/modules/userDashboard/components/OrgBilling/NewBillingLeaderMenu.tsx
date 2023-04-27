@@ -14,6 +14,9 @@ import styled from '@emotion/styled'
 import TypeAheadLabel from '../../../../components/TypeAheadLabel'
 import useFilteredItems from '../../../../hooks/useFilteredItems'
 import {EmptyDropdownMenuItemLabel} from '../../../../components/EmptyDropdownMenuItemLabel'
+import SetOrgUserRoleMutation from '../../../../mutations/SetOrgUserRoleMutation'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
 
 const AvatarBlock = styled('div')({
   paddingRight: 32
@@ -31,9 +34,12 @@ const getValue = (
 
 const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   const {menuProps, organizationRef, newLeaderSearchQuery} = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
   const organization = useFragment(
     graphql`
       fragment NewBillingLeaderMenu_organization on Organization {
+        id
         billingLeaders {
           id
         }
@@ -53,7 +59,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
     `,
     organizationRef
   )
-  const {organizationUsers, billingLeaders} = organization
+  const {id: orgId, organizationUsers, billingLeaders} = organization
   const nonLeaderOrgUsers = useMemo(() => {
     return organizationUsers.edges.filter((organizationUser) => {
       const {node} = organizationUser
@@ -70,6 +76,12 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   const filteredOrgUsers = useFilteredItems(query, nonLeaderOrgUsers, (orgUser) =>
     getValue(orgUser).toLowerCase()
   )
+
+  const handleClick = (userId: string) => {
+    const role = 'BILLING_LEADER'
+    const variables = {orgId, userId, role}
+    SetOrgUserRoleMutation(atmosphere, variables, {onError, onCompleted})
+  }
 
   return (
     <Menu ariaLabel='Select New Billing Leader' keepParentFocus {...menuProps}>
@@ -101,7 +113,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
                 {preferredName}
               </MenuItemLabel>
             }
-            // onClick={onClick}
+            onClick={() => handleClick(userId)}
           />
         )
       })}
