@@ -6,6 +6,7 @@ import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamProm
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
+import SAML from '../database/types/SAML'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getKysely from '../postgres/getKysely'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
@@ -574,6 +575,29 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
         })
       )
       return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const samlInfoByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, SAML | null, string>(
+    async (orgIds) => {
+      const r = await getRethink()
+      const result = await Promise.all(
+        orgIds.map(async (orgId) => {
+          const samlRecord = await r
+            .table('SAML')
+            .getAll(orgId, {index: 'orgId'})
+            .nth(0)
+            .default(null)
+            .run()
+          return samlRecord
+        })
+      )
+      return result
     },
     {
       ...parent.dataLoaderOptions

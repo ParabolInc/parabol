@@ -1,9 +1,12 @@
 import styled from '@emotion/styled'
 import {Add, Check} from '@mui/icons-material'
 import React from 'react'
+import makeMaxWidthMediaQuery from '~/utils/makeMaxWidthMediaQuery'
 import DialogTitle from '../../../../components/DialogTitle'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks} from '../../../../types/constEnums'
+
+const mobileBreakpoint = makeMaxWidthMediaQuery(420)
 
 const IconBlock = styled('div')({
   padding: '0px 8px 0 8px'
@@ -58,14 +61,42 @@ const ContactLink = styled('a')({
   }
 })
 
+const DomainWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  [mobileBreakpoint]: {
+    flexDirection: 'column'
+  }
+})
+
+const DomainChips = styled('span')({
+  backgroundColor: PALETTE.SLATE_200,
+  borderRadius: '12px',
+  padding: '4px 12px',
+  margin: '8px 8px 4px 0',
+  fontSize: '14px',
+  fontWeight: 600,
+  color: PALETTE.SLATE_800,
+  width: 'fit-content'
+})
+
 interface Props {
+  samlInfo:
+    | {
+        readonly id: string
+        readonly domains: ReadonlyArray<string> | null
+        readonly url: string | null
+        readonly metadata: string | null
+      }
+    | null
+    | undefined
   disabled: boolean
 }
 
 const OrgAuthenticationSSOFrame = (props: Props) => {
-  const {disabled} = props
+  const {samlInfo, disabled} = props
 
-  const isSSOEnabled = false
+  const isSSOEnabled = samlInfo?.domains && samlInfo?.url && samlInfo?.metadata
 
   return (
     <SSOEnabledToggleBlock>
@@ -90,6 +121,13 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
             </ContactLink>{' '}
             {disabled ? 'to enable SSO' : 'to update email domains'}
           </SSOEnabledLabel>
+          {samlInfo?.domains && samlInfo?.domains.length > 0 && (
+            <DomainWrapper>
+              {samlInfo.domains.map((domain) => (
+                <DomainChips key={domain}>{domain}</DomainChips>
+              ))}
+            </DomainWrapper>
+          )}
         </SSOEnabledLabelBlock>
       </ContentWrapper>
     </SSOEnabledToggleBlock>

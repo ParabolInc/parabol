@@ -1,8 +1,11 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
+import UpdateSAMLMutation from '~/mutations/UpdateSAMLMutation'
 import DialogTitle from '../../../../components/DialogTitle'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import SecondaryButton from '../../../../components/SecondaryButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const Section = styled('div')({
@@ -40,11 +43,27 @@ const ButtonSection = styled('div')({
 
 interface Props {
   disabled: boolean
+  orgId: string
 }
 
 const OrgAuthenticationMetadata = (props: Props) => {
   const [metadata, setMetadata] = useState('')
-  const {disabled} = props
+  const {disabled, orgId} = props
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const atmosphere = useAtmosphere()
+
+  const submitMetadata = () => {
+    if (submitting) return
+    submitMutation()
+    UpdateSAMLMutation(
+      atmosphere,
+      {
+        metadata: metadata.length ? metadata : null,
+        orgId
+      },
+      {onError, onCompleted}
+    )
+  }
 
   return (
     <Container>
@@ -52,20 +71,22 @@ const OrgAuthenticationMetadata = (props: Props) => {
         <SubTitle disabled={disabled}>Metadata</SubTitle>
         <Label disabled={disabled}>Paste metadata from your identity provider</Label>
       </Section>
-      <InputSection>
-        <BasicTextArea
-          disabled={disabled}
-          name='metadata'
-          placeholder='Paste your metadata here'
-          value={metadata}
-          onChange={(e) => setMetadata(e.target.value)}
-        />
-      </InputSection>
-      <ButtonSection>
-        <SecondaryButton disabled={disabled} size='medium'>
-          Update Metadata
-        </SecondaryButton>
-      </ButtonSection>
+      <form onSubmit={submitMetadata}>
+        <InputSection>
+          <BasicTextArea
+            disabled={disabled}
+            name='metadata'
+            placeholder='Paste your metadata here'
+            value={metadata}
+            onChange={(e) => setMetadata(e.target.value)}
+          />
+        </InputSection>
+        <ButtonSection>
+          <SecondaryButton disabled={disabled} size='medium'>
+            Update Metadata
+          </SecondaryButton>
+        </ButtonSection>
+      </form>
     </Container>
   )
 }

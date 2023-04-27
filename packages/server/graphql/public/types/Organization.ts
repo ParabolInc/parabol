@@ -18,6 +18,9 @@ const Organization: OrganizationResolvers = {
   featureFlags: ({featureFlags}) => {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
+  },
+  samlInfo: async ({id: orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('samlInfoByOrgId').load(orgId)
   }
 }
 

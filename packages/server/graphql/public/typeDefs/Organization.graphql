@@ -151,6 +151,11 @@ type Organization {
   Any super power given to the organization via a super user
   """
   featureFlags: OrganizationFeatureFlags!
+
+  """
+  Shows the organization SAML details
+  """
+  samlInfo: SAMLInfo
 }
 
 type MeetingStat {
@@ -171,4 +176,29 @@ type OrganizationFeatureFlags {
   teamsLimit: Boolean!
   SAMLUI: Boolean!
   promptToJoinOrg: Boolean!
+}
+
+"""
+The SAML info for the organization
+"""
+type SAMLInfo {
+  """
+  The SAML issuer
+  """
+  id: ID!
+
+  """
+  a list of domains that the account has control over. usually the part after the @ of their email
+  """
+  domains: [String!]
+
+  """
+  The SAML redirect URL
+  """
+  url: String
+
+  """
+  A big chunk of XML data containing the redirect URL and X.509 certificate
+  """
+  metadata: String
 }

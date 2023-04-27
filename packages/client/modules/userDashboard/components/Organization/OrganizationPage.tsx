@@ -73,7 +73,7 @@ const OrganizationPage = (props: Props) => {
             <Route
               exact
               path={`${match.url}/${AUTHENTICATION_PAGE}`}
-              render={() => <OrgAuthentication />}
+              render={() => <OrgAuthentication orgId={orgId} />}
             />
           )}
         </Switch>
