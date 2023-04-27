@@ -26,6 +26,9 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   const organization = useFragment(
     graphql`
       fragment NewBillingLeaderMenu_organization on Organization {
+        billingLeaders {
+          id
+        }
         organizationUsers {
           edges {
             node {
@@ -43,14 +46,24 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
     organizationRef
   )
   console.log('🚀 ~ organization:', organization)
-  const {organizationUsers} = organization
+  const {organizationUsers, billingLeaders} = organization
+  const nonLeaderOrgUsers = organizationUsers.edges.filter((organizationUser) => {
+    const {node} = organizationUser
+    const {user} = node
+    const {id: userId} = user
+    return !billingLeaders.some((billingLeader) => {
+      const {id: billingLeaderId} = billingLeader
+      return billingLeaderId === userId
+    })
+  })
+
   return (
     <Menu ariaLabel='Select New Billing Leader' keepParentFocus {...menuProps}>
       {/* <SearchMenuItem placeholder='Search GitLab' onChange={onQueryChange} value={query} /> */}
       {/* {filteredProjects.length === 0 && ( */}
       {/* <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel> */}
       {/* )} */}
-      {organizationUsers.edges.slice(0, 10).map((organizationUser) => {
+      {nonLeaderOrgUsers.slice(0, 10).map((organizationUser) => {
         const {node} = organizationUser
         const {user} = node
         const {id: userId, preferredName, picture} = user
