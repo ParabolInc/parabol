@@ -120,6 +120,29 @@ const ActivityDetailsSidebar = (props: Props) => {
     )
   }
 
+  const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
+    <div className='w-[352px] p-4'>
+      <div>
+        This custom activity is private to the <b>{templateTeam.name}</b> team.
+      </div>
+      <br />
+      <div>
+        As a member of the team you can share this activity with the{' '}
+        <b>{templateTeam.organization.name}</b> organization so that any team can also use the
+        activity.
+      </div>
+      <button
+        onClick={handleShareToOrg}
+        className={
+          'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-sm font-semibold text-slate-700 hover:bg-slate-100'
+        }
+      >
+        <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
+        Allow all teams to use this activity
+      </button>
+    </div>
+  )
+
   return (
     <>
       {isOpen && <div className='w-96' />}
@@ -141,64 +164,24 @@ const ActivityDetailsSidebar = (props: Props) => {
               }}
               selectedTeamRef={selectedTeam}
               teamsRef={availableTeams}
-              customPortal={
-                templateTeam &&
-                selectedTemplate.scope === 'TEAM' && (
-                  <div className='w-[352px] p-4'>
-                    <div>
-                      This custom activity is private to the <b>{templateTeam.name}</b> team.
-                    </div>
-                    <br />
-                    <div>
-                      As a member of the team you can share this activity with the{' '}
-                      <b>{templateTeam.organization.name}</b> organization so that any team can also
-                      use the activity.
-                    </div>
-                    <button
-                      onClick={handleShareToOrg}
-                      className={clsx(
-                        'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-base text-sm font-semibold text-slate-700 hover:bg-slate-100',
-                        submitting && 'cursor-wait'
-                      )}
-                    >
-                      <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
-                      Allow all teams to use this activity
-                    </button>
-                  </div>
-                )
-              }
+              customPortal={teamScopePopover}
             />
           )}
-          <div className='mb-6 text-xl font-semibold'>Settings</div>
 
-          <div className='flex grow flex-col gap-2'>
-            {availableTeams.length > 0 && (
-              <NewMeetingTeamPicker
-                positionOverride={MenuPosition.UPPER_LEFT}
-                onSelectTeam={(teamId) => {
-                  const newTeam = availableTeams.find((team) => team.id === teamId)
-                  newTeam && setSelectedTeam(newTeam)
-                }}
-                selectedTeamRef={selectedTeam}
-                teamsRef={availableTeams}
-              />
-            )}
-
-            {selectedTemplate.type === 'retrospective' && (
-              <>
-                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-              </>
-            )}
-            {selectedTemplate.type === 'poker' && (
-              <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
-            )}
-            <div className='flex grow flex-col justify-end gap-2'>
-              <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-              <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
-                <div className='text-lg'>Start Activity</div>
-              </FlatPrimaryButton>
-            </div>
+          {selectedTemplate.type === 'retrospective' && (
+            <>
+              <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+              <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+            </>
+          )}
+          {selectedTemplate.type === 'poker' && (
+            <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+          )}
+          <div className='flex grow flex-col justify-end gap-2'>
+            <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
+            <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
+              <div className='text-lg'>Start Activity</div>
+            </FlatPrimaryButton>
           </div>
         </div>
       </div>
