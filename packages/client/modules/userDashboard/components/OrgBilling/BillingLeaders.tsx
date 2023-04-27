@@ -18,7 +18,7 @@ import NewBillingLeaderInput from './NewBillingLeaderInput'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
-  marginBottom: 80
+  marginBottom: 96
 })
 
 const StyledRow = styled(Row)({

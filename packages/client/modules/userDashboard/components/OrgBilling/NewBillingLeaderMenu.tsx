@@ -90,16 +90,10 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
           No team members found!
         </EmptyDropdownMenuItemLabel>
       )}
-
       {filteredOrgUsers.slice(0, 10).map((organizationUser) => {
         const {node} = organizationUser
         const {user} = node
         const {id: userId, preferredName, picture} = user
-        // const {id: projectId, fullPath} = project
-        // const onClick = () => {
-        // handleSelectFullPath(fullPath)
-        // }
-
         return (
           <MenuItem
             ref={ref}
