@@ -91,6 +91,7 @@
     "@tailwindcss/forms": "^0.5.3",
     "@types/dotenv": "^6.1.1",
     "@types/jscodeshift": "^0.11.3",
+    "@types/lodash": "4.14.194",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
     "autoprefixer": "^10.4.13",
