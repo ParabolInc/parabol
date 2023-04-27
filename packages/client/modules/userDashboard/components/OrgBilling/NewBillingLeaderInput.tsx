@@ -1,30 +1,19 @@
 import styled from '@emotion/styled'
 import {ExpandMore, Person, PersonPin, PersonPinCircle} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent, useEffect, useRef, useState} from 'react'
+import React, {ChangeEvent, FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import getNonNullEdges from '~/utils/getNonNullEdges'
 import {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
-// import useForm from '../hooks/useForm'
-// import {PortalStatus} from '../hooks/usePortal'
-// import CreateTaskMutation from '../mutations/CreateTaskMutation'
-// import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-// import {CompletedHandler} from '../types/relayMutations'
-// import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
-// // import Legitity from '../validation/Legitity'
-// import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
-// // import Checkbox from './Checkbox'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import StyledError from '../../../../components/StyledError'
 import Legitity from '../../../../validation/Legitity'
 import useForm from '../../../../hooks/useForm'
 import {PortalStatus} from '../../../../hooks/usePortal'
-import Checkbox from '../../../../components/Checkbox'
 import NewBillingLeaderMenu from './NewBillingLeaderMenu'
 
 const StyledButton = styled(PlainButton)({
@@ -40,14 +29,6 @@ const StyledButton = styled(PlainButton)({
     backgroundColor: 'transparent'
   }
 })
-
-// const StyledIcon = styled(ExpandMore)({
-//   color: PALETTE.SKY_500,
-//   height: 20,
-//   width: 20,
-//   padding: 0,
-//   alignContent: 'center'
-// })
 
 const StyledLink = styled('a')({
   color: PALETTE.SKY_500,
@@ -90,6 +71,10 @@ const Wrapper = styled('div')({
   width: '100%'
 })
 
+const DropdownWrapper = styled('button')({
+  width: 400
+})
+
 const NewLeaderInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
@@ -127,8 +112,6 @@ const NewBillingLeaderInput = (props: Props) => {
     `,
     organizationRef
   )
-  console.log('🚀 ~ organization....:', organization)
-
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newLeader: {
       getDefault: () => '',
@@ -136,21 +119,17 @@ const NewBillingLeaderInput = (props: Props) => {
     }
   })
   const {dirty, error, value: newLeaderSearchQuery} = fields.newLeader
-  console.log('🚀 ~ fields.newLeader:', newLeaderSearchQuery)
+  const ref = useRef<HTMLInputElement>(null)
 
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_LEFT,
+    MenuPosition.UPPER_CENTER,
     {isDropdown: true}
   )
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
-      originRef.current?.focus()
+      ref.current?.focus()
     }
   }, [portalStatus])
-
-  const handleFocus = () => {
-    togglePortal()
-  }
 
   const handleCreateNewLeader = (e: FormEvent) => {
     e.preventDefault()
@@ -162,6 +141,14 @@ const NewBillingLeaderInput = (props: Props) => {
     }
   }
 
+  const handleFocus = () => {
+    togglePortal()
+  }
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(e)
+  }
+
   // if (!isEditing) return null
   return (
     <>
@@ -171,16 +158,17 @@ const NewBillingLeaderInput = (props: Props) => {
           <Form onSubmit={handleCreateNewLeader}>
             <NewLeaderInput
               autoFocus
+              autoComplete={'off'}
               onBlur={handleCreateNewLeader}
               onFocus={handleFocus}
-              onChange={onChange}
+              onChange={handleChange}
               maxLength={255}
               name='newLeader'
               placeholder='Search for a new billing leader'
-              // ref={ref}
-              ref={originRef}
+              ref={ref}
               type='text'
             />
+            <DropdownWrapper ref={originRef} />
             {dirty && error && <Error>{error}</Error>}
           </Form>
         </Wrapper>

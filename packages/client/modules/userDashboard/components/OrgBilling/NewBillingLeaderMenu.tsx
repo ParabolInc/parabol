@@ -13,6 +13,7 @@ import Avatar from '../../../../components/Avatar/Avatar'
 import styled from '@emotion/styled'
 import TypeAheadLabel from '../../../../components/TypeAheadLabel'
 import useFilteredItems from '../../../../hooks/useFilteredItems'
+import {EmptyDropdownMenuItemLabel} from '../../../../components/EmptyDropdownMenuItemLabel'
 
 const AvatarBlock = styled('div')({
   paddingRight: 32
@@ -26,12 +27,7 @@ interface Props {
 
 const getValue = (
   orgUser: NewBillingLeaderMenu_organization$data['organizationUsers']['edges'][0]
-) => {
-  const {node} = orgUser
-  const {user} = node
-  const {preferredName} = user
-  return preferredName
-}
+) => orgUser.node.user.preferredName
 
 const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   const {menuProps, organizationRef, newLeaderSearchQuery} = props
@@ -71,17 +67,18 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   }, [billingLeaders, organizationUsers])
 
   const query = newLeaderSearchQuery.toLowerCase()
-
   const filteredOrgUsers = useFilteredItems(query, nonLeaderOrgUsers, (orgUser) =>
     getValue(orgUser).toLowerCase()
   )
 
   return (
     <Menu ariaLabel='Select New Billing Leader' keepParentFocus {...menuProps}>
-      {/* <SearchMenuItem placeholder='Search GitLab' onChange={onQueryChange} value={query} /> */}
-      {/* {filteredProjects.length === 0 && ( */}
-      {/* <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel> */}
-      {/* )} */}
+      {filteredOrgUsers.length === 0 && (
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No team members found!
+        </EmptyDropdownMenuItemLabel>
+      )}
+
       {filteredOrgUsers.slice(0, 10).map((organizationUser) => {
         const {node} = organizationUser
         const {user} = node
@@ -90,6 +87,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
         // const onClick = () => {
         // handleSelectFullPath(fullPath)
         // }
+
         return (
           <MenuItem
             ref={ref}

@@ -17,7 +17,8 @@ import plural from '../../../../utils/plural'
 import NewBillingLeaderInput from './NewBillingLeaderInput'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH
+  maxWidth: ElementWidth.PANEL_WIDTH,
+  marginBottom: 80
 })
 
 const StyledRow = styled(Row)({
