@@ -15,6 +15,9 @@ graphql`
   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
     organization {
       ...CompleteOrganizationFrag @relay(mask: false)
+      billingLeaders {
+        id
+      }
     }
     notificationsAdded {
       type
@@ -35,6 +38,9 @@ graphql`
     organization {
       id
       isBillingLeader
+      billingLeaders {
+        id
+      }
     }
     updatedOrgMember {
       user {

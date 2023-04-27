@@ -21,11 +21,12 @@ const StyledPanel = styled(Panel)({
   marginBottom: 96
 })
 
-const StyledRow = styled(Row)({
+const StyledRow = styled(Row)<{isAddingBillingLeader?: boolean}>(({isAddingBillingLeader}) => ({
   padding: '12px 16px',
   display: 'flex',
-  alignItems: 'center'
-})
+  alignItems: 'center',
+  backgroundColor: isAddingBillingLeader ? PALETTE.SLATE_200 : 'inherit'
+}))
 
 const InfoText = styled('span')({
   fontSize: 16,
@@ -107,22 +108,23 @@ const BillingLeaders = (props: Props) => {
           organizationRef={organization}
         />
       ))}
-      {isViewerBillingLeader && !isAddingBillingLeader && (
-        <StyledRow>
-          <ButtonWrapper onClick={handleClick}>
-            <StyledButton>
-              <IconLabel iconLarge icon='add' />
-            </StyledButton>
-            <RowInfo>
-              <RowInfoHeader>
-                <BillingLeaderLabel>Add Billing Leader</BillingLeaderLabel>
-              </RowInfoHeader>
-            </RowInfo>
-          </ButtonWrapper>
+      {isViewerBillingLeader && (
+        <StyledRow isAddingBillingLeader={isAddingBillingLeader}>
+          {isAddingBillingLeader ? (
+            <NewBillingLeaderInput removeInput={removeInput} organizationRef={organization} />
+          ) : (
+            <ButtonWrapper onClick={handleClick}>
+              <StyledButton>
+                <IconLabel iconLarge icon='add' />
+              </StyledButton>
+              <RowInfo>
+                <RowInfoHeader>
+                  <BillingLeaderLabel>Add Billing Leader</BillingLeaderLabel>
+                </RowInfoHeader>
+              </RowInfo>
+            </ButtonWrapper>
+          )}
         </StyledRow>
-      )}
-      {isAddingBillingLeader && (
-        <NewBillingLeaderInput removeInput={removeInput} organizationRef={organization} />
       )}
     </StyledPanel>
   )

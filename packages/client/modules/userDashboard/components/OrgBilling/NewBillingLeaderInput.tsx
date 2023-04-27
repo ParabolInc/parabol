@@ -1,50 +1,23 @@
 import styled from '@emotion/styled'
-import {ExpandMore, Person, PersonPin, PersonPinCircle} from '@mui/icons-material'
+import {Person} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ChangeEvent, FormEvent, useEffect, useRef, useState} from 'react'
+import React, {ChangeEvent, FormEvent, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
-import PlainButton from '../../../../components/PlainButton/PlainButton'
 import StyledError from '../../../../components/StyledError'
 import Legitity from '../../../../validation/Legitity'
 import useForm from '../../../../hooks/useForm'
 import {PortalStatus} from '../../../../hooks/usePortal'
 import NewBillingLeaderMenu from './NewBillingLeaderMenu'
-
-const StyledButton = styled(PlainButton)({
-  alignItems: 'center',
-  backgroundColor: 'transparent',
-  display: 'flex',
-  height: '20px',
-  justifyContent: 'flex-start',
-  margin: 0,
-  opacity: 1,
-  width: 'fit-content',
-  ':hover, :focus': {
-    backgroundColor: 'transparent'
-  }
-})
-
-const StyledLink = styled('a')({
-  color: PALETTE.SKY_500,
-  display: 'block',
-  fontSize: 12,
-  lineHeight: '20px',
-  textDecoration: 'none',
-  '&:hover,:focus': {
-    textDecoration: 'underline'
-  }
-})
+import {ElementWidth} from '../../../../types/constEnums'
 
 const StyledIcon = styled(Person)({
   color: PALETTE.SKY_500,
-  width: 48,
-  height: 48
+  width: ElementWidth.BILLING_AVATAR,
+  height: ElementWidth.BILLING_AVATAR
 })
 
 const Form = styled('form')({
@@ -57,9 +30,9 @@ const Item = styled('div')({
   backgroundColor: PALETTE.SLATE_200,
   cursor: 'pointer',
   display: 'flex',
-  paddingLeft: 16,
-  paddingTop: 8,
-  paddingBottom: 8,
+  // paddingLeft: 16,
+  // paddingTop: 8,
+  // paddingBottom: 8,
   alignItems: 'center',
   width: '100%'
 })
@@ -112,7 +85,7 @@ const NewBillingLeaderInput = (props: Props) => {
     `,
     organizationRef
   )
-  const {fields, onChange, validateField, setDirtyField} = useForm({
+  const {fields, onChange, validateField} = useForm({
     newLeader: {
       getDefault: () => '',
       validate: validateIssue
@@ -133,9 +106,8 @@ const NewBillingLeaderInput = (props: Props) => {
 
   const handleCreateNewLeader = (e: FormEvent) => {
     e.preventDefault()
-    // if (portalStatus !== PortalStatus.Exited || !selectedFullPath) return
     const {newLeader: newLeaderRes} = validateField()
-    const {value: newLeaderTitle, error} = newLeaderRes
+    const {value: newLeaderTitle} = newLeaderRes
     if (!newLeaderTitle.length) {
       removeInput()
     }
@@ -149,7 +121,6 @@ const NewBillingLeaderInput = (props: Props) => {
     onChange(e)
   }
 
-  // if (!isEditing) return null
   return (
     <>
       <Item>
@@ -175,8 +146,6 @@ const NewBillingLeaderInput = (props: Props) => {
       </Item>
       {menuPortal(
         <NewBillingLeaderMenu
-          // gitlabProjects={gitlabProjects}
-          // handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
           organizationRef={organization}
           newLeaderSearchQuery={newLeaderSearchQuery}
