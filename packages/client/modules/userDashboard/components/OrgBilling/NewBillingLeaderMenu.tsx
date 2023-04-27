@@ -1,15 +1,18 @@
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useMemo} from 'react'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import MenuItemLabel from '../../../../components/MenuItemLabel'
-import MenuItemAvatar from '../../../../components/MenuItemAvatar'
 import {MenuProps} from '../../../../hooks/useMenu'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NewBillingLeaderMenu_organization$key} from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
+import {
+  NewBillingLeaderMenu_organization$data,
+  NewBillingLeaderMenu_organization$key
+} from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import styled from '@emotion/styled'
 import TypeAheadLabel from '../../../../components/TypeAheadLabel'
+import useFilteredItems from '../../../../hooks/useFilteredItems'
 
 const AvatarBlock = styled('div')({
   paddingRight: 32
@@ -19,6 +22,15 @@ interface Props {
   menuProps: MenuProps
   organizationRef: NewBillingLeaderMenu_organization$key
   newLeaderSearchQuery: string
+}
+
+const getValue = (
+  orgUser: NewBillingLeaderMenu_organization$data['organizationUsers']['edges'][0]
+) => {
+  const {node} = orgUser
+  const {user} = node
+  const {preferredName} = user
+  return preferredName
 }
 
 const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
@@ -45,17 +57,24 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
     `,
     organizationRef
   )
-  console.log('🚀 ~ organization:', organization)
   const {organizationUsers, billingLeaders} = organization
-  const nonLeaderOrgUsers = organizationUsers.edges.filter((organizationUser) => {
-    const {node} = organizationUser
-    const {user} = node
-    const {id: userId} = user
-    return !billingLeaders.some((billingLeader) => {
-      const {id: billingLeaderId} = billingLeader
-      return billingLeaderId === userId
+  const nonLeaderOrgUsers = useMemo(() => {
+    return organizationUsers.edges.filter((organizationUser) => {
+      const {node} = organizationUser
+      const {user} = node
+      const {id: userId} = user
+      return !billingLeaders.some((billingLeader) => {
+        const {id: billingLeaderId} = billingLeader
+        return billingLeaderId === userId
+      })
     })
-  })
+  }, [billingLeaders, organizationUsers])
+
+  const query = newLeaderSearchQuery.toLowerCase()
+
+  const filteredOrgUsers = useFilteredItems(query, nonLeaderOrgUsers, (orgUser) =>
+    getValue(orgUser).toLowerCase()
+  )
 
   return (
     <Menu ariaLabel='Select New Billing Leader' keepParentFocus {...menuProps}>
@@ -63,7 +82,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
       {/* {filteredProjects.length === 0 && ( */}
       {/* <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel> */}
       {/* )} */}
-      {nonLeaderOrgUsers.slice(0, 10).map((organizationUser) => {
+      {filteredOrgUsers.slice(0, 10).map((organizationUser) => {
         const {node} = organizationUser
         const {user} = node
         const {id: userId, preferredName, picture} = user
