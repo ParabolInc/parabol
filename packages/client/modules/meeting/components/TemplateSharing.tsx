@@ -5,7 +5,6 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import useTooltip from '../../../hooks/useTooltip'
 import {PALETTE} from '../../../styles/paletteV3'
 import lazyPreload from '../../../utils/lazyPreload'
 import {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
@@ -53,17 +52,17 @@ const DropdownIcon = styled('div')({
   width: 24
 })
 
-const DropdownBlock = styled('div')<{disabled: boolean; readOnly?: boolean}>(
-  ({disabled, readOnly}) => ({
+const DropdownBlock = styled('div')<{readOnly?: boolean}>(
+  ({readOnly}) => ({
     color: PALETTE.SLATE_700,
-    cursor: disabled ? 'not-allowed' : readOnly ? undefined : 'pointer',
+    cursor: readOnly ? undefined : 'pointer',
     alignItems: 'center',
     display: 'flex',
     fontSize: 16,
     lineHeight: '24px',
     userSelect: 'none',
     ':hover': {
-      color: disabled ? undefined : PALETTE.SLATE_900
+      color: PALETTE.SLATE_900
     }
   })
 )
@@ -99,7 +98,6 @@ export const UnstyledTemplateSharing = (props: Props) => {
         id
         scope
         team {
-          isLead
           name
           organization {
             name
@@ -110,7 +108,7 @@ export const UnstyledTemplateSharing = (props: Props) => {
     templateRef
   )
   const {scope, team} = template
-  const {name: teamName, organization, isLead} = team
+  const {name: teamName, organization} = team
   const {name: orgName} = organization
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_LEFT,
@@ -123,14 +121,6 @@ export const UnstyledTemplateSharing = (props: Props) => {
       }
     }
   )
-  const {
-    openTooltip,
-    tooltipPortal,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER, {
-    disabled: isLead
-  })
   if (!isOwner) return null
   const label =
     scope === 'TEAM'
@@ -142,11 +132,8 @@ export const UnstyledTemplateSharing = (props: Props) => {
     <>
       <DropdownBlock
         onMouseEnter={SelectSharingScopeDropdown.preload}
-        onClick={isLead && !readOnly ? togglePortal : undefined}
-        ref={isLead ? originRef : tooltipRef}
-        disabled={!isLead}
-        onMouseOver={openTooltip}
-        onMouseLeave={closeTooltip}
+        onClick={togglePortal}
+        ref={originRef}
         readOnly={readOnly}
       >
         <DropdownDecoratorIcon>
@@ -157,7 +144,6 @@ export const UnstyledTemplateSharing = (props: Props) => {
         <DropdownIcon>{!readOnly && <ExpandMoreIcon />}</DropdownIcon>
       </DropdownBlock>
       {menuPortal(<SelectSharingScopeDropdown menuProps={menuProps} template={template} />)}
-      {tooltipPortal(<div>Must be Team Lead to change</div>)}
     </>
   )
 }
