@@ -7,14 +7,22 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {NewBillingLeaderMenu_organization$key} from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
+import Avatar from '../../../../components/Avatar/Avatar'
+import styled from '@emotion/styled'
+import TypeAheadLabel from '../../../../components/TypeAheadLabel'
+
+const AvatarBlock = styled('div')({
+  paddingRight: 32
+})
 
 interface Props {
   menuProps: MenuProps
   organizationRef: NewBillingLeaderMenu_organization$key
+  newLeaderSearchQuery: string
 }
 
 const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
-  const {menuProps, organizationRef} = props
+  const {menuProps, organizationRef, newLeaderSearchQuery} = props
   const organization = useFragment(
     graphql`
       fragment NewBillingLeaderMenu_organization on Organization {
@@ -25,6 +33,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
               user {
                 id
                 preferredName
+                picture
               }
             }
           }
@@ -44,7 +53,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
       {organizationUsers.edges.slice(0, 10).map((organizationUser) => {
         const {node} = organizationUser
         const {user} = node
-        const {id: userId, preferredName} = user
+        const {id: userId, preferredName, picture} = user
         // const {id: projectId, fullPath} = project
         // const onClick = () => {
         // handleSelectFullPath(fullPath)
@@ -55,8 +64,10 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
             key={userId}
             label={
               <MenuItemLabel>
-                <MenuItemAvatar>{/* <Svg /> */}</MenuItemAvatar>
-                {/* <TypeAheadLabel query={query} label={label} /> */}
+                <AvatarBlock>
+                  <Avatar picture={picture} size={32} />
+                </AvatarBlock>
+                <TypeAheadLabel query={newLeaderSearchQuery} label={preferredName} />
                 {preferredName}
               </MenuItemLabel>
             }

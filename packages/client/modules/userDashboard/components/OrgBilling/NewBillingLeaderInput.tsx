@@ -135,12 +135,13 @@ const NewBillingLeaderInput = (props: Props) => {
       validate: validateIssue
     }
   })
+  const {dirty, error, value: newLeaderSearchQuery} = fields.newLeader
+  console.log('🚀 ~ fields.newLeader:', newLeaderSearchQuery)
+
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
     MenuPosition.UPPER_LEFT,
     {isDropdown: true}
   )
-  // const ref = useRef<HTMLInputElement>(null)
-  const {dirty, error} = fields.newLeader
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
       originRef.current?.focus()
@@ -174,8 +175,8 @@ const NewBillingLeaderInput = (props: Props) => {
               onFocus={handleFocus}
               onChange={onChange}
               maxLength={255}
-              name='newIssue'
-              placeholder='New issue title'
+              name='newLeader'
+              placeholder='Search for a new billing leader'
               // ref={ref}
               ref={originRef}
               type='text'
@@ -190,6 +191,7 @@ const NewBillingLeaderInput = (props: Props) => {
           // handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
           organizationRef={organization}
+          newLeaderSearchQuery={newLeaderSearchQuery}
         />
       )}
     </>
