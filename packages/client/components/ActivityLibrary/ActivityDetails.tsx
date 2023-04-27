@@ -9,7 +9,7 @@ import IconLabel from '../IconLabel'
 import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
 import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
 import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
-import {ActivityCard, CategoryID, MeetingThemes} from './ActivityCard'
+import {ActivityCard} from './ActivityCard'
 import {activityIllustrations} from './ActivityIllustrations'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import useTemplateDescription from '../../utils/useTemplateDescription'
@@ -24,12 +24,12 @@ import JiraSVG from '../JiraSVG'
 import GitLabSVG from '../GitLabSVG'
 import AzureDevOpsSVG from '../AzureDevOpsSVG'
 import JiraServerSVG from '../JiraServerSVG'
-import {CATEGORY_ID_TO_NAME} from './ActivityLibrary'
 import ActivityDetailsSidebar from './ActivityDetailsSidebar'
 import CloneTemplate from '../../modules/meeting/components/CloneTemplate'
 import useModal from '../../hooks/useModal'
 import TeamPickerModal from './TeamPickerModal'
 import FlatButton from '../FlatButton'
+import {CategoryID, CATEGORY_THEMES, CATEGORY_ID_TO_NAME} from './Categories'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -170,7 +170,7 @@ const ActivityDetails = (props: Props) => {
           <div className='flex w-full flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14'>
             <ActivityCard
               className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
-              category={category}
+              theme={CATEGORY_THEMES[category]}
               imageSrc={activityIllustration}
               badge={null}
             />
@@ -187,7 +187,7 @@ const ActivityDetails = (props: Props) => {
                   />
                 </div>
                 <div className='mb-4 flex gap-2'>
-                  <DetailsBadge className={clsx(MeetingThemes[category].primary, 'text-white')}>
+                  <DetailsBadge className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}>
                     {CATEGORY_ID_TO_NAME[category]}
                   </DetailsBadge>
                   {!selectedTemplate.isFree &&
