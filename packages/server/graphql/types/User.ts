@@ -585,8 +585,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           ? user!.tms
           : user!.tms.filter((teamId) => authToken.tms.includes(teamId))
 
-        const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
-        const allVisibleTeams = [...teams, ...organizationTmsWithPublicFlag]
+        const teamsUserBelongsTo = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+        const allVisibleTeams = [...teamsUserBelongsTo, ...organizationTmsWithPublicFlag]
         allVisibleTeams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return allVisibleTeams
       }
