@@ -44,7 +44,6 @@ const updateSubscriptionQuantity = async (
     ])
     if (
       teamSubscription &&
-      teamSubscription.plan?.tiers_mode !== 'volume' &&
       teamSubscription.quantity !== undefined &&
       teamSubscription.quantity !== orgUserCount
     ) {
