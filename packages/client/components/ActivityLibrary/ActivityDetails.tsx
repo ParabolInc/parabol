@@ -158,7 +158,7 @@ const ActivityDetails = (props: Props) => {
 
   return (
     <>
-      <div className='flex h-full flex-col bg-white'>
+      <div className='relative flex h-full flex-col bg-white'>
         <div className='flex grow'>
           <div className='mt-4 grow'>
             <div className='mb-14 ml-4 flex h-min w-max items-center'>
@@ -198,7 +198,9 @@ const ActivityDetails = (props: Props) => {
                       />
                     </div>
                     <div className='mb-4 flex gap-2'>
-                      <DetailsBadge className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}>
+                      <DetailsBadge
+                        className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}
+                      >
                         {CATEGORY_ID_TO_NAME[category]}
                       </DetailsBadge>
                       {!selectedTemplate.isFree &&
