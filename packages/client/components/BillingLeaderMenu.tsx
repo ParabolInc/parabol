@@ -35,13 +35,10 @@ const BillingLeaderMenu = (props: Props) => {
     `,
     billingLeaderRef
   )
-  // const {id: orgId, } = organization
   const {viewerId} = atmosphere
   const {id: userId, organizationUser} = billingLeader
-  console.log('🚀 ~ billingLeader:', billingLeader)
   const {newUserUntil, tier, orgId} = organizationUser
   const isViewer = viewerId === userId
-  const isViewerLastBillingLeader = isViewer && billingLeaderCount === 1
 
   const removeBillingLeader = () => {
     if (submitting) return
@@ -62,7 +59,6 @@ const BillingLeaderMenu = (props: Props) => {
                 ? 'Refund and Remove'
                 : 'Remove from Organization'
             }
-            // onClick={toggleRemove}
           />
         )}
       </Menu>

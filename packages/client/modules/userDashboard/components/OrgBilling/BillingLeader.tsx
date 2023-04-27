@@ -136,11 +136,6 @@ const BillingLeader = (props: Props) => {
                 menuProps={menuProps}
                 billingLeaderRef={billingLeader}
                 billingLeaderCount={billingLeaderCount}
-                // isViewerLastBillingLeader={true}
-                // organizationUser={billingLeader}
-                // organization={organization}
-                // toggleLeave={toggleLeave}
-                // toggleRemove={toggleRemove}
               />
             )}
           </MenuToggleBlock>
