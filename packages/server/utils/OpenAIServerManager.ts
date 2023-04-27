@@ -41,9 +41,63 @@ class OpenAIServerManager {
     }
   }
 
-  async groupReflections(text: string | string[]) {
+  // async groupReflections(reflections: {id: string; content: string}[]) {
+  async groupReflections(text: string[]) {
     if (!this.openAIApi) return null
     try {
+      // const response = await this.openAIApi.createChatCompletion(
+      //   {
+      //     model: 'gpt-3.5-turbo',
+      //     messages: [
+      //       {
+      //         role: 'user',
+      //         content: `You are given a list of objects, each containing an "id" and a "content" key, representing reflections from a meeting. Your task is to group these reflections into similar topics based on the "content" fields and return an array of JavaScript objects, where each object represents a topic and contains an array of reflection ids that belong to that topic.
+
+      //         Example Input:
+      //         [
+      //           { "id": 1, "content": "The retreat went well" },
+      //           { "id": 2, "content": "The project might not be ready in time" },
+      //           { "id": 3, "content": "The deadline is really tight" },
+      //           { "id": 4, "content": "I liked that the length of the retreat" },
+      //           { "id": 5, "content": "I enjoyed the hotel" },
+      //           { "id": 6, "content": "Feeling overworked" }
+      //         ]
+
+      //         Example Output:
+      //         [
+      //           {
+      //             "topic": "The Retreat",
+      //             "reflectionIds": [1, 4, 5]
+      //           },
+      //           {
+      //             "topic": "Deadlines",
+      //             "reflectionIds": [2, 3, 6]
+      //           }
+      //         ]
+
+      //         In the output, "The Retreat" and "Deadlines" are example topic names that you can create to group the reflections.
+
+      //         Here is the list of reflections: """
+      //         ${reflections}
+      //         """
+      //         `
+      //       }
+      //     ],
+      //     temperature: 0.7,
+      //     top_p: 1,
+      //     frequency_penalty: 0,
+      //     presence_penalty: 0
+      //   }
+      //   // {
+      //   //   timeout: 60000
+      //   // }
+      // )
+
+      // const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      // const nullableAnswer = /^No\.*$/i.test(answer) ? null : answer
+      // if (!nullableAnswer) return null
+      // return nullableAnswer
+
       const response = await this.openAIApi.createChatCompletion(
         {
           model: 'gpt-3.5-turbo',
@@ -51,6 +105,7 @@ class OpenAIServerManager {
             {
               role: 'user',
               content: `You are given a list of reflections from a meeting, separated by commas. Your task is to group these reflections into similar topics and return an array of JavaScript objects, where each object represents a topic and contains an array of reflections that belong to that topic.
+              Don't change the input text at all, even if it's spelt incorrectly.
 
       Example Input:
       ['The retreat went well', 'The project might not be ready in time', 'The deadline is really tight', 'I liked that the length of the retreat', 'I enjoyed the hotel', 'Feeling overworked']

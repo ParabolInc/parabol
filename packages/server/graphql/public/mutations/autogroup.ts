@@ -23,11 +23,22 @@ const autogroup: MutationResolvers['autogroup'] = async (
     .orderBy('createdAt')
     .run()
 
-  const reflectionText = reflections.map(({plaintextContent}) => plaintextContent)
-  console.log('🚀 ~ reflectionText:', reflectionText)
+  // const groupReflectionsInput = reflections.map((reflection) => {
+  //   return {
+  //     id: reflection.id,
+  //     content: reflection.plaintextContent
+  //   }
+  // })
+  const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
+  console.log('🚀 ~ groupReflectionsInput:', groupReflectionsInput)
   const manager = new OpenAIServerManager()
 
-  const groupedReflections = await manager.groupReflections(reflectionText)
+  const groupedReflections = await manager.groupReflections(groupReflectionsInput)
+  console.log('🚀 ~ groupedReflections:', groupedReflections)
+  if (!groupedReflections) {
+    throw new Error('Error grouping reflections')
+  }
+  // const parsedGroupedReflections = JSON.parse(groupedReflections)
 
   for (const group of groupedReflections) {
     const reflectionsTextInGroup = Object.values(group).flat()
