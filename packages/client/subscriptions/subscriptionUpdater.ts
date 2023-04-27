@@ -13,6 +13,7 @@ const subscriptionUpdater =
     if (!payload) return
     const fieldName = payload.getValue('fieldName')
     const field = payload.getLinkedRecord(fieldName)
+    if (!field) return
     const handler = updateHandlers[fieldName]
     handler?.(field, {atmosphere, store})
   }
