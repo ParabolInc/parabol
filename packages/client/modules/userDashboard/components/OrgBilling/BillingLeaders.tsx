@@ -66,6 +66,7 @@ const BillingLeaders = (props: Props) => {
     graphql`
       fragment BillingLeaders_organization on Organization {
         ...BillingLeader_organization
+        ...NewBillingLeaderInput_organization
         isViewerBillingLeader: isBillingLeader
         billingLeaders {
           id
@@ -119,7 +120,9 @@ const BillingLeaders = (props: Props) => {
           </ButtonWrapper>
         </StyledRow>
       )}
-      {isAddingBillingLeader && <NewBillingLeaderInput removeInput={removeInput} />}
+      {isAddingBillingLeader && (
+        <NewBillingLeaderInput removeInput={removeInput} organizationRef={organization} />
+      )}
     </StyledPanel>
   )
 }

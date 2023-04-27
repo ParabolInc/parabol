@@ -9,7 +9,7 @@ import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import getNonNullEdges from '~/utils/getNonNullEdges'
-import {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInput_viewer.graphql'
+import {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
 // import useForm from '../hooks/useForm'
 // import {PortalStatus} from '../hooks/usePortal'
 // import CreateTaskMutation from '../mutations/CreateTaskMutation'
@@ -19,13 +19,13 @@ import {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInpu
 // // import Legitity from '../validation/Legitity'
 // import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 // // import Checkbox from './Checkbox'
-import NewGitLabIssueMenu from './NewGitLabIssueMenu'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import StyledError from '../../../../components/StyledError'
 import Legitity from '../../../../validation/Legitity'
 import useForm from '../../../../hooks/useForm'
 import {PortalStatus} from '../../../../hooks/usePortal'
 import Checkbox from '../../../../components/Checkbox'
+import NewBillingLeaderMenu from './NewBillingLeaderMenu'
 
 const StyledButton = styled(PlainButton)({
   alignItems: 'center',
@@ -109,11 +109,7 @@ const Error = styled(StyledError)({
 })
 
 interface Props {
-  isEditing: boolean
-  meetingId: string
-  setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewGitLabIssueInput_viewer$key
-
+  organizationRef: NewBillingLeaderInput_organization$key
   removeInput: () => void
 }
 
@@ -122,55 +118,17 @@ const validateIssue = (issue: string) => {
 }
 
 const NewBillingLeaderInput = (props: Props) => {
-  const {isEditing, meetingId, setIsEditing, viewerRef, removeInput} = props
-  // const viewer = useFragment(
-  //   graphql`
-  //     fragment NewGitLabIssueInput_viewer on User {
-  //       id
-  //       team(teamId: $teamId) {
-  //         id
-  //       }
-  //       teamMember(teamId: $teamId) {
-  //         integrations {
-  //           gitlab {
-  //             api {
-  //               errors {
-  //                 message
-  //                 locations {
-  //                   line
-  //                   column
-  //                 }
-  //                 path
-  //               }
-  //               # use alias to tell relay that this query shouldn't be cached with GitLabScopingSearchResults query
-  //               newIssueQuery: query {
-  //                 projects(membership: true, first: 100, sort: "latest_activity_desc") {
-  //                   edges {
-  //                     node {
-  //                       ... on _xGitLabProject {
-  //                         __typename
-  //                         id
-  //                         fullPath
-  //                       }
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   `,
-  //   viewerRef
-  // )
-  // const {id: userId, team, teamMember} = viewer
-  // const {id: teamId} = team!
-  // const nullableEdges = teamMember?.integrations?.gitlab?.api?.newIssueQuery?.projects?.edges ?? []
-  // const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)
-  const atmosphere = useAtmosphere()
-  // const {onCompleted, onError} = useMutationProps()
-  // const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
+  const {removeInput, organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment NewBillingLeaderInput_organization on Organization {
+        ...NewBillingLeaderMenu_organization
+      }
+    `,
+    organizationRef
+  )
+  console.log('🚀 ~ organization....:', organization)
+
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newLeader: {
       getDefault: () => '',
@@ -181,13 +139,17 @@ const NewBillingLeaderInput = (props: Props) => {
     MenuPosition.UPPER_LEFT,
     {isDropdown: true}
   )
-  const ref = useRef<HTMLInputElement>(null)
+  // const ref = useRef<HTMLInputElement>(null)
   const {dirty, error} = fields.newLeader
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
-      ref.current?.focus()
+      originRef.current?.focus()
     }
   }, [portalStatus])
+
+  const handleFocus = () => {
+    togglePortal()
+  }
 
   const handleCreateNewLeader = (e: FormEvent) => {
     e.preventDefault()
@@ -197,49 +159,6 @@ const NewBillingLeaderInput = (props: Props) => {
     if (!newLeaderTitle.length) {
       removeInput()
     }
-
-    // if (error) {
-    //   setDirtyField()
-    //   return
-    // }
-    // setIsEditing(false)
-    // fields.newIssue.resetValue()
-    // if (!newIssueTitle.length) {
-    //   fields.newIssue.dirty = false
-    //   return
-    // }
-    // const newTask = {
-    //   teamId,
-    //   userId,
-    //   meetingId,
-    //   content: convertToTaskContent(`${newIssueTitle} #archived`),
-    //   plaintextContent: newIssueTitle,
-    //   status: 'active' as const,
-    //   integration: {
-    //     service: 'gitlab' as const,
-    //     serviceProjectHash: selectedFullPath
-    //   }
-    // }
-    // const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
-    //   const integrationHash = res.createTask?.task?.integrationHash ?? null
-    //   if (!integrationHash) return
-    //   const pokerScopeVariables = {
-    //     meetingId,
-    //     updates: [
-    //       {
-    //         service: 'gitlab',
-    //         serviceTaskId: integrationHash,
-    //         action: 'ADD'
-    //       } as const
-    //     ]
-    //   }
-    //   UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
-    //     onError,
-    //     onCompleted,
-    //     contents: [newIssueTitle]
-    //   })
-    // }
-    // CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
   // if (!isEditing) return null
@@ -252,24 +171,27 @@ const NewBillingLeaderInput = (props: Props) => {
             <NewLeaderInput
               autoFocus
               onBlur={handleCreateNewLeader}
+              onFocus={handleFocus}
               onChange={onChange}
               maxLength={255}
               name='newIssue'
               placeholder='New issue title'
-              ref={ref}
+              // ref={ref}
+              ref={originRef}
               type='text'
             />
             {dirty && error && <Error>{error}</Error>}
           </Form>
         </Wrapper>
       </Item>
-      {/* {menuPortal(
-        <NewGitLabIssueMenu
-          gitlabProjects={gitlabProjects}
-          handleSelectFullPath={setSelectedFullPath}
+      {menuPortal(
+        <NewBillingLeaderMenu
+          // gitlabProjects={gitlabProjects}
+          // handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
+          organizationRef={organization}
         />
-      )} */}
+      )}
     </>
   )
 }
