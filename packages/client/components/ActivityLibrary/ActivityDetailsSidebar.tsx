@@ -96,8 +96,8 @@ const ActivityDetailsSidebar = (props: Props) => {
   return (
     <div
       className={clsx(
-        'flex w-96 translate-x-0 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14 transition-all',
-        !isOpen && 'w-0 overflow-hidden opacity-0'
+        'flex translate-x-0 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14 transition-all',
+        isOpen ? ' w-96' : 'w-0 overflow-hidden opacity-0'
       )}
     >
       <div className='mb-6 text-xl font-semibold'>Settings</div>
