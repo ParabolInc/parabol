@@ -33,7 +33,7 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
       },
       async resolve({id: templateId}, {dimensionId}, {authToken, dataLoader}: GQLContext) {
         const viewerId = getUserId(authToken)
-        const template = await dataLoader.get('meetingTemplates').load(templateId)
+        const template = await dataLoader.get('meetingTemplates').loadNonNull(templateId)
         const {teamId} = template
         if (!isTeamMember(authToken, teamId)) {
           return standardError(new Error('Team not found'), {userId: viewerId})

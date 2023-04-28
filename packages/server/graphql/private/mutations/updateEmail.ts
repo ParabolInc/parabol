@@ -23,7 +23,6 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
     updatedAt: new Date()
   }
   await Promise.all([
-    r.table('User').get(userId).update(updates).run(),
     r
       .table('TeamMember')
       .getAll(userId, {index: 'userId'})
