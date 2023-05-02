@@ -59,7 +59,7 @@ export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
     this.name = name
     this.teamId = teamId
     this.updatedAt = now
-    this.scope = scope || 'TEAM'
+    this.scope = scope || 'ORGANIZATION'
     this.orgId = orgId
     this.parentTemplateId = parentTemplateId || null
     this.lastUsedAt = lastUsedAt || null

@@ -17,9 +17,12 @@ const handleAddReflectTemplate = (
   addNodeToArray(newNode, meetingSettings, 'teamTemplates', 'name')
 
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  const allTemplatesConn =
+  const allTemplatesDetailsConn =
     viewer && ConnectionHandler.getConnection(viewer, 'ActivityDetails_availableTemplates')
-  putTemplateInConnection(newNode, allTemplatesConn, store)
+  putTemplateInConnection(newNode, allTemplatesDetailsConn, store)
+  const allTemplatesLibraryConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')
+  putTemplateInConnection(newNode, allTemplatesLibraryConn, store)
 }
 
 export default handleAddReflectTemplate

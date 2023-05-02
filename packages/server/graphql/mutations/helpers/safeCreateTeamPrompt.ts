@@ -5,6 +5,8 @@ import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import createNewMeetingPhases from './createNewMeetingPhases'
 
+export const DEFAULT_PROMPT = 'What are you working on today? Stuck on anything?'
+
 const safeCreateTeamPrompt = async (
   name: string,
   teamId: string,
@@ -37,7 +39,7 @@ const safeCreateTeamPrompt = async (
     meetingCount,
     phases,
     facilitatorUserId: facilitatorId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?', // :TODO: (jmtaber129): Get this from meeting settings.
+    meetingPrompt: DEFAULT_PROMPT, // :TODO: (jmtaber129): Get this from meeting settings.
     ...meetingOverrideProps
   })
 }

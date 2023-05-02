@@ -14,9 +14,14 @@ export default abstract class FileStoreManager {
     return `Organization/${orgId}/picture/${generateUID()}.${ext}`
   }
 
+  static getTemplatePath(orgId: string, ext: string) {
+    return `Organization/${orgId}/template/${generateUID()}.${ext}`
+  }
+
   protected abstract prependPath(partialPath: string): string
   protected abstract _putFile(fullPath: string, buffer: Buffer): Promise<void>
   protected abstract getPublicFileLocation(fullPath: string): string
+  abstract checkExists(fileName: string): Promise<boolean>
 
   async putFile(options: PutFileOptions): Promise<string> {
     const {partialPath, buffer} = options

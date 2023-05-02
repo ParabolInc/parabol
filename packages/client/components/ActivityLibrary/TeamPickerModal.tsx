@@ -15,15 +15,19 @@ import {Threshold} from '../../types/constEnums'
 import {useFragment} from 'react-relay'
 import clsx from 'clsx'
 
+const ACTION_BUTTON_CLASSES =
+  'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
+
 interface Props {
   teamsRef: TeamPickerModal_teams$key
   templatesRef: TeamPickerModal_templates$key
   closePortal: () => void
   category: string
+  parentTemplateId: string
 }
 
 const TeamPickerModal = (props: Props) => {
-  const {teamsRef, templatesRef, closePortal, category} = props
+  const {teamsRef, templatesRef, closePortal, category, parentTemplateId} = props
   const teams = useFragment(
     graphql`
       fragment TeamPickerModal_teams on Team @relay(plural: true) {
@@ -69,20 +73,15 @@ const TeamPickerModal = (props: Props) => {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
-    if (teamTemplates.find((template) => template.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
-      return
-    }
-
-    closePortal()
 
     submitMutation()
     AddReflectTemplateMutation(
       atmosphere,
-      {teamId: selectedTeam.id},
+      {teamId: selectedTeam.id, parentTemplateId},
       {
         onError,
         onCompleted: (res: AddReflectTemplateMutation$data) => {
+          closePortal()
           const templateId = res.addReflectTemplate?.reflectTemplate?.id
           if (templateId) {
             history.push(`/activity-library/details/${templateId}`, {
@@ -99,7 +98,7 @@ const TeamPickerModal = (props: Props) => {
     <div className='w-[440px] bg-white p-6'>
       <div className='flex flex-col gap-4'>
         <div>
-          <b>Select the team</b> to manage this new activity template:
+          <b>Select the team</b> to manage this cloned template
         </div>
         <NewMeetingTeamPicker
           parentId='templateTeamPickerModal'
@@ -112,14 +111,27 @@ const TeamPickerModal = (props: Props) => {
           teamsRef={teams}
         />
         {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
-        <button
-          className={clsx(
-            'w-max cursor-pointer self-end rounded-full bg-sky-500 px-4 py-2 text-center font-sans text-base font-medium text-white hover:bg-sky-600'
-          )}
-          onClick={handleSelectTeam}
-        >
-          Select Team
-        </button>
+        <div className='flex gap-2.5 self-end'>
+          <button
+            className={clsx(
+              ACTION_BUTTON_CLASSES,
+              'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-200'
+            )}
+            onClick={closePortal}
+          >
+            Cancel
+          </button>
+          <button
+            className={clsx(
+              ACTION_BUTTON_CLASSES,
+              'bg-sky-500 px-4 py-2 text-white hover:bg-sky-600',
+              submitting && 'cursor-wait'
+            )}
+            onClick={handleSelectTeam}
+          >
+            Clone Template
+          </button>
+        </div>
       </div>
     </div>
   )

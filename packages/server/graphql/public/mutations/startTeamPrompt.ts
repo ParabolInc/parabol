@@ -43,7 +43,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
 
   //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
   const meetingName = createTeamPromptTitle(
-    recurrenceSettings?.name ?? 'Standup',
+    recurrenceSettings?.name || 'Standup',
     new Date(),
     'UTC'
   )
