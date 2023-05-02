@@ -63,7 +63,6 @@ const RetroGroupPhase = (props: Props) => {
   const {id: meetingId, endedAt, showSidebar, organization} = meeting
   const {featureFlags} = organization
   const {suggestGroups} = featureFlags
-  console.log('🚀 ~ organization:', organization)
 
   const handleAutoGroupClick = () => {
     AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
@@ -82,11 +81,11 @@ const RetroGroupPhase = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} canUndo={true} />
-          {suggestGroups && (
-            <ButtonWrapper>
-              <PrimaryButton onClick={handleAutoGroupClick}>{'Suggest Groups ✨'}</PrimaryButton>
-            </ButtonWrapper>
-          )}
+          {/* {suggestGroups && ( */}
+          <ButtonWrapper>
+            <PrimaryButton onClick={handleAutoGroupClick}>{'Suggest Groups ✨'}</PrimaryButton>
+          </ButtonWrapper>
+          {/* )} */}
           <MeetingPhaseWrapper>
             <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
