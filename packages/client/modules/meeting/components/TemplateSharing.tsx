@@ -52,20 +52,18 @@ const DropdownIcon = styled('div')({
   width: 24
 })
 
-const DropdownBlock = styled('div')<{readOnly?: boolean}>(
-  ({readOnly}) => ({
-    color: PALETTE.SLATE_700,
-    cursor: readOnly ? undefined : 'pointer',
-    alignItems: 'center',
-    display: 'flex',
-    fontSize: 16,
-    lineHeight: '24px',
-    userSelect: 'none',
-    ':hover': {
-      color: PALETTE.SLATE_900
-    }
-  })
-)
+const DropdownBlock = styled('div')<{readOnly?: boolean}>(({readOnly}) => ({
+  color: PALETTE.SLATE_700,
+  cursor: readOnly ? undefined : 'pointer',
+  alignItems: 'center',
+  display: 'flex',
+  fontSize: 16,
+  lineHeight: '24px',
+  userSelect: 'none',
+  ':hover': {
+    color: PALETTE.SLATE_900
+  }
+}))
 
 interface Props {
   isOwner: boolean
