@@ -1,10 +1,15 @@
 import getRethink from '../../../database/rethinkDriver'
+import Reflection from '../../../database/types/Reflection'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import {MutationResolvers} from '../resolverTypes'
+
+type GroupedReflection = {
+  [groupTitle: string]: string[]
+}
 
 const autogroup: MutationResolvers['autogroup'] = async (
   _source,
@@ -41,35 +46,60 @@ const autogroup: MutationResolvers['autogroup'] = async (
     .orderBy('createdAt')
     .run()
 
-  const parsedGroupedReflections = JSON.parse(groupedReflectionsJSON)
-  for (const group of parsedGroupedReflections) {
-    const reflectionsTextInGroup = Object.values(group).flat() as string[]
-    const smartTitle = Object.keys(group).join(', ')
-    const [firstReflectionInGroup] = reflections.filter(
-      ({plaintextContent}) => reflectionsTextInGroup[0] === plaintextContent
+  const parsedGroupedReflections: GroupedReflection[] = JSON.parse(groupedReflectionsJSON)
+
+  const processReflectionInGroup = async (
+    firstReflectionInGroup: Reflection,
+    reflectionTextInGroup: string,
+    group: GroupedReflection
+  ) => {
+    const originalReflection = reflections.find(
+      ({plaintextContent}) => plaintextContent === reflectionTextInGroup
     )
-    if (!firstReflectionInGroup) continue
-    for (const reflectionTextInGroup of reflectionsTextInGroup.slice(1)) {
-      const originalReflection = reflections.find(
-        ({plaintextContent}) => plaintextContent === reflectionTextInGroup
+
+    if (!originalReflection) {
+      const error = new Error('Unable to match OpenAI reflection with original reflection')
+      sendToSentry(error, {tags: {reflectionTextInGroup}})
+      return
+    }
+
+    try {
+      const smartTitle = Object.keys(group).join(', ')
+      return await addReflectionToGroup(
+        originalReflection.id,
+        firstReflectionInGroup.reflectionGroupId,
+        context,
+        smartTitle
       )
-      if (!originalReflection) {
-        const error = new Error('Unable to match OpenAI reflection with original reflection')
-        sendToSentry(error, {tags: {reflectionTextInGroup}})
-        continue
-      }
-      try {
-        await addReflectionToGroup(
-          originalReflection.id,
-          firstReflectionInGroup.reflectionGroupId,
-          context,
-          smartTitle
-        )
-      } catch (error) {
-        console.error('Error adding reflection to group:', error)
-      }
+    } catch (error) {
+      console.error('Error adding reflection to group:', error)
     }
   }
+
+  const processGroup = async (group: GroupedReflection) => {
+    const reflectionsTextInGroup = Object.values(group).flat() as string[]
+    const firstReflectionInGroup = reflections.find(
+      ({plaintextContent}) => reflectionsTextInGroup[0].trim() === plaintextContent.trim()
+    )
+
+    if (!firstReflectionInGroup) {
+      const error = new Error('Unable to match OpenAI reflection with original reflection')
+      const problematicReflection = reflectionsTextInGroup[0]
+      sendToSentry(error, {tags: {problematicReflection}})
+      return
+    }
+
+    const reflectionPromises = reflectionsTextInGroup
+      .slice(1)
+      .map((reflectionTextInGroup) =>
+        processReflectionInGroup(firstReflectionInGroup, reflectionTextInGroup, group)
+      )
+    await Promise.all(reflectionPromises)
+  }
+
+  const groupPromises = parsedGroupedReflections.map(processGroup)
+  await Promise.all(groupPromises)
+
   const data = {meetingId}
   return data
 }
