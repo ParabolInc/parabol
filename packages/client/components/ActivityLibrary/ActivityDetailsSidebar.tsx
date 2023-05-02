@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
+import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
@@ -86,11 +87,19 @@ const ActivityDetailsSidebar = (props: Props) => {
       {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
       {
         onCompleted: () => {
-          StartRetrospectiveMutation(
-            atmosphere,
-            {teamId: selectedTeam.id},
-            {history, onError, onCompleted}
-          )
+          if (selectedTemplate.type === 'retrospective') {
+            StartRetrospectiveMutation(
+              atmosphere,
+              {teamId: selectedTeam.id},
+              {history, onError, onCompleted}
+            )
+          } else if (selectedTemplate.type === 'poker') {
+            StartSprintPokerMutation(
+              atmosphere,
+              {teamId: selectedTeam.id},
+              {history, onError, onCompleted}
+            )
+          }
         },
         onError
       }
@@ -126,7 +135,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           </>
         )}
         {selectedTemplate.type === 'poker' && (
-          <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+          <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
         )}
         <div className='flex grow flex-col justify-end gap-2'>
           <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
