@@ -6,7 +6,8 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import ReflectionGroupType from '../../database/types/ReflectionGroup'
@@ -51,6 +52,11 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: ({commentCount}) => commentCount || 0
+    },
+    groupedReflectionsJSON: {
+      type: GraphQLString,
+      description:
+        'The JSON stringified version of the grouped reflections. Null if not grouped, they dont have access to OpenAI, or OpenAI was unable to create the groups'
     },
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),

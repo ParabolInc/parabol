@@ -14,6 +14,7 @@ import addSummariesToThreads from './addSummariesToThreads'
 import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
+import generateGroups from './generateGroups'
 
 /*
  * handle side effects when a stage is completed
@@ -66,6 +67,7 @@ const handleCompletedRetrospectiveStage = async (
       )
 
       data.reflectionGroups = sortedReflectionGroups
+      generateGroups(reflections)
     } else if (stage.phaseType === GROUP) {
       const {facilitatorUserId, phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)

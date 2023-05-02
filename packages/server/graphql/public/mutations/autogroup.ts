@@ -38,9 +38,9 @@ const autogroup: MutationResolvers['autogroup'] = async (
   if (!groupedReflections) {
     throw new Error('Error grouping reflections')
   }
-  // const parsedGroupedReflections = JSON.parse(groupedReflections)
+  const parsedGroupedReflections = JSON.parse(groupedReflections)
 
-  for (const group of groupedReflections) {
+  for (const group of parsedGroupedReflections) {
     const reflectionsTextInGroup = Object.values(group).flat()
     const smartTitle = Object.keys(group).join(', ')
 
