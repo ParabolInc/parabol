@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
-import React from 'react'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
@@ -23,12 +23,17 @@ import styled from '@emotion/styled'
 import AutogroupMutation from '../mutations/AutogroupMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {Elevation} from '../styles/elevation'
 
 const ButtonWrapper = styled('div')({
   display: 'flex',
-  width: '100%',
-  paddingBottom: 32,
-  paddingLeft: 338 // TODO: super hacky, only for demo
+  padding: '16px 0px 8px 0px'
+})
+
+const StyledButton = styled(PrimaryButton)({
+  '&:hover, &:focus': {
+    boxShadow: Elevation.Z2
+  }
 })
 
 interface Props extends RetroMeetingPhaseProps {
@@ -57,15 +62,18 @@ const RetroGroupPhase = (props: Props) => {
   )
   const [callbackRef, phaseRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
-
   const {onError, onCompleted} = useMutationProps()
-
+  const [hasSuggestedGroups, setHasSuggestedGroups] = useState(false)
   const {id: meetingId, endedAt, showSidebar, organization} = meeting
   const {featureFlags} = organization
   const {suggestGroups} = featureFlags
 
   const handleAutoGroupClick = () => {
-    AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
+    if (!hasSuggestedGroups) {
+      AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
+      // TODO: show ungroup button instead
+      setHasSuggestedGroups(true)
+    }
   }
 
   return (
@@ -78,14 +86,16 @@ const RetroGroupPhase = (props: Props) => {
         >
           <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
+          {suggestGroups && (
+            <ButtonWrapper>
+              <StyledButton disabled={hasSuggestedGroups} onClick={handleAutoGroupClick}>
+                {'Suggest Groups ✨'}
+              </StyledButton>
+            </ButtonWrapper>
+          )}
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} canUndo={true} />
-          {/* {suggestGroups && ( */}
-          <ButtonWrapper>
-            <PrimaryButton onClick={handleAutoGroupClick}>{'Suggest Groups ✨'}</PrimaryButton>
-          </ButtonWrapper>
-          {/* )} */}
           <MeetingPhaseWrapper>
             <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
