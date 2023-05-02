@@ -115,7 +115,7 @@ const PokerTemplateScalePicker = (props: Props) => {
         <MenuToggleInner>
           <MenuToggleLabel>{selectedScale.name}</MenuToggleLabel>
         </MenuToggleInner>
-        {!readOnly && <DropdownIcon />}
+        {(!readOnly || !isOwner) && <DropdownIcon />}
       </DropdownBlock>
       {menuPortal(<SelectScaleDropdown menuProps={menuProps} dimension={dimension} />)}
       {tooltipPortal(<div>Must be the template owner to change</div>)}
