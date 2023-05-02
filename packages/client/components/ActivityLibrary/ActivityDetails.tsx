@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {ContentCopy} from '@mui/icons-material'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -32,6 +32,7 @@ import useModal from '../../hooks/useModal'
 import TeamPickerModal from './TeamPickerModal'
 import FlatButton from '../FlatButton'
 import {CategoryID, CATEGORY_THEMES, CATEGORY_ID_TO_NAME} from './Categories'
+import {setActiveTemplate} from '../../utils/relay/setActiveTemplate'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -149,6 +150,13 @@ const ActivityDetails = (props: Props) => {
   const description = useTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
 
   const [isEditing, setIsEditing] = useState(false)
+
+  useEffect(
+    () =>
+      selectedTemplate &&
+      setActiveTemplate(atmosphere, selectedTemplate.teamId, templateId, selectedTemplate.type),
+    [selectedTemplate, templateId]
+  )
 
   if (!selectedTemplate) {
     return <Redirect to='/activity-library' />
@@ -326,10 +334,11 @@ const ActivityDetails = (props: Props) => {
                     <>
                       <TemplateDimensionList
                         isOwner={isOwner}
+                        readOnly={!isEditing}
                         dimensions={dimensions!}
                         templateId={templateId}
                       />
-                      {isOwner && (
+                      {isOwner && isEditing && (
                         <AddPokerTemplateDimension
                           templateId={templateId}
                           dimensions={dimensions!}
