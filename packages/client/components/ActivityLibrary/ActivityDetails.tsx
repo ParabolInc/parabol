@@ -8,7 +8,9 @@ import {Link} from 'react-router-dom'
 import IconLabel from '../IconLabel'
 import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
 import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
+import TemplateDimensionList from '../../modules/meeting/components/TemplateDimensionList'
 import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
+import AddPokerTemplateDimension from '../../modules/meeting/components/AddPokerTemplateDimension'
 import {ActivityCard} from './ActivityCard'
 import {activityIllustrations} from './ActivityIllustrations'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
@@ -44,7 +46,9 @@ graphql`
     ...ActivityDetailsSidebar_template
     ...EditableTemplateName_teamTemplates
     ...ReflectTemplateDetailsTemplate @relay(mask: false)
+    ...PokerTemplateDetailsTemplate @relay(mask: false)
     ...TeamPickerModal_templates
+    ...useTemplateDescription_template
   }
 `
 
@@ -87,6 +91,8 @@ const DetailsBadge = (props: DetailsBadgeProps) => {
   )
 }
 
+const SUPPORTED_TYPES = ['retrospective', 'poker']
+
 interface Props {
   queryRef: PreloadedQuery<ActivityDetailsQuery>
   templateId: string
@@ -98,7 +104,7 @@ const ActivityDetails = (props: Props) => {
   const {viewer} = data
   const {availableTemplates, teams, organizations, tier} = viewer
   const selectedTemplate = availableTemplates.edges.find(
-    (edge) => edge.node.id === templateId && edge.node.type === 'retrospective'
+    (edge) => edge.node.id === templateId && SUPPORTED_TYPES.includes(edge.node.type)
   )?.node
 
   const history = useHistory<{prevCategory?: string}>()
@@ -148,7 +154,7 @@ const ActivityDetails = (props: Props) => {
     return <Redirect to='/activity-library' />
   }
 
-  const {name: templateName, prompts} = selectedTemplate
+  const {name: templateName, prompts, dimensions, type} = selectedTemplate
 
   const templateIllustration =
     activityIllustrations[selectedTemplate.id as keyof typeof activityIllustrations]
@@ -274,9 +280,20 @@ const ActivityDetails = (props: Props) => {
                           </div>
                         )}
                       </div>
-                      <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common
-                      themes and vote on the hottest topics. As you <b>discuss topics</b>, create{' '}
-                      <b>takeaway tasks</b> that can be integrated with your backlog.
+                      {type === 'retrospective' && (
+                        <>
+                          <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common
+                          themes and vote on the hottest topics. As you <b>discuss topics</b>,
+                          create <b>takeaway tasks</b> that can be integrated with your backlog.
+                        </>
+                      )}
+                      {type === 'poker' && (
+                        <>
+                          <b>Select</b> a list of issues from your integrated backlog, or create new
+                          issues to estimate. <b>Estimate</b> with your team on 1 or many scoring
+                          dimensions. <b>Push</b> the estimations to your backlog.
+                        </>
+                      )}
                     </div>
                     <div className='mt-[18px] flex min-w-max items-center'>
                       <div className='flex items-center gap-3'>
@@ -287,17 +304,38 @@ const ActivityDetails = (props: Props) => {
                         <AzureDevOpsSVG />
                       </div>
                       <div className='ml-4'>
-                        <b>Tip:</b> push takeaway tasks to your backlog
+                        <b>Tip:</b>{' '}
+                        {type === 'retrospective' && 'push takeaway tasks to your backlog'}
+                        {type === 'poker' && 'sync estimations with your backlog'}
                       </div>
                     </div>
                   </div>
-                  <TemplatePromptList
-                    isOwner={isOwner && isEditing}
-                    prompts={prompts!}
-                    templateId={templateId}
-                  />
-                  {isOwner && isEditing && (
-                    <AddTemplatePrompt templateId={templateId} prompts={prompts!} />
+                  {type === 'retrospective' && (
+                    <>
+                      <TemplatePromptList
+                        isOwner={isOwner && isEditing}
+                        prompts={prompts!}
+                        templateId={templateId}
+                      />
+                      {isOwner && isEditing && (
+                        <AddTemplatePrompt templateId={templateId} prompts={prompts!} />
+                      )}
+                    </>
+                  )}
+                  {type === 'poker' && (
+                    <>
+                      <TemplateDimensionList
+                        isOwner={isOwner}
+                        dimensions={dimensions!}
+                        templateId={templateId}
+                      />
+                      {isOwner && (
+                        <AddPokerTemplateDimension
+                          templateId={templateId}
+                          dimensions={dimensions!}
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -324,11 +362,10 @@ const ActivityDetails = (props: Props) => {
         <TeamPickerModal
           category={category}
           teamsRef={teams}
-          templatesRef={availableTemplates.edges
-            .map((edge) => edge.node)
-            .filter((template) => template.type === 'retrospective')}
+          templatesRef={availableTemplates.edges.map((edge) => edge.node)}
           closePortal={closePortal}
           parentTemplateId={selectedTemplate.id}
+          type={type}
         />
       )}
     </>

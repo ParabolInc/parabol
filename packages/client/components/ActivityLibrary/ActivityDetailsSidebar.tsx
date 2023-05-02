@@ -29,6 +29,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
         id
+        type
         teamId
         orgId
         scope
@@ -48,6 +49,9 @@ const ActivityDetailsSidebar = (props: Props) => {
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
           ...NewMeetingSettingsToggleAnonymity_settings
+        }
+        pokerSettings: meetingSettings(meetingType: poker) {
+          ...NewMeetingSettingsToggleCheckIn_settings
         }
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
@@ -115,8 +119,15 @@ const ActivityDetailsSidebar = (props: Props) => {
           />
         )}
 
-        <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-        <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+        {selectedTemplate.type === 'retrospective' && (
+          <>
+            <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+            <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+          </>
+        )}
+        {selectedTemplate.type === 'poker' && (
+          <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+        )}
         <div className='flex grow flex-col justify-end gap-2'>
           <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
           <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>

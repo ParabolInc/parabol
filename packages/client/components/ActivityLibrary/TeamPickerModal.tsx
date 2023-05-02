@@ -3,7 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {MenuPosition} from '../../hooks/useCoords'
-import {TeamPickerModal_templates$key} from '~/__generated__/TeamPickerModal_templates.graphql'
+import {
+  MeetingTypeEnum,
+  TeamPickerModal_templates$key
+} from '~/__generated__/TeamPickerModal_templates.graphql'
 import {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import sortByTier from '../../utils/sortByTier'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -14,6 +17,8 @@ import {useHistory} from 'react-router'
 import {Threshold} from '../../types/constEnums'
 import {useFragment} from 'react-relay'
 import clsx from 'clsx'
+import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
+import {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
 
 const ACTION_BUTTON_CLASSES =
   'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
@@ -24,10 +29,11 @@ interface Props {
   closePortal: () => void
   category: string
   parentTemplateId: string
+  type: MeetingTypeEnum
 }
 
 const TeamPickerModal = (props: Props) => {
-  const {teamsRef, templatesRef, closePortal, category, parentTemplateId} = props
+  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type} = props
   const teams = useFragment(
     graphql`
       fragment TeamPickerModal_teams on Team @relay(plural: true) {
@@ -45,6 +51,7 @@ const TeamPickerModal = (props: Props) => {
     graphql`
       fragment TeamPickerModal_templates on MeetingTemplate @relay(plural: true) {
         name
+        type
         teamId
       }
     `,
@@ -67,31 +74,54 @@ const TeamPickerModal = (props: Props) => {
       return
     }
 
-    const teamTemplates = templates.filter((template) => template.teamId === selectedTeam.id)
+    const teamTemplates = templates.filter(
+      (template) => template.teamId === selectedTeam.id && template.type === type
+    )
 
     if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
 
-    submitMutation()
-    AddReflectTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id, parentTemplateId},
-      {
-        onError,
-        onCompleted: (res: AddReflectTemplateMutation$data) => {
-          closePortal()
-          const templateId = res.addReflectTemplate?.reflectTemplate?.id
-          if (templateId) {
-            history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: category
-            })
+    if (type === 'retrospective') {
+      submitMutation()
+      AddReflectTemplateMutation(
+        atmosphere,
+        {teamId: selectedTeam.id, parentTemplateId},
+        {
+          onError,
+          onCompleted: (res: AddReflectTemplateMutation$data) => {
+            closePortal()
+            const templateId = res.addReflectTemplate?.reflectTemplate?.id
+            if (templateId) {
+              history.push(`/activity-library/details/${templateId}`, {
+                prevCategory: category
+              })
+            }
+            onCompleted()
           }
-          onCompleted()
         }
-      }
-    )
+      )
+    } else if (type === 'poker') {
+      submitMutation()
+      AddPokerTemplateMutation(
+        atmosphere,
+        {teamId: selectedTeam.id, parentTemplateId},
+        {
+          onError,
+          onCompleted: (res: AddPokerTemplateMutation$data) => {
+            closePortal()
+            const templateId = res.addPokerTemplate?.pokerTemplate?.id
+            if (templateId) {
+              history.push(`/activity-library/details/${templateId}`, {
+                prevCategory: category
+              })
+            }
+            onCompleted()
+          }
+        }
+      )
+    }
   }
 
   return (

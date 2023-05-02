@@ -4,7 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember, isUserInOrg} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -66,7 +66,10 @@ const addPokerTemplate = {
           return standardError(new Error('Template is scoped to team'), {userId: viewerId})
       } else if (scope === 'ORGANIZATION') {
         const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
-        if (viewerTeam.orgId !== parentTemplateTeam?.orgId) {
+        const isInOrg =
+          parentTemplateTeam &&
+          (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader))
+        if (!isInOrg) {
           return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
         }
       }

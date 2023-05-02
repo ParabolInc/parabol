@@ -13,6 +13,7 @@ graphql`
     pokerTemplate {
       ...TemplateSharing_template
       ...PokerTemplateDetailsTemplate
+      ...ActivityDetails_template
       id
       teamId
     }
@@ -72,8 +73,8 @@ const AddPokerTemplateMutation: StandardMutation<TAddPokerTemplateMutation> = (
       const templateId = proxyTemplate.getValue('id')
 
       if (parentTemplate) {
-        const currentPrompts = parentTemplate.getLinkedRecords('prompts')!
-        proxyTemplate.setLinkedRecords(currentPrompts, 'prompts')
+        const currentDimensions = parentTemplate.getLinkedRecords('dimensions')!
+        proxyTemplate.setLinkedRecords(currentDimensions, 'dimensions')
       } else {
         const dimension = createProxyRecord(store, 'TemplateDimension', {
           scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
