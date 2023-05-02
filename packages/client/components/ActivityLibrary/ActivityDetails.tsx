@@ -33,6 +33,7 @@ import TeamPickerModal from './TeamPickerModal'
 import FlatButton from '../FlatButton'
 import {CategoryID, CATEGORY_THEMES, CATEGORY_ID_TO_NAME} from './Categories'
 import {setActiveTemplate} from '../../utils/relay/setActiveTemplate'
+import PokerTemplateScaleDetails from '../../modules/meeting/components/PokerTemplateScaleDetails'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -44,6 +45,10 @@ graphql`
     teamId
     isFree
     scope
+    team {
+      editingScaleId
+      ...PokerTemplateScaleDetails_team
+    }
     ...ActivityDetailsSidebar_template
     ...EditableTemplateName_teamTemplates
     ...ReflectTemplateDetailsTemplate @relay(mask: false)
@@ -129,9 +134,33 @@ const ActivityDetails = (props: Props) => {
     )
   }, [templateId, submitting, submitMutation, onError, onCompleted])
 
-  const {togglePortal, modalPortal, closePortal} = useModal({
+  const {
+    togglePortal: toggleTeamPickerPortal,
+    modalPortal: teamPickerModalPortal,
+    closePortal: closeTeamPickerPortal
+  } = useModal({
     id: 'templateTeamPickerModal'
   })
+
+  const {
+    openPortal: openPokerTemplateScaleDetailsPortal,
+    modalPortal: pokerTemplateScaleDetailsPortal,
+    closePortal: closePokerTemplateScaleDetailsPortal
+  } = useModal({
+    id: 'pokerTemplateScaleDetailsModal'
+  })
+
+  useEffect(() => {
+    if (selectedTemplate?.team.editingScaleId) {
+      openPokerTemplateScaleDetailsPortal()
+    } else {
+      closePokerTemplateScaleDetailsPortal()
+    }
+  }, [
+    openPokerTemplateScaleDetailsPortal,
+    closePokerTemplateScaleDetailsPortal,
+    selectedTemplate?.team.editingScaleId
+  ])
 
   const teamIds = teams.map((team) => team.id)
   const orgIds = organizations.map((org) => org.id)
@@ -264,7 +293,10 @@ const ActivityDetails = (props: Props) => {
                                     />
                                   </div>
                                   <div className='rounded-full border border-solid border-slate-400'>
-                                    <CloneTemplate canClone={true} onClick={togglePortal} />
+                                    <CloneTemplate
+                                      canClone={true}
+                                      onClick={toggleTeamPickerPortal}
+                                    />
                                   </div>
                                 </>
                               )}
@@ -279,7 +311,7 @@ const ActivityDetails = (props: Props) => {
                               <FlatButton
                                 style={{padding: '8px 12px', border: '0'}}
                                 className='flex gap-1 px-12'
-                                onClick={togglePortal}
+                                onClick={toggleTeamPickerPortal}
                               >
                                 <ContentCopy className='text-slate-600' />
                                 <div className='font-semibold text-slate-700'>Clone & Edit</div>
@@ -367,16 +399,23 @@ const ActivityDetails = (props: Props) => {
           </div>
         )}
       </div>
-      {modalPortal(
+      {teamPickerModalPortal(
         <TeamPickerModal
           category={category}
           teamsRef={teams}
           templatesRef={availableTemplates.edges.map((edge) => edge.node)}
-          closePortal={closePortal}
+          closePortal={closeTeamPickerPortal}
           parentTemplateId={selectedTemplate.id}
           type={type}
         />
       )}
+      {type === 'poker' &&
+        selectedTemplate.team.editingScaleId &&
+        pokerTemplateScaleDetailsPortal(
+          <div className='w-[520px]'>
+            <PokerTemplateScaleDetails team={selectedTemplate.team} />
+          </div>
+        )}
     </>
   )
 }
