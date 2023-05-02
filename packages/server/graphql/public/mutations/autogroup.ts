@@ -1,6 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
@@ -15,15 +14,6 @@ const autogroup: MutationResolvers['autogroup'] = async (
   const {authToken} = context
   const viewerId = getUserId(authToken)
   const r = await getRethink()
-
-  // VALIDATION
-  const reflections = await r
-    .table('RetroReflection')
-    .getAll(meetingId, {index: 'meetingId'})
-    .filter({isActive: true})
-    .orderBy('createdAt')
-    .run()
-
   const meeting = await r.table('NewMeeting').get(meetingId).run()
 
   if (!meeting) {
@@ -44,8 +34,14 @@ const autogroup: MutationResolvers['autogroup'] = async (
     })
   }
 
-  const parsedGroupedReflections = JSON.parse(groupedReflectionsJSON)
+  const reflections = await r
+    .table('RetroReflection')
+    .getAll(meetingId, {index: 'meetingId'})
+    .filter({isActive: true})
+    .orderBy('createdAt')
+    .run()
 
+  const parsedGroupedReflections = JSON.parse(groupedReflectionsJSON)
   for (const group of parsedGroupedReflections) {
     const reflectionsTextInGroup = Object.values(group).flat() as string[]
     const smartTitle = Object.keys(group).join(', ')
@@ -74,9 +70,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
       }
     }
   }
-
-  // RESOLUTION
-  const data = {success: true}
+  const data = {meetingId}
   return data
 }
 

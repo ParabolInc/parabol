@@ -5,7 +5,18 @@ import {AutogroupMutation as TAutogroupMutation} from '../__generated__/Autogrou
 
 graphql`
   fragment AutogroupMutation_meeting on AutogroupSuccess {
-    successField
+    meeting {
+      id
+      reflectionGroups {
+        id
+        title
+        smartTitle
+        reflections {
+          id
+          plaintextContent
+        }
+      }
+    }
   }
 `
 
@@ -30,9 +41,6 @@ const AutogroupMutation: StandardMutation<TAutogroupMutation> = (
   return commitMutation<TAutogroupMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {} = variables
-    },
     onCompleted,
     onError
   })

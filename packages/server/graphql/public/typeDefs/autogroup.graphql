@@ -1,13 +1,8 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  This groups the reflections together using OpenAI
   """
-  autogroup(
-    """
-    Describe the first arg here
-    """
-    meetingId: ID!
-  ): AutogroupPayload!
+  autogroup(meetingId: ID!): AutogroupPayload!
 }
 
 """
@@ -17,7 +12,7 @@ union AutogroupPayload = ErrorPayload | AutogroupSuccess
 
 type AutogroupSuccess {
   """
-  Describe the first return field here
+  The meeting that was autogrouped
   """
-  successField: Boolean!
+  meeting: RetrospectiveMeeting!
 }

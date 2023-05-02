@@ -1,13 +1,12 @@
 import {AutogroupSuccessResolvers} from '../resolverTypes'
 
 export type AutogroupSuccessSource = {
-  id: string
+  meetingId: string
 }
 
 const AutogroupSuccess: AutogroupSuccessResolvers = {
-  successField: async ({id}, _args, {dataLoader}) => {
-    // return dataLoader.get('').load(id)
-    return true
+  meeting: async ({meetingId}, _args, {dataLoader}) => {
+    return dataLoader.get('newMeetings').load(meetingId)
   }
 }
 
