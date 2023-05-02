@@ -41,8 +41,7 @@ class OpenAIServerManager {
     }
   }
 
-  // async groupReflections(reflections: {id: string; content: string}[]) {
-  async groupReflections(text: string[]) {
+  async groupReflections(reflectionsText: string[]) {
     if (!this.openAIApi) return null
     try {
       const response = await this.openAIApi.createChatCompletion(
@@ -78,7 +77,7 @@ class OpenAIServerManager {
       In the output, "The Retreat" and "Deadlines" are example topic names that you can create to group the reflections.
 
       Here is the list of reflections: """
-      ${text}
+      ${reflectionsText}
       """
       `
             }
@@ -93,9 +92,8 @@ class OpenAIServerManager {
         }
       )
       const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      const nullableAnswer = /^No\.*$/i.test(answer) ? null : answer
-      if (!nullableAnswer) return null
-      return nullableAnswer
+      if (!answer) return null
+      return answer
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
