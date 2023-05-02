@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@mattkrick/graphql-trebuchet-client": "^2.2.1",
-    "@pgtyped/cli": "^0.11.0",
+    "@pgtyped/cli": "^2.2.0",
     "@types/analytics-node": "^3.1.3",
     "@types/bcryptjs": "^2.4.2",
     "@types/cheerio": "^0.22.30",
