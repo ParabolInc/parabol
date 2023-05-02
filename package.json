@@ -74,7 +74,8 @@
     "fbjs": "^3.0.0",
     "undici": "^5.8.2",
     "parse-url": "^8.1.0",
-    "rethinkdb-ts": "2.5.1"
+    "rethinkdb-ts": "2.5.1",
+    "recursive-readdir": "^2.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
