@@ -1,3 +1,4 @@
+import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {AutogroupSuccessResolvers} from '../resolverTypes'
 
 export type AutogroupSuccessSource = {
@@ -6,7 +7,8 @@ export type AutogroupSuccessSource = {
 
 const AutogroupSuccess: AutogroupSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    return dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    return meeting as MeetingRetrospective
   }
 }
 

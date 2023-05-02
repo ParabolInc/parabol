@@ -1,7 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import Reflection from '../../../database/types/Reflection'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import sendToSentry from '../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../graphql'
 
 const generateGroups = async (
@@ -20,9 +19,7 @@ const generateGroups = async (
   const manager = new OpenAIServerManager()
   const groupedReflectionsJSON = await manager.groupReflections(groupReflectionsInput)
   if (!groupedReflectionsJSON) {
-    const error = new Error('Error using OpenAI to group reflections')
-    const joinedInput = groupReflectionsInput.join(', ')
-    sendToSentry(error, {tags: {joinedInput}})
+    console.warn('ChatGPT was unable to group the reflections')
     return
   }
   await r.table('NewMeeting').get(meetingId).update({groupedReflectionsJSON}).run()

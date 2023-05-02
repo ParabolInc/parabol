@@ -52,6 +52,7 @@ class OpenAIServerManager {
               role: 'user',
               content: `You are given a list of reflections from a meeting, separated by commas. Your task is to group these reflections into similar topics and return an array of JavaScript objects, where each object represents a topic and contains an array of reflections that belong to that topic.
               Don't change the input text at all, even if it's spelt incorrectly.
+              If you're unable to group the reflections, simply say "No".
 
       Example Input:
       ['The retreat went well', 'The project might not be ready in time', 'The deadline is really tight', 'I liked that the length of the retreat', 'I enjoyed the hotel', 'Feeling overworked']
@@ -92,8 +93,9 @@ class OpenAIServerManager {
         }
       )
       const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      if (!answer) return null
-      return answer
+      const nullableAnswer = /^No\.*$/i.test(answer) ? null : answer
+      if (!nullableAnswer) return null
+      return nullableAnswer
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
