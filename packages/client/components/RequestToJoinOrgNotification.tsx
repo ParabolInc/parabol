@@ -1,22 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy} from 'react'
+import {useLocation} from 'react-router'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import {RequestToJoinOrgNotification_notification$key} from '~/__generated__/RequestToJoinOrgNotification_notification.graphql'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
-import useModal from '../hooks/useModal'
+import useRouter from '../hooks/useRouter'
 
 interface Props {
   notification: RequestToJoinOrgNotification_notification$key
 }
 
-const ReviewRequestToJoinOrgModal = lazy(
-  () =>
-    import(/* webpackChunkName: 'ReviewRequestToJoinOrgModal' */ './ReviewRequestToJoinOrgModal')
-)
-
 const RequestToJoinOrgNotification = (props: Props) => {
   const {notification: notificationRef} = props
+  const {history} = useRouter()
+  const location = useLocation()
   const notification = useFragment(
     graphql`
       fragment RequestToJoinOrgNotification_notification on NotifyRequestToJoinOrg {
@@ -26,19 +24,17 @@ const RequestToJoinOrgNotification = (props: Props) => {
         email
         picture
         requestCreatedBy
+        domainJoinRequestId
       }
     `,
     notificationRef
   )
-  const {togglePortal, modalPortal, closePortal} = useModal({
-    id: 'reviewRequestToJoinOrgModal',
-    parentId: 'topBarNotificationsMenu'
-  })
-  const {name, email, picture, requestCreatedBy} = notification
+  const {name, email, picture, domainJoinRequestId} = notification
 
-  const onActionClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    togglePortal()
+  const onActionClick = () => {
+    history.replace(`/organization-join-request/${domainJoinRequestId}`, {
+      backgroundLocation: location
+    })
   }
 
   return (
@@ -49,19 +45,6 @@ const RequestToJoinOrgNotification = (props: Props) => {
         action={<NotificationAction label={`Review ${email}`} onClick={onActionClick} />}
         notification={notification}
       />
-      {modalPortal(
-        <div
-          onClick={(e) => {
-            e.stopPropagation()
-          }}
-        >
-          <ReviewRequestToJoinOrgModal
-            closePortal={closePortal}
-            requestCreatedBy={requestCreatedBy}
-            email={email}
-          />
-        </div>
-      )}
     </>
   )
 }

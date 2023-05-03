@@ -44,6 +44,10 @@ const NewMeetingRoot = lazy(
   () => import(/* webpackChunkName: 'NewMeetingRoot' */ './NewMeetingRoot')
 )
 
+const ReviewRequestToJoinOrgRoot = lazy(
+  () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
+)
+
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
 }
@@ -169,6 +173,10 @@ const Dashboard = (props: Props) => {
           </Switch>
           <Switch>
             <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
+            <Route
+              path='/organization-join-request/:requestId'
+              component={ReviewRequestToJoinOrgRoot}
+            />
           </Switch>
         </DashMain>
       </DashPanel>
