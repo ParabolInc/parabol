@@ -10,6 +10,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
+import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -79,7 +80,9 @@ const addPokerTemplate = {
         name: newName,
         teamId,
         orgId: viewerTeam.orgId,
-        parentTemplateId
+        parentTemplateId,
+        mainCategory: parentTemplate.mainCategory,
+        illustrationUrl: parentTemplate.illustrationUrl
       })
 
       const dimensions = await dataLoader
@@ -106,7 +109,13 @@ const addPokerTemplate = {
       }
       const {orgId} = viewerTeam
 
-      const newTemplate = new PokerTemplate({name: '*New Template', teamId, orgId})
+      const newTemplate = new PokerTemplate({
+        name: '*New Template',
+        teamId,
+        orgId,
+        mainCategory: 'estimation',
+        illustrationUrl: getTemplateIllustrationUrl('estimatedEffortTemplate.png')
+      })
       const templateId = newTemplate.id
       const newDimension = new TemplateDimension({
         scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
