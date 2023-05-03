@@ -34,6 +34,7 @@ import FlatButton from '../FlatButton'
 import {CategoryID, CATEGORY_THEMES, CATEGORY_ID_TO_NAME} from './Categories'
 import {setActiveTemplate} from '../../utils/relay/setActiveTemplate'
 import PokerTemplateScaleDetails from '../../modules/meeting/components/PokerTemplateScaleDetails'
+import RemovePokerTemplateMutation from '../../mutations/RemovePokerTemplateMutation'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -120,18 +121,33 @@ const ActivityDetails = (props: Props) => {
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
-    submitMutation()
-    RemoveReflectTemplateMutation(
-      atmosphere,
-      {templateId},
-      {
-        onError,
-        onCompleted: () => {
-          onCompleted()
-          history.replace('/activity-library')
+    if (selectedTemplate?.type === 'retrospective') {
+      submitMutation()
+      RemoveReflectTemplateMutation(
+        atmosphere,
+        {templateId},
+        {
+          onError,
+          onCompleted: () => {
+            onCompleted()
+            history.replace('/activity-library')
+          }
         }
-      }
-    )
+      )
+    } else if (selectedTemplate?.type === 'poker') {
+      submitMutation()
+      RemovePokerTemplateMutation(
+        atmosphere,
+        {templateId},
+        {
+          onError,
+          onCompleted: () => {
+            onCompleted()
+            history.replace('/activity-library')
+          }
+        }
+      )
+    }
   }, [templateId, submitting, submitMutation, onError, onCompleted])
 
   const {
