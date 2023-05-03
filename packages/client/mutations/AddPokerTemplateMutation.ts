@@ -6,7 +6,7 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
 import {AddPokerTemplateMutation as TAddPokerTemplateMutation} from '../__generated__/AddPokerTemplateMutation.graphql'
 import {AddPokerTemplateMutation_team$data} from '../__generated__/AddPokerTemplateMutation_team.graphql'
-import handleAddPokerTemplate from './handlers/handleAddPokerTemplate'
+import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
   fragment AddPokerTemplateMutation_team on AddPokerTemplatePayload {
@@ -35,7 +35,7 @@ export const addPokerTemplateTeamUpdater: SharedUpdater<AddPokerTemplateMutation
   const template = payload.getLinkedRecord('pokerTemplate')
   if (!template) return
   const templateId = template.getValue('id')
-  handleAddPokerTemplate(template, store)
+  handleAddMeetingTemplate(template, 'poker', store)
   const teamId = template.getValue('teamId')
   const team = store.get(teamId)
   if (!team) return
@@ -86,7 +86,7 @@ const AddPokerTemplateMutation: StandardMutation<TAddPokerTemplateMutation> = (
         })
         proxyTemplate.setLinkedRecords([dimension], 'dimensions')
       }
-      handleAddPokerTemplate(proxyTemplate, store)
+      handleAddMeetingTemplate(proxyTemplate, 'poker', store)
     }
   })
 }
