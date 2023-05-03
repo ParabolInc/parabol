@@ -13,11 +13,14 @@ const pushToCDN = async () => {
     false,
     /Template.png$/
   )
+  console.log('pushing to cdn from', __dirname)
   context.keys().forEach((relativePath) => {
     const {name, ext} = path.parse(relativePath)
     const absBuildPath = context(relativePath).default
+    console.log({absBuildPath})
     // we may build on one machine & push on another, so remove the path prefix
     const absDistPath = path.resolve(__dirname, path.relative(__dirname, absBuildPath))
+    console.log({absDistPath})
     collector[`${name}${ext}`] = absDistPath
   })
   const fileStoreManager = getFileStoreManager()
