@@ -15,7 +15,10 @@ const pushToCDN = async () => {
   )
   context.keys().forEach((relativePath) => {
     const {name, ext} = path.parse(relativePath)
-    collector[`${name}${ext}`] = context(relativePath).default
+    const absBuildPath = context(relativePath).default
+    // we may build on one machine & push on another, so remove the path prefix
+    const absDistPath = path.resolve(__dirname, path.relative(__dirname, absBuildPath))
+    collector[`${name}${ext}`] = absDistPath
   })
   const fileStoreManager = getFileStoreManager()
   const results = await Promise.all(
