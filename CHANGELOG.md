@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.102.0 2023-May-3
+
+### Added
+
+- feat(retros-in-disguise): added create new activity view (#8069)
+- feat(rid): Edit Mode (#8108)
+- feat: add more dd tracing (#7774)
+- feat(templates): Share to org by default (#8129)
+
+### Changed
+
+- chore: remove User table from RethinkDB (#8115)
+- chore: bump webpack to secure version
+- chore: generate kysely schema in dev (#8114)
+- chore(security): bump vulnerable packages (#8135)
+
 ## 6.101.0 2023-Apr-26
 
 ### Added
