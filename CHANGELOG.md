@@ -21,6 +21,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore: generate kysely schema in dev (#8114)
 - chore(security): bump vulnerable packages (#8135)
 
+### Fixed
+
+- **stripe**: do not update subscription quantity on enterprise annual plan (#8105)
+
 ## 6.101.0 2023-Apr-26
 
 ### Added
