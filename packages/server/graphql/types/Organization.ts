@@ -70,10 +70,12 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     },
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
-      description: 'all the teams the viewer is on in the organization',
+      description: 'all the teams the viewer is on and the public teams in the organization',
       resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
-        const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        const org = await dataLoader.get('organizations').load(orgId)
+        const [allTeamsOnOrg, org] = await Promise.all([
+          dataLoader.get('teamsByOrgIds').load(orgId),
+          dataLoader.get('organizations').load(orgId)
+        ])
 
         if (isSuperUser(authToken)) return allTeamsOnOrg
         else if (org.featureFlags?.includes('publicTeams')) {

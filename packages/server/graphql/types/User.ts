@@ -562,7 +562,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const viewerId = getUserId(authToken)
         const [user, organizationUsers] = await Promise.all([
-          dataLoader.get('users').load(userId),
+          dataLoader.get('users').loadNonNull(userId),
           dataLoader.get('organizationUsersByUserId').load(userId)
         ])
         const orgIds = organizationUsers.map(({orgId}) => orgId)
