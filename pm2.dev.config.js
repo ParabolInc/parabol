@@ -60,6 +60,11 @@ module.exports = {
       instances: 1
     },
     {
+      name: 'Kysely Codegen',
+      script: 'yarn pg:generate',
+      autorestart: false
+    },
+    {
       name: 'PG Typed',
       script: 'yarn pg:build -w'
     }
