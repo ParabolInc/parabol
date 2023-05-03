@@ -78,7 +78,12 @@ const TeamPickerModal = (props: Props) => {
       (template) => template.teamId === selectedTeam.id && template.type === type
     )
 
-    if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
+    if (
+      teamTemplates.length >=
+      (type === 'retrospective'
+        ? Threshold.MAX_RETRO_TEAM_TEMPLATES
+        : Threshold.MAX_POKER_TEAM_TEMPLATES)
+    ) {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
