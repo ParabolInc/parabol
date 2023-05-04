@@ -1,4 +1,7 @@
 import styled from '@emotion/styled'
+import {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
+import graphql from 'babel-plugin-relay/macro'
+import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
@@ -7,12 +10,13 @@ import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
+import CreateSetupIntentMutation from '../../../../mutations/CreateSetupIntentMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import {CompletedHandler} from '../../../../types/relayMutations'
-import {CreatePaymentIntentMutation as TCreatePaymentIntentMutation} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
+import {CreateSetupIntentMutation as TCreateSetupIntentMutation} from '../../../../__generated__/CreateSetupIntentMutation.graphql'
 import BillingForm from './BillingForm'
+import {MONTHLY_PRICE} from '../../../../utils/constants'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -125,35 +129,43 @@ const stripeElementOptions = {
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
-const PaymentDetails = () => {
+type Props = {
+  organizationRef: PaymentDetails_organization$key
+}
+
+const PaymentDetails = (props: Props) => {
+  const {organizationRef} = props
   const [clientSecret, setClientSecret] = useState('')
   const atmosphere = useAtmosphere()
   const {onError} = useMutationProps()
 
+  const organization = useFragment(
+    graphql`
+      fragment PaymentDetails_organization on Organization {
+        id
+        tier
+        orgUserCount {
+          activeUserCount
+        }
+      }
+    `,
+    organizationRef
+  )
+  const {id: orgId, orgUserCount, tier} = organization
+  const {activeUserCount} = orgUserCount
+  const price = activeUserCount * MONTHLY_PRICE
+
   useEffect(() => {
-    const handleCompleted: CompletedHandler<TCreatePaymentIntentMutation['response']> = (res) => {
-      const {createPaymentIntent} = res
-      const {clientSecret} = createPaymentIntent
+    if (tier !== 'starter') return
+    const handleCompleted: CompletedHandler<TCreateSetupIntentMutation['response']> = (res) => {
+      const {createSetupIntent} = res
+      const {clientSecret} = createSetupIntent
       if (clientSecret) {
         setClientSecret(clientSecret)
       }
     }
-
-    CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
+    CreateSetupIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
   }, [])
-
-  // TODO: add functionality in https://github.com/ParabolInc/parabol/issues/7693
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   // if (submitting) return
-  //   // these 3 calls internally call dispatch (or setState), which are asynchronous in nature.
-  //   // To get the current value of `fields`, we have to wait for the component to rerender
-  //   // the useEffect hook above will continue the process if submitting === true
-
-  //   setDirtyField()
-  //   validateField()
-  //   submitMutation()
-  // }
 
   if (!clientSecret.length) return null
   return (
@@ -169,7 +181,7 @@ const PaymentDetails = () => {
               }}
               stripe={stripePromise}
             >
-              <BillingForm />
+              <BillingForm orgId={orgId} />
             </Elements>
           </Content>
         </Plan>
@@ -183,12 +195,12 @@ const PaymentDetails = () => {
               <InfoText>
                 {'Active users are anyone who uses Parabol within a billing period'}
               </InfoText>
-              <Subtitle>{'27'}</Subtitle>
+              <Subtitle>{activeUserCount}</Subtitle>
             </ActiveUserBlock>
             <Divider />
             <TotalBlock>
               <Subtitle>{'Total'}</Subtitle>
-              <Subtitle>{'$162.00'}</Subtitle>
+              <Subtitle>{`$${price.toFixed(2)}`}</Subtitle>
             </TotalBlock>
             <InfoText>{'All prices are in USD'}</InfoText>
           </Content>

@@ -185,9 +185,6 @@ export interface MeetingTemplate {
   hideStartingAt: Timestamp | null
   hideEndingAt: Timestamp | null
   mainCategory: string
-  Foo1: string | null
-  Foo2: string | null
-  Foo3: string | null
 }
 
 export interface MeetingTemplateUserFavorite {

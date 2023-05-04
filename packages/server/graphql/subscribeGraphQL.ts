@@ -78,12 +78,12 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
   // hold onto responseStream so we can unsubscribe from other contexts
   connectionContext.subs[opId] = responseStream
   for await (const payload of responseStream) {
-    const {data} = payload as ExecutionResult
+    const {data, ...restPayload} = payload as ExecutionResult
     if (!data) {
       sendGQLMessage(connectionContext, opId, 'data', false, payload)
       continue
     }
-    const subscriptionName = Object.keys(data!)[0]!
+    const subscriptionName = Object.keys(data)[0]!
     const subscriptionPayload = data[subscriptionName]
     const {fieldName, __typename} = subscriptionPayload
     const fields = {
@@ -91,6 +91,8 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
       [fieldName]: subscriptionPayload[fieldName],
       ...(__typename && {__typename})
     }
+    // excludes all the null values so payloads don't grow as subscription size grows
+    const dehydratedData = {[subscriptionName]: fields}
     if (subscriptionName === 'notificationSubscription') {
       if (fieldName === 'AuthTokenPayload') {
         // AuthTokenPayload is sent when a user is added/removed from a team and their JWT is soft invalidated
@@ -111,7 +113,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     }
 
     const syn = !reliableSubscriptionPayloadBlackList.includes(fieldName)
-    sendGQLMessage(connectionContext, opId, 'data', syn, payload)
+    sendGQLMessage(connectionContext, opId, 'data', syn, {...restPayload, data: dehydratedData})
   }
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
