@@ -4,7 +4,12 @@ import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isUserBillingLeader,
+  isTeamMember
+} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 import standardError from '../../../utils/standardError'
@@ -19,6 +24,27 @@ import connectionFromTemplateArray from '../../queries/helpers/connectionFromTem
 import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
 
 const User: UserResolvers = {
+  canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    switch (entity) {
+      case 'Team':
+        return isTeamMember(authToken, id)
+      case 'Meeting':
+        const meeting = await dataLoader.get('newMeetings').load(id)
+        if (!meeting) {
+          return false
+        }
+        const {teamId} = meeting
+        return isTeamMember(authToken, teamId)
+      case 'Organization':
+        const organizationUser = await dataLoader
+          .get('organizationUsersByUserIdOrgId')
+          .load({userId: viewerId, id})
+        return !!organizationUser
+      default:
+        return false
+    }
+  },
   company: async ({email}, _args, {authToken}) => {
     const domain = getDomainFromEmail(email)
     if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null

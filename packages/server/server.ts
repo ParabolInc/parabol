@@ -22,21 +22,32 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
+import ServerHealthChecker from './utils/ServerHealthChecker'
 
 tracer.init({
   service: `Web ${process.env.SERVER_ID}`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false
 })
+tracer.use('ioredis').use('http').use('pg').use('fs')
 
-const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
+const onKill = async () => {
+  r.getPoolMaster()?.drain()
+  const healthChecker = new ServerHealthChecker()
+  await healthChecker.reportDeadServers([process.env.SERVER_ID!])
+  process.exit()
+}
+
+// If the process is getting killed, remove all the user presence from redis
+process.on('SIGTERM', onKill)
 if (!PROD) {
   process.on('SIGINT', async () => {
-    await r.getPoolMaster()?.drain()
-    process.exit()
+    r.getPoolMaster()?.drain()
+    onKill()
   })
 }
 
+const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
 uws
   .App()
   .get('/favicon.ico', PWAHandler)

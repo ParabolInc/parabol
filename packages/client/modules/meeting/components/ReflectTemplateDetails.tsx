@@ -9,7 +9,7 @@ import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMut
 import {PALETTE} from '../../../styles/paletteV3'
 import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
-import makeTemplateDescription from '../../../utils/makeTemplateDescription'
+import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {ReflectTemplateDetails_settings$key} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
 import {ReflectTemplateDetails_viewer$key} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
@@ -116,7 +116,7 @@ const ReflectTemplateDetails = (props: Props) => {
         featureFlags {
           templateLimit
         }
-        ...makeTemplateDescription_viewer
+        ...useTemplateDescription_viewer
       }
     `,
     viewerRef
@@ -129,7 +129,7 @@ const ReflectTemplateDetails = (props: Props) => {
   const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, activeTemplate, viewer, tier)
+  const description = useTemplateDescription(lowestScope, activeTemplate, viewer, tier)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -196,7 +196,7 @@ graphql`
   fragment ReflectTemplateDetailsTemplate on ReflectTemplate {
     ...TemplateSharing_template
     ...getTemplateList_template
-    ...makeTemplateDescription_template
+    ...useTemplateDescription_template
     id
     name
     prompts {

@@ -6,7 +6,9 @@ interface Input {
   scope?: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
-  lastUsedAt?: Date
+  lastUsedAt?: Date | null
+  illustrationUrl: string | null
+  mainCategory: string | null
 }
 
 export default class ReflectTemplate extends MeetingTemplate {

@@ -136,7 +136,7 @@ export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team$
     handleRemoveTeams(teamIds, store)
   } else {
     const teamMembers = payload.getLinkedRecords('teamMembers')
-    const teamMemberIds = teamMembers.map((teamMember) => teamMember.getValue('id'))
+    const teamMemberIds = teamMembers?.map((teamMember) => teamMember.getValue('id'))
     handleRemoveTeamMembers(teamMemberIds, store)
   }
 }

@@ -84,7 +84,9 @@ const updateTemplateScope = {
         orgId,
         scope: newScope,
         parentTemplateId: templateId,
-        lastUsedAt: template.lastUsedAt
+        lastUsedAt: template.lastUsedAt,
+        illustrationUrl: template.illustrationUrl,
+        mainCategory: template.mainCategory
       })
       clonedTemplateId = clonedTemplate.id
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
@@ -113,7 +115,9 @@ const updateTemplateScope = {
         orgId,
         scope: newScope,
         parentTemplateId: templateId,
-        lastUsedAt: template.lastUsedAt
+        lastUsedAt: template.lastUsedAt,
+        illustrationUrl: template.illustrationUrl,
+        mainCategory: template.mainCategory
       })
       clonedTemplateId = clonedTemplate.id
       const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)

@@ -3,4 +3,4 @@
   @param ids -> (...)
 */
 SELECT * FROM "MeetingTemplate"
-WHERE id in :ids;
+WHERE id in :ids AND "isActive";

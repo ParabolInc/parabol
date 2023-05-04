@@ -165,7 +165,7 @@ export default {
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').load(templateId),
+      dataLoader.get('meetingTemplates').loadNonNull(templateId),
       r
         .table('RetroReflectionGroup')
         .getAll(meetingId, {index: 'meetingId'})

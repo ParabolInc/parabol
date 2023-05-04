@@ -1,15 +1,17 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import RemoveTeamMemberPayload from '../types/RemoveTeamMemberPayload'
 import removeTeamMember from './helpers/removeTeamMember'
 
 export default {
-  type: RemoveTeamMemberPayload,
+  type: new GraphQLObjectType({
+    name: 'RemoveTeamMemberPayload',
+    fields: {}
+  }),
   description: 'Remove a team member from the team',
   args: {
     teamMemberId: {

@@ -11,12 +11,13 @@ import standardError from '../../../utils/standardError'
 import {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
+import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safeCreateTeamPrompt'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 
 const startRecurringTeamPrompt = async (
   meetingSeries: MeetingSeries,
+  lastMeeting: MeetingTeamPrompt | null,
   startTime: Date,
   dataLoader: DataLoaderWorker,
   r: ParabolR,
@@ -30,10 +31,15 @@ const startRecurringTeamPrompt = async (
 
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
   const nextMeetingStartDate = rrule.after(startTime)
-  const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
-    name: createTeamPromptTitle(meetingSeries.title, startTime, rrule.options.tzid ?? 'UTC'),
+  const meetingName = createTeamPromptTitle(
+    meetingSeries.title,
+    startTime,
+    rrule.options.tzid ?? 'UTC'
+  )
+  const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, r, dataLoader, {
     scheduledEndTime: nextMeetingStartDate,
-    meetingSeriesId: meetingSeries.id
+    meetingSeriesId: meetingSeries.id,
+    meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : DEFAULT_PROMPT
   })
 
   await r.table('NewMeeting').insert(meeting).run()
@@ -84,14 +90,14 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
         return
       }
 
-      const lastMeeting = await r
+      const lastMeeting = (await r
         .table('NewMeeting')
         .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
         .filter({meetingType: 'teamPrompt'})
         .orderBy(r.desc('createdAt'))
         .nth(0)
         .default(null)
-        .run()
+        .run()) as MeetingTeamPrompt | null
 
       // For meetings that should still be active, start the meeting and set its end time.
       // Any subscriptions are handled by the shared meeting start code
@@ -112,6 +118,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
       for (const startTime of newMeetingsStartTimes) {
         const err = await startRecurringTeamPrompt(
           meetingSeries,
+          lastMeeting,
           startTime,
           dataLoader,
           r,
