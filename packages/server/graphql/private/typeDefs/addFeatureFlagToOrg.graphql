@@ -5,6 +5,7 @@ enum OrganizationFeatureFlagsEnum {
   teamsLimit
   SAMLUI
   promptToJoinOrg
+  suggestGroups
 }
 
 extend type Mutation {
