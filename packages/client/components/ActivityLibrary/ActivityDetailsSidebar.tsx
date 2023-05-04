@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
+import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
@@ -29,6 +30,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
         id
+        type
         teamId
         orgId
         scope
@@ -48,6 +50,9 @@ const ActivityDetailsSidebar = (props: Props) => {
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
           ...NewMeetingSettingsToggleAnonymity_settings
+        }
+        pokerSettings: meetingSettings(meetingType: poker) {
+          ...NewMeetingSettingsToggleCheckIn_settings
         }
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
@@ -82,11 +87,19 @@ const ActivityDetailsSidebar = (props: Props) => {
       {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
       {
         onCompleted: () => {
-          StartRetrospectiveMutation(
-            atmosphere,
-            {teamId: selectedTeam.id},
-            {history, onError, onCompleted}
-          )
+          if (selectedTemplate.type === 'retrospective') {
+            StartRetrospectiveMutation(
+              atmosphere,
+              {teamId: selectedTeam.id},
+              {history, onError, onCompleted}
+            )
+          } else if (selectedTemplate.type === 'poker') {
+            StartSprintPokerMutation(
+              atmosphere,
+              {teamId: selectedTeam.id},
+              {history, onError, onCompleted}
+            )
+          }
         },
         onError
       }
@@ -94,37 +107,47 @@ const ActivityDetailsSidebar = (props: Props) => {
   }
 
   return (
-    <div
-      className={clsx(
-        'flex translate-x-0 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14 transition-all',
-        isOpen ? ' w-96' : 'w-0 overflow-hidden opacity-0'
-      )}
-    >
-      <div className='mb-6 text-xl font-semibold'>Settings</div>
-
-      <div className='flex grow flex-col gap-2'>
-        {availableTeams.length > 0 && (
-          <NewMeetingTeamPicker
-            positionOverride={MenuPosition.UPPER_LEFT}
-            onSelectTeam={(teamId) => {
-              const newTeam = availableTeams.find((team) => team.id === teamId)
-              newTeam && setSelectedTeam(newTeam)
-            }}
-            selectedTeamRef={selectedTeam}
-            teamsRef={availableTeams}
-          />
+    <>
+      {isOpen && <div className='w-96' />}
+      <div
+        className={clsx(
+          'fixed right-0 flex h-screen translate-x-0 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14 transition-all',
+          isOpen ? ' w-96' : 'w-0 overflow-hidden opacity-0'
         )}
+      >
+        <div className='mb-6 text-xl font-semibold'>Settings</div>
 
-        <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-        <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-        <div className='flex grow flex-col justify-end gap-2'>
-          <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-          <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
-            <div className='text-lg'>Start Activity</div>
-          </FlatPrimaryButton>
+        <div className='flex grow flex-col gap-2'>
+          {availableTeams.length > 0 && (
+            <NewMeetingTeamPicker
+              positionOverride={MenuPosition.UPPER_LEFT}
+              onSelectTeam={(teamId) => {
+                const newTeam = availableTeams.find((team) => team.id === teamId)
+                newTeam && setSelectedTeam(newTeam)
+              }}
+              selectedTeamRef={selectedTeam}
+              teamsRef={availableTeams}
+            />
+          )}
+
+          {selectedTemplate.type === 'retrospective' && (
+            <>
+              <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+              <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+            </>
+          )}
+          {selectedTemplate.type === 'poker' && (
+            <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+          )}
+          <div className='flex grow flex-col justify-end gap-2'>
+            <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
+            <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
+              <div className='text-lg'>Start Activity</div>
+            </FlatPrimaryButton>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

@@ -174,7 +174,12 @@ const PokerTemplateDetails = (props: Props) => {
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
-        <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
+        <TemplateDimensionList
+          isOwner={isOwner}
+          dimensions={dimensions}
+          templateId={templateId}
+          parentId='templateModal'
+        />
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
         <TemplateSharing isOwner={isOwner} template={activeTemplate} />
       </Scrollable>
