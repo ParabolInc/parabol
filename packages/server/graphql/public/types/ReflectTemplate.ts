@@ -5,7 +5,6 @@ const RECOMMENDED_TEMPLATES = ['teamCharterTemplate', 'startStopContinueTemplate
 const ReflectTemplate: ReflectTemplateResolvers = {
   __isTypeOf: ({type}) => type === 'retrospective',
   category: ({mainCategory}, _args, _context) => mainCategory,
-  isFree: ({isFree}) => !!isFree,
   isRecommended: ({id}, _args, _context) => {
     return RECOMMENDED_TEMPLATES.includes(id)
   },
