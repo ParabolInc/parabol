@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
-import {BillingLeaderMenu_user$key} from '../__generated__/ BillingLeaderMenu_user.graphql'
+import {BillingLeaderMenu_user$key} from '../__generated__/BillingLeaderMenu_user.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import useMutationProps from '../hooks/useMutationProps'
@@ -36,6 +36,7 @@ const BillingLeaderMenu = (props: Props) => {
   )
   const {viewerId} = atmosphere
   const {id: userId, organizationUser} = billingLeader
+  if (!organizationUser) return null
   const {newUserUntil, tier, orgId} = organizationUser
   const isViewer = viewerId === userId
 
