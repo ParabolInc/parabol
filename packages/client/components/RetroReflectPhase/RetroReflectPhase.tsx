@@ -1,10 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroReflectPhase_meeting$key} from '~/__generated__/RetroReflectPhase_meeting.graphql'
-import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -19,8 +17,6 @@ import StageTimerDisplay from '../StageTimerDisplay'
 import PhaseItemColumn from './PhaseItemColumn'
 import ReflectWrapperMobile from './ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './ReflectWrapperDesktop'
-import AutogroupMutation from '../../mutations/AutogroupMutation'
-import useMutationProps from '../../hooks/useMutationProps'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroReflectPhase_meeting$key
