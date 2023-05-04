@@ -65,7 +65,6 @@
           "RRule": "rrule#RRule",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
-          "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "Task": "../../database/types/Task#default",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
