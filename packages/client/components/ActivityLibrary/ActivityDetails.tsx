@@ -119,7 +119,7 @@ const ActivityDetails = (props: Props) => {
     (edge) => edge.node.id === templateId && SUPPORTED_TYPES.includes(edge.node.type)
   )?.node
 
-  const history = useHistory<{prevCategory?: string}>()
+  const history = useHistory<{prevCategory?: string; edit?: boolean}>()
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -206,9 +206,8 @@ const ActivityDetails = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
-    const params = new URLSearchParams(history.location.search)
-    setIsEditing(!!params.get('edit'))
-  }, [history.location.search, setIsEditing])
+    setIsEditing(!!history.location.state?.edit)
+  }, [history.location.state?.edit, setIsEditing])
 
   useEffect(
     () =>
