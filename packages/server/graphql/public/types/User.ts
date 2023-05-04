@@ -68,7 +68,12 @@ const User: UserResolvers = {
     if (domain !== request.domain) {
       return null
     }
-    return {id: request.id, createdByEmail: request.createdBy, createdBy: request.createdBy}
+    return {
+      id: request.id,
+      createdByEmail: request.createdBy,
+      createdBy: request.createdBy,
+      domain: request.domain
+    }
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))

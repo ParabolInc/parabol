@@ -15,15 +15,18 @@ const query = graphql`
       domainJoinRequest(requestId: $requestId) {
         createdByEmail
         createdBy
+        domain
       }
       teams {
         id
         name
+        isLead
         teamMembers(sortBy: "preferredName") {
           userId
         }
         organization {
           name
+          activeDomain
         }
       }
     }
@@ -42,10 +45,6 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   const data = usePreloadedQuery<ReviewRequestToJoinOrgModalQuery>(query, queryRef)
 
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
-  const teams = data.viewer.teams
-  const sortedTeams = teams
-    .slice()
-    .sort((a, b) => a.organization.name.localeCompare(b.organization.name))
 
   const {domainJoinRequest} = data.viewer
 
@@ -53,7 +52,13 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
     return null
   }
 
-  const {createdBy, createdByEmail} = domainJoinRequest
+  const {createdBy, createdByEmail, domain} = domainJoinRequest
+
+  const teams = data.viewer.teams
+  const sortedTeams = teams
+    .filter((team) => team.isLead && team.organization.activeDomain === domain)
+    .slice()
+    .sort((a, b) => a.organization.name.localeCompare(b.organization.name))
 
   return (
     <DialogContainer>
