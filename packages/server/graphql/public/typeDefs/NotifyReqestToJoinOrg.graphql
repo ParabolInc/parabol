@@ -39,4 +39,9 @@ type NotifyRequestToJoinOrg implements Notification {
   Request created by userId
   """
   requestCreatedBy: ID!
+
+  """
+  Attached join request id
+  """
+  domainJoinRequestId: ID!
 }

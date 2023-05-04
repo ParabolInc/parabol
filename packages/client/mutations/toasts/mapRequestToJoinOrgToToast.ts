@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Snack} from '../../components/Snackbar'
 import {mapRequestToJoinOrgToToast_notification$data} from '../../__generated__/mapRequestToJoinOrgToToast_notification.graphql'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import {OnNextHistoryContext} from '../../types/relayMutations'
 
 graphql`
   fragment mapRequestToJoinOrgToToast_notification on NotifyRequestToJoinOrg {
@@ -9,13 +10,15 @@ graphql`
     name
     email
     picture
+    domainJoinRequestId
   }
 `
 
 const mapRequestToJoinOrgToToast = (
-  notification: mapRequestToJoinOrgToToast_notification$data
+  notification: mapRequestToJoinOrgToToast_notification$data,
+  {history}: OnNextHistoryContext
 ): Snack => {
-  const {id: notificationId, email} = notification
+  const {id: notificationId, email, domainJoinRequestId} = notification
 
   return {
     autoDismiss: 0,
@@ -25,7 +28,9 @@ const mapRequestToJoinOrgToToast = (
     action: {
       label: 'Review',
       callback: () => {
-        // TODO: Implement review window and add segment events
+        history.push(`/organization-join-request/${domainJoinRequestId}`, {
+          backgroundLocation: history.location
+        })
       }
     },
     secondaryAction: {
