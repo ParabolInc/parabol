@@ -69,11 +69,11 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
             const {name: orgName} = organization
 
             // TODO: implement filter on API side
-            const disabled = !!teamMembers.find((member) => member.userId === createdBy)
-            const active = selectedTeams.includes(teamId) || disabled
+            const isAlreadyMember = teamMembers.some((member) => member.userId === createdBy)
+            const active = selectedTeams.includes(teamId) || isAlreadyMember
 
             const handleClick = () => {
-              if (disabled) return
+              if (isAlreadyMember) return
 
               if (active) {
                 setSelectedTeams((prevSelectedTeams) =>
@@ -88,10 +88,14 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
               <div className='mb-2 flex items-center text-base' key={teamId} onClick={handleClick}>
                 <Checkbox
                   active={active}
-                  disabled={disabled}
-                  className={active && !disabled ? `text-sky-500` : undefined}
+                  disabled={isAlreadyMember}
+                  className={active && !isAlreadyMember ? `text-sky-500` : undefined}
                 />
-                <label className={`ml-2 cursor-pointer ${disabled ? 'opacity-[.38]' : ''}`}>
+                <label
+                  className={`ml-2 ${
+                    isAlreadyMember ? 'cursor-not-allowed opacity-[.38]' : 'cursor-pointer'
+                  }`}
+                >
                   {teamName} | {orgName}
                 </label>
               </div>
