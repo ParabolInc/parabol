@@ -75,7 +75,7 @@ jobs:
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
           else
             echo "NO_DEPS=false" >> $GITHUB_ENV
-            echo "BUILD_WITH_SECURITY=false" >> $GITHUB_ENV
+            echo "BUILD_WITH_SECURITY=true" >> $GITHUB_ENV
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           fi
 
