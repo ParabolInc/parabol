@@ -127,9 +127,8 @@ const ActivityDetailsSidebar = (props: Props) => {
       </div>
       <br />
       <div>
-        As a member of the team you can share this activity with the{' '}
-        <b>{templateTeam.organization.name}</b> organization so that any team can also use the
-        activity.
+        As a member of the team you can share this activity with other teams at the{' '}
+        <b>{templateTeam.organization.name}</b> organization so that they can also use the activity.
       </div>
       <button
         onClick={handleShareToOrg}
@@ -138,7 +137,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         }
       >
         <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
-        Allow all teams to use this activity
+        Allow other teams to use this activity
       </button>
     </div>
   )
