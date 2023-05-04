@@ -217,7 +217,7 @@ const ActivityDetails = (props: Props) => {
 
   return (
     <>
-      <div className='relative flex h-full flex-col bg-white'>
+      <div className='flex h-full flex-col bg-white'>
         <div className='flex grow'>
           <div className='mt-4 grow'>
             <div className='mb-14 ml-4 flex h-min w-max items-center'>
@@ -244,7 +244,7 @@ const ActivityDetails = (props: Props) => {
                   imageSrc={activityIllustration}
                   badge={null}
                 />
-                <div>
+                <div className='pb-20'>
                   <div className='mb-10 pl-14'>
                     <div className='mb-2 flex min-h-[40px] items-center'>
                       <EditableTemplateName
@@ -405,7 +405,7 @@ const ActivityDetails = (props: Props) => {
           />
         </div>
         {isEditing && (
-          <div className='absolute bottom-0 flex h-20 w-full items-center justify-center bg-slate-200'>
+          <div className='fixed bottom-0 flex h-20 w-full items-center justify-center bg-slate-200'>
             <button
               onClick={() => setIsEditing(false)}
               className='w-max cursor-pointer rounded-full bg-sky-500 px-10 py-3 text-center font-sans text-lg font-semibold text-white hover:bg-sky-600'
