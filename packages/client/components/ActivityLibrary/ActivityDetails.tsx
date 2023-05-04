@@ -31,7 +31,12 @@ import CloneTemplate from '../../modules/meeting/components/CloneTemplate'
 import useModal from '../../hooks/useModal'
 import TeamPickerModal from './TeamPickerModal'
 import FlatButton from '../FlatButton'
-import {CategoryID, CATEGORY_THEMES, CATEGORY_ID_TO_NAME} from './Categories'
+import {
+  CategoryID,
+  CATEGORY_THEMES,
+  CATEGORY_ID_TO_NAME,
+  QUICK_START_CATEGORY_ID
+} from './Categories'
 import {setActiveTemplate} from '../../utils/relay/setActiveTemplate'
 import PokerTemplateScaleDetails from '../../modules/meeting/components/PokerTemplateScaleDetails'
 import RemovePokerTemplateMutation from '../../mutations/RemovePokerTemplateMutation'
@@ -119,6 +124,10 @@ const ActivityDetails = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
 
+  const categoryLink = `/activity-library/category/${
+    history.location.state?.prevCategory ?? selectedTemplate?.category ?? QUICK_START_CATEGORY_ID
+  }`
+
   const removeTemplate = useCallback(() => {
     if (submitting) return
     if (selectedTemplate?.type === 'retrospective') {
@@ -130,7 +139,7 @@ const ActivityDetails = (props: Props) => {
           onError,
           onCompleted: () => {
             onCompleted()
-            history.replace('/activity-library')
+            history.replace(categoryLink)
           }
         }
       )
@@ -143,7 +152,7 @@ const ActivityDetails = (props: Props) => {
           onError,
           onCompleted: () => {
             onCompleted()
-            history.replace('/activity-library')
+            history.replace(categoryLink)
           }
         }
       )
@@ -221,12 +230,7 @@ const ActivityDetails = (props: Props) => {
         <div className='flex grow'>
           <div className='mt-4 grow'>
             <div className='mb-14 ml-4 flex h-min w-max items-center'>
-              <Link
-                className='mr-4'
-                to={`/activity-library/category/${
-                  history.location.state?.prevCategory ?? category
-                }`}
-              >
+              <Link className='mr-4' to={categoryLink}>
                 <IconLabel icon={'arrow_back'} iconLarge />
               </Link>
               <div className='w-max text-xl font-semibold'>Start Activity</div>
