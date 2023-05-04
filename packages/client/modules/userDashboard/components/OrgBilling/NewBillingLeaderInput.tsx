@@ -8,7 +8,6 @@ import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
 import {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
 import StyledError from '../../../../components/StyledError'
-import Legitity from '../../../../validation/Legitity'
 import useForm from '../../../../hooks/useForm'
 import {PortalStatus} from '../../../../hooks/usePortal'
 import NewBillingLeaderMenu from './NewBillingLeaderMenu'
@@ -30,9 +29,6 @@ const Item = styled('div')({
   backgroundColor: PALETTE.SLATE_200,
   cursor: 'pointer',
   display: 'flex',
-  // paddingLeft: 16,
-  // paddingTop: 8,
-  // paddingBottom: 8,
   alignItems: 'center',
   width: '100%'
 })
@@ -55,7 +51,7 @@ const NewLeaderInput = styled('input')({
   color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
-  padding: '0px 8px 0px 0px',
+  paddingRight: 8,
   outline: 0,
   width: '100%'
 })
@@ -71,10 +67,6 @@ interface Props {
   removeInput: () => void
 }
 
-const validateIssue = (issue: string) => {
-  return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
-}
-
 const NewBillingLeaderInput = (props: Props) => {
   const {removeInput, organizationRef} = props
   const organization = useFragment(
@@ -85,13 +77,12 @@ const NewBillingLeaderInput = (props: Props) => {
     `,
     organizationRef
   )
-  const {fields, onChange, validateField} = useForm({
+  const {fields, onChange} = useForm({
     newLeader: {
-      getDefault: () => '',
-      validate: validateIssue
+      getDefault: () => ''
     }
   })
-  const {dirty, error, value: newLeaderSearchQuery} = fields.newLeader
+  const {dirty, error, value: newLeaderValue} = fields.newLeader
   const ref = useRef<HTMLInputElement>(null)
 
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
@@ -106,9 +97,7 @@ const NewBillingLeaderInput = (props: Props) => {
 
   const handleCreateNewLeader = (e: FormEvent) => {
     e.preventDefault()
-    const {newLeader: newLeaderRes} = validateField()
-    const {value: newLeaderTitle} = newLeaderRes
-    if (!newLeaderTitle.length) {
+    if (!newLeaderValue.length) {
       removeInput()
     }
   }
@@ -148,7 +137,7 @@ const NewBillingLeaderInput = (props: Props) => {
         <NewBillingLeaderMenu
           menuProps={menuProps}
           organizationRef={organization}
-          newLeaderSearchQuery={newLeaderSearchQuery}
+          newLeaderSearchQuery={newLeaderValue}
         />
       )}
     </>
