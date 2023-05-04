@@ -18,6 +18,8 @@ import useMenu from '../../../../hooks/useMenu'
 import BillingLeaderMenu from '../../../../components/BillingLeaderMenu'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
+import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
+import useModal from '../../../../hooks/useModal'
 
 const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
   padding: '12px 16px',
@@ -72,19 +74,20 @@ const BillingLeader = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment BillingLeader_organization on Organization {
+        id
         isViewerBillingLeader: isBillingLeader
       }
     `,
     organizationRef
   )
-  const {isViewerBillingLeader} = organization
+  const {id: orgId, isViewerBillingLeader} = organization
   const {
     tooltipPortal,
     openTooltip,
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
-
+  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
   const {preferredName, picture} = billingLeader
   const isViewerLastBillingLeader = isViewerBillingLeader && billingLeaderCount === 1
 
@@ -133,14 +136,15 @@ const BillingLeader = (props: Props) => {
             )}
             {menuPortal(
               <BillingLeaderMenu
+                toggleLeave={toggleLeave}
                 menuProps={menuProps}
                 billingLeaderRef={billingLeader}
-                billingLeaderCount={billingLeaderCount}
               />
             )}
           </MenuToggleBlock>
         </ActionsBlock>
       </RowActions>
+      {leaveModal(<LeaveOrgModal orgId={orgId} />)}
     </StyledRow>
   )
 }
