@@ -1,5 +1,7 @@
 import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '@mui/icons-material'
 import React from 'react'
+import clsx from 'clsx'
+
 interface Props {
   active: boolean | null
   color?: string
@@ -13,19 +15,20 @@ const Checkbox = (props: Props) => {
   const cursor = disabled ? 'cursor-not-allowed' : 'cursor-pointer'
   const opacity = disabled ? 'opacity-[.38]' : 'opacity-100'
 
-  const styledIconClasses = [
-    'text-slate-600',
-    'h-6',
-    'w-6',
-    'block',
-    'select-none',
-    cursor,
-    opacity,
-    className
-  ].join(' ')
-
   return (
-    <div className={styledIconClasses} onClick={disabled ? undefined : onClick}>
+    <div
+      className={clsx(
+        'text-slate-600',
+        'h-6',
+        'w-6',
+        'block',
+        'select-none',
+        cursor,
+        opacity,
+        className
+      )}
+      onClick={disabled ? undefined : onClick}
+    >
       <Icon />
     </div>
   )
