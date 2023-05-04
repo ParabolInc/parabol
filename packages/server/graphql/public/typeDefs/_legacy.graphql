@@ -2006,6 +2006,11 @@ type ReflectTemplate implements MeetingTemplate {
   isActive: Boolean!
 
   """
+  True if template is available to all teams including non-paying teams, else false
+  """
+  isFree: Boolean!
+
+  """
   The time of the meeting the template was last used
   """
   lastUsedAt: DateTime
@@ -3726,6 +3731,11 @@ type PokerTemplate implements MeetingTemplate {
   isActive: Boolean!
 
   """
+  True if template is available to all teams including non-paying teams, else false
+  """
+  isFree: Boolean!
+
+  """
   The time of the meeting the template was last used
   """
   lastUsedAt: DateTime
@@ -3801,6 +3811,11 @@ interface MeetingTemplate {
   True if template can be used, else false
   """
   isActive: Boolean!
+
+  """
+  True if template is available to all teams including non-paying teams, else false
+  """
+  isFree: Boolean!
 
   """
   The time of the meeting the template was last used
