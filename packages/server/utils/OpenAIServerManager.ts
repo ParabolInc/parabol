@@ -1,5 +1,6 @@
 import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
+import {isValidJSON} from './isValidJSON'
 
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
@@ -51,8 +52,8 @@ class OpenAIServerManager {
             {
               role: 'user',
               content: `You are given a list of reflections from a meeting, separated by commas. Your task is to group these reflections into similar topics and return an array of JavaScript objects, where each object represents a topic and contains an array of reflections that belong to that topic.
-              Don't change the input text at all, even if it's spelt incorrectly.
-              If you're unable to group the reflections, simply say "No".
+              Don't change the input text at all, even if it's spelt incorrectly or has special characters.
+              If you're unable to group any reflections, simply say "No".
 
       Example Input:
       ['The retreat went well', 'The project might not be ready in time', 'The deadline is really tight', 'I liked that the length of the retreat', 'I enjoyed the hotel', 'Feeling overworked']
@@ -93,12 +94,20 @@ class OpenAIServerManager {
         }
       )
       const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      const nullableAnswer = /^No\.*$/i.test(answer) ? null : answer
-      if (!nullableAnswer) return null
-      return nullableAnswer
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
-      sendToSentry(error)
+      if (!isValidJSON(answer)) return null
+      const parsedOutput = JSON.parse(answer)
+      if (!Array.isArray(parsedOutput)) return null
+      const invalidGroup = parsedOutput.some(
+        (group) =>
+          typeof group !== 'object' ||
+          group === null ||
+          Array.isArray(group) ||
+          Object.keys(group).length !== 1
+      )
+      if (invalidGroup) return null
+      return answer
+    } catch (error) {
+      console.error(error)
       return null
     }
   }
