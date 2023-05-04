@@ -205,6 +205,11 @@ const ActivityDetails = (props: Props) => {
 
   const [isEditing, setIsEditing] = useState(false)
 
+  useEffect(() => {
+    const params = new URLSearchParams(history.location.search)
+    setIsEditing(!!params.get('edit'))
+  }, [history.location.search, setIsEditing])
+
   useEffect(
     () =>
       selectedTemplate &&

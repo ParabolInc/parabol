@@ -99,7 +99,7 @@ const TeamPickerModal = (props: Props) => {
             closePortal()
             const templateId = res.addReflectTemplate?.reflectTemplate?.id
             if (templateId) {
-              history.push(`/activity-library/details/${templateId}`, {
+              history.push(`/activity-library/details/${templateId}?edit=1`, {
                 prevCategory: category
               })
             }
@@ -118,7 +118,7 @@ const TeamPickerModal = (props: Props) => {
             closePortal()
             const templateId = res.addPokerTemplate?.pokerTemplate?.id
             if (templateId) {
-              history.push(`/activity-library/details/${templateId}`, {
+              history.push(`/activity-library/details/${templateId}?edit=1`, {
                 prevCategory: category
               })
             }
