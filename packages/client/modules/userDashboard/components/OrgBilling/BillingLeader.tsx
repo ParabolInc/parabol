@@ -20,6 +20,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
 import useModal from '../../../../hooks/useModal'
+import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
 
 const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
   padding: '12px 16px',
@@ -65,6 +66,7 @@ const BillingLeader = (props: Props) => {
     graphql`
       fragment BillingLeader_user on User {
         ...BillingLeaderMenu_user
+        id
         preferredName
         picture
       }
@@ -88,7 +90,8 @@ const BillingLeader = (props: Props) => {
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
   const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
-  const {preferredName, picture} = billingLeader
+  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
+  const {id: userId, preferredName, picture} = billingLeader
   const isViewerLastBillingLeader = isViewerBillingLeader && billingLeaderCount === 1
 
   const handleClick = () => {
@@ -139,12 +142,16 @@ const BillingLeader = (props: Props) => {
                 toggleLeave={toggleLeave}
                 menuProps={menuProps}
                 billingLeaderRef={billingLeader}
+                toggleRemove={toggleRemove}
               />
             )}
           </MenuToggleBlock>
         </ActionsBlock>
       </RowActions>
       {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+      {removeModal(
+        <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
+      )}
     </StyledRow>
   )
 }

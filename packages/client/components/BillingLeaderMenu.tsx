@@ -13,10 +13,11 @@ type Props = {
   menuProps: MenuProps
   billingLeaderRef: BillingLeaderMenu_user$key
   toggleLeave: () => void
+  toggleRemove: () => void
 }
 
 const BillingLeaderMenu = (props: Props) => {
-  const {menuProps, billingLeaderRef, toggleLeave} = props
+  const {menuProps, toggleRemove, billingLeaderRef, toggleLeave} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const billingLeader = useFragment(
@@ -56,6 +57,7 @@ const BillingLeaderMenu = (props: Props) => {
               ? 'Refund and Remove'
               : 'Remove from Organization'
           }
+          onClick={toggleRemove}
         />
       )}
     </Menu>
