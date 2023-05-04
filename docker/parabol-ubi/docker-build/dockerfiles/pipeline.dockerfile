@@ -58,6 +58,7 @@ RUN cd parabol && \
     rm -rf .circleci .github .husky .vscode docker docs && \
     rm -rf .dockerignore .gitignore docker-compose.yml nginx.conf.sigil
 
+# Testing cache
 #final image - copies in parabol build and applies all security configurations to container if enabled
 FROM redhat/ubi8:8.6
 
