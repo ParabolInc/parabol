@@ -130,10 +130,6 @@ export default class StripeManager {
     return this.stripe.invoiceItems.retrieve(invoiceItemId)
   }
 
-  async retrievePaymentIntent(paymentIntentId: string) {
-    return this.stripe.paymentIntents.retrieve(paymentIntentId)
-  }
-
   async retrieveSource(customerId: string, cardId: string) {
     return this.stripe.customers.retrieveSource(customerId, cardId)
   }
