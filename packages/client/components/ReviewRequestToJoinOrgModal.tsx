@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
@@ -10,6 +10,7 @@ import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestTo
 import Checkbox from './Checkbox'
 import useAtmosphere from '../hooks/useAtmosphere'
 import AcceptRequestToJoinDomainMutation from '../mutations/AcceptRequestToJoinDomainMutation'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 
 graphql`
   fragment ReviewRequestToJoinOrgModal_viewer on User {
@@ -68,6 +69,12 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
 
   const {domainJoinRequest} = data.viewer
+
+  useEffect(() => {
+    if (domainJoinRequest) {
+      SendClientSegmentEventMutation(atmosphere, 'Join Request Reviewed')
+    }
+  }, [domainJoinRequest])
 
   if (!domainJoinRequest) {
     return null
