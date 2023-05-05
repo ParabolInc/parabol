@@ -8,6 +8,7 @@ import {
   ThreadedCommentHeader_comment$key,
   ThreadedCommentHeader_comment$data
 } from '~/__generated__/ThreadedCommentHeader_comment.graphql'
+import {PARABOL_AI_USER_ID} from '../utils/constants'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
@@ -48,6 +49,7 @@ const ThreadedCommentHeader = (props: Props) => {
       fragment ThreadedCommentHeader_comment on Comment {
         id
         createdByUserNullable: createdByUser {
+          id
           preferredName
         }
         isActive
@@ -60,7 +62,15 @@ const ThreadedCommentHeader = (props: Props) => {
     `,
     commentRef
   )
-  const {id: commentId, isActive, isViewerComment, reactjis, updatedAt} = comment
+  const {
+    id: commentId,
+    isActive,
+    isViewerComment,
+    reactjis,
+    updatedAt,
+    createdByUserNullable
+  } = comment
+  const isAIComment = createdByUserNullable?.id === PARABOL_AI_USER_ID
   const name = getName(comment)
   const hasReactjis = reactjis.length > 0
   return (
@@ -73,7 +83,7 @@ const ThreadedCommentHeader = (props: Props) => {
               <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
             </>
           )}
-          {isViewerComment && (
+          {(isViewerComment || isAIComment) && (
             <CommentAuthorOptionsButton
               dataCy={`${dataCy}`}
               editComment={editComment}

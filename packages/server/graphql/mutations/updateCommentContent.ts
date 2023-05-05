@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -47,7 +48,7 @@ export default {
       return {error: {message: `Not a member of the meeting`}}
     }
     const {createdBy} = comment
-    if (createdBy !== viewerId) {
+    if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {
       return {error: {message: 'Can only update your own comment'}}
     }
 
