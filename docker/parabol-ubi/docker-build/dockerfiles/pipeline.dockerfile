@@ -43,7 +43,7 @@ RUN cd parabol && \
     yarn pg:build && \
     if [ "$_NO_DEPS" = "true" ]; then \
         yarn build --no-deps && \
-        rm -rf build node_modules packages scripts; \
+        rm -rf node_modules packages scripts; \
     else \
         yarn build; \
     fi && \
