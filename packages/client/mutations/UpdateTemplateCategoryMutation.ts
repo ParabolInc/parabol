@@ -1,7 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {commitMutation} from 'react-relay'
-import {UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation} from '../__generated__/UpdateTemplateCategoryMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateTemplateCategoryMutation_team on UpdateTemplateCategorySuccess {
@@ -11,7 +8,7 @@ graphql`
   }
 `
 
-const mutation = graphql`
+graphql`
   mutation UpdateTemplateCategoryMutation($templateId: ID!, $mainCategory: String!) {
     updateTemplateCategory(templateId: $templateId, mainCategory: $mainCategory) {
       ... on ErrorPayload {
@@ -23,23 +20,3 @@ const mutation = graphql`
     }
   }
 `
-
-const UpdateTemplateCategoryMutation: StandardMutation<TUpdateTemplateCategoryMutation> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted}
-) => {
-  return commitMutation<TUpdateTemplateCategoryMutation>(atmosphere, {
-    mutation,
-    variables,
-    optimisticUpdater: (store) => {
-      const {templateId, mainCategory} = variables
-      const template = store.get(templateId)
-      template?.setValue(mainCategory, 'mainCategory')
-    },
-    onCompleted,
-    onError
-  })
-}
-
-export default UpdateTemplateCategoryMutation
