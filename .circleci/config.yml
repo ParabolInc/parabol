@@ -241,6 +241,9 @@ jobs:
               yarn build --deploy
             fi
       - run:
+          name: Verify source is clean
+          command: git diff-index --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
+      - run:
           name: Push Assets to Databases
           # Use the test env so the ports match up (NODE_ENV=testing)
           command: |
