@@ -61,9 +61,9 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
   const samlInfo = useFragment(
     graphql`
       fragment OrgAuthenticationSignOnUrl_samlInfo on SAMLInfo {
-          id
-          domains
-          url
+        id
+        domains
+        url
       }
     `,
     samlInfoRef

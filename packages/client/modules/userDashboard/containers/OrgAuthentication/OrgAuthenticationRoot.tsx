@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react'
-import { useQueryLoaderNowWithRetry} from '../../../../hooks/useQueryLoaderNow'
+import {useQueryLoaderNowWithRetry} from '../../../../hooks/useQueryLoaderNow'
 import orgAuthenticationQuery, {
   OrgAuthenticationQuery
 } from '../../../../__generated__/OrgAuthenticationQuery.graphql'
@@ -11,7 +11,10 @@ interface Props {
 
 const OrgAuthenticationRoot = (props: Props) => {
   const {orgId} = props
-  const {queryRef, retry} =  useQueryLoaderNowWithRetry<OrgAuthenticationQuery>(orgAuthenticationQuery, {orgId})
+  const {queryRef, retry} = useQueryLoaderNowWithRetry<OrgAuthenticationQuery>(
+    orgAuthenticationQuery,
+    {orgId}
+  )
   return (
     <Suspense fallback={''}>
       {queryRef && <OrgAuthentication orgId={orgId} queryRef={queryRef} retry={retry} />}

@@ -47,16 +47,14 @@ const OrgAuthentication = (props: Props) => {
   const {organization} = viewer
   const {samlInfo} = organization!
 
-  const disabled =
-    !organization?.isBillingLeader ||
-    !organization?.featureFlags.SAMLUI
+  const disabled = !organization?.isBillingLeader || !organization?.featureFlags.SAMLUI
 
   return (
     <Panel>
       <OrgAuthenticationHeader />
       <OrgAuthenticationSSOFrame disabled={disabled} samlInfo={samlInfo} />
       <OrgAuthenticationSignOnUrl disabled={disabled} samlInfo={samlInfo} />
-      <OrgAuthenticationMetadata {...{orgId, samlInfo,disabled, retry}}/>
+      <OrgAuthenticationMetadata {...{orgId, samlInfo, disabled, retry}} />
     </Panel>
   )
 }

@@ -89,15 +89,15 @@ interface Props {
 }
 
 const OrgAuthenticationSSOFrame = (props: Props) => {
-  const {samlInfo:samlInfoRef, disabled} = props
+  const {samlInfo: samlInfoRef, disabled} = props
 
   const samlInfo = useFragment(
     graphql`
       fragment OrgAuthenticationSSOFrame_samlInfo on SAMLInfo {
-          id
-          domains
-          url
-          metadata
+        id
+        domains
+        url
+        metadata
       }
     `,
     samlInfoRef

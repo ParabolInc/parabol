@@ -61,12 +61,12 @@ interface Props {
 const OrgAuthenticationMetadata = (props: Props) => {
   const [metadata, setMetadata] = useState('')
   const {disabled, orgId, samlInfo: samlInfoRef, retry} = props
-  const {error,onError, submitMutation, submitting, onCompleted} = useMutationProps()
+  const {error, onError, submitMutation, submitting, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
 
   const samlInfo = useFragment(
     graphql`
-      fragment OrgAuthenticationMetadata_samlInfo on  SAMLInfo {
+      fragment OrgAuthenticationMetadata_samlInfo on SAMLInfo {
         id
         domains
       }
@@ -77,7 +77,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
   const isOSSDisabled = Boolean(disabled || !samlInfo?.domains?.length)
 
   const submitMetadata = (e: React.FocusEvent | React.FormEvent) => {
-     e.preventDefault()
+    e.preventDefault()
     if (submitting) return
     submitMutation()
     const handleCompleted: CompletedHandler = (response) => {
@@ -85,12 +85,8 @@ const OrgAuthenticationMetadata = (props: Props) => {
       if (success) {
         onCompleted()
         retry()
-      }else {
-        onError(
-          new Error(
-            `${error.message}`
-          )
-        )
+      } else {
+        onError(new Error(`${error.message}`))
       }
     }
     UpdateSAMLMutation(
