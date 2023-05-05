@@ -6,11 +6,12 @@ import {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticatio
 import OrgAuthenticationHeader from './OrgAuthenticationHeader'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
-import OrgAuthenticationSSOEnabled from './OrgAuthenticationSSOFrame'
+import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 
 interface Props {
   queryRef: PreloadedQuery<OrgAuthenticationQuery>
   orgId: string
+  retry: () => void
 }
 
 const query = graphql`
@@ -21,14 +22,15 @@ const query = graphql`
         isBillingLeader
         createdAt
         name
+
         featureFlags {
           SAMLUI
         }
+
         samlInfo {
-          id
-          domains
-          url
-          metadata
+          ...OrgAuthenticationSSOFrame_samlInfo
+          ...OrgAuthenticationMetadata_samlInfo
+          ...OrgAuthenticationSignOnUrl_samlInfo
         }
       }
     }
@@ -36,28 +38,25 @@ const query = graphql`
 `
 
 const OrgAuthentication = (props: Props) => {
-  const {queryRef, orgId} = props
+  const {queryRef, orgId, retry} = props
   const data = usePreloadedQuery<OrgAuthenticationQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
 
   const {viewer} = data
   const {organization} = viewer
+  const {samlInfo} = organization!
 
   const disabled =
     !organization?.isBillingLeader ||
-    !organization?.featureFlags?.SAMLUI ||
-    !organization?.samlInfo?.domains?.length
+    !organization?.featureFlags.SAMLUI
 
   return (
     <Panel>
       <OrgAuthenticationHeader />
-      <OrgAuthenticationSSOEnabled disabled={disabled} samlInfo={organization?.samlInfo} />
-      <OrgAuthenticationSignOnUrl
-        singleSignOnUrl={organization?.samlInfo?.url}
-        disabled={disabled}
-      />
-      <OrgAuthenticationMetadata orgId={orgId} disabled={disabled} />
+      <OrgAuthenticationSSOFrame disabled={disabled} samlInfo={samlInfo} />
+      <OrgAuthenticationSignOnUrl disabled={disabled} samlInfo={samlInfo} />
+      <OrgAuthenticationMetadata {...{orgId, samlInfo,disabled, retry}}/>
     </Panel>
   )
 }

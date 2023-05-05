@@ -1,6 +1,9 @@
+import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {Add, Check} from '@mui/icons-material'
 import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgAuthenticationSSOFrame_samlInfo$key} from '~/__generated__/OrgAuthenticationSSOFrame_samlInfo.graphql'
 import makeMaxWidthMediaQuery from '~/utils/makeMaxWidthMediaQuery'
 import DialogTitle from '../../../../components/DialogTitle'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -81,20 +84,24 @@ const DomainChips = styled('span')({
 })
 
 interface Props {
-  samlInfo:
-    | {
-        readonly id: string
-        readonly domains: ReadonlyArray<string> | null
-        readonly url: string | null
-        readonly metadata: string | null
-      }
-    | null
-    | undefined
+  samlInfo: OrgAuthenticationSSOFrame_samlInfo$key | null
   disabled: boolean
 }
 
 const OrgAuthenticationSSOFrame = (props: Props) => {
-  const {samlInfo, disabled} = props
+  const {samlInfo:samlInfoRef, disabled} = props
+
+  const samlInfo = useFragment(
+    graphql`
+      fragment OrgAuthenticationSSOFrame_samlInfo on SAMLInfo {
+          id
+          domains
+          url
+          metadata
+      }
+    `,
+    samlInfoRef
+  )
 
   const isSSOEnabled = samlInfo?.domains && samlInfo?.url && samlInfo?.metadata
 

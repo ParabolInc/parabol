@@ -1,6 +1,9 @@
+import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {ContentCopy} from '@mui/icons-material'
 import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgAuthenticationSignOnUrl_samlInfo$key} from '~/__generated__/OrgAuthenticationSignOnUrl_samlInfo.graphql'
 import CopyLink from '../../../../components/CopyLink'
 import DialogTitle from '../../../../components/DialogTitle'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -50,12 +53,24 @@ const StyledContentCopyIcon = styled(ContentCopy)({
 
 interface Props {
   disabled: boolean
-  singleSignOnUrl?: string | null
+  samlInfo: OrgAuthenticationSignOnUrl_samlInfo$key | null
 }
 
 const OrgAuthenticationSignOutUrl = (props: Props) => {
-  const {disabled} = props
-  const singleSignOnUrl = props.singleSignOnUrl ?? ''
+  const {disabled, samlInfo: samlInfoRef} = props
+  const samlInfo = useFragment(
+    graphql`
+      fragment OrgAuthenticationSignOnUrl_samlInfo on SAMLInfo {
+          id
+          domains
+          url
+      }
+    `,
+    samlInfoRef
+  )
+
+  const singleSignOnUrl = samlInfo?.url ?? ''
+  const isOSSDisabled = Boolean(disabled || !samlInfo?.domains?.length)
 
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
@@ -64,15 +79,15 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
   return (
     <>
       <Section>
-        <SubTitle disabled={disabled}>Single Sign-On URL</SubTitle>
-        <Label disabled={disabled}>
+        <SubTitle disabled={isOSSDisabled}>Single Sign-On URL</SubTitle>
+        <Label disabled={isOSSDisabled}>
           Copy and paste this into your identity providers SAML configuration
         </Label>
       </Section>
       <InputSection>
         <BasicInput
           readOnly
-          disabled={disabled}
+          disabled={isOSSDisabled}
           name='singleSignOnUrl'
           placeholder='https://action.parabol.co/sso/saml/xxxxxxx-xxxxx-xxxxx-xxxxxxx'
           value={singleSignOnUrl}
