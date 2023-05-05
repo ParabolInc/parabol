@@ -2,15 +2,15 @@ extend type Mutation {
   """
   This creates a set-up intent so that we're able to use Stripe Elements in the client
   """
-  createSetupIntent(orgId: ID!): CreateSetupIntentPayload!
+  createPaymentIntent(orgId: ID!): CreatePaymentIntentPayload!
 }
 
 """
-Return value for createSetupIntent, which could be an error
+Return value for createPaymentIntent, which could be an error
 """
-union CreateSetupIntentPayload = ErrorPayload | CreateSetupIntentSuccess
+union CreatePaymentIntentPayload = ErrorPayload | CreatePaymentIntentSuccess
 
-type CreateSetupIntentSuccess {
+type CreatePaymentIntentSuccess {
   """
   The client secret required to confirm the subscription set-up intent
   """

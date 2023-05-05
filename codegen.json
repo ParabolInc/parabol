@@ -44,7 +44,7 @@
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
-          "CreateSetupIntentSuccess": "./types/CreateSetupIntentSuccess#CreateSetupIntentSuccessSource",
+          "CreatePaymentIntentSuccess": "./types/CreatePaymentIntentSuccess#CreatePaymentIntentSuccessSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",

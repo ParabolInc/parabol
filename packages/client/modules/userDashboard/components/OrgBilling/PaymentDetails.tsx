@@ -10,11 +10,11 @@ import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import CreateSetupIntentMutation from '../../../../mutations/CreateSetupIntentMutation'
+import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import {CompletedHandler} from '../../../../types/relayMutations'
-import {CreateSetupIntentMutation as TCreateSetupIntentMutation} from '../../../../__generated__/CreateSetupIntentMutation.graphql'
+import {CreatePaymentIntentMutation as TCreatePaymentIntentMutation} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
 import BillingForm from './BillingForm'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 
@@ -157,14 +157,14 @@ const PaymentDetails = (props: Props) => {
 
   useEffect(() => {
     if (tier !== 'starter') return
-    const handleCompleted: CompletedHandler<TCreateSetupIntentMutation['response']> = (res) => {
-      const {createSetupIntent} = res
-      const {clientSecret} = createSetupIntent
+    const handleCompleted: CompletedHandler<TCreatePaymentIntentMutation['response']> = (res) => {
+      const {createPaymentIntent} = res
+      const {clientSecret} = createPaymentIntent
       if (clientSecret) {
         setClientSecret(clientSecret)
       }
     }
-    CreateSetupIntentMutation(atmosphere, {orgId}, {onError, onCompleted: handleCompleted})
+    CreatePaymentIntentMutation(atmosphere, {orgId}, {onError, onCompleted: handleCompleted})
   }, [])
 
   if (!clientSecret.length) return null

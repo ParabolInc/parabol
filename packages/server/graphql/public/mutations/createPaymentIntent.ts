@@ -3,7 +3,7 @@ import {getUserId} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
-const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
+const createPaymentIntent: MutationResolvers['createPaymentIntent'] = async (
   _source,
   {orgId},
   {authToken, dataLoader}
@@ -27,4 +27,4 @@ const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
   return data
 }
 
-export default createSetupIntent
+export default createPaymentIntent
