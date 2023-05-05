@@ -5,13 +5,38 @@ import getPg from '../getPg'
 const insertMeetingTemplate = async (meetingTemplate: MeetingTemplate) => {
   const r = await getRethink()
   const pg = getPg()
-  const {id, name, teamId, orgId, parentTemplateId, type, scope, lastUsedAt, isStarter, isFree} =
-    meetingTemplate
+  const {
+    id,
+    name,
+    teamId,
+    orgId,
+    parentTemplateId,
+    type,
+    scope,
+    lastUsedAt,
+    isStarter,
+    isFree,
+    mainCategory,
+    illustrationUrl
+  } = meetingTemplate
   const [rRes, pgRes] = await Promise.allSettled([
     r.table('MeetingTemplate').insert(meetingTemplate).run(),
     pg.query(
-      `INSERT INTO "MeetingTemplate" (id, name, "teamId", "orgId", "parentTemplateId", type, scope, "lastUsedAt", "isStarter", "isFree") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-      [id, name, teamId, orgId, parentTemplateId, type, scope, lastUsedAt, isStarter, isFree]
+      `INSERT INTO "MeetingTemplate" (id, name, "teamId", "orgId", "parentTemplateId", type, scope, "lastUsedAt", "isStarter", "isFree", "mainCategory", "illustrationUrl") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [
+        id,
+        name,
+        teamId,
+        orgId,
+        parentTemplateId,
+        type,
+        scope,
+        lastUsedAt,
+        isStarter,
+        isFree,
+        mainCategory,
+        illustrationUrl
+      ]
     )
   ])
   if (pgRes.status === 'rejected') console.log(pgRes.reason)
