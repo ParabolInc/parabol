@@ -14,11 +14,11 @@ import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
 import ThreadedReplyButton from './ThreadedReplyButton'
 
-const HeaderActions = styled('div')<{isViewerComment: boolean}>(({isViewerComment}) => ({
+const HeaderActions = styled('div')<{isEditable: boolean}>(({isEditable}) => ({
   color: PALETTE.SLATE_600,
   display: 'flex',
   fontWeight: 600,
-  paddingRight: !isViewerComment ? 32 : 8
+  paddingRight: !isEditable ? 32 : 8
 }))
 
 const AddReactji = styled(AddReactjiButton)({
@@ -73,17 +73,18 @@ const ThreadedCommentHeader = (props: Props) => {
   const isAIComment = createdByUserNullable?.id === PARABOL_AI_USER_ID
   const name = getName(comment)
   const hasReactjis = reactjis.length > 0
+  const isEditable = isViewerComment || isAIComment
   return (
     <ThreadedItemHeaderDescription title={name} subTitle={relativeDate(updatedAt)}>
       {isActive && (
-        <HeaderActions isViewerComment={isViewerComment}>
+        <HeaderActions isEditable={isEditable}>
           {!hasReactjis && (
             <>
               <AddReactji onToggle={onToggleReactji} />
               <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
             </>
           )}
-          {(isViewerComment || isAIComment) && (
+          {isEditable && (
             <CommentAuthorOptionsButton
               dataCy={`${dataCy}`}
               editComment={editComment}
