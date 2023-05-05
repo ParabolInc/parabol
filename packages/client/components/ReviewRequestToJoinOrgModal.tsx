@@ -8,11 +8,29 @@ import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
 import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import Checkbox from './Checkbox'
+import useAtmosphere from '../hooks/useAtmosphere'
+import AcceptRequestToJoinDomainMutation from '../mutations/AcceptRequestToJoinDomainMutation'
+
+graphql`
+  fragment ReviewRequestToJoinOrgModal_viewer on User {
+    teams {
+      id
+      name
+      teamMembers(sortBy: "preferredName") {
+        userId
+      }
+      organization {
+        name
+      }
+    }
+  }
+`
 
 const query = graphql`
   query ReviewRequestToJoinOrgModalQuery($requestId: ID!) {
     viewer {
       domainJoinRequest(requestId: $requestId) {
+        id
         createdByEmail
         createdBy
         domain
@@ -29,6 +47,7 @@ const query = graphql`
           activeDomain
         }
       }
+      ...ReviewRequestToJoinOrgModal_viewer @relay(mask: false)
     }
   }
 `
@@ -42,6 +61,8 @@ interface Props {
 const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {closePortal, queryRef} = props
 
+  const atmosphere = useAtmosphere()
+
   const data = usePreloadedQuery<ReviewRequestToJoinOrgModalQuery>(query, queryRef)
 
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
@@ -52,13 +73,20 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
     return null
   }
 
-  const {createdBy, createdByEmail, domain} = domainJoinRequest
+  const {createdBy, createdByEmail, domain, id: requestId} = domainJoinRequest
 
   const teams = data.viewer.teams
   const sortedTeams = teams
     .filter((team) => team.isLead && team.organization.activeDomain === domain)
     .slice()
     .sort((a, b) => a.organization.name.localeCompare(b.organization.name))
+
+  const onAdd = () => {
+    AcceptRequestToJoinDomainMutation(atmosphere, {
+      requestId,
+      teamIds: selectedTeams
+    })
+  }
 
   return (
     <DialogContainer>
@@ -114,7 +142,9 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
               Cancel
             </SecondaryButton>
           </div>
-          <PrimaryButton size='small'>Add to teams</PrimaryButton>
+          <PrimaryButton size='small' onClick={onAdd}>
+            Add to teams
+          </PrimaryButton>
         </div>
       </DialogContent>
     </DialogContainer>
