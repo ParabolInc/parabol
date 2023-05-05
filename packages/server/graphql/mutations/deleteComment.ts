@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -45,8 +46,8 @@ const deleteComment = {
       return {error: {message: `Not a member of the meeting`}}
     }
     const {createdBy} = comment
-    if (createdBy !== viewerId) {
-      return {error: {message: 'Can only delete your own comment'}}
+    if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {
+      return {error: {message: 'Can only delete your own comment or Parabol AI comments'}}
     }
 
     await r.table('Comment').get(commentId).update({isActive: false, updatedAt: now}).run()

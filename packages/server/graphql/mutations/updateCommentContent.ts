@@ -49,7 +49,7 @@ export default {
     }
     const {createdBy} = comment
     if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {
-      return {error: {message: 'Can only update your own comment'}}
+      return {error: {message: 'Can only update your own comment or Parabol AI comments'}}
     }
 
     // VALIDATION
