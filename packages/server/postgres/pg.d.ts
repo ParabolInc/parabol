@@ -181,6 +181,9 @@ export interface MeetingTemplate {
   type: 'action' | 'poker' | 'retrospective' | 'teamPrompt'
   isStarter: Generated<boolean>
   isFree: Generated<boolean>
+  Foo1: string | null
+  Foo2: string | null
+  Foo3: string | null
   illustrationUrl: string | null
   hideStartingAt: Timestamp | null
   hideEndingAt: Timestamp | null
