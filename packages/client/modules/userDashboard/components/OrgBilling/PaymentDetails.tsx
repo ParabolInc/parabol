@@ -164,7 +164,7 @@ const PaymentDetails = (props: Props) => {
         setClientSecret(clientSecret)
       }
     }
-    CreateSetupIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
+    CreateSetupIntentMutation(atmosphere, {orgId}, {onError, onCompleted: handleCompleted})
   }, [])
 
   if (!clientSecret.length) return null

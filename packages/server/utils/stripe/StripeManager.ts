@@ -54,9 +54,12 @@ export default class StripeManager {
     })
   }
 
-  async createSetupIntent() {
-    return this.stripe.setupIntents.create({
-      payment_method_types: ['card']
+  async createPaymentIntent(customerId: string, amount: number) {
+    return this.stripe.paymentIntents.create({
+      customer: customerId,
+      setup_future_usage: 'off_session',
+      amount,
+      currency: 'usd'
     })
   }
 
@@ -125,6 +128,10 @@ export default class StripeManager {
 
   async retrieveInvoiceItem(invoiceItemId: string) {
     return this.stripe.invoiceItems.retrieve(invoiceItemId)
+  }
+
+  async retrievePaymentIntent(paymentIntentId: string) {
+    return this.stripe.paymentIntents.retrieve(paymentIntentId)
   }
 
   async retrieveSource(customerId: string, cardId: string) {

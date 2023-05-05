@@ -18,6 +18,14 @@ const eventLookup = {
         }
       `
     },
+    payment_succeeded: {
+      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
+      query: `
+        mutation StripeInvoicePaid($invoiceId: ID!) {
+          stripeInvoicePaid(invoiceId: $invoiceId)
+        }
+      `
+    },
     payment_failed: {
       getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `
@@ -99,6 +107,7 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   const {data, type} = verifiedBody
   const {object: payload} = data
   const {event, subEvent, action} = splitType(type)
+  console.log('🚀 ~ IN WEBHOOK!!:', {event})
 
   const parentHandler = eventLookup[event as keyof typeof eventLookup]
   if (!parentHandler) {

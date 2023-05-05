@@ -136,7 +136,7 @@
     "samlify": "^2.8.2",
     "sharp": "^0.30.7",
     "string-similarity": "^3.0.0",
-    "stripe": "^9.13.0",
+    "stripe": "^12.4.0",
     "tslib": "^2.4.0",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v20.19.0"
   }

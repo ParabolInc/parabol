@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
+import {useStripe, useElements, PaymentElement} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
@@ -71,7 +71,7 @@ const BillingForm = (props: Props) => {
     if (!stripe || !elements) return
     setIsLoading(true)
     if (errorMsg) setErrorMsg(null)
-    const {setupIntent, error} = await stripe.confirmSetup({
+    const {paymentIntent, error} = await stripe.confirmPayment({
       elements,
       redirect: 'if_required'
     })
@@ -80,7 +80,8 @@ const BillingForm = (props: Props) => {
       setErrorMsg(error.message)
       return
     }
-    const {payment_method: paymentMethodId, status} = setupIntent
+
+    const {payment_method: paymentMethodId, status} = paymentIntent
     if (status === 'succeeded' && typeof paymentMethodId === 'string') {
       setIsPaymentSuccessful(true)
       UpgradeToTeamTierMutation(atmosphere, {orgId, paymentMethodId}, {onError, onCompleted})
