@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import publish from '../../../utils/publish'
 import getKysely from '../../../postgres/getKysely'
+import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 
 const updateTemplateCategory: MutationResolvers['updateTemplateCategory'] = async (
@@ -15,6 +15,11 @@ const updateTemplateCategory: MutationResolvers['updateTemplateCategory'] = asyn
   // VALIDATION
   if (mainCategory.length < 1) return {error: {message: 'Category name cannot be blank'}}
   if (mainCategory.length > 100) return {error: {message: 'Category name is too long'}}
+
+  // I'd like to relax this later, hence the separate validation from string length
+  const stockCategories = ['retrospective', 'estimation', 'standup', 'feedback', 'strategy']
+  if (!stockCategories.includes(mainCategory))
+    return {error: {message: 'Custom categories not available'}}
 
   // RESOLUTION
   await pg

@@ -185,7 +185,7 @@ const ActivityDetails = (props: Props) => {
                         isOwner={isOwner && isEditing}
                       />
                     </div>
-                    <ActivityDetailsBadges templateRef={selectedTemplate} />
+                    <ActivityDetailsBadges isEditing={isEditing} templateRef={selectedTemplate} />
                     <div className='w-[480px]'>
                       <div className='mb-8'>
                         {isOwner ? (
