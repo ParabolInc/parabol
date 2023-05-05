@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Only run this workflow if it target is main branch on pull_request event
-    if: ${{ contains(github.event.issue.labels.*.name, 'bug') && (github.event.label.name == 'Squad 1' || github.event.label.name == 'Squad 2')}}
+    if: ${{ contains(github.event.issue.labels.*.name, 'bug') && (github.event.label.name == 'Squad - Land & Expand' || github.event.label.name == 'Squad - Self Serve')}}
     
     steps:
       - uses: pullreminders/slack-action@master
