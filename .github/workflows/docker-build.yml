@@ -62,26 +62,15 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
-      # 1.- Only images produced on tags are built with addiotional security. It takes about 2 more minutes to build.
-      # 2.- Change the NO_DEPS for tags to true whenenver we want to start building using the --no-deps option. It requires more memory than what is available in the free runners and it also takes more time to build.
-      - name: Setup Docker build args
+      # Generate the NODE_VERSION from the package.json
+      - name: Setup environment variables for Docker build args
         run: |
           NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
           echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
 
-          if [ ${{github.ref_type}} = "tag" ]; then
-            echo "NO_DEPS=false" >> $GITHUB_ENV
-            echo "BUILD_WITH_SECURITY=true" >> $GITHUB_ENV
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
-          else
-            echo "NO_DEPS=false" >> $GITHUB_ENV
-            echo "BUILD_WITH_SECURITY=true" >> $GITHUB_ENV
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
-          fi
-
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-
-      - name: Build and push
+      # If we are in a branch, build the image (tags SHA and branch-name) and also push it as cache for the future.
+      - name: Build and push for branches
+        if: ${{github.ref_type}} == "branch"
         uses: docker/build-push-action@v4
         with:
           network: host
@@ -91,11 +80,31 @@ jobs:
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
             "_BUILD_ENV_PATH=${{ env.PARABOL_BUILD_ENV_PATH }}"
-            "_SECURITY_ENABLED=${{ env.BUILD_WITH_SECURITY }}"
-            "_NO_DEPS=${{ env.NO_DEPS }}"
+            "_SECURITY_ENABLED=true"
+            "_NO_DEPS=false"
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
-            "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{github.ref_name}}"
+            "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}"
           cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache
           cache-to: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache,mode=max
+
+      # If we are in a tag, which is likely only to release the application, build the image using the cache from the master branch, not pushing it as cache afterwards.
+      - name: Build and push for tags
+        if: ${{github.ref_type}} == "tag"
+        uses: docker/build-push-action@v4
+        with:
+          network: host
+          allow: network.host
+          file: ${{ env.PARABOL_DOCKERFILE }}
+          context: .
+          build-args: |
+            "_NODE_VERSION=${{ env.NODE_VERSION }}"
+            "_BUILD_ENV_PATH=${{ env.PARABOL_BUILD_ENV_PATH }}"
+            "_SECURITY_ENABLED=true"
+            "_NO_DEPS=false"
+          push: true
+          tags: |
+            "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
+            "${{ secrets.GCP_AR_PARABOL }}:${{github.ref_name}}"
+          cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:master-cache
