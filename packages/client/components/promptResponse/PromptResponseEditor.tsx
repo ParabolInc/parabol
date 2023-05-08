@@ -177,6 +177,7 @@ const PromptResponseEditor = (props: Props) => {
       if (draftStorageKey) {
         window.localStorage.setItem(draftStorageKey, JSON.stringify(editorState.getJSON()))
       }
+      linkReplace('.loom-video')
     },
     [setEditing, draftStorageKey]
   )

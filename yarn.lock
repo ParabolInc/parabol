@@ -5252,6 +5252,11 @@
   resolved "https://registry.yarnpkg.com/@linaria/core/-/core-3.0.0-beta.13.tgz#049c5be5faa67e341e413a0f6b641d5d78d91056"
   integrity sha512-3zEi5plBCOsEzUneRVuQb+2SAx3qaC1dj0FfFAI6zIJQoDWu0dlSwKijMRack7oO9tUWrchfj3OkKQAd1LBdVg==
 
+"@loomhq/loom-embed@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@loomhq/loom-embed/-/loom-embed-1.5.0.tgz#1f5a72a3bef30958c05b37a94ec86af78c3626c9"
+  integrity sha512-1Rilv+Ta39Rk2mEb8wzfLSpPhl6ax7kfLNnfYTAGK4mCJIxwQ1o/BY46QRbIpQT/SdfsFCvvNWa57hlEEaduGA==
+
 "@mattkrick/fast-rtc-peer@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.4.1.tgz#68a0c7053f19b088b1737f0d03c2ef7935de7dd4"
@@ -8840,9 +8845,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001286, caniuse-lite@^1.0.30001317, caniuse-lite@^1.0.30001359, caniuse-lite@^1.0.30001400, caniuse-lite@^1.0.30001426, caniuse-lite@^1.0.30001449, caniuse-lite@~1.0.0:
-  version "1.0.30001482"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001482.tgz#8b3fad73dc35b2674a5c96df2d4f9f1c561435de"
-  integrity sha512-F1ZInsg53cegyjroxLNW9DmrEQ1SuGRTO1QlpA0o2/6OpQ0gFeDRoq1yFmnr8Sakn9qwwt9DmbxHB6w167OSuQ==
+  version "1.0.30001486"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001486.tgz#56a08885228edf62cbe1ac8980f2b5dae159997e"
+  integrity sha512-uv7/gXuHi10Whlj0pp5q/tsK/32J2QSqVRKQhs2j8VsDCjgyruAh/eEXHF822VqO9yT6iZKw3nRwZRSPBE9OQg==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -14908,11 +14913,6 @@ minipass@^3.1.6:
   dependencies:
     yallist "^4.0.0"
 
-minipass@^4.0.0:
-  version "4.2.8"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-4.2.8.tgz#f0010f64393ecfc1d1ccb5f582bcaf45f48e1a3a"
-  integrity sha512-fNzuVyifolSLFL4NzpF+wEF4qrgqaaKX0haXPQEdQ7NKAN+WecoKMHV09YcuL/DHxrUsYQOK3MiuDf7Ip2OXfQ==
-
 minipass@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-5.0.0.tgz#3e9788ffb90b694a5d0ec94479a45b5d8738133d"
@@ -19092,13 +19092,13 @@ tar@^4.4.13:
     yallist "^3.1.1"
 
 tar@^6.0.2:
-  version "6.1.13"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.13.tgz#46e22529000f612180601a6fe0680e7da508847b"
-  integrity sha512-jdIBIN6LTIe2jqzay/2vtYLlBHa3JF42ot3h1dW8Q0PaAG4v8rm0cvpVePtau5C6OKXGGcgO9q2AMNSWxiLqKw==
+  version "6.1.14"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.14.tgz#e87926bec1cfe7c9e783a77a79f3e81c1cfa3b66"
+  integrity sha512-piERznXu0U7/pW7cdSn7hjqySIVTYT6F76icmFk7ptU7dDYlXTm5r9A6K04R2vU3olYgoKeo1Cg3eeu5nhftAw==
   dependencies:
     chownr "^2.0.0"
     fs-minipass "^2.0.0"
-    minipass "^4.0.0"
+    minipass "^5.0.0"
     minizlib "^2.1.1"
     mkdirp "^1.0.3"
     yallist "^4.0.0"

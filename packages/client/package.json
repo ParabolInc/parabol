@@ -68,6 +68,7 @@
     "@emotion/core": "^10.0.27",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^10.0.27",
+    "@loomhq/loom-embed": "^1.5.0",
     "@mattkrick/graphql-trebuchet-client": "^2.2.1",
     "@mattkrick/sanitize-svg": "0.4.0",
     "@mattkrick/trebuchet-client": "^3.0.1",
