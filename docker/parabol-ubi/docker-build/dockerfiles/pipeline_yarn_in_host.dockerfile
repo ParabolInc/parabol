@@ -11,48 +11,17 @@ WORKDIR /home/node
 COPY docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
 COPY docker/parabol-ubi/docker-build/tools/ip-to-server_id /home/node/tools/ip-to-server_id
 
-RUN mkdir -p /home/node/parabol/self-hosted && \
-    chown node:node /home/node/parabol/self-hosted
+COPY --chown=node . ./parabol
 
-RUN mkdir -p ${NPM_CONFIG_PREFIX} && \
-    mkdir -p /home/node/parabol/ && \
-    mkdir -p /home/node/parabol/self-hosted && \
-    mkdir -p /home/node/parabol/packages/{client,gql-executor,integration-tests,server} && \
-    chown -R node:node /home/node
-
-COPY ${_BUILD_ENV_PATH} ./parabol/.env
-
-COPY yarn.lock ./parabol/yarn.lock
-COPY package.json ./parabol/package.json
-COPY packages/client/package.json ./parabol/packages/client/package.json
-COPY packages/gql-executor/package.json ./parabol/packages/gql-executor/package.json
-COPY packages/integration-tests/package.json ./parabol/packages/integration-tests/package.json
-COPY packages/server/package.json ./parabol/packages/server/package.json
-
-RUN cd parabol && \
-    NODE_OPTIONS=--max-old-space-size=20480 && \
-    yarn install --frozen-lockfile && \
-    yarn cache clean
-
-COPY . ./parabol
-
-RUN cd parabol && \
-    NODE_OPTIONS=--max-old-space-size=20480 && \
-    yarn db:migrate && \
-    yarn pg:migrate up && \
-    yarn pg:build && \
-    if [ "$_NO_DEPS" = "true" ]; then \
-        yarn build --no-deps && \
+RUN if [ "$_NO_DEPS" = "true" ]; then \
         rm -rf node_modules packages scripts; \
-    else \
-        yarn build; \
     fi && \
-    chown -R node:1000 /home/node && \
     rm -rf .env && \
     rm -rf .circleci .github .husky .vscode docker docs && \
     rm -rf .dockerignore .gitignore docker-compose.yml nginx.conf.sigil
 
 # Final image - copies in parabol build and applies all security configurations to container if enabled
+#FROM redhat/ubi8-minimal:8.6
 FROM redhat/ubi8:8.6
 
 ARG _SECURITY_ENABLED="true"

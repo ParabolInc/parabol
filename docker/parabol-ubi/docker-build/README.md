@@ -44,7 +44,7 @@ Example of variables:
 
 ```commandLine
 export postgresql_tag=12.10-alpine; \
-export rethinkdb_tag=2.4.0; \
+export rethinkdb_tag=2.4.2; \
 export redis_tag=6.2.6; \
 export _BUILD_ENV_PATH=docker/parabol-ubi/docker-build/environments/pipeline; \
 export _NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json); \
@@ -68,6 +68,8 @@ docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres t
 It will produce a Docker image tagged as `${_DOCKER_REPOSITORY}:${_DOCKER_TAG}`. Ex: `parabol:test-image`.
 
 To avoid caching images and using cache, the flag `--no-cache` can be added to the `docker build` command. It will save some space in the workstation, but it might take longer to build.
+
+If you want debug the commands executed during the docker build, add the flag `--progress=plain` to the docker build command.
 
 ## Build from git
 
