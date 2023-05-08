@@ -90,6 +90,8 @@
     "@pgtyped/query": "^0.11.0",
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.8.0",
+    "@slack/events-api": "^3.0.1",
+    "@slack/web-api": "^6.8.1",
     "adaptivecards": "^2.10.0",
     "analytics-node": "^5.0.0",
     "base64url": "^3.0.1",
