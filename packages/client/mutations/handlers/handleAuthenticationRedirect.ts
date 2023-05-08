@@ -14,7 +14,13 @@ const handleAuthenticationRedirect: OnNextHandler<
   SendClientSegmentEventMutation(atmosphere, 'User Login')
   const redirectTo = getValidRedirectParam()
   if (redirectTo) {
-    history.push(redirectTo)
+    const nonce = new URLSearchParams(window.location.search).get('nonce')
+    const {authToken} = atmosphere
+    if (nonce) {
+      window.location.href = `${redirectTo}?nonce=${nonce}&token=${authToken}`
+    } else {
+      history.push(redirectTo)
+    }
     return
   }
   if (!acceptTeamInvitation?.team) {
