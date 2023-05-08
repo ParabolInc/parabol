@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useEffect, useMemo, useState} from 'react'
+import React, {Suspense, useEffect, useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'

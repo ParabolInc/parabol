@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
 import {JSONContent} from '@tiptap/react'
-import {oembed} from '@loomhq/loom-embed'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -235,14 +234,6 @@ const TeamPromptResponseCard = (props: Props) => {
     )
   }
 
-  const [loomHtml, setLoomHtml] = useState<string | null>(null)
-
-  useEffect(() => {
-    oembed('https://www.loom.com/share/450680aacaaf44bca9b1a2d211e6cb29').then(({html}) => {
-      setLoomHtml(html)
-    })
-  }, [])
-
   const ref = useAnimatedCard(displayIdx, status)
 
   return (
@@ -276,7 +267,6 @@ const TeamPromptResponseCard = (props: Props) => {
               placeholder={viewerEmptyResponsePlaceholder}
               draftStorageKey={`draftResponse:${stageId}`}
             />
-            {loomHtml && <div dangerouslySetInnerHTML={{__html: loomHtml}} />}
             {!!plaintextContent && (
               <ResponseCardFooter>
                 <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
