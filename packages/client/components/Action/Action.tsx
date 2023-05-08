@@ -78,6 +78,10 @@ const Action = memo(() => {
             <Route path='/reset-password/:token' component={SetNewPassword} />
             <Route path='/team-invitation/:token' component={TeamInvitation} />
             <Route path='/invitation-link/:token' component={InvitationLink} />
+            <Route
+              path='/admin/login'
+              render={(p) => <AuthenticationPage {...p} page={'admin-login'} />}
+            />
             <Route component={PrivateRoutes} />
           </Switch>
         </Suspense>

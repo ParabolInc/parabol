@@ -24,6 +24,7 @@ export type AuthPageSlug =
   | 'signin'
   | 'forgot-password'
   | 'forgot-password/submitted'
+  | 'admin-login'
 
 export type GotoAuthPage = (page: AuthPageSlug, search?: string) => void
 

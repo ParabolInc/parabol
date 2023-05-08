@@ -23,11 +23,15 @@ const AuthenticationPage = (props: Props) => {
   const {history} = useRouter()
   const {page} = props
   const atmosphere = useAtmosphere()
-  const {authObj} = atmosphere
+  const {authObj, authToken} = atmosphere
   useDocumentTitle('Sign Up for Free Online Retrospectives | Parabol', 'Sign Up')
   useCanonical(page)
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
+    if (page === 'admin-login') {
+      const nonce = new URLSearchParams(window.location.search).get('nonce')
+      window.location.href = `${nextUrl}?nonce=${nonce}&token=${authToken}`
+    }
     // always replace otherwise they could get stuck in a back-button loop
     setTimeout(() => history.replace(nextUrl))
     return null

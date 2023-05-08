@@ -35,7 +35,7 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
       ip,
       query,
       variables,
-      isPrivate,
+      isPrivate: true,
       isAdHoc: true
     })
     res.cork(() => {
