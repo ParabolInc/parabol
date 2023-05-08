@@ -12,57 +12,54 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     return null
   },
   meetingSeries: async ({meetingSeriesId}, _args, {dataLoader}) => {
-    if (meetingSeriesId) {
-      const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
-      if (!series) {
-        return null
-      }
+    if (!meetingSeriesId) return null
 
-      return series
+    const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
+    if (!series) {
+      return null
     }
-    return null
+
+    return series
   },
   prevMeeting: async ({meetingSeriesId, createdAt}, _args, {dataLoader}) => {
-    if (meetingSeriesId) {
-      const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
-      if (!series || series.cancelledAt) {
-        return null
-      }
+    if (!meetingSeriesId) return null
 
-      const r = await getRethink()
-      const meetings = await r
-        .table('NewMeeting')
-        .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
-        .filter({meetingType: 'teamPrompt'})
-        .filter((row) => row('createdAt').lt(createdAt))
-        .orderBy(r.desc('createdAt'))
-        .limit(1)
-        .run()
-
-      return meetings[0] as MeetingTeamPrompt
+    const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
+    if (!series || series.cancelledAt) {
+      return null
     }
-    return null
+
+    const r = await getRethink()
+    const meetings = await r
+      .table('NewMeeting')
+      .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
+      .filter({meetingType: 'teamPrompt'})
+      .filter((row) => row('createdAt').lt(createdAt))
+      .orderBy(r.desc('createdAt'))
+      .limit(1)
+      .run()
+
+    return meetings[0] as MeetingTeamPrompt
   },
   nextMeeting: async ({meetingSeriesId, createdAt}, _args, {dataLoader}) => {
-    if (meetingSeriesId) {
-      const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
-      if (!series || series.cancelledAt) {
-        return null
-      }
+    if (!meetingSeriesId) return null
 
-      const r = await getRethink()
-      const meetings = await r
-        .table('NewMeeting')
-        .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
-        .filter({meetingType: 'teamPrompt'})
-        .filter((doc) => doc('createdAt').gt(createdAt))
-        .orderBy(r.asc('createdAt'))
-        .limit(1)
-        .run()
-
-      return meetings[0] as MeetingTeamPrompt
+    const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
+    if (!series || series.cancelledAt) {
+      return null
     }
-    return null
+
+    const r = await getRethink()
+    const meetings = await r
+      .table('NewMeeting')
+      .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
+      .filter({meetingType: 'teamPrompt'})
+      .filter((doc) => doc('createdAt').gt(createdAt))
+      .orderBy(r.asc('createdAt'))
+      .limit(1)
+      .run()
+
+    return meetings[0] as MeetingTeamPrompt
   }
 }
 
