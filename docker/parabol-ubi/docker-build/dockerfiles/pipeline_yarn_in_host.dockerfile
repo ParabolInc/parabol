@@ -13,13 +13,6 @@ COPY docker/parabol-ubi/docker-build/tools/ip-to-server_id /home/node/tools/ip-t
 
 COPY --chown=node . ./parabol
 
-RUN if [ "$_NO_DEPS" = "true" ]; then \
-        rm -rf node_modules packages scripts; \
-    fi && \
-    rm -rf .env && \
-    rm -rf .circleci .github .husky .vscode docker docs && \
-    rm -rf .dockerignore .gitignore docker-compose.yml nginx.conf.sigil
-
 # Final image - copies in parabol build and applies all security configurations to container if enabled
 #FROM redhat/ubi8-minimal:8.6
 FROM redhat/ubi8:8.6

@@ -10,8 +10,8 @@ jobs:
   build-and-push:
     runs-on: ubuntu-22.04
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     services:
       postgres:
         image: postgres:12.10-alpine
@@ -45,22 +45,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
-          buildkitd-flags: '--allow-insecure-entitlement network.host'
+          buildkitd-flags: "--allow-insecure-entitlement network.host"
           driver-opts: network=host
 
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
         with:
-          token_format: 'access_token'
+          token_format: "access_token"
           workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
-      - uses: 'docker/login-action@v2'
+      - uses: "docker/login-action@v2"
         with:
           registry: ${{ secrets.GCP_DOCKER_REGISTRY }}
-          username: 'oauth2accesstoken'
-          password: '${{ steps.auth.outputs.access_token }}'
+          username: "oauth2accesstoken"
+          password: "${{ steps.auth.outputs.access_token }}"
 
       # 1.- Only images produced on tags are built with addiotional security. It takes about 2 more minutes to build.
       # 2.- Change the NO_DEPS for tags to true whenenver we want to start building using the --no-deps option. It requires more memory than what is available in the free runners and it also takes more time to build.
@@ -84,8 +84,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '${{ env.NODE_VERSION }}'
-          cache: 'yarn'
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: "yarn"
           cache-dependency-path: |
             yarn.lock
             package.json
@@ -129,5 +129,5 @@ jobs:
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{github.ref_name}}"
-          cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache
-          cache-to: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache,mode=max
+          #cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:master-cache
+          #cache-to: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache,mode=max
