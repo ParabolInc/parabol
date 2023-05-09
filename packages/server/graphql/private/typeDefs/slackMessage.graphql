@@ -2,5 +2,5 @@ extend type Mutation {
   """
   Ping various services to determine response time & availability
   """
-  slackMessage(text: String!, username: String!, channel: String!): Boolean!
+  slackMessage(text: String!, username: String!, channel: String!, mentions: [String!]!): Boolean!
 }

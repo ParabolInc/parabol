@@ -5,7 +5,6 @@ import parseBody from '../parseBody'
 import publishWebhookGQL from '../utils/publishWebhookGQL'
 import tsscmp from 'tsscmp'
 
-
 const SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET!
 const REQUEST_TIMESTAMP_MAX_DELTA_MIN = 5
 
@@ -32,12 +31,33 @@ type SlackEvent = {
   event_context: string
 }
 
+const walkElements = <T>(elements: any[], callback: (element: any) => T): T[] => {
+  return elements.flatMap((element) => {
+    if (element.elements) {
+      return walkElements(element.elements, callback)
+    } else {
+      return callback(element)
+    }
+  })
+}
+
+const getMentions = (blocks: {elements: any[]}[]) => {
+  return walkElements(blocks, (element) => {
+    return element.type === 'user' ? element.user_id : null
+  }).filter((mention) => mention !== null)
+}
+
 const eventCallbackLookup = {
-  message: {
-    getVars: ({event: {text, user, channel}}: SlackEvent) => ({text, username: user, channel}),
+  // we could also listen for all messages, but let's not do this now
+  // message: {
+  app_mention: {
+    getVars: ({event: {text, user, channel, blocks}}: SlackEvent) => {
+      const mentions = getMentions(blocks)
+      return {text, username: user, channel, mentions}
+    },
     query: `
-      mutation SlackMessage($text: String!, $username: String!, $channel: String!) {
-        slackMessage(text: $text, username: $username, channel: $channel)
+      mutation SlackMessage($text: String!, $username: String!, $channel: String!, $mentions: [String!]) {
+        slackMessage(text: $text, username: $username, channel: $channel, mentions: $mentions)
       }
     `
   }
@@ -66,7 +86,9 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
 
   // Rule 1: Check staleness
   if (requestTimestampSec < fiveMinutesAgoSec) {
-    console.log(`Slack x-slack-request-timestamp must differ from system time by no more than ${REQUEST_TIMESTAMP_MAX_DELTA_MIN} minutes or request is stale`)
+    console.log(
+      `Slack x-slack-request-timestamp must differ from system time by no more than ${REQUEST_TIMESTAMP_MAX_DELTA_MIN} minutes or request is stale`
+    )
     res.writeStatus('401').end()
     return
   }
@@ -78,15 +100,15 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
     res.writeStatus('401').end()
     return
   }
-  const hmac = createHmac('sha256', SIGNING_SECRET);
-  hmac.update(`${signatureVersion}:${requestTimestampSec}:${body}`);
-  const ourSignatureHash = hmac.digest('hex');
+  const hmac = createHmac('sha256', SIGNING_SECRET)
+  hmac.update(`${signatureVersion}:${requestTimestampSec}:${body}`)
+  const ourSignatureHash = hmac.digest('hex')
   if (!signatureHash || !tsscmp(signatureHash, ourSignatureHash)) {
     console.log('Slack signature mismatch')
     res.writeStatus('401').end()
     return
   }
- 
+
   const message = JSON.parse(body)
   const {type} = message
 
@@ -98,7 +120,8 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
       return
     case 'event_callback':
       const event = message as SlackEvent
-      const actionHandler = eventCallbackLookup[event.event.type]
+      const actionHandler =
+        eventCallbackLookup[event.event.type as keyof typeof eventCallbackLookup]
       if (actionHandler) {
         const {getVars, query} = actionHandler
         const variables = getVars(event)
@@ -108,14 +131,13 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
         } else {
           res.writeStatus('500').end()
         }
-      }
-      else {
-        console.log('GEORG event', JSON.stringify(message, undefined, 2))
+      } else {
+        console.log('Slack unknown event_callback', JSON.stringify(message, undefined, 2))
         res.writeStatus('501').end()
       }
       return
   }
-  console.log('GEORG type unknown', type)
+  console.log('Slack type unknown', type)
   res.writeStatus('404').end()
 })
 

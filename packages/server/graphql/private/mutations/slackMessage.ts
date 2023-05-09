@@ -4,7 +4,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const slackMessage: MutationResolvers['slackMessage'] = async (
   _source,
-  {text, username, channel},
+  {text, username, channel, mentions},
   {authToken}
 ) => {
   const r = await getRethink()
@@ -16,7 +16,7 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
   }
 
   // VALIDATION
-  console.log('GEORG mutation', text, username, channel)
+  console.log('GEORG mutation', text, username, channel, mentions)
   return true
 }
 
