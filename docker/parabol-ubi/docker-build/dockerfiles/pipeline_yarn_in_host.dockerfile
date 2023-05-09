@@ -8,10 +8,10 @@ ENV PORT=3000
 
 WORKDIR /home/node
 
-COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
-COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id /home/node/tools/ip-to-server_id
+# COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
+# COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id /home/node/tools/ip-to-server_id
 
-COPY --chown=node . ./parabol
+# COPY --chown=node . ./parabol
 
 WORKDIR ${HOME}/parabol/
 USER node
@@ -37,8 +37,11 @@ COPY --from=base /usr/local/include /usr/local/include
 COPY --from=base /usr/local/share/man /usr/local/share/man
 COPY --from=base /usr/local/share/doc /usr/local/share/doc
 COPY --from=base /usr/local/share/systemtap /usr/local/share/systemtap
-COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
+#COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=base /opt /opt
+
+COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
+COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
 
 # Security
 COPY docker/parabol-ubi/docker-build/security /security
@@ -105,8 +108,10 @@ RUN  if [ "$_SECURITY_ENABLED" = "true" ]; then \
 
 RUN rm -rf /security/
 
-COPY --from=base --chown=node /home/node/tools/ip-to-server_id /home/node/tools/ip-to-server_id
-COPY --from=base --chown=node /home/node/parabol/ ${HOME}/parabol
+COPY --chown=node . ${HOME}/parabol
+
+# COPY --from=base --chown=node /home/node/tools/ip-to-server_id /home/node/tools/ip-to-server_id
+# COPY --from=base --chown=node /home/node/parabol/ ${HOME}/parabol
 
 WORKDIR ${HOME}/parabol/
 USER node

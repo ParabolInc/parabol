@@ -108,13 +108,13 @@ jobs:
           yarn pg:build && \
           if [ "$_NO_DEPS" = "true" ]; then \
               yarn build --no-deps && \
-              rm -rf node_modules packages scripts; \
+              rm -rf node_modules; \
           else \
               yarn build; \
           fi && \
           rm -rf .env && \
-          rm -rf .circleci .github .husky .vscode docs && \
-          rm -rf .dockerignore .gitignore docker-compose.yml nginx.conf.sigil
+          rm -rf .circleci .git .github .husky .vscode docs packages scripts static && \
+          rm -rf .gitignore docker-compose.yml nginx.conf.sigil *.js *.json *.md CHECKS COPYING yarn.lock .prettierrc
 
       - name: Build and push - not master
         if: github.ref_name != 'master'
