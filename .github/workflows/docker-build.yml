@@ -5,6 +5,7 @@ on: [push]
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline_yarn_in_host.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
+  DEPENDENCIES_CACHE: cache-node-modules
 
 jobs:
   build-and-push:
@@ -86,15 +87,17 @@ jobs:
         with:
           node-version: "${{ env.NODE_VERSION }}"
           cache: "yarn"
-          cache-dependency-path: |
-            yarn.lock
-            package.json
-            packages/client/package.json
-            packages/gql-executor/package.json
-            packages/integration-tests/package.json
-            packages/server/package.json
+
+      - name: Get cached node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('yarn.lock') }}
 
       - name: Yarn install
+        if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --immutable && yarn cache clean
 
       - name: Build the application
