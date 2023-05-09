@@ -53,6 +53,7 @@ module.exports = {
       'sse-ping',
       'jira-attachments',
       'stripe',
+      'slack',
       'webhooks',
       'graphql',
       'intranet-graphql',

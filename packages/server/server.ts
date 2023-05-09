@@ -2,6 +2,7 @@ import tracer from 'dd-trace'
 import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
+import slackWebhookHandler from './slack/slackWebhookHandler'
 import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
@@ -61,6 +62,7 @@ uws
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
+  .post('/slack', slackWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/webhooks/graphql', webhookGraphQLHandler)
   .post('/graphql', httpGraphQLHandler)
