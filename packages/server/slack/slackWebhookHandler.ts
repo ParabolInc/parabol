@@ -9,6 +9,40 @@ import tsscmp from 'tsscmp'
 const SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET!
 const REQUEST_TIMESTAMP_MAX_DELTA_MIN = 5
 
+type SlackEvent = {
+  token: string
+  team_id: string
+  api_app_id: string
+  event: {
+    client_msg_id: string
+    type: string
+    text: string
+    user: string
+    ts: string
+    blocks: any[]
+    team: string
+    channel: string
+    event_ts: string
+  }
+  type: string
+  event_id: string
+  event_time: number
+  authorizations: any[]
+  is_ext_shared_channel: boolean
+  event_context: string
+}
+
+const eventCallbackLookup = {
+  message: {
+    getVars: ({event: {text, user, channel}}: SlackEvent) => ({text, username: user, channel}),
+    query: `
+      mutation SlackMessage($text: String!, $username: String!, $channel: String!) {
+        slackMessage(text: $text, username: $username, channel: $channel)
+      }
+    `
+  }
+}
+
 const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const requestTimestampSec = Number.parseInt(req.getHeader('x-slack-request-timestamp'))
   const signature = req.getHeader('x-slack-signature')
@@ -63,9 +97,22 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
       res.writeStatus('200').end()
       return
     case 'event_callback':
-      const {text} = message
-      console.log('GEORG event', JSON.stringify(message, undefined, 2))
-      res.writeStatus('501').end()
+      const event = message as SlackEvent
+      const actionHandler = eventCallbackLookup[event.event.type]
+      if (actionHandler) {
+        const {getVars, query} = actionHandler
+        const variables = getVars(event)
+        const result = await publishWebhookGQL(query, variables)
+        if (result?.data) {
+          res.writeStatus('200').end()
+        } else {
+          res.writeStatus('500').end()
+        }
+      }
+      else {
+        console.log('GEORG event', JSON.stringify(message, undefined, 2))
+        res.writeStatus('501').end()
+      }
       return
   }
   console.log('GEORG type unknown', type)
