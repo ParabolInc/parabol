@@ -116,6 +116,14 @@ jobs:
           rm -rf .circleci .github .husky .vscode docs && \
           rm -rf .dockerignore .gitignore docker-compose.yml nginx.conf.sigil
 
+      - name: Build and push - not master
+        if: ${{github.ref_name}} != 'master'
+        run: echo "not master!"
+
+      - name: Build and push - master
+        if: ${{github.ref_name}} == 'master'
+        run: echo "Master!"
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
