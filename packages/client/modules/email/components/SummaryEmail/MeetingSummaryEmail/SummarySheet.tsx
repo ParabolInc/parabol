@@ -19,7 +19,9 @@ import SummaryPokerStories from './SummaryPokerStories'
 import SummarySheetCTA from './SummarySheetCTA'
 import TeamPromptResponseSummary from './TeamPromptResponseSummary'
 import WholeMeetingSummary from './WholeMeetingSummary'
-import ExportAllTasks from './ExportAllTasks'
+import lazyPreload from '../../../../../utils/lazyPreload'
+
+const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
 
 interface Props {
   emailCSVUrl: string
@@ -89,7 +91,7 @@ const SummarySheet = (props: Props) => {
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
-        {referrer === 'meeting' && taskCount && taskCount > 0 && (
+        {referrer === 'meeting' && !!taskCount && taskCount > 0 && (
           <tr>
             <td
               style={{
