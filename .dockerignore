@@ -7,10 +7,10 @@
 .husky
 docs
 
-node_modules/
+#node_modules/
 dev/
-build/
-dist/
+#build/
+#dist/
 packages/client/__generated__
 .prettierrc
 *.env
@@ -24,15 +24,15 @@ packages/client/__generated__
 pgBackup/
 coverage/
 dump.rdb
-package-lock.json
-packages/server/postgres/queries/generated
-packages/server/types/githubTypes.ts
-packages/server/types/gitlabTypes.ts
-packages/server/graphql/private/resolverTypes.ts
-packages/server/graphql/public/resolverTypes.ts
-packages/server/types/gitlabTypes.ts
-packages/server/types/githubTypes.ts
-queryMap.json
+# package-lock.json
+# packages/server/postgres/queries/generated
+# packages/server/types/githubTypes.ts
+# packages/server/types/gitlabTypes.ts
+# packages/server/graphql/private/resolverTypes.ts
+# packages/server/graphql/public/resolverTypes.ts
+# packages/server/types/gitlabTypes.ts
+# packages/server/types/githubTypes.ts
+# queryMap.json
 rethinkdb_data/
 rethinkdb_dump_*
 schema.graphql
