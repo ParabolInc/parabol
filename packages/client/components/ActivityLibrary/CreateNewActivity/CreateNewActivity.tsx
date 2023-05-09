@@ -25,6 +25,8 @@ import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
 import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
 import BaseButton from '../../BaseButton'
+import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
+import {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
 
 const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
@@ -56,7 +58,6 @@ type SupportedActivity = {
   type: ActivityType
   includedCategories: CategoryID[]
   image: string
-  isEnabled: boolean
   phases: React.ReactNode
 }
 
@@ -66,7 +67,6 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
     type: 'retrospective',
     includedCategories: ['retrospective', 'feedback', 'strategy'],
     image: newTemplate,
-    isEnabled: true,
     phases: (
       <>
         <div>
@@ -92,7 +92,6 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
     type: 'poker',
     includedCategories: ['estimation'],
     image: estimatedEffortTemplate,
-    isEnabled: false,
     phases: (
       <>
         <div>
@@ -127,6 +126,7 @@ const query = graphql`
           node {
             name
             teamId
+            type
           }
         }
       }
@@ -167,7 +167,8 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     const teamTemplates = data.viewer.availableTemplates.edges.filter(
-      (template) => template.node.teamId === selectedTeam.id
+      (template) =>
+        template.node.teamId === selectedTeam.id && template.node.type === 'retrospective'
     )
 
     if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
@@ -199,7 +200,40 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   const handleCreatePokerTemplate = () => {
-    //TODO: implement me
+    if (submitting) {
+      return
+    }
+
+    const teamTemplates = data.viewer.availableTemplates.edges.filter(
+      (template) => template.node.teamId === selectedTeam.id && template.node.type === 'poker'
+    )
+
+    if (teamTemplates.length >= Threshold.MAX_POKER_TEAM_TEMPLATES) {
+      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
+      return
+    }
+    if (teamTemplates.find((template) => template.node.name === '*New Template')) {
+      onError(new Error('You already have a new template. Try renaming that one first.'))
+      return
+    }
+
+    submitMutation()
+    AddPokerTemplateMutation(
+      atmosphere,
+      {teamId: selectedTeam.id},
+      {
+        onError,
+        onCompleted: (res: AddPokerTemplateMutation$data) => {
+          const templateId = res.addPokerTemplate?.pokerTemplate?.id
+          if (templateId) {
+            history.push(`/activity-library/details/${templateId}`, {
+              prevCategory: params.categoryId
+            })
+          }
+          onCompleted()
+        }
+      }
+    )
   }
 
   const createCustomActivityLookup: Record<ActivityType, () => void> = {
@@ -237,9 +271,8 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='disabled:user-select-none group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none focus:ring-2 focus:ring-offset-8 disabled:cursor-not-allowed disabled:opacity-50'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none focus:ring-2 focus:ring-offset-8'
                 value={activity.type}
-                disabled={!activity.isEnabled}
               >
                 <ActivityCard
                   className='w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'

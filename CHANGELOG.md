@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.103.0 2023-May-05
+
+### Added
+
+- feat(retros-in-disguise): Prompt user to use org scope (#8120)
+- feat(retros-in-disguise):Create new poker template (#8143)
+- feat(retros-in-disguise): Poker details view (#8131)
+- chore(prompt-to-join): Allow to open add teammate dialog from the snackbar (#8136)
+- feat(suggest-groups): Add suggestGroups org feature flag (#8130)
+- feat: add mainCategory and illustrationUrl to MeetingTemplate (#8074)
+
+### Fixed
+
+- fix: subscribe to acceptInvite paylods in subscription (#8127)
+
 ## 6.102.0 2023-May-3
 
 ### Added
