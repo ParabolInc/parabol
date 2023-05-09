@@ -1,14 +1,15 @@
-import getRethink from '../../../database/rethinkDriver'
 import {isSuperUser} from '../../../utils/authorization'
+import SlackServerManager from '../../../utils/SlackServerManager'
 import {MutationResolvers} from '../resolverTypes'
+
+const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN
 
 const slackMessage: MutationResolvers['slackMessage'] = async (
   _source,
-  {text, username, channel, mentions},
+  {text, mentions}, //username, channel, mentions},
   {authToken}
 ) => {
-  const r = await getRethink()
-  const now = new Date()
+  //const now = new Date()
 
   // AUTH
   if (!isSuperUser(authToken)) {
@@ -16,7 +17,16 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
   }
 
   // VALIDATION
-  console.log('GEORG mutation', text, username, channel, mentions)
+  // RESOLUTION
+
+  const manager = new SlackServerManager(SLACK_BOT_TOKEN)
+  const slackUsers = await Promise.all(mentions.map((userId) => manager.getUserInfo(userId)))
+
+  const userEmails = slackUsers
+    .map((user) => ('user' in user ? user.user.profile.email : null))
+    .filter((email) => !!email)
+
+  console.log('GEORG mutation', text, userEmails)
   return true
 }
 

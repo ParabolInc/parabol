@@ -107,6 +107,8 @@ interface SlackUser {
     image_192: string
     image_512: string
     team: string
+    // requires scope: users:read.email
+    email?: string
   }
   is_admin: true
   is_owner: boolean
@@ -166,7 +168,11 @@ abstract class SlackManager {
   async get<T>(url: string): Promise<T | ErrorResponse> {
     const record = this.cache[url]
     if (!record) {
-      const res = await this.fetch(encodeURI(url))
+      const res = await this.fetch(encodeURI(url), {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      })
       const result = await res.json()
       this.cache[url] = {
         result,
@@ -197,13 +203,11 @@ abstract class SlackManager {
   }
 
   getUserInfo(userId: string) {
-    return this.get<UserInfoResponse>(
-      `https://slack.com/api/users.info?token=${this.token}&user=${userId}`
-    )
+    return this.get<UserInfoResponse>(`https://slack.com/api/users.info?user=${userId}`)
   }
 
   isValidAuthToken(token: string) {
-    return this.get<IsValidAuthRes>(`https://slack.com/api/auth.test?token=${token}`)
+    return this.post<IsValidAuthRes>('https://slack.com/api/auth.test', {token})
   }
 
   joinConversation(channelId: string) {
