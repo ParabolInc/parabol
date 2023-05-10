@@ -1,5 +1,8 @@
-import {Configuration, OpenAIApi} from 'openai'
+// import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
+
+const Configuration = null as any
+const OpenAIApi = null as any
 
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null

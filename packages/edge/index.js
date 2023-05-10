@@ -1,1 +1,1 @@
-export {default, WebSockets} from '../../dist/edge'
+export {handler as default, WebSockets} from '../../dist/edge'

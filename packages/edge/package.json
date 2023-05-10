@@ -30,7 +30,10 @@
   "dependencies": {
     "dd-trace": "^2.10.0",
     "graphql-yoga": "^3.9.1",
+    "https-browserify": "^1.0.0",
     "parabol-client": "^6.103.0",
-    "parabol-server": "^6.103.0"
+    "parabol-server": "^6.103.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0"
   }
 }

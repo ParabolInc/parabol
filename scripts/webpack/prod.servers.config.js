@@ -38,7 +38,7 @@ module.exports = ({isDeploy, noDeps}) => ({
   entry: {
     // web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     // gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-    edge: [DOTENV, path.join(PROJECT_ROOT, 'packages/edge/worker.ts')]
+    edge: [path.join(PROJECT_ROOT, 'packages/edge/worker.ts')]
     // postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
     // migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
     // pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')]
@@ -46,8 +46,20 @@ module.exports = ({isDeploy, noDeps}) => ({
   output: {
     filename: '[name].js',
     path: distPath,
+    libraryTarget: 'commonjs2'
   },
   resolve: {
+    fallback: {
+      assert: false,
+      os: false,
+      fs: false,
+      crypto: false,
+      net: false,
+      nodemailer: false,
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      stream: require.resolve('stream-browserify')
+    },
     mainFields: ['main'],
     alias: {
       '~': CLIENT_ROOT,
@@ -61,7 +73,7 @@ module.exports = ({isDeploy, noDeps}) => ({
   resolveLoader: {
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },
-  target: 'node',
+  target: 'webworker',
   externals: [
     !noDeps &&
       nodeExternals({
@@ -103,6 +115,7 @@ module.exports = ({isDeploy, noDeps}) => ({
     new webpack.IgnorePlugin({resourceRegExp: /^http2$/}),
     new webpack.IgnorePlugin({resourceRegExp: /^stream\/web$/}),
     new webpack.IgnorePlugin({resourceRegExp: /^perf_hooks$/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^nodemailer$/}),
     new webpack.IgnorePlugin({
       resourceRegExp: /react-router\/esm$/
     }),

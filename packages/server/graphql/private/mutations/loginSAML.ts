@@ -1,4 +1,4 @@
-import * as validator from '@authenio/samlify-node-xmllint'
+// import * as validator from '@authenio/samlify-node-xmllint'
 import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
@@ -14,6 +14,7 @@ import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
 
+const validator = null as any
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(validator)
 

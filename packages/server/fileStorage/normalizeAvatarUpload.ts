@@ -1,5 +1,5 @@
-import sharp from 'sharp'
-
+// import sharp from 'sharp'
+const sharp = {} as any
 const normalizeAvatarUpload = async (ext: string, buffer: Buffer): Promise<[string, Buffer]> => {
   const resizedBuffer = await sharp(buffer).resize(200, 200).toBuffer()
   if (ext === 'svg') {
