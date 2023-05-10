@@ -44,11 +44,6 @@ const sheetStyle = {
   boxShadow: sheetShadow
 }
 
-const iconLinkLabel = {
-  color: PALETTE.SLATE_700,
-  fontSize: '13px'
-}
-
 const SummarySheet = (props: Props) => {
   const {
     emailCSVUrl,
@@ -100,7 +95,7 @@ const SummarySheet = (props: Props) => {
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
-        {referrer === 'meeting' && !!taskCount && taskCount > 0 ? (
+        {referrer === 'meeting' ? (
           <>
             <tr>
               <td>
@@ -109,7 +104,7 @@ const SummarySheet = (props: Props) => {
                     <tr>
                       <td align='center' width='100%'>
                         <div className='flex justify-center gap-4'>
-                          <ExportAllTasks meetingRef={meeting} />
+                          {!!taskCount && taskCount > 0 && <ExportAllTasks meetingRef={meeting} />}
                           <Link
                             to={emailCSVUrl}
                             className={
@@ -123,22 +118,25 @@ const SummarySheet = (props: Props) => {
                           </Link>
                         </div>
                       </td>
-                      <td style={iconLinkLabel} align='center' width='0%'>
-                        <div className='hidden'>
-                          <ExportToCSV
-                            emailCSVUrl={emailCSVUrl}
-                            meetingId={meetingId}
-                            urlAction={urlAction}
-                            referrer={referrer}
-                            corsOptions={corsOptions}
-                          />
-                        </div>
-                      </td>
                     </tr>
                   </tbody>
                 </table>
               </td>
             </tr>
+            {/* :HACK: The 'ExportToCSV' component both downloads the CSV if 'urlAction' is 'csv'
+                and shows the 'Export to CSV' button. We need the download functionality, but we
+                don't want to show the button as-is, so hide it in the DOM */}
+            <div className='hidden'>
+              {/* :TODO: (jmtaber129): Decouple the download and button functionality of this
+                  component. */}
+              <ExportToCSV
+                emailCSVUrl={emailCSVUrl}
+                meetingId={meetingId}
+                urlAction={urlAction}
+                referrer={referrer}
+                corsOptions={corsOptions}
+              />
+            </div>
           </>
         ) : (
           <ExportToCSV
