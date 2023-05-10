@@ -29,10 +29,11 @@ interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
   isOpen: boolean
+  viewerRef: ActivityDetailsSidebar_viewer$key
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, isOpen} = props
+  const {selectedTemplateRef, teamsRef, isOpen, viewerRef} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -45,6 +46,18 @@ const ActivityDetailsSidebar = (props: Props) => {
     `,
     selectedTemplateRef
   )
+
+  const viewer = useFragment(
+    graphql`
+      fragment ActivityDetailsSidebar_viewer on User {
+        featureFlags {
+          gcal
+        }
+      }
+    `,
+    viewerRef
+  )
+  const hasGcalFlag = viewer.featureFlags?.gcal
 
   const teams = useFragment(
     graphql`
@@ -88,7 +101,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const history = useHistory()
-  const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
+  const {togglePortal: toggleModal, modalPortal} = useModal()
 
   const handleStartRetro = () => {
     if (submitting) return
@@ -189,9 +202,11 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
           <div className='flex grow flex-col justify-end gap-2'>
             <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-            <SecondaryButton onClick={toggleModal} waiting={submitting} className='h-14'>
-              <div className='text-lg'>Schedule</div>
-            </SecondaryButton>
+            {hasGcalFlag && (
+              <SecondaryButton onClick={toggleModal} waiting={submitting} className='h-14'>
+                <div className='text-lg'>Schedule</div>
+              </SecondaryButton>
+            )}
             <FlatPrimaryButton onClick={handleStartRetro} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>

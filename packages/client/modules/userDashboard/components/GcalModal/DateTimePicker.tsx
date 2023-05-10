@@ -1,17 +1,19 @@
-import React, {useState} from 'react'
-import dayjs, {Dayjs} from 'dayjs'
+import React from 'react'
+import {Dayjs} from 'dayjs'
 import {DemoContainer} from '@mui/x-date-pickers/internals/demo'
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {DateTimePicker as MuiDateTimePicker} from '@mui/x-date-pickers/DateTimePicker'
 
-const DateTimePicker = () => {
-  const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
-  const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
+type Props = {
+  startValue: Dayjs | null
+  setStartValue: (newValue: Dayjs | null) => void
+  endValue: Dayjs | null
+  setEndValue: (newValue: Dayjs | null) => void
+}
 
-  const [startValue, setStartValue] = useState<Dayjs | null>(startOfNextHour)
-  const [endValue, setEndValue] = useState<Dayjs | null>(endOfNextHour)
-
+const DateTimePicker = (props: Props) => {
+  const {startValue, setStartValue, endValue, setEndValue} = props
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className='flex justify-between'>

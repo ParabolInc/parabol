@@ -83,8 +83,8 @@ const query = graphql`
       organizations {
         id
       }
-
       ...useTemplateDescription_viewer
+      ...ActivityDetailsSidebar_viewer
     }
   }
 `
@@ -406,6 +406,7 @@ const ActivityDetails = (props: Props) => {
             selectedTemplateRef={selectedTemplate}
             teamsRef={teams}
             isOpen={!isEditing}
+            viewerRef={viewer}
           />
         </div>
         {isEditing && (

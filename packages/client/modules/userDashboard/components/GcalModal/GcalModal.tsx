@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import clsx from 'clsx'
-import dayjs from 'dayjs'
-import React, {PropsWithChildren} from 'react'
+import dayjs, {Dayjs} from 'dayjs'
+import React, {PropsWithChildren, useState} from 'react'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -12,9 +12,11 @@ import {RecurrenceSettings} from '../../../../components/TeamPrompt/Recurrence/R
 import {RecurrenceTimePicker} from '../../../../components/TeamPrompt/Recurrence/RecurrenceTimePicker'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
+import useForm from '../../../../hooks/useForm'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
+import {PALETTE} from '../../../../styles/paletteV3'
 import DateTimePicker from './DateTimePicker'
 
 const StyledButton = styled(PrimaryButton)({
@@ -26,17 +28,21 @@ const Wrapper = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const Label = ({
-  className,
-  children,
-  ...rest
-}: PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>) => {
-  return (
-    <label className={clsx('text-sm font-semibold text-slate-800', className)} {...rest}>
-      {children}
-    </label>
-  )
-}
+const StyledInput = styled('input')({
+  background: PALETTE.SLATE_200,
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  borderRadius: 4,
+  color: PALETTE.SLATE_800,
+  fontSize: 16,
+  font: 'inherit',
+  marginTop: 16,
+  padding: '12px 16px',
+  outline: 0,
+  width: '100%',
+  '::placeholder': {
+    color: PALETTE.SLATE_600
+  }
+})
 
 interface Props {
   // orgId: string
@@ -53,15 +59,25 @@ const GcalModal = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
-    dayjs()
-      .add(1, 'day')
-      .set('hour', 6)
-      .set('minute', 0)
-      .set('second', 0)
-      .set('millisecond', 0)
-      .toDate() // suggest 6:00 AM tomorrow
-  )
+  const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
+  const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
+  const {fields, onChange, validateField, setDirtyField} = useForm({
+    title: {
+      getDefault: () => ''
+      // validate: validateIssue
+    },
+    description: {
+      getDefault: () => ''
+      // validate: validateIssue
+    },
+    emails: {
+      getDefault: () => ''
+    }
+  })
+
+  const [startValue, setStartValue] = useState<Dayjs | null>(startOfNextHour)
+  const [endValue, setEndValue] = useState<Dayjs | null>(endOfNextHour)
+
   const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
     {
@@ -95,7 +111,29 @@ const GcalModal = (props: Props) => {
         }
         <div className='space-y-1 pt-4'>
           {/* <Label>Meeting starts at</Label> */}
-          <DateTimePicker />
+          <StyledInput
+            autoFocus
+            maxLength={100}
+            defaultValue={fields.title.value}
+            name='title'
+            placeholder='Please enter the name of your meeting'
+          />
+          <StyledInput
+            maxLength={100}
+            name='description'
+            placeholder='Enter your meeting description (optional)'
+          />
+          <StyledInput
+            maxLength={100}
+            name='emails'
+            placeholder='Enter the email addresses of your meeting attendees (optional)'
+          />
+          <DateTimePicker
+            startValue={startValue}
+            endValue={endValue}
+            setStartValue={setStartValue}
+            setEndValue={setEndValue}
+          />
           {/* <DropdownMenuToggle
             className='w-full text-sm'
             defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
