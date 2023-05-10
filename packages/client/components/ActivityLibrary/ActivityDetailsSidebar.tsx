@@ -20,6 +20,9 @@ import {useHistory} from 'react-router'
 import {LockOpen} from '@mui/icons-material'
 import {PALETTE} from '../../styles/paletteV3'
 import clsx from 'clsx'
+import SecondaryButton from '../SecondaryButton'
+import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
+import useModal from '../../hooks/useModal'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -84,6 +87,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const history = useHistory()
+  const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
 
   const handleStartRetro = () => {
     if (submitting) return
@@ -178,12 +182,16 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
           <div className='flex grow flex-col justify-end gap-2'>
             <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-            <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
+            <SecondaryButton onClick={toggleModal} waiting={submitting} className='h-14'>
+              <div className='text-lg'>Schedule</div>
+            </SecondaryButton>
+            <FlatPrimaryButton onClick={handleStartRetro} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>
           </div>
         </div>
       </div>
+      {modalPortal(<GcalModal closeModal={closeModal} />)}
     </>
   )
 }
