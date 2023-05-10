@@ -15,6 +15,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
+import DateTimePicker from './DateTimePicker'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
@@ -92,20 +93,21 @@ const GcalModal = (props: Props) => {
         {
           'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link. '
         }
-        <div className='space-y-1'>
-          <Label>Meeting starts at</Label>
-          <DropdownMenuToggle
+        <div className='space-y-1 pt-4'>
+          {/* <Label>Meeting starts at</Label> */}
+          <DateTimePicker />
+          {/* <DropdownMenuToggle
             className='w-full text-sm'
             defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
             onClick={togglePortal}
             ref={originRef}
             size='small'
-          />
+          /> */}
           {menuPortal(<RecurrenceTimePicker menuProps={menuProps} onClick={handleClick} />)}
         </div>
         <Wrapper>
           <StyledButton size='medium' onClick={handleScheduleMeeting} waiting={submitting}>
-            <IconLabel icon='arrow_forward' iconAfter label={`Create Meeting & Gcal Invite`} />
+            {`Create Meeting & Gcal Invite`}
           </StyledButton>
         </Wrapper>
       </DialogContent>
