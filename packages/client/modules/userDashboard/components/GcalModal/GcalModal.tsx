@@ -71,6 +71,7 @@ const GcalModal = (props: Props) => {
   })
 
   const [startValue, setStartValue] = useState<Dayjs | null>(startOfNextHour)
+  console.log('🚀 ~ startValue:', startValue)
   const [endValue, setEndValue] = useState<Dayjs | null>(endOfNextHour)
 
   // const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
@@ -84,17 +85,13 @@ const GcalModal = (props: Props) => {
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
 
   const handleClick = () => {
-    // if (submitting) return
-    // submitMutation()
-    // RemoveOrgUserMutation(
-    //   atmosphere,
-    //   {orgId, userId: atmosphere.viewerId},
-    //   {
-    //     history,
-    //     onError,
-    //     onCompleted
-    //   }
-    // )
+    const startDateTime = startValue?.toDate().getTime()
+    const endDateTime = endValue?.toDate().getTime()
+
+    const variables = {
+      startDateTime,
+      endDateTime
+    }
   }
 
   return (

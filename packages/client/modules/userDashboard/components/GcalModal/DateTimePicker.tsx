@@ -14,19 +14,24 @@ type Props = {
 
 const DateTimePicker = (props: Props) => {
   const {startValue, setStartValue, endValue, setEndValue} = props
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const date = new Date()
+  const dateTimeString = date.toLocaleString('en-US', {timeZone: timeZone, timeZoneName: 'short'})
+  const timeZoneShort = dateTimeString.split(' ').pop()
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className='flex justify-between'>
         <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
           <MuiDateTimePicker
-            label='Meeting Start Time'
+            label={`Meeting Start Time (${timeZoneShort})`}
             value={startValue}
             onChange={(newValue) => setStartValue(newValue)}
           />
         </DemoContainer>
         <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
           <MuiDateTimePicker
-            label='Meeting End Time'
+            label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
             onChange={(newValue) => setEndValue(newValue)}
           />

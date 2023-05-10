@@ -1,6 +1,8 @@
 import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 import {google} from 'googleapis'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
 
 const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   _source,
@@ -12,14 +14,12 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
 
   // VALIDATION
 
-  console.log('elloooooo')
-
   const hardcodedToken = {
     access_token: process.env.GCAL_ACCESS_TOKEN,
     refresh_token: process.env.GCAL_REFRESH_TOKEN,
     scope: 'https://www.googleapis.com/auth/calendar',
     token_type: 'Bearer',
-    expiry_date: 1234567890 // Replace with the actual expiry date
+    expiry_date: 1234567890
   }
 
   const CLIENT_ID = process.env.GCAL_CLIENT_ID
@@ -27,15 +27,14 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   const REDIRECT_URI = 'http://localhost:3000/'
 
   const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-
   oauth2Client.setCredentials(hardcodedToken)
-
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
+  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
   const event = {
-    summary: 'Parabol Event',
-    location: 'Online',
-    description: 'A test event created from Parabol app',
+    summary: title,
+    location: meetingUrl,
+    description: description,
     start: {
       dateTime: '2023-05-10T09:00:00-07:00',
       timeZone: 'America/Los_Angeles'
@@ -44,7 +43,7 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
       dateTime: '2023-05-10T10:00:00-07:00',
       timeZone: 'America/Los_Angeles'
     },
-    attendees: [{email: 'nickoferrall@gmail.com'}, {email: 'nick@parabol.co'}],
+    attendees: attendeesEmails,
     reminders: {
       useDefault: false,
       overrides: [
@@ -53,7 +52,6 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
       ]
     }
   }
-  console.log('🚀 ~ event:', event)
 
   try {
     const createdEvent = await calendar.events.insert({
@@ -61,8 +59,6 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
       requestBody: event
     })
     console.log('🚀 ~ createdEvent:', createdEvent)
-
-    console.log('Event created:', createdEvent.data.htmlLink)
   } catch (error) {
     console.error('Error creating event:', error)
   }
