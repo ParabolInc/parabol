@@ -34,7 +34,6 @@ COPY --from=base /opt /opt
 
 COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
 COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
-COPY --chown=node . ${HOME}/parabol
 
 # Security
 COPY docker/parabol-ubi/docker-build/security /security
@@ -100,6 +99,8 @@ RUN  if [ "$_SECURITY_ENABLED" = "true" ]; then \
     fi
 
 RUN rm -rf /security/
+
+COPY --chown=node . ${HOME}/parabol
 
 WORKDIR ${HOME}/parabol/
 USER node
