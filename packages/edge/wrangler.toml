@@ -1,0 +1,16 @@
+name = "edge"
+main = "./index.js"
+compatibility_date = "2022-11-30"
+node_compat = true
+
+[build]
+# command = "npm run build"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["WebSockets"]
+
+[durable_objects]
+bindings = [{name = "webSockets", class_name = "WebSockets"}]
+
+# webpack_config = "webpack.config.js"

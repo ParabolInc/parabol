@@ -1,4 +1,4 @@
-import tracer from 'dd-trace'
+// import tracer from 'dd-trace'
 import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
@@ -7,12 +7,12 @@ import executeGraphQL, {GQLRequest} from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
 import RedisStream from './RedisStream'
 
-tracer.init({
-  service: `GQLExecutor ${process.env.SERVER_ID}`,
-  appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
-})
-tracer.use('ioredis').use('http').use('pg').use('fs')
+// tracer.init({
+//   service: `GQLExecutor ${process.env.SERVER_ID}`,
+//   appsec: process.env.DD_APPSEC_ENABLED === 'true',
+//   plugins: false
+// })
+// tracer.use('ioredis').use('http').use('pg').use('fs')
 
 const {REDIS_URL, SERVER_ID} = process.env
 interface PubSubPromiseMessage {

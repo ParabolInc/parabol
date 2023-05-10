@@ -1,5 +1,5 @@
 import fs from 'fs'
-import inspector from 'inspector'
+// import inspector from 'inspector'
 import path from 'path'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -10,7 +10,7 @@ const dumpHeap: MutationResolvers['dumpHeap'] = async (_source, {isDangerous}, {
     global.gc?.()
     const memoryUsage = process.memoryUsage()
     const {rss} = memoryUsage
-    const session = new inspector.Session()
+    const session = {} as any
     const MB = 2 ** 20
     const usedMB = Math.floor(rss / MB)
     const now = new Date().toJSON()

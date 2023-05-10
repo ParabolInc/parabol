@@ -1,0 +1,36 @@
+{
+  "name": "edge",
+  "version": "6.103.0",
+  "description": "To the edge",
+  "author": "Matt Krick <matt.krick@gmail.com>",
+  "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ParabolInc/parabol.git"
+  },
+  "scripts": {
+    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
+  },
+  "bugs": {
+    "url": "https://github.com/ParabolInc/parabol/issues"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.18.6",
+    "@babel/core": "7.18.6",
+    "@cloudflare/workers-types": "^4.20230419.0",
+    "@types/node": "^16.11.62",
+    "babel-plugin-inline-import": "^3.0.0",
+    "chokidar": "^3.3.1",
+    "sucrase": "^3.23.0",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "4.9.5",
+    "wrangler": "^2.20.0"
+  },
+  "dependencies": {
+    "dd-trace": "^2.10.0",
+    "graphql-yoga": "^3.9.1",
+    "parabol-client": "^6.103.0",
+    "parabol-server": "^6.103.0"
+  }
+}

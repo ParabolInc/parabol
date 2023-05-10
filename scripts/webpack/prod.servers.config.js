@@ -9,6 +9,7 @@ const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -30,21 +31,24 @@ const getNormalizedWebpackPublicPath = () => {
 
 module.exports = ({isDeploy, noDeps}) => ({
   mode: 'production',
+  // devtool: 'source-map',
   node: {
     __dirname: false
   },
   entry: {
-    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
-    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-    postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
-    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
-    pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')]
+    // web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
+    // gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
+    edge: [DOTENV, path.join(PROJECT_ROOT, 'packages/edge/worker.ts')]
+    // postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
+    // migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
+    // pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')]
   },
   output: {
     filename: '[name].js',
-    path: distPath
+    path: distPath,
   },
   resolve: {
+    mainFields: ['main'],
     alias: {
       '~': CLIENT_ROOT,
       'parabol-client': CLIENT_ROOT,
@@ -65,11 +69,11 @@ module.exports = ({isDeploy, noDeps}) => ({
       })
   ].filter(Boolean),
   optimization: {
-    minimize: noDeps,
+    minimize: false,
     minimizer: [
       new TerserPlugin({
         extractComments: false,
-        parallel: noDeps ? 2 : true,
+        parallel: true,
         terserOptions: {
           output: {
             comments: false,
@@ -95,10 +99,21 @@ module.exports = ({isDeploy, noDeps}) => ({
     new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
     // native bindings might be faster, but abandonware & not currently used
     new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^inspector$/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^http2$/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^stream\/web$/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^perf_hooks$/}),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /react-router\/esm$/
+    }),
+    // yup uses lodash-es, which doesn't bundle
+    new webpack.IgnorePlugin({resourceRegExp: /^yup$/}),
+    // new webpack.IgnorePlugin({resourceRegExp: /^worker-types$/}),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[fullhash].js.map',
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
     }),
+    new BundleAnalyzerPlugin({generateStatsFile: true}),
     isDeploy &&
       // #8101 Eventually this will be replaced with pushToCDN to decouple the push from the build
       new S3Plugin({

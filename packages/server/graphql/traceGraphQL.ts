@@ -61,8 +61,8 @@ interface Config {
 /**
  * Return {@link compileQuery} function which will add tracing to the query.
  */
-export function tracedCompileQuery(tracer: Tracer, config: Config) {
-  if (process.env.DD_TRACE_ENABLED !== 'true') {
+export function tracedCompileQuery(tracer: Tracer | undefined, config: Config) {
+  if (!tracer || process.env.DD_TRACE_ENABLED !== 'true') {
     return compileQuery
   }
   return function compileTracedQuery(

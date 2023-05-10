@@ -1,8 +1,9 @@
 import fs from 'fs'
-import inspector from 'inspector'
+// import inspector from 'inspector'
 import {MutationResolvers} from '../resolverTypes'
 
-let session: inspector.Session
+// let session: inspector.Session
+let session: any
 
 const enable = () => {
   return new Promise<void>((resolve) => {
@@ -36,7 +37,7 @@ const stop = () => {
 
 const profileCPU: MutationResolvers['profileCPU'] = async (_source, _args, {authToken}) => {
   if (!session) {
-    session = new inspector.Session()
+    session = {} as any
     session.connect()
     await enable()
     await start()

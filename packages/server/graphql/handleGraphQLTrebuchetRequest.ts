@@ -1,5 +1,5 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
-import tracer from 'dd-trace'
+// import tracer from 'dd-trace'
 import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {getUserId} from '../utils/authorization'
@@ -38,29 +38,28 @@ const handleGraphQLTrebuchetRequest = async (
       return
     }
     try {
-      return tracer.trace('handleGraphQLTrebuchetRequest', async (span) => {
-        const carrier = {}
-        tracer.inject(span!, 'http_headers', carrier)
-        const result = await getGraphQLExecutor().publish({
-          docId,
-          query,
-          variables,
-          socketId,
-          authToken,
-          ip,
-          carrier
-        })
-        if (result.errors?.[0]) {
-          const [firstError] = result.errors
-          const safeError = new Error(firstError.message)
-          safeError.stack = firstError.stack
-          sendToSentry(safeError)
-        }
-        const safeResult = sanitizeGraphQLErrors(result)
-        // TODO if multiple results, send GQL_DATA for all but the last
-        const messageType = result.data ? 'complete' : 'error'
-        return {type: messageType, id: opId, payload: safeResult} as const
+      // return tracer.trace('handleGraphQLTrebuchetRequest', async (span) => {
+      // const carrier = {}
+      // tracer.inject(span!, 'http_headers', carrier)
+      const result = await getGraphQLExecutor().publish({
+        docId,
+        query,
+        variables,
+        socketId,
+        authToken,
+        ip
       })
+      if (result.errors?.[0]) {
+        const [firstError] = result.errors
+        const safeError = new Error(firstError.message)
+        safeError.stack = firstError.stack
+        sendToSentry(safeError)
+      }
+      const safeResult = sanitizeGraphQLErrors(result)
+      // TODO if multiple results, send GQL_DATA for all but the last
+      const messageType = result.data ? 'complete' : 'error'
+      return {type: messageType, id: opId, payload: safeResult} as const
+      // })
     } catch (e) {
       if (e instanceof Error && e.message === 'TIMEOUT') {
         sendToSentry(new Error('GQL executor took too long to respond'), {

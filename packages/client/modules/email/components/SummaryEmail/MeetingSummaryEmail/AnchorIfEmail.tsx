@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router-dom/cjs/react-router-dom'
 
 interface Props {
   isDemo?: boolean

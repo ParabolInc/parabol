@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["esnext", "DOM", "DOM.Iterable"],
+    "types": ["@cloudflare/workers-types"],
+    "noEmit": true
+  },
+  "files": ["worker.ts"]
+}

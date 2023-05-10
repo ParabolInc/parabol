@@ -1,4 +1,4 @@
-import tracer from 'dd-trace'
+// import tracer from 'dd-trace'
 import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
@@ -24,12 +24,12 @@ import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 import ServerHealthChecker from './utils/ServerHealthChecker'
 
-tracer.init({
-  service: `Web ${process.env.SERVER_ID}`,
-  appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
-})
-tracer.use('ioredis').use('http').use('pg').use('fs')
+// tracer.init({
+//   service: `Web ${process.env.SERVER_ID}`,
+//   appsec: process.env.DD_APPSEC_ENABLED === 'true',
+//   plugins: false
+// })
+// tracer.use('ioredis').use('http').use('pg').use('fs')
 
 const onKill = async () => {
   r.getPoolMaster()?.drain()
