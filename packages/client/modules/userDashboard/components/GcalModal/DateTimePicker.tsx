@@ -26,7 +26,15 @@ const DateTimePicker = (props: Props) => {
           <MuiDateTimePicker
             label={`Meeting Start Time (${timeZoneShort})`}
             value={startValue}
+            closeOnSelect={false}
             onChange={(newValue) => setStartValue(newValue)}
+            slotProps={{
+              inputAdornment: {
+                style: {
+                  display: 'none'
+                }
+              }
+            }}
           />
         </DemoContainer>
         <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
@@ -34,6 +42,13 @@ const DateTimePicker = (props: Props) => {
             label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
             onChange={(newValue) => setEndValue(newValue)}
+            slotProps={{
+              inputAdornment: {
+                style: {
+                  display: 'none'
+                }
+              }
+            }}
           />
         </DemoContainer>
       </div>

@@ -5,6 +5,7 @@ import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
+import {ActivityDetailsSidebar_viewer$key} from '~/__generated__/ActivityDetailsSidebar_viewer.graphql'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -24,6 +25,8 @@ import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
 import ScheduleMeetingMutation from '../../mutations/ScheduleMeetingMutation'
 import useModal from '../../hooks/useModal'
+import useForm from '../../hooks/useForm'
+import dayjs from 'dayjs'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -105,20 +108,53 @@ const ActivityDetailsSidebar = (props: Props) => {
     id: 'scheduleMeetingModal',
     noClose: true
   })
+  const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
+  const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
+  const {fields, onChange} = useForm({
+    title: {
+      getDefault: () => ''
+    },
+    description: {
+      getDefault: () => ''
+    },
+    emails: {
+      getDefault: () => ''
+    },
+    start: {
+      getDefault: () => startOfNextHour
+    },
+    end: {
+      getDefault: () => endOfNextHour
+    }
+  })
 
-  const handleStartRetro = () => {
+  const handleCompletedRetro = () => {
+    const variables = {
+      title: 'test',
+      description: 'test',
+      startDateTime: '2021-10-10T10:00:00.000Z',
+      endDateTime: '2021-10-10T11:00:00.000Z',
+      attendeesEmails: ['nickoferrall@gmail.com'],
+      meetingId: 'test'
+    }
+    ScheduleMeetingMutation(atmosphere, variables, {onError, onCompleted})
+  }
+
+  const handleStartMeeting = (scheduleGcalEvent: boolean) => {
     if (submitting) return
     submitMutation()
+
     SelectTemplateMutation(
       atmosphere,
       {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
       {
         onCompleted: () => {
           if (selectedTemplate.type === 'retrospective') {
+            const handleOnComplete = scheduleGcalEvent ? handleCompletedRetro : onCompleted
             StartRetrospectiveMutation(
               atmosphere,
               {teamId: selectedTeam.id},
-              {history, onError, onCompleted}
+              {history, onError, onCompleted: handleOnComplete}
             )
           } else if (selectedTemplate.type === 'poker') {
             StartSprintPokerMutation(
@@ -143,16 +179,7 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   const handleScheduleMeeting = () => {
     toggleModal()
-    // handleStartRetro()
-    const variables = {
-      title: 'test',
-      description: 'test',
-      startDateTime: '2021-10-10T10:00:00.000Z',
-      endDateTime: '2021-10-10T11:00:00.000Z',
-      attendeesEmails: ['nickoferrall@gmail.com'],
-      meetingId: 'test'
-    }
-    ScheduleMeetingMutation(atmosphere, variables, {onError, onCompleted})
+    handleStartMeeting(true)
   }
 
   const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
@@ -218,13 +245,19 @@ const ActivityDetailsSidebar = (props: Props) => {
                 <div className='text-lg'>Schedule</div>
               </SecondaryButton>
             )}
-            <FlatPrimaryButton onClick={handleStartRetro} className='h-14'>
+            <FlatPrimaryButton onClick={() => handleStartMeeting(false)} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>
           </div>
         </div>
       </div>
-      {modalPortal(<GcalModal handleScheduleMeeting={handleScheduleMeeting} />)}
+      {modalPortal(
+        <GcalModal
+          fields={fields}
+          onChange={onChange}
+          handleScheduleMeeting={handleScheduleMeeting}
+        />
+      )}
     </>
   )
 }

@@ -41,37 +41,42 @@ const StyledInput = styled('input')({
   }
 })
 
-interface Props {
-  handleScheduleMeeting: () => void
-}
-
 const StyledDialogContainer = styled(DialogContainer)({
   width: 'auto'
 })
 
+interface Props {
+  handleScheduleMeeting: () => void
+  fields: {
+    title: {
+      value: string
+    }
+    description: {
+      value: string
+    }
+    emails: {
+      value: string
+    }
+    start: {
+      value: string
+    }
+    end: {
+      value: string
+    }
+  }
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
 const GcalModal = (props: Props) => {
-  const {handleScheduleMeeting} = props
+  const {handleScheduleMeeting, onChange, fields} = props
+  console.log('🚀 ~ fields:', fields)
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
-  const {fields, onChange, validateField, setDirtyField} = useForm({
-    title: {
-      getDefault: () => ''
-      // validate: validateIssue
-    },
-    description: {
-      getDefault: () => ''
-      // validate: validateIssue
-    },
-    emails: {
-      getDefault: () => ''
-    }
-  })
 
   const [startValue, setStartValue] = useState<Dayjs | null>(startOfNextHour)
-  console.log('🚀 ~ startValue:', startValue)
   const [endValue, setEndValue] = useState<Dayjs | null>(endOfNextHour)
 
   // const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
@@ -85,13 +90,9 @@ const GcalModal = (props: Props) => {
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
 
   const handleClick = () => {
-    const startDateTime = startValue?.toDate().getTime()
-    const endDateTime = endValue?.toDate().getTime()
-
-    const variables = {
-      startDateTime,
-      endDateTime
-    }
+    const startDateTime = startValue?.format('YYYY-MM-DDTHH:mm:ssZ')
+    const endDateTime = endValue?.format('YYYY-MM-DDTHH:mm:ssZ')
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   }
 
   return (
@@ -118,6 +119,7 @@ const GcalModal = (props: Props) => {
             maxLength={100}
             name='emails'
             placeholder='Enter the email addresses of your meeting attendees'
+            onChange={onChange}
           />
           <DateTimePicker
             startValue={startValue}
@@ -125,16 +127,9 @@ const GcalModal = (props: Props) => {
             setStartValue={setStartValue}
             setEndValue={setEndValue}
           />
-          {/* <DropdownMenuToggle
-            className='w-full text-sm'
-            defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
-            onClick={togglePortal}
-            ref={originRef}
-            size='small'
-          /> */}
         </div>
         <Wrapper>
-          <PrimaryButton size='medium' onClick={handleScheduleMeeting} waiting={submitting}>
+          <PrimaryButton size='medium' onClick={handleClick} waiting={submitting}>
             {`Create Meeting & Gcal Invite`}
           </PrimaryButton>
         </Wrapper>

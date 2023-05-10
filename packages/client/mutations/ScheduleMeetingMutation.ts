@@ -19,6 +19,7 @@ const mutation = graphql`
     $startDateTime: String!
     $endDateTime: String!
     $attendeesEmails: [String!]!
+    $timezone: String!
   ) {
     scheduleMeeting(
       meetingId: $meetingId
@@ -27,6 +28,7 @@ const mutation = graphql`
       startDateTime: $startDateTime
       endDateTime: $endDateTime
       attendeesEmails: $attendeesEmails
+      timezone: $timezone
     ) {
       ... on ErrorPayload {
         error {
