@@ -3,7 +3,7 @@ name: Build Docker image
 on: [push]
 
 env:
-  PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline_yarn_in_host.dockerfile
+  PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
   DEPENDENCIES_CACHE: cache-node-modules
 
@@ -30,7 +30,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       rethinkdb:
-        image: rethinkdb:2.4.0
+        image: rethinkdb:2.4.2
         ports:
           - 8080:8080
           - 28015:28015
@@ -114,15 +114,7 @@ jobs:
           fi && \
           rm -rf .env && \
           rm -rf .circleci .git .github .husky .vscode docs packages scripts static && \
-          rm -rf .gitignore docker-compose.yml nginx.conf.sigil *.js *.json *.md CHECKS COPYING yarn.lock .prettierrc
-
-      - name: Build and push - not master
-        if: github.ref_name != 'master'
-        run: echo "not master!"
-
-      - name: Build and push - master
-        if: github.ref_name == 'master'
-        run: echo "Master!"
+          rm -rf .gitignore .eslintrc.js docker-compose.yml nginx.conf.sigil *.html *.js *.json *.md CHECKS COPYING yarn.lock .prettierrc
 
       - name: Build and push
         uses: docker/build-push-action@v4
@@ -140,5 +132,5 @@ jobs:
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{github.ref_name}}"
-          #cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:master-cache
-          #cache-to: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache,mode=max
+          cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache
+          cache-to: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache,mode=max

@@ -1,56 +1,20 @@
 ARG _NODE_VERSION=${_NODE_VERSION}
-#base build for dev deps
 FROM node:${_NODE_VERSION} as base
 
 ARG _BUILD_ENV_PATH=environments/local-buildenv
 ARG _NO_DEPS="false"
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+ENV PORT=3000
 
-WORKDIR /home/node
+# COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
+# COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id /home/node/tools/ip-to-server_id
 
-COPY docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
-COPY docker/parabol-ubi/docker-build/tools/ip-to-server_id /home/node/tools/ip-to-server_id
+# COPY --chown=node . ./parabol
 
-RUN mkdir -p /home/node/parabol/self-hosted && \
-    chown node:node /home/node/parabol/self-hosted
+USER node
+EXPOSE ${PORT}
 
-RUN mkdir -p ${NPM_CONFIG_PREFIX} && \
-    mkdir -p /home/node/parabol/ && \
-    mkdir -p /home/node/parabol/self-hosted && \
-    mkdir -p /home/node/parabol/packages/{client,gql-executor,integration-tests,server} && \
-    chown -R node:node /home/node
-
-COPY ${_BUILD_ENV_PATH} ./parabol/.env
-
-COPY yarn.lock ./parabol/yarn.lock
-COPY package.json ./parabol/package.json
-COPY packages/client/package.json ./parabol/packages/client/package.json
-COPY packages/gql-executor/package.json ./parabol/packages/gql-executor/package.json
-COPY packages/integration-tests/package.json ./parabol/packages/integration-tests/package.json
-COPY packages/server/package.json ./parabol/packages/server/package.json
-
-RUN cd parabol && \
-    NODE_OPTIONS=--max-old-space-size=20480 && \
-    yarn install --frozen-lockfile && \
-    yarn cache clean
-
-COPY . ./parabol
-
-RUN cd parabol && \
-    NODE_OPTIONS=--max-old-space-size=20480 && \
-    yarn db:migrate && \
-    yarn pg:migrate up && \
-    yarn pg:build && \
-    if [ "$_NO_DEPS" = "true" ]; then \
-        yarn build --no-deps && \
-        rm -rf node_modules packages scripts; \
-    else \
-        yarn build; \
-    fi && \
-    chown -R node:1000 /home/node && \
-    rm -rf .env && \
-    rm -rf .circleci .github .husky .vscode docker docs && \
-    rm -rf .dockerignore .gitignore docker-compose.yml nginx.conf.sigil
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Final image - copies in parabol build and applies all security configurations to container if enabled
 FROM redhat/ubi8:8.6
@@ -70,8 +34,12 @@ COPY --from=base /usr/local/include /usr/local/include
 COPY --from=base /usr/local/share/man /usr/local/share/man
 COPY --from=base /usr/local/share/doc /usr/local/share/doc
 COPY --from=base /usr/local/share/systemtap /usr/local/share/systemtap
-COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
+#COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=base /opt /opt
+
+COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
+COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
+COPY --chown=node . ${HOME}/parabol
 
 # Security
 COPY docker/parabol-ubi/docker-build/security /security
@@ -137,9 +105,6 @@ RUN  if [ "$_SECURITY_ENABLED" = "true" ]; then \
     fi
 
 RUN rm -rf /security/
-
-COPY --from=base --chown=node /home/node/tools/ip-to-server_id /home/node/tools/ip-to-server_id
-COPY --from=base --chown=node /home/node/parabol/ ${HOME}/parabol
 
 WORKDIR ${HOME}/parabol/
 USER node
