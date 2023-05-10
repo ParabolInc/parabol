@@ -1,8 +1,10 @@
 import getKysely from '../../../postgres/getKysely'
-import {getUserByEmail, getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
+import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {isSuperUser} from '../../../utils/authorization'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import {MutationResolvers} from '../resolverTypes'
+import publish from '../../../utils/publish'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN!
 
@@ -21,16 +23,17 @@ const unicodeToString = (unicodeInput?: string) => {
 
 const slackMessage: MutationResolvers['slackMessage'] = async (
   _source,
-  {text, sender, mentions, emojis},
-  {authToken}
+  {sender, mentions, emojis},
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  //const now = new Date()
-  const pg = getKysely()
-
   // AUTH
   if (!isSuperUser(authToken)) {
     throw new Error('Don’t be rude.')
   }
+
+  const pg = getKysely()
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
 
   // VALIDATION
   // RESOLUTION
@@ -64,21 +67,35 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
     slackUsers.some((user) => user.profile.email === email)
   )
 
-  await Promise.all(
-    parabolMentions.map((user) =>
-      reactions.map((reaction) =>
-        pg
-          .insertInto('UserInteractions')
-          .values({
-            createdById: parabolSender.id,
-            receivedById: user.id,
-            emoji: reaction.emoji,
-            emojiName: reaction.name
-          })
-          .execute()
-      )
-    )
+  const interactionInserts = parabolMentions.flatMap((user) =>
+    reactions.map((reaction) => ({
+      createdById: parabolSender.id,
+      receivedById: user.id,
+      emoji: reaction.emoji,
+      emojiName: reaction.name
+    }))
   )
+
+  const inserted = await pg.insertInto('UserInteractions').values(interactionInserts).execute()
+  const interactions = inserted.map((row, i) => ({
+    id: row.insertId,
+    ...interactionInserts[i]
+  }))
+
+  parabolSender.tms.forEach((teamId) => {
+    const mentionedMateIds = parabolMentions
+      .filter((user) => user.tms.includes(teamId))
+      .map(({id}) => id)
+    if (mentionedMateIds.length) {
+      const userInteractions = interactions.filter(({receivedById}) =>
+        mentionedMateIds.includes(receivedById)
+      )
+      const data = {
+        userInteractions
+      }
+      publish(SubscriptionChannel.TEAM, teamId, 'UserInteractionSuccess', data, subOptions)
+    }
+  })
 
   return true
 }

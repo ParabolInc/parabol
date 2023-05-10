@@ -171,6 +171,7 @@ type TeamSubscriptionPayload {
   UpdatePokerTemplateDimensionScalePayload: UpdatePokerTemplateDimensionScalePayload
   UpdatePokerTemplateScaleValuePayload: UpdatePokerTemplateScaleValuePayload
   UpdateUserProfilePayload: UpdateUserProfilePayload
+  UserInteractionSuccess: UserInteractionSuccess
   PersistJiraSearchQuerySuccess: PersistJiraSearchQuerySuccess
   MovePokerTemplateScaleValueSuccess: MovePokerTemplateScaleValueSuccess
   UpdateAzureDevOpsDimensionFieldSuccess: UpdateAzureDevOpsDimensionFieldSuccess
