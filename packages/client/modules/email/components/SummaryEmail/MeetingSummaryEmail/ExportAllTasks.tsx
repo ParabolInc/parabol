@@ -10,11 +10,7 @@ import {
   ExportAllTasks_meeting$key,
   TaskServiceEnum
 } from '../../../../../__generated__/ExportAllTasks_meeting.graphql'
-import styled from '@emotion/styled'
-import BaseButton from '../../../../../components/BaseButton'
-import {PALETTE} from '../../../../../styles/paletteV3'
 import {buttonShadow} from '../../../../../styles/elevation'
-import {emailFontFamily} from '../../../styles'
 import {IntegrationProviderServiceEnum} from '../../../../../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
@@ -37,25 +33,6 @@ const integrationToServiceName: Record<TaskServiceEnum, string> = {
 interface Props {
   meetingRef: ExportAllTasks_meeting$key
 }
-
-const ExportButton = styled(BaseButton)({
-  backgroundColor: PALETTE.SKY_500,
-  opacity: 1,
-  outline: 0,
-  marginTop: 12,
-  padding: '9px 20px',
-  borderRadius: '4em',
-  boxShadow: buttonShadow,
-  color: '#FFFFFF',
-  cursor: 'pointer',
-  display: 'block',
-  fontFamily: emailFontFamily,
-  fontSize: 14,
-  fontWeight: 600,
-  margin: '0px auto',
-  textAlign: 'center',
-  textDecoration: 'none'
-})
 
 const ExportAllTasks = (props: Props) => {
   const {meetingRef} = props
@@ -150,7 +127,7 @@ const ExportAllTasks = (props: Props) => {
   }
 
   return (
-    <>
+    <div className='font-sans text-sm'>
       {submitting ? (
         <span className='flex justify-center text-center'>Pushing tasks to integration...</span>
       ) : filteredTasks.length === 0 ? (
@@ -174,13 +151,17 @@ const ExportAllTasks = (props: Props) => {
           )}
         </span>
       ) : (
-        <ExportButton
+        <button
+          className={
+            'cursor-pointer rounded-full bg-sky-500 px-5 py-2 text-center font-semibold text-white shadow-card-1'
+          }
+          style={{boxShadow: buttonShadow}}
           onClick={togglePortal}
           ref={originRef}
           onMouseEnter={ExportAllTasksMenuRoot.preload}
         >
           Export tasks to integration
-        </ExportButton>
+        </button>
       )}
       {menuPortal(
         <ExportAllTasksMenuRoot
@@ -192,7 +173,7 @@ const ExportAllTasks = (props: Props) => {
           handlePushToIntegration={handlePushToIntegration}
         />
       )}
-    </>
+    </div>
   )
 }
 
