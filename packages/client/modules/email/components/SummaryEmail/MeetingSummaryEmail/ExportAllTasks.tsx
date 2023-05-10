@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {Check} from '@mui/icons-material'
+import {Loop} from '@mui/icons-material'
 import {MenuPosition} from '../../../../../hooks/useCoords'
 import useMenu from '../../../../../hooks/useMenu'
 import useMutationProps, {getOnCompletedError} from '../../../../../hooks/useMutationProps'
@@ -18,10 +18,14 @@ import {Providers} from '../../../../../types/constEnums'
 import GitHubSVG from '../../../../../components/GitHubSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
 import GitLabSVG from '../../../../../components/GitLabSVG'
+import clsx from 'clsx'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')
 )
+
+const BUTTON_CLASSES =
+  'flex items-center gap-2 rounded-full border border-solid border-slate-400 px-5 py-2 text-center font-sans text-sm font-semibold'
 
 const integrationToServiceName: Record<TaskServiceEnum, string> = {
   PARABOL: 'Parabol',
@@ -130,53 +134,44 @@ const ExportAllTasks = (props: Props) => {
 
   return (
     <>
-      <div className='font-sans text-sm'>
-        {submitting ? (
-          <span className='flex justify-center text-center'>Pushing tasks to integration...</span>
-        ) : filteredTasks.length === 0 ? (
-          <span className='flex justify-center text-center'>
-            {taskServices.length === 1 ? (
-              <>
-                <span>
-                  All tasks pushed to{' '}
-                  <b>
-                    {pushedIntegrationLabel ??
-                      integrationToServiceName[taskServices[0] as TaskServiceEnum]}
-                  </b>
-                </span>
-                {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
-              </>
-            ) : (
-              <>
-                All tasks pushed to integrations
-                <Check className='ml-2' />
-              </>
-            )}
-          </span>
-        ) : (
-          <button
-            className={
-              'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-semibold hover:bg-slate-100'
-            }
-            onClick={togglePortal}
-            ref={originRef}
-            onMouseEnter={ExportAllTasksMenuRoot.preload}
-          >
-            <div>Send Tasks to</div>
-            <JiraSVG /> <GitHubSVG /> <GitLabSVG />
-          </button>
-        )}
-        {menuPortal(
-          <ExportAllTasksMenuRoot
-            menuProps={menuProps}
-            loadingDelay={loadingDelay}
-            loadingWidth={loadingWidth}
-            mutationProps={mutationProps}
-            meetingRef={meeting}
-            handlePushToIntegration={handlePushToIntegration}
-          />
-        )}
-      </div>
+      {submitting ? (
+        <button className={clsx(BUTTON_CLASSES, 'cursor-wait bg-slate-300')}>
+          <Loop style={{width: '14px', height: '14px'}} /> Syncing in Progress...
+        </button>
+      ) : filteredTasks.length === 0 ? (
+        <button className={clsx(BUTTON_CLASSES, 'bg-slate-200')}>
+          {taskServices.length === 1 ? (
+            <>
+              {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
+              Tasks synced to{' '}
+              {pushedIntegrationLabel ??
+                integrationToServiceName[taskServices[0] as TaskServiceEnum]}
+            </>
+          ) : (
+            'Tasks synced'
+          )}
+        </button>
+      ) : (
+        <button
+          className={clsx(BUTTON_CLASSES, 'cursor-pointer bg-white hover:bg-slate-100')}
+          onClick={togglePortal}
+          ref={originRef}
+          onMouseEnter={ExportAllTasksMenuRoot.preload}
+        >
+          <div>Send Tasks to</div>
+          <JiraSVG /> <GitHubSVG /> <GitLabSVG />
+        </button>
+      )}
+      {menuPortal(
+        <ExportAllTasksMenuRoot
+          menuProps={menuProps}
+          loadingDelay={loadingDelay}
+          loadingWidth={loadingWidth}
+          mutationProps={mutationProps}
+          meetingRef={meeting}
+          handlePushToIntegration={handlePushToIntegration}
+        />
+      )}
     </>
   )
 }

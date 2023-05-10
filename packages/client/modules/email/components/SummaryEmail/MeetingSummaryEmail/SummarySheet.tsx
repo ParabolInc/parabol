@@ -23,6 +23,7 @@ import lazyPreload from '../../../../../utils/lazyPreload'
 import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import {TableChart} from '@mui/icons-material'
+import {Link} from 'react-router-dom'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
 
@@ -109,7 +110,8 @@ const SummarySheet = (props: Props) => {
                       <td align='center' width='100%'>
                         <div className='flex justify-center gap-4'>
                           <ExportAllTasks meetingRef={meeting} />
-                          <button
+                          <Link
+                            to={emailCSVUrl}
                             className={
                               'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
                             }
@@ -118,7 +120,7 @@ const SummarySheet = (props: Props) => {
                               style={{width: '14px', height: '14px', color: PALETTE.SLATE_600}}
                             />
                             Export to CSV
-                          </button>
+                          </Link>
                         </div>
                       </td>
                       <td style={iconLinkLabel} align='center' width='0%'>
@@ -139,17 +141,13 @@ const SummarySheet = (props: Props) => {
             </tr>
           </>
         ) : (
-          <tr>
-            <td align='center' style={iconLinkLabel} width='100%'>
-              <ExportToCSV
-                emailCSVUrl={emailCSVUrl}
-                meetingId={meetingId}
-                urlAction={urlAction}
-                referrer={referrer}
-                corsOptions={corsOptions}
-              />
-            </td>
-          </tr>
+          <ExportToCSV
+            emailCSVUrl={emailCSVUrl}
+            meetingId={meetingId}
+            urlAction={urlAction}
+            referrer={referrer}
+            corsOptions={corsOptions}
+          />
         )}
         <EmailBorderBottom />
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
