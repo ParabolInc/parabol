@@ -6,11 +6,6 @@ ARG _NO_DEPS="false"
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PORT=3000
 
-# COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
-# COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id /home/node/tools/ip-to-server_id
-
-# COPY --chown=node . ./parabol
-
 USER node
 EXPOSE ${PORT}
 
@@ -34,7 +29,7 @@ COPY --from=base /usr/local/include /usr/local/include
 COPY --from=base /usr/local/share/man /usr/local/share/man
 COPY --from=base /usr/local/share/doc /usr/local/share/doc
 COPY --from=base /usr/local/share/systemtap /usr/local/share/systemtap
-#COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=base /opt /opt
 
 COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
