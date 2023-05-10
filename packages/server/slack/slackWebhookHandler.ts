@@ -142,7 +142,6 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
         } else {
           res.writeStatus('500').end()
         }
-        console.log('Slack event_callback', JSON.stringify(message, undefined, 2))
       } else {
         console.log('Slack unknown event_callback', JSON.stringify(message, undefined, 2))
         res.writeStatus('501').end()

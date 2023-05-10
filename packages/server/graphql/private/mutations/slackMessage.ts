@@ -1,3 +1,4 @@
+import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail, getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {isSuperUser} from '../../../utils/authorization'
 import SlackServerManager from '../../../utils/SlackServerManager'
@@ -24,6 +25,7 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
   {authToken}
 ) => {
   //const now = new Date()
+  const pg = getKysely()
 
   // AUTH
   if (!isSuperUser(authToken)) {
@@ -34,21 +36,50 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
   // RESOLUTION
 
   const manager = new SlackServerManager(SLACK_BOT_TOKEN)
-  const slackUsers = (
-    await Promise.all(
-      mentions.map(async (slackUserId) => {
-        const slackUserInfo = await manager.getUserInfo(slackUserId)
-        const slackUser = slackUserInfo.ok ? slackUserInfo.user : null
-        return slackUser
-      })
-    )
-  ).filter(Boolean)
+  const [slackSender, ...slackUsers] = await Promise.all(
+    [sender, ...mentions].map(async (slackUserId) => {
+      const slackUserInfo = await manager.getUserInfo(slackUserId)
+      const slackUser = slackUserInfo.ok ? slackUserInfo.user : null
+      return slackUser
+    })
+  )
 
-  const userEmails = slackUsers.map((user) => user.profile.email)
+  if (!slackSender) {
+    console.log('no slack sender')
+    return true
+  }
+
+  const userEmails = [slackSender, ...slackUsers].map((user) => user.profile.email)
   const parabolUsers = await getUsersByEmails(userEmails)
-  const reactions = emojis.map((emoji) => unicodeToString(emoji.unicode)).filter(Boolean)
 
-  console.log('GEORG mutation', parabolUsers, reactions)
+  const reactions = emojis
+    .map(({name, unicode}) => ({
+      name,
+      emoji: unicodeToString(unicode)
+    }))
+    .filter(({emoji}) => !!emoji)
+
+  const parabolSender = parabolUsers.find(({email}) => email === slackSender.profile.email)
+  const parabolMentions = parabolUsers.filter(({email}) =>
+    slackUsers.some((user) => user.profile.email === email)
+  )
+
+  await Promise.all(
+    parabolMentions.map((user) =>
+      reactions.map((reaction) =>
+        pg
+          .insertInto('UserInteractions')
+          .values({
+            createdById: parabolSender.id,
+            receivedById: user.id,
+            emoji: reaction.emoji,
+            emojiName: reaction.name
+          })
+          .execute()
+      )
+    )
+  )
+
   return true
 }
 
