@@ -1,6 +1,25 @@
+input EmojiInput {
+  name: String!
+  unicode: String
+}
+
 extend type Mutation {
-  """
-  Ping various services to determine response time & availability
-  """
-  slackMessage(text: String!, username: String!, channel: String!, mentions: [String!]!): Boolean!
+  slackMessage(
+    """
+    plain text message
+    """
+    text: String!
+    """
+    Slack user id of the sender
+    """
+    sender: ID!
+    """
+    Slack user ids of the mentioned users
+    """
+    mentions: [String!]!
+    """
+    Emojis present in the message
+    """
+    emojis: [EmojiInput!]!
+  ): Boolean!
 }

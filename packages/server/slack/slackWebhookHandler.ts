@@ -41,23 +41,33 @@ const walkElements = <T>(elements: any[], callback: (element: any) => T): T[] =>
   })
 }
 
-const getMentions = (blocks: {elements: any[]}[]) => {
-  return walkElements(blocks, (element) => {
-    return element.type === 'user' ? element.user_id : null
-  }).filter((mention) => mention !== null)
-}
+const getMentions = (blocks: {elements: any[]}[]) =>
+  walkElements(blocks, (element) => element.type === 'user' && element.user_id).filter(
+    (mention) => !!mention
+  )
+
+const getEmojis = (blocks: {elements: any[]}[]) =>
+  walkElements(
+    blocks,
+    (element) =>
+      element.type === 'emoji' && {
+        name: element.name,
+        unicode: element.unicode
+      }
+  ).filter((emoji) => !!emoji)
 
 const eventCallbackLookup = {
   // we could also listen for all messages, but let's not do this now
   // message: {
   app_mention: {
-    getVars: ({event: {text, user, channel, blocks}}: SlackEvent) => {
+    getVars: ({event: {text, user, blocks}}: SlackEvent) => {
       const mentions = getMentions(blocks)
-      return {text, username: user, channel, mentions}
+      const emojis = getEmojis(blocks)
+      return {text, sender: user, mentions, emojis}
     },
     query: `
-      mutation SlackMessage($text: String!, $username: String!, $channel: String!, $mentions: [String!]) {
-        slackMessage(text: $text, username: $username, channel: $channel, mentions: $mentions)
+      mutation SlackMessage($text: String!, $sender: String!, $mentions: [String!]!, $emojis: [EmojiInput!]!) {
+        slackMessage(text: $text, sender: $sender, mentions: $mentions, emojis: $emojis)
       }
     `
   }
@@ -89,8 +99,9 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
     console.log(
       `Slack x-slack-request-timestamp must differ from system time by no more than ${REQUEST_TIMESTAMP_MAX_DELTA_MIN} minutes or request is stale`
     )
-    res.writeStatus('401').end()
-    return
+    // TODO Remove this, for development allow replay attacks
+    //res.writeStatus('401').end()
+    //return
   }
 
   // Rule 2: Check signature
@@ -131,6 +142,7 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
         } else {
           res.writeStatus('500').end()
         }
+        console.log('Slack event_callback', JSON.stringify(message, undefined, 2))
       } else {
         console.log('Slack unknown event_callback', JSON.stringify(message, undefined, 2))
         res.writeStatus('501').end()
