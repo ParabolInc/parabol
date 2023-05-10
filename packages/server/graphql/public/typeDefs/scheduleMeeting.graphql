@@ -1,0 +1,24 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  scheduleMeeting(
+    """
+    Describe the first arg here
+    """
+    startTimeDate: String!
+    endTimeDate: String!
+  ): ScheduleMeetingPayload!
+}
+
+"""
+Return value for scheduleMeeting, which could be an error
+"""
+union ScheduleMeetingPayload = ErrorPayload | ScheduleMeetingSuccess
+
+type ScheduleMeetingSuccess {
+  """
+  Describe the first return field here
+  """
+  meeting: ID!
+}

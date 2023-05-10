@@ -13,6 +13,11 @@ const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
+const Wrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end'
+})
+
 interface Props {
   // orgId: string
   closeModal: () => void
@@ -44,10 +49,14 @@ const GcalModal = (props: Props) => {
     <StyledDialogContainer>
       <DialogTitle>{'Schedule Your Meeting'}</DialogTitle>
       <DialogContent>
-        {'Tell us when you want to meet and we’ll create a Google Calendar invite. '}
-        <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
-          <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
-        </StyledButton>
+        {
+          'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link. '
+        }
+        <Wrapper>
+          <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
+            <IconLabel icon='arrow_forward' iconAfter label={`Create Meeting & Gcal Invite`} />
+          </StyledButton>
+        </Wrapper>
       </DialogContent>
     </StyledDialogContainer>
   )
