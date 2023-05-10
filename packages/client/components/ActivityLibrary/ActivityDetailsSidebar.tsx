@@ -101,7 +101,10 @@ const ActivityDetailsSidebar = (props: Props) => {
   const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const history = useHistory()
-  const {togglePortal: toggleModal, modalPortal} = useModal()
+  const {togglePortal: toggleModal, modalPortal} = useModal({
+    id: 'scheduleMeetingModal',
+    noClose: true
+  })
 
   const handleStartRetro = () => {
     if (submitting) return
@@ -141,7 +144,15 @@ const ActivityDetailsSidebar = (props: Props) => {
   const handleScheduleMeeting = () => {
     toggleModal()
     // handleStartRetro()
-    ScheduleMeetingMutation(atmosphere, {meetingId: 'dummyId'}, {onError, onCompleted})
+    const variables = {
+      title: 'test',
+      description: 'test',
+      startDateTime: '2021-10-10T10:00:00.000Z',
+      endDateTime: '2021-10-10T11:00:00.000Z',
+      attendeesEmails: ['nickoferrall@gmail.com'],
+      meetingId: 'test'
+    }
+    ScheduleMeetingMutation(atmosphere, variables, {onError, onCompleted})
   }
 
   const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (

@@ -4,7 +4,7 @@ import {google} from 'googleapis'
 
 const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   _source,
-  {meetingId},
+  {meetingId, title, description, startTime, endTime, attendeesEmails},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)

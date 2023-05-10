@@ -19,13 +19,10 @@ import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import DateTimePicker from './DateTimePicker'
 
-const StyledButton = styled(PrimaryButton)({
-  margin: '1.5rem auto 0'
-})
-
 const Wrapper = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-end',
+  paddingTop: 16
 })
 
 const StyledInput = styled('input')({
@@ -45,8 +42,6 @@ const StyledInput = styled('input')({
 })
 
 interface Props {
-  // orgId: string
-  // closeModal: () => void
   handleScheduleMeeting: () => void
 }
 
@@ -78,14 +73,14 @@ const GcalModal = (props: Props) => {
   const [startValue, setStartValue] = useState<Dayjs | null>(startOfNextHour)
   const [endValue, setEndValue] = useState<Dayjs | null>(endOfNextHour)
 
-  const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT,
-    {
-      id: 'scheduleMeetingModal',
-      // parentId: 'scheduleMeetingModal',
-      isDropdown: true
-    }
-  )
+  // const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
+  //   MenuPosition.LOWER_LEFT,
+  //   {
+  //     id: 'scheduleMeetingModal',
+  //     // parentId: 'scheduleMeetingModal',
+  //     isDropdown: true
+  //   }
+  // )
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
 
   const handleClick = () => {
@@ -107,10 +102,9 @@ const GcalModal = (props: Props) => {
       <DialogTitle>{'Schedule Your Meeting'}</DialogTitle>
       <DialogContent>
         {
-          'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link. '
+          'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link'
         }
         <div className='space-y-1 pt-4'>
-          {/* <Label>Meeting starts at</Label> */}
           <StyledInput
             autoFocus
             maxLength={100}
@@ -126,7 +120,7 @@ const GcalModal = (props: Props) => {
           <StyledInput
             maxLength={100}
             name='emails'
-            placeholder='Enter the email addresses of your meeting attendees (optional)'
+            placeholder='Enter the email addresses of your meeting attendees'
           />
           <DateTimePicker
             startValue={startValue}
@@ -141,12 +135,11 @@ const GcalModal = (props: Props) => {
             ref={originRef}
             size='small'
           /> */}
-          {menuPortal(<RecurrenceTimePicker menuProps={menuProps} onClick={handleClick} />)}
         </div>
         <Wrapper>
-          <StyledButton size='medium' onClick={handleScheduleMeeting} waiting={submitting}>
+          <PrimaryButton size='medium' onClick={handleScheduleMeeting} waiting={submitting}>
             {`Create Meeting & Gcal Invite`}
-          </StyledButton>
+          </PrimaryButton>
         </Wrapper>
       </DialogContent>
     </StyledDialogContainer>

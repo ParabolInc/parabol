@@ -12,8 +12,22 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation ScheduleMeetingMutation($meetingId: ID!) {
-    scheduleMeeting(meetingId: $meetingId) {
+  mutation ScheduleMeetingMutation(
+    $meetingId: ID!
+    $title: String!
+    $description: String!
+    $startDateTime: String!
+    $endDateTime: String!
+    $attendeesEmails: [String!]!
+  ) {
+    scheduleMeeting(
+      meetingId: $meetingId
+      title: $title
+      description: $description
+      startDateTime: $startDateTime
+      endDateTime: $endDateTime
+      attendeesEmails: $attendeesEmails
+    ) {
       ... on ErrorPayload {
         error {
           message

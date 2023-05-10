@@ -4,9 +4,29 @@ extend type Mutation {
   """
   scheduleMeeting(
     """
-    Describe the first arg here
+    The id of the meeting
     """
     meetingId: ID!
+    """
+    The title of the meeting
+    """
+    title: String!
+    """
+    The description of the meeting
+    """
+    description: String!
+    """
+    The start dateTime of the meeting
+    """
+    startDateTime: String!
+    """
+    The end dateTime of the meeting
+    """
+    endDateTime: String!
+    """
+    The emails of the attendees
+    """
+    attendeesEmails: [String!]!
   ): ScheduleMeetingPayload!
 }
 
