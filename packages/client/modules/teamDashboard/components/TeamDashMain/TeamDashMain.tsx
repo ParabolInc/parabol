@@ -8,87 +8,7 @@ import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import TeamDrawer from './TeamDrawer'
-
-const activityItems = [
-  {
-    user: {
-      name: 'Georg Washington',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    },
-    emoji: '👍',
-    receiver: {
-      name: 'Michael Jackson',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    },
-    date: '1h',
-    dateTime: '2023-01-23T11:00'
-  },
-  {
-    user: {
-      name: 'Freddy Mercury',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    },
-    emoji: '🤯',
-    receiver: {
-      name: 'David Bowie',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    },
-    date: '1h',
-    dateTime: '2023-01-23T11:00'
-  },
-  {
-    user: {
-      name: 'Michael Foster',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    },
-    emoji: '🤡',
-    receiver: {
-      name: 'Michael Foster',
-      imageUrl:
-        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    },
-    date: '1h',
-    dateTime: '2023-01-23T11:00'
-  }
-]
-
-const TeamInteractions = () => {
-  return (
-    <aside className='w-96 overflow-y-auto border-l border-primary/20 '>
-      <header className='flex items-center justify-between border-b border-primary/20 px-4 py-4'>
-        <div className='text-base font-semibold leading-7 text-slate-700'>Activity feed</div>
-      </header>
-      <div className='divide-y divide-primary/20'>
-        {activityItems.map((item, index) => (
-          <li key={index} className='list-none px-4 py-4'>
-            <div className='flex items-center gap-x-3'>
-              <img
-                src={item.user.imageUrl}
-                alt=''
-                className='bg-gray-800 h-6 w-6 flex-none rounded-full'
-              />
-              <div className='flex-auto truncate text-sm font-semibold text-slate-700'>
-                {item.user.name}
-              </div>
-              <time dateTime={item.dateTime} className='text-gray-600 flex-none text-xs'>
-                {item.date} ago
-              </time>
-            </div>
-            <div className='text-gray-500 mt-1 truncate text-sm'>
-              Gave <span className='font-semibold'>{item.emoji}</span> to{' '}
-              <span className='font-semibold '>{item.receiver.name}</span>
-            </div>
-          </li>
-        ))}
-      </div>
-    </aside>
-  )
-}
+import TeamInteractions from './TeamInteractions'
 
 const AbsoluteFab = styled(StartMeetingFAB)({
   position: 'absolute'
@@ -137,6 +57,7 @@ const TeamDashMain = (props: Props) => {
           team(teamId: $teamId) {
             name
             ...TeamTasksHeaderContainer_team
+            ...TeamInteractions_team
           }
           ...TeamColumnsContainer_viewer
           ...TeamDrawer_viewer
@@ -162,7 +83,7 @@ const TeamDashMain = (props: Props) => {
         </TasksContent>
         <AbsoluteFab />
       </TasksMain>
-      <TeamInteractions />
+      <TeamInteractions teamRef={team} />
       <TeamDrawer viewer={viewer} />
     </RootBlock>
   )

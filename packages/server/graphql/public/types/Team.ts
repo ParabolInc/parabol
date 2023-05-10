@@ -4,7 +4,7 @@ import isValid from '../../isValid'
 
 const Team: TeamResolvers = {
   userInteractions: async ({id: teamId}, {afterDate, beforeDate}, {dataLoader}) => {
-    const teamMembers = await dataLoader.get('teamMembers').loadMany(teamId)
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const userIds = teamMembers.filter(isValid).map((teamMember) => teamMember.userId)
 
     const pg = getKysely()

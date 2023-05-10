@@ -17,7 +17,7 @@ type UserInteractionEdge {
 }
 
 extend type Team {
-  userInteractions(afterDate: DateTime, beforeDate: DateTime): UserInteractionConnection!
+  userInteractions(last: Int, afterDate: DateTime, beforeDate: DateTime): UserInteractionConnection!
 }
 
 type UserInteractionSuccess {

@@ -93,6 +93,7 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
       const data = {
         userInteractions
       }
+      console.log('GEORG publish', teamId, JSON.stringify(data, undefined, 2))
       publish(SubscriptionChannel.TEAM, teamId, 'UserInteractionSuccess', data, subOptions)
     }
   })
