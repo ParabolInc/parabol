@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import SlackManager from 'parabol-client/utils/SlackManager'
 import {stringify} from 'querystring'
 
