@@ -3,8 +3,6 @@ const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-const S3Plugin = require('webpack-s3-plugin')
-const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -53,14 +51,27 @@ module.exports = ({isDeploy, noDeps}) => ({
       assert: false,
       os: false,
       fs: false,
-      crypto: false,
+      // crypto: false,
       net: false,
       nodemailer: false,
+      tty: false,
+      tls: false,
+      dns: false,
+      constants: false,
+      domain: false,
+      child_process: false,
+      console: false,
+      process: false,
+      path: require.resolve('path-browserify'),
+      'node-fetch': 'fetch',
       http: require.resolve('stream-http'),
       https: require.resolve('https-browserify'),
-      stream: require.resolve('stream-browserify')
+      stream: require.resolve('stream-browserify'),
+      zlib: false,
+      util: false
     },
     mainFields: ['main'],
+    // exportsFields: ['main'],
     alias: {
       '~': CLIENT_ROOT,
       'parabol-client': CLIENT_ROOT,
@@ -78,7 +89,8 @@ module.exports = ({isDeploy, noDeps}) => ({
     !noDeps &&
       nodeExternals({
         allowlist: [/parabol-client/, /parabol-server/]
-      })
+      }),
+    'crypto'
   ].filter(Boolean),
   optimization: {
     minimize: false,
@@ -120,27 +132,13 @@ module.exports = ({isDeploy, noDeps}) => ({
       resourceRegExp: /react-router\/esm$/
     }),
     // yup uses lodash-es, which doesn't bundle
-    new webpack.IgnorePlugin({resourceRegExp: /^yup$/}),
+    // new webpack.IgnorePlugin({resourceRegExp: /^yup$/}),
     // new webpack.IgnorePlugin({resourceRegExp: /^worker-types$/}),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[fullhash].js.map',
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
     }),
     new BundleAnalyzerPlugin({generateStatsFile: true}),
-    isDeploy &&
-      // #8101 Eventually this will be replaced with pushToCDN to decouple the push from the build
-      new S3Plugin({
-        s3Options: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION
-        },
-        s3UploadOptions: {
-          Bucket: process.env.AWS_S3_BUCKET
-        },
-        basePath: `${getS3BasePath()}server/dist/`,
-        directory: distPath
-      }),
     noDeps &&
       new CopyWebpackPlugin({
         patterns: [

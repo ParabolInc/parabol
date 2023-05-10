@@ -28,12 +28,15 @@
     "wrangler": "^2.20.0"
   },
   "dependencies": {
+    "browserify-zlib": "^0.2.0",
     "dd-trace": "^2.10.0",
     "graphql-yoga": "^3.9.1",
     "https-browserify": "^1.0.0",
     "parabol-client": "^6.103.0",
     "parabol-server": "^6.103.0",
+    "path-browserify": "^1.0.1",
     "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0"
+    "stream-http": "^3.2.0",
+    "util": "^0.12.5"
   }
 }
