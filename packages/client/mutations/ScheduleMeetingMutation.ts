@@ -4,20 +4,22 @@ import {StandardMutation} from '../types/relayMutations'
 import {ScheduleMeetingMutation as TScheduleMeetingMutation} from '../__generated__/ScheduleMeetingMutation.graphql'
 
 graphql`
-  fragment ScheduleMeetingMutation_part on ScheduleMeetingSuccess {
-    successField
+  fragment ScheduleMeetingMutation_meeting on ScheduleMeetingSuccess {
+    meeting {
+      id
+    }
   }
 `
 
 const mutation = graphql`
-  mutation ScheduleMeetingMutation($arg1: ID!) {
-    scheduleMeeting(arg1: $arg1) {
+  mutation ScheduleMeetingMutation($meetingId: ID!) {
+    scheduleMeeting(meetingId: $meetingId) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...ScheduleMeetingMutation_part @relay(mask: false)
+      ...ScheduleMeetingMutation_meeting @relay(mask: false)
     }
   }
 `
@@ -30,9 +32,6 @@ const ScheduleMeetingMutation: StandardMutation<TScheduleMeetingMutation> = (
   return commitMutation<TScheduleMeetingMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {} = variables
-    },
     onCompleted,
     onError
   })

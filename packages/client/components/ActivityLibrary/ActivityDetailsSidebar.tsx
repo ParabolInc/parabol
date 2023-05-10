@@ -22,6 +22,7 @@ import {PALETTE} from '../../styles/paletteV3'
 import clsx from 'clsx'
 import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
+import ScheduleMeetingMutation from '../../mutations/ScheduleMeetingMutation'
 import useModal from '../../hooks/useModal'
 
 interface Props {
@@ -124,6 +125,12 @@ const ActivityDetailsSidebar = (props: Props) => {
     )
   }
 
+  const handleScheduleMeeting = () => {
+    toggleModal()
+    // handleStartRetro()
+    ScheduleMeetingMutation(atmosphere, {meetingId: 'dummyId'}, {onError, onCompleted})
+  }
+
   const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
     <div className='w-[352px] p-4'>
       <div>
@@ -191,7 +198,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           </div>
         </div>
       </div>
-      {modalPortal(<GcalModal closeModal={closeModal} />)}
+      {modalPortal(<GcalModal handleScheduleMeeting={handleScheduleMeeting} />)}
     </>
   )
 }

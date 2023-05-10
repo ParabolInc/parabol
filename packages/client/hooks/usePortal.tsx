@@ -38,6 +38,7 @@ export type PortalId =
   | 'endRecurringMeetingModal'
   | 'templateTeamPickerModal'
   | 'pokerTemplateScaleDetailsModal'
+  | 'scheduleMeetingModal'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void

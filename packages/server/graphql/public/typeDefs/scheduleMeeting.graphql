@@ -6,8 +6,7 @@ extend type Mutation {
     """
     Describe the first arg here
     """
-    startTimeDate: String!
-    endTimeDate: String!
+    meetingId: ID!
   ): ScheduleMeetingPayload!
 }
 
@@ -20,5 +19,5 @@ type ScheduleMeetingSuccess {
   """
   Describe the first return field here
   """
-  meeting: ID!
+  meeting: NewMeeting!
 }
