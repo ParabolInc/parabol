@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamInteractions_team$key} from '~/__generated__/TeamInteractions_team.graphql'
+import relativeDate from '../../../../utils/date/relativeDate'
 
 /*
 const activityItems = [
@@ -107,7 +108,7 @@ const TeamInteractions = (props: Props) => {
                 {item.sender.preferredName}
               </div>
               <time dateTime={item.createdAt} className='text-gray-600 flex-none text-xs'>
-                {item.createdAt} ago
+                {relativeDate(item.createdAt)}
               </time>
             </div>
             <div className='text-gray-500 mt-1 truncate text-sm'>
