@@ -86,7 +86,6 @@ const TeamInteractions = (props: Props) => {
     `,
     teamRef
   )
-  console.log('GEORG', team)
 
   const interactions = useMemo(() => team.userInteractions.edges.map((edge) => edge.node), [team])
 

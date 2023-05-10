@@ -32,6 +32,7 @@ import {
   removeTeamMemberTeamOnNext,
   removeTeamMemberTeamUpdater
 } from '../mutations/RemoveTeamMemberMutation'
+import {userInteractionTeamUpdater} from './updaters/UserInteractionTeamUpdater'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {
   TeamSubscription as TTeamSubscription,
@@ -170,6 +171,9 @@ const subscription = graphql`
       UpdateIntegrationProviderSuccess {
         ...UpdateIntegrationProviderMutation_team @relay(mask: false)
       }
+      UserInteractionSuccess {
+        ...UserInteractionTeamUpdater_team @relay(mask: false)
+      }
       AddIntegrationProviderSuccess {
         ...AddIntegrationProviderMutation_team @relay(mask: false)
       }
@@ -206,7 +210,8 @@ const updateHandlers = {
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
-  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
+  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater,
+  UserInteractionSuccess: userInteractionTeamUpdater
 } as const
 
 const TeamSubscription = (

@@ -76,9 +76,13 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
     }))
   )
 
-  const inserted = await pg.insertInto('UserInteractions').values(interactionInserts).execute()
+  const inserted = await pg
+    .insertInto('UserInteractions')
+    .values(interactionInserts)
+    .returning(['id', 'createdAt'])
+    .execute()
   const interactions = inserted.map((row, i) => ({
-    id: row.insertId,
+    ...row,
     ...interactionInserts[i]
   }))
 
@@ -87,13 +91,15 @@ const slackMessage: MutationResolvers['slackMessage'] = async (
       .filter((user) => user.tms.includes(teamId))
       .map(({id}) => id)
     if (mentionedMateIds.length) {
-      const userInteractions = interactions.filter(({receivedById}) =>
-        mentionedMateIds.includes(receivedById)
-      )
+      const userInteractions = interactions
+        .filter(({receivedById}) => mentionedMateIds.includes(receivedById))
+        .map((interaction) => ({
+          teamId,
+          ...interaction
+        }))
       const data = {
         userInteractions
       }
-      console.log('GEORG publish', teamId, JSON.stringify(data, undefined, 2))
       publish(SubscriptionChannel.TEAM, teamId, 'UserInteractionSuccess', data, subOptions)
     }
   })

@@ -88,7 +88,6 @@ const slackWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpR
     res.writeStatus('401').end()
     return
   }
-  console.log('req', req, body)
 
   // Calculate time-dependent values
   const nowMs = Date.now()

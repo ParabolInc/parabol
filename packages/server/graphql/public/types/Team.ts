@@ -12,6 +12,7 @@ const Team: TeamResolvers = {
       .selectFrom('UserInteractions')
       .where('createdById', 'in', userIds)
       .where('receivedById', 'in', userIds)
+      .orderBy('createdAt', 'desc')
       .selectAll()
       .execute()
 
@@ -19,7 +20,10 @@ const Team: TeamResolvers = {
     return {
       edges: interactions.map((node) => ({
         cursor: node.createdAt,
-        node
+        node: {
+          ...node,
+          teamId
+        }
       }))
     }
   }
