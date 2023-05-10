@@ -40,7 +40,7 @@ const GcalProviderRow = (props: Props) => {
         togglePortal={togglePortal}
         menuRef={originRef}
         providerName={Providers.GCAL_NAME}
-        providerDescription={Providers.GCAL_DESCRIPTION}
+        providerDescription={Providers.GCAL_DESC}
         providerLogo={<GcalProviderLogo />}
       />
       {menuPortal(<GcalConfigMenu menuProps={menuProps} mutationProps={mutationProps} />)}
