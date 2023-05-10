@@ -13,6 +13,7 @@ import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
+import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 
 interface Props {
   queryRef: PreloadedQuery<ProviderListQuery>
@@ -100,10 +101,10 @@ const query = graphql`
           }
         }
       }
-
       featureFlags {
         azureDevOps
         msTeams
+        gcal
       }
     }
   }
@@ -114,8 +115,9 @@ const ProviderList = (props: Props) => {
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
   const {
-    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
+    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams, gcal: allowGcal}
   } = viewer
+  console.log('🚀 ~ allowGcal:', {allowGcal, featureFlag: viewer.featureFlags})
 
   const integrations = viewer.teamMember?.integrations
 
@@ -162,6 +164,13 @@ const ProviderList = (props: Props) => {
       connected: !!integrations?.msTeams.auth,
       component: <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />,
       hidden: !allowMSTeams
+    },
+    {
+      name: 'Gcal Integration',
+      // connected: !!integrations?.gcal?.accessToken,
+      connected: true,
+      component: <GcalProviderRow />,
+      hidden: !allowGcal
     }
   ]
 

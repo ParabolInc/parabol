@@ -29,6 +29,7 @@ type UserFeatureFlags {
   noMeetingHistoryLimit: Boolean!
   checkoutFlow: Boolean!
   retrosInDisguise: Boolean!
+  gcal: Boolean!
 }
 
 extend type Mutation {

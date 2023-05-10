@@ -288,6 +288,8 @@ export const enum Providers {
   JIRA_SERVER_NAME = 'Jira Server',
   JIRA_SERVER_DESC = 'Use Jira Server Issues from within Parabol',
   GITHUB_NAME = 'GitHub',
+  GCAL_NAME = 'Google Calendar',
+  GCAL_DESC = 'Create Google Calendar events from within Parabol',
   GITHUB_DESC = 'Use GitHub Issues from within Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
   GITLAB_SCOPE = 'api',
