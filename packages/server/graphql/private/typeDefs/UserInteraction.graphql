@@ -1,0 +1,21 @@
+type UserInteraction {
+  id: ID!
+  sender: User!
+  receiver: User!
+  emoji: String!
+  createdAt: DateTime!
+}
+
+type UserInteractionConnection {
+  edges: [UserInteractionEdge!]!
+  pageInfo: PageInfoDateCursor
+}
+
+type UserInteractionEdge {
+  node: UserInteraction!
+  cursor: DateTime
+}
+
+extend type Team {
+  userInteractions(afterDate: DateTime, beforeDate: DateTime): UserInteractionConnection!
+}
