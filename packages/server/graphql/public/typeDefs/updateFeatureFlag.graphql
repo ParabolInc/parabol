@@ -12,6 +12,7 @@ enum UserFlagEnum {
   noMeetingHistoryLimit
   checkoutFlow
   retrosInDisguise
+  gcal
 }
 
 """
