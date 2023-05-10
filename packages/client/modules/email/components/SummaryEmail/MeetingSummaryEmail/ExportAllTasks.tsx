@@ -10,12 +10,14 @@ import {
   ExportAllTasks_meeting$key,
   TaskServiceEnum
 } from '../../../../../__generated__/ExportAllTasks_meeting.graphql'
-import {buttonShadow} from '../../../../../styles/elevation'
 import {IntegrationProviderServiceEnum} from '../../../../../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import {integrationSvgLookup} from '../../../../../components/TaskIntegrationMenuItem'
 import {Providers} from '../../../../../types/constEnums'
+import GitHubSVG from '../../../../../components/GitHubSVG'
+import JiraSVG from '../../../../../components/JiraSVG'
+import GitLabSVG from '../../../../../components/GitLabSVG'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')
@@ -127,53 +129,55 @@ const ExportAllTasks = (props: Props) => {
   }
 
   return (
-    <div className='font-sans text-sm'>
-      {submitting ? (
-        <span className='flex justify-center text-center'>Pushing tasks to integration...</span>
-      ) : filteredTasks.length === 0 ? (
-        <span className='flex justify-center text-center'>
-          {taskServices.length === 1 ? (
-            <>
-              <span>
-                All tasks pushed to{' '}
-                <b>
-                  {pushedIntegrationLabel ??
-                    integrationToServiceName[taskServices[0] as TaskServiceEnum]}
-                </b>
-              </span>
-              {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
-            </>
-          ) : (
-            <>
-              All tasks pushed to integrations
-              <Check className='ml-2' />
-            </>
-          )}
-        </span>
-      ) : (
-        <button
-          className={
-            'cursor-pointer rounded-full bg-sky-500 px-5 py-2 text-center font-semibold text-white shadow-card-1'
-          }
-          style={{boxShadow: buttonShadow}}
-          onClick={togglePortal}
-          ref={originRef}
-          onMouseEnter={ExportAllTasksMenuRoot.preload}
-        >
-          Export tasks to integration
-        </button>
-      )}
-      {menuPortal(
-        <ExportAllTasksMenuRoot
-          menuProps={menuProps}
-          loadingDelay={loadingDelay}
-          loadingWidth={loadingWidth}
-          mutationProps={mutationProps}
-          meetingRef={meeting}
-          handlePushToIntegration={handlePushToIntegration}
-        />
-      )}
-    </div>
+    <>
+      <div className='font-sans text-sm'>
+        {submitting ? (
+          <span className='flex justify-center text-center'>Pushing tasks to integration...</span>
+        ) : filteredTasks.length === 0 ? (
+          <span className='flex justify-center text-center'>
+            {taskServices.length === 1 ? (
+              <>
+                <span>
+                  All tasks pushed to{' '}
+                  <b>
+                    {pushedIntegrationLabel ??
+                      integrationToServiceName[taskServices[0] as TaskServiceEnum]}
+                  </b>
+                </span>
+                {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
+              </>
+            ) : (
+              <>
+                All tasks pushed to integrations
+                <Check className='ml-2' />
+              </>
+            )}
+          </span>
+        ) : (
+          <button
+            className={
+              'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-semibold hover:bg-slate-100'
+            }
+            onClick={togglePortal}
+            ref={originRef}
+            onMouseEnter={ExportAllTasksMenuRoot.preload}
+          >
+            <div>Send Tasks to</div>
+            <JiraSVG /> <GitHubSVG /> <GitLabSVG />
+          </button>
+        )}
+        {menuPortal(
+          <ExportAllTasksMenuRoot
+            menuProps={menuProps}
+            loadingDelay={loadingDelay}
+            loadingWidth={loadingWidth}
+            mutationProps={mutationProps}
+            meetingRef={meeting}
+            handlePushToIntegration={handlePushToIntegration}
+          />
+        )}
+      </div>
+    </>
   )
 }
 

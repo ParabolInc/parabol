@@ -20,6 +20,9 @@ import SummarySheetCTA from './SummarySheetCTA'
 import TeamPromptResponseSummary from './TeamPromptResponseSummary'
 import WholeMeetingSummary from './WholeMeetingSummary'
 import lazyPreload from '../../../../../utils/lazyPreload'
+import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
+import {PALETTE} from '../../../../../styles/paletteV3'
+import {TableChart} from '@mui/icons-material'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
 
@@ -38,6 +41,11 @@ interface Props {
 const sheetStyle = {
   borderSpacing: 0,
   boxShadow: sheetShadow
+}
+
+const iconLinkLabel = {
+  color: PALETTE.SLATE_700,
+  fontSize: '13px'
 }
 
 const SummarySheet = (props: Props) => {
@@ -91,26 +99,59 @@ const SummarySheet = (props: Props) => {
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
-        {referrer === 'meeting' && !!taskCount && taskCount > 0 && (
+        {referrer === 'meeting' && !!taskCount && taskCount > 0 ? (
+          <>
+            <tr>
+              <td>
+                <table width='90%' align='center' className='mt-8 rounded-lg bg-slate-200 py-4'>
+                  <tbody>
+                    <tr>
+                      <td align='center' width='100%'>
+                        <div className='flex justify-center gap-4'>
+                          <ExportAllTasks meetingRef={meeting} />
+                          <button
+                            className={
+                              'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                            }
+                          >
+                            <TableChart
+                              style={{width: '14px', height: '14px', color: PALETTE.SLATE_600}}
+                            />
+                            Export to CSV
+                          </button>
+                        </div>
+                      </td>
+                      <td style={iconLinkLabel} align='center' width='0%'>
+                        <div className='hidden'>
+                          <ExportToCSV
+                            emailCSVUrl={emailCSVUrl}
+                            meetingId={meetingId}
+                            urlAction={urlAction}
+                            referrer={referrer}
+                            corsOptions={corsOptions}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </>
+        ) : (
           <tr>
-            <td
-              style={{
-                paddingTop: 44
-              }}
-              align='center'
-              width='100%'
-            >
-              <ExportAllTasks meetingRef={meeting} />
+            <td align='center' style={iconLinkLabel} width='100%'>
+              <ExportToCSV
+                emailCSVUrl={emailCSVUrl}
+                meetingId={meetingId}
+                urlAction={urlAction}
+                referrer={referrer}
+                corsOptions={corsOptions}
+              />
             </td>
           </tr>
         )}
-        <ExportToCSV
-          emailCSVUrl={emailCSVUrl}
-          meetingId={meetingId}
-          urlAction={urlAction}
-          referrer={referrer}
-          corsOptions={corsOptions}
-        />
+        <EmailBorderBottom />
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
         {meetingType === 'teamPrompt' ? (
           <TeamPromptResponseSummary meetingRef={meeting} />
