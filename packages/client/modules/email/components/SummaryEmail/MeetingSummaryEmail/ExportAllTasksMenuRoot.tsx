@@ -11,6 +11,7 @@ import LoadingComponent from '../../../../../components/LoadingComponent/Loading
 import ExportAllTasksMenu from './ExportAllTasksMenu'
 import {MenuProps} from '../../../../../hooks/useMenu'
 import {MenuMutationProps} from '../../../../../hooks/useMutationProps'
+import {IntegrationProviderServiceEnum} from '../../../../../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 
 interface Props {
   menuProps: MenuProps
@@ -18,10 +19,22 @@ interface Props {
   loadingWidth: number
   mutationProps: MenuMutationProps
   meetingRef: ExportAllTasksMenuRoot_meeting$key
+  handlePushToIntegration: (
+    integrationRepoId: string,
+    integrationProviderService: IntegrationProviderServiceEnum,
+    integrationLabel?: string
+  ) => void
 }
 
 const ExportAllTasksMenuRoot = (props: Props) => {
-  const {menuProps, loadingDelay, loadingWidth, mutationProps, meetingRef} = props
+  const {
+    menuProps,
+    loadingDelay,
+    loadingWidth,
+    mutationProps,
+    meetingRef,
+    handlePushToIntegration
+  } = props
   const meeting = useFragment(
     graphql`
       fragment ExportAllTasksMenuRoot_meeting on NewMeeting {
@@ -53,6 +66,7 @@ const ExportAllTasksMenuRoot = (props: Props) => {
           menuProps={menuProps}
           mutationProps={mutationProps}
           meetingRef={meeting}
+          handlePushToIntegration={handlePushToIntegration}
         />
       )}
     </Suspense>

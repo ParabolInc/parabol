@@ -7,9 +7,7 @@ import {ExportAllTasksMenuQuery} from '../../../../../__generated__/ExportAllTas
 import {ExportAllTasksMenu_meeting$key} from '../../../../../__generated__/ExportAllTasksMenu_meeting.graphql'
 import TaskFooterIntegrateMenuList from '../../../../../components/TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from '../../../../../components/TaskFooterIntegrateMenuSignup'
-import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import {IntegrationProviderServiceEnum} from '../../../../../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import {useIsIntegrated, makePlaceholder} from '../../../../../hooks/useIsIntegrated'
 
 interface Props {
@@ -17,6 +15,11 @@ interface Props {
   mutationProps: MenuMutationProps
   meetingRef: ExportAllTasksMenu_meeting$key
   queryRef: PreloadedQuery<ExportAllTasksMenuQuery>
+  handlePushToIntegration: (
+    integrationRepoId: string,
+    integrationProviderService: IntegrationProviderServiceEnum,
+    integrationLabel?: string
+  ) => void
 }
 
 const query = graphql`
@@ -34,7 +37,7 @@ const query = graphql`
 `
 
 const ExportAllTasksMenu = (props: Props) => {
-  const {menuProps, mutationProps, meetingRef, queryRef} = props
+  const {menuProps, mutationProps, meetingRef, queryRef, handlePushToIntegration} = props
   const data = usePreloadedQuery<ExportAllTasksMenuQuery>(query, queryRef)
   const {viewer} = data
   const meeting = useFragment(
@@ -61,7 +64,6 @@ const ExportAllTasksMenu = (props: Props) => {
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
 
   const {viewerTeamMember} = viewer
   const {teamId, tasks} = meeting
@@ -70,26 +72,10 @@ const ExportAllTasksMenu = (props: Props) => {
   if (!viewerTeamMember) return null
   const {integrations: viewerIntegrations} = viewerTeamMember
 
-  const {onError, onCompleted} = mutationProps
-
   const filteredTasks = tasks?.filter((task) => !task.integration)
 
   if (!filteredTasks || filteredTasks.length === 0) {
     return null
-  }
-
-  const handlePushToIntegration = (
-    integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum
-  ) => {
-    filteredTasks?.forEach((task) => {
-      const variables = {
-        integrationRepoId,
-        taskId: task.id,
-        integrationProviderService: integrationProviderService
-      }
-      CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
-    })
   }
 
   if (isViewerIntegrated) {

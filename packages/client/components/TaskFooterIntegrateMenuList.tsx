@@ -23,7 +23,8 @@ interface Props {
   label?: string
   onPushToIntegration: (
     integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum
+    integrationProviderService: IntegrationProviderServiceEnum,
+    integrationLabel?: string
   ) => void
 }
 
@@ -146,7 +147,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
-              onClick={() => onPushToIntegration(integrationRepoId, 'jira')}
+              onClick={() => onPushToIntegration(integrationRepoId, 'jira', repoIntegration.name)}
               service='jira'
             />
           )
@@ -157,7 +158,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
-              onClick={() => onPushToIntegration(integrationRepoId, 'jiraServer')}
+              onClick={() =>
+                onPushToIntegration(integrationRepoId, 'jiraServer', repoIntegration.name)
+              }
               service='jiraServer'
             />
           )
@@ -169,7 +172,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               key={integrationRepoId}
               query={query}
               label={repoIntegration.nameWithOwner}
-              onClick={() => onPushToIntegration(nameWithOwner, 'github')}
+              onClick={() =>
+                onPushToIntegration(nameWithOwner, 'github', repoIntegration.nameWithOwner)
+              }
               service='github'
             />
           )
@@ -181,7 +186,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               key={integrationRepoId}
               query={query}
               label={fullPath}
-              onClick={() => onPushToIntegration(fullPath, 'gitlab')}
+              onClick={() => onPushToIntegration(fullPath, 'gitlab', fullPath)}
               service='gitlab'
             />
           )
@@ -198,7 +203,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               key={integrationRepoId}
               query={query}
               label={name}
-              onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps')}
+              onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps', name)}
               service='azureDevOps'
             />
           )
