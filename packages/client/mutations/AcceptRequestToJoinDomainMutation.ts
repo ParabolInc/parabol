@@ -40,7 +40,8 @@ const AcceptRequestToJoinDomainMutation: SimpleMutation<TAcceptRequestToJoinDoma
           autoDismiss: 5,
           key: 'acceptRequestToJoinDomainSuccess'
         })
-        SendClientSegmentEventMutation(atmosphere, 'Join Request Accepted', {
+        SendClientSegmentEventMutation(atmosphere, 'Join Request Reviewed', {
+          action: 'accept',
           teamIds: variables.teamIds
         })
       } else {

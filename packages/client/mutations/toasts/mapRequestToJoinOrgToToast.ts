@@ -26,6 +26,11 @@ const mapRequestToJoinOrgToToast = (
     showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
     message: `${email} is requesting to join your organization`,
+    onShow: () => {
+      SendClientSegmentEventMutation(atmosphere, 'Snackbar Viewed', {
+        snackbarType: 'requestToJoinOrg'
+      })
+    },
     action: {
       label: 'Review',
       callback: () => {
@@ -37,7 +42,9 @@ const mapRequestToJoinOrgToToast = (
     secondaryAction: {
       label: 'Deny',
       callback: () => {
-        SendClientSegmentEventMutation(atmosphere, 'Join Request Denied')
+        SendClientSegmentEventMutation(atmosphere, 'Join Request Reviewed', {
+          action: 'deny'
+        })
       }
     }
   }
