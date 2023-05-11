@@ -113,8 +113,8 @@ jobs:
               yarn build; \
           fi && \
           rm -rf .env && \
-          rm -rf .circleci .git .github .husky .vscode docs packages static && \
-          rm -rf .gitignore .eslintrc.js docker-compose.yml nginx.conf.sigil *.html *.js *.md CHECKS COPYING .prettierrc
+          rm -rf .circleci .git .github .husky .vscode docs static && \
+          rm -rf .gitignore docker-compose.yml nginx.conf.sigil *.html *.md CHECKS COPYING .prettierrc
 
       - name: Build and push
         uses: docker/build-push-action@v4
