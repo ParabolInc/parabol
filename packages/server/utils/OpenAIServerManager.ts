@@ -46,22 +46,22 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
 
     const prompt: Record<ModifyType, string> = {
-      CORPORATE: `Below is a ice breaker question from a team retrospective meeting. Modify the check-in question to use more corporate language. Respond with just a plain content of modified question.
+      CORPORATE: `Below is a ice breaker question from a team retrospective meeting. Rephrase the following icebreaker question to suit a professional corporate setting. Respond with just a plain content of modified question.
 
       Ice breaker question: """
       ${question}
       """`,
-      CRAZY: `Below is a ice breaker question from a team retrospective meeting. Modify the check-in question to be more absurd, abstract, thought provoking and engaging. Respond with just a plain content of modified question.
+      CRAZY: `Below is a ice breaker question from a team retrospective meeting. Transform the following icebreaker question into something bizarre and unexpected. Respond with just a plain content of modified question.
 
       Ice breaker question: """
       ${question}
       """`,
-      FUNNY: `Below is a ice breaker question from a team retrospective meeting. Modify the check-in question to be more funny and engaging. Respond with just a plain content of modified question.
+      FUNNY: `Below is a ice breaker question from a team retrospective meeting. Add humor to the following icebreaker question. Respond with just a plain content of modified question.
 
       Ice breaker question: """
       ${question}
       """`,
-      SERIOUS: `Below is a ice breaker question from a team retrospective meeting. Modify the check-in question to be more serious. Respond with just a content of modified question.
+      SERIOUS: `Below is a ice breaker question from a team retrospective meeting. Make the following ice breaker question more thought-provoking and serious. Respond with just a content of modified question.
 
       Ice breaker question: """
       ${question}

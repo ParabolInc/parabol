@@ -145,7 +145,6 @@ const NewCheckInQuestion = (props: Props) => {
   }
 
   const modify = (modifyType: ModifyType) => {
-    submitMutation()
     ModifyCheckInQuestionMutation(
       atmosphere,
       {
