@@ -111,7 +111,7 @@ jobs:
           yarn pg:build && \
           if [ "$_NO_DEPS" = "true" ]; then \
               yarn build --no-deps && \
-              rm -rf node_modules; \
+              rm -rf node_modules packages scripts; \
           else \
               yarn build; \
           fi && \
