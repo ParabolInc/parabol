@@ -129,14 +129,17 @@ const ActivityDetailsSidebar = (props: Props) => {
   })
 
   const handleCompletedRetro = () => {
+    const timestampSeconds = Math.floor(1633570562000 / 1000)
+    const timestampSecondsDos = Math.floor(1633570563000 / 1000)
     const variables = {
       title: 'test',
       description: 'test',
-      startDateTime: '2021-10-10T10:00:00.000Z',
-      endDateTime: '2021-10-10T11:00:00.000Z',
-      attendeesEmails: ['nickoferrall@gmail.com'],
+      startTimestamp: timestampSeconds,
+      endTimestamp: timestampSecondsDos,
+      inviteTeam: true,
       meetingId: 'test'
     }
+    console.log('🚀 ~ variables =======:', variables)
     ScheduleMeetingMutation(atmosphere, variables, {onError, onCompleted})
   }
 

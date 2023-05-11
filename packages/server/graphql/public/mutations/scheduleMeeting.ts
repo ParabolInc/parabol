@@ -9,6 +9,7 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   {meetingId, title, description, startTimestamp, endTimestamp, inviteTeam},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  console.log('in schedule meeting!')
   const viewerId = getUserId(authToken)
   const now = new Date()
 

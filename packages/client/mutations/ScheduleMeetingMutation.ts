@@ -16,8 +16,8 @@ const mutation = graphql`
     $meetingId: ID!
     $title: String!
     $description: String!
-    $startTimestamp: String!
-    $endTimestamp: String!
+    $startTimestamp: Int!
+    $endTimestamp: Int!
     $inviteTeam: Boolean!
   ) {
     scheduleMeeting(

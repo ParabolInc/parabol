@@ -129,7 +129,7 @@ const GcalModal = (props: Props) => {
           />
         </div>
         <Wrapper>
-          <PrimaryButton size='medium' onClick={handleClick} waiting={submitting}>
+          <PrimaryButton size='medium' onClick={handleScheduleMeeting} waiting={submitting}>
             {`Create Meeting & Gcal Invite`}
           </PrimaryButton>
         </Wrapper>
