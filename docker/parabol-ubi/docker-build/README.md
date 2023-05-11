@@ -61,7 +61,7 @@ To build the image, these commands must be executed from the root level of this 
 docker run --name temp-postgres --network=host -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:${postgresql_tag} && \
 docker run --name temp-rethinkdb --network=host -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:${rethinkdb_tag} && \
 docker run --name temp-redis --network=host -d -p 6379:6379 redis:${redis_tag} && \
-docker build --network=host -t ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION --build-arg _BUILD_ENV_PATH=${_BUILD_ENV_PATH} --build-arg _SECURITY_ENABLED=${_SECURITY_ENABLED} --build-arg _NO_DEPS=${_NO_DEPS} . && \
+docker build --network=host -t ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION --build-arg _BUILD_ENV_PATH=${_BUILD_ENV_PATH} --build-arg _SECURITY_ENABLED=${_SECURITY_ENABLED} . && \
 docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f || docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f
 ```
 
