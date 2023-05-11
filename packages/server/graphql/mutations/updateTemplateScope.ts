@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
@@ -50,11 +49,6 @@ const updateTemplateScope = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not a member of the team`}}
     }
-    const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-    if (!teamMember.isLead) {
-      return {error: {message: `Not the team leader`}}
-    }
 
     // VALIDATION
     if (scope === newScope) {
@@ -84,7 +78,9 @@ const updateTemplateScope = {
         orgId,
         scope: newScope,
         parentTemplateId: templateId,
-        lastUsedAt: template.lastUsedAt
+        lastUsedAt: template.lastUsedAt,
+        illustrationUrl: template.illustrationUrl,
+        mainCategory: template.mainCategory
       })
       clonedTemplateId = clonedTemplate.id
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
@@ -113,7 +109,9 @@ const updateTemplateScope = {
         orgId,
         scope: newScope,
         parentTemplateId: templateId,
-        lastUsedAt: template.lastUsedAt
+        lastUsedAt: template.lastUsedAt,
+        illustrationUrl: template.illustrationUrl,
+        mainCategory: template.mainCategory
       })
       clonedTemplateId = clonedTemplate.id
       const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)

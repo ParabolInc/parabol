@@ -5,6 +5,64 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.103.0 2023-May-05
+
+### Added
+
+- feat(retros-in-disguise): Prompt user to use org scope (#8120)
+- feat(retros-in-disguise):Create new poker template (#8143)
+- feat(retros-in-disguise): Poker details view (#8131)
+- chore(prompt-to-join): Allow to open add teammate dialog from the snackbar (#8136)
+- feat(suggest-groups): Add suggestGroups org feature flag (#8130)
+- feat: add mainCategory and illustrationUrl to MeetingTemplate (#8074)
+
+### Fixed
+
+- fix: subscribe to acceptInvite paylods in subscription (#8127)
+
+## 6.102.0 2023-May-3
+
+### Added
+
+- feat(retros-in-disguise): added create new activity view (#8069)
+- feat(rid): Edit Mode (#8108)
+- feat: add more dd tracing (#7774)
+- feat(templates): Share to org by default (#8129)
+
+### Changed
+
+- chore: remove User table from RethinkDB (#8115)
+- chore: bump webpack to secure version
+- chore: generate kysely schema in dev (#8114)
+- chore(security): bump vulnerable packages (#8135)
+
+### Fixed
+
+- **stripe**: do not update subscription quantity on enterprise annual plan (#8105)
+
+## 6.101.0 2023-Apr-26
+
+### Added
+
+- Throw and catch GraphQL errors on the client (#7932)
+- **retros-in-disguise**: Clone template (#8036)
+- Create new Github Action - Notify on bug assignment (#8058)
+- Create updateSAML mutation (#7685)
+- **checkout-flow**: handle credit card functionality (#8005)
+- **recurrence**: Use the prompt from the most recent meeting in the series (#8095)
+- **prompt-to-join**: Add request to join domain mutation (#8040)
+
+### Changed
+
+- refactor MeetingTemplate reads to PG (#8015)
+- refactor notifications to SDL (example PR) (#8018)
+- bump vm2 from 3.9.16 to 3.9.17 (#8078)
+
+### Fixed
+
+- Fix duplicate charge on failed payment (#8072)
+- Fix default standup name (#8079)
+
 ## 6.100.0 2023-Apr-19
 
 ### Added

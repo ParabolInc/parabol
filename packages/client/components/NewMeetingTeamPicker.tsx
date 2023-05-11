@@ -24,10 +24,11 @@ interface Props {
   onSelectTeam: (teamId: string) => void
   parentId?: PortalId
   positionOverride?: MenuPosition
+  customPortal?: React.ReactNode
 }
 
 const NewMeetingTeamPicker = (props: Props) => {
-  const {selectedTeamRef, teamsRef, onSelectTeam, parentId, positionOverride} = props
+  const {selectedTeamRef, teamsRef, onSelectTeam, parentId, positionOverride, customPortal} = props
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     positionOverride ?? MenuPosition.LOWER_RIGHT,
     {
@@ -71,7 +72,11 @@ const NewMeetingTeamPicker = (props: Props) => {
         opened={[PortalStatus.Entering, PortalStatus.Entered].includes(portalStatus)}
       />
       {menuPortal(
-        <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={onSelectTeam} />
+        customPortal ? (
+          customPortal
+        ) : (
+          <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={onSelectTeam} />
+        )
       )}
     </>
   )

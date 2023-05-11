@@ -1,4 +1,4 @@
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import {PokerTemplateList_settings$data} from '~/__generated__/PokerTemplateList_settings.graphql'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
@@ -20,6 +20,11 @@ const handleRemovePokerTemplate = (
   const publicConn = getPokerTemplatePublicConn(settings)
   safeRemoveNodeFromConn(templateId, orgConn)
   safeRemoveNodeFromConn(templateId, publicConn)
+
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const allAvailableConn =
+    viewer && ConnectionHandler.getConnection(viewer, 'ActivityLibrary_availableTemplates')
+  safeRemoveNodeFromConn(templateId, allAvailableConn)
 }
 
 const handleRemovePokerTemplates = pluralizeHandler(handleRemovePokerTemplate)

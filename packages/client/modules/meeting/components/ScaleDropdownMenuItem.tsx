@@ -132,7 +132,12 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
             <ScaleValues>{scaleValueString(values)}</ScaleValues>
           </ScaleNameAndValues>
           <ScaleActionButtonGroup>
-            <ScaleActions scale={scale} scaleCount={scaleCount} teamId={dimension.team.id} />
+            <ScaleActions
+              scale={scale}
+              scaleCount={scaleCount}
+              teamId={dimension.team.id}
+              closeMenu={closePortal}
+            />
           </ScaleActionButtonGroup>
         </ScaleDetails>
       }
