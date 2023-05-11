@@ -132,5 +132,3 @@ jobs:
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{github.ref_name}}"
-          #cache-from: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache
-          #cache-to: type=registry,ref=${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.ref_name}}-cache,mode=max
