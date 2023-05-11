@@ -67,7 +67,7 @@
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
           "RemoveTeamMemberPayload": "./types/RemoveTeamMemberPayload#RemoveTeamMemberPayloadSource",
-          "ScheduleMeetingSuccess": "./types/ScheduleMeetingSuccess#ScheduleMeetingSuccessSource",
+          "CreateGcalEventSuccess": "./types/CreateGcalEventSuccess#CreateGcalEventSuccessSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",

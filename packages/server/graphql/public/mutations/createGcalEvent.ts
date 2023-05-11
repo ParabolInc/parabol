@@ -11,10 +11,10 @@ const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker)
   return teamMembers.map((teamMember) => teamMember.email)
 }
 
-const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
+const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
   _source,
   {meetingId, teamId, title, description, startTimestamp, endTimestamp, inviteTeam},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
   const viewerTeam = await dataLoader.get('teams').load(teamId)
@@ -23,9 +23,6 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   }
   const viewer = await dataLoader.get('users').load(viewerId)
   const {email: viewerEmail} = viewer
-  const now = new Date()
-
-  // VALIDATION
 
   const hardcodedToken = {
     access_token: process.env.GCAL_ACCESS_TOKEN,
@@ -78,13 +75,15 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
       requestBody: event
     })
     console.log('🚀 ~ createdEvent:', createdEvent)
+    const gcalLink = createdEvent.data.htmlLink
+    if (!gcalLink) {
+      return standardError(new Error('Could not create event'), {userId: viewerId})
+    }
+    return {gcalLink}
   } catch (error) {
     console.error('Error creating event:', error)
+    return error
   }
-
-  // RESOLUTION
-  const data = {meetingId}
-  return data
 }
 
-export default scheduleMeeting
+export default createGcalEvent

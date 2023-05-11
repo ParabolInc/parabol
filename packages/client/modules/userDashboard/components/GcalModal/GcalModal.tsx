@@ -56,7 +56,7 @@ const ErrorMessage = styled(StyledError)({
 })
 
 interface Props {
-  handleScheduleMeeting: () => void
+  handleCreateGcalEvent: () => void
   setStart: (start: Dayjs) => void
   setEnd: (end: Dayjs) => void
   start: Dayjs
@@ -77,7 +77,7 @@ interface Props {
 
 const GcalModal = (props: Props) => {
   const {
-    handleScheduleMeeting,
+    handleCreateGcalEvent,
     inviteTeam,
     closeModal,
     setInviteTeam,
@@ -96,7 +96,7 @@ const GcalModal = (props: Props) => {
       setErrorMsg('Please enter the name of your meeting')
       return
     }
-    handleScheduleMeeting()
+    handleCreateGcalEvent()
   }
 
   return (

@@ -1,18 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {ScheduleMeetingMutation as TScheduleMeetingMutation} from '../__generated__/ScheduleMeetingMutation.graphql'
+import {CreateGcalEventMutation as TCreateGcalEventMutation} from '../__generated__/CreateGcalEventMutation.graphql'
 
 graphql`
-  fragment ScheduleMeetingMutation_meeting on ScheduleMeetingSuccess {
-    meeting {
-      id
-    }
+  fragment CreateGcalEventMutation_meeting on CreateGcalEventSuccess {
+    gcalLink
   }
 `
 
 const mutation = graphql`
-  mutation ScheduleMeetingMutation(
+  mutation CreateGcalEventMutation(
     $meetingId: ID!
     $teamId: ID!
     $title: String!
@@ -21,7 +19,7 @@ const mutation = graphql`
     $endTimestamp: Int!
     $inviteTeam: Boolean!
   ) {
-    scheduleMeeting(
+    createGcalEvent(
       meetingId: $meetingId
       teamId: $teamId
       title: $title
@@ -35,17 +33,17 @@ const mutation = graphql`
           message
         }
       }
-      ...ScheduleMeetingMutation_meeting @relay(mask: false)
+      ...CreateGcalEventMutation_meeting @relay(mask: false)
     }
   }
 `
 
-const ScheduleMeetingMutation: StandardMutation<TScheduleMeetingMutation> = (
+const CreateGcalEventMutation: StandardMutation<TCreateGcalEventMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TScheduleMeetingMutation>(atmosphere, {
+  return commitMutation<TCreateGcalEventMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -53,4 +51,4 @@ const ScheduleMeetingMutation: StandardMutation<TScheduleMeetingMutation> = (
   })
 }
 
-export default ScheduleMeetingMutation
+export default CreateGcalEventMutation

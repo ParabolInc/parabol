@@ -2,7 +2,7 @@ extend type Mutation {
   """
   Describe the mutation here
   """
-  scheduleMeeting(
+  createGcalEvent(
     """
     The id of the meeting
     """
@@ -31,17 +31,17 @@ extend type Mutation {
     Whether the users in the team should be invited in gcal
     """
     inviteTeam: Boolean!
-  ): ScheduleMeetingPayload!
+  ): CreateGcalEventPayload!
 }
 
 """
-Return value for scheduleMeeting, which could be an error
+Return value for createGcalEvent, which could be an error
 """
-union ScheduleMeetingPayload = ErrorPayload | ScheduleMeetingSuccess
+union CreateGcalEventPayload = ErrorPayload | CreateGcalEventSuccess
 
-type ScheduleMeetingSuccess {
+type CreateGcalEventSuccess {
   """
-  Describe the first return field here
+  The link of the gcal event
   """
-  meeting: NewMeeting!
+  gcalLink: String!
 }

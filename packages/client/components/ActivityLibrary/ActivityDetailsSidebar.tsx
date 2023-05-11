@@ -23,7 +23,7 @@ import {PALETTE} from '../../styles/paletteV3'
 import clsx from 'clsx'
 import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
-import ScheduleMeetingMutation from '../../mutations/ScheduleMeetingMutation'
+import CreateGcalEventMutation from '../../mutations/CreateGcalEventMutation'
 import useModal from '../../hooks/useModal'
 import useForm from '../../hooks/useForm'
 import dayjs from 'dayjs'
@@ -111,7 +111,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const history = useHistory()
   const {togglePortal: toggleModal, modalPortal} = useModal({
-    id: 'scheduleMeetingModal',
+    id: 'createGcalEventModal',
     noClose: true
   })
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
@@ -146,7 +146,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       inviteTeam: true,
       meetingId
     }
-    ScheduleMeetingMutation(atmosphere, variables, {onError, onCompleted})
+    CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
   }
 
   const handleStartMeeting = (scheduleGcalEvent: boolean) => {
@@ -186,7 +186,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     )
   }
 
-  const handleScheduleMeeting = () => {
+  const handleCreateGcalEvent = () => {
     toggleModal()
     handleStartMeeting(true)
   }
@@ -271,7 +271,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           setInviteTeam={setInviteTeam}
           end={end}
           closeModal={toggleModal}
-          handleScheduleMeeting={handleScheduleMeeting}
+          handleCreateGcalEvent={handleCreateGcalEvent}
         />
       )}
     </>
