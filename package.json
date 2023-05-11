@@ -132,6 +132,7 @@
   "dependencies": {
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
+    "lodash": "4.17.21",
     "rethinkdb-ts-migrate": "^0.3.6"
   }
 }
