@@ -28,6 +28,7 @@ import useModal from '../../hooks/useModal'
 import useForm from '../../hooks/useForm'
 import dayjs from 'dayjs'
 import Legitity from '../../validation/Legitity'
+import {StartRetrospectiveMutation$data} from '../../__generated__/StartRetrospectiveMutation.graphql'
 
 const validateTitle = (title: string) => {
   return new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
@@ -130,8 +131,9 @@ const ActivityDetailsSidebar = (props: Props) => {
   })
   console.log('🚀 ~ fields:', fields)
 
-  const handleCompletedRetro = (testa: any) => {
-    console.log('🚀 ~ testa:', testa)
+  const handleCompletedRetro = (res: StartRetrospectiveMutation$data) => {
+    const meetingId = res.startRetrospective?.meeting?.id
+    if (!meetingId) return
     const startTimestamp = start.unix()
     const endTimestamp = end.unix()
     const title = fields.title.value
@@ -143,7 +145,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       startTimestamp,
       endTimestamp,
       inviteTeam: true,
-      meetingId: 'test'
+      meetingId
     }
     ScheduleMeetingMutation(atmosphere, variables, {onError, onCompleted})
   }

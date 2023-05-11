@@ -83,7 +83,7 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   }
 
   // RESOLUTION
-  const data = {meetingId: 'n0EGJHp7JS'}
+  const data = {meetingId}
   return data
 }
 
