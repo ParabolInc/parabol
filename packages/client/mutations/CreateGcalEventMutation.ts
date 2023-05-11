@@ -10,24 +10,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateGcalEventMutation(
-    $meetingId: ID!
-    $teamId: ID!
-    $title: String!
-    $description: String!
-    $startTimestamp: Int!
-    $endTimestamp: Int!
-    $inviteTeam: Boolean!
-  ) {
-    createGcalEvent(
-      meetingId: $meetingId
-      teamId: $teamId
-      title: $title
-      description: $description
-      startTimestamp: $startTimestamp
-      endTimestamp: $endTimestamp
-      inviteTeam: $inviteTeam
-    ) {
+  mutation CreateGcalEventMutation($input: CreateGcalEventInput!) {
+    createGcalEvent(input: $input) {
       ... on ErrorPayload {
         error {
           message

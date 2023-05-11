@@ -1,0 +1,54 @@
+import {
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLInt
+} from 'graphql'
+
+const CreateGcalEventInput = new GraphQLInputObjectType({
+  name: 'CreateGcalEventInput',
+  fields: () => ({
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the meeting'
+    },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the team'
+    },
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The title of the meeting'
+    },
+    description: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The description of the meeting'
+    },
+    startTimestamp: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The start dateTime of the meeting'
+    },
+    endTimestamp: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The end dateTime of the meeting'
+    },
+    inviteTeam: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'Whether the users in the team should be invited in gcal'
+    }
+  })
+})
+
+export type CreateGcalEventInputType = {
+  meetingId: string
+  teamId: string
+  title: string
+  description: string
+  startTimestamp: number
+  endTimestamp: number
+  inviteTeam: boolean
+}
+
+export default CreateGcalEventInput

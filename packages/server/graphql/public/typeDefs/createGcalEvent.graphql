@@ -4,33 +4,9 @@ extend type Mutation {
   """
   createGcalEvent(
     """
-    The id of the meeting
+    The input with the required fields to create a gcal event
     """
-    meetingId: ID!
-    """
-    The id of the team
-    """
-    teamId: ID!
-    """
-    The title of the meeting
-    """
-    title: String!
-    """
-    The description of the meeting
-    """
-    description: String!
-    """
-    The start dateTime of the meeting
-    """
-    startTimestamp: Int!
-    """
-    The end dateTime of the meeting
-    """
-    endTimestamp: Int!
-    """
-    Whether the users in the team should be invited in gcal
-    """
-    inviteTeam: Boolean!
+    input: CreateGcalEventInput!
   ): CreateGcalEventPayload!
 }
 
@@ -44,4 +20,14 @@ type CreateGcalEventSuccess {
   The link of the gcal event
   """
   gcalLink: String!
+}
+
+input CreateGcalEventInput {
+  meetingId: ID!
+  teamId: ID!
+  title: String!
+  description: String!
+  startTimestamp: Int!
+  endTimestamp: Int!
+  inviteTeam: Boolean!
 }

@@ -138,14 +138,16 @@ const ActivityDetailsSidebar = (props: Props) => {
     const title = fields.title.value
     const description = fields.description.value
     const variables = {
-      title,
-      teamId: selectedTeam.id,
-      description,
-      startTimestamp,
-      endTimestamp,
-      inviteTeam: true,
-      meetingId
-    }
+      input: {
+        title,
+        teamId: selectedTeam.id,
+        description,
+        startTimestamp,
+        endTimestamp,
+        inviteTeam: true,
+        meetingId
+      }
+    } as const
     CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
   }
 

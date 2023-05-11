@@ -13,7 +13,7 @@ const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker)
 
 const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
   _source,
-  {meetingId, teamId, title, description, startTimestamp, endTimestamp, inviteTeam},
+  {input: {teamId, meetingId, startTimestamp, endTimestamp, title, description, inviteTeam}},
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
@@ -74,7 +74,6 @@ const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
       calendarId: 'primary',
       requestBody: event
     })
-    console.log('🚀 ~ createdEvent:', createdEvent)
     const gcalLink = createdEvent.data.htmlLink
     if (!gcalLink) {
       return standardError(new Error('Could not create event'), {userId: viewerId})
