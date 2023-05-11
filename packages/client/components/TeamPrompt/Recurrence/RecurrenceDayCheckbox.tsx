@@ -28,9 +28,9 @@ export const CheckboxRoot = styled('div')({
 })
 
 export const StyledCheckbox = styled('input')({
-  appearance: 'none',
+  // appearance: 'none',
   margin: 0,
-  position: 'absolute',
+  // position: 'absolute',
   top: 0,
   left: 0,
   right: 0,

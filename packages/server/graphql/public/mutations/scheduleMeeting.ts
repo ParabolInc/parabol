@@ -3,14 +3,26 @@ import {MutationResolvers} from '../resolverTypes'
 import {google} from 'googleapis'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
+import {DataLoaderWorker} from '../../graphql'
+import standardError from '../../../utils/standardError'
+
+const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker) => {
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  return teamMembers.map((teamMember) => teamMember.email)
+}
 
 const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   _source,
-  {meetingId, title, description, startTimestamp, endTimestamp, inviteTeam},
+  {meetingId, teamId, title, description, startTimestamp, endTimestamp, inviteTeam},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  console.log('in schedule meeting!')
   const viewerId = getUserId(authToken)
+  const viewerTeam = await dataLoader.get('teams').load(teamId)
+  if (!viewerTeam) {
+    return standardError(new Error('Team not found'), {userId: viewerId})
+  }
+  const viewer = await dataLoader.get('users').load(viewerId)
+  const {email: viewerEmail} = viewer
   const now = new Date()
 
   // VALIDATION
@@ -35,10 +47,13 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
+  const attendees = inviteTeam ? await getTeamMemberEmails(teamId, dataLoader) : [viewerEmail]
+  const attendeesWithEmailObjects = attendees.map((email) => ({email}))
+
   const event = {
     summary: title,
     location: meetingUrl,
-    description: description,
+    description,
     start: {
       dateTime: startDateTime,
       timeZone
@@ -47,7 +62,7 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
       dateTime: endDateTime,
       timeZone
     },
-    attendees: ['nick@parabol.co'],
+    attendees: attendeesWithEmailObjects,
     reminders: {
       useDefault: false,
       overrides: [

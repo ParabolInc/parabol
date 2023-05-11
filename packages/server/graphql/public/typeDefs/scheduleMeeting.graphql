@@ -8,6 +8,10 @@ extend type Mutation {
     """
     meetingId: ID!
     """
+    The id of the team
+    """
+    teamId: ID!
+    """
     The title of the meeting
     """
     title: String!

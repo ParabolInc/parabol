@@ -117,6 +117,8 @@ const ActivityDetailsSidebar = (props: Props) => {
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
   const [end, setEnd] = useState(endOfNextHour)
+  const [inviteTeam, setInviteTeam] = useState(true)
+  console.log('🚀 ~ inviteTeam:', inviteTeam)
   const {fields, onChange, validateField} = useForm({
     title: {
       getDefault: () => '',
@@ -124,20 +126,19 @@ const ActivityDetailsSidebar = (props: Props) => {
     },
     description: {
       getDefault: () => ''
-    },
-    emails: {
-      getDefault: () => ''
     }
   })
   console.log('🚀 ~ fields:', fields)
 
-  const handleCompletedRetro = () => {
+  const handleCompletedRetro = (testa: any) => {
+    console.log('🚀 ~ testa:', testa)
     const startTimestamp = start.unix()
     const endTimestamp = end.unix()
     const title = fields.title.value
     const description = fields.description.value
     const variables = {
       title,
+      teamId: selectedTeam.id,
       description,
       startTimestamp,
       endTimestamp,
@@ -265,6 +266,8 @@ const ActivityDetailsSidebar = (props: Props) => {
           setStart={setStart}
           setEnd={setEnd}
           start={start}
+          inviteTeam={inviteTeam}
+          setInviteTeam={setInviteTeam}
           end={end}
           handleScheduleMeeting={handleScheduleMeeting}
         />

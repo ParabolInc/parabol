@@ -1,15 +1,13 @@
 import styled from '@emotion/styled'
-import dayjs, {Dayjs} from 'dayjs'
+import {Dayjs} from 'dayjs'
 import React from 'react'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import PrimaryButton from '../../../../components/PrimaryButton'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import DateTimePicker from './DateTimePicker'
+import Checkbox from '../../../../components/Checkbox'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -42,6 +40,8 @@ interface Props {
   setStart: (start: Dayjs) => void
   setEnd: (end: Dayjs) => void
   start: Dayjs
+  inviteTeam: boolean
+  setInviteTeam: (inviteTeam: boolean) => void
   end: Dayjs
   fields: {
     title: {
@@ -50,15 +50,22 @@ interface Props {
     description: {
       value: string
     }
-    emails: {
-      value: string
-    }
   }
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const GcalModal = (props: Props) => {
-  const {handleScheduleMeeting, onChange, fields, start, end, setStart, setEnd} = props
+  const {
+    handleScheduleMeeting,
+    inviteTeam,
+    setInviteTeam,
+    onChange,
+    fields,
+    start,
+    end,
+    setStart,
+    setEnd
+  } = props
 
   return (
     <StyledDialogContainer>
@@ -82,13 +89,16 @@ const GcalModal = (props: Props) => {
             onChange={onChange}
             placeholder='Enter your meeting description (optional)'
           />
-          {/* <StyledInput
-            maxLength={100}
-            name='emails'
-            placeholder='Enter the email addresses of your meeting attendees'
-            onChange={onChange}
-          /> */}
           <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
+          <div className='flex items-center pt-4'>
+            <Checkbox active={inviteTeam} onClick={() => setInviteTeam(!inviteTeam)} />
+            <label
+              htmlFor='link-checkbox'
+              className='text-gray-900 dark:text-gray-300 ml-2 text-sm font-medium'
+            >
+              Send a Google Calendar invite to my team members
+            </label>
+          </div>
         </div>
         <Wrapper>
           <PrimaryButton size='medium' onClick={handleScheduleMeeting}>

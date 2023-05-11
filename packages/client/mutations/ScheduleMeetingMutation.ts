@@ -14,6 +14,7 @@ graphql`
 const mutation = graphql`
   mutation ScheduleMeetingMutation(
     $meetingId: ID!
+    $teamId: ID!
     $title: String!
     $description: String!
     $startTimestamp: Int!
@@ -22,6 +23,7 @@ const mutation = graphql`
   ) {
     scheduleMeeting(
       meetingId: $meetingId
+      teamId: $teamId
       title: $title
       description: $description
       startTimestamp: $startTimestamp
