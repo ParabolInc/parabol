@@ -1,19 +1,11 @@
 import styled from '@emotion/styled'
-import clsx from 'clsx'
 import dayjs, {Dayjs} from 'dayjs'
-import React, {PropsWithChildren, useState} from 'react'
+import React from 'react'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
-import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
-import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
-import {RecurrenceSettings} from '../../../../components/TeamPrompt/Recurrence/RecurrenceSettings'
-import {RecurrenceTimePicker} from '../../../../components/TeamPrompt/Recurrence/RecurrenceTimePicker'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useForm from '../../../../hooks/useForm'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -47,6 +39,10 @@ const StyledDialogContainer = styled(DialogContainer)({
 
 interface Props {
   handleScheduleMeeting: () => void
+  setStart: (start: Dayjs) => void
+  setEnd: (end: Dayjs) => void
+  start: Dayjs
+  end: Dayjs
   fields: {
     title: {
       value: string
@@ -57,26 +53,12 @@ interface Props {
     emails: {
       value: string
     }
-    start: {
-      value: string
-    }
-    end: {
-      value: string
-    }
   }
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const GcalModal = (props: Props) => {
-  const {handleScheduleMeeting, onChange, fields} = props
-  const atmosphere = useAtmosphere()
-  const {history} = useRouter()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
-  const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
-
-  const [startValue, setStartValue] = useState<Dayjs | null>(startOfNextHour)
-  const [endValue, setEndValue] = useState<Dayjs | null>(endOfNextHour)
+  const {handleScheduleMeeting, onChange, fields, start, end, setStart, setEnd} = props
 
   return (
     <StyledDialogContainer>
@@ -106,15 +88,10 @@ const GcalModal = (props: Props) => {
             placeholder='Enter the email addresses of your meeting attendees'
             onChange={onChange}
           /> */}
-          <DateTimePicker
-            startValue={startValue}
-            endValue={endValue}
-            setStartValue={setStartValue}
-            setEndValue={setEndValue}
-          />
+          <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
         </div>
         <Wrapper>
-          <PrimaryButton size='medium' onClick={handleScheduleMeeting} waiting={submitting}>
+          <PrimaryButton size='medium' onClick={handleScheduleMeeting}>
             {`Create Meeting & Gcal Invite`}
           </PrimaryButton>
         </Wrapper>

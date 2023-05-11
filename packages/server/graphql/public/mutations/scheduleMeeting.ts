@@ -22,10 +22,13 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
     token_type: 'Bearer',
     expiry_date: 1234567890
   }
-
   const CLIENT_ID = process.env.GCAL_CLIENT_ID
   const CLIENT_SECRET = process.env.GCAL_CLIENT_SECRET
   const REDIRECT_URI = 'http://localhost:3000/'
+
+  const startDateTime = new Date(startTimestamp * 1000).toISOString()
+  const endDateTime = new Date(endTimestamp * 1000).toISOString()
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
   oauth2Client.setCredentials(hardcodedToken)
@@ -37,12 +40,12 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
     location: meetingUrl,
     description: description,
     start: {
-      dateTime: '2023-05-10T09:00:00-07:00',
-      timeZone: 'America/Los_Angeles'
+      dateTime: startDateTime,
+      timeZone
     },
     end: {
-      dateTime: '2023-05-10T10:00:00-07:00',
-      timeZone: 'America/Los_Angeles'
+      dateTime: endDateTime,
+      timeZone
     },
     attendees: ['nick@parabol.co'],
     reminders: {

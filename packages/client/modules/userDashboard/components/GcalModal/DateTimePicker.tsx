@@ -6,18 +6,30 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {DateTimePicker as MuiDateTimePicker} from '@mui/x-date-pickers/DateTimePicker'
 
 type Props = {
-  startValue: Dayjs | null
-  setStartValue: (newValue: Dayjs | null) => void
-  endValue: Dayjs | null
-  setEndValue: (newValue: Dayjs | null) => void
+  startValue: Dayjs
+  setStart: (newValue: Dayjs) => void
+  endValue: Dayjs
+  setEnd: (newValue: Dayjs) => void
 }
 
 const DateTimePicker = (props: Props) => {
-  const {startValue, setStartValue, endValue, setEndValue} = props
+  const {startValue, setStart, endValue, setEnd} = props
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const date = new Date()
   const dateTimeString = date.toLocaleString('en-US', {timeZone: timeZone, timeZoneName: 'short'})
   const timeZoneShort = dateTimeString.split(' ').pop()
+
+  const handleChangeStart = (newValue: Dayjs | null) => {
+    if (newValue) {
+      setStart(newValue)
+    }
+  }
+
+  const handleChangeEnd = (newValue: Dayjs | null) => {
+    if (newValue) {
+      setEnd(newValue)
+    }
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -27,7 +39,7 @@ const DateTimePicker = (props: Props) => {
             label={`Meeting Start Time (${timeZoneShort})`}
             value={startValue}
             closeOnSelect={false}
-            onChange={(newValue) => setStartValue(newValue)}
+            onChange={handleChangeStart}
             slotProps={{
               inputAdornment: {
                 style: {
@@ -41,7 +53,7 @@ const DateTimePicker = (props: Props) => {
           <MuiDateTimePicker
             label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
-            onChange={(newValue) => setEndValue(newValue)}
+            onChange={handleChangeEnd}
             slotProps={{
               inputAdornment: {
                 style: {

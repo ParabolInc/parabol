@@ -115,6 +115,8 @@ const ActivityDetailsSidebar = (props: Props) => {
   })
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
+  const [start, setStart] = useState(startOfNextHour)
+  const [end, setEnd] = useState(endOfNextHour)
   const {fields, onChange, validateField} = useForm({
     title: {
       getDefault: () => '',
@@ -125,31 +127,23 @@ const ActivityDetailsSidebar = (props: Props) => {
     },
     emails: {
       getDefault: () => ''
-    },
-    start: {
-      getDefault: () => startOfNextHour
-    },
-    end: {
-      getDefault: () => endOfNextHour
     }
   })
   console.log('🚀 ~ fields:', fields)
 
   const handleCompletedRetro = () => {
-    const timestampSeconds = Math.floor(1633570562000 / 1000)
-    const timestampSecondsDos = Math.floor(1633570563000 / 1000)
-
+    const startTimestamp = start.unix()
+    const endTimestamp = end.unix()
     const title = fields.title.value
     const description = fields.description.value
     const variables = {
       title,
       description,
-      startTimestamp: timestampSeconds,
-      endTimestamp: timestampSecondsDos,
+      startTimestamp,
+      endTimestamp,
       inviteTeam: true,
       meetingId: 'test'
     }
-    console.log('🚀 ~ variables =======:', variables)
     ScheduleMeetingMutation(atmosphere, variables, {onError, onCompleted})
   }
 
@@ -268,6 +262,10 @@ const ActivityDetailsSidebar = (props: Props) => {
         <GcalModal
           fields={fields}
           onChange={onChange}
+          setStart={setStart}
+          setEnd={setEnd}
+          start={start}
+          end={end}
           handleScheduleMeeting={handleScheduleMeeting}
         />
       )}
