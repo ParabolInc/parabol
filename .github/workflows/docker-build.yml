@@ -128,9 +128,7 @@ jobs:
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
-            "_BUILD_ENV_PATH=${{ env.PARABOL_BUILD_ENV_PATH }}"
             "_SECURITY_ENABLED=${{ env.BUILD_WITH_SECURITY }}"
-            "_NO_DEPS=${{ env.NO_DEPS }}"
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"

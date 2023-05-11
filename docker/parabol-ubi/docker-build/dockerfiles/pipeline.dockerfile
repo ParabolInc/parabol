@@ -1,8 +1,6 @@
 ARG _NODE_VERSION=${_NODE_VERSION}
 FROM node:${_NODE_VERSION} as base
 
-ARG _BUILD_ENV_PATH=environments/local-buildenv
-ARG _NO_DEPS="false"
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PORT=3000
 
