@@ -16,19 +16,17 @@ const mutation = graphql`
     $meetingId: ID!
     $title: String!
     $description: String!
-    $startDateTime: String!
-    $endDateTime: String!
-    $attendeesEmails: [String!]!
-    $timezone: String!
+    $startTimestamp: String!
+    $endTimestamp: String!
+    $inviteTeam: Boolean!
   ) {
     scheduleMeeting(
       meetingId: $meetingId
       title: $title
       description: $description
-      startDateTime: $startDateTime
-      endDateTime: $endDateTime
-      attendeesEmails: $attendeesEmails
-      timezone: $timezone
+      startTimestamp: $startTimestamp
+      endTimestamp: $endTimestamp
+      inviteTeam: $inviteTeam
     ) {
       ... on ErrorPayload {
         error {

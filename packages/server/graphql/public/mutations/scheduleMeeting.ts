@@ -6,7 +6,7 @@ import appOrigin from '../../../appOrigin'
 
 const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
   _source,
-  {meetingId, title, description, startTime, endTime, attendeesEmails},
+  {meetingId, title, description, startTimestamp, endTimestamp, inviteTeam},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
@@ -43,7 +43,7 @@ const scheduleMeeting: MutationResolvers['scheduleMeeting'] = async (
       dateTime: '2023-05-10T10:00:00-07:00',
       timeZone: 'America/Los_Angeles'
     },
-    attendees: attendeesEmails,
+    attendees: ['nick@parabol.co'],
     reminders: {
       useDefault: false,
       overrides: [

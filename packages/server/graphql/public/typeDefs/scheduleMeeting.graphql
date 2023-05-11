@@ -18,15 +18,15 @@ extend type Mutation {
     """
     The start dateTime of the meeting
     """
-    startDateTime: String!
+    startTimestamp: Int!
     """
     The end dateTime of the meeting
     """
-    endDateTime: String!
+    endTimestamp: Int!
     """
-    The emails of the attendees
+    Whether the users in the team should be invited in gcal
     """
-    attendeesEmails: [String!]!
+    inviteTeam: Boolean!
   ): ScheduleMeetingPayload!
 }
 
