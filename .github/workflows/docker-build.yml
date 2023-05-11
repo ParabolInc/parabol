@@ -113,7 +113,7 @@ jobs:
               yarn build; \
           fi && \
           rm -rf .env && \
-          rm -rf .circleci .git .github .husky .vscode docs packages scripts static && \
+          rm -rf .circleci .git .github .husky .vscode docs packages static && \
           rm -rf .gitignore .eslintrc.js docker-compose.yml nginx.conf.sigil *.html *.js *.md CHECKS COPYING .prettierrc
 
       - name: Build and push
