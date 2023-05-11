@@ -11,7 +11,7 @@ import LoadingComponent from '../../../../../components/LoadingComponent/Loading
 import ExportAllTasksMenu from './ExportAllTasksMenu'
 import {MenuProps} from '../../../../../hooks/useMenu'
 import {MenuMutationProps} from '../../../../../hooks/useMutationProps'
-import {IntegrationProviderServiceEnum} from '../../../../../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
+import {TaskServiceEnum} from '../../../../../__generated__/CreateTaskMutation.graphql'
 
 interface Props {
   menuProps: MenuProps
@@ -21,7 +21,7 @@ interface Props {
   meetingRef: ExportAllTasksMenuRoot_meeting$key
   handlePushToIntegration: (
     integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum,
+    integrationProviderService: Exclude<TaskServiceEnum, 'PARABOL'>,
     integrationLabel?: string
   ) => void
 }

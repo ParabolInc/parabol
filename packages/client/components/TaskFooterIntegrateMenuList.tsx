@@ -6,15 +6,13 @@ import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {
-  IntegrationProviderServiceEnum,
-  TaskFooterIntegrateMenuListLocalQuery
-} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
+import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
 import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
+import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 
 interface Props {
   menuProps: MenuProps
@@ -23,7 +21,7 @@ interface Props {
   label?: string
   onPushToIntegration: (
     integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum,
+    integrationProviderService: Exclude<TaskServiceEnum, 'PARABOL'>,
     integrationLabel?: string
   ) => void
 }

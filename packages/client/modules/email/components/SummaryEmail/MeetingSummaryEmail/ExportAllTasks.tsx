@@ -10,7 +10,6 @@ import {
   ExportAllTasks_meeting$key,
   TaskServiceEnum
 } from '../../../../../__generated__/ExportAllTasks_meeting.graphql'
-import {IntegrationProviderServiceEnum} from '../../../../../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import {integrationSvgLookup} from '../../../../../components/TaskIntegrationMenuItem'
@@ -19,6 +18,7 @@ import GitHubSVG from '../../../../../components/GitHubSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
 import GitLabSVG from '../../../../../components/GitLabSVG'
 import clsx from 'clsx'
+import SendClientSegmentEventMutation from '../../../../../mutations/SendClientSegmentEventMutation'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')
@@ -54,6 +54,8 @@ const ExportAllTasks = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment ExportAllTasks_meeting on NewMeeting {
+        id
+        meetingType
         teamId
         ...ExportAllTasksMenuRoot_meeting
         ... on RetrospectiveMeeting {
@@ -82,7 +84,7 @@ const ExportAllTasks = (props: Props) => {
   // :TODO: (jmtaber129): Get this information from the tasks integration.
   const [pushedIntegrationLabel, setPushedIntegrationLabel] = useState<string | null>(null)
 
-  const {tasks} = meeting
+  const {id: meetingId, meetingType, tasks, teamId} = meeting
   if (!tasks) {
     return null
   }
@@ -97,7 +99,7 @@ const ExportAllTasks = (props: Props) => {
 
   const handlePushToIntegration = (
     integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum,
+    integrationProviderService: Exclude<TaskServiceEnum, 'PARABOL'>,
     integrationLabel?: string
   ) => {
     submitMutation()
@@ -116,6 +118,12 @@ const ExportAllTasks = (props: Props) => {
               if (error) {
                 reject(error)
               } else {
+                SendClientSegmentEventMutation(atmosphere, 'Bulk Tasks Published', {
+                  teamId,
+                  meetingId,
+                  meetingType,
+                  service: integrationProviderService
+                })
                 resolve()
               }
             }

@@ -7,8 +7,8 @@ import {ExportAllTasksMenuQuery} from '../../../../../__generated__/ExportAllTas
 import {ExportAllTasksMenu_meeting$key} from '../../../../../__generated__/ExportAllTasksMenu_meeting.graphql'
 import TaskFooterIntegrateMenuList from '../../../../../components/TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from '../../../../../components/TaskFooterIntegrateMenuSignup'
-import {IntegrationProviderServiceEnum} from '../../../../../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {useIsIntegrated, makePlaceholder} from '../../../../../hooks/useIsIntegrated'
+import {TaskServiceEnum} from '../../../../../__generated__/CreateTaskMutation.graphql'
 
 interface Props {
   menuProps: MenuProps
@@ -17,7 +17,7 @@ interface Props {
   queryRef: PreloadedQuery<ExportAllTasksMenuQuery>
   handlePushToIntegration: (
     integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum,
+    integrationProviderService: Exclude<TaskServiceEnum, 'PARABOL'>,
     integrationLabel?: string
   ) => void
 }
