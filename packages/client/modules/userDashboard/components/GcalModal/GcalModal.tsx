@@ -69,7 +69,6 @@ interface Props {
 
 const GcalModal = (props: Props) => {
   const {handleScheduleMeeting, onChange, fields} = props
-  console.log('🚀 ~ fields:', fields)
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -78,22 +77,6 @@ const GcalModal = (props: Props) => {
 
   const [startValue, setStartValue] = useState<Dayjs | null>(startOfNextHour)
   const [endValue, setEndValue] = useState<Dayjs | null>(endOfNextHour)
-
-  // const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
-  //   MenuPosition.LOWER_LEFT,
-  //   {
-  //     id: 'scheduleMeetingModal',
-  //     // parentId: 'scheduleMeetingModal',
-  //     isDropdown: true
-  //   }
-  // )
-  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
-
-  const handleClick = () => {
-    const startDateTime = startValue?.format('YYYY-MM-DDTHH:mm:ssZ')
-    const endDateTime = endValue?.format('YYYY-MM-DDTHH:mm:ssZ')
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  }
 
   return (
     <StyledDialogContainer>
@@ -107,20 +90,22 @@ const GcalModal = (props: Props) => {
             autoFocus
             maxLength={100}
             defaultValue={fields.title.value}
+            onChange={onChange}
             name='title'
             placeholder='Please enter the name of your meeting'
           />
           <StyledInput
             maxLength={100}
             name='description'
+            onChange={onChange}
             placeholder='Enter your meeting description (optional)'
           />
-          <StyledInput
+          {/* <StyledInput
             maxLength={100}
             name='emails'
             placeholder='Enter the email addresses of your meeting attendees'
             onChange={onChange}
-          />
+          /> */}
           <DateTimePicker
             startValue={startValue}
             endValue={endValue}

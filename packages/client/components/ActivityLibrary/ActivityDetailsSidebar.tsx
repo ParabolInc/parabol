@@ -27,6 +27,11 @@ import ScheduleMeetingMutation from '../../mutations/ScheduleMeetingMutation'
 import useModal from '../../hooks/useModal'
 import useForm from '../../hooks/useForm'
 import dayjs from 'dayjs'
+import Legitity from '../../validation/Legitity'
+
+const validateTitle = (title: string) => {
+  return new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
+}
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -110,9 +115,10 @@ const ActivityDetailsSidebar = (props: Props) => {
   })
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
-  const {fields, onChange} = useForm({
+  const {fields, onChange, validateField} = useForm({
     title: {
-      getDefault: () => ''
+      getDefault: () => '',
+      validate: validateTitle
     },
     description: {
       getDefault: () => ''
@@ -127,13 +133,17 @@ const ActivityDetailsSidebar = (props: Props) => {
       getDefault: () => endOfNextHour
     }
   })
+  console.log('🚀 ~ fields:', fields)
 
   const handleCompletedRetro = () => {
     const timestampSeconds = Math.floor(1633570562000 / 1000)
     const timestampSecondsDos = Math.floor(1633570563000 / 1000)
+
+    const title = fields.title.value
+    const description = fields.description.value
     const variables = {
-      title: 'test',
-      description: 'test',
+      title,
+      description,
       startTimestamp: timestampSeconds,
       endTimestamp: timestampSecondsDos,
       inviteTeam: true,
