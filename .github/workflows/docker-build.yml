@@ -82,6 +82,9 @@ jobs:
 
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
 
+          GITHUB_REF_NAME_NORMALIZED=$(echo ${{github.ref_name}} | tr / -)
+          echo "GITHUB_REF_NAME_NORMALIZED=${GITHUB_REF_NAME_NORMALIZED}" >> $GITHUB_ENV
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -131,4 +134,4 @@ jobs:
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
-            "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{github.ref_name}}"
+            "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{ env.GITHUB_REF_NAME_NORMALIZED }}"
