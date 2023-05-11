@@ -13,6 +13,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useEditorState from '../../../../hooks/useEditorState'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
+import ModifyCheckInQuestionMutation from '../../../../mutations/ModifyCheckInQuestionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 
@@ -138,40 +139,101 @@ const NewCheckInQuestion = (props: Props) => {
       checkInQuestion: ''
     })
   }
+
+  const moreSerious = () => {
+    ModifyCheckInQuestionMutation(atmosphere, {
+      meetingId,
+      checkInQuestion: checkInQuestion!,
+      modifyType: 'SERIOUS'
+    })
+  }
+
+  const moreFunny = () => {
+    ModifyCheckInQuestionMutation(atmosphere, {
+      meetingId,
+      checkInQuestion: checkInQuestion!,
+      modifyType: 'FUNNY'
+    })
+  }
+
+  const moreCorporate = () => {
+    ModifyCheckInQuestionMutation(atmosphere, {
+      meetingId,
+      checkInQuestion: checkInQuestion!,
+      modifyType: 'CORPORATE'
+    })
+  }
+
+  const moreCrazy = () => {
+    ModifyCheckInQuestionMutation(atmosphere, {
+      meetingId,
+      checkInQuestion: checkInQuestion!,
+      modifyType: 'CRAZY'
+    })
+  }
+
   return (
-    <QuestionBlock>
-      {/* cannot set min width because iPhone 5 has a width of 320*/}
-      <EditorInputWrapper
-        ariaLabel={'Edit the icebreaker'}
-        editorState={editorState}
-        setEditorState={updateQuestion}
-        readOnly={!isFacilitating}
-        placeholder='e.g. How are you?'
-        editorRef={editorRef}
-        setEditorStateFallback={updateQuestionAndroidFallback}
-      />
-      {isFacilitating && (
-        <>
-          <PlainButton
-            aria-label={tip}
-            onClick={focusQuestion}
-            onMouseEnter={openTooltip}
-            onMouseLeave={closeTooltip}
-            ref={originRef}
-          >
-            <CogIcon>
-              <CreateIcon />
-            </CogIcon>
-          </PlainButton>
-          <PlainButton aria-label={'Refresh'} onClick={refresh}>
-            <CogIcon>
-              <RefreshIcon />
-            </CogIcon>
-          </PlainButton>
-        </>
-      )}
-      {tooltipPortal(<div>{tip}</div>)}
-    </QuestionBlock>
+    <div>
+      <QuestionBlock>
+        {/* cannot set min width because iPhone 5 has a width of 320*/}
+        <EditorInputWrapper
+          ariaLabel={'Edit the icebreaker'}
+          editorState={editorState}
+          setEditorState={updateQuestion}
+          readOnly={!isFacilitating}
+          placeholder='e.g. How are you?'
+          editorRef={editorRef}
+          setEditorStateFallback={updateQuestionAndroidFallback}
+        />
+        {isFacilitating && (
+          <>
+            <PlainButton
+              aria-label={tip}
+              onClick={focusQuestion}
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={originRef}
+            >
+              <CogIcon>
+                <CreateIcon />
+              </CogIcon>
+            </PlainButton>
+            <PlainButton aria-label={'Refresh'} onClick={refresh}>
+              <CogIcon>
+                <RefreshIcon />
+              </CogIcon>
+            </PlainButton>
+          </>
+        )}
+        {tooltipPortal(<div>{tip}</div>)}
+      </QuestionBlock>
+      <div className='flex items-center justify-center gap-x-3'>
+        <button
+          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          onClick={moreSerious}
+        >
+          More serious
+        </button>
+        <button
+          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          onClick={moreFunny}
+        >
+          More funny
+        </button>
+        <button
+          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          onClick={moreCorporate}
+        >
+          More corporate
+        </button>
+        <button
+          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          onClick={moreCrazy}
+        >
+          Feeling adventurous?
+        </button>
+      </div>
+    </div>
   )
 }
 

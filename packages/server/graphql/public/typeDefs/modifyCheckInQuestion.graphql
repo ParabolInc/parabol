@@ -1,0 +1,26 @@
+enum ModifyType {
+  FUNNY
+  SERIOUS
+  CORPORATE
+  CRAZY
+}
+
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  modifyCheckInQuestion(
+    meetingId: ID!
+    checkInQuestion: String!
+    modifyType: ModifyType!
+  ): ModifyCheckInQuestionPayload!
+}
+
+"""
+Return value for modifyCheckInQuestion, which could be an error
+"""
+union ModifyCheckInQuestionPayload = ErrorPayload | ModifyCheckInQuestionSuccess
+
+type ModifyCheckInQuestionSuccess {
+  meeting: NewMeeting!
+}
