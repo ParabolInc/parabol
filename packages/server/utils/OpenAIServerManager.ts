@@ -51,7 +51,7 @@ class OpenAIServerManager {
       Ice breaker question: """
       ${question}
       """`,
-      CRAZY: `Below is a ice breaker question from a team retrospective meeting. Modify the check-in question to be more abstract, thought provoking and engaging. Respond with just a plain content of modified question.
+      CRAZY: `Below is a ice breaker question from a team retrospective meeting. Modify the check-in question to be more absurd, abstract, thought provoking and engaging. Respond with just a plain content of modified question.
 
       Ice breaker question: """
       ${question}
@@ -72,7 +72,7 @@ class OpenAIServerManager {
       const response = await this.openAIApi.createCompletion({
         model: 'text-davinci-003',
         prompt: prompt[modifyType],
-        temperature: 0.7,
+        temperature: 0.8,
         max_tokens: 256,
         top_p: 1,
         frequency_penalty: 0,

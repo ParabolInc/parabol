@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SimpleMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import {ModifyCheckInQuestionMutation as TModifyCheckInQuestionMutation} from '../__generated__/ModifyCheckInQuestionMutation.graphql'
 import CheckInPhase from 'parabol-server/database/types/CheckInPhase'
 import {RecordProxy} from 'relay-runtime'
@@ -38,7 +38,7 @@ const mutation = graphql`
   }
 `
 
-const ModifyCheckInQuestionMutation: SimpleMutation<TModifyCheckInQuestionMutation> = (
+const ModifyCheckInQuestionMutation: StandardMutation<TModifyCheckInQuestionMutation> = (
   atmosphere,
   variables
 ) => {

@@ -16,6 +16,9 @@ import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewChe
 import ModifyCheckInQuestionMutation from '../../../../mutations/ModifyCheckInQuestionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import clsx from 'clsx'
+import {ModifyType} from '../../../../__generated__/ModifyCheckInQuestionMutation.graphql'
 
 const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
@@ -133,6 +136,7 @@ const NewCheckInQuestion = (props: Props) => {
       disabled: isEditing || !isFacilitating
     }
   )
+  const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
   const refresh = () => {
     UpdateNewCheckInQuestionMutation(atmosphere, {
       meetingId,
@@ -140,36 +144,17 @@ const NewCheckInQuestion = (props: Props) => {
     })
   }
 
-  const moreSerious = () => {
-    ModifyCheckInQuestionMutation(atmosphere, {
-      meetingId,
-      checkInQuestion: checkInQuestion!,
-      modifyType: 'SERIOUS'
-    })
-  }
-
-  const moreFunny = () => {
-    ModifyCheckInQuestionMutation(atmosphere, {
-      meetingId,
-      checkInQuestion: checkInQuestion!,
-      modifyType: 'FUNNY'
-    })
-  }
-
-  const moreCorporate = () => {
-    ModifyCheckInQuestionMutation(atmosphere, {
-      meetingId,
-      checkInQuestion: checkInQuestion!,
-      modifyType: 'CORPORATE'
-    })
-  }
-
-  const moreCrazy = () => {
-    ModifyCheckInQuestionMutation(atmosphere, {
-      meetingId,
-      checkInQuestion: checkInQuestion!,
-      modifyType: 'CRAZY'
-    })
+  const modify = (modifyType: ModifyType) => {
+    submitMutation()
+    ModifyCheckInQuestionMutation(
+      atmosphere,
+      {
+        meetingId,
+        checkInQuestion: checkInQuestion!,
+        modifyType
+      },
+      {onCompleted, onError}
+    )
   }
 
   return (
@@ -209,26 +194,38 @@ const NewCheckInQuestion = (props: Props) => {
       </QuestionBlock>
       <div className='flex items-center justify-center gap-x-3'>
         <button
-          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
-          onClick={moreSerious}
+          className={clsx(
+            'text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          )}
+          disabled={submitting}
+          onClick={() => modify('SERIOUS')}
         >
           More serious
         </button>
         <button
-          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
-          onClick={moreFunny}
+          className={clsx(
+            'text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          )}
+          disabled={submitting}
+          onClick={() => modify('FUNNY')}
         >
           More funny
         </button>
         <button
-          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
-          onClick={moreCorporate}
+          className={clsx(
+            'text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          )}
+          disabled={submitting}
+          onClick={() => modify('CORPORATE')}
         >
           More corporate
         </button>
         <button
-          className='text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
-          onClick={moreCrazy}
+          className={clsx(
+            'text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
+          )}
+          disabled={submitting}
+          onClick={() => modify('CRAZY')}
         >
           Feeling adventurous?
         </button>
