@@ -1,5 +1,5 @@
 import React from 'react'
-import {Dayjs} from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import {DemoContainer} from '@mui/x-date-pickers/internals/demo'
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
@@ -39,6 +39,8 @@ const DateTimePicker = (props: Props) => {
             label={`Meeting Start Time (${timeZoneShort})`}
             value={startValue}
             closeOnSelect={false}
+            disablePast
+            minDate={dayjs().add(1, 'hour')}
             onChange={handleChangeStart}
             slotProps={{
               inputAdornment: {
@@ -53,6 +55,8 @@ const DateTimePicker = (props: Props) => {
           <MuiDateTimePicker
             label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
+            disablePast
+            minDate={dayjs().add(1, 'hour')}
             onChange={handleChangeEnd}
             slotProps={{
               inputAdornment: {

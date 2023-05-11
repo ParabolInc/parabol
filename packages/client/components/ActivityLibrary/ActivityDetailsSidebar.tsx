@@ -117,10 +117,10 @@ const ActivityDetailsSidebar = (props: Props) => {
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
+  console.log('🚀 ~ start:', start)
   const [end, setEnd] = useState(endOfNextHour)
   const [inviteTeam, setInviteTeam] = useState(true)
-  console.log('🚀 ~ inviteTeam:', inviteTeam)
-  const {fields, onChange, validateField} = useForm({
+  const {fields, onChange} = useForm({
     title: {
       getDefault: () => '',
       validate: validateTitle
@@ -129,7 +129,6 @@ const ActivityDetailsSidebar = (props: Props) => {
       getDefault: () => ''
     }
   })
-  console.log('🚀 ~ fields:', fields)
 
   const handleCompletedRetro = (res: StartRetrospectiveMutation$data) => {
     const meetingId = res.startRetrospective?.meeting?.id
@@ -271,6 +270,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           inviteTeam={inviteTeam}
           setInviteTeam={setInviteTeam}
           end={end}
+          closeModal={toggleModal}
           handleScheduleMeeting={handleScheduleMeeting}
         />
       )}

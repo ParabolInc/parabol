@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Dayjs} from 'dayjs'
-import React from 'react'
+import React, {useState} from 'react'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -8,6 +8,9 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import DateTimePicker from './DateTimePicker'
 import Checkbox from '../../../../components/Checkbox'
+import StyledError from '../../../../components/StyledError'
+import PlainButton from '../../../../components/PlainButton/PlainButton'
+import {Close} from '@mui/icons-material'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -16,13 +19,12 @@ const Wrapper = styled('div')({
 })
 
 const StyledInput = styled('input')({
-  background: PALETTE.SLATE_200,
   border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: 4,
   color: PALETTE.SLATE_800,
   fontSize: 16,
   font: 'inherit',
-  marginTop: 16,
+  margin: '8px 0',
   padding: '12px 16px',
   outline: 0,
   width: '100%',
@@ -33,6 +35,24 @@ const StyledInput = styled('input')({
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 'auto'
+})
+
+const CloseIcon = styled(Close)({
+  color: PALETTE.SLATE_600,
+  cursor: 'pointer',
+  '&:hover': {
+    opacity: 0.5
+  }
+})
+
+const StyledCloseButton = styled(PlainButton)({
+  height: 24,
+  marginLeft: 'auto'
+})
+
+const ErrorMessage = styled(StyledError)({
+  padding: '0 8px',
+  textAlign: 'right'
 })
 
 interface Props {
@@ -52,12 +72,14 @@ interface Props {
     }
   }
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  closeModal: () => void
 }
 
 const GcalModal = (props: Props) => {
   const {
     handleScheduleMeeting,
     inviteTeam,
+    closeModal,
     setInviteTeam,
     onChange,
     fields,
@@ -67,9 +89,24 @@ const GcalModal = (props: Props) => {
     setEnd
   } = props
 
+  const [errorMsg, setErrorMsg] = useState<null | string>(null)
+
+  const handleClick = () => {
+    if (!fields.title.value) {
+      setErrorMsg('Please enter the name of your meeting')
+      return
+    }
+    handleScheduleMeeting()
+  }
+
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Schedule Your Meeting'}</DialogTitle>
+      <DialogTitle>
+        {'Schedule Your Meeting'}
+        <StyledCloseButton onClick={closeModal}>
+          <CloseIcon />
+        </StyledCloseButton>
+      </DialogTitle>
       <DialogContent>
         {
           'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link'
@@ -89,7 +126,9 @@ const GcalModal = (props: Props) => {
             onChange={onChange}
             placeholder='Enter your meeting description (optional)'
           />
-          <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
+          <div className='pt-2'>
+            <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
+          </div>
           <div className='flex items-center pt-4'>
             <Checkbox active={inviteTeam} onClick={() => setInviteTeam(!inviteTeam)} />
             <label
@@ -99,9 +138,10 @@ const GcalModal = (props: Props) => {
               Send a Google Calendar invite to my team members
             </label>
           </div>
+          {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
         </div>
         <Wrapper>
-          <PrimaryButton size='medium' onClick={handleScheduleMeeting}>
+          <PrimaryButton size='medium' onClick={handleClick}>
             {`Create Meeting & Gcal Invite`}
           </PrimaryButton>
         </Wrapper>
