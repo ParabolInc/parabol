@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useState, useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
@@ -16,17 +16,17 @@ const query = graphql`
         createdByEmail
         createdBy
         domain
-      }
-      teams {
-        id
-        name
-        isLead
-        teamMembers(sortBy: "preferredName") {
-          userId
-        }
-        organization {
+        teams {
+          id
           name
-          activeDomain
+          isLead
+          teamMembers(sortBy: "preferredName") {
+            userId
+          }
+          organization {
+            name
+            activeDomain
+          }
         }
       }
     }
@@ -47,18 +47,20 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
 
   const {domainJoinRequest} = data.viewer
+  const teams = domainJoinRequest?.teams
+  const sortedTeams = useMemo(() => {
+    if (!teams) {
+      return []
+    }
+
+    return teams?.slice().sort((a, b) => a.organization.name.localeCompare(b.organization.name))
+  }, [teams])
 
   if (!domainJoinRequest) {
     return null
   }
 
-  const {createdBy, createdByEmail, domain} = domainJoinRequest
-
-  const teams = data.viewer.teams
-  const sortedTeams = teams
-    .filter((team) => team.isLead && team.organization.activeDomain === domain)
-    .slice()
-    .sort((a, b) => a.organization.name.localeCompare(b.organization.name))
+  const {createdBy, createdByEmail} = domainJoinRequest
 
   return (
     <DialogContainer>
@@ -73,7 +75,7 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
             const {id: teamId, name: teamName, organization, teamMembers} = team
             const {name: orgName} = organization
 
-            // TODO: implement filter on API side
+            // TODO: implement userId filter for teamMembers on API side
             const isAlreadyMember = teamMembers.some((member) => member.userId === createdBy)
             const active = selectedTeams.includes(teamId) || isAlreadyMember
 
