@@ -29,8 +29,11 @@ const AuthenticationPage = (props: Props) => {
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
     if (page === 'admin-login') {
-      const nonce = new URLSearchParams(window.location.search).get('nonce')
-      window.location.href = `${nextUrl}?nonce=${nonce}&token=${authToken}`
+      if (window.__ACTION__.AUTH_ALLOWED_REDIRECTS.includes(nextUrl)) {
+        const nonce = new URLSearchParams(window.location.search).get('nonce')
+        window.location.href = `${nextUrl}?nonce=${nonce}&token=${authToken}`
+      }
+      return null
     }
     // always replace otherwise they could get stuck in a back-button loop
     setTimeout(() => history.replace(nextUrl))

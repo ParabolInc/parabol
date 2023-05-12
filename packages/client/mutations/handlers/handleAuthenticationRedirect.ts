@@ -14,10 +14,13 @@ const handleAuthenticationRedirect: OnNextHandler<
   SendClientSegmentEventMutation(atmosphere, 'User Login')
   const redirectTo = getValidRedirectParam()
   if (redirectTo) {
-    const nonce = new URLSearchParams(window.location.search).get('nonce')
-    const {authToken} = atmosphere
-    if (nonce) {
-      window.location.href = `${redirectTo}?nonce=${nonce}&token=${authToken}`
+    // check for admin/login redirect
+    if (window.__ACTION__.AUTH_ALLOWED_REDIRECTS.includes(redirectTo)) {
+      const nonce = new URLSearchParams(window.location.search).get('nonce')
+      const {authObj, authToken} = atmosphere
+      if (nonce && authObj?.rol === 'su') {
+        window.location.href = `${redirectTo}?nonce=${nonce}&token=${authToken}`
+      }
     } else {
       history.push(redirectTo)
     }
