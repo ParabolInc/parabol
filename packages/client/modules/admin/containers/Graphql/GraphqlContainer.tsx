@@ -27,7 +27,7 @@ const GraphqlContainer = () => {
         'content-type': 'application/json',
         'x-application-authorization': `Bearer ${atmosphere.authToken}`
       },
-      body: JSON.stringify({query, variables, isPrivate: true})
+      body: JSON.stringify({query, variables})
     })
     const resJSON = await res.json()
     return resJSON

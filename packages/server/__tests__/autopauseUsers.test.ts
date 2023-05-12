@@ -11,8 +11,7 @@ test.skip('Autopause users who where never active', async () => {
       mutation AutopauseUsers {
         autopauseUsers
       }
-    `,
-    isPrivate: true
+    `
   })
 
   expect(paused).toMatchObject({
@@ -33,8 +32,7 @@ test.skip('Autopause users who where never active', async () => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({

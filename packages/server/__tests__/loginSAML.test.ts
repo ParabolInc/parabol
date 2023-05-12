@@ -50,8 +50,7 @@ test('SAML', async () => {
       name: samlName,
       domains: [domain],
       metadata
-    },
-    isPrivate: true
+    }
   })
 
   expect(enableSaml).toMatchObject({
@@ -117,8 +116,7 @@ test('SAML', async () => {
     variables: {
       queryString: `SAMLResponse=${Buffer.from(response).toString('base64url')}`,
       samlName
-    },
-    isPrivate: true
+    }
   })
 
   expect(saml).toMatchObject({

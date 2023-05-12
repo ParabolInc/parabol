@@ -26,8 +26,7 @@ const PROCESS_RECURRENCE = `
 const assertIdempotency = async () => {
   // Assert that subsequent mutations do nothing.
   let res = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(res).toEqual({
@@ -40,8 +39,7 @@ const assertIdempotency = async () => {
   })
 
   res = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(res).toEqual({
@@ -60,8 +58,7 @@ beforeEach(async () => {
   // Process recurrence right before each test to prevent pending effects (i.e. meetings that will
   // start or end on the next processRecurrence run) from interfering with test results.
   await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 })
 
@@ -83,8 +80,7 @@ test('Should not end meetings that are not scheduled to end', async () => {
   await r.table('NewMeeting').insert(meeting).run()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -121,8 +117,7 @@ test('Should not end meetings that are scheduled to end in the future', async ()
   await r.table('NewMeeting').insert(meeting).run()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -161,8 +156,7 @@ test('Should end meetings that are scheduled to end in the past', async () => {
   await r.table('NewMeeting').insert(meeting).run()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -224,8 +218,7 @@ test('Should end the current meeting and start a new meeting', async () => {
   await r.table('NewMeeting').insert(meeting).run()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -299,8 +292,7 @@ test('Should only start a new meeting if it would still be active', async () => 
   await r.table('NewMeeting').insert(meeting).run()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -363,8 +355,7 @@ test('Should not start a new meeting if the rrule has not started', async () => 
   await r.table('NewMeeting').insert(meeting).run()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -428,8 +419,7 @@ test('Should not hang if the rrule interval is invalid', async () => {
   await r.table('NewMeeting').insert(meeting).run()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({

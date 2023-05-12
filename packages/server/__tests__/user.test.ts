@@ -18,8 +18,7 @@ test('Get user by id', async () => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -54,8 +53,7 @@ test('Get user by email', async () => {
     `,
     variables: {
       email
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -93,8 +91,7 @@ test('First user is patientZero', async () => {
     query,
     variables: {
       userId: user1Id
-    },
-    isPrivate: true
+    }
   })
 
   expect(user1).toMatchObject({
@@ -110,8 +107,7 @@ test('First user is patientZero', async () => {
     query,
     variables: {
       userId: user2Id
-    },
-    isPrivate: true
+    }
   })
 
   expect(user2).toMatchObject({
