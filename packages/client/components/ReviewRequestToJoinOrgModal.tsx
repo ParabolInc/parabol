@@ -1,17 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState, useMemo} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
 import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
+import {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
 import Checkbox from './Checkbox'
 import useAtmosphere from '../hooks/useAtmosphere'
 import AcceptRequestToJoinDomainMutation from '../mutations/AcceptRequestToJoinDomainMutation'
 
-graphql`
+const ReviewRequestToJoinOrgModalViewerFragment = graphql`
   fragment ReviewRequestToJoinOrgModal_viewer on User
   @argumentDefinitions(requestId: {type: "ID!"}) {
     domainJoinRequest(requestId: $requestId) {
@@ -38,24 +39,6 @@ graphql`
 const query = graphql`
   query ReviewRequestToJoinOrgModalQuery($requestId: ID!) {
     viewer {
-      domainJoinRequest(requestId: $requestId) {
-        id
-        createdByEmail
-        createdBy
-        domain
-        teams {
-          id
-          name
-          isLead
-          teamMembers(sortBy: "preferredName") {
-            userId
-          }
-          organization {
-            name
-            activeDomain
-          }
-        }
-      }
       ...ReviewRequestToJoinOrgModal_viewer @arguments(requestId: $requestId)
     }
   }
@@ -69,14 +52,16 @@ interface Props {
 // TODO: Create generic dialog components using tailwind https://github.com/ParabolInc/parabol/issues/8107
 const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {closePortal, queryRef} = props
-
   const atmosphere = useAtmosphere()
-
-  const data = usePreloadedQuery<ReviewRequestToJoinOrgModalQuery>(query, queryRef)
-
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
 
-  const {domainJoinRequest} = data.viewer
+  const data = usePreloadedQuery<ReviewRequestToJoinOrgModalQuery>(query, queryRef)
+  const viewer = useFragment<ReviewRequestToJoinOrgModal_viewer$key>(
+    ReviewRequestToJoinOrgModalViewerFragment,
+    data.viewer
+  )
+
+  const {domainJoinRequest} = viewer
 
   const teams = domainJoinRequest?.teams
   const sortedTeams = useMemo(() => {
