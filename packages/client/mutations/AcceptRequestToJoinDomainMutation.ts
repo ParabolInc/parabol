@@ -5,9 +5,10 @@ import {AcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation}
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
-  fragment AcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess {
+  fragment AcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
+  @argumentDefinitions(requestId: {type: "ID!"}) {
     viewer {
-      ...ReviewRequestToJoinOrgModal_viewer @relay(mask: false)
+      ...ReviewRequestToJoinOrgModal_viewer @arguments(requestId: $requestId)
     }
   }
 `
@@ -20,7 +21,7 @@ const mutation = graphql`
           message
         }
       }
-      ...AcceptRequestToJoinDomainMutation_success @relay(mask: false)
+      ...AcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId)
     }
   }
 `

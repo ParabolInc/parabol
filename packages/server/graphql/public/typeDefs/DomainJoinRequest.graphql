@@ -18,4 +18,9 @@ type DomainJoinRequest {
   Request domain
   """
   domain: String!
+
+  """
+  Matching teams
+  """
+  teams: [Team!]!
 }
