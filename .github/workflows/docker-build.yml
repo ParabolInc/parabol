@@ -110,15 +110,7 @@ jobs:
           yarn db:migrate && \
           yarn pg:migrate up && \
           yarn pg:build && \
-          if [ "$_NO_DEPS" = "true" ]; then \
-              yarn build --no-deps && \
-              rm -rf node_modules packages scripts; \
-          else \
-              yarn build; \
-          fi && \
-          rm -rf .env && \
-          rm -rf .circleci .git .github .husky .vscode docs static && \
-          rm -rf .gitignore docker-compose.yml nginx.conf.sigil *.html *.md CHECKS COPYING .prettierrc
+          yarn build --no-deps
 
       - name: Build and push
         uses: docker/build-push-action@v4
