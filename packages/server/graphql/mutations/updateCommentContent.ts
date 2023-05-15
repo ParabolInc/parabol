@@ -5,6 +5,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
+import {isDiscussionFromMeeting} from '../../utils/isDiscussionFromMeeting'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -38,16 +39,22 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const comment = await r.table('Comment').get(commentId).run()
+    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+    const [comment, viewerMeetingMember, meeting] = await Promise.all([
+      r.table('Comment').get(commentId).run(),
+      dataLoader.get('meetingMembers').load(meetingMemberId),
+      dataLoader.get('newMeetings').load(meetingId)
+    ])
     if (!comment || !comment.isActive) {
       return standardError(new Error('comment not found'), {userId: viewerId})
     }
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
       return {error: {message: `Not a member of the meeting`}}
     }
-    const {createdBy} = comment
+    const {createdBy, discussionId} = comment
+    if (!isDiscussionFromMeeting(discussionId, meeting)) {
+      return {error: {message: `Comment is not from this meeting`}}
+    }
     if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {
       return {error: {message: 'Can only update your own comment or Parabol AI comments'}}
     }
