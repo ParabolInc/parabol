@@ -25,11 +25,11 @@ const autogroup: MutationResolvers['autogroup'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
   if (meeting.meetingType !== 'retrospective') {
-    return standardError(new Error('Incorrect meeting type'), {userId: viewerId})
+    return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
   const {groupedReflectionsJSON, teamId} = meeting
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
+    return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
   if (!groupedReflectionsJSON) {
