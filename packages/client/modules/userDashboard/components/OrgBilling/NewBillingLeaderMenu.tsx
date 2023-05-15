@@ -10,7 +10,6 @@ import {
   NewBillingLeaderMenu_organization$key
 } from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
-import styled from '@emotion/styled'
 import TypeAheadLabel from '../../../../components/TypeAheadLabel'
 import useFilteredItems from '../../../../hooks/useFilteredItems'
 import {EmptyDropdownMenuItemLabel} from '../../../../components/EmptyDropdownMenuItemLabel'
@@ -18,19 +17,15 @@ import SetOrgUserRoleMutation from '../../../../mutations/SetOrgUserRoleMutation
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 
-const AvatarBlock = styled('div')({
-  paddingRight: 32
-})
-
 interface Props {
   menuProps: MenuProps
   organizationRef: NewBillingLeaderMenu_organization$key
   newLeaderSearchQuery: string
 }
 
-const getValue = (
+const getOrgUserPreferredName = (
   orgUser: NewBillingLeaderMenu_organization$data['organizationUsers']['edges'][0]
-) => orgUser.node.user.preferredName
+) => orgUser.node.user.preferredName.toLowerCase()
 
 const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   const {menuProps, organizationRef, newLeaderSearchQuery} = props
@@ -74,7 +69,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
 
   const query = newLeaderSearchQuery.toLowerCase()
   const filteredOrgUsers = useFilteredItems(query, nonLeaderOrgUsers, (orgUser) =>
-    getValue(orgUser).toLowerCase()
+    getOrgUserPreferredName(orgUser)
   )
 
   const handleClick = (userId: string) => {
@@ -100,11 +95,10 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
             key={userId}
             label={
               <MenuItemLabel>
-                <AvatarBlock>
+                <div className='pr-8'>
                   <Avatar picture={picture} size={32} />
-                </AvatarBlock>
+                </div>
                 <TypeAheadLabel query={newLeaderSearchQuery} label={preferredName} />
-                {preferredName}
               </MenuItemLabel>
             }
             onClick={() => handleClick(userId)}

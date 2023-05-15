@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Person} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ChangeEvent, FormEvent, useEffect, useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
@@ -95,8 +95,7 @@ const NewBillingLeaderInput = (props: Props) => {
     }
   }, [portalStatus])
 
-  const handleCreateNewLeader = (e: FormEvent) => {
-    e.preventDefault()
+  const handleCreateNewLeader = () => {
     if (!newLeaderValue.length) {
       removeInput()
     }
@@ -104,10 +103,6 @@ const NewBillingLeaderInput = (props: Props) => {
 
   const handleFocus = () => {
     togglePortal()
-  }
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e)
   }
 
   return (
@@ -121,7 +116,7 @@ const NewBillingLeaderInput = (props: Props) => {
               autoComplete={'off'}
               onBlur={handleCreateNewLeader}
               onFocus={handleFocus}
-              onChange={handleChange}
+              onChange={onChange}
               maxLength={255}
               name='newLeader'
               placeholder='Search for a new billing leader'
