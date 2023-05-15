@@ -9,8 +9,7 @@ env:
 
 jobs:
   build-and-push:
-    runs-on:
-      labels: ubuntu-4core-16ram-150ssd
+    runs-on: ubuntu-4core
     permissions:
       contents: "read"
       id-token: "write"
