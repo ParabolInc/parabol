@@ -1,7 +1,6 @@
 const tsJestPresets = require('ts-jest/presets')
 
 module.exports = {
-  preset: 'ts-jest',
   testEnvironment: 'node',
   transform: {
     '\\.(gql|graphql)$': './__tests__/jest-transform-graphql-shim.js',
