@@ -100,7 +100,8 @@ const TeamPickerModal = (props: Props) => {
             const templateId = res.addReflectTemplate?.reflectTemplate?.id
             if (templateId) {
               history.push(`/activity-library/details/${templateId}`, {
-                prevCategory: category
+                prevCategory: category,
+                edit: true
               })
             }
             onCompleted()
@@ -119,7 +120,8 @@ const TeamPickerModal = (props: Props) => {
             const templateId = res.addPokerTemplate?.pokerTemplate?.id
             if (templateId) {
               history.push(`/activity-library/details/${templateId}`, {
-                prevCategory: category
+                prevCategory: category,
+                edit: true
               })
             }
             onCompleted()

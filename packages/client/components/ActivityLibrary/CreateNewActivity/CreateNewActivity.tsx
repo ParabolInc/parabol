@@ -190,7 +190,8 @@ export const CreateNewActivity = (props: Props) => {
           const templateId = res.addReflectTemplate?.reflectTemplate?.id
           if (templateId) {
             history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: params.categoryId
+              prevCategory: params.categoryId,
+              edit: true
             })
           }
           onCompleted()
@@ -227,7 +228,8 @@ export const CreateNewActivity = (props: Props) => {
           const templateId = res.addPokerTemplate?.pokerTemplate?.id
           if (templateId) {
             history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: params.categoryId
+              prevCategory: params.categoryId,
+              edit: true
             })
           }
           onCompleted()
