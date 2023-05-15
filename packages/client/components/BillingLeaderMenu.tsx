@@ -26,8 +26,6 @@ const BillingLeaderMenu = (props: Props) => {
         id
         organizationUser(orgId: $orgId) {
           id
-          newUserUntil
-          tier
           orgId
         }
       }
@@ -37,7 +35,7 @@ const BillingLeaderMenu = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: userId, organizationUser} = billingLeader
   if (!organizationUser) return null
-  const {newUserUntil, tier, orgId} = organizationUser
+  const {orgId} = organizationUser
   const isViewer = viewerId === userId
 
   const removeBillingLeader = () => {
@@ -51,16 +49,7 @@ const BillingLeaderMenu = (props: Props) => {
     <Menu ariaLabel={'Select your action'} {...menuProps}>
       <MenuItem label='Remove Billing Leader role' onClick={removeBillingLeader} />
       {isViewer && <MenuItem onClick={toggleLeave} label='Leave Organization' />}
-      {!isViewer && (
-        <MenuItem
-          label={
-            tier === 'team' && new Date(newUserUntil) > new Date()
-              ? 'Refund and Remove'
-              : 'Remove from Organization'
-          }
-          onClick={toggleRemove}
-        />
-      )}
+      {!isViewer && <MenuItem label={'Remove from Organization'} onClick={toggleRemove} />}
     </Menu>
   )
 }
