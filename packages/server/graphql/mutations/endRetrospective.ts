@@ -57,35 +57,40 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       })
     }
   }
+  const summary = await generateWholeMeetingSummary(
+    discussionIds,
+    meetingId,
+    teamId,
+    facilitatorUserId,
+    dataLoader
+  )
 
-  await Promise.allSettled([
-    generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
-    r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          commentCount: r
-            .table('Comment')
-            .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .filter((row: RDatum) =>
-              row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
-            )
-            .count()
-            .default(0) as unknown as number,
-          taskCount: r
-            .table('Task')
-            .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .count()
-            .default(0) as unknown as number,
-          topicCount: reflectionGroupIds.length,
-          reflectionCount: reflections.length,
-          sentimentScore
-        },
-        {nonAtomic: true}
-      )
-      .run()
-  ])
+  await r
+    .table('NewMeeting')
+    .get(meetingId)
+    .update(
+      {
+        commentCount: r
+          .table('Comment')
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
+          .filter((row: RDatum) =>
+            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
+          )
+          .count()
+          .default(0) as unknown as number,
+        taskCount: r
+          .table('Task')
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
+          .count()
+          .default(0) as unknown as number,
+        topicCount: reflectionGroupIds.length,
+        reflectionCount: reflections.length,
+        sentimentScore,
+        summary
+      },
+      {nonAtomic: true}
+    )
+    .run()
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
