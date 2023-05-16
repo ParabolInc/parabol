@@ -5,12 +5,10 @@ export const isDiscussionFromMeeting = (discussionId: string, meeting: AnyMeetin
   const {meetingType} = meeting
   if (meetingType === 'retrospective') {
     const discussPhase = getPhase(meeting.phases, 'discuss')
-    const discussionIds = discussPhase.stages.map(({discussionId}) => discussionId)
-    return discussionIds.includes(discussionId)
+    return discussPhase.stages.some((stage) => stage.discussionId === discussionId)
   } else if (meetingType === 'poker') {
     const estimatePhase = getPhase(meeting.phases, 'ESTIMATE')
-    const discussionIds = estimatePhase.stages.map(({discussionId}) => discussionId)
-    return discussionIds.includes(discussionId)
+    return estimatePhase.stages.some((stage) => stage.discussionId === discussionId)
   }
   return false
 }
