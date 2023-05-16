@@ -12,6 +12,7 @@ import {CategoryID, CATEGORY_THEMES, CATEGORY_ID_TO_NAME} from '../Categories'
 import {NoTemplatesMeeting, query, MEETING_TYPE_TO_CATEGORY_ID} from './ActivityDetails'
 import {DetailsBadge} from './components/DetailsBadge'
 import {IntegrationsList} from './components/IntegrationsList'
+import {Details} from './components/Details'
 
 const MEETING_ID_TO_NAME: Record<NoTemplatesMeeting, string> = {
   teamPrompt: 'Standup',
@@ -54,60 +55,46 @@ export const MeetingDetails = (props: Props) => {
   }
 
   return (
-    <div className='flex h-full flex-col bg-white'>
-      <div className='flex grow'>
-        <div className='mt-4 grow'>
-          <div className='mb-14 ml-4 flex h-min w-max items-center'>
-            <Link className='mr-4' to={categoryLink}>
-              <IconLabel icon={'arrow_back'} iconLarge />
-            </Link>
-            <div className='w-max text-xl font-semibold'>Start Activity</div>
+    <Details
+      backNavigation={
+        <Link to={categoryLink}>
+          <IconLabel icon={'arrow_back'} iconLarge />
+        </Link>
+      }
+      activityCard={
+        <ActivityCard
+          className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
+          theme={CATEGORY_THEMES[category]}
+          imageSrc={activityIllustration}
+          badge={null}
+        />
+      }
+      activityName={
+        <div className='text-[32px] font-semibold leading-tight text-slate-700'>
+          {MEETING_ID_TO_NAME[activityId]}
+        </div>
+      }
+      activityDetails={
+        <>
+          <div className='mb-4 flex gap-2'>
+            <DetailsBadge className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}>
+              {CATEGORY_ID_TO_NAME[category]}
+            </DetailsBadge>
           </div>
-          <div className='mx-auto w-min'>
-            <div
-              className={clsx(
-                'flex w-full flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14'
-              )}
-            >
-              <ActivityCard
-                className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
-                theme={CATEGORY_THEMES[category]}
-                imageSrc={activityIllustration}
-                badge={null}
-              />
-              <div className='pb-20'>
-                <div className='mb-10 pl-14'>
-                  <div className='mb-2 flex min-h-[40px] items-center'>
-                    <div className='text-[32px] font-semibold leading-tight text-slate-700'>
-                      {MEETING_ID_TO_NAME[activityId]}
-                    </div>
-                  </div>
-                  <div className='mb-4 flex gap-2'>
-                    <DetailsBadge className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}>
-                      {CATEGORY_ID_TO_NAME[category]}
-                    </DetailsBadge>
-                  </div>
 
-                  <div className='my-6 text-base font-semibold leading-6 text-slate-600'>
-                    Created by Parabol
-                  </div>
+          <div className='my-6 text-base font-semibold leading-6 text-slate-600'>
+            Created by Parabol
+          </div>
 
-                  <div className='w-[480px]'>
-                    {descriptionLookup[activityId as NoTemplatesMeeting]}
-                  </div>
-                  <div className='mt-[18px] flex min-w-max items-center'>
-                    <IntegrationsList />
-                    <div className='ml-4'>
-                      <b>Tip:</b> {tipLookup[activityId as NoTemplatesMeeting]}
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className='w-[480px]'>{descriptionLookup[activityId]}</div>
+          <div className='mt-[18px] flex min-w-max items-center'>
+            <IntegrationsList />
+            <div className='ml-4'>
+              <b>Tip:</b> {tipLookup[activityId]}
             </div>
           </div>
-        </div>
-        {/* Sidebar goes here */}
-      </div>
-    </div>
+        </>
+      }
+    />
   )
 }
