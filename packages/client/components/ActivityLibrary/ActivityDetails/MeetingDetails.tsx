@@ -76,18 +76,18 @@ export const MeetingDetails = (props: Props) => {
       }
       activityDetails={
         <>
-          <div className='mb-4 flex gap-2'>
+          <div className='flex gap-2'>
             <DetailsBadge className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}>
               {CATEGORY_ID_TO_NAME[category]}
             </DetailsBadge>
           </div>
 
-          <div className='my-6 text-base font-semibold leading-6 text-slate-600'>
+          <div className='text-base font-semibold leading-6 text-slate-600'>
             Created by Parabol
           </div>
 
           <div className='w-[480px]'>{descriptionLookup[activityId]}</div>
-          <div className='mt-[18px] flex min-w-max items-center'>
+          <div className='flex min-w-max items-center'>
             <IntegrationsList />
             <div className='ml-4'>
               <b>Tip:</b> {tipLookup[activityId]}

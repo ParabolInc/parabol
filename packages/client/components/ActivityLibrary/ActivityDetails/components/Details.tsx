@@ -39,9 +39,9 @@ export const Details = (props: Props) => {
             >
               {activityCard}
               <div className='pb-20'>
-                <div className='mb-10 pl-14'>
-                  <div className='mb-2 flex min-h-[40px] items-center'>{activityName}</div>
-                  <div className='space-y-4'>{activityDetails}</div>
+                <div className='mb-10 pl-14 space-y-2'>
+                  <div className='flex min-h-[40px] items-center'>{activityName}</div>
+                  <div className='space-y-6'>{activityDetails}</div>
                 </div>
                 {activityTemplateDetails ? activityTemplateDetails : null}
               </div>
