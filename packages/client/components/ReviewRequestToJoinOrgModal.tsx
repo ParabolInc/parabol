@@ -73,7 +73,21 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   }, [teams])
 
   if (!domainJoinRequest) {
-    return null
+    return (
+      <DialogContainer>
+        <DialogTitle>{'Add teammate'}</DialogTitle>
+        <DialogContent>
+          Request expired or deleted
+          <div className={'mt-6 flex w-full justify-end'}>
+            <div className={'mr-2'}>
+              <SecondaryButton onClick={closePortal} size='small'>
+                Cancel
+              </SecondaryButton>
+            </div>
+          </div>
+        </DialogContent>
+      </DialogContainer>
+    )
   }
 
   const {createdBy, createdByEmail, id: requestId} = domainJoinRequest

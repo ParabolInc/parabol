@@ -69,7 +69,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     return standardError(new Error('Invalid teams'))
   }
 
-  // make sure that same request can't be accepted at the same moment
+  // Avoid race conditions: we make changes based on the data fetched first, see insertNewTeamMember
   const ttl = 3000
   const redisLock = new RedisLock(`acceptRequestToJoinDomain:${request.id}`, ttl)
   const lockTTL = await redisLock.checkLock()
@@ -82,7 +82,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const user = await dataLoader.get('users').loadNonNull(createdBy)
   const {id: userId} = user
 
-  const addTeamMemberPromises = validTeams.map(async (validTeam) => {
+  for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
     const [organizationUser] = await Promise.all([
       dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId}),
@@ -101,9 +101,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       }
       await setUserTierForUserIds([userId])
     }
-  })
-
-  await Promise.all(addTeamMemberPromises)
+  }
 
   await redisLock.unlock()
 
