@@ -98,7 +98,7 @@ COPY --chown=node --chmod=755 docker/parabol-ubi/docker-build/entrypoints/builde
 COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
 
 # The application requires a yarn.lock file on the root folder to identify it
-COPY --chown=node yarn.lock yarn.lock
+COPY --chown=node yarn.lock ${HOME}/parabol/yarn.lock
 
 COPY --chown=node .env.example ${HOME}/parabol/.env.example
 COPY --chown=node build ${HOME}/parabol/build
