@@ -85,7 +85,6 @@ RUN  if [ "$_SECURITY_ENABLED" = "true" ]; then \
         /security/xccdf_org.ssgproject.content_rule_package_iptables_installed.sh && \
         dnf clean all && \
         rm -rf /var/cache/dnf/ /var/tmp/* /tmp/* /var/tmp/.???* /tmp/.???* && \
-        chmod 755 /usr/local/bin/docker-entrypoint.sh && \
         chmod g-s /opt/yarn-v*/bin /opt/yarn-v*/lib && \
         chgrp -R root /opt/yarn-v* && \
         chgrp root /opt/yarn-v*/lib/* /opt/yarn-v*/bin/* /opt/yarn-v*/*; \
@@ -95,7 +94,7 @@ RUN  if [ "$_SECURITY_ENABLED" = "true" ]; then \
 
 RUN rm -rf /security/
 
-COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
+COPY --chown=node --chmod=755 docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
 COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
 
 COPY --chown=node .env.example ${HOME}/parabol/.env.example
