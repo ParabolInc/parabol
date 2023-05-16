@@ -48,7 +48,6 @@ class OpenAIServerManager {
         }
         return null
       }
-
       const error = new Error('OpenAI failed to getSummary')
       sendToSentry(error)
       return null
