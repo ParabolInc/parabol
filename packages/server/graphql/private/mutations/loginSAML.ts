@@ -40,7 +40,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
 
   if (!doc) return {error: {message: `${normalizedName} has not been created in Parabol yet`}}
   const {domains, metadata} = doc
-  const idp = samlify.IdentityProvider({metadata})
+  const idp = samlify.IdentityProvider({metadata: metadata ?? undefined})
   let loginResponse
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
@@ -93,7 +93,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     tier: 'enterprise'
   })
 
-  const authToken = await bootstrapNewUser(tempUser, !isInvited)
+  const authToken = await bootstrapNewUser(tempUser, !isInvited, '')
   return {
     userId,
     authToken: encodeAuthToken(authToken),

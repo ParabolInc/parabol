@@ -18,7 +18,7 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
-const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
+const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams: string) => {
   const {
     id: userId,
     createdAt,
@@ -39,11 +39,23 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
 
   // TODO: remove the following after templateLimit experiment is complete: https://github.com/ParabolInc/parabol/issues/7712
   const stopTemplateLimitsP0Experiment = !!process.env.STOP_TEMPLATE_LIMITS_P0_EXPERIMENT
-  const domainUserHasFlag = usersWithDomain.some((user) =>
+  const domainUserHasTemplateFlag = usersWithDomain.some((user) =>
     user.featureFlags.includes('templateLimit')
   )
-  const addTemplateFlag = !stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasFlag)
-  const experimentalFlags = addTemplateFlag ? [...featureFlags, 'templateLimit'] : featureFlags
+  const addTemplateFlag =
+    !stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasTemplateFlag)
+  const experimentalFlags = [...featureFlags]
+  if (addTemplateFlag) {
+    experimentalFlags.push('templateLimit')
+  }
+
+  const domainUserHasRidFlag = usersWithDomain.some((user) =>
+    user.featureFlags.includes('retrosInDisguise')
+  )
+  const params = new URLSearchParams(searchParams)
+  if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
+    experimentalFlags.push('retrosInDisguise')
+  }
 
   await Promise.all([
     r({
