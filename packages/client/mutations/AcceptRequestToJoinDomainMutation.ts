@@ -6,7 +6,7 @@ import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
   fragment AcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
-  @argumentDefinitions(requestId: {type: "ID!"}) {
+  @argumentDefinitions(requestId: {type: "Int!"}) {
     viewer {
       ...ReviewRequestToJoinOrgModal_viewer @arguments(requestId: $requestId)
     }

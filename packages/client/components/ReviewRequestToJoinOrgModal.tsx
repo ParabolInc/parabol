@@ -14,7 +14,7 @@ import AcceptRequestToJoinDomainMutation from '../mutations/AcceptRequestToJoinD
 
 const ReviewRequestToJoinOrgModalViewerFragment = graphql`
   fragment ReviewRequestToJoinOrgModal_viewer on User
-  @argumentDefinitions(requestId: {type: "ID!"}) {
+  @argumentDefinitions(requestId: {type: "Int!"}) {
     domainJoinRequest(requestId: $requestId) {
       id
       createdByEmail

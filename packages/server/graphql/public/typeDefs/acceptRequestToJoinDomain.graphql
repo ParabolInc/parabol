@@ -6,7 +6,7 @@ extend type Mutation {
     """
     DomainJoinRequest id
     """
-    requestId: ID!
+    requestId: Int!
 
     """
     Array of team ids
