@@ -6,7 +6,6 @@ import {
   NestedSource,
   NestGraphQLEndpointParams
 } from 'nest-graphql-endpoint/lib/types'
-import fetch from 'node-fetch'
 
 const defaultExecutor: Executor<{
   accessToken: string
