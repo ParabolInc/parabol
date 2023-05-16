@@ -3,7 +3,6 @@ import React, {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
-import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -41,11 +40,8 @@ const TeamHealth = (props: Props) => {
     `,
     meetingRef
   )
-  const {endedAt, showSidebar, localStage, phases} = meeting
-  const {id: localStageId, question, labels} = localStage
-  const nextStageRes = findStageAfterId(phases, localStageId)
-  // in case the checkin is the last phase of the meeting
-  if (!nextStageRes) return null
+  const {endedAt, showSidebar, localStage} = meeting
+  const {question, labels} = localStage
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>

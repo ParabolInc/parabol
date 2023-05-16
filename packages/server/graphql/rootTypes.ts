@@ -28,7 +28,6 @@ import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
 import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
-import TeamHealthPhase from './types/TeamHealthPhase'
 import TeamPromptMeeting from './types/TeamPromptMeeting'
 import TeamPromptMeetingMember from './types/TeamPromptMeetingMember'
 import TeamPromptMeetingSettings from './types/TeamPromptMeetingSettings'
@@ -70,7 +69,6 @@ const rootTypes = [
   SuggestedActionTryActionMeeting,
   SuggestedActionCreateNewTeam,
   SuggestedActionTryTheDemo,
-  TeamHealthPhase,
   TimelineEventTeamCreated,
   TimelineEventJoinedParabol,
   TimelineEventCompletedRetroMeeting,
