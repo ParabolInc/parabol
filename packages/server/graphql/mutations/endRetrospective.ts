@@ -91,6 +91,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       {nonAtomic: true}
     )
     .run()
+  dataLoader.get('newMeetings').clear(meetingId)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
