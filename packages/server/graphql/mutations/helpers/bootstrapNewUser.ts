@@ -19,6 +19,7 @@ import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
+  const r = await getRethink()
   const {
     id: userId,
     createdAt,
@@ -30,11 +31,12 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     identities
   } = newUser
   const domain = email.split('@')[1]
-  const [isPatient0, usersWithDomain] = await Promise.all([
+  const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
-    getUsersbyDomain(domain)
+    getUsersbyDomain(domain),
+    r.table('SAML').getAll(domain, {index: 'domains'}).limit(1).count().eq(1).run()
   ])
-  const r = await getRethink()
+
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
   // TODO: remove the following after templateLimit experiment is complete: https://github.com/ParabolInc/parabol/issues/7712
@@ -104,8 +106,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
 
   const emailIsVerified = identities[0]?.isEmailVerified
 
-  const usingSSO = tier === 'enterprise'
-  if (emailIsVerified && isOrganic && !usingSSO) {
+  if (emailIsVerified && isOrganic && !isSAMLVerified) {
     sendPromptToJoinOrg(email, userId)
   }
 
