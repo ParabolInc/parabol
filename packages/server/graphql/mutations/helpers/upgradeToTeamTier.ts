@@ -27,9 +27,10 @@ const upgradeToTeamTier = async (
     .run()
 
   const manager = getStripeManager()
-  const customers = await manager.getCustomersByEmail(email)
-  const existingCustomer = customers.data.find((customer) => customer.metadata.orgId === orgId)
-  const customer = existingCustomer ?? (await manager.createCustomer(orgId, email))
+  const {stripeId} = organization
+  const customer = stripeId
+    ? await manager.retrieveCustomer(stripeId)
+    : await manager.createCustomer(orgId)
   const {id: customerId} = customer
   await manager.attachPaymentToCustomer(customerId, paymentMethodId)
   // wait until the payment is attached to the customer before updating the default payment method

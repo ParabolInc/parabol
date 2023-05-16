@@ -21,7 +21,7 @@ export default class StripeManager {
     return this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
   }
 
-  async createCustomer(orgId: string, email: string, source?: string) {
+  async createCustomer(orgId: string, email?: string, source?: string) {
     return this.stripe.customers.create({
       email,
       source,

@@ -4,8 +4,8 @@ import {StandardMutation} from '../types/relayMutations'
 import {CreatePaymentIntentMutation as TCreatePaymentIntentMutation} from '../__generated__/CreatePaymentIntentMutation.graphql'
 
 const mutation = graphql`
-  mutation CreatePaymentIntentMutation {
-    createPaymentIntent {
+  mutation CreatePaymentIntentMutation($orgId: ID!) {
+    createPaymentIntent(orgId: $orgId) {
       ... on ErrorPayload {
         error {
           message
