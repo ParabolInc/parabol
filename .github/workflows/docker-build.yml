@@ -71,12 +71,8 @@ jobs:
           echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
 
           if [ ${{github.ref_type}} = "tag" ]; then
-            echo "NO_DEPS=true" >> $GITHUB_ENV
-            echo "BUILD_WITH_SECURITY=true" >> $GITHUB_ENV
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
           else
-            echo "NO_DEPS=true" >> $GITHUB_ENV
-            echo "BUILD_WITH_SECURITY=true" >> $GITHUB_ENV
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           fi
 
@@ -120,7 +116,7 @@ jobs:
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
-            "_SECURITY_ENABLED=${{ env.BUILD_WITH_SECURITY }}"
+            "_SECURITY_ENABLED=true"
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
