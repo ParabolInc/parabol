@@ -30,9 +30,6 @@ COPY --from=base /usr/local/share/systemtap /usr/local/share/systemtap
 COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=base /opt /opt
 
-COPY --chown=node docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
-COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
-
 # Security
 COPY docker/parabol-ubi/docker-build/security /security
 
@@ -88,7 +85,6 @@ RUN  if [ "$_SECURITY_ENABLED" = "true" ]; then \
         /security/xccdf_org.ssgproject.content_rule_package_iptables_installed.sh && \
         dnf clean all && \
         rm -rf /var/cache/dnf/ /var/tmp/* /tmp/* /var/tmp/.???* /tmp/.???* && \
-        chmod 755 /usr/local/bin/docker-entrypoint.sh && \
         chmod g-s /opt/yarn-v*/bin /opt/yarn-v*/lib && \
         chgrp -R root /opt/yarn-v* && \
         chgrp root /opt/yarn-v*/lib/* /opt/yarn-v*/bin/* /opt/yarn-v*/*; \
@@ -98,7 +94,17 @@ RUN  if [ "$_SECURITY_ENABLED" = "true" ]; then \
 
 RUN rm -rf /security/
 
-COPY --chown=node . ${HOME}/parabol
+COPY --chown=node --chmod=755 docker/parabol-ubi/docker-build/entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
+COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
+
+# The application requires a yarn.lock file on the root folder to identify it
+COPY --chown=node yarn.lock ${HOME}/parabol/yarn.lock
+# Required for post-deploy to work
+COPY --chown=node queryMap.json ${HOME}/parabol/queryMap.json
+
+COPY --chown=node .env.example ${HOME}/parabol/.env.example
+COPY --chown=node build ${HOME}/parabol/build
+COPY --chown=node dist ${HOME}/parabol/dist
 
 WORKDIR ${HOME}/parabol/
 USER node

@@ -26,19 +26,16 @@ Recommended:
 ### Variables
 
 | Name                 | Description                                                                                                             | Possible values                                       | Recommended value                                                   |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------- | --- |
 | `postgresql_tag`     | PostgreSQL version from the [Docker image](https://hub.docker.com/_/postgres)                                           | `Any tag`                                             | `12.10-alpine`                                                      |
 | `rethinkdb_tag`      | RethinkDB version from the [Docker image](https://hub.docker.com/_/rethinkdb)                                           | `Any tag`                                             | `2.4.2`                                                             |
 | `redis_tag`          | Redis version from the [Docker image](https://hub.docker.com/_/redis)                                                   | `Any tag`                                             | `6.2.6`                                                             |
 | `_BUILD_ENV_PATH`    | File `.env` used by the application during the build process                                                            | `Relative path from the root level of the repository` | `docker/parabol-ubi/docker-build/environments/pipeline`             |
 | `_NODE_VERSION`      | Node version, used by Docker to use the Docker image node:\_NODE_VERSION as base image to build                         | `Same as in root package.json`                        |                                                                     |
 | `_DOCKERFILE`        | Dockerfile used to build the image                                                                                      | `Relative path from the root level of the repository` | `./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile` |
-| `_SECURITY_ENABLED`  | Enable or disable security configurations. It will add some MBs to the final image, but it will produce a secured image | `true/false`                                          | `true`                                                              |
-| `_NO_DEPS`           | Builds a smaller final image, but at the cost of spending more time to build and using about 12 GB of RAM for it        | `true/false`                                          | `true`                                                              |
+| `_SECURITY_ENABLED`  | Enable or disable security configurations. It will add some MBs to the final image, but it will produce a secured image | `true/false`                                          | `true`                                                              |     |
 | `_DOCKER_REPOSITORY` | The destination repository                                                                                              | `String`                                              | `parabol`                                                           |
 | `_DOCKER_TAG`        | Tag for the produced image                                                                                              | `String`                                              |                                                                     |
-
-### Building the image
 
 Example of variables:
 
@@ -50,10 +47,13 @@ export _BUILD_ENV_PATH=docker/parabol-ubi/docker-build/environments/pipeline; \
 export _NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json); \
 export _DOCKERFILE=./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile; \
 export _SECURITY_ENABLED=true; \
-export _NO_DEPS=true; \
 export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=test-image
 ```
+
+### Building the image
+
+The application must be already built locally using the command `yarn build --no-deps` mode.
 
 To build the image, these commands must be executed from the root level of this repository:
 
