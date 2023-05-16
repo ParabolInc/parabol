@@ -1,116 +1,50 @@
-import graphql from 'babel-plugin-relay/macro'
 import {ContentCopy} from '@mui/icons-material'
 import React, {useCallback, useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {Link} from 'react-router-dom'
-import IconLabel from '../IconLabel'
-import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
-import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
-import TemplateDimensionList from '../../modules/meeting/components/TemplateDimensionList'
-import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
-import AddPokerTemplateDimension from '../../modules/meeting/components/AddPokerTemplateDimension'
-import {ActivityCard} from './ActivityCard'
-import {activityIllustrations} from './ActivityIllustrations'
-import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
-import useTemplateDescription from '../../utils/useTemplateDescription'
+import IconLabel from '../../IconLabel'
+import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
+import TemplatePromptList from '../../../modules/meeting/components/TemplatePromptList'
+import TemplateDimensionList from '../../../modules/meeting/components/TemplateDimensionList'
+import AddTemplatePrompt from '../../../modules/meeting/components/AddTemplatePrompt'
+import AddPokerTemplateDimension from '../../../modules/meeting/components/AddPokerTemplateDimension'
+import {ActivityCard} from '../ActivityCard'
+import {activityIllustrations} from '../ActivityIllustrations'
+import customTemplateIllustration from '../../../../../static/images/illustrations/customTemplate.png'
+import useTemplateDescription from '../../../utils/useTemplateDescription'
 import clsx from 'clsx'
-import {UnstyledTemplateSharing} from '../../modules/meeting/components/TemplateSharing'
-import DetailAction from '../DetailAction'
-import RemoveReflectTemplateMutation from '../../mutations/RemoveReflectTemplateMutation'
-import useMutationProps from '../../hooks/useMutationProps'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import GitHubSVG from '../GitHubSVG'
-import JiraSVG from '../JiraSVG'
-import GitLabSVG from '../GitLabSVG'
-import AzureDevOpsSVG from '../AzureDevOpsSVG'
-import JiraServerSVG from '../JiraServerSVG'
-import ActivityDetailsSidebar from './ActivityDetailsSidebar'
-import CloneTemplate from '../../modules/meeting/components/CloneTemplate'
-import useModal from '../../hooks/useModal'
-import TeamPickerModal from './TeamPickerModal'
-import FlatButton from '../FlatButton'
+import {UnstyledTemplateSharing} from '../../../modules/meeting/components/TemplateSharing'
+import DetailAction from '../../DetailAction'
+import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import useMutationProps from '../../../hooks/useMutationProps'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
+import CloneTemplate from '../../../modules/meeting/components/CloneTemplate'
+import useModal from '../../../hooks/useModal'
+import TeamPickerModal from '../TeamPickerModal'
+import FlatButton from '../../FlatButton'
 import {
   CategoryID,
   CATEGORY_THEMES,
   CATEGORY_ID_TO_NAME,
   QUICK_START_CATEGORY_ID
-} from './Categories'
-import {setActiveTemplate} from '../../utils/relay/setActiveTemplate'
-import PokerTemplateScaleDetails from '../../modules/meeting/components/PokerTemplateScaleDetails'
-import RemovePokerTemplateMutation from '../../mutations/RemovePokerTemplateMutation'
-
-graphql`
-  fragment ActivityDetails_template on MeetingTemplate {
-    id
-    name
-    type
-    category
-    orgId
-    teamId
-    isFree
-    scope
-    team {
-      editingScaleId
-      ...PokerTemplateScaleDetails_team
-    }
-    ...ActivityDetailsSidebar_template
-    ...EditableTemplateName_teamTemplates
-    ...ReflectTemplateDetailsTemplate @relay(mask: false)
-    ...PokerTemplateDetailsTemplate @relay(mask: false)
-    ...TeamPickerModal_templates
-    ...useTemplateDescription_template
-  }
-`
-
-const query = graphql`
-  query ActivityDetailsQuery {
-    viewer {
-      tier
-      availableTemplates(first: 100) @connection(key: "ActivityDetails_availableTemplates") {
-        edges {
-          node {
-            ...ActivityDetails_template @relay(mask: false)
-          }
-        }
-      }
-      teams {
-        id
-        ...ActivityDetailsSidebar_teams
-        ...TeamPickerModal_teams
-      }
-      organizations {
-        id
-      }
-
-      ...useTemplateDescription_viewer
-    }
-  }
-`
-
-interface DetailsBadgeProps {
-  className?: string
-  children?: React.ReactNode
-}
-
-const DetailsBadge = (props: DetailsBadgeProps) => {
-  const {className, children} = props
-  return (
-    <div className={clsx('w-min rounded-full px-3 py-1 text-xs font-semibold', className)}>
-      {children}
-    </div>
-  )
-}
-
-const SUPPORTED_TYPES = ['retrospective', 'poker']
+} from '../Categories'
+import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
+import PokerTemplateScaleDetails from '../../../modules/meeting/components/PokerTemplateScaleDetails'
+import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
+import {MeetingTypeEnum} from '../../../../server/postgres/types/Meeting'
+import {query, SUPPORTED_TYPES} from './ActivityDetails'
+import {DetailsBadge} from './components/DetailsBadge'
+import {IntegrationsList} from './components/IntegrationsList'
 
 interface Props {
   queryRef: PreloadedQuery<ActivityDetailsQuery>
   templateId: string
 }
 
-const ActivityDetails = (props: Props) => {
+export const TemplateDetails = (props: Props) => {
   const {queryRef, templateId} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
@@ -130,33 +64,26 @@ const ActivityDetails = (props: Props) => {
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
-    if (selectedTemplate?.type === 'retrospective') {
-      submitMutation()
-      RemoveReflectTemplateMutation(
-        atmosphere,
-        {templateId},
-        {
-          onError,
-          onCompleted: () => {
-            onCompleted()
-            history.replace(categoryLink)
-          }
-        }
-      )
-    } else if (selectedTemplate?.type === 'poker') {
-      submitMutation()
-      RemovePokerTemplateMutation(
-        atmosphere,
-        {templateId},
-        {
-          onError,
-          onCompleted: () => {
-            onCompleted()
-            history.replace(categoryLink)
-          }
-        }
-      )
+    if (!selectedTemplate) return
+    const removeTemplateMutationLookup = {
+      retrospective: RemoveReflectTemplateMutation,
+      poker: RemovePokerTemplateMutation,
+      action: null,
+      teamPrompt: null
+    } as const
+
+    const removeTemplateMutation = removeTemplateMutationLookup[selectedTemplate.type]
+    if (!removeTemplateMutation) return
+
+    submitMutation()
+    const mutationArgs = {
+      onError,
+      onCompleted: () => {
+        onCompleted()
+        history.replace(categoryLink)
+      }
     }
+    removeTemplateMutation(atmosphere, {templateId}, mutationArgs)
   }, [templateId, submitting, submitMutation, onError, onCompleted])
 
   const {
@@ -225,8 +152,61 @@ const ActivityDetails = (props: Props) => {
   const templateIllustration =
     activityIllustrations[selectedTemplate.id as keyof typeof activityIllustrations]
   const activityIllustration = templateIllustration ?? customTemplateIllustration
-
   const category = selectedTemplate.category as CategoryID
+
+  const descriptionLookup: Record<MeetingTypeEnum, React.ReactNode> = {
+    retrospective: (
+      <>
+        <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes and vote on
+        the hottest topics. As you <b>discuss topics</b>, create <b>takeaway tasks</b> that can be
+        integrated with your backlog.
+      </>
+    ),
+    poker: (
+      <>
+        <b>Select</b> a list of issues from your integrated backlog, or create new issues to
+        estimate. <b>Estimate</b> with your team on 1 or many scoring dimensions. <b>Push</b> the
+        estimations to your backlog.
+      </>
+    ),
+    teamPrompt: null,
+    action: null
+  }
+
+  const tipLookup: Record<MeetingTypeEnum, React.ReactNode> = {
+    retrospective: <>push takeaway tasks to your backlog</>,
+    poker: <>sync estimations with your backlog</>,
+    action: null,
+    teamPrompt: null
+  }
+
+  const templateDetailsLookup: Record<MeetingTypeEnum, React.ReactNode> = {
+    retrospective: (
+      <>
+        <TemplatePromptList
+          isOwner={isOwner && isEditing}
+          prompts={prompts!}
+          templateId={templateId}
+        />
+        {isOwner && isEditing && <AddTemplatePrompt templateId={templateId} prompts={prompts!} />}
+      </>
+    ),
+    poker: (
+      <>
+        <TemplateDimensionList
+          isOwner={isOwner}
+          readOnly={!isEditing}
+          dimensions={dimensions!}
+          templateId={templateId}
+        />
+        {isOwner && isEditing && (
+          <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions!} />
+        )}
+      </>
+    ),
+    action: null,
+    teamPrompt: null
+  }
 
   return (
     <>
@@ -344,64 +324,16 @@ const ActivityDetails = (props: Props) => {
                           </div>
                         )}
                       </div>
-                      {type === 'retrospective' && (
-                        <>
-                          <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common
-                          themes and vote on the hottest topics. As you <b>discuss topics</b>,
-                          create <b>takeaway tasks</b> that can be integrated with your backlog.
-                        </>
-                      )}
-                      {type === 'poker' && (
-                        <>
-                          <b>Select</b> a list of issues from your integrated backlog, or create new
-                          issues to estimate. <b>Estimate</b> with your team on 1 or many scoring
-                          dimensions. <b>Push</b> the estimations to your backlog.
-                        </>
-                      )}
+                      {descriptionLookup[selectedTemplate.type]}
                     </div>
                     <div className='mt-[18px] flex min-w-max items-center'>
-                      <div className='flex items-center gap-3'>
-                        <JiraSVG />
-                        <GitHubSVG />
-                        <JiraServerSVG />
-                        <GitLabSVG />
-                        <AzureDevOpsSVG />
-                      </div>
+                      <IntegrationsList />
                       <div className='ml-4'>
-                        <b>Tip:</b>{' '}
-                        {type === 'retrospective' && 'push takeaway tasks to your backlog'}
-                        {type === 'poker' && 'sync estimations with your backlog'}
+                        <b>Tip:</b> {tipLookup[selectedTemplate.type]}
                       </div>
                     </div>
                   </div>
-                  {type === 'retrospective' && (
-                    <>
-                      <TemplatePromptList
-                        isOwner={isOwner && isEditing}
-                        prompts={prompts!}
-                        templateId={templateId}
-                      />
-                      {isOwner && isEditing && (
-                        <AddTemplatePrompt templateId={templateId} prompts={prompts!} />
-                      )}
-                    </>
-                  )}
-                  {type === 'poker' && (
-                    <>
-                      <TemplateDimensionList
-                        isOwner={isOwner}
-                        readOnly={!isEditing}
-                        dimensions={dimensions!}
-                        templateId={templateId}
-                      />
-                      {isOwner && isEditing && (
-                        <AddPokerTemplateDimension
-                          templateId={templateId}
-                          dimensions={dimensions!}
-                        />
-                      )}
-                    </>
-                  )}
+                  {templateDetailsLookup[selectedTemplate.type]}
                 </div>
               </div>
             </div>
@@ -443,5 +375,3 @@ const ActivityDetails = (props: Props) => {
     </>
   )
 }
-
-export default ActivityDetails

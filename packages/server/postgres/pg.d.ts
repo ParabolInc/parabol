@@ -181,10 +181,10 @@ export interface MeetingTemplate {
   type: 'action' | 'poker' | 'retrospective' | 'teamPrompt'
   isStarter: Generated<boolean>
   isFree: Generated<boolean>
-  illustrationUrl: string | null
+  illustrationUrl: string
   hideStartingAt: Timestamp | null
   hideEndingAt: Timestamp | null
-  mainCategory: string | null
+  mainCategory: string
 }
 
 export interface MeetingTemplateUserFavorite {
@@ -331,6 +331,15 @@ export interface User {
   isPatient0: Generated<boolean>
 }
 
+export interface UserInteractions {
+  id: Generated<number>
+  createdAt: Generated<Timestamp>
+  createdById: string
+  receivedById: string
+  emoji: string
+  emojiName: string
+}
+
 export interface DB {
   AtlassianAuth: AtlassianAuth
   AzureDevOpsDimensionFieldMap: AzureDevOpsDimensionFieldMap
@@ -357,4 +366,5 @@ export interface DB {
   TemplateRef: TemplateRef
   TemplateScaleRef: TemplateScaleRef
   User: User
+  UserInteractions: UserInteractions
 }
