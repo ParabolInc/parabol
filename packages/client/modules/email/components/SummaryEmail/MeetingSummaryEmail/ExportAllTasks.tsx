@@ -118,12 +118,6 @@ const ExportAllTasks = (props: Props) => {
               if (error) {
                 reject(error)
               } else {
-                SendClientSegmentEventMutation(atmosphere, 'Bulk Tasks Published', {
-                  teamId,
-                  meetingId,
-                  meetingType,
-                  service: integrationProviderService
-                })
                 resolve()
               }
             }
@@ -135,6 +129,12 @@ const ExportAllTasks = (props: Props) => {
       if (errors.length > 0) {
         onError(errors[0]!.reason)
       } else {
+        SendClientSegmentEventMutation(atmosphere, 'Bulk Tasks Published', {
+          teamId,
+          meetingId,
+          meetingType,
+          service: integrationProviderService
+        })
         integrationLabel && setPushedIntegrationLabel(integrationLabel)
         onCompleted()
       }
