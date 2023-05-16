@@ -60,15 +60,6 @@ export interface Discussion {
   summary: string | null
 }
 
-export interface DomainJoinRequest {
-  id: string
-  createdBy: string
-  domain: string
-  expiresAt: Timestamp | null
-  createdAt: Generated<Timestamp>
-  updatedAt: Generated<Timestamp>
-}
-
 export interface GitHubAuth {
   accessToken: string
   createdAt: Generated<Timestamp>
@@ -335,7 +326,6 @@ export interface DB {
   AtlassianAuth: AtlassianAuth
   AzureDevOpsDimensionFieldMap: AzureDevOpsDimensionFieldMap
   Discussion: Discussion
-  DomainJoinRequest: DomainJoinRequest
   GitHubAuth: GitHubAuth
   GitHubDimensionFieldMap: GitHubDimensionFieldMap
   GitLabDimensionFieldMap: GitLabDimensionFieldMap

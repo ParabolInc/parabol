@@ -22,6 +22,7 @@ import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
+import SetMeetingSettingsPayload from './types/SetMeetingSettingsPayload'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
@@ -63,6 +64,7 @@ const rootTypes = [
   RetrospectiveMeeting,
   RetrospectiveMeetingMember,
   RetrospectiveMeetingSettings,
+  SetMeetingSettingsPayload,
   SuggestedActionInviteYourTeam,
   SuggestedActionTryRetroMeeting,
   SuggestedActionTryActionMeeting,
