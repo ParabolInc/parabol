@@ -513,6 +513,5 @@ export const enum AIExplainer {
 }
 
 export const enum EmptyMeetingViewMessage {
-  NO_ACTIVE_MEETINGS = `Looks like you have no upcoming meetings 😎 Start one now or check out these tips and tricks.`,
-  NO_SEARCH_RESULTS = `Sorry we could not find any meetings matched with your query. Would you like to checkout these tips and tricks?`
+  NO_ACTIVE_MEETINGS = `Looks like you have no upcoming meetings 😎 Start one now or check out these tips and tricks.`
 }
