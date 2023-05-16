@@ -1,5 +1,6 @@
 import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
+import {AxiosError} from 'axios'
 
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
@@ -35,7 +36,20 @@ class OpenAIServerManager {
       })
       return (response.data.choices[0]?.text?.trim() as string) ?? null
     } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      if (e instanceof Error) {
+        const rateLimitStatusCode = 429
+        if (
+          (e as AxiosError).response?.status === rateLimitStatusCode &&
+          (e as AxiosError).response?.data?.error
+        ) {
+          sendToSentry((e as AxiosError).response?.data?.error)
+        } else {
+          sendToSentry(e)
+        }
+        return null
+      }
+
+      const error = new Error('OpenAI failed to getSummary')
       sendToSentry(error)
       return null
     }
