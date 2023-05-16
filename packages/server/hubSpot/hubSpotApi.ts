@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 const accessToken = process.env.HUBSPOT_API_KEY
 
 type Company = {

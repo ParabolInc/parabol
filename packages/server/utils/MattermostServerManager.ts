@@ -1,5 +1,3 @@
-import fetch from 'node-fetch'
-
 // Mattermost is a server-only integration for now, unlike the Slack integration
 
 // We're following a similar manager pattern here should we wish to refactor the

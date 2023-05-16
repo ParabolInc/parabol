@@ -15,7 +15,11 @@ const migrateRethinkDB = async () => {
   process.env.port = port!
   process.env.db = urlPath!.slice(1)
   process.env.r = process.cwd()
-  const context = (require as any).context('../../packages/server/database/migrations', false, /.(js|ts)$/)
+  const context = (require as any).context(
+    '../../packages/server/database/migrations',
+    false,
+    /.(js|ts)$/
+  )
   const collector = {}
   context.keys().forEach((relativePath) => {
     const {name} = path.parse(relativePath)
@@ -32,7 +36,11 @@ const migratePG = async () => {
   // pgm uses a dynamic require statement, which doesn't work with webpack
   // if we ignore that dynamic require, we'd still have to include the migrations directory AND any dependencies it might have
   // by processing through webpack's require.context, we let webpack handle everything
-  const context = (require as any).context('../../packages/server/postgres/migrations', false, /.ts$/)
+  const context = (require as any).context(
+    '../../packages/server/postgres/migrations',
+    false,
+    /.ts$/
+  )
   const collector = {}
   context.keys().forEach((relativePath) => {
     const {name, ext} = path.parse(relativePath)
@@ -49,12 +57,6 @@ const migratePG = async () => {
   return pgMigrate(programmaticPgmConfig as any)
 }
 
-const clearRedis = async () => {
-  const redis = new Redis(process.env.REDIS_URL!, {connectionName: 'devRedis'})
-  await redis.flushall()
-  redis.disconnect()
-}
-
 const migrateDBs = async () => {
   // RethinkDB must be run first because
   // Some PG migrations depemd on the latest state of RethinkDB
@@ -62,8 +64,4 @@ const migrateDBs = async () => {
   return migratePG()
 }
 
-const runMigrations = async () => {
-  await Promise.all([clearRedis(), migrateDBs()])
-}
-
-runMigrations()
+migrateDBs()
