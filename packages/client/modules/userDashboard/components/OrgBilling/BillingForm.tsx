@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {useStripe, useElements, CardElement, PaymentElement} from '@stripe/react-stripe-js'
+import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
@@ -8,6 +8,7 @@ import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMu
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
+import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -93,29 +94,30 @@ const BillingForm = (props: Props) => {
     setIsLoading(true)
     if (errorMsg) setErrorMsg(null)
     const cardElement = elements.getElement(CardElement)
+    if (!cardElement) return
     const {paymentMethod, error} = await stripe.createPaymentMethod({
       type: 'card',
-      card: cardElement!
+      card: cardElement
     })
 
-    setIsLoading(false)
     if (error) {
       setErrorMsg(error.message)
       return
     }
 
-    const handleCompleted = async (res: any) => {
+    const handleCompleted = async (res: UpgradeToTeamTierMutation$data) => {
       const {upgradeToTeamTier} = res
-      const {organization} = upgradeToTeamTier
-      const {stripeSubscriptionId, stripeSubscriptionClientSecret} = organization
-      console.log('🚀 ~ stripeSubscriptionId:', {
-        stripeSubscriptionClientSecret,
-        stripeSubscriptionId
-      })
+      const stripeSubscriptionClientSecret =
+        upgradeToTeamTier?.organization?.stripeSubscriptionClientSecret
+      if (!stripeSubscriptionClientSecret) {
+        setIsLoading(false)
+        return
+      }
       await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
-      onCompleted(res)
+      setIsLoading(false)
       setIsPaymentSuccessful(true)
     }
+
     UpgradeToTeamTierMutation(
       atmosphere,
       {orgId, paymentMethodId: paymentMethod.id},
