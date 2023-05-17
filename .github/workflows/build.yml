@@ -44,6 +44,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       # 1.- Only images produced on tags are built with addiotional security. It takes about 2 more minutes to build.
       # 2.- Change the NO_DEPS for tags to true whenenver we want to start building using the --no-deps option. It requires more memory than what is available in the free runners and it also takes more time to build.
@@ -98,6 +100,7 @@ jobs:
         uses: nrwl/nx-set-shas@v2
       - name: Check Code Quality
         run: |
+
           npx nx affected --target=typecheck
           npx nx affected --target=lint:check
           npx nx affected --target=prettier:check
