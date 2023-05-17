@@ -31,7 +31,8 @@ const emitGA4SignUpEvent = (args: GA4SignUpEventEmissionRequiredArgs) => {
       userId,
       user_properties: {
         is_patient_0: isPatient0
-      }
+      },
+      is_patient_0: isPatient0
     })
   }
 }
