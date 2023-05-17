@@ -17,7 +17,7 @@ export type NoTemplatesMeeting = Exclude<MeetingTypeEnum, 'retrospective' | 'pok
 
 export const MEETING_ID_TO_NAME: Record<NoTemplatesMeeting, string> = {
   teamPrompt: 'Standup',
-  action: 'Check In'
+  action: 'Team Check-In'
 }
 
 export const MEETING_TYPE_TO_CATEGORY_ID: Record<NoTemplatesMeeting, CategoryID> = {
@@ -46,12 +46,18 @@ export const MEETING_TYPE_DESCRIPTION_LOOKUP: Record<MeetingTypeEnum, React.Reac
       your backlog.
     </>
   ),
-  action: null
+  action: (
+    <>
+      This is a space to check in as a team. Share a personal update using the <b>Icebreaker</b>{' '}
+      phase. Give a brief update on what’s changed with your work during the <b>Solo Updates</b>{' '}
+      phase. Raise issues for discussion in the <b>Team Agenda</b> phase.
+    </>
+  )
 }
 
 export const MEETING_TYPE_TIP_LOOKUP: Record<MeetingTypeEnum, React.ReactNode> = {
   teamPrompt: <>push takeaway tasks to your backlog</>,
-  action: null,
+  action: <>push takeaway tasks to your backlog</>,
   retrospective: <>push takeaway tasks to your backlog</>,
   poker: <>sync estimations with your backlog</>
 }
