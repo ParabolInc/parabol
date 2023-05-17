@@ -5,6 +5,34 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.104.0 2023-May-17
+
+### Added
+
+- feat(recurrence): Prev/next meeting navigation (#8157)
+- feat(rid): Enter edit mode automatically for new templates (#8156)
+- feat(pipeline): Docker build pipeline (#8030)
+- feat(checkout-flow): add billing leader functionality (#8121)
+- feat: can edit & delete AI comment (#8164)
+- feat: prime new columns on MeetingTemplate (#8081)
+- feat(rid): Navigate to activity lib by default from CTA (#8210)
+- feat: build no-deps (#8196)
+
+### Fixed
+
+- fix: remove flushall redis on migrate (#8175)
+- fix(rid): Ignore category in search empty state (#8144)
+- fix: more logs for voting error (#8167)
+
+### Changed
+
+- chore(pg-migrations): message when no migrations need to be run on PG showing it is actually PosgreSQL (#8174)
+- chore: ignore generated files in PR size (#8165)
+- chore: Verify all checked in generated files are clean (#8161)
+- chore: AI opt out at org level (#8163)
+- chore(deps): bump vm2 from 3.9.17 to 3.9.18 (#8198)
+- chore: remove node-fetch from app code (#8178)
+
 ## 6.103.0 2023-May-05
 
 ### Added
