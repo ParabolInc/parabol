@@ -63,7 +63,7 @@ jobs:
           GITHUB_REF_NAME_NORMALIZED=$(echo ${{github.ref_name}} | tr / -)
           echo "GITHUB_REF_NAME_NORMALIZED=${GITHUB_REF_NAME_NORMALIZED}" >> $GITHUB_ENV
 
-          DOCKERIZE = ${{ contains(fromJSON('["master", "staging", "production"]'), github.ref_name) || contains(github.event.head_commit.message, '@dockerize')}}
+          DOCKERIZE=${{ contains(fromJSON('["master", "staging", "production"]'), github.ref_name) || contains(github.event.head_commit.message, '@dockerize')}}
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -79,6 +79,9 @@ jobs:
           path: |
             **/node_modules
           key: node_modules-${{ runner.os }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Install node_modules
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
 
       - name: Build the DBs
         run: |
