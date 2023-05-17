@@ -31,6 +31,7 @@ export default class Organization {
   showConversionModal?: boolean
   stripeId?: string
   stripeSubscriptionId?: string | null
+  stripeSubscriptionClientSecret?: string | null
   upcomingInvoiceEmailSentAt?: Date
   tier: TierEnum
   tierLimitExceededAt?: Date | null

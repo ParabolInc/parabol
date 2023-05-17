@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {useStripe, useElements, PaymentElement} from '@stripe/react-stripe-js'
+import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
@@ -71,26 +71,41 @@ const BillingForm = (props: Props) => {
     if (!stripe || !elements) return
     setIsLoading(true)
     if (errorMsg) setErrorMsg(null)
-    const {paymentIntent, error} = await stripe.confirmPayment({
-      elements,
-      redirect: 'if_required'
+    const cardElement = elements.getElement(CardElement)
+    const {paymentMethod, error} = await stripe.createPaymentMethod({
+      type: 'card',
+      card: cardElement!
     })
+
     setIsLoading(false)
     if (error) {
       setErrorMsg(error.message)
       return
     }
 
-    const {payment_method: paymentMethodId, status} = paymentIntent
-    if (status === 'succeeded' && typeof paymentMethodId === 'string') {
+    const handleCompleted = async (res: any) => {
+      const {upgradeToTeamTier} = res
+      const {organization} = upgradeToTeamTier
+      const {stripeSubscriptionId, stripeSubscriptionClientSecret} = organization
+      console.log('🚀 ~ stripeSubscriptionId:', {
+        stripeSubscriptionClientSecret,
+        stripeSubscriptionId
+      })
+      await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      onCompleted(res)
       setIsPaymentSuccessful(true)
-      UpgradeToTeamTierMutation(atmosphere, {orgId, paymentMethodId}, {onError, onCompleted})
     }
+    UpgradeToTeamTierMutation(
+      atmosphere,
+      {orgId, paymentMethodId: paymentMethod.id},
+      {onError, onCompleted: handleCompleted}
+    )
   }
 
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      <PaymentElement id='payment-element' options={{layout: 'tabs'}} />
+      {/* <PaymentElement id='payment-element' options={{layout: 'tabs'}} /> */}
+      <CardElement />
       <ButtonBlock>
         {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>

@@ -54,12 +54,9 @@ export default class StripeManager {
     })
   }
 
-  async createPaymentIntent(customerId: string, amount: number) {
-    return this.stripe.paymentIntents.create({
-      customer: customerId,
-      setup_future_usage: 'off_session',
-      amount,
-      currency: 'usd'
+  async createSetupIntent(customerId: string) {
+    return this.stripe.setupIntents.create({
+      customer: customerId
     })
   }
 
@@ -70,6 +67,7 @@ export default class StripeManager {
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
       proration_behavior: 'none',
+      expand: ['latest_invoice.payment_intent'],
       // Use this for testing invoice.created hooks
       // run `yarn ultrahook` and subscribe
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack

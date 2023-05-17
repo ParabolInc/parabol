@@ -24,8 +24,7 @@ const createPaymentIntent: MutationResolvers['createPaymentIntent'] = async (
     r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
   }
 
-  const amount = MONTHLY_PRICE * 100 * activeUserCount
-  const paymentIntent = await manager.createPaymentIntent(customer.id, amount)
+  const paymentIntent = await manager.createSetupIntent(customer.id)
 
   const {client_secret: clientSecret} = paymentIntent
   const data = {clientSecret}
