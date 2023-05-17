@@ -5,6 +5,94 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.103.0 2023-May-05
+
+### Added
+
+- feat(retros-in-disguise): Prompt user to use org scope (#8120)
+- feat(retros-in-disguise):Create new poker template (#8143)
+- feat(retros-in-disguise): Poker details view (#8131)
+- chore(prompt-to-join): Allow to open add teammate dialog from the snackbar (#8136)
+- feat(suggest-groups): Add suggestGroups org feature flag (#8130)
+- feat: add mainCategory and illustrationUrl to MeetingTemplate (#8074)
+
+### Fixed
+
+- fix: subscribe to acceptInvite paylods in subscription (#8127)
+
+## 6.102.0 2023-May-3
+
+### Added
+
+- feat(retros-in-disguise): added create new activity view (#8069)
+- feat(rid): Edit Mode (#8108)
+- feat: add more dd tracing (#7774)
+- feat(templates): Share to org by default (#8129)
+
+### Changed
+
+- chore: remove User table from RethinkDB (#8115)
+- chore: bump webpack to secure version
+- chore: generate kysely schema in dev (#8114)
+- chore(security): bump vulnerable packages (#8135)
+
+### Fixed
+
+- **stripe**: do not update subscription quantity on enterprise annual plan (#8105)
+
+## 6.101.0 2023-Apr-26
+
+### Added
+
+- Throw and catch GraphQL errors on the client (#7932)
+- **retros-in-disguise**: Clone template (#8036)
+- Create new Github Action - Notify on bug assignment (#8058)
+- Create updateSAML mutation (#7685)
+- **checkout-flow**: handle credit card functionality (#8005)
+- **recurrence**: Use the prompt from the most recent meeting in the series (#8095)
+- **prompt-to-join**: Add request to join domain mutation (#8040)
+
+### Changed
+
+- refactor MeetingTemplate reads to PG (#8015)
+- refactor notifications to SDL (example PR) (#8018)
+- bump vm2 from 3.9.16 to 3.9.17 (#8078)
+
+### Fixed
+
+- Fix duplicate charge on failed payment (#8072)
+- Fix default standup name (#8079)
+
+## 6.100.0 2023-Apr-19
+
+### Added
+
+- **retros-in-disguise**: Retro Details Sidebar (#8008)
+- **metrics**: Add icloud.com as another generic domain (#8049)
+- user presence supports k8s (#7208)
+- **deps**: bump vm2 from 3.9.15 to 3.9.16 (#8035)
+- **prompt-to-join**: Add "would you like to join org" notification (#8003)
+- **retros-in-disguise**: Create retro template from retro categories view (#8027)
+- improve tailwind classes specificity (#8064)
+- **checkout-flow**: right drawer (#8004)
+
+### Fixed
+
+- ensure task exists (#8042)
+- ensure teamMembers exist in payload (#8043)
+- when user leaves team, do not remove estimate stages they created (#8045)
+- add args to dd-trace (#7766)
+- expire failed login attempts (#8038)
+- Rename makeTemplateDescription -> useTemplateDescription to satisfy hooks rules (#8066)
+- prevent repeating date in stanudps name (#8059)
+- remove tailwind selector strategy (#8068)
+
+## 6.99.1 2023-Apr-17
+
+### Fixed
+
+- More strict for sending email invites from temp email services
+
 ## 6.99.0 2023-Apr-12
 
 ### Added

@@ -1,5 +1,4 @@
 import {decode} from 'jsonwebtoken'
-import fetch from 'node-fetch'
 import GoogleManager from 'parabol-client/utils/GoogleManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {stringify} from 'querystring'

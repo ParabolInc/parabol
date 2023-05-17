@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
@@ -49,11 +48,6 @@ const updateTemplateScope = {
     const {name, teamId, orgId, scope} = template
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not a member of the team`}}
-    }
-    const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-    if (!teamMember.isLead) {
-      return {error: {message: `Not the team leader`}}
     }
 
     // VALIDATION

@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {

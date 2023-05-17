@@ -11,7 +11,7 @@ const Button = styled(PlainButton)({
 
 interface Props {
   label: string
-  onClick(): void
+  onClick(e: React.MouseEvent): void
 }
 
 const NotificationAction = (props: Props) => {

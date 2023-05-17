@@ -12,6 +12,7 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {TemplateDimensionItem_dimension$key} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import EditableTemplateDimension from './EditableTemplateDimension'
 import PokerTemplateScalePicker from './PokerTemplateScalePicker'
+import {PortalId} from '../../../hooks/usePortal'
 
 interface Props {
   isOwner: boolean
@@ -19,6 +20,8 @@ interface Props {
   dimension: TemplateDimensionItem_dimension$key
   dimensions: TemplateDimensionItem_dimensions$key
   dragProvided: DraggableProvided
+  parentId?: PortalId
+  readOnly?: boolean
 }
 
 interface StyledProps {
@@ -70,7 +73,9 @@ const TemplateDimensionItem = (props: Props) => {
     isDragging,
     isOwner,
     dimension: dimensionRef,
-    dimensions: dimensionsRef
+    dimensions: dimensionsRef,
+    parentId,
+    readOnly
   } = props
   const dimensions = useFragment(
     graphql`
@@ -96,7 +101,7 @@ const TemplateDimensionItem = (props: Props) => {
   const [isEditingDescription] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const canRemove = dimensions.length > 1 && isOwner
+  const canRemove = dimensions.length > 1 && isOwner && !readOnly
   const onMouseEnter = () => {
     setIsHover(true)
   }
@@ -120,7 +125,7 @@ const TemplateDimensionItem = (props: Props) => {
       {...dragProvided.draggableProps}
       isDragging={isDragging}
       isHover={isHover}
-      isOwner={isOwner}
+      isOwner={isOwner && !readOnly}
       onMouseOver={onMouseEnter}
       onMouseOut={onMouseLeave}
     >
@@ -129,7 +134,7 @@ const TemplateDimensionItem = (props: Props) => {
       </RemoveDimensionIcon>
       <DimensionAndDescription>
         <EditableTemplateDimension
-          isOwner={isOwner}
+          isOwner={isOwner && !readOnly}
           isEditingDescription={isEditingDescription}
           isHover={isHover}
           dimensionName={dimensionName}
@@ -137,7 +142,12 @@ const TemplateDimensionItem = (props: Props) => {
           dimensions={dimensions}
         />
       </DimensionAndDescription>
-      <PokerTemplateScalePicker dimension={dimension} isOwner={isOwner} />
+      <PokerTemplateScalePicker
+        dimension={dimension}
+        isOwner={isOwner}
+        readOnly={readOnly}
+        parentId={parentId}
+      />
     </DimensionItem>
   )
 }
