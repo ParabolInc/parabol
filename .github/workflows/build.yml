@@ -12,9 +12,9 @@ env:
 jobs:
   build-DBs:
     name: Build DBs
+    runs-on: ubuntu-4core
     permissions:
       contents: "read"
-      id-token: "write"
     services:
       postgres:
         image: postgres:12.10-alpine
@@ -62,6 +62,7 @@ jobs:
   build-app-cheap:
     name: Build App Cheap
     needs: build-DBs
+    runs-on: ubuntu-4core
     if: ${{ true }}
     steps:
       - name: Run yarn build
@@ -69,6 +70,7 @@ jobs:
   build-app-prod:
     name: Build App for Prod
     needs: build-DBs
+    runs-on: ubuntu-4core
     if: ${{ false }}
     steps:
       - name: Run yarn build --no-deps
@@ -76,6 +78,7 @@ jobs:
   build-docker:
     name: Build Docker Image
     needs: build-app-prod
+    runs-on: ubuntu-4core
     permissions:
       id-token: "write"
     steps:
