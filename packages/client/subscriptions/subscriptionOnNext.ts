@@ -15,6 +15,11 @@ const subscriptionOnNext =
     if (!payload) return
     const {fieldName} = payload
     const field = payload[fieldName]
+    if (!field) {
+      /* this happens when an onNextHandler exists
+      but there is no matching fragment in the GQL subscription query. */
+      console.error('Notification Subscription Payload received without field:', fieldName)
+    }
     const handler = onNextHandlers[fieldName]
     handler?.(field, {...router, atmosphere})
   }

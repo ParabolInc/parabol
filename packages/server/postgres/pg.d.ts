@@ -181,6 +181,15 @@ export interface MeetingTemplate {
   type: 'action' | 'poker' | 'retrospective' | 'teamPrompt'
   isStarter: Generated<boolean>
   isFree: Generated<boolean>
+  illustrationUrl: string
+  hideStartingAt: Timestamp | null
+  hideEndingAt: Timestamp | null
+  mainCategory: string
+}
+
+export interface MeetingTemplateUserFavorite {
+  userId: string
+  templateId: string
 }
 
 export interface OrganizationApprovedDomain {
@@ -336,6 +345,7 @@ export interface DB {
   JiraServerDimensionFieldMap: JiraServerDimensionFieldMap
   MeetingSeries: MeetingSeries
   MeetingTemplate: MeetingTemplate
+  MeetingTemplateUserFavorite: MeetingTemplateUserFavorite
   OrganizationApprovedDomain: OrganizationApprovedDomain
   OrganizationUserAudit: OrganizationUserAudit
   Poll: Poll

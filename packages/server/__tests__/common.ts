@@ -1,7 +1,6 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
 import faker from 'faker'
-import fetch from 'node-fetch'
 import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'

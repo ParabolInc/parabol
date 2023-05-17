@@ -1,5 +1,6 @@
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../../database/types/RetrospectivePrompt'
+import getTemplateIllustrationUrl from './getTemplateIllustrationUrl'
 
 interface TemplatePrompt {
   description: string
@@ -16,7 +17,13 @@ const makeRetroTemplates = (teamId: string, orgId: string, templateObj: Template
   const reflectPrompts: RetrospectivePrompt[] = []
   const templates: ReflectTemplate[] = []
   Object.entries(templateObj).forEach(([templateName, promptBase]) => {
-    const template = new ReflectTemplate({name: templateName, teamId, orgId})
+    const template = new ReflectTemplate({
+      name: templateName,
+      teamId,
+      orgId,
+      illustrationUrl: getTemplateIllustrationUrl('gladSadMadTemplate.png'),
+      mainCategory: 'retrospective'
+    })
 
     const prompts = promptBase.map(
       (prompt, idx) =>
