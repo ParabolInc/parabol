@@ -44,11 +44,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
+      - name: Set NODE_VERSION
+        run: |
+          NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
+          echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: $(jq -r -j '.engines.node|ltrimstr("^")' package.json)
+          node-version: ${{ env.NODE_VERSION }}
           # caches node_modules, no need for actions/cache@v3
           cache: "yarn"
       - run: yarn install --immutable
