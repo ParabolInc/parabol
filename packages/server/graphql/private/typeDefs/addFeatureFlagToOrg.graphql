@@ -4,6 +4,9 @@ A flag to give an individual organization super powers
 enum OrganizationFeatureFlagsEnum {
   teamsLimit
   SAMLUI
+  promptToJoinOrg
+  suggestGroups
+  noAISummary
 }
 
 extend type Mutation {

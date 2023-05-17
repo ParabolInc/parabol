@@ -79,23 +79,33 @@ export default class RedisLockQueue {
     }
   }
 
-  lock = async (maxWaitMs: number) => {
+  /**
+   * \returns true if a lock could be aquired within the timeout, false otherwise
+   */
+  tryLock = async (maxWaitMs: number) => {
     // "Infinity" loop
     for (let i = 0; i < 1000; i++) {
       const hasLock = await this.setLockAndValidateQueue()
       if (!hasLock) {
         this.timeoutId = setTimeout(() => this.unlock(), this.ttlMs)
         await this.markTaskAsRunning()
-        return
+        return true
       } else {
         await sleep(RedisLockQueue.checkAfterMs)
         this.waitTimeMs += RedisLockQueue.checkAfterMs
         if (this.waitTimeMs > maxWaitMs) {
           // Remove event from the queue
           await this.unlock()
-          throw new Error(`Could not achieve lock for ${this.queueKey} after ${maxWaitMs}ms`)
+          return false
         }
       }
+    }
+    return false
+  }
+
+  lock = async (maxWaitMs: number) => {
+    if (!(await this.tryLock(maxWaitMs))) {
+      throw new Error(`Could not achieve lock for ${this.queueKey} after ${maxWaitMs}ms`)
     }
   }
 }

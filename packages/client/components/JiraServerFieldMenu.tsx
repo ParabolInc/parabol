@@ -44,7 +44,7 @@ const JiraServerFieldMenu = (props: Props) => {
             ... on JiraServerIssue {
               __typename
               id
-              projectId
+              jiraProjectId: projectId
               issueType
               possibleEstimationFieldNames
             }
@@ -59,7 +59,7 @@ const JiraServerFieldMenu = (props: Props) => {
   if (task?.integration?.__typename !== 'JiraServerIssue') return null
 
   const {integration} = task
-  const {projectId, issueType, possibleEstimationFieldNames} = integration
+  const {jiraProjectId, issueType, possibleEstimationFieldNames} = integration
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
@@ -81,7 +81,7 @@ const JiraServerFieldMenu = (props: Props) => {
         dimensionName,
         fieldName,
         issueType,
-        projectId,
+        projectId: jiraProjectId,
         meetingId
       },
       {

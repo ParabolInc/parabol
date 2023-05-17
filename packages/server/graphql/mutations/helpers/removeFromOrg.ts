@@ -56,8 +56,7 @@ const removeFromOrg = async (
   ])
 
   // need to make sure the org doc is updated before adjusting this
-  const {joinedAt, newUserUntil, role} = organizationUser
-  const prorationDate = newUserUntil >= now ? new Date(joinedAt) : undefined
+  const {role} = organizationUser
   if (role === 'BILLING_LEADER') {
     const organization = await r.table('Organization').get(orgId).run()
     // if no other billing leader, promote the oldest
@@ -90,7 +89,7 @@ const removeFromOrg = async (
     }
   }
   try {
-    await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, dataLoader, {prorationDate})
+    await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, dataLoader)
   } catch (e) {
     console.log(e)
   }

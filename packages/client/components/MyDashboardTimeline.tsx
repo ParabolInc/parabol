@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
-import useNewFeatureSnackbar from '../hooks/useNewFeatureSnackbar'
 import {DashTimeline} from '../types/constEnums'
 import {MyDashboardTimelineQuery} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import ErrorBoundary from './ErrorBoundary'
@@ -45,7 +44,6 @@ const MyDashboardTimeline = (props: Props) => {
         viewer {
           ...TimelineSuggestedAction_viewer
           ...TimelineRightDrawer_viewer
-          ...useNewFeatureSnackbar_viewer
         }
         ...TimelineFeedList_query
       }
@@ -53,7 +51,6 @@ const MyDashboardTimeline = (props: Props) => {
     queryRef
   )
   const {viewer} = data
-  useNewFeatureSnackbar(viewer)
   useDocumentTitle('My History | Parabol', 'History')
   return (
     <FeedAndDrawer>

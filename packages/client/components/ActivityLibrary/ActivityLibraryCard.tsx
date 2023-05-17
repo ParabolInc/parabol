@@ -1,21 +1,17 @@
+import clsx from 'clsx'
 import React from 'react'
+import {ActivityCard, ActivityCardProps} from './ActivityCard'
 
-interface Props {
-  name: string
-  type: string
-  teamName: string
-}
+export const ActivityLibraryCard = (props: ActivityCardProps) => {
+  const {className, ...rest} = props
 
-const ActivityLibraryCard = (props: Props) => {
-  const {type, name, teamName} = props
   return (
-    <div className='m-2 border-solid p-2'>
-      <div>
-        {type} on team {teamName}
-      </div>
-      <div className='text-lg font-bold'>{name}</div>
-    </div>
+    <ActivityCard
+      className={clsx(
+        'group transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-md motion-reduce:transition-none',
+        className
+      )}
+      {...rest}
+    />
   )
 }
-
-export default ActivityLibraryCard

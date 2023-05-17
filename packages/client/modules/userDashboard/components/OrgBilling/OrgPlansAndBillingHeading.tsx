@@ -2,8 +2,9 @@ import styled from '@emotion/styled'
 import {Article} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import {upperFirst} from '../../../../utils/upperFirst'
@@ -16,7 +17,7 @@ const Wrapper = styled('div')({
   lineHeight: '24px',
   padding: '16px 0px',
   flexWrap: 'wrap',
-  width: ElementWidth.PANEL_WIDTH,
+  maxWidth: ElementWidth.PANEL_WIDTH,
   position: 'relative'
 })
 
@@ -67,14 +68,27 @@ const OrgPlansAndBillingHeading = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment OrgPlansAndBillingHeading_organization on Organization {
+        id
         name
         tier
+        showDrawer
       }
     `,
     organizationRef
   )
-  const {name, tier} = organization
+  const atmosphere = useAtmosphere()
+  const {id: orgId, name, tier} = organization
   const tierName = upperFirst(tier)
+
+  const handleClick = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const org = store.get(orgId)
+      if (!org) return
+      const showDrawer = org.getValue('showDrawer')
+      org.setValue(!showDrawer, 'showDrawer')
+    })
+  }
+
   return (
     <Wrapper>
       <Title>{'Plans & Billing'}</Title>
@@ -83,7 +97,7 @@ const OrgPlansAndBillingHeading = (props: Props) => {
         <Subtitle>{` is currently on the `}</Subtitle>
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
-      <StyledButton>
+      <StyledButton onClick={handleClick}>
         <StyledIcon>
           <Article />
         </StyledIcon>

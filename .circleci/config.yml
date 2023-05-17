@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   production_postgresql_backup:
     docker:
-      - image: cimg/node:18.14.2
+      - image: cimg/node:18.16.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -24,7 +24,7 @@ jobs:
           name: DevOps checkout
           command: |
             mkdir -p ~/.ssh
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            echo "github.com ssh-rsa ${GITHUB_RSA_HOST_KEY}" >> ~/.ssh/known_hosts
             git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Backup
@@ -37,7 +37,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` PostgreSQL backup pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
   staging_postgresql_restore:
     docker:
-      - image: cimg/node:18.14.2
+      - image: cimg/node:18.16.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -60,7 +60,7 @@ jobs:
           name: DevOps checkout
           command: |
             mkdir -p ~/.ssh
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            echo "github.com ssh-rsa ${GITHUB_RSA_HOST_KEY}" >> ~/.ssh/known_hosts
             git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Restore to Staging
@@ -73,7 +73,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` PostgreSQL data restoration pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
   production_rethinkdb_backup:
     docker:
-      - image: cimg/node:18.14.2
+      - image: cimg/node:18.16.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -95,7 +95,7 @@ jobs:
           name: DevOps checkout
           command: |
             mkdir -p ~/.ssh
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            echo "github.com ssh-rsa ${GITHUB_RSA_HOST_KEY}" >> ~/.ssh/known_hosts
             git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Backup
@@ -111,7 +111,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` RethinkDB backup done"}' $SLACK_DEVOPS_URL
   staging_rethinkdb_restore:
     docker:
-      - image: cimg/node:18.14.2
+      - image: cimg/node:18.16.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -132,7 +132,7 @@ jobs:
           name: DevOps checkout
           command: |
             mkdir -p ~/.ssh
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            echo "github.com ssh-rsa ${GITHUB_RSA_HOST_KEY}" >> ~/.ssh/known_hosts
             git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Assure folder for temporary backups exists
@@ -165,7 +165,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` RethinkDB data restoration done."}' $SLACK_DEVOPS_URL
   build:
     docker:
-      - image: cimg/node:18.14.2
+      - image: cimg/node:18.16.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
         environment:
@@ -219,7 +219,7 @@ jobs:
           name: DevOps checkout
           command: |
             mkdir -p ~/.ssh
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            echo "github.com ssh-rsa ${GITHUB_RSA_HOST_KEY}" >> ~/.ssh/known_hosts
             git clone --depth 1 $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Build Databases
@@ -229,6 +229,8 @@ jobs:
             yarn db:migrate
             yarn pg:migrate up
             yarn pg:build
+            # Generate types for PG to later verify the checked in types are current
+            yarn pg:generate
       - run:
           name: Build Assets
           # Use the staging env to run webpack (NODE_ENV=production)
@@ -240,6 +242,9 @@ jobs:
               cp $DEVOPS_WORKDIR/environments/local .env
               yarn build --deploy
             fi
+      - run:
+          name: Verify source is clean
+          command: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
       - run:
           name: Push Assets to Databases
           # Use the test env so the ports match up (NODE_ENV=testing)

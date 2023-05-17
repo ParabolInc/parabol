@@ -1,6 +1,5 @@
 import cheerio from 'cheerio'
 import fs from 'fs'
-import fetch from 'node-fetch'
 import path from 'path'
 import {promisify} from 'util'
 import generateUID from '../generateUID'

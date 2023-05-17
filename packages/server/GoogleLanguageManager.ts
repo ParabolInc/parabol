@@ -1,5 +1,4 @@
 import {sign} from 'jsonwebtoken'
-import fetch from 'node-fetch'
 import sendToSentry from './utils/sendToSentry'
 
 export interface SyntaxTextToken {
@@ -73,11 +72,14 @@ interface CloudKey {
   privateKey: string
 }
 
-export type GoogleErrorResponse = [
-  {
-    error: GoogleError
-  }
-]
+export type GoogleErrorResponse = {
+  error: GoogleError
+}
+
+export type GoogleLanguageResponse =
+  | GoogleAnalyzedSyntax
+  | GoogleAnalyzedEntities
+  | GoogleAnalyzedSentiment
 
 const MAX_REQUEST_TIME = 10000
 
@@ -112,15 +114,13 @@ export default class GoogleLanguageManager {
 
   async post<T>(endpoint: string, content: string): Promise<T> {
     if (!this.jwt) {
-      return [
-        {
-          error: {
-            code: 500,
-            message: 'No JWT provided',
-            status: 'GOOGLE_CLOUD_PRIVATE_KEY is invalid in the .env'
-          }
+      return {
+        error: {
+          code: 500,
+          message: 'No JWT provided',
+          status: 'GOOGLE_CLOUD_PRIVATE_KEY is invalid in the .env'
         }
-      ] as any
+      } as any
     }
     const controller = new AbortController()
     const {signal} = controller as any
@@ -149,15 +149,13 @@ export default class GoogleLanguageManager {
       const error = e instanceof Error ? e : new Error('Failed to fetch google language apis')
       sendToSentry(error)
       clearTimeout(timeout)
-      return [
-        {
-          error: {
-            code: 500,
-            message: error.message,
-            status: 'Google is down'
-          }
+      return {
+        error: {
+          code: 500,
+          message: error.message,
+          status: 'Google is down'
         }
-      ] as any
+      } as any
     }
   }
 

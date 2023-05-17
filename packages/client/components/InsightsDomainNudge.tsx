@@ -43,7 +43,7 @@ const InsightsDomainNudge = (props: Props) => {
         id
         suggestedTier
         tier
-        viewerOrganizations {
+        organizations {
           ...LimitExceededWarning_organization
           id
           name
@@ -60,8 +60,8 @@ const InsightsDomainNudge = (props: Props) => {
   const atmosphere = useAtmosphere()
   const history = useHistory()
   const {togglePortal, closePortal, modalPortal} = useModal()
-  const {id: domainId, suggestedTier, tier, viewerOrganizations} = domain
-  const starterOrganizations = viewerOrganizations
+  const {id: domainId, suggestedTier, tier, organizations} = domain
+  const starterOrganizations = organizations
     .filter((org) => org.tier === 'starter')
     .sort((a, b) => (a.orgUserCount > b.orgUserCount ? -1 : 1))
   const [biggestOrganization] = starterOrganizations
@@ -69,7 +69,7 @@ const InsightsDomainNudge = (props: Props) => {
   const {id: biggestOrganizationId, name: organizationName, orgUserCount} = biggestOrganization
   const suggestTeam = suggestedTier === 'team' && tier === 'starter'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
-  const toBeLockedOrg = viewerOrganizations.find(({scheduledLockAt}) => scheduledLockAt)
+  const toBeLockedOrg = organizations.find(({scheduledLockAt}) => scheduledLockAt)
   const showNudge = suggestTeam || suggestEnterprise || toBeLockedOrg
   const CTACopy = suggestTeam || toBeLockedOrg ? `Upgrade ${organizationName}` : 'Contact Us'
   const CTAType = suggestTeam ? 'team' : 'enterprise'

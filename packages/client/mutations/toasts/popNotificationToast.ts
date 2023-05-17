@@ -11,6 +11,8 @@ import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
+import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
+import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
@@ -19,7 +21,9 @@ const typePicker: Partial<
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
   RESPONSE_REPLIED: mapResponseRepliedToToast,
   TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
-  TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast
+  TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
+  PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
+  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
 }
 
 graphql`
@@ -32,6 +36,8 @@ graphql`
       ...mapResponseRepliedToToast_notification @relay(mask: false)
       ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
       ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
+      ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
+      ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
     }
   }
 `

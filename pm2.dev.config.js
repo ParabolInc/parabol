@@ -41,16 +41,12 @@ module.exports = {
       autorestart: false
     },
     {
-      name: 'GraphQL Schema Updater',
-      script: 'scripts/runSchemaUpdater.js',
-      watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
-    },
-    {
       name: 'Relay Compiler',
-      script: 'scripts/compileRelay.js',
-      args: '--watch',
+      script: 'scripts/relayWatch.js',
       watch: [
         'packages/server/graphql/public/schema.graphql',
+        'packages/server/graphql/public/typeDefs',
+        'packages/server/graphql/private/typeDefs',
         'packages/client/clientSchema.graphql'
       ]
     },
@@ -62,6 +58,11 @@ module.exports = {
       // SIGINT won't kill this process in fork mode >:-(
       // instances: 1 forces cluster mode
       instances: 1
+    },
+    {
+      name: 'Kysely Codegen',
+      script: 'yarn pg:generate',
+      autorestart: false
     },
     {
       name: 'PG Typed',

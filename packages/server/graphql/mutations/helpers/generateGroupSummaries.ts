@@ -14,7 +14,8 @@ const generateGroupSummaries = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  if (!canAccessAISummary(team, facilitator.featureFlags)) return
+  const isAISummaryAccessible = await canAccessAISummary(team, facilitator.featureFlags, dataLoader)
+  if (!isAISummaryAccessible) return
   const [reflections, reflectionGroups] = await Promise.all([
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)

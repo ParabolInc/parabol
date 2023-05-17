@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
-  static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
+  static PARABOL_TEAM_600 = 'parabol-pro-600' // $6/seat/mo
   static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {apiVersion: '2020-08-27'})
@@ -15,6 +15,10 @@ export default class StripeManager {
       console.log('StripeWebhookError:', e)
       return null
     }
+  }
+
+  async attachPaymentToCustomer(customerId: string, paymentMethodId: string) {
+    return this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
   }
 
   async createCustomer(orgId: string, email: string, source?: string) {
@@ -50,29 +54,29 @@ export default class StripeManager {
     })
   }
 
-  async createPaymentIntent(amount: number) {
-    return this.stripe.paymentIntents.create({
-      amount,
-      currency: 'usd',
-      automatic_payment_methods: {
-        // TODO: change this when we're handling webhooks for selected payments
-        enabled: true
-      }
+  async createSetupIntent() {
+    return this.stripe.setupIntents.create({
+      payment_method_types: ['card']
     })
   }
 
-  async createProSubscription(customerId: string, orgId: string, quantity: number) {
+  async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
       // https://stripe.com/docs/billing/testing
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
+      proration_behavior: 'none',
+      // Use this for testing invoice.created hooks
+      // run `yarn ultrahook` and subscribe
+      // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
+      // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
       metadata: {
         orgId
       },
       items: [
         {
-          plan: StripeManager.PARABOL_PRO_600,
+          plan: StripeManager.PARABOL_TEAM_600,
           quantity
         }
       ]
@@ -81,6 +85,10 @@ export default class StripeManager {
 
   async deleteSubscription(stripeSubscriptionId: string) {
     return this.stripe.subscriptions.del(stripeSubscriptionId)
+  }
+
+  async getCustomersByEmail(email: string) {
+    return this.stripe.customers.list({email})
   }
 
   async getSubscriptionItem(subscriptionId: string) {
@@ -154,14 +162,16 @@ export default class StripeManager {
     return this.stripe.customers.update(customerId, {source})
   }
 
-  async updateSubscriptionItemQuantity(
-    stripeSubscriptionItemId: string,
-    quantity: number,
-    prorationDate?: number
-  ) {
+  async updateDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
+    return this.stripe.customers.update(customerId, {
+      invoice_settings: {default_payment_method: paymentMethodId}
+    })
+  }
+
+  async updateSubscriptionItemQuantity(stripeSubscriptionItemId: string, quantity: number) {
     return this.stripe.subscriptionItems.update(stripeSubscriptionItemId, {
       quantity,
-      proration_date: prorationDate
+      proration_behavior: 'none'
     })
   }
 }

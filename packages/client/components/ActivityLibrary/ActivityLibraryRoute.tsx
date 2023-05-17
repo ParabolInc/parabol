@@ -6,7 +6,7 @@ import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {renderLoader} from '../../utils/relay/renderLoader'
 import {ActivityLibrary} from './ActivityLibrary'
 
-const ActivityLibaryRoute = () => {
+const ActivityLibraryRoute = () => {
   const queryRef = useQueryLoaderNow<ActivityLibraryQuery>(activityLibraryQuery)
 
   return (
@@ -16,4 +16,4 @@ const ActivityLibaryRoute = () => {
   )
 }
 
-export default ActivityLibaryRoute
+export default ActivityLibraryRoute

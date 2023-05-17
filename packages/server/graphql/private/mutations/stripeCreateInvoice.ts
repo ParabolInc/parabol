@@ -1,5 +1,6 @@
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
+import updateSubscriptionQuantity from '../../../billing/helpers/updateSubscriptionQuantity'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
@@ -16,12 +17,24 @@ const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
 
   // RESOLUTION
   const manager = getStripeManager()
-  const stripeLineItems = await fetchAllLines(invoiceId)
-  const invoice = await manager.retrieveInvoice(invoiceId)
+  const [stripeLineItems, invoice] = await Promise.all([
+    fetchAllLines(invoiceId),
+    manager.retrieveInvoice(invoiceId)
+  ])
+  const stripeCustomer = await manager.retrieveCustomer(invoice.customer as string)
+  if (stripeCustomer.deleted) {
+    throw new Error('Customer was deleted')
+  }
   const {
     metadata: {orgId}
-  } = await manager.retrieveCustomer(invoice.customer as string)
+  } = stripeCustomer
   if (!orgId) throw new Error(`orgId not found on metadata for invoice ${invoiceId}`)
+
+  const isTierModeVolume = stripeLineItems.every(({plan}) => plan?.tiers_mode === 'volume')
+  if (!isTierModeVolume) {
+    await updateSubscriptionQuantity(orgId, dataLoader, true)
+  }
+
   await Promise.all([
     generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader),
     manager.updateInvoice(invoiceId, orgId)

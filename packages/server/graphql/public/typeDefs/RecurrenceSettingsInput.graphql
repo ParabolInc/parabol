@@ -1,0 +1,14 @@
+"""
+Recurrence settings for a meeting series, used to create or update a meeting series
+"""
+input RecurrenceSettingsInput {
+  """
+  The recurrence rule for the meeting series in RRULE format
+  """
+  rrule: RRule
+
+  """
+  Meeting series name, by default "Standup"
+  """
+  name: String
+}

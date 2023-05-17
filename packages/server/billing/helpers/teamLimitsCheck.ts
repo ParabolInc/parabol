@@ -1,7 +1,8 @@
 import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
+// Uncomment for easier testing
+// import { ThresholdTest as Threshold } from "~/types/constEnums";
 import {r} from 'rethinkdb-ts'
-import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
 import Organization from '../../database/types/Organization'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
@@ -13,16 +14,9 @@ import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appe
 import sendToSentry from '../../utils/sendToSentry'
 import removeTeamsLimitObjects from './removeTeamsLimitObjects'
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
+import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
+import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
 import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
-
-// Uncomment for easier testing
-// const enum Threshold {
-//   MAX_STARTER_TIER_TEAMS = 0,
-//   MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
-//   MIN_STICKY_TEAM_MEETINGS = 1,
-//   STARTER_TIER_LOCK_AFTER_DAYS = 0,
-//   STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
-// }
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
   await r
@@ -60,59 +54,15 @@ const sendWebsiteNotifications = async (
 }
 
 // Warning: the function might be expensive
-const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
-  const teamIds = teams.map(({id}) => id)
-
+const isLimitExceeded = async (orgId: string) => {
+  const teamIds = await getTeamIdsByOrgIds([orgId])
   if (teamIds.length <= Threshold.MAX_STARTER_TIER_TEAMS) {
     return false
   }
 
-  // Sticky team is the team that completed 3 meetings with more than 1 attendee
-  // and have had at least 1 meeting in the last 30 days
-  // Warning: the query is very expensive
-  return r
-    .table('NewMeeting')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter((row: RDatum) => row('endedAt').default(null).ne(null))('id')
-    .coerceTo('array')
-    .distinct()
-    .do((endedMeetingIds: RValue) => {
-      return r
-        .table('MeetingMember')
-        .getAll(r.args(endedMeetingIds), {index: 'meetingId'})
-        .group('teamId', 'meetingId')
-        .count()
-        .ungroup()
-        .map((row) => ({
-          teamId: row('group')(0),
-          meetingId: row('group')(1),
-          meetingMembers: row('reduction')
-        }))
-        .filter((row: RDatum) =>
-          row('meetingMembers').ge(Threshold.MIN_STICKY_TEAM_MEETING_ATTENDEES)
-        )
-        .group('teamId')
-        .ungroup()
-        .filter((row) => row('reduction').count().ge(Threshold.MIN_STICKY_TEAM_MEETINGS))
-        .filter((row) => {
-          const meetingIds = row('reduction')('meetingId')
-          return r
-            .table('NewMeeting')
-            .getAll(r.args(meetingIds))
-            .filter((meeting: RValue) => {
-              return meeting('endedAt').during(
-                r.now().sub(Threshold.STICKY_TEAM_LAST_MEETING_TIMEFRAME),
-                r.now()
-              )
-            })
-            .count()
-            .gt(0)
-        })
-        .count()
-        .gt(Threshold.MAX_STARTER_TIER_TEAMS)
-    })
-    .run()
+  const activeTeamCount = await getActiveTeamCountByTeamIds(teamIds)
+
+  return activeTeamCount >= Threshold.MAX_STARTER_TIER_TEAMS
 }
 
 // Warning: the function might be expensive
@@ -123,7 +73,7 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
     return
   }
 
-  if (!(await isLimitExceeded(orgId, dataLoader))) {
+  if (!(await isLimitExceeded(orgId))) {
     const billingLeadersIds = await dataLoader.get('billingLeadersIdsByOrgId').load(orgId)
     await Promise.all([
       r
@@ -160,7 +110,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   // if an org is using a free provider, e.g. gmail.com, we can't show them usage stats, so don't send notifications/emails directing them there for now. Issue to fix this here: https://github.com/ParabolInc/parabol/issues/7723
   if (!organization.activeDomain) return
 
-  if (!(await isLimitExceeded(orgId, dataLoader))) return
+  if (!(await isLimitExceeded(orgId))) return
 
   const hasActiveDeals = await domainHasActiveDeals(organization.activeDomain)
 

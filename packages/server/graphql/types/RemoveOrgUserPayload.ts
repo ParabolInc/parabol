@@ -10,7 +10,6 @@ import {
   resolveTeams,
   resolveUser
 } from '../resolvers'
-import NotifyKickedOut from './NotifyKickedOut'
 import Organization from './Organization'
 import OrganizationUser from './OrganizationUser'
 import StandardMutationError from './StandardMutationError'
@@ -51,7 +50,14 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: resolveUser
     },
     kickOutNotifications: {
-      type: new GraphQLList(new GraphQLNonNull(NotifyKickedOut)),
+      type: new GraphQLList(
+        new GraphQLNonNull(
+          new GraphQLObjectType({
+            name: 'NotifyKickedOut',
+            fields: {}
+          })
+        )
+      ),
       description: 'The notifications for each team the user was kicked out of',
       resolve: async ({kickOutNotificationIds}, _args: unknown, {authToken, dataLoader}) => {
         if (!kickOutNotificationIds) return null

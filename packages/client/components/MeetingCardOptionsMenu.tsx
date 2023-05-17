@@ -26,6 +26,7 @@ interface Props {
   menuProps: MenuProps
   popTooltip: () => void
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
+  openEndRecurringMeetingModal: () => void
 }
 
 const StyledIcon = styled('div')({
@@ -83,7 +84,7 @@ const query = graphql`
 `
 
 const MeetingCardOptionsMenu = (props: Props) => {
-  const {menuProps, popTooltip, queryRef} = props
+  const {menuProps, popTooltip, queryRef, openEndRecurringMeetingModal} = props
   const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef)
   const {viewer} = data
   const {id: viewerId, team, meeting} = viewer
@@ -158,11 +159,15 @@ const MeetingCardOptionsMenu = (props: Props) => {
           }
           onClick={() => {
             closePortal()
-            EndMeetingMutationLookup[meetingType]?.(
-              atmosphere,
-              {meetingId},
-              {onError, onCompleted, history}
-            )
+            if (!hasRecurrenceEnabled) {
+              EndMeetingMutationLookup[meetingType]?.(
+                atmosphere,
+                {meetingId},
+                {onError, onCompleted, history}
+              )
+            } else {
+              openEndRecurringMeetingModal()
+            }
           }}
         />
       )}

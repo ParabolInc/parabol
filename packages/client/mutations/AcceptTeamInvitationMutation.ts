@@ -111,15 +111,19 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<
   if (!team) return
   handleAddTeams(team, store)
 
-  // the viewer could have requested the meeting & had it return null
-  const activeMeetings = team.getLinkedRecords('activeMeetings')
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (viewer) {
+    // if they checked canAccess before, we need to update it
+    viewer.setValue(true, 'canAccess', {entity: 'Team', id: team.getValue('id')})
+
+    // the viewer could have requested the meeting & had it return null
     const requestedMeeting = payload.getLinkedRecord('meeting')
     if (requestedMeeting) {
       const requestedMeetingId = requestedMeeting.getValue('id')
       viewer.setLinkedRecord(requestedMeeting, 'meeting', {meetingId: requestedMeetingId})
+      viewer.setValue(true, 'canAccess', {entity: 'Meeting', id: requestedMeetingId})
     }
+    const activeMeetings = team.getLinkedRecords('activeMeetings')
     activeMeetings.forEach((activeMeeting) => {
       const meetingId = activeMeeting.getValue('id')
       viewer.setLinkedRecord(activeMeeting, 'meeting', {meetingId})

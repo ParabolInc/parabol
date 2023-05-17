@@ -27,7 +27,7 @@ import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
   const [template, dimensions] = await Promise.all([
-    dataLoader.get('meetingTemplates').load(templateId),
+    dataLoader.get('meetingTemplates').loadNonNull(templateId),
     dataLoader.get('templateDimensionsByTemplateId').load(templateId)
   ])
   const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)

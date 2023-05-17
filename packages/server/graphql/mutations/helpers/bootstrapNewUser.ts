@@ -10,16 +10,25 @@ import insertUser from '../../../postgres/queries/insertUser'
 import IUser from '../../../postgres/types/IUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import segmentIo from '../../../utils/segmentIo'
-import {UserFeatureFlagsResolvers} from '../../private/resolverTypes'
-import {UserFeatureFlags, UserFlagEnum} from '../../public/resolverTypes'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
 import isPatientZero from './isPatientZero'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
+import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
+import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
-  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
+  const {
+    id: userId,
+    createdAt,
+    preferredName,
+    email,
+    featureFlags,
+    tier,
+    segmentId,
+    identities
+  } = newUser
   const domain = email.split('@')[1]
   const [isPatient0, usersWithDomain] = await Promise.all([
     isPatientZero(domain),
@@ -66,7 +75,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     const validNewTeam = {
       id: teamId,
       orgId,
-      name: `${preferredName}’s Team`,
+      name: makeDefaultTeamName(teamId),
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`
@@ -92,6 +101,12 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
       .run()
   }
   analytics.accountCreated(userId, !isOrganic, isPatient0)
+
+  const emailIsVerified = identities[0]?.isEmailVerified
+
+  if (emailIsVerified && isOrganic && tier !== 'enterprise') {
+    sendPromptToJoinOrg(email, userId)
+  }
 
   return new AuthToken({sub: userId, tms})
 }
