@@ -1,4 +1,4 @@
-import {r} from 'rethinkdb-ts'
+import {r, RValue} from 'rethinkdb-ts'
 import {ParabolR} from '../../database/rethinkDriver'
 
 const connectRethinkDB = async () => {
@@ -22,13 +22,15 @@ export async function down() {
     .table('NewMeeting')
     .filter({meetingType: 'retrospective'})
     .filter(r.row('phases').contains((row) => row('phaseType').eq('TEAM_HEALTH')))
-    .update({
-      phases: r.row('phases').difference(r.row('phases').filter({phaseType: 'TEAM_HEALTH'}))
-    })
+    .update((row: RValue) => ({
+      phases: row('phases').difference(row('phases').filter({phaseType: 'TEAM_HEALTH'}))
+    }))
+    .run()
   await r
     .table('MeetingSettings')
     .filter({meetingType: 'retrospective'})
     .filter(r.row('phaseTypes').contains('TEAM_HEALTH'))
     .update({phaseTypes: r.row('phaseTypes').difference(['TEAM_HEALTH'])})
+    .run()
   await r.getPoolMaster()?.drain()
 }
