@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {Link} from 'react-router-dom'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -16,6 +17,7 @@ import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettin
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
+import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',
@@ -94,6 +96,12 @@ const TeamPromptTopBar = (props: Props) => {
         id
         name
         facilitatorUserId
+        prevMeeting {
+          id
+        }
+        nextMeeting {
+          id
+        }
         meetingSeries {
           id
           cancelledAt
@@ -114,7 +122,14 @@ const TeamPromptTopBar = (props: Props) => {
     useModal({id: 'endRecurringMeetingModal'})
 
   const {viewerId} = atmosphere
-  const {id: meetingId, name: meetingName, facilitatorUserId, meetingSeries} = meeting
+  const {
+    id: meetingId,
+    name: meetingName,
+    facilitatorUserId,
+    meetingSeries,
+    prevMeeting,
+    nextMeeting
+  } = meeting
   const isFacilitator = viewerId === facilitatorUserId
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
@@ -124,22 +139,36 @@ const TeamPromptTopBar = (props: Props) => {
       <MeetingTitleSection>
         <TeamPromptLogoBlock />
         <div>
-          {isFacilitator ? (
-            <EditableTeamPromptHeaderTitle
-              error={error?.message}
-              handleSubmit={handleSubmit}
-              initialValue={meetingName}
-              isWrap
-              maxLength={50}
-              validate={validate}
-              placeholder={'Best Meeting Ever!'}
-            />
-          ) : (
-            <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
-          )}
-          {isRecurrenceEnabled && (
-            <HumanReadableRecurrenceRule recurrenceRule={meetingSeries.recurrenceRule} />
-          )}
+          <div className='flex w-max gap-1'>
+            {isRecurrenceEnabled && prevMeeting && (
+              <Link className='text-slate-600' to={`/meet/${prevMeeting.id}`}>
+                <KeyboardArrowLeft />
+              </Link>
+            )}
+            <div>
+              {isFacilitator ? (
+                <EditableTeamPromptHeaderTitle
+                  error={error?.message}
+                  handleSubmit={handleSubmit}
+                  initialValue={meetingName}
+                  isWrap
+                  maxLength={50}
+                  validate={validate}
+                  placeholder={'Best Meeting Ever!'}
+                />
+              ) : (
+                <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+              )}
+              {isRecurrenceEnabled && (
+                <HumanReadableRecurrenceRule recurrenceRule={meetingSeries.recurrenceRule} />
+              )}
+            </div>
+            {isRecurrenceEnabled && nextMeeting && (
+              <Link className='text-slate-600' to={`/meet/${nextMeeting.id}`}>
+                <KeyboardArrowRight />
+              </Link>
+            )}
+          </div>
         </div>
       </MeetingTitleSection>
       {isDesktop && (

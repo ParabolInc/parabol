@@ -229,6 +229,8 @@ jobs:
             yarn db:migrate
             yarn pg:migrate up
             yarn pg:build
+            # Generate types for PG to later verify the checked in types are current
+            yarn pg:generate
       - run:
           name: Build Assets
           # Use the staging env to run webpack (NODE_ENV=production)
@@ -240,6 +242,9 @@ jobs:
               cp $DEVOPS_WORKDIR/environments/local .env
               yarn build --deploy
             fi
+      - run:
+          name: Verify source is clean
+          command: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
       - run:
           name: Push Assets to Databases
           # Use the test env so the ports match up (NODE_ENV=testing)

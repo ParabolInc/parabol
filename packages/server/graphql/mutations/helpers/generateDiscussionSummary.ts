@@ -17,7 +17,8 @@ const generateDiscussionSummary = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  if (!canAccessAISummary(team, facilitator.featureFlags)) return
+  const isAISummaryAccessible = await canAccessAISummary(team, facilitator.featureFlags, dataLoader)
+  if (!isAISummaryAccessible) return
   const [comments, tasks] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').load(discussionId),
     dataLoader.get('tasksByDiscussionId').load(discussionId)

@@ -1,6 +1,5 @@
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import {JSDOM} from 'jsdom'
-import fetch from 'node-fetch'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
 import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema'
@@ -38,7 +37,8 @@ const updateUserProfile = async (
 
   if (validUpdatedUser.picture && validUpdatedUser.picture.endsWith('.svg')) {
     const res = await fetch(validUpdatedUser.picture)
-    const buffer = await res.buffer()
+    const arrayBuffer = await res.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
     const {window} = new JSDOM()
     const sanitaryPicture = await sanitizeSVG(buffer, window as any)
     if (!sanitaryPicture) {

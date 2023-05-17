@@ -53,6 +53,7 @@ const ScaleValueEditor = styled('div')({
   flexDirection: 'column',
   overflow: 'hidden',
   maxWidth: 520,
+  paddingBottom: '4px',
   width: '100%'
 })
 
