@@ -87,10 +87,7 @@ jobs:
           node-version: "${{ env.NODE_VERSION }}"
           # caches node_modules, no need for actions/cache@v3
           cache: "yarn"
-
-      - name: Yarn install
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile --immutable && yarn cache clean
+        run: yarn install --immutable
 
       - name: Build the application
         run: |
