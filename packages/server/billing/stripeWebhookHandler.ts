@@ -18,14 +18,6 @@ const eventLookup = {
         }
       `
     },
-    payment_succeeded: {
-      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
-      query: `
-        mutation StripeInvoicePaid($invoiceId: ID!) {
-          stripeInvoicePaid(invoiceId: $invoiceId)
-        }
-      `
-    },
     payment_failed: {
       getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `

@@ -34,7 +34,7 @@ const VerifyEmailMutation: StandardMutation<TSignUpWithPasswordMutation, History
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, verifyEmail} = res
       const authToken = acceptTeamInvitation?.authToken ?? verifyEmail.authToken
-      onCompleted(res, errors)
+      onCompleted({verifyEmail}, errors)
       if (authToken) {
         handleSuccessfulLogin(verifyEmail)
         atmosphere.setAuthToken(authToken)
