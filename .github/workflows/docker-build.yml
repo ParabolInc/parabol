@@ -87,7 +87,7 @@ jobs:
           node-version: "${{ env.NODE_VERSION }}"
           # caches node_modules, no need for actions/cache@v3
           cache: "yarn"
-        run: yarn install --immutable
+      - run: yarn install --immutable
 
       - name: Build the application
         run: |
