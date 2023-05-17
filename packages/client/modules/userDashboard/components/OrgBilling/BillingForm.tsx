@@ -85,7 +85,7 @@ const BillingForm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
+  const {onError} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

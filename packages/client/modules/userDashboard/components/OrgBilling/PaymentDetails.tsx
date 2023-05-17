@@ -10,11 +10,11 @@ import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
+import CreateSetupIntentMutation from '../../../../mutations/CreateSetupIntentMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import {CompletedHandler} from '../../../../types/relayMutations'
-import {CreatePaymentIntentMutation as TCreatePaymentIntentMutation} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
+import {CreateSetupIntentMutation as TCreateSetupIntentMutation} from '../../../../__generated__/CreateSetupIntentMutation.graphql'
 import BillingForm from './BillingForm'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 
@@ -97,36 +97,6 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
-const stripeElementOptions = {
-  appearance: {
-    theme: 'stripe',
-    rules: {
-      '.Input': {
-        border: 'none',
-        borderBottom: `1px solid ${PALETTE.SLATE_400}`
-      }
-    },
-    variables: {
-      colorBackground: PALETTE.SLATE_200,
-      border: 'none',
-      borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-      color: PALETTE.SLATE_800,
-      fontSize: 16,
-      marginBottom: 16,
-      padding: '12px 16px',
-      outline: 0
-    }
-  } as const,
-  loader: 'never' as const,
-  fonts: [
-    {
-      family: 'IBM Plex Sans',
-      src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
-      weight: '400'
-    }
-  ]
-}
-
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
@@ -157,14 +127,14 @@ const PaymentDetails = (props: Props) => {
 
   useEffect(() => {
     if (tier !== 'starter') return
-    const handleCompleted: CompletedHandler<TCreatePaymentIntentMutation['response']> = (res) => {
-      const {createPaymentIntent} = res
-      const {clientSecret} = createPaymentIntent
+    const handleCompleted: CompletedHandler<TCreateSetupIntentMutation['response']> = (res) => {
+      const {createSetupIntent} = res
+      const {clientSecret} = createSetupIntent
       if (clientSecret) {
         setClientSecret(clientSecret)
       }
     }
-    CreatePaymentIntentMutation(atmosphere, {orgId}, {onError, onCompleted: handleCompleted})
+    CreateSetupIntentMutation(atmosphere, {orgId}, {onError, onCompleted: handleCompleted})
   }, [])
 
   if (!clientSecret.length) return null
@@ -176,8 +146,7 @@ const PaymentDetails = (props: Props) => {
           <Content>
             <Elements
               options={{
-                clientSecret,
-                ...stripeElementOptions
+                clientSecret
               }}
               stripe={stripePromise}
             >
