@@ -10,6 +10,8 @@
     "lib": ["esnext", "dom"],
     "types": ["node"]
   },
-  "files": ["client.tsx", "components/ActivityLibrary/ActivityDetails/components/DetailsBadge.tsx"],
+  "files": [
+    "client.tsx",
+  ],
   "exclude": ["serviceWorker", "**/node_modules"]
 }

@@ -4,7 +4,7 @@ import {MeetingTypeEnum} from '../../../../server/postgres/types/Meeting'
 import {IntegrationsList} from './components/IntegrationsList'
 import clsx from 'clsx'
 import {DetailsBadge} from './components/DetailsBadge'
-import {descriptionLookup, tipLookup} from './ActivityDetails'
+import {MEETING_TYPE_DESCRIPTION_LOOKUP, MEETING_TYPE_TIP_LOOKUP} from './hooks/useActivityDetails'
 
 interface MeetingDetailsProps {
   type: MeetingTypeEnum
@@ -23,11 +23,11 @@ export const MeetingDetails = (props: MeetingDetailsProps) => {
 
       <div className='text-base font-semibold leading-6 text-slate-600'>Created by Parabol</div>
 
-      <div className='w-[480px]'>{descriptionLookup[type]}</div>
+      <div className='w-[480px]'>{MEETING_TYPE_DESCRIPTION_LOOKUP[type]}</div>
       <div className='flex min-w-max items-center'>
         <IntegrationsList />
         <div className='ml-4'>
-          <b>Tip:</b> {tipLookup[type]}
+          <b>Tip:</b> {MEETING_TYPE_TIP_LOOKUP[type]}
         </div>
       </div>
     </>

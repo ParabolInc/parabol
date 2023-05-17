@@ -28,7 +28,7 @@ import DetailAction from '../../DetailAction'
 import FlatButton from '../../FlatButton'
 import PokerTemplateScaleDetails from '../../../modules/meeting/components/PokerTemplateScaleDetails'
 import TeamPickerModal from '../TeamPickerModal'
-import {descriptionLookup, tipLookup} from './ActivityDetails'
+import {MEETING_TYPE_DESCRIPTION_LOOKUP, MEETING_TYPE_TIP_LOOKUP} from './hooks/useActivityDetails'
 
 type Template =
   ActivityDetailsQuery['response']['viewer']['availableTemplates']['edges'][number]['node']
@@ -233,12 +233,12 @@ export const TemplateDetails = (props: Props) => {
             </div>
           )}
         </div>
-        {descriptionLookup[selectedTemplate.type]}
+        {MEETING_TYPE_DESCRIPTION_LOOKUP[selectedTemplate.type]}
       </div>
       <div className='flex min-w-max items-center'>
         <IntegrationsList />
         <div className='ml-4'>
-          <b>Tip:</b> {tipLookup[selectedTemplate.type]}
+          <b>Tip:</b> {MEETING_TYPE_TIP_LOOKUP[selectedTemplate.type]}
         </div>
       </div>
 
