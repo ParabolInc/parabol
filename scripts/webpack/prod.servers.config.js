@@ -138,7 +138,7 @@ module.exports = ({isDeploy, noDeps}) => ({
               {
                 loader: 'file-loader',
                 options: {
-                  name: '/templates/[name].[ext]',
+                  name: 'templates/[name].[ext]',
                   publicPath: distPath
                 }
               }
@@ -165,7 +165,7 @@ module.exports = ({isDeploy, noDeps}) => ({
             options: {
               // sharp's bindings.gyp is hardcoded to look for libvips 2 directories up
               // rather than do a custom build, we just output it 2 directories down (/node/binaries)
-              name: '/node/binaries/[name].[ext]'
+              name: 'node/binaries/[name].[ext]'
             }
           }
         ]

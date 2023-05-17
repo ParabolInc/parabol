@@ -71,7 +71,8 @@ const CREATE_CUSTOM_ACTIVITY_ALLOW_LIST: Array<typeof QUICK_START_CATEGORY_ID | 
   QUICK_START_CATEGORY_ID,
   'retrospective',
   'feedback',
-  'strategy'
+  'strategy',
+  'estimation'
 ]
 
 const CategoryIDToColorClass = {
@@ -211,9 +212,7 @@ export const ActivityLibrary = (props: Props) => {
                   you have in mind.
                 </div>
                 <div className='h-40 w-64'>
-                  {CREATE_CUSTOM_ACTIVITY_ALLOW_LIST.includes(selectedCategory) && (
-                    <CreateActivityCard category={selectedCategory} className='h-full' />
-                  )}
+                  <CreateActivityCard category={QUICK_START_CATEGORY_ID} className='h-full' />
                 </div>
               </div>
             </div>
