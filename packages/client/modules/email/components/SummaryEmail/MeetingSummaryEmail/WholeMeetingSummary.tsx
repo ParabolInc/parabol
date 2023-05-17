@@ -43,7 +43,7 @@ const WholeMeetingSummary = (props: Props) => {
   const {stages} = discussPhase ?? {}
   const hasTopicSummary = reflectionGroups.some((group) => group.summary)
   const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
-  const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+  const hasOpenAISummary = (hasTopicSummary || hasDiscussionSummary) && !!wholeMeetingSummary
   if (!hasOpenAISummary) return null
   if (hasOpenAISummary && !wholeMeetingSummary) return <WholeMeetingSummaryLoading />
   return <WholeMeetingSummaryResult meetingRef={meeting} />
