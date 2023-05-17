@@ -64,7 +64,7 @@ export default {
     try {
       // TODO: remove upgradeToTeamTierOld once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
       if (paymentMethodId) {
-        await upgradeToTeamTier(orgId, paymentMethodId, email, dataLoader)
+        await upgradeToTeamTier(orgId, paymentMethodId, dataLoader)
       } else if (stripeToken) {
         await upgradeToTeamTierOld(orgId, stripeToken, email, dataLoader)
       }

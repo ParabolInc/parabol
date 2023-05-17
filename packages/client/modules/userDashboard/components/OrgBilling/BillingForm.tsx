@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js'
+import {useStripe, useElements, CardElement, PaymentElement} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
@@ -51,6 +51,27 @@ const ErrorMsg = styled(StyledError)({
   paddingTop: 8,
   textTransform: 'none'
 })
+
+const CARD_OPTIONS = {
+  hidePostalCode: true,
+  style: {
+    base: {
+      color: PALETTE.SLATE_800,
+      fontFamily: '"IBM Plex Sans", sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+        color: PALETTE.SLATE_800
+      },
+      marginBottom: '16px',
+      padding: '12px 16px'
+    },
+    invalid: {
+      color: PALETTE.TOMATO_500,
+      iconColor: PALETTE.TOMATO_500
+    }
+  }
+}
 
 type Props = {
   orgId: string
@@ -104,8 +125,7 @@ const BillingForm = (props: Props) => {
 
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      {/* <PaymentElement id='payment-element' options={{layout: 'tabs'}} /> */}
-      <CardElement />
+      <CardElement options={CARD_OPTIONS} />
       <ButtonBlock>
         {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>

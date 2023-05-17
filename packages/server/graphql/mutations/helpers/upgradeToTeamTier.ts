@@ -1,3 +1,4 @@
+import Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
@@ -10,7 +11,6 @@ import {DataLoaderWorker} from '../../graphql'
 const upgradeToTeamTier = async (
   orgId: string,
   paymentMethodId: string,
-  email: string,
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
@@ -36,15 +36,16 @@ const upgradeToTeamTier = async (
   // wait until the payment is attached to the customer before updating the default payment method
   await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
   const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
-  console.log('🚀 ~ subscription:', subscription)
-  const newSecret = subscription?.latest_invoice?.payment_intent?.client_secret
-  console.log('🚀 ~ newSecret:', newSecret)
+
+  const latestInvoice = subscription.latest_invoice as Stripe.Invoice
+  const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
+  const clientSecret = paymentIntent.client_secret
 
   const subscriptionFields = {
     periodEnd: fromEpochSeconds(subscription.current_period_end),
     periodStart: fromEpochSeconds(subscription.current_period_start),
     stripeSubscriptionId: subscription.id,
-    stripeSubscriptionClientSecret: newSecret
+    stripeSubscriptionClientSecret: clientSecret
   }
 
   await Promise.all([
