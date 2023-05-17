@@ -85,15 +85,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "${{ env.NODE_VERSION }}"
+          # caches node_modules, no need for actions/cache@v3
           cache: "yarn"
-
-      - name: Get cached node modules
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            **/node_modules
-          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('yarn.lock') }}
 
       - name: Yarn install
         if: steps.cache.outputs.cache-hit != 'true'
