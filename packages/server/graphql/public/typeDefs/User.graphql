@@ -50,7 +50,7 @@ type User {
   """
   Domain join request
   """
-  domainJoinRequest(requestId: Int!): DomainJoinRequest
+  domainJoinRequest(requestId: ID!): DomainJoinRequest
 
   """
   The user email
