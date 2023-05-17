@@ -113,7 +113,12 @@ const BillingForm = (props: Props) => {
         setIsLoading(false)
         return
       }
-      await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      if (error) {
+        setErrorMsg(error.message)
+        setIsLoading(false)
+        return
+      }
       setIsLoading(false)
       setIsPaymentSuccessful(true)
     }
