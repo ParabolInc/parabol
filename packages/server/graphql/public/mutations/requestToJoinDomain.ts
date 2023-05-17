@@ -69,6 +69,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
       email: viewer.email,
       name: viewer.preferredName,
       picture: viewer.picture,
+      requestCreatedBy: viewerId,
       domainJoinRequestId: insertResult.id
     })
   })

@@ -62,6 +62,19 @@ const User: UserResolvers = {
     const approvedDomains = organizations.map(({activeDomain}) => activeDomain).filter(isNotNull)
     return [...new Set(approvedDomains)].map((id) => ({id}))
   },
+  domainJoinRequest: async ({email}, {requestId}, {dataLoader}) => {
+    const request = await dataLoader.get('domainJoinRequests').loadNonNull(requestId)
+    const domain = getDomainFromEmail(email)
+    if (domain !== request.domain) {
+      return null
+    }
+    return {
+      id: request.id,
+      createdByEmail: request.createdBy,
+      createdBy: request.createdBy,
+      domain: request.domain
+    }
+  },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
