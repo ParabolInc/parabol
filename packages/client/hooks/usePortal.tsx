@@ -39,6 +39,7 @@ export type PortalId =
   | 'templateTeamPickerModal'
   | 'reviewRequestToJoinOrgModal'
   | 'topBarNotificationsMenu'
+  | 'pokerTemplateScaleDetailsModal'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void

@@ -1,9 +1,10 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
-import {putTemplateInConnection} from '../UpdateReflectTemplateScopeMutation'
+import {putTemplateInConnection} from '../UpdatePokerTemplateScopeMutation'
 
-const handleAddReflectTemplate = (
+const handleAddMeetingTemplate = (
   newNode: RecordProxy | null,
+  meetingType: 'retrospective' | 'poker',
   store: RecordSourceSelectorProxy
 ) => {
   if (!newNode) return
@@ -11,7 +12,7 @@ const handleAddReflectTemplate = (
   const team = store.get(teamId)
   if (!team) return
   const meetingSettings = team.getLinkedRecord('meetingSettings', {
-    meetingType: 'retrospective'
+    meetingType
   })
   if (!meetingSettings) return
   addNodeToArray(newNode, meetingSettings, 'teamTemplates', 'name')
@@ -25,4 +26,4 @@ const handleAddReflectTemplate = (
   putTemplateInConnection(newNode, allTemplatesLibraryConn, store)
 }
 
-export default handleAddReflectTemplate
+export default handleAddMeetingTemplate

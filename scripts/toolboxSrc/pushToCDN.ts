@@ -13,9 +13,15 @@ const pushToCDN = async () => {
     false,
     /Template.png$/
   )
+
   context.keys().forEach((relativePath) => {
     const {name, ext} = path.parse(relativePath)
-    collector[`${name}${ext}`] = context(relativePath).default
+    // This path only exists on the build machine
+    const builtPath = context(relativePath).default
+    // sub out the build machine path prefix with the __dirname
+    // e.g. /Users/CI/dist/templates/X.png -> /app/dist/templates/X.png
+    const absPath = builtPath.replace(/^.+\/dist(\/.+$)/, __dirname + '$1')
+    collector[`${name}${ext}`] = absPath
   })
   const fileStoreManager = getFileStoreManager()
   const results = await Promise.all(
