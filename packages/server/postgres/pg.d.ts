@@ -61,7 +61,7 @@ export interface Discussion {
 }
 
 export interface DomainJoinRequest {
-  id: Generated<number>
+  id: string
   createdBy: string
   domain: string
   expiresAt: Timestamp | null
@@ -181,10 +181,10 @@ export interface MeetingTemplate {
   type: 'action' | 'poker' | 'retrospective' | 'teamPrompt'
   isStarter: Generated<boolean>
   isFree: Generated<boolean>
-  illustrationUrl: string | null
+  illustrationUrl: string
   hideStartingAt: Timestamp | null
   hideEndingAt: Timestamp | null
-  mainCategory: string | null
+  mainCategory: string
 }
 
 export interface MeetingTemplateUserFavorite {

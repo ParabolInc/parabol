@@ -15,8 +15,8 @@ interface Input {
   type: MeetingTypeEnum
   isStarter?: boolean
   isFree?: boolean
-  mainCategory: string | null
-  illustrationUrl: string | null
+  mainCategory: string
+  illustrationUrl: string
 }
 
 export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
@@ -33,10 +33,8 @@ export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
   type: MeetingTypeEnum
   isStarter: boolean
   isFree: boolean
-  // will remove nullability in next migration
-  mainCategory: string | null
-  // will remove nullability in next migration
-  illustrationUrl: string | null
+  mainCategory: string
+  illustrationUrl: string
 
   constructor(input: Input) {
     const {

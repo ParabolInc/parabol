@@ -51,11 +51,12 @@ const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 
 interface Props {
   className?: string
+  hasRid: boolean
 }
 
 const StartMeetingFAB = (props: Props) => {
   const location = useLocation()
-  const {className} = props
+  const {className, hasRid} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
@@ -91,7 +92,11 @@ const StartMeetingFAB = (props: Props) => {
     }
   }
   const onClick = () => {
-    history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
+    if (hasRid) {
+      history.push('/activity-library')
+    } else {
+      history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
+    }
   }
   // We use the SideBarStartMeetingButton in this case
   if (isDesktop) {

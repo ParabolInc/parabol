@@ -48,6 +48,11 @@ type User {
   domains: [Company!]!
 
   """
+  Domain join request
+  """
+  domainJoinRequest(requestId: ID!): DomainJoinRequest
+
+  """
   The user email
   """
   email: Email!

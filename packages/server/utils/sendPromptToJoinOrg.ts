@@ -3,12 +3,12 @@ import NotificationPromptToJoinOrg from '../database/types/NotificationPromptToJ
 import isRequestToJoinDomainAllowed from './isRequestToJoinDomainAllowed'
 import getDomainFromEmail from './getDomainFromEmail'
 
-const sendPromptToJoinOrg = async (email, userId) => {
+const sendPromptToJoinOrg = async (email: string, userId: string) => {
   const r = await getRethink()
 
   const activeDomain = getDomainFromEmail(email)
 
-  if (!(await isRequestToJoinDomainAllowed(activeDomain))) {
+  if (!(await isRequestToJoinDomainAllowed(activeDomain, userId))) {
     return
   }
 
