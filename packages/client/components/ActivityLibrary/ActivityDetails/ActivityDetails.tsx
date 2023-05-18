@@ -152,13 +152,12 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
-        {activity.isTemplate ? (
-          <ActivityDetailsSidebar
-            selectedTemplateRef={activity.template}
-            teamsRef={teams}
-            isOpen={!isEditing}
-          />
-        ) : null}
+        <ActivityDetailsSidebar
+          selectedTemplateRef={activity.isTemplate ? activity.template : null}
+          teamsRef={teams}
+          isOpen={!isEditing}
+          type={activity.type}
+        />
       </div>
     </div>
   )

@@ -221,6 +221,7 @@ const NewMeeting = (props: Props) => {
               <NewMeetingRecurrenceSettings
                 onRecurrenceSettingsUpdated={setRecurrenceSettings}
                 recurrenceSettings={recurrenceSettings}
+                parentId='newMeetingRoot'
               />
             )}
           </SettingsRow>

@@ -20,15 +20,21 @@ import {useHistory} from 'react-router'
 import {LockOpen} from '@mui/icons-material'
 import {PALETTE} from '../../styles/paletteV3'
 import clsx from 'clsx'
+import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
+import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
+import StartCheckInMutation from '../../mutations/StartCheckInMutation'
+import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
+import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 
 interface Props {
-  selectedTemplateRef: ActivityDetailsSidebar_template$key
+  selectedTemplateRef: ActivityDetailsSidebar_template$key | null
   teamsRef: ActivityDetailsSidebar_teams$key
+  type: MeetingTypeEnum
   isOpen: boolean
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, isOpen} = props
+  const {selectedTemplateRef, teamsRef, type, isOpen} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -60,6 +66,9 @@ const ActivityDetailsSidebar = (props: Props) => {
         pokerSettings: meetingSettings(meetingType: poker) {
           ...NewMeetingSettingsToggleCheckIn_settings
         }
+        actionSettings: meetingSettings(meetingType: action) {
+          ...NewMeetingSettingsToggleCheckIn_settings
+        }
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
@@ -70,57 +79,82 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   const atmosphere = useAtmosphere()
 
-  const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
+  const templateTeam = teams.find((team) => team.id === selectedTemplate?.teamId)
 
-  const availableTeams =
-    selectedTemplate.scope === 'PUBLIC'
-      ? teams
-      : selectedTemplate.scope === 'ORGANIZATION'
-      ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-      : templateTeam
-      ? [templateTeam]
-      : []
+  const availableTeams = !selectedTemplate
+    ? teams
+    : selectedTemplate.scope === 'PUBLIC'
+    ? teams
+    : selectedTemplate.scope === 'ORGANIZATION'
+    ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
+    : templateTeam
+    ? [templateTeam]
+    : []
 
   const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const history = useHistory()
 
-  const handleStartRetro = () => {
+  const handleStartActivity = () => {
     if (submitting) return
     submitMutation()
-    SelectTemplateMutation(
-      atmosphere,
-      {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
-      {
-        onCompleted: () => {
-          if (selectedTemplate.type === 'retrospective') {
-            StartRetrospectiveMutation(
-              atmosphere,
-              {teamId: selectedTeam.id},
-              {history, onError, onCompleted}
-            )
-          } else if (selectedTemplate.type === 'poker') {
-            StartSprintPokerMutation(
-              atmosphere,
-              {teamId: selectedTeam.id},
-              {history, onError, onCompleted}
-            )
-          }
-        },
-        onError
+    if (selectedTemplate) {
+      SelectTemplateMutation(
+        atmosphere,
+        {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
+        {
+          onCompleted: () => {
+            if (selectedTemplate.type === 'retrospective') {
+              StartRetrospectiveMutation(
+                atmosphere,
+                {teamId: selectedTeam.id},
+                {history, onError, onCompleted}
+              )
+            } else if (selectedTemplate.type === 'poker') {
+              StartSprintPokerMutation(
+                atmosphere,
+                {teamId: selectedTeam.id},
+                {history, onError, onCompleted}
+              )
+            }
+          },
+          onError
+        }
+      )
+    } else {
+      if (type === 'teamPrompt') {
+        StartTeamPromptMutation(
+          atmosphere,
+          {
+            teamId: selectedTeam.id,
+            recurrenceSettings: {
+              rrule: recurrenceSettings.rrule?.toString(),
+              name: recurrenceSettings.name
+            }
+          },
+          {history, onError, onCompleted}
+        )
+      } else if (type === 'action') {
+        StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
       }
-    )
+    }
   }
+
+  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
+    name: '',
+    rrule: null
+  })
 
   const handleShareToOrg = () => {
-    UpdateReflectTemplateScopeMutation(
-      atmosphere,
-      {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
-      {onError, onCompleted}
-    )
+    selectedTemplate &&
+      UpdateReflectTemplateScopeMutation(
+        atmosphere,
+        {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
+        {onError, onCompleted}
+      )
   }
 
-  const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
+  const teamScopePopover = templateTeam && selectedTemplate?.scope === 'TEAM' && (
     <div className='w-[352px] p-4'>
       <div>
         This custom activity is private to the <b>{templateTeam.name}</b> team.
@@ -167,18 +201,27 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
 
-          {selectedTemplate.type === 'retrospective' && (
+          {selectedTemplate?.type === 'retrospective' && (
             <>
               <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
               <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
             </>
           )}
-          {selectedTemplate.type === 'poker' && (
+          {selectedTemplate?.type === 'poker' && (
             <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+          )}
+          {type === 'action' && (
+            <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
+          )}
+          {type === 'teamPrompt' && (
+            <ActivityDetailsRecurrenceSettings
+              onRecurrenceSettingsUpdated={setRecurrenceSettings}
+              recurrenceSettings={recurrenceSettings}
+            />
           )}
           <div className='flex grow flex-col justify-end gap-2'>
             <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
-            <FlatPrimaryButton onClick={handleStartRetro} waiting={submitting} className='h-14'>
+            <FlatPrimaryButton onClick={handleStartActivity} waiting={submitting} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>
           </div>
