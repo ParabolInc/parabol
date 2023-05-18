@@ -12,6 +12,7 @@ import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEn
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import publish from '../../../utils/publish'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import fromGlobalId from '../../../utils/fromGlobalId'
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
@@ -30,7 +31,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const request = await pg
     .selectFrom('DomainJoinRequest')
     .selectAll()
-    .where('id', '=', requestId)
+    .where('id', '=', fromGlobalId(requestId).id)
     .where('expiresAt', '>', now)
     .executeTakeFirst()
 

@@ -22,6 +22,7 @@ import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import db from '../../../db'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
+import fromGlobalId from '../../../utils/fromGlobalId'
 
 const User: UserResolvers = {
   canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
@@ -63,17 +64,14 @@ const User: UserResolvers = {
     return [...new Set(approvedDomains)].map((id) => ({id}))
   },
   domainJoinRequest: async ({email}, {requestId}, {dataLoader}) => {
-    const request = await dataLoader.get('domainJoinRequests').loadNonNull(requestId)
+    const request = await dataLoader
+      .get('domainJoinRequests')
+      .loadNonNull(fromGlobalId(requestId).id)
     const domain = getDomainFromEmail(email)
     if (domain !== request.domain) {
       return null
     }
-    return {
-      id: request.id,
-      createdByEmail: request.createdBy,
-      createdBy: request.createdBy,
-      domain: request.domain
-    }
+    return request
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
