@@ -5,7 +5,7 @@ import {FONT_FAMILY, ICON_SIZE} from 'parabol-client/styles/typographyV2'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {ExternalLinks} from '../../../../../types/constEnums'
+import {ExternalLinks, OpenAIMagicWords} from '../../../../../types/constEnums'
 import {APP_CORS_OPTIONS, EMAIL_CORS_OPTIONS} from '../../../../../types/cors'
 import {RetroTopic_stage$key} from '../../../../../__generated__/RetroTopic_stage.graphql'
 import AnchorIfEmail from './AnchorIfEmail'
@@ -97,7 +97,10 @@ const RetroTopic = (props: Props) => {
   )
   const {reflectionGroup, discussion} = stage
   const {commentCount, discussionSummary} = discussion
+  const validDiscussionSummary =
+    discussionSummary && discussionSummary !== OpenAIMagicWords.NO_SUMMARY_RESPONSE
   const {reflections, title, voteCount, topicSummary} = reflectionGroup!
+  const validTopicSummary = topicSummary && topicSummary !== OpenAIMagicWords.NO_SUMMARY_RESPONSE
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -119,10 +122,10 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {(topicSummary || discussionSummary) && (
+      {(validDiscussionSummary || validTopicSummary) && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            {topicSummary && (
+            {validTopicSummary && (
               <>
                 <tr>
                   <td style={topicTitleStyle}>{'🤖 Topic Summary'}</td>
@@ -132,7 +135,7 @@ const RetroTopic = (props: Props) => {
                 </tr>
               </>
             )}
-            {discussionSummary && (
+            {validDiscussionSummary && (
               <>
                 <tr>
                   <td style={topicTitleStyle}>{'🤖 Discussion Summary'}</td>

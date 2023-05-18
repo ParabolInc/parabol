@@ -1,5 +1,11 @@
 import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
+import {OpenAIMagicWords} from '../../client/types/constEnums'
+
+const NO_SUMMARY_REGEX = new RegExp(
+  `^${OpenAIMagicWords.NO_SUMMARY_PROMPT_INSTRUCTION_WORDS}\.*$`,
+  'i'
+)
 
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
@@ -27,7 +33,7 @@ class OpenAIServerManager {
             role: 'user',
             content: `Below is a comma-separated list of text from a ${location}.
             Summarize the text for a second-grade student in one or two sentences.
-            If you can't provide a summary, simply say the word "No".
+            If you can't provide a summary, simply write the word "${OpenAIMagicWords.NO_SUMMARY_PROMPT_INSTRUCTION_WORDS}".
 
             Text: """
             ${text}
@@ -41,7 +47,7 @@ class OpenAIServerManager {
         presence_penalty: 0
       })
       const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      return /^No\.*$/i.test(answer) ? null : answer
+      return NO_SUMMARY_REGEX.test(answer) ? OpenAIMagicWords.NO_SUMMARY_RESPONSE : answer
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)

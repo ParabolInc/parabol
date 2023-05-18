@@ -1,4 +1,4 @@
-import {AIExplainer} from '../../../../client/types/constEnums'
+import {AIExplainer, OpenAIMagicWords} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import Comment from '../../../database/types/Comment'
@@ -20,7 +20,7 @@ const addSummariesToThreads = async (
   const {tier} = team
   const commentPromises = stages.map(async (stage, idx) => {
     const group = groups.find((group) => group.id === stage.reflectionGroupId)
-    if (!group?.summary) return
+    if (!group?.summary || group?.summary === OpenAIMagicWords.NO_SUMMARY_RESPONSE) return
     const explainerText = tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
     const html =
       idx === 0
