@@ -90,10 +90,7 @@ jobs:
         run: yarn build --no-deps
 
       - name: Check Code Quality
-        run: |
-          yarn typecheck
-          yarn lintcheck
-          yarn stylecheck
+        run: yarn codecheck
 
       - name: Set up Docker Buildx
         if: env.DOCKERIZE == 'true'
