@@ -3,15 +3,15 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React from 'react'
-import {useFragment, useMutation} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {ActivityDetailsCategoryBadge_template$key} from '../../__generated__/ActivityDetailsCategoryBadge_template.graphql'
-import UpdateTemplateCategoryMutation, {
-  UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation
-} from '../../__generated__/UpdateTemplateCategoryMutation.graphql'
+import {UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation} from '../../__generated__/UpdateTemplateCategoryMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import UpdateTemplateCategoryMutation from '../../mutations/UpdateTemplateCategoryMutation'
 import PlainButton from '../PlainButton/PlainButton'
 import ActivityDetailsBadge from './ActivityDetailsBadge'
 import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID} from './Categories'
+import {MutationConfig} from 'relay-runtime'
 
 interface Props {
   isEditing: boolean
@@ -31,26 +31,23 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
   )
   const {id: templateId} = template
   const category = template.category as CategoryID
-  const [commit] = useMutation<TUpdateTemplateCategoryMutation>(UpdateTemplateCategoryMutation)
   const atmosphere = useAtmosphere()
 
   const updateTemplateCategory = (categoryId: string) => {
-    commit({
-      variables: {templateId, mainCategory: categoryId},
-      optimisticUpdater: (store) => {
-        const template = store.get(templateId)
-        template?.setValue(categoryId, 'mainCategory')
-      },
-      onCompleted: (res) => {
-        const message = res.updateTemplateCategory.error?.message
-        message &&
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'updateCategory',
-            message,
-            autoDismiss: 5
-          })
-      }
-    })
+    const onCompleted: MutationConfig<TUpdateTemplateCategoryMutation>['onCompleted'] = (res) => {
+      const message = res.updateTemplateCategory.error?.message
+      message &&
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'updateCategory',
+          message,
+          autoDismiss: 5
+        })
+    }
+    UpdateTemplateCategoryMutation(
+      atmosphere,
+      {templateId, mainCategory: categoryId},
+      {onCompleted}
+    )
   }
   return (
     <DropdownMenu.Root>
