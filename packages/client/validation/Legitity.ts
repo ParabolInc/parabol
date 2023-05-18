@@ -1,4 +1,4 @@
-import toArray from 'lodash/toarray'
+import toArray from 'lodash.toarray'
 class Legitity {
   value: any
   error: undefined | string
