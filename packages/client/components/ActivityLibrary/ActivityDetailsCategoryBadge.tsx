@@ -34,12 +34,12 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
   const [commit] = useMutation<TUpdateTemplateCategoryMutation>(UpdateTemplateCategoryMutation)
   const atmosphere = useAtmosphere()
 
-  const updateTemplateCategory = (value: string) => {
+  const updateTemplateCategory = (categoryId: string) => {
     commit({
-      variables: {templateId, mainCategory: value},
+      variables: {templateId, mainCategory: categoryId},
       optimisticUpdater: (store) => {
         const template = store.get(templateId)
-        template?.setValue(value, 'mainCategory')
+        template?.setValue(categoryId, 'mainCategory')
       },
       onCompleted: (res) => {
         const message = res.updateTemplateCategory.error?.message
@@ -67,20 +67,20 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       <DropdownMenu.Portal>
         <DropdownMenu.Content className='border-rad rounded bg-white shadow-lg' sideOffset={5}>
           <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>
-            {Object.keys(CATEGORY_THEMES).map((v) => {
-              const value = v as CategoryID
+            {Object.keys(CATEGORY_THEMES).map((c) => {
+              const categoryId = c as CategoryID
               return (
                 <DropdownMenu.RadioItem
-                  key={value}
+                  key={categoryId}
                   className='flex cursor-pointer select-none py-3 px-4 outline-none data-[state=checked]:bg-slate-200
                 data-[highlighted]:bg-slate-100'
-                  value={value}
+                  value={categoryId}
                 >
                   <span
-                    className={clsx(CATEGORY_THEMES[value].primary, 'h-5 w-5 rounded-full')}
+                    className={clsx(CATEGORY_THEMES[categoryId].primary, 'h-5 w-5 rounded-full')}
                   ></span>
                   <span className='pl-5 pr-10 text-xs font-semibold'>
-                    {CATEGORY_ID_TO_NAME[value]}
+                    {CATEGORY_ID_TO_NAME[categoryId]}
                   </span>
                 </DropdownMenu.RadioItem>
               )

@@ -6,7 +6,7 @@ const getTeamIdFromArgTemplateId = async (
   {dataLoader}: GQLContext
 ) => {
   const template = await dataLoader.get('meetingTemplates').load(templateId)
-  if (!template) return null
+  if (!template) return new Error('Invalid templateId')
   const {teamId} = template
   return teamId
 }
