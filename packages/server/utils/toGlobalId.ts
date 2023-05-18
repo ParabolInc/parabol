@@ -8,7 +8,7 @@ function toGlobalId(type: string, id: number) {
     if (charIndex === -1) {
       throw new Error(`Invalid character ${str[i]} in type or id`)
     }
-    const newIndex = (charIndex + 13) % charSet.length
+    const newIndex = (charIndex + 32) % charSet.length
     encoded += charSet[newIndex]
   }
   return encoded

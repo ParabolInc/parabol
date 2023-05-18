@@ -7,7 +7,7 @@ function fromGlobalId(globalId: string) {
     if (charIndex === -1) {
       throw new Error(`Invalid character ${globalId[i]} in globalId`)
     }
-    const newIndex = (charIndex - 13 + charSet.length) % charSet.length
+    const newIndex = (charIndex - 32 + charSet.length) % charSet.length
     decoded += charSet[newIndex]
   }
   const [type, id] = decoded.split(':')
