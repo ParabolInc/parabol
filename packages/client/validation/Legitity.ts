@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import toArray from 'lodash/toarray'
 class Legitity {
   value: any
   error: undefined | string
@@ -39,7 +39,7 @@ class Legitity {
   max(len: number, msg?: string) {
     if (this.value !== undefined) {
       // https://stackoverflow.com/a/46085147
-      const value = _.toArray(this.value)
+      const value = toArray(this.value)
       if (!this.error && value.length > len) {
         this.error = msg || 'max'
       }
@@ -50,7 +50,7 @@ class Legitity {
   min(len: number, msg?: string) {
     if (this.value !== undefined) {
       // https://stackoverflow.com/a/46085147
-      const value = _.toArray(this.value)
+      const value = toArray(this.value)
       if (!this.error && value.length < len) {
         this.error = msg || 'min'
       }

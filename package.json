@@ -93,7 +93,7 @@
     "@tailwindcss/forms": "^0.5.3",
     "@types/dotenv": "^6.1.1",
     "@types/jscodeshift": "^0.11.3",
-    "@types/lodash": "^4.14.194",
+    "@types/lodash.toarray": "^4.4.7",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
     "autoprefixer": "^10.4.13",
@@ -132,7 +132,7 @@
   "dependencies": {
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
-    "lodash": "^4.17.21",
+    "lodash.toarray": "^4.4.0",
     "rethinkdb-ts-migrate": "^0.3.6"
   }
 }
