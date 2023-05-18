@@ -25,12 +25,6 @@ jobs:
           POSTGRES_DB: "tempdb"
         ports:
           - 5432:5432
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
       rethinkdb:
         image: rethinkdb:2.4.2
         ports:
@@ -45,14 +39,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 2 # Required for nx affected
 
-      # 1.- Only images produced on tags are built with addiotional security. It takes about 2 more minutes to build.
-      # 2.- Change the NO_DEPS for tags to true whenenver we want to start building using the --no-deps option. It requires more memory than what is available in the free runners and it also takes more time to build.
-      - name: Setup runtime variables
+      - name: Setup environment variables
         run: |
-          NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
-          echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
+          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
 
           if [ ${{github.ref_type}} = "tag" ]; then
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
@@ -66,14 +57,13 @@ jobs:
           echo "GITHUB_REF_NAME_NORMALIZED=${GITHUB_REF_NAME_NORMALIZED}" >> $GITHUB_ENV
 
           DOCKERIZE=${{ contains(fromJSON('["master", "staging", "production"]'), github.ref_name) || contains(github.event.head_commit.message, '@dockerize')}}
-          echo $DOCKERIZE
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
-          # Do not cache yarn dir here. Running yarn install is too slow.
-          # Instead, we aggressively cache node_modules below
+          # Caching yarn dir & running yarn install is too slow
+          # Instead, we aggressively cache node_modules below to avoid calling install
 
       - name: Get cached node modules
         id: cache
@@ -81,7 +71,7 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: node_modules-${{ runner.os }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
