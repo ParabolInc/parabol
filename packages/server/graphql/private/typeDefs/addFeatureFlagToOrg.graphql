@@ -6,6 +6,7 @@ enum OrganizationFeatureFlagsEnum {
   SAMLUI
   promptToJoinOrg
   suggestGroups
+  noAISummary
 }
 
 extend type Mutation {

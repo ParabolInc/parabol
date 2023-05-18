@@ -47,7 +47,7 @@ const TopBarNotifications = ({queryRef}: Props) => {
   const menuContentRef = useRef<HTMLDivElement>(null)
   const {togglePortal, openPortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
-    {menuContentRef}
+    {menuContentRef, id: 'topBarNotificationsMenu'}
   )
   const {location} = useRouter()
   useEffect(() => {

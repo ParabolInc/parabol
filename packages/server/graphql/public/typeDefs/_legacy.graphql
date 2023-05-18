@@ -6161,6 +6161,16 @@ type TeamPromptMeeting implements NewMeeting {
   The tasks created within the meeting
   """
   responses: [TeamPromptResponse!]!
+
+  """
+  The previous meeting in the series if this meeting is recurring
+  """
+  prevMeeting: TeamPromptMeeting
+
+  """
+  The next meeting in the series if this meeting is recurring
+  """
+  nextMeeting: TeamPromptMeeting
 }
 
 """

@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
+import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
@@ -16,6 +17,8 @@ import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import {useHistory} from 'react-router'
+import {LockOpen} from '@mui/icons-material'
+import {PALETTE} from '../../styles/paletteV3'
 import clsx from 'clsx'
 
 interface Props {
@@ -47,6 +50,9 @@ const ActivityDetailsSidebar = (props: Props) => {
         name
         tier
         orgId
+        organization {
+          name
+        }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
           ...NewMeetingSettingsToggleAnonymity_settings
@@ -106,6 +112,36 @@ const ActivityDetailsSidebar = (props: Props) => {
     )
   }
 
+  const handleShareToOrg = () => {
+    UpdateReflectTemplateScopeMutation(
+      atmosphere,
+      {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
+      {onError, onCompleted}
+    )
+  }
+
+  const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
+    <div className='w-[352px] p-4'>
+      <div>
+        This custom activity is private to the <b>{templateTeam.name}</b> team.
+      </div>
+      <br />
+      <div>
+        As a member of the team you can share this activity with other teams at the{' '}
+        <b>{templateTeam.organization.name}</b> organization so that they can also use the activity.
+      </div>
+      <button
+        onClick={handleShareToOrg}
+        className={
+          'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-sm font-semibold text-slate-700 hover:bg-slate-100'
+        }
+      >
+        <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
+        Allow other teams to use this activity
+      </button>
+    </div>
+  )
+
   return (
     <>
       {isOpen && <div className='w-96' />}
@@ -127,6 +163,7 @@ const ActivityDetailsSidebar = (props: Props) => {
               }}
               selectedTeamRef={selectedTeam}
               teamsRef={availableTeams}
+              customPortal={teamScopePopover}
             />
           )}
 

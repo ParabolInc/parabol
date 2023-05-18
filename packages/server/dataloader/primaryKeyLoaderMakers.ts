@@ -1,4 +1,5 @@
 import {getDiscussionsByIds} from '../postgres/queries/getDiscussionsByIds'
+import {getDomainJoinRequestsByIds} from '../postgres/queries/getDomainJoinRequestsByIds'
 import getMeetingSeriesByIds from '../postgres/queries/getMeetingSeriesByIds'
 import {getTeamPromptResponsesByIds} from '../postgres/queries/getTeamPromptResponsesByIds'
 import getTeamsByIds from '../postgres/queries/getTeamsByIds'
@@ -16,3 +17,4 @@ export const templateScaleRefs = primaryKeyLoaderMaker(getTemplateScaleRefsByIds
 export const teamPromptResponses = primaryKeyLoaderMaker(getTeamPromptResponsesByIds)
 export const meetingSeries = primaryKeyLoaderMaker(getMeetingSeriesByIds)
 export const meetingTemplates = primaryKeyLoaderMaker(getMeetingTemplatesByIds)
+export const domainJoinRequests = primaryKeyLoaderMaker(getDomainJoinRequestsByIds)

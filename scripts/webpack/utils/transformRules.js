@@ -1,6 +1,6 @@
 const path = require('path')
 
-const transformRules = (projectRoot) => {
+const transformRules = (projectRoot, isProd) => {
   const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client')
   const SERVER_ROOT = path.join(projectRoot, 'packages', 'server')
   const GQL_ROOT = path.join(projectRoot, 'packages', 'gql-executor')
@@ -38,6 +38,7 @@ const transformRules = (projectRoot) => {
         {
           loader: '@sucrase/webpack-loader',
           options: {
+            production: isProd,
             transforms: ['jsx', 'typescript']
           }
         }
@@ -52,6 +53,7 @@ const transformRules = (projectRoot) => {
       use: {
         loader: '@sucrase/webpack-loader',
         options: {
+          production: isProd,
           // imports is needed for old JS RethinkDB migration files
           // otherwise exports.up is ignored when an import statement is there
           // can remove when they're gone
@@ -83,6 +85,7 @@ const transformRules = (projectRoot) => {
         {
           loader: '@sucrase/webpack-loader',
           options: {
+            production: isProd,
             transforms: ['jsx', 'typescript']
           }
         }

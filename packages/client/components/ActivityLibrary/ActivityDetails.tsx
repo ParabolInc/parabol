@@ -102,7 +102,7 @@ const ActivityDetails = (props: Props) => {
     (edge) => edge.node.id === templateId && SUPPORTED_TYPES.includes(edge.node.type)
   )?.node
 
-  const history = useHistory<{prevCategory?: string}>()
+  const history = useHistory<{prevCategory?: string; edit?: boolean}>()
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -187,6 +187,10 @@ const ActivityDetails = (props: Props) => {
   const description = useTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
 
   const [isEditing, setIsEditing] = useState(false)
+
+  useEffect(() => {
+    setIsEditing(!!history.location.state?.edit)
+  }, [history.location.state?.edit, setIsEditing])
 
   useEffect(
     () =>
