@@ -8,9 +8,8 @@ const DomainJoinRequest: DomainJoinRequestResolvers = {
   id: ({id}) => {
     return toGlobalId('DomainJoinRequest', id)
   },
-  createdByEmail: async ({id}, _args, {dataLoader}) => {
-    const request = await dataLoader.get('domainJoinRequests').loadNonNull(id)
-    const user = await dataLoader.get('users').loadNonNull(request.createdBy)
+  createdByEmail: async ({createdBy}, _args, {dataLoader}) => {
+    const user = await dataLoader.get('users').loadNonNull(createdBy)
     return user.email
   },
   teams: async ({id}, _args, {authToken, dataLoader}: GQLContext) => {
