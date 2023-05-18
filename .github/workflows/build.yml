@@ -55,6 +55,9 @@ jobs:
           echo "GITHUB_REF_NAME_NORMALIZED=${GITHUB_REF_NAME_NORMALIZED}" >> $GITHUB_ENV
 
           DOCKERIZE=${{ contains(fromJSON('["master", "staging", "production"]'), github.ref_name) || startsWith(github.event.head_commit.message, 'dockerize')}}
+          echo "Dockerize=$DOCKERIZE"
+          echo ${{ github.event.head_commit.message }}
+          echo ${{ startsWith(github.event.head_commit.message, 'dockerize') }}
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v3
