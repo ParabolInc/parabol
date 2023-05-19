@@ -129,10 +129,6 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'The subscriptionId from stripe',
       resolve: resolveForBillingLeaders('stripeSubscriptionId')
     },
-    stripeSubscriptionClientSecret: {
-      type: GraphQLID,
-      description: 'The subscriptionClientSecret from stripe'
-    },
     upcomingInvoiceEmailSentAt: {
       type: GraphQLISO8601Type,
       description: 'The last upcoming invoice email that was sent, null if never sent'

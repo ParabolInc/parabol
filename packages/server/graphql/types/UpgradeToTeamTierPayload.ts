@@ -32,6 +32,10 @@ const UpgradeToTeamTierPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: ({meetingIds}, _args: unknown, {dataLoader}) => {
         return meetingIds ? dataLoader.get('newMeetings').loadMany(meetingIds) : null
       }
+    },
+    stripeSubscriptionClientSecret: {
+      type: GraphQLID,
+      description: 'The client secret for the Stripe subscription'
     }
   })
 })

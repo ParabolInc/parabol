@@ -107,8 +107,7 @@ const BillingForm = (props: Props) => {
 
     const handleCompleted = async (res: UpgradeToTeamTierMutation$data) => {
       const {upgradeToTeamTier} = res
-      const stripeSubscriptionClientSecret =
-        upgradeToTeamTier?.organization?.stripeSubscriptionClientSecret
+      const stripeSubscriptionClientSecret = upgradeToTeamTier?.stripeSubscriptionClientSecret
       if (!stripeSubscriptionClientSecret) {
         setIsLoading(false)
         return

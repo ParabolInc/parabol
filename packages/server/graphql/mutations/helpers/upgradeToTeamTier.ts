@@ -44,8 +44,7 @@ const upgradeToTeamTier = async (
   const subscriptionFields = {
     periodEnd: fromEpochSeconds(subscription.current_period_end),
     periodStart: fromEpochSeconds(subscription.current_period_start),
-    stripeSubscriptionId: subscription.id,
-    stripeSubscriptionClientSecret: clientSecret
+    stripeSubscriptionId: subscription.id
   }
 
   await Promise.all([
@@ -74,6 +73,7 @@ const upgradeToTeamTier = async (
   ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  return clientSecret
 }
 
 export default upgradeToTeamTier
