@@ -55,14 +55,50 @@ export _DOCKER_TAG=test-image
 
 The application must be already built locally using the command `yarn build --no-deps` mode.
 
-To build the image, these commands must be executed from the root level of this repository:
+To build the image, these commands must be executed from the **root level** of this repository:
+
+- Copy the env file for docker build:
+
+> :warning: **THIS WILL DELETE YOUR LOCAL .env file is you have one**. Back it up before proceeding.
+
+```commandLine
+cp ${_BUILD_ENV_PATH} ./.env
+```
+
+- Start the databases:
 
 ```commandLine
 docker run --name temp-postgres --network=host -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:${postgresql_tag} && \
 docker run --name temp-rethinkdb --network=host -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:${rethinkdb_tag} && \
-docker run --name temp-redis --network=host -d -p 6379:6379 redis:${redis_tag} && \
-docker build --network=host -t ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION --build-arg _BUILD_ENV_PATH=${_BUILD_ENV_PATH} --build-arg _SECURITY_ENABLED=${_SECURITY_ENABLED} . && \
+docker run --name temp-redis --network=host -d -p 6379:6379 redis:${redis_tag}
+```
+
+- Build the application:
+
+```commandLine
+yarn && \
+yarn db:migrate && \
+yarn pg:migrate up && \
+yarn pg:build && \
+yarn build --no-deps
+```
+
+- Build the docker image:
+
+```commandLine
+docker build --network=host -t ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} -f ${_DOCKERFILE} --build-arg _NODE_VERSION=${_NODE_VERSION} --build-arg _SECURITY_ENABLED=${_SECURITY_ENABLED} .
+```
+
+- Stop and delete all database containers:
+
+```commandLine
 docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f || docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f
+```
+
+- Delete the `.env`:
+
+```commandLine
+rm .env
 ```
 
 It will produce a Docker image tagged as `${_DOCKER_REPOSITORY}:${_DOCKER_TAG}`. Ex: `parabol:test-image`.
