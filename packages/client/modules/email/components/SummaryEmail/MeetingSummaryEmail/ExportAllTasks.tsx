@@ -97,13 +97,13 @@ const ExportAllTasks = (props: Props) => {
     )
   )
 
-  const handlePushToIntegration = (
+  const handlePushToIntegration = async (
     integrationRepoId: string,
     integrationProviderService: Exclude<TaskServiceEnum, 'PARABOL'>,
     integrationLabel?: string
   ) => {
     submitMutation()
-    Promise.allSettled(
+    const results = await Promise.allSettled(
       filteredTasks?.map((task) => {
         return new Promise<void>((resolve, reject) => {
           const variables = {
@@ -124,21 +124,21 @@ const ExportAllTasks = (props: Props) => {
           })
         })
       })
-    ).then((results) => {
-      const errors = results.filter((res) => res.status === 'rejected') as PromiseRejectedResult[]
-      if (errors.length > 0) {
-        onError(errors[0]!.reason)
-      } else {
-        SendClientSegmentEventMutation(atmosphere, 'Bulk Tasks Published', {
-          teamId,
-          meetingId,
-          meetingType,
-          service: integrationProviderService
-        })
-        integrationLabel && setPushedIntegrationLabel(integrationLabel)
-        onCompleted()
-      }
-    })
+    )
+
+    const errors = results.filter((res) => res.status === 'rejected') as PromiseRejectedResult[]
+    if (errors.length > 0) {
+      onError(errors[0]!.reason)
+    } else {
+      SendClientSegmentEventMutation(atmosphere, 'Bulk Tasks Published', {
+        teamId,
+        meetingId,
+        meetingType,
+        service: integrationProviderService
+      })
+      integrationLabel && setPushedIntegrationLabel(integrationLabel)
+      onCompleted()
+    }
   }
 
   return (
