@@ -77,6 +77,7 @@ class OpenAIServerManager {
       ]
 
       In the output, "The Retreat" and "Deadlines" are example topic names that you can create to group the reflections.
+      Do not give me code to run. Give me the output in the format above.
 
       Here is the list of reflections: """
       ${reflectionsText}
@@ -94,9 +95,15 @@ class OpenAIServerManager {
         }
       )
       const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      if (!isValidJSON(answer)) return null
+      if (!isValidJSON(answer)) {
+        sendToSentry(new Error(`Invalid JSON when creating AI groups. Answer: ${answer}`))
+        return null
+      }
       const parsedOutput = JSON.parse(answer)
-      if (!Array.isArray(parsedOutput)) return null
+      if (!Array.isArray(parsedOutput)) {
+        sendToSentry(new Error(`Parsed output when creating AI groups is not an array: ${answer}`))
+        return null
+      }
       const invalidGroup = parsedOutput.some(
         (group) =>
           typeof group !== 'object' ||
@@ -104,7 +111,10 @@ class OpenAIServerManager {
           Array.isArray(group) ||
           Object.keys(group).length !== 1
       )
-      if (invalidGroup) return null
+      if (invalidGroup) {
+        sendToSentry(new Error(`AI group is in an invalid format: ${answer}`))
+        return null
+      }
       return answer
     } catch (error) {
       console.error(error)
