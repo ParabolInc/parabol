@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -9,6 +9,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import {StripePaymentElementChangeEvent} from '@stripe/stripe-js'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -89,10 +90,13 @@ const BillingForm = (props: Props) => {
     }
   }
 
-  const handleChange = () => {
-    if (!hasStarted) {
+  const handleChange = (event: StripePaymentElementChangeEvent) => {
+    if (!hasStarted && !event.empty) {
       SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
       setHasStarted(true)
+    }
+    if (event.complete) {
+      SendClientSegmentEventMutation(atmosphere, 'Payment Details Complete', {orgId})
     }
   }
 
