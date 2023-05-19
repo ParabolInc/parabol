@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  This groups the reflections together using OpenAI
+  Creates suggested reflection groups using OpenAI
   """
   autogroup(meetingId: ID!): AutogroupPayload!
 }
@@ -11,8 +11,5 @@ Return value for autogroup, which could be an error
 union AutogroupPayload = ErrorPayload | AutogroupSuccess
 
 type AutogroupSuccess {
-  """
-  The meeting that was autogrouped
-  """
   meeting: RetrospectiveMeeting!
 }

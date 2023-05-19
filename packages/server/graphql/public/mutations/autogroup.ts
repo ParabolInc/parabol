@@ -4,10 +4,6 @@ import {GQLContext} from '../../graphql'
 import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import {MutationResolvers} from '../resolverTypes'
 
-type GroupedReflection = {
-  [groupTitle: string]: string[]
-}
-
 const autogroup: MutationResolvers['autogroup'] = async (
   _source,
   {meetingId}: {meetingId: string},
@@ -25,28 +21,29 @@ const autogroup: MutationResolvers['autogroup'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
   if (meetingType !== 'retrospective') {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+    return standardError(new Error('Incorrect meeting type'), {userId: viewerId})
   }
 
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+    return standardError(new Error('Team not found'), {userId: viewerId})
   }
 
-  const promises = autogroupReflectionGroups.flatMap((group) => {
-    const {groupTitle, reflectionIds} = group
-    const reflectionsInGroup = reflections.filter(({id}) => reflectionIds.includes(id))
-    const firstReflectionInGroup = reflectionsInGroup[0]
-    return reflectionsInGroup.map((reflection) =>
-      addReflectionToGroup(
-        reflection.id,
-        firstReflectionInGroup.reflectionGroupId,
-        context,
-        groupTitle
+  await Promise.all(
+    autogroupReflectionGroups.flatMap((group) => {
+      const {groupTitle, reflectionIds} = group
+      const reflectionsInGroup = reflections.filter(({id}) => reflectionIds.includes(id))
+      const firstReflectionInGroup = reflectionsInGroup[0]
+      return reflectionsInGroup.map((reflection) =>
+        addReflectionToGroup(
+          reflection.id,
+          firstReflectionInGroup.reflectionGroupId,
+          context,
+          groupTitle
+        )
       )
-    )
-  })
+    })
+  )
 
-  await Promise.all(promises)
   const data = {meetingId}
   return data
 }

@@ -54,11 +54,6 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       description: 'The number of comments generated in the meeting',
       resolve: ({commentCount}) => commentCount || 0
     },
-    groupedReflectionsJSON: {
-      type: GraphQLString,
-      description:
-        'The JSON stringified version of the grouped reflections. Null if not grouped, they dont have access to OpenAI, or OpenAI was unable to create the groups'
-    },
     autogroupReflectionGroups: {
       type: new GraphQLList(new GraphQLNonNull(AutogroupReflectionGroup)),
       description: 'The suggested reflection groups created by OpenAI'
