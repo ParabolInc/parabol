@@ -5,13 +5,10 @@ import clsx from 'clsx'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {ActivityDetailsCategoryBadge_template$key} from '../../__generated__/ActivityDetailsCategoryBadge_template.graphql'
-import {UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation} from '../../__generated__/UpdateTemplateCategoryMutation.graphql'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import UpdateTemplateCategoryMutation from '../../mutations/UpdateTemplateCategoryMutation'
 import PlainButton from '../PlainButton/PlainButton'
 import ActivityDetailsBadge from './ActivityDetailsBadge'
 import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID} from './Categories'
-import {MutationConfig} from 'relay-runtime'
+import useTemplateCategoryMutation from '../../mutations/UpdateTemplateCategoryMutation'
 
 interface Props {
   isEditing: boolean
@@ -31,24 +28,12 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
   )
   const {id: templateId} = template
   const category = template.category as CategoryID
-  const atmosphere = useAtmosphere()
+  const [commit] = useTemplateCategoryMutation()
 
-  const updateTemplateCategory = (categoryId: string) => {
-    const onCompleted: MutationConfig<TUpdateTemplateCategoryMutation>['onCompleted'] = (res) => {
-      const message = res.updateTemplateCategory.error?.message
-      message &&
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          key: 'updateCategory',
-          message,
-          autoDismiss: 5
-        })
-    }
-    UpdateTemplateCategoryMutation(
-      atmosphere,
-      {templateId, mainCategory: categoryId},
-      {onCompleted}
-    )
+  const updateTemplateCategory = (mainCategory: string) => {
+    commit({variables: {templateId, mainCategory}})
   }
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>

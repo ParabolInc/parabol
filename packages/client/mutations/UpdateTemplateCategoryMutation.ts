@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {commitMutation} from 'react-relay'
 import {UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation} from '../__generated__/UpdateTemplateCategoryMutation.graphql'
-import {OptionalHandlers, StandardMutation} from '../types/relayMutations'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {useMutation} from 'react-relay'
 
 graphql`
   fragment UpdateTemplateCategoryMutation_team on UpdateTemplateCategorySuccess {
@@ -23,21 +23,32 @@ const mutation = graphql`
     }
   }
 `
-const UpdateTemplateCategoryMutation: StandardMutation<
-  TUpdateTemplateCategoryMutation,
-  OptionalHandlers
-> = (atmosphere, variables, {onError, onCompleted}) => {
-  return commitMutation<TUpdateTemplateCategoryMutation>(atmosphere, {
-    mutation,
-    variables,
-    optimisticUpdater: (store) => {
-      const {templateId, mainCategory} = variables
-      const template = store.get(templateId)
-      template?.setValue(mainCategory, 'mainCategory')
-    },
-    onCompleted,
-    onError
-  })
+
+const useTemplateCategoryMutation = () => {
+  const [commit, submitting] = useMutation<TUpdateTemplateCategoryMutation>(mutation)
+  const atmosphere = useAtmosphere()
+  const execute: typeof commit = (config) => {
+    const {variables} = config
+    const {templateId, mainCategory} = variables
+    return commit({
+      optimisticUpdater: (store) => {
+        const template = store.get(templateId)
+        template?.setValue(mainCategory, 'mainCategory')
+      },
+      onCompleted: (res) => {
+        const message = res.updateTemplateCategory.error?.message
+        message &&
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'updateCategory',
+            message,
+            autoDismiss: 5
+          })
+      },
+      // allow components to override default handlers
+      ...config
+    })
+  }
+  return [execute, submitting] as const
 }
 
-export default UpdateTemplateCategoryMutation
+export default useTemplateCategoryMutation
