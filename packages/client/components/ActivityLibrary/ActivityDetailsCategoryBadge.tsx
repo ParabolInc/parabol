@@ -36,8 +36,8 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <PlainButton className={clsx(!isEditing && 'cursor-default', 'flex')}>
+      <DropdownMenu.Trigger asChild disabled={!isEditing}>
+        <PlainButton className={clsx(!isEditing && 'cursor-default', 'flex')} disabled={false}>
           <ActivityDetailsBadge
             className={clsx(CATEGORY_THEMES[category].primary, 'select-none text-white')}
           >
