@@ -96,6 +96,11 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
     AcceptRequestToJoinDomainMutation(atmosphere, {
       requestId,
       teamIds: selectedTeams
+    }, {
+      onCompleted: closePortal,
+      onError: () => {
+        /* noop */
+      }
     })
   }
 

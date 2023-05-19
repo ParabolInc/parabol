@@ -1,5 +1,4 @@
 import getRethink from '../../database/rethinkDriver'
-import {DataLoaderWorker} from '../../graphql/graphql'
 import {getStripeManager} from '../../utils/stripe'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import sendToSentry from '../../utils/sendToSentry'
@@ -11,13 +10,13 @@ import RedisLockQueue from '../../utils/RedisLockQueue'
  */
 const updateSubscriptionQuantity = async (
   orgId: string,
-  dataLoader: DataLoaderWorker,
   logMismatch?: boolean
 ) => {
   const r = await getRethink()
   const manager = getStripeManager()
 
-  const org = await dataLoader.get('organizations').load(orgId)
+  const org = await r.table('Organization').get(orgId).run()
+
   if (!org) throw new Error(`org not found for invoice`)
   const {stripeSubscriptionId} = org
   if (!stripeSubscriptionId) return

@@ -32,7 +32,7 @@ const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
 
   const isTierModeVolume = stripeLineItems.every(({plan}) => plan?.tiers_mode === 'volume')
   if (!isTierModeVolume) {
-    await updateSubscriptionQuantity(orgId, dataLoader, true)
+    await updateSubscriptionQuantity(orgId, true)
   }
 
   await Promise.all([

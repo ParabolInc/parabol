@@ -12,6 +12,7 @@ import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEn
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import publish from '../../../utils/publish'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import { getUserById } from "../../../postgres/queries/getUsersByIds";
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
@@ -79,23 +80,27 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     }
   }
 
-  const user = await dataLoader.get('users').loadNonNull(createdBy)
+  const user = await getUserById(createdBy)
+
   const {id: userId} = user
 
   for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
     const [organizationUser] = await Promise.all([
-      dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId}),
+      r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({orgId, removedAt: null})
+        .nth(0)
+        .default(null)
+        .run(),
       insertNewTeamMember(user, teamId),
       addTeamIdToTMS(userId, teamId)
     ])
 
     if (!organizationUser) {
-      // clear the cache, adjustUserCount will mutate these
-      dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})
-      dataLoader.get('users').clear(userId)
       try {
-        await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+        await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
       } catch (e) {
         console.log(e)
       }
@@ -106,8 +111,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   await redisLock.unlock()
 
   // Send the new team member a welcome & a new token
-  dataLoader.get('users').clear(userId)
-  const updatedUser = await dataLoader.get('users').loadNonNull(createdBy)
+  const updatedUser = await getUserById(createdBy)
   publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: updatedUser.tms})
 
   validTeams.forEach((team) => {
