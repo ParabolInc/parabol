@@ -114,6 +114,7 @@ jobs:
           allow: network.host
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .
+          platforms: linux/amd64,linux/arm64
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
             "_SECURITY_ENABLED=true"
