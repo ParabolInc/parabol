@@ -128,6 +128,11 @@ const ExportAllTasks = (props: Props) => {
 
     const errors = results.filter((res) => res.status === 'rejected') as PromiseRejectedResult[]
     if (errors.length > 0) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'bulkExportError',
+        message: 'Could not sync all tasks. Please try again',
+        autoDismiss: 10
+      })
       onError(errors[0]!.reason)
     } else {
       SendClientSegmentEventMutation(atmosphere, 'Bulk Tasks Published', {
