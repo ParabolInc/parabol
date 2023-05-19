@@ -18,7 +18,7 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
-const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams: string) => {
+const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
   const {
     id: userId,
     createdAt,

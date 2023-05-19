@@ -64,7 +64,7 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   // if that happens, then they'll get into the app & won't be on any team
   // edge case because that requires the invitation token to have expired
   const isOrganic = !invitationToken
-  context.authToken = await bootstrapNewUser(newUser, isOrganic, '')
+  context.authToken = await bootstrapNewUser(newUser, isOrganic)
   return {
     userId: newUser.id,
     authToken: encodeAuthToken(context.authToken),
