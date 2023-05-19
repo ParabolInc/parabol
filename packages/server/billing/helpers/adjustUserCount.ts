@@ -14,7 +14,7 @@ import isCompanyDomain from '../../utils/isCompanyDomain'
 import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
-import { getUserById } from "../../postgres/queries/getUsersByIds";
+import {getUserById} from '../../postgres/queries/getUsersByIds'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, newUserEmail: string) => {
   const r = await getRethink()

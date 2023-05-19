@@ -8,10 +8,7 @@ import RedisLockQueue from '../../utils/RedisLockQueue'
  * Check and update if necessary the subscription quantity
  * @param logMismatch Pass true if a quantity mismatch should be logged
  */
-const updateSubscriptionQuantity = async (
-  orgId: string,
-  logMismatch?: boolean
-) => {
+const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) => {
   const r = await getRethink()
   const manager = getStripeManager()
 

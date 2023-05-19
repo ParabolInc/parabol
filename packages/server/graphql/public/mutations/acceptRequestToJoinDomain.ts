@@ -13,7 +13,7 @@ import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import publish from '../../../utils/publish'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import fromGlobalId from '../../../utils/fromGlobalId'
-import { getUserById } from "../../../postgres/queries/getUsersByIds";
+import {getUserById} from '../../../postgres/queries/getUsersByIds'
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
