@@ -53,7 +53,7 @@ class OpenAIServerManager {
               role: 'user',
               content: `You are given a list of reflections from a meeting, separated by commas. Your task is to group these reflections into similar topics and return an array of JavaScript objects, where each object represents a topic and contains an array of reflections that belong to that topic.
               Don't change the input text at all, even if it's spelt incorrectly or has special characters.
-              If you're unable to group any reflections, simply say "No".
+              Groups should have at least 2 reflection.
 
       Example Input:
       ['The retreat went well', 'The project might not be ready in time', 'The deadline is really tight', 'I liked that the length of the retreat', 'I enjoyed the hotel', 'Feeling overworked']

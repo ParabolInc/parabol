@@ -2,6 +2,7 @@ import getRethink from '../../../database/rethinkDriver'
 import Reflection from '../../../database/types/Reflection'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
+import {AutogroupReflectionGroupType} from '../../types/AutogroupReflectionGroup'
 
 const generateGroups = async (
   reflections: Reflection[],
@@ -14,7 +15,6 @@ const generateGroups = async (
   const {featureFlags} = organization
   const hasSuggestGroupsFlag = featureFlags?.includes('suggestGroups')
   if (!hasSuggestGroupsFlag) return
-  const r = await getRethink()
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
   const manager = new OpenAIServerManager()
   const groupedReflectionsJSON = await manager.groupReflections(groupReflectionsInput)
@@ -22,7 +22,31 @@ const generateGroups = async (
     console.warn('ChatGPT was unable to group the reflections')
     return
   }
-  await r.table('NewMeeting').get(meetingId).update({groupedReflectionsJSON}).run()
+  const parsedGroupedReflections = JSON.parse(groupedReflectionsJSON)
+  const autogroupReflectionGroups: AutogroupReflectionGroupType[] = []
+
+  for (const group of parsedGroupedReflections) {
+    const groupTitle = Object.keys(group)[0]
+    if (!groupTitle) continue
+    const reflectionTexts = group[groupTitle]
+    const reflectionIds: string[] = []
+
+    for (const reflectionText of reflectionTexts) {
+      const reflection = reflections.find(
+        (r) => r.plaintextContent.trim() === reflectionText.trim()
+      )
+      if (reflection) {
+        reflectionIds.push(reflection.id)
+      }
+    }
+    autogroupReflectionGroups.push({
+      groupTitle,
+      reflectionIds
+    })
+  }
+
+  const r = await getRethink()
+  await r.table('NewMeeting').get(meetingId).update({autogroupReflectionGroups}).run()
 }
 
 export default generateGroups

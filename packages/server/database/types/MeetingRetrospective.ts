@@ -1,3 +1,4 @@
+import {AutogroupReflectionGroupType} from '../../graphql/types/AutogroupReflectionGroup'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
 
@@ -13,7 +14,7 @@ interface Input {
   totalVotes: number
   maxVotesPerGroup: number
   disableAnonymity: boolean
-  groupedReflectionsJSON?: string
+  autogroupReflectionGroups?: AutogroupReflectionGroupType[]
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
@@ -34,7 +35,7 @@ export default class MeetingRetrospective extends Meeting {
   templateId: string
   topicCount?: number
   reflectionCount?: number
-  groupedReflectionsJSON?: string
+  autogroupReflectionGroups?: AutogroupReflectionGroupType[]
 
   constructor(input: Input) {
     const {
@@ -49,7 +50,7 @@ export default class MeetingRetrospective extends Meeting {
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
-      groupedReflectionsJSON
+      autogroupReflectionGroups
     } = input
     super({
       id,
@@ -65,6 +66,6 @@ export default class MeetingRetrospective extends Meeting {
     this.showConversionModal = showConversionModal
     this.templateId = templateId
     this.disableAnonymity = disableAnonymity
-    this.groupedReflectionsJSON = groupedReflectionsJSON
+    this.autogroupReflectionGroups = autogroupReflectionGroups
   }
 }
