@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SimpleMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import {AcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/AcceptRequestToJoinDomainMutation.graphql'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
@@ -26,9 +26,10 @@ const mutation = graphql`
   }
 `
 
-const AcceptRequestToJoinDomainMutation: SimpleMutation<TAcceptRequestToJoinDomainMutation> = (
+const AcceptRequestToJoinDomainMutation: StandardMutation<TAcceptRequestToJoinDomainMutation> = (
   atmosphere,
-  variables
+  variables,
+  {onCompleted}
 ) => {
   return commitMutation<TAcceptRequestToJoinDomainMutation>(atmosphere, {
     mutation,
@@ -45,6 +46,7 @@ const AcceptRequestToJoinDomainMutation: SimpleMutation<TAcceptRequestToJoinDoma
           action: 'accept',
           teamIds: variables.teamIds
         })
+        onCompleted(res)
       } else {
         atmosphere.eventEmitter.emit('addSnackbar', {
           message: error.message,
