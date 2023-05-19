@@ -132,7 +132,7 @@ const ActivityDetails = (props: Props) => {
                   </div>
                   {activity.isTemplate ? (
                     <TemplateDetails
-                      selectedTemplate={activity.template}
+                      template={activity.template}
                       viewerRef={viewer}
                       templatesRef={availableTemplates.edges.map((edge) => edge.node)}
                       isEditing={isEditing}

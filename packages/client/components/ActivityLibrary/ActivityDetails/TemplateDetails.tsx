@@ -10,7 +10,7 @@ import {
   CategoryID,
   QUICK_START_CATEGORY_ID
 } from '../Categories'
-import {IntegrationsList} from './components/IntegrationsList'
+import {IntegrationsTip} from './components/IntegrationsTip'
 import clsx from 'clsx'
 import {useHistory} from 'react-router'
 import {DetailsBadge} from './components/DetailsBadge'
@@ -28,7 +28,7 @@ import DetailAction from '../../DetailAction'
 import FlatButton from '../../FlatButton'
 import PokerTemplateScaleDetails from '../../../modules/meeting/components/PokerTemplateScaleDetails'
 import TeamPickerModal from '../TeamPickerModal'
-import {MEETING_TYPE_DESCRIPTION_LOOKUP, MEETING_TYPE_TIP_LOOKUP} from './hooks/useActivityDetails'
+import {ACTIVITY_TYPE_DATA_LOOKUP} from './hooks/useActivityDetails'
 import AddPokerTemplateDimension from '../../../modules/meeting/components/AddPokerTemplateDimension'
 import AddTemplatePrompt from '../../../modules/meeting/components/AddTemplatePrompt'
 import TemplateDimensionList from '../../../modules/meeting/components/TemplateDimensionList'
@@ -38,7 +38,7 @@ type Template =
   ActivityDetailsQuery['response']['viewer']['availableTemplates']['edges'][number]['node']
 
 interface Props {
-  selectedTemplate: Template
+  template: Template
   isEditing: boolean
   setIsEditing: (isEditing: boolean) => void
   viewerRef: TemplateDetails_user$key
@@ -46,8 +46,8 @@ interface Props {
 }
 
 export const TemplateDetails = (props: Props) => {
-  const {viewerRef, templatesRef, selectedTemplate, isEditing, setIsEditing} = props
-  const {category} = selectedTemplate
+  const {viewerRef, templatesRef, template, isEditing, setIsEditing} = props
+  const {category} = template
 
   const viewer = useFragment(
     graphql`
@@ -94,7 +94,7 @@ export const TemplateDetails = (props: Props) => {
       teamPrompt: null
     } as const
 
-    const removeTemplateMutation = removeTemplateMutationLookup[selectedTemplate.type]
+    const removeTemplateMutation = removeTemplateMutationLookup[template.type]
     if (!removeTemplateMutation) return
 
     submitMutation()
@@ -107,8 +107,8 @@ export const TemplateDetails = (props: Props) => {
         )
       }
     }
-    removeTemplateMutation(atmosphere, {templateId: selectedTemplate.id}, mutationArgs)
-  }, [selectedTemplate.id, submitting, submitMutation, onError, onCompleted])
+    removeTemplateMutation(atmosphere, {templateId: template.id}, mutationArgs)
+  }, [template.id, submitting, submitMutation, onError, onCompleted])
 
   const {
     togglePortal: toggleTeamPickerPortal,
@@ -127,7 +127,7 @@ export const TemplateDetails = (props: Props) => {
   })
 
   useEffect(() => {
-    if (selectedTemplate.team.editingScaleId) {
+    if (template.team.editingScaleId) {
       openPokerTemplateScaleDetailsPortal()
     } else {
       closePokerTemplateScaleDetailsPortal()
@@ -135,33 +135,23 @@ export const TemplateDetails = (props: Props) => {
   }, [
     openPokerTemplateScaleDetailsPortal,
     closePokerTemplateScaleDetailsPortal,
-    selectedTemplate.team.editingScaleId
+    template.team.editingScaleId
   ])
 
   const teamIds = teams.map((team) => team.id)
   const orgIds = organizations.map((org) => org.id)
-  const isOwner = teamIds.includes(selectedTemplate.teamId)
+  const isOwner = teamIds.includes(template.teamId)
 
-  const lowestScope = isOwner
-    ? 'TEAM'
-    : orgIds.includes(selectedTemplate.orgId)
-    ? 'ORGANIZATION'
-    : 'PUBLIC'
-  const description = useTemplateDescription(lowestScope, selectedTemplate, viewer, tier)
+  const lowestScope = isOwner ? 'TEAM' : orgIds.includes(template.orgId) ? 'ORGANIZATION' : 'PUBLIC'
+  const description = useTemplateDescription(lowestScope, template, viewer, tier)
 
   useEffect(() => {
     setIsEditing(!!history.location.state?.edit)
   }, [history.location.state?.edit, setIsEditing])
 
   useEffect(
-    () =>
-      setActiveTemplate(
-        atmosphere,
-        selectedTemplate.teamId,
-        selectedTemplate.teamId,
-        selectedTemplate.type
-      ),
-    [selectedTemplate]
+    () => setActiveTemplate(atmosphere, template.teamId, template.teamId, template.type),
+    [template]
   )
 
   const templateConfigLookup: Record<MeetingTypeEnum, React.ReactNode> = {
@@ -169,11 +159,11 @@ export const TemplateDetails = (props: Props) => {
       <>
         <TemplatePromptList
           isOwner={isOwner && isEditing}
-          prompts={selectedTemplate.prompts!}
-          templateId={selectedTemplate.id}
+          prompts={template.prompts!}
+          templateId={template.id}
         />
         {isOwner && isEditing && (
-          <AddTemplatePrompt templateId={selectedTemplate.id} prompts={selectedTemplate.prompts!} />
+          <AddTemplatePrompt templateId={template.id} prompts={template.prompts!} />
         )}
       </>
     ),
@@ -182,14 +172,11 @@ export const TemplateDetails = (props: Props) => {
         <TemplateDimensionList
           isOwner={isOwner}
           readOnly={!isEditing}
-          dimensions={selectedTemplate.dimensions!}
-          templateId={selectedTemplate.id}
+          dimensions={template.dimensions!}
+          templateId={template.id}
         />
         {isOwner && isEditing && (
-          <AddPokerTemplateDimension
-            templateId={selectedTemplate.id}
-            dimensions={selectedTemplate.dimensions!}
-          />
+          <AddPokerTemplateDimension templateId={template.id} dimensions={template.dimensions!} />
         )}
       </>
     ),
@@ -205,7 +192,7 @@ export const TemplateDetails = (props: Props) => {
         >
           {CATEGORY_ID_TO_NAME[category as CategoryID]}
         </DetailsBadge>
-        {!selectedTemplate.isFree &&
+        {!template.isFree &&
           (lowestScope === 'PUBLIC' ? (
             <DetailsBadge className='bg-gold-300 text-grape-700'>Premium</DetailsBadge>
           ) : (
@@ -225,7 +212,7 @@ export const TemplateDetails = (props: Props) => {
                 <UnstyledTemplateSharing
                   noModal={true}
                   isOwner={isOwner}
-                  template={selectedTemplate}
+                  template={template}
                   readOnly={!isEditing}
                 />
               </div>
@@ -270,16 +257,12 @@ export const TemplateDetails = (props: Props) => {
             </div>
           )}
         </div>
-        {MEETING_TYPE_DESCRIPTION_LOOKUP[selectedTemplate.type]}
-      </div>
-      <div className='flex min-w-max items-center'>
-        <IntegrationsList />
-        <div className='ml-4'>
-          <b>Tip:</b> {MEETING_TYPE_TIP_LOOKUP[selectedTemplate.type]}
-        </div>
+        {ACTIVITY_TYPE_DATA_LOOKUP.description[template.type]}
       </div>
 
-      <div className='-ml-14'>{templateConfigLookup[selectedTemplate.type]}</div>
+      <IntegrationsTip type={template.type} />
+
+      <div className='-ml-14 pt-4'>{templateConfigLookup[template.type]}</div>
 
       {isEditing && (
         <div className='fixed bottom-0 left-0 right-0 flex h-20 w-full items-center justify-center bg-slate-200'>
@@ -298,16 +281,16 @@ export const TemplateDetails = (props: Props) => {
           teamsRef={teams}
           templatesRef={templates}
           closePortal={closeTeamPickerPortal}
-          parentTemplateId={selectedTemplate.id}
-          type={selectedTemplate.type}
+          parentTemplateId={template.id}
+          type={template.type}
         />
       )}
 
-      {selectedTemplate.type === 'poker' &&
-        selectedTemplate.team.editingScaleId &&
+      {template.type === 'poker' &&
+        template.team.editingScaleId &&
         pokerTemplateScaleDetailsPortal(
           <div className='w-[520px]'>
-            <PokerTemplateScaleDetails team={selectedTemplate.team} />
+            <PokerTemplateScaleDetails team={template.team} />
           </div>
         )}
     </div>

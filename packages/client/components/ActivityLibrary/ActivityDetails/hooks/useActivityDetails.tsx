@@ -17,41 +17,45 @@ export const MEETING_TYPE_TO_CATEGORY_ID: Record<NoTemplatesMeeting, CategoryID>
   teamPrompt: 'standup'
 }
 
-export const MEETING_TYPE_DESCRIPTION_LOOKUP: Record<MeetingTypeEnum, React.ReactNode> = {
-  teamPrompt: (
-    <>
-      This is the space for teammates to give async updates on their work. You can discuss how work
-      is going using a thread, or hop on a call and review the updates together.
-    </>
-  ),
-  retrospective: (
-    <>
-      <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes and vote on
-      the hottest topics. As you <b>discuss topics</b>, create <b>takeaway tasks</b> that can be
-      integrated with your backlog.
-    </>
-  ),
-  poker: (
-    <>
-      <b>Select</b> a list of issues from your integrated backlog, or create new issues to estimate.{' '}
-      <b>Estimate</b> with your team on 1 or many scoring dimensions. <b>Push</b> the estimations to
-      your backlog.
-    </>
-  ),
-  action: (
-    <>
-      This is a space to check in as a team. Share a personal update using the <b>Icebreaker</b>{' '}
-      phase. Give a brief update on what’s changed with your work during the <b>Solo Updates</b>{' '}
-      phase. Raise issues for discussion in the <b>Team Agenda</b> phase.
-    </>
-  )
-}
-
-export const MEETING_TYPE_TIP_LOOKUP: Record<MeetingTypeEnum, React.ReactNode> = {
-  teamPrompt: <>push takeaway tasks to your backlog</>,
-  action: <>push takeaway tasks to your backlog</>,
-  retrospective: <>push takeaway tasks to your backlog</>,
-  poker: <>sync estimations with your backlog</>
+export const ACTIVITY_TYPE_DATA_LOOKUP: {
+  description: Record<MeetingTypeEnum, React.ReactNode>
+  integrationsTip: Record<MeetingTypeEnum, React.ReactNode>
+} = {
+  description: {
+    teamPrompt: (
+      <>
+        This is the space for teammates to give async updates on their work. You can discuss how
+        work is going using a thread, or hop on a call and review the updates together.
+      </>
+    ),
+    retrospective: (
+      <>
+        <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes and vote on
+        the hottest topics. As you <b>discuss topics</b>, create <b>takeaway tasks</b> that can be
+        integrated with your backlog.
+      </>
+    ),
+    poker: (
+      <>
+        <b>Select</b> a list of issues from your integrated backlog, or create new issues to
+        estimate. <b>Estimate</b> with your team on 1 or many scoring dimensions. <b>Push</b> the
+        estimations to your backlog.
+      </>
+    ),
+    action: (
+      <>
+        This is a space to check in as a team. Share a personal update using the <b>Icebreaker</b>{' '}
+        phase. Give a brief update on what’s changed with your work during the <b>Solo Updates</b>{' '}
+        phase. Raise issues for discussion in the <b>Team Agenda</b> phase.
+      </>
+    )
+  },
+  integrationsTip: {
+    teamPrompt: <>push takeaway tasks to your backlog</>,
+    action: <>push takeaway tasks to your backlog</>,
+    retrospective: <>push takeaway tasks to your backlog</>,
+    poker: <>sync estimations with your backlog</>
+  }
 }
 
 type MeetingActivity = {
@@ -99,7 +103,7 @@ export const useActivityDetails = (
         prevCategory ?? category ?? QUICK_START_CATEGORY_ID
       }`,
       type: activityId as MeetingTypeEnum,
-      description: MEETING_TYPE_DESCRIPTION_LOOKUP[type],
+      description: ACTIVITY_TYPE_DATA_LOOKUP.description[type],
       isTemplate: false
     }
 
@@ -126,7 +130,7 @@ export const useActivityDetails = (
       prevCategory ?? category ?? QUICK_START_CATEGORY_ID
     }`,
     type,
-    description: MEETING_TYPE_DESCRIPTION_LOOKUP[type],
+    description: ACTIVITY_TYPE_DATA_LOOKUP.description[type],
     isTemplate: true,
     template: selectedTemplate
   }

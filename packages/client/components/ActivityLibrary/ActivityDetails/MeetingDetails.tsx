@@ -1,16 +1,15 @@
 import React from 'react'
-import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID} from '../Categories'
-import {MeetingTypeEnum} from '../../../../server/postgres/types/Meeting'
-import {IntegrationsList} from './components/IntegrationsList'
+import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES} from '../Categories'
+import {IntegrationsTip} from './components/IntegrationsTip'
 import clsx from 'clsx'
 import {DetailsBadge} from './components/DetailsBadge'
-import {MEETING_TYPE_DESCRIPTION_LOOKUP, MEETING_TYPE_TIP_LOOKUP} from './hooks/useActivityDetails'
+import {Activity, ACTIVITY_TYPE_DATA_LOOKUP} from './hooks/useActivityDetails'
 
-interface MeetingDetailsProps {
-  type: MeetingTypeEnum
-  category: CategoryID
+interface Props {
+  type: Activity['type']
+  category: Activity['category']
 }
-export const MeetingDetails = (props: MeetingDetailsProps) => {
+export const MeetingDetails = (props: Props) => {
   const {type, category} = props
 
   return (
@@ -23,13 +22,9 @@ export const MeetingDetails = (props: MeetingDetailsProps) => {
 
       <div className='text-base font-semibold leading-6 text-slate-600'>Created by Parabol</div>
 
-      <div className='w-[480px]'>{MEETING_TYPE_DESCRIPTION_LOOKUP[type]}</div>
-      <div className='flex min-w-max items-center'>
-        <IntegrationsList />
-        <div className='ml-4'>
-          <b>Tip:</b> {MEETING_TYPE_TIP_LOOKUP[type]}
-        </div>
-      </div>
+      <div className='w-[480px]'>{ACTIVITY_TYPE_DATA_LOOKUP.description[type]}</div>
+
+      <IntegrationsTip type={type} />
     </div>
   )
 }
