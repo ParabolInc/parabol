@@ -245,7 +245,14 @@ const OrgPlans = (props: Props) => {
     }
   ] as const
 
-  const handleClick = (label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan') => {
+  const handleClick = (
+    label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan',
+    tier: TierEnum
+  ) => {
+    SendClientSegmentEventMutation(atmosphere, 'Plan Tier Selected', {
+      orgId,
+      tier
+    })
     if (label === 'Contact') {
       window.open('mailto:love@parabol.co', '_blank')
     } else if (label === 'Select Plan') {
@@ -254,7 +261,7 @@ const OrgPlans = (props: Props) => {
       openPortal()
       SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
         orgId,
-        downgradeCTALocation: 'billing'
+        tier
       })
     }
   }
@@ -301,7 +308,8 @@ const OrgPlans = (props: Props) => {
               </Content>
               <ButtonBlock>
                 <CTAButton
-                  onClick={() => handleClick(plan.buttonLabel)}
+                  disabled={plan.buttonStyle === 'disabled'}
+                  onClick={() => handleClick(plan.buttonLabel, plan.tier)}
                   buttonStyle={plan.buttonStyle}
                   size='medium'
                 >

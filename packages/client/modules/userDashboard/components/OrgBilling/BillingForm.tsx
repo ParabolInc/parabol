@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -8,6 +8,7 @@ import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMu
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -65,6 +66,7 @@ const BillingForm = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
+  const [hasStarted, setHasStarted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -87,9 +89,16 @@ const BillingForm = (props: Props) => {
     }
   }
 
+  const handleChange = () => {
+    if (!hasStarted) {
+      SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
+      setHasStarted(true)
+    }
+  }
+
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      <PaymentElement id='payment-element' options={{layout: 'tabs'}} />
+      <PaymentElement onChange={handleChange} id='payment-element' options={{layout: 'tabs'}} />
       <ButtonBlock>
         {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
