@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useCallback, useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
+import {ActivityDetailsQuery, MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
 import {TemplateDetails_templates$key} from '~/__generated__/TemplateDetails_templates.graphql'
 import {
@@ -29,6 +29,10 @@ import FlatButton from '../../FlatButton'
 import PokerTemplateScaleDetails from '../../../modules/meeting/components/PokerTemplateScaleDetails'
 import TeamPickerModal from '../TeamPickerModal'
 import {MEETING_TYPE_DESCRIPTION_LOOKUP, MEETING_TYPE_TIP_LOOKUP} from './hooks/useActivityDetails'
+import AddPokerTemplateDimension from '../../../modules/meeting/components/AddPokerTemplateDimension'
+import AddTemplatePrompt from '../../../modules/meeting/components/AddTemplatePrompt'
+import TemplateDimensionList from '../../../modules/meeting/components/TemplateDimensionList'
+import TemplatePromptList from '../../../modules/meeting/components/TemplatePromptList'
 
 type Template =
   ActivityDetailsQuery['response']['viewer']['availableTemplates']['edges'][number]['node']
@@ -160,8 +164,41 @@ export const TemplateDetails = (props: Props) => {
     [selectedTemplate]
   )
 
+  const templateConfigLookup: Record<MeetingTypeEnum, React.ReactNode> = {
+    retrospective: (
+      <>
+        <TemplatePromptList
+          isOwner={isOwner && isEditing}
+          prompts={selectedTemplate.prompts!}
+          templateId={selectedTemplate.id}
+        />
+        {isOwner && isEditing && (
+          <AddTemplatePrompt templateId={selectedTemplate.id} prompts={selectedTemplate.prompts!} />
+        )}
+      </>
+    ),
+    poker: (
+      <>
+        <TemplateDimensionList
+          isOwner={isOwner}
+          readOnly={!isEditing}
+          dimensions={selectedTemplate.dimensions!}
+          templateId={selectedTemplate.id}
+        />
+        {isOwner && isEditing && (
+          <AddPokerTemplateDimension
+            templateId={selectedTemplate.id}
+            dimensions={selectedTemplate.dimensions!}
+          />
+        )}
+      </>
+    ),
+    action: null,
+    teamPrompt: null
+  }
+
   return (
-    <>
+    <div className='space-y-6'>
       <div className='flex gap-2'>
         <DetailsBadge
           className={clsx(CATEGORY_THEMES[category as CategoryID].primary, 'text-white')}
@@ -242,6 +279,8 @@ export const TemplateDetails = (props: Props) => {
         </div>
       </div>
 
+      <div className='-ml-14'>{templateConfigLookup[selectedTemplate.type]}</div>
+
       {isEditing && (
         <div className='fixed bottom-0 left-0 right-0 flex h-20 w-full items-center justify-center bg-slate-200'>
           <button
@@ -271,6 +310,6 @@ export const TemplateDetails = (props: Props) => {
             <PokerTemplateScaleDetails team={selectedTemplate.team} />
           </div>
         )}
-    </>
+    </div>
   )
 }

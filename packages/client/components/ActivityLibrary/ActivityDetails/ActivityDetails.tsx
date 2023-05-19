@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {CATEGORY_THEMES} from '../Categories'
@@ -9,6 +9,10 @@ import {Link} from 'react-router-dom'
 import IconLabel from '../../IconLabel'
 import {ActivityCard} from '../ActivityCard'
 import {useActivityDetails} from './hooks/useActivityDetails'
+import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
+import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
+import {TemplateDetails} from './TemplateDetails'
+import {MeetingDetails} from './MeetingDetails'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -66,11 +70,23 @@ interface Props {
 const ActivityDetails = (props: Props) => {
   const {queryRef, activityId: activityIdParam} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
-  const {activity, isEditing} = useActivityDetails(activityIdParam, data)
+  const {viewer} = data
+  const {availableTemplates, teams} = viewer
+
+  const [isEditing, setIsEditing] = useState(false)
+  const {activity} = useActivityDetails(activityIdParam, data)
 
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
+
+  const teamTemplates = activity.isTemplate
+    ? availableTemplates.edges
+        .map((edge) => edge.node)
+        .filter((edge) => edge.teamId === activity.template.teamId)
+    : []
+  const teamIds = teams.map((team) => team.id)
+  const isOwner = activity.isTemplate ? teamIds.includes(activity.template.teamId) : false
 
   return (
     <div className='flex h-full flex-col bg-white'>
@@ -99,15 +115,44 @@ const ActivityDetails = (props: Props) => {
               />
               <div className='pb-20'>
                 <div className='mb-10 space-y-2 pl-14'>
-                  <div className='flex min-h-[40px] items-center'>{activity.name}</div>
-                  <div className='space-y-6'>{activity.details}</div>
+                  <div className='flex min-h-[40px] items-center'>
+                    {activity.isTemplate ? (
+                      <EditableTemplateName
+                        className='text-[32px] leading-9'
+                        name={activity.name}
+                        templateId={activity.id}
+                        teamTemplates={teamTemplates}
+                        isOwner={isOwner && isEditing}
+                      />
+                    ) : (
+                      <div className='text-[32px] font-semibold leading-tight text-slate-700'>
+                        {activity.name}
+                      </div>
+                    )}
+                  </div>
+                  {activity.isTemplate ? (
+                    <TemplateDetails
+                      selectedTemplate={activity.template}
+                      viewerRef={viewer}
+                      templatesRef={availableTemplates.edges.map((edge) => edge.node)}
+                      isEditing={isEditing}
+                      setIsEditing={setIsEditing}
+                    />
+                  ) : (
+                    <MeetingDetails type={activity.type} category={activity.category} />
+                  )}
                 </div>
-                {activity.templateConfig ? activity.templateConfig : null}
               </div>
             </div>
           </div>
         </div>
-        {activity.sidebar ? activity.sidebar : null}
+        {activity.isTemplate ? (
+          <ActivityDetailsSidebar
+            selectedTemplateRef={activity.template}
+            teamsRef={teams}
+            isOpen={!isEditing}
+          />
+        ) : null}
       </div>
     </div>
   )

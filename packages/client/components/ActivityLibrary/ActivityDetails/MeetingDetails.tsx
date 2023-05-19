@@ -14,7 +14,7 @@ export const MeetingDetails = (props: MeetingDetailsProps) => {
   const {type, category} = props
 
   return (
-    <>
+    <div className='space-y-6'>
       <div className='flex gap-2'>
         <DetailsBadge className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}>
           {CATEGORY_ID_TO_NAME[category]}
@@ -30,6 +30,6 @@ export const MeetingDetails = (props: MeetingDetailsProps) => {
           <b>Tip:</b> {MEETING_TYPE_TIP_LOOKUP[type]}
         </div>
       </div>
-    </>
+    </div>
   )
 }
