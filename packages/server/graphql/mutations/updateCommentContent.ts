@@ -5,7 +5,6 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
-import {isDiscussionFromMeeting} from '../../utils/isDiscussionFromMeeting'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -40,7 +39,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const [comment, viewerMeetingMember, meeting] = await Promise.all([
+    const [comment, viewerMeetingMember] = await Promise.all([
       r.table('Comment').get(commentId).run(),
       dataLoader.get('meetingMembers').load(meetingMemberId),
       dataLoader.get('newMeetings').load(meetingId)
@@ -52,7 +51,8 @@ export default {
       return {error: {message: `Not a member of the meeting`}}
     }
     const {createdBy, discussionId} = comment
-    if (!isDiscussionFromMeeting(discussionId, meeting)) {
+    const discussion = await dataLoader.get('discussions').loadNonNull(discussionId)
+    if (discussion.meetingId !== meetingId) {
       return {error: {message: `Comment is not from this meeting`}}
     }
     if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {
