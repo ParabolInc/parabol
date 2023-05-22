@@ -3,14 +3,14 @@ import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES} from '../Categories'
 import {IntegrationsTip} from './components/IntegrationsTip'
 import clsx from 'clsx'
 import {DetailsBadge} from './components/DetailsBadge'
-import {Activity, ACTIVITY_TYPE_DATA_LOOKUP} from './hooks/useActivityDetails'
+import {ActivityWithNoTemplate} from './hooks/useActivityDetails'
 
 interface Props {
-  type: Activity['type']
-  category: Activity['category']
+  activity: ActivityWithNoTemplate
 }
 export const MeetingDetails = (props: Props) => {
-  const {type, category} = props
+  const {activity} = props
+  const {category, description, integrationsTip} = activity
 
   return (
     <div className='space-y-6'>
@@ -22,9 +22,9 @@ export const MeetingDetails = (props: Props) => {
 
       <div className='text-base font-semibold leading-6 text-slate-600'>Created by Parabol</div>
 
-      <div className='w-[480px]'>{ACTIVITY_TYPE_DATA_LOOKUP.description[type]}</div>
+      <div className='w-[480px]'>{description}</div>
 
-      <IntegrationsTip type={type} />
+      <IntegrationsTip>{integrationsTip}</IntegrationsTip>
     </div>
   )
 }

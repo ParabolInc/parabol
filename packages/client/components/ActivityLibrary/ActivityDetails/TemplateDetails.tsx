@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useCallback, useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {ActivityDetailsQuery, MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
+import {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
 import {TemplateDetails_templates$key} from '~/__generated__/TemplateDetails_templates.graphql'
 import {
@@ -28,17 +28,14 @@ import DetailAction from '../../DetailAction'
 import FlatButton from '../../FlatButton'
 import PokerTemplateScaleDetails from '../../../modules/meeting/components/PokerTemplateScaleDetails'
 import TeamPickerModal from '../TeamPickerModal'
-import {ACTIVITY_TYPE_DATA_LOOKUP} from './hooks/useActivityDetails'
 import AddPokerTemplateDimension from '../../../modules/meeting/components/AddPokerTemplateDimension'
 import AddTemplatePrompt from '../../../modules/meeting/components/AddTemplatePrompt'
 import TemplateDimensionList from '../../../modules/meeting/components/TemplateDimensionList'
 import TemplatePromptList from '../../../modules/meeting/components/TemplatePromptList'
-
-type Template =
-  ActivityDetailsQuery['response']['viewer']['availableTemplates']['edges'][number]['node']
+import {ActivityWithTemplate} from './hooks/useActivityDetails'
 
 interface Props {
-  template: Template
+  activity: ActivityWithTemplate
   isEditing: boolean
   setIsEditing: (isEditing: boolean) => void
   viewerRef: TemplateDetails_user$key
@@ -46,8 +43,8 @@ interface Props {
 }
 
 export const TemplateDetails = (props: Props) => {
-  const {viewerRef, templatesRef, template, isEditing, setIsEditing} = props
-  const {category} = template
+  const {viewerRef, templatesRef, isEditing, setIsEditing, activity} = props
+  const {category, type, description: activityDescription, integrationsTip, template} = activity
 
   const viewer = useFragment(
     graphql`
@@ -94,7 +91,7 @@ export const TemplateDetails = (props: Props) => {
       teamPrompt: null
     } as const
 
-    const removeTemplateMutation = removeTemplateMutationLookup[template.type]
+    const removeTemplateMutation = removeTemplateMutationLookup[type]
     if (!removeTemplateMutation) return
 
     submitMutation()
@@ -257,12 +254,12 @@ export const TemplateDetails = (props: Props) => {
             </div>
           )}
         </div>
-        {ACTIVITY_TYPE_DATA_LOOKUP.description[template.type]}
+        {activityDescription}
       </div>
 
-      <IntegrationsTip type={template.type} />
+      <IntegrationsTip>{integrationsTip}</IntegrationsTip>
 
-      <div className='-ml-14 pt-4'>{templateConfigLookup[template.type]}</div>
+      <div className='-ml-14 pt-4'>{templateConfigLookup[type]}</div>
 
       {isEditing && (
         <div className='fixed bottom-0 left-0 right-0 flex h-20 w-full items-center justify-center bg-slate-200'>
