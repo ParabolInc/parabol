@@ -183,6 +183,7 @@ module.exports = ({isDeploy, isStats}) => ({
           {
             loader: '@sucrase/webpack-loader',
             options: {
+              production: true,
               transforms: ['jsx', 'typescript']
             }
           }
@@ -213,6 +214,7 @@ module.exports = ({isDeploy, isStats}) => ({
           {
             loader: '@sucrase/webpack-loader',
             options: {
+              production: true,
               transforms: ['jsx']
             }
           }

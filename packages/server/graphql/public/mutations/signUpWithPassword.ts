@@ -13,7 +13,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,
-  {invitationToken, password, segmentId, email: denormEmail},
+  {invitationToken, password, segmentId, email: denormEmail, params},
   context
 ) => {
   const email = denormEmail.toLowerCase().trim()
@@ -61,7 +61,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
   const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, segmentId})
   // MUTATIVE
-  context.authToken = await bootstrapNewUser(newUser, isOrganic)
+  context.authToken = await bootstrapNewUser(newUser, isOrganic, params)
   return {
     userId: newUser.id,
     authToken: encodeAuthToken(context.authToken),

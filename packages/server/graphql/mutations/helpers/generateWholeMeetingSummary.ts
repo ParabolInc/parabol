@@ -1,5 +1,4 @@
 import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
-import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -37,12 +36,9 @@ const generateWholeMeetingSummary = async (
     .flatMap((tasksByDiscussion) => tasksByDiscussion.map(({plaintextContent}) => plaintextContent))
   const contentToSummarize = [...commentsContent, ...tasksContent, ...reflectionsContent]
   if (contentToSummarize.length <= 1) return
-  const [r, summary] = await Promise.all([getRethink(), manager.getSummary(contentToSummarize)])
+  const summary = await manager.getSummary(contentToSummarize)
   if (!summary) return
-  await Promise.all([
-    dataLoader.get('newMeetings').updateCache(meetingId, {summary}),
-    r.table('NewMeeting').get(meetingId).update({summary}).run()
-  ])
+  return summary
 }
 
 export default generateWholeMeetingSummary

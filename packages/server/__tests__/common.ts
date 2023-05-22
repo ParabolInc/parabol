@@ -92,8 +92,9 @@ const SIGNUP_WITH_PASSWORD_MUTATION = `
     $password: String!
     $invitationToken: ID!
     $segmentId: ID
+    $params: String!
   ) {
-    signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, segmentId: $segmentId) {
+    signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, segmentId: $segmentId, params: $params) {
       error {
         message
       }
@@ -135,7 +136,8 @@ export const signUpWithEmail = async (emailInput: string) => {
       email,
       password,
       segmentId: null,
-      invitationToken: ''
+      invitationToken: '',
+      params: ''
     }
   })
 
