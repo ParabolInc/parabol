@@ -139,9 +139,7 @@ test.describe('retrospective-demo / discuss page', () => {
       // Emoji reactions do not appear on mobile devices
       if (!isMobile) {
         for await (const emoji of emojis) {
-          await expect(page.locator(`text=${emoji}`)).toBeVisible({
-            timeout: 30_000
-          })
+          await expect(page.locator(`text=${emoji}`)).toBeVisible()
         }
       }
 
