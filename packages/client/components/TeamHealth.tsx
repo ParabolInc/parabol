@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
-import useGotoStageId from '~/hooks/useGotoStageId'
 import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingContent from './MeetingContent'
@@ -14,7 +13,6 @@ interface Props {
   avatarGroup: ReactElement
   meeting: TeamHealth_meeting$key
   toggleSidebar: () => void
-  gotoStageId?: ReturnType<typeof useGotoStageId>
 }
 
 const TeamHealth = (props: Props) => {
@@ -24,7 +22,6 @@ const TeamHealth = (props: Props) => {
       fragment TeamHealth_meeting on NewMeeting {
         endedAt
         showSidebar
-        facilitatorStageId
         localStage {
           id
           ...TeamHealthLocalStage @relay(mask: false)
@@ -35,7 +32,6 @@ const TeamHealth = (props: Props) => {
             ...TeamHealthLocalStage @relay(mask: false)
           }
         }
-        teamId
       }
     `,
     meetingRef
@@ -53,7 +49,7 @@ const TeamHealth = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <div className='text-center text-2xl'>{question}</div>
+          <div className='text-2xl text-center'>{question}</div>
           <form
             className='flex flex-row'
             onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
@@ -62,8 +58,8 @@ const TeamHealth = (props: Props) => {
           >
             {labels?.map((label) => (
               //center vertically
-              <div key={label} className='flex h-24 w-24 items-center justify-center p-8'>
-                <input name='foo' className='peer hidden' type='radio' id={label} value={label} />
+              <div key={label} className='flex items-center justify-center w-24 h-24 p-8'>
+                <input name='foo' className='hidden peer' type='radio' id={label} value={label} />
                 <label
                   htmlFor={label}
                   className='text-4xl opacity-75 drop-shadow-lg hover:text-5xl hover:opacity-100 hover:blur-none peer-checked:text-6xl peer-checked:opacity-100 peer-checked:blur-none'
@@ -83,11 +79,6 @@ graphql`
   fragment TeamHealthLocalStage on TeamHealthStage {
     question
     labels
-    scores {
-      id
-      userId
-      label
-    }
   }
 `
 
