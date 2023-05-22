@@ -153,7 +153,7 @@ export const newMeetingFields = () => ({
   },
   summary: {
     type: GraphQLString,
-    description: `The GPT-3 generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
+    description: `The OpenAI generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
   },
   sentimentScore: {
     type: GraphQLFloat,

@@ -93,15 +93,19 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {createdBy, createdByEmail, id: requestId} = domainJoinRequest
 
   const onAdd = () => {
-    AcceptRequestToJoinDomainMutation(atmosphere, {
-      requestId,
-      teamIds: selectedTeams
-    }, {
-      onCompleted: closePortal,
-      onError: () => {
-        /* noop */
+    AcceptRequestToJoinDomainMutation(
+      atmosphere,
+      {
+        requestId,
+        teamIds: selectedTeams
+      },
+      {
+        onCompleted: closePortal,
+        onError: () => {
+          /* noop */
+        }
       }
-    })
+    )
   }
 
   return (
