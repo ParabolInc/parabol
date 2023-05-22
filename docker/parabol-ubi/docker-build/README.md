@@ -64,15 +64,17 @@ To build the image, these commands must be executed from the **root level** of t
 > :warning: **THIS WILL DELETE YOUR LOCAL .env file is you have one**. Back it up before proceeding.
 
 ```commandLine
-cp ${_BUILD_ENV_PATH} ./.env
+cp $_BUILD_ENV_PATH ./.env
 ```
 
 - **Start the databases:**
 
+> :warning: Stop all database containers you might have running before executing the following command. If other database containers are running, some ports might be already taken.
+
 ```commandLine
-docker run --name temp-postgres --network=host -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:${postgresql_tag} && \
-docker run --name temp-rethinkdb --network=host -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:${rethinkdb_tag} && \
-docker run --name temp-redis --network=host -d -p 6379:6379 redis:${redis_tag}
+docker run --name temp-postgres -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:$postgresql_tag && \
+docker run --name temp-rethinkdb -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:$rethinkdb_tag && \
+docker run --name temp-redis -d -p 6379:6379 redis:$redis_tag
 ```
 
 - **Build the application:**
@@ -88,8 +90,14 @@ yarn build --no-deps
 - **Build the docker image:**
 
 ```commandLine
-docker build --network=host -t ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} -f ${_DOCKERFILE} --build-arg _NODE_VERSION=${_NODE_VERSION} --build-arg _SECURITY_ENABLED=${_SECURITY_ENABLED} .
+docker build -t $_DOCKER_REPOSITORY:$_DOCKER_TAG -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION --build-arg _SECURITY_ENABLED=$_SECURITY_ENABLED .
 ```
+
+> Some build tips
+>
+> - **Docker cache:** to avoid caching images and using cache, the flag `--no-cache` can be added to the `docker build` command. It will save some space in the workstation, but it might take longer to build.
+> - **Multi platform:** to build images for multiple platforms, you can use `docker builx build --platform linux/arm64 [the rest of the build command]`.
+> - **Debug:** if you want debug the commands executed during the docker build, add the flag `--progress=plain` to the docker build command.
 
 - **Stop and delete all database containers:**
 
@@ -105,9 +113,11 @@ rm .env
 
 It will produce a Docker image tagged as `${_DOCKER_REPOSITORY}:${_DOCKER_TAG}`. Ex: `parabol:test-image`.
 
-To avoid caching images and using cache, the flag `--no-cache` can be added to the `docker build` command. It will save some space in the workstation, but it might take longer to build.
+- **Show the new image:**
 
-If you want debug the commands executed during the docker build, add the flag `--progress=plain` to the docker build command.
+```commandLine
+docker images $_DOCKER_REPOSITORY:$_DOCKER_TAG
+```
 
 ## Build from git
 
