@@ -225,7 +225,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           password,
           invitationToken: invitationToken || '',
           isInvitation: !!invitationToken,
-          segmentId
+          segmentId,
+          params: location.search
         },
         {
           onError,
