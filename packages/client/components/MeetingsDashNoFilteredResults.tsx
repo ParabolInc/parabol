@@ -4,6 +4,10 @@ import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {FONT_FAMILY} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV3'
+import {Link} from 'react-router-dom'
+import Atmosphere from '../Atmosphere'
+import {commitLocalUpdate} from 'relay-runtime'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 const maybeTabletPlusMediaQuery = makeMinWidthMediaQuery(Breakpoint.FUZZY_TABLET)
 
@@ -41,14 +45,26 @@ interface Props {
 }
 const MeetingsDashNoFilteredResults = (props: Props) => {
   const {name} = props
+  const clearDashSearch = (atmosphere: Atmosphere) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      viewer.setValue(null, 'dashSearch')
+    })
+  }
+
+  const atmosphere = useAtmosphere()
+  const onClick = () => {
+    clearDashSearch(atmosphere)
+  }
   return (
     <Section>
       <Heading>{`Hi ${name},`}</Heading>
       <Copy>
         {'Sorry we could not find any meetings matched with your query. '}
-        <a href={'/meetings'} style={linkStyle}>
+        <Link to={'/meetings'} style={linkStyle} onClick={onClick}>
           Click here
-        </a>
+        </Link>
         {'  to see all meetings.'}
       </Copy>
     </Section>
