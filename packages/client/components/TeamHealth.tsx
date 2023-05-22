@@ -49,7 +49,7 @@ const TeamHealth = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <div className='text-2xl text-center'>{question}</div>
+          <div className='text-center text-2xl'>{question}</div>
           <form
             className='flex flex-row'
             onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
@@ -58,8 +58,8 @@ const TeamHealth = (props: Props) => {
           >
             {labels?.map((label) => (
               //center vertically
-              <div key={label} className='flex items-center justify-center w-24 h-24 p-8'>
-                <input name='foo' className='hidden peer' type='radio' id={label} value={label} />
+              <div key={label} className='flex h-24 w-24 items-center justify-center p-8'>
+                <input name='foo' className='peer hidden' type='radio' id={label} value={label} />
                 <label
                   htmlFor={label}
                   className='text-4xl opacity-75 drop-shadow-lg hover:text-5xl hover:opacity-100 hover:blur-none peer-checked:text-6xl peer-checked:opacity-100 peer-checked:blur-none'
