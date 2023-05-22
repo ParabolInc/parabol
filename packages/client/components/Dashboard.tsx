@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {Location} from 'history'
 import React, {lazy, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route, Switch, useLocation} from 'react-router'
+import {Route, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
@@ -40,10 +39,6 @@ const NewTeam = lazy(
       /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
     )
 )
-const NewMeetingRoot = lazy(
-  () => import(/* webpackChunkName: 'NewMeetingRoot' */ './NewMeetingRoot')
-)
-
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
 }
@@ -135,9 +130,6 @@ const Dashboard = (props: Props) => {
   useSnacksForNewMeetings(activeMeetings)
   useNewFeatureSnackbar(viewer)
 
-  const location = useLocation<{backgroundLocation?: Location}>()
-  const state = location.state
-
   return (
     <DashLayout>
       <SkipLink href='#main'>Skip to content</SkipLink>
@@ -155,7 +147,7 @@ const Dashboard = (props: Props) => {
           </SwipeableDashSidebar>
         )}
         <DashMain id='main' ref={meetingsDashRef}>
-          <Switch location={state?.backgroundLocation || location}>
+          <Switch>
             <Route
               path='(/meetings|/new-meeting)'
               render={(routeProps) => (
@@ -166,9 +158,6 @@ const Dashboard = (props: Props) => {
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
             <Route path='/usage' component={InsightsRoot} />
-          </Switch>
-          <Switch>
-            <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
           </Switch>
         </DashMain>
       </DashPanel>
