@@ -1,7 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import {MutationResolvers} from '../resolverTypes'
 
-const addFeatureFlagToOrg: MutationResolvers['addFeatureFlagToOrg'] = async (
+const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
   _source,
   {orgIds, flag}
 ) => {
@@ -30,4 +30,4 @@ const addFeatureFlagToOrg: MutationResolvers['addFeatureFlagToOrg'] = async (
   return {updatedOrgIds}
 }
 
-export default addFeatureFlagToOrg
+export default updateOrgFeatureFlag
