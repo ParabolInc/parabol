@@ -102,7 +102,7 @@ type TeamHealthStage implements NewMeetingStage {
   labels: [String!]!
 
   """
-  All the estimates, 1 per user
+  All the scores, 1 per user
   """
   scores: [TeamHealthUserScore!]!
 }
