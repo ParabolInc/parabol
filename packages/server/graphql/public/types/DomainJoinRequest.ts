@@ -1,12 +1,12 @@
 import {DomainJoinRequestResolvers} from '../resolverTypes'
 import {getUserId} from '../../../utils/authorization'
-import toGlobalId from '../../../utils/toGlobalId'
+import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {GQLContext} from '../../graphql'
 import getRethink from '../../../database/rethinkDriver'
 
 const DomainJoinRequest: DomainJoinRequestResolvers = {
   id: ({id}) => {
-    return toGlobalId('DomainJoinRequest', id)
+    return DomainJoinRequestId.join(id)
   },
   createdByEmail: async ({createdBy}, _args, {dataLoader}) => {
     const user = await dataLoader.get('users').loadNonNull(createdBy)

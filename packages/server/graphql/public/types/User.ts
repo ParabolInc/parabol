@@ -22,7 +22,7 @@ import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import db from '../../../db'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
-import fromGlobalId from '../../../utils/fromGlobalId'
+import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 
 const User: UserResolvers = {
   canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
@@ -66,7 +66,7 @@ const User: UserResolvers = {
   domainJoinRequest: async ({email}, {requestId}, {dataLoader}) => {
     const request = await dataLoader
       .get('domainJoinRequests')
-      .loadNonNull(fromGlobalId(requestId).id)
+      .loadNonNull(DomainJoinRequestId.split(requestId))
     const domain = getDomainFromEmail(email)
     if (domain !== request.domain) {
       return null

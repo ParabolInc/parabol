@@ -1,10 +1,10 @@
 import {NotifyRequestToJoinOrgResolvers} from '../resolverTypes'
-import toGlobalId from '../../../utils/toGlobalId'
+import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 
 const NotifyRequestToJoinOrg: NotifyRequestToJoinOrgResolvers = {
   __isTypeOf: ({type}) => type === 'REQUEST_TO_JOIN_ORG',
   domainJoinRequestId: ({domainJoinRequestId}) => {
-    return toGlobalId('DomainJoinRequest', domainJoinRequestId)
+    return DomainJoinRequestId.join(domainJoinRequestId)
   }
 }
 
