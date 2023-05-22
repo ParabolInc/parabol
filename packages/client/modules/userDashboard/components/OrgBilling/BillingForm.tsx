@@ -9,6 +9,8 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
 import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import {StripeCardElementChangeEvent} from '@stripe/stripe-js'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -87,6 +89,7 @@ const BillingForm = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
+  const [hasStarted, setHasStarted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -129,9 +132,19 @@ const BillingForm = (props: Props) => {
     )
   }
 
+  const handleChange = (event: StripeCardElementChangeEvent) => {
+    if (!hasStarted && !event.empty) {
+      SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
+      setHasStarted(true)
+    }
+    if (event.complete) {
+      SendClientSegmentEventMutation(atmosphere, 'Payment Details Complete', {orgId})
+    }
+  }
+
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      <CardElement options={CARD_OPTIONS} />
+      <CardElement onChange={handleChange} options={CARD_OPTIONS} />
       <ButtonBlock>
         {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
