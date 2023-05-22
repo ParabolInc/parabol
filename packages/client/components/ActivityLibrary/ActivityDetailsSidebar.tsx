@@ -82,15 +82,14 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   const templateTeam = teams.find((team) => team.id === selectedTemplate?.teamId)
 
-  const availableTeams = !selectedTemplate
-    ? teams
-    : selectedTemplate.scope === 'PUBLIC'
-    ? teams
-    : selectedTemplate.scope === 'ORGANIZATION'
-    ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-    : templateTeam
-    ? [templateTeam]
-    : []
+  const availableTeams =
+    !selectedTemplate || selectedTemplate.scope === 'PUBLIC'
+      ? teams
+      : selectedTemplate.scope === 'ORGANIZATION'
+      ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
+      : templateTeam
+      ? [templateTeam]
+      : []
 
   const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
@@ -105,13 +104,13 @@ const ActivityDetailsSidebar = (props: Props) => {
         {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
         {
           onCompleted: () => {
-            if (selectedTemplate.type === 'retrospective') {
+            if (type === 'retrospective') {
               StartRetrospectiveMutation(
                 atmosphere,
                 {teamId: selectedTeam.id},
                 {history, onError, onCompleted}
               )
-            } else if (selectedTemplate.type === 'poker') {
+            } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
                 {teamId: selectedTeam.id},
@@ -202,13 +201,13 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
 
-          {selectedTemplate?.type === 'retrospective' && (
+          {type === 'retrospective' && (
             <>
               <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
               <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
             </>
           )}
-          {selectedTemplate?.type === 'poker' && (
+          {type === 'poker' && (
             <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
           )}
           {type === 'action' && (

@@ -1,5 +1,4 @@
 import React from 'react'
-import {PortalId} from '../../hooks/usePortal'
 import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 import NewMeetingDropdown from '../NewMeetingDropdown'
 import {toHumanReadable} from '../TeamPrompt/Recurrence/HumanReadableRecurrenceRule'
@@ -9,18 +8,13 @@ import DialogContainer from '../DialogContainer'
 interface Props {
   onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
   recurrenceSettings: RecurrenceSettings
-  parentId?: PortalId
 }
 
 export const ActivityDetailsRecurrenceSettings = (props: Props) => {
-  const {onRecurrenceSettingsUpdated, recurrenceSettings, parentId} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {togglePortal, modalPortal} = useModal({
-    id: 'activityDetailsRecurrenceSettings',
-    parentId: parentId
+    id: 'activityDetailsRecurrenceSettings'
   })
-  const handleClick = () => {
-    togglePortal()
-  }
 
   return (
     <>
@@ -31,7 +25,7 @@ export const ActivityDetailsRecurrenceSettings = (props: Props) => {
             : 'Does not restart'
         }
         title={'Recurrence'}
-        onClick={handleClick}
+        onClick={togglePortal}
       />
       {modalPortal(
         <DialogContainer className='bg-white'>
