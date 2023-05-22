@@ -6,8 +6,7 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
+  GraphQLObjectType
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import ReflectionGroupType from '../../database/types/ReflectionGroup'
