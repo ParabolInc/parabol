@@ -23,6 +23,10 @@ extend type Mutation {
     the flag that you want to give to the organization
     """
     flag: OrganizationFeatureFlagsEnum!
+    """
+    whether or not you want to give the organization the flag
+    """
+    addFlag: Boolean!
   ): UpdateOrgFeatureFlagPayload!
 }
 

@@ -3,7 +3,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
   _source,
-  {orgIds, flag}
+  {orgIds, flag, addFlag}
 ) => {
   const r = await getRethink()
 
@@ -20,9 +20,15 @@ const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
     .table('Organization')
     .getAll(r.args(orgIds))
     .update(
-      {
-        featureFlags: r.row('featureFlags').default([]).setInsert(flag)
-      },
+      (row) => ({
+        featureFlags: r.branch(
+          addFlag,
+          row('featureFlags').default([]).setInsert(flag),
+          row('featureFlags')
+            .default([])
+            .filter((featureFlag) => featureFlag.ne(flag))
+        )
+      }),
       {returnChanges: true}
     )('changes')('new_val')('id')
     .run()) as string[]
