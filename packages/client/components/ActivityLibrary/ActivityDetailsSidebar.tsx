@@ -25,6 +25,7 @@ import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import StyledError from '../StyledError'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key | null
@@ -92,7 +93,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     : []
 
   const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
-  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
 
   const handleStartActivity = () => {
@@ -220,6 +221,7 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
           <div className='flex grow flex-col justify-end gap-2'>
+            {error && <StyledError>{error.message}</StyledError>}
             <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
             <FlatPrimaryButton onClick={handleStartActivity} waiting={submitting} className='h-14'>
               <div className='text-lg'>Start Activity</div>
