@@ -81,7 +81,6 @@ class RecallAIServerManager {
         const text = words.map((word) => word.text).join(' ')
         return `${speaker}: ${text}`
       })
-      console.log('🚀 ~ transcript:', transcript)
       return transcript.join('\n') as string
     } catch (err) {
       console.error(err)
