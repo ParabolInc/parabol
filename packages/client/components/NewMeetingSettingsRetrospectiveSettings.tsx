@@ -9,8 +9,14 @@ import {PortalStatus} from '../hooks/usePortal'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsToggleTeamHealth from './NewMeetingSettingsToggleTeamHealth'
 
 const NewMeetingSettingsToggleCheckInMenuEntry = styled(NewMeetingSettingsToggleCheckIn)({
+  background: 'none',
+  borderRadius: 0
+})
+
+const NewMeetingSettingsToggleTeamHealthMenuEntry = styled(NewMeetingSettingsToggleTeamHealth)({
   background: 'none',
   borderRadius: 0
 })
@@ -38,11 +44,22 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
     graphql`
       fragment NewMeetingSettingsRetrospectiveSettings_settings on TeamMeetingSettings {
         ...NewMeetingSettingsToggleCheckIn_settings
+        ...NewMeetingSettingsToggleTeamHealth_settings
         ...NewMeetingSettingsToggleAnonymity_settings
+        team {
+          organization {
+            featureFlags {
+              teamHealth
+            }
+          }
+        }
       }
     `,
     settingsRef
   )
+
+  // not the cleanest, but the feature flag is temporary
+  const teamHealth = settings.team.organization.featureFlags.teamHealth
 
   return (
     <>
@@ -56,6 +73,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       {menuPortal(
         <div {...menuProps}>
           <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
+          {teamHealth && <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />}
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
         </div>
       )}

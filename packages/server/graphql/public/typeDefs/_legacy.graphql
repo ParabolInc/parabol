@@ -6903,23 +6903,6 @@ type Mutation {
   ): SetAppLocationPayload!
 
   """
-  Enabled or disable the icebreaker round
-  """
-  setMeetingSettings(
-    settingsId: ID!
-
-    """
-    true to turn icebreaker phase on, false to turn it off
-    """
-    checkinEnabled: Boolean
-
-    """
-    disables anonymity of reflections
-    """
-    disableAnonymity: Boolean
-  ): SetMeetingSettingsPayload!
-
-  """
   Update the default Slack channel where notifications are sent
   """
   setDefaultSlackChannel(slackChannelId: ID!, teamId: ID!): SetDefaultSlackChannelPayload!
