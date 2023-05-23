@@ -61,16 +61,7 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
   }
 }
 
-type ActivityNoTemplate = {
-  isTemplate: false
-}
-
-type ActivityTemplate = {
-  isTemplate: true
-  template: ActivityDetailsQuery['response']['viewer']['availableTemplates']['edges'][number]['node']
-}
-
-export type Activity = {
+interface BaseActivity {
   id: ActivityId
   name: string
   illustration: string
@@ -79,10 +70,19 @@ export type Activity = {
   type: MeetingTypeEnum
   description: React.ReactNode
   integrationsTip: React.ReactNode
-} & (ActivityNoTemplate | ActivityTemplate)
+  isTemplate: boolean
+}
 
-export type ActivityWithTemplate = Activity & ActivityTemplate
-export type ActivityWithNoTemplate = Activity & ActivityNoTemplate
+export interface ActivityWithTemplate extends BaseActivity {
+  isTemplate: true
+  template: ActivityDetailsQuery['response']['viewer']['availableTemplates']['edges'][number]['node']
+}
+
+export interface ActivityWithNoTemplate extends BaseActivity {
+  isTemplate: false
+}
+
+export type Activity = ActivityWithTemplate | ActivityWithNoTemplate
 
 export const useActivityDetails = (
   activityIdParam: string,
@@ -92,8 +92,8 @@ export const useActivityDetails = (
   const {availableTemplates} = viewer
 
   // for now, standups and check-ins don't have templates
-  const meetingIds = ['teamPrompt', 'action']
-  if (meetingIds.includes(activityIdParam)) {
+  const noTemplateActivityIds = ['teamPrompt', 'action']
+  if (noTemplateActivityIds.includes(activityIdParam)) {
     const activityId = activityIdParam as ActivityId
     const type = activityId as NoTemplatesMeeting
     const category = MEETING_TYPE_TO_CATEGORY_ID[type]

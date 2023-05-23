@@ -41,7 +41,7 @@ export const query = graphql`
   query ActivityDetailsQuery {
     viewer {
       tier
-      availableTemplates(first: 100) @connection(key: "ActivityDetails_availableTemplates") {
+      availableTemplates(first: 200) @connection(key: "ActivityDetails_availableTemplates") {
         edges {
           node {
             ...ActivityDetails_template @relay(mask: false)
