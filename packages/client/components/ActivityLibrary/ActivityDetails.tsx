@@ -1,45 +1,41 @@
-import graphql from 'babel-plugin-relay/macro'
 import {ContentCopy} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React, {useCallback, useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
-import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {Link} from 'react-router-dom'
-import IconLabel from '../IconLabel'
-import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
-import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
-import TemplateDimensionList from '../../modules/meeting/components/TemplateDimensionList'
-import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
-import AddPokerTemplateDimension from '../../modules/meeting/components/AddPokerTemplateDimension'
-import {ActivityCard} from './ActivityCard'
-import {activityIllustrations} from './ActivityIllustrations'
+import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
-import useTemplateDescription from '../../utils/useTemplateDescription'
-import clsx from 'clsx'
-import {UnstyledTemplateSharing} from '../../modules/meeting/components/TemplateSharing'
-import DetailAction from '../DetailAction'
-import RemoveReflectTemplateMutation from '../../mutations/RemoveReflectTemplateMutation'
-import useMutationProps from '../../hooks/useMutationProps'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import GitHubSVG from '../GitHubSVG'
-import JiraSVG from '../JiraSVG'
-import GitLabSVG from '../GitLabSVG'
-import AzureDevOpsSVG from '../AzureDevOpsSVG'
-import JiraServerSVG from '../JiraServerSVG'
-import ActivityDetailsSidebar from './ActivityDetailsSidebar'
-import CloneTemplate from '../../modules/meeting/components/CloneTemplate'
 import useModal from '../../hooks/useModal'
-import TeamPickerModal from './TeamPickerModal'
-import FlatButton from '../FlatButton'
-import {
-  CategoryID,
-  CATEGORY_THEMES,
-  CATEGORY_ID_TO_NAME,
-  QUICK_START_CATEGORY_ID
-} from './Categories'
-import {setActiveTemplate} from '../../utils/relay/setActiveTemplate'
+import useMutationProps from '../../hooks/useMutationProps'
+import AddPokerTemplateDimension from '../../modules/meeting/components/AddPokerTemplateDimension'
+import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
+import CloneTemplate from '../../modules/meeting/components/CloneTemplate'
+import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
 import PokerTemplateScaleDetails from '../../modules/meeting/components/PokerTemplateScaleDetails'
+import TemplateDimensionList from '../../modules/meeting/components/TemplateDimensionList'
+import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
+import {UnstyledTemplateSharing} from '../../modules/meeting/components/TemplateSharing'
 import RemovePokerTemplateMutation from '../../mutations/RemovePokerTemplateMutation'
+import RemoveReflectTemplateMutation from '../../mutations/RemoveReflectTemplateMutation'
+import {setActiveTemplate} from '../../utils/relay/setActiveTemplate'
+import useTemplateDescription from '../../utils/useTemplateDescription'
+import AzureDevOpsSVG from '../AzureDevOpsSVG'
+import DetailAction from '../DetailAction'
+import FlatButton from '../FlatButton'
+import GitHubSVG from '../GitHubSVG'
+import GitLabSVG from '../GitLabSVG'
+import IconLabel from '../IconLabel'
+import JiraSVG from '../JiraSVG'
+import JiraServerSVG from '../JiraServerSVG'
+import {ActivityCard} from './ActivityCard'
+import ActivityDetailsBadges from './ActivityDetailsBadges'
+import ActivityDetailsSidebar from './ActivityDetailsSidebar'
+import {activityIllustrations} from './ActivityIllustrations'
+import {CATEGORY_THEMES, CategoryID, QUICK_START_CATEGORY_ID} from './Categories'
+import TeamPickerModal from './TeamPickerModal'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -55,6 +51,7 @@ graphql`
       editingScaleId
       ...PokerTemplateScaleDetails_team
     }
+    ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
     ...EditableTemplateName_teamTemplates
     ...ReflectTemplateDetailsTemplate @relay(mask: false)
@@ -88,20 +85,6 @@ const query = graphql`
     }
   }
 `
-
-interface DetailsBadgeProps {
-  className?: string
-  children?: React.ReactNode
-}
-
-const DetailsBadge = (props: DetailsBadgeProps) => {
-  const {className, children} = props
-  return (
-    <div className={clsx('w-min rounded-full px-3 py-1 text-xs font-semibold', className)}>
-      {children}
-    </div>
-  )
-}
 
 const SUPPORTED_TYPES = ['retrospective', 'poker']
 
@@ -264,22 +247,7 @@ const ActivityDetails = (props: Props) => {
                         isOwner={isOwner && isEditing}
                       />
                     </div>
-                    <div className='mb-4 flex gap-2'>
-                      <DetailsBadge
-                        className={clsx(CATEGORY_THEMES[category].primary, 'text-white')}
-                      >
-                        {CATEGORY_ID_TO_NAME[category]}
-                      </DetailsBadge>
-                      {!selectedTemplate.isFree &&
-                        (lowestScope === 'PUBLIC' ? (
-                          <DetailsBadge className='bg-gold-300 text-grape-700'>
-                            Premium
-                          </DetailsBadge>
-                        ) : (
-                          <DetailsBadge className='bg-grape-700 text-white'>Custom</DetailsBadge>
-                        ))}
-                    </div>
-
+                    <ActivityDetailsBadges isEditing={isEditing} templateRef={selectedTemplate} />
                     <div className='w-[480px]'>
                       <div className='mb-8'>
                         {isOwner ? (

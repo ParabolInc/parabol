@@ -85,6 +85,7 @@ export type AnalyticsEvent =
   | 'Downgrade Clicked'
   | 'Downgrade Continue Clicked'
   | 'Organization Downgraded'
+  | 'Billing Leader Modified'
 
   // task
   | 'Task Created'
@@ -388,6 +389,20 @@ class Analytics {
     this.track(userId, 'Account Name Changed', {
       newName
     })
+
+  billingLeaderModified = (
+    userId: string,
+    viewerId: string,
+    orgId: string,
+    modificationType: 'add' | 'remove'
+  ) => {
+    this.track(userId, 'Billing Leader Modified', {
+      userId,
+      viewerId,
+      orgId,
+      modificationType
+    })
+  }
 
   userRemovedFromOrg = (userId: string, orgId: string) =>
     this.track(userId, 'User Removed From Org', {userId, orgId})

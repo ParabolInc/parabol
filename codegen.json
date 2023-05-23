@@ -10,7 +10,7 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
-          "AddFeatureFlagToOrgSuccess": "./types/AddFeatureFlagToOrgSuccess#AddFeatureFlagToOrgSuccessSource",
+          "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
@@ -86,10 +86,13 @@
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
+          "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
-          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
+          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
+          "TemplateDimension": "../../database/types/TemplateDimension#default",
+          "ReflectPrompt": "../../database/types/RetrospectivePrompt#default"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],

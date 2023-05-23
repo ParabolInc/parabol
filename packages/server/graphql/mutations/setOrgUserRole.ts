@@ -3,9 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
 import {OrgUserRole} from '../../database/types/OrganizationUser'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
@@ -78,6 +78,9 @@ export default {
     // RESOLUTION
     await r.table('OrganizationUser').get(organizationUserId).update({role}).run()
 
+    const modificationType = role === 'BILLING_LEADER' ? 'add' : 'remove'
+    analytics.billingLeaderModified(userId, viewerId, orgId, modificationType)
+
     if (role === 'BILLING_LEADER') {
       const promotionNotification = new NotificationPromoteToBillingLeader({orgId, userId})
       const {id: promotionNotificationId} = promotionNotification
@@ -99,11 +102,6 @@ export default {
         data,
         subOptions
       )
-      segmentIo.track({
-        userId,
-        event: 'User Role Billing Leader Granted',
-        properties: {orgId}
-      })
       return data
     }
     if (role === null) {
@@ -122,11 +120,6 @@ export default {
         data,
         subOptions
       )
-      segmentIo.track({
-        userId,
-        event: 'User Role Billing Leader Revoked',
-        properties: {orgId}
-      })
       return data
     }
     return null
