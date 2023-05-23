@@ -191,4 +191,3 @@ export const reasonsToDowngradeLookup: Record<
   "Not using Parabol's paid features": 'notUsingPaidFeatures',
   'Moving to another tool (please specify)': 'anotherTool'
 }
-export const PARABOL_TRANSCRIPT_USER_ID = 'parabolTranscriptUser'
