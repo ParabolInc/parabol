@@ -19,11 +19,13 @@ const mutation = graphql`
     $settingsId: ID!
     $checkinEnabled: Boolean
     $disableAnonymity: Boolean
+    $videoMeetingURL: String
   ) {
     setMeetingSettings(
       settingsId: $settingsId
       checkinEnabled: $checkinEnabled
       disableAnonymity: $disableAnonymity
+      videoMeetingURL: $videoMeetingURL
     ) {
       ...SetMeetingSettingsMutation_team @relay(mask: false)
     }

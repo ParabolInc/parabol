@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../database/rethinkDriver'
@@ -24,6 +24,10 @@ const setMeetingSettings = {
     disableAnonymity: {
       type: GraphQLBoolean,
       description: 'disables anonymity of reflections'
+    },
+    videoMeetingURL: {
+      type: GraphQLString,
+      description: 'the url of the video meeting'
     }
   },
   resolve: async (
@@ -31,8 +35,14 @@ const setMeetingSettings = {
     {
       settingsId,
       checkinEnabled,
-      disableAnonymity
-    }: {settingsId: string; checkinEnabled?: boolean; disableAnonymity?: boolean},
+      disableAnonymity,
+      videoMeetingURL
+    }: {
+      settingsId: string
+      checkinEnabled?: boolean
+      disableAnonymity?: boolean
+      videoMeetingURL?: string
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -66,6 +76,11 @@ const setMeetingSettings = {
         if (isNotNull(disableAnonymity)) {
           updatedSettings.disableAnonymity = disableAnonymity
           meetingSettings.disableAnonymity = disableAnonymity
+        }
+
+        if (isNotNull(videoMeetingURL)) {
+          updatedSettings.videoMeetingURL = videoMeetingURL
+          meetingSettings.videoMeetingURL = videoMeetingURL
         }
 
         return updatedSettings

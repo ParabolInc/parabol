@@ -62,7 +62,7 @@ interface Props {
 
 const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription?: boolean) => {
   if (showTranscription) {
-    return 'Paste your Zoom Meeting ID below to transcribe the meeting'
+    return 'Paste your Zoom meeting URL below to transcribe the meeting'
   }
   if (isReadOnly) {
     return allowTasks ? 'No comments or tasks were added here' : 'No comments were added here'

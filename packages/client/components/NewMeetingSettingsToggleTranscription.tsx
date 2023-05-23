@@ -1,13 +1,18 @@
 import styled from '@emotion/styled'
+import StyledError from './StyledError'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 // import {NewMeetingSettingsToggleTranscription_settings$key} from '~/__generated__/NewMeetingSettingsToggleTranscription_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
 import {PALETTE} from '../styles/paletteV3'
+import linkify from '../utils/linkify'
+import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
+import FlatButton from './FlatButton'
 import PlainButton from './PlainButton/PlainButton'
 
 const ButtonRow = styled(PlainButton)<{isInput?: boolean}>(({isInput}) => ({
@@ -47,6 +52,16 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
   userSelect: 'none'
 }))
 
+const StyledButton = styled(FlatButton)({
+  background: PALETTE.SKY_500,
+  borderColor: PALETTE.SLATE_400,
+  color: PALETTE.WHITE,
+  fontSize: 12,
+  fontWeight: 600,
+  minWidth: 36,
+  marginLeft: '16px'
+})
+
 const StyledInput = styled('input')({
   appearance: 'none',
   background: 'inherit',
@@ -73,26 +88,42 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
     graphql`
       fragment NewMeetingSettingsToggleTranscription_settings on TeamMeetingSettings {
         id
-        phaseTypes
       }
     `,
     settingsRef
   )
-  const {id: settingsId, phaseTypes} = settings
+  const {id: settingsId} = settings
   const [isChecked, setIsChecked] = useState(false)
-  const hasCheckIn = phaseTypes.includes('checkin')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
+  const {validateField, setDirtyField, onChange, fields} = useForm({
+    url: {
+      getDefault: () => '',
+      validate: (rawInput: string) => {
+        return new Legitity(rawInput).test((maybeUrl) => {
+          if (!maybeUrl) return 'No link provided'
+          const links = linkify.match(maybeUrl)
+          return !links ? 'Not looking too linky' : ''
+        })
+      }
+    }
+  })
+  const {error: fieldError, value: urlValue} = fields.url
+
   const toggleCheckIn = () => {
     setIsChecked((isChecked) => !isChecked)
-    // if (submitting) return
-    // submitMutation()
-    // SetMeetingSettingsMutation(
-    //   atmosphere,
-    //   {checkinEnabled: !hasCheckIn, settingsId},
-    //   {onError, onCompleted}
-    // )
   }
+
+  const handleSubmit = () => {
+    if (submitting) return
+    submitMutation()
+    SetMeetingSettingsMutation(
+      atmosphere,
+      {videoMeetingURL: urlValue, settingsId},
+      {onError, onCompleted}
+    )
+  }
+
   return (
     <>
       {!isChecked && (
@@ -103,10 +134,18 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
       )}
       {isChecked && (
         <ButtonRow>
-          <StyledInput placeholder='Enter your meeting id' />
-          <StyledCheckbox active={isChecked} />
+          <StyledInput
+            placeholder='Paste your Zoom meeting URL'
+            onChange={onChange}
+            name='url'
+            value={urlValue}
+          />
+          <StyledButton onClick={handleSubmit} size='medium'>
+            Update
+          </StyledButton>
         </ButtonRow>
       )}
+      {fieldError && <StyledError>{fieldError}</StyledError>}
     </>
   )
 }

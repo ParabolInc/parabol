@@ -52,6 +52,7 @@ export type TaskEstimateProperties = {
 export type MeetingSettings = {
   hasIcebreaker?: boolean
   disableAnonymity?: boolean
+  videoMeetingURL?: string
 }
 
 export type WebSocketProperties = {
