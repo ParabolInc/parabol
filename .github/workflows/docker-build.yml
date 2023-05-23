@@ -86,9 +86,11 @@ jobs:
           yarn pg:migrate up && \
           yarn pg:build && \
           yarn build --no-deps
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+      #
+      # Multi-platform build. Uncomment to be able t build multi-platform images.
+      #
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -117,7 +119,7 @@ jobs:
           allow: network.host
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .
-          platforms: linux/amd64,linux/arm64
+          # platforms: linux/amd64,linux/arm64 # Uncomment to be able t build multi-platform images.
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
             "_SECURITY_ENABLED=true"
