@@ -46,7 +46,7 @@ class RecallAIServerManager {
         bot_name: 'Parabol Notetaker',
         real_time_transcription: {
           partial_results: false,
-          destination_url: 'http://localhost:3000' // this is required by the API but it's not doing anything and can be any URL. TODO: speak with recall.ai about this & fix
+          destination_url: `${PROTOCOL}://${HOST}` // this is required by the API but it's not doing anything and can be any URL. TODO: speak with recall.ai about this & fix
         },
         transcription_options: {provider: 'assembly_ai'},
         chat: {
