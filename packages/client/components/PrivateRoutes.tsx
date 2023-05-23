@@ -49,6 +49,10 @@ const ReviewRequestToJoinOrgRoot = lazy(
   () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
 )
 
+const NewMeetingRoot = lazy(
+  () => import(/* webpackChunkName: 'NewMeetingRoot' */ './NewMeetingRoot')
+)
+
 const PrivateRoutes = () => {
   useAuthRoute()
   useNoIndex()
@@ -74,7 +78,7 @@ const PrivateRoutes = () => {
           path='/organization-join-request/:requestId'
           component={ReviewRequestToJoinOrgRoot}
         />
-        <Route path='(/new-meeting)' component={DashboardRoot} />
+        <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
       </Switch>
     </>
   )
