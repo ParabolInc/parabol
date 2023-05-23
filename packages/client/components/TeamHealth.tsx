@@ -9,6 +9,12 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
+import TeamHealthVotingRow from './TeamHealthVotingRow'
+import BaseButton from './BaseButton'
+import useMutationProps from '../hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SetTeamHealthScoreMutation from '../mutations/SetTeamHealthScoreMutation'
+import * as RadioGroup from '@radix-ui/react-radio-group'
 
 interface Props {
   avatarGroup: ReactElement
@@ -19,9 +25,11 @@ interface Props {
 
 const TeamHealth = (props: Props) => {
   const {avatarGroup, meeting: meetingRef, toggleSidebar} = props
+  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment TeamHealth_meeting on NewMeeting {
+        id
         endedAt
         showSidebar
         facilitatorStageId
@@ -40,8 +48,18 @@ const TeamHealth = (props: Props) => {
     `,
     meetingRef
   )
-  const {endedAt, showSidebar, localStage} = meeting
-  const {question, labels} = localStage
+  const {id: meetingId, endedAt, showSidebar, localStage} = meeting
+  const {id: stageId, question, labels, scores} = localStage
+  const {viewerId} = atmosphere
+  const viewerScore = scores?.find((score) => score.userId === viewerId)
+  const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
+
+  const onVote = (label: string) => {
+    if (submitting) return
+    submitMutation()
+    SetTeamHealthScoreMutation(atmosphere, {meetingId, stageId, label}, {onError, onCompleted})
+  }
+
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -53,26 +71,28 @@ const TeamHealth = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <div className='text-center text-2xl'>{question}</div>
-          <form
+          <div className='text-2xl text-center'>{question}</div>
+          <RadioGroup.Root
             className='flex flex-row'
-            onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
-              console.log('TODO: Vote changed', e.target.value)
-            }
+            onValueChange={onVote}
+            value={viewerScore?.label}
           >
             {labels?.map((label) => (
-              //center vertically
-              <div key={label} className='flex h-24 w-24 items-center justify-center p-8'>
-                <input name='foo' className='peer hidden' type='radio' id={label} value={label} />
+              <RadioGroup.Item
+                key={label}
+                value={label}
+                className='flex items-center justify-center w-24 h-24 p-8 group'
+              >
                 <label
-                  htmlFor={label}
-                  className='text-4xl opacity-75 drop-shadow-lg hover:text-5xl hover:opacity-100 hover:blur-none peer-checked:text-6xl peer-checked:opacity-100 peer-checked:blur-none'
+                  className='text-4xl hover:text-5xl group-data-[state=checked]:text-6xl'
                 >
                   {label}
                 </label>
-              </div>
+              </RadioGroup.Item>
             ))}
-          </form>
+          </RadioGroup.Root>
+          <TeamHealthVotingRow scores={scores} />
+          <BaseButton className='mt-4 rounded-full h-14 bg-slate-300 text-slate-600'>Reveal Results</RaisedButton>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>
@@ -84,6 +104,7 @@ graphql`
     question
     labels
     scores {
+      ...TeamHealthVotingRow_scores
       id
       userId
       label

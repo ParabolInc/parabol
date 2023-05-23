@@ -1,14 +1,14 @@
-type SetTeamHealthScorePayload {
+type SetTeamHealthScoreSuccess {
   meetingId: ID!
-  phaseId: ID!
   stageId: ID!
+  stage: TeamHealthStage!
 }
+
+union SetTeamHealthScorePayload = ErrorPayload | SetTeamHealthScoreSuccess
 
 extend type Mutation {
   setTeamHealthScore(
     meetingId: ID!
-
-    phaseId: ID!
 
     stageId: ID!
 

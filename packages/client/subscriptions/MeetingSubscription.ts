@@ -102,6 +102,9 @@ const subscription = graphql`
       SetStageTimerPayload {
         ...SetStageTimerMutation_meeting @relay(mask: false)
       }
+      SetTeamHealthScoreSuccess {
+        ...SetTeamHealthScoreMutation_meeting @relay(mask: false)
+      }
       StartDraggingReflectionPayload {
         ...StartDraggingReflectionMutation_meeting @relay(mask: false)
       }
