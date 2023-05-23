@@ -4,7 +4,7 @@ import {DISCUSS, PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
-import getRethink from '../../database/rethinkDriver'
+import getRethink, {ParabolR} from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
@@ -27,13 +27,20 @@ import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 
+const getTranscription = async (recallBotId?: string) => {
+  if (!recallBotId) return
+  const manager = new RecallAIServerManager()
+  return await manager.getBotTranscript(recallBotId)
+}
+
 const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
   const {dataLoader, authToken} = context
   const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
   const r = await getRethink()
-  const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
+  const [reflectionGroups, reflections, meetingSettings, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'}),
     generateWholeMeetingSentimentScore(meetingId, facilitatorUserId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
@@ -59,13 +66,11 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       })
     }
   }
-  const summary = await generateWholeMeetingSummary(
-    discussionIds,
-    meetingId,
-    teamId,
-    facilitatorUserId,
-    dataLoader
-  )
+  const recallBotId = (meetingSettings as MeetingSettingsRetrospective).recallBotId
+  const [summary, transcription] = await Promise.all([
+    generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
+    getTranscription(recallBotId)
+  ])
 
   await r
     .table('NewMeeting')
@@ -88,7 +93,8 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
         topicCount: reflectionGroupIds.length,
         reflectionCount: reflections.length,
         sentimentScore,
-        summary
+        summary,
+        transcription
       },
       {nonAtomic: true}
     )
@@ -196,16 +202,7 @@ export default {
         })
     )
     const timelineEventId = events[0]!.id
-    const [meetingSettings] = await Promise.all([
-      dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'}),
-      r.table('TimelineEvent').insert(events).run()
-    ])
-    if ('recallBotId' in meetingSettings) {
-      const {recallBotId} = meetingSettings
-      const manager = new RecallAIServerManager()
-      const transcription = await manager.getBotTranscript(recallBotId!)
-      await r.table('NewMeeting').get(meetingId).update({transcription}).run()
-    }
+    await r.table('TimelineEvent').insert(events).run()
 
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
