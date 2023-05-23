@@ -27,10 +27,12 @@ const ErrorMessage = styled(StyledError)({
 })
 
 const StyledCheckbox = styled(Checkbox)({
-  width: 24,
-  height: 24,
-  marginRight: 8,
-  color: PALETTE.SKY_500
+  '&&': {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+    color: PALETTE.SKY_500
+  }
 })
 
 type Props = {
