@@ -65,7 +65,12 @@ export default {
     try {
       // TODO: remove upgradeToTeamTierOld once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
       if (paymentMethodId) {
-        stripeSubscriptionClientSecret = await upgradeToTeamTier(orgId, paymentMethodId, dataLoader)
+        stripeSubscriptionClientSecret = await upgradeToTeamTier(
+          orgId,
+          paymentMethodId,
+          email,
+          dataLoader
+        )
       } else if (stripeToken) {
         await upgradeToTeamTierOld(orgId, stripeToken, email, dataLoader)
       }

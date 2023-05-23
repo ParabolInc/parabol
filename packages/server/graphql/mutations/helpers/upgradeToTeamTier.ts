@@ -11,6 +11,7 @@ import {DataLoaderWorker} from '../../graphql'
 const upgradeToTeamTier = async (
   orgId: string,
   paymentMethodId: string,
+  email: string,
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
@@ -30,7 +31,7 @@ const upgradeToTeamTier = async (
   const {stripeId} = organization
   const customer = stripeId
     ? await manager.retrieveCustomer(stripeId)
-    : await manager.createCustomer(orgId)
+    : await manager.createCustomer(orgId, email)
   const {id: customerId} = customer
   await manager.attachPaymentToCustomer(customerId, paymentMethodId)
   // wait until the payment is attached to the customer before updating the default payment method

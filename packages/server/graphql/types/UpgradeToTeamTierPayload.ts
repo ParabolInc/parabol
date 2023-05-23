@@ -35,7 +35,8 @@ const UpgradeToTeamTierPayload = new GraphQLObjectType<any, GQLContext>({
     },
     stripeSubscriptionClientSecret: {
       type: GraphQLID,
-      description: 'The client secret for the Stripe subscription'
+      description:
+        'The client secret from the Stripe subscription. Used for client-side retrieval using a publishable key.'
     }
   })
 })

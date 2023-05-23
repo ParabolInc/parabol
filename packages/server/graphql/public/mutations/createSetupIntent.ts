@@ -10,14 +10,13 @@ const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
   {dataLoader, authToken}
 ) => {
   const viewerId = getUserId(authToken)
-  const [viewer, organization] = await Promise.all([
+  const [viewer, organization, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('organizations').load(orgId)
+    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})
   ])
-  const {tms} = viewer
-  const viewerTeams = await dataLoader.get('teams').loadMany(tms)
-  const viewerOrgIds = viewerTeams.map(({orgId}) => orgId)
-  if (!viewerOrgIds.includes(orgId)) {
+  const {email} = viewer
+  if (!organizationUser) {
     return {error: 'Viewer does not belong to this organization'}
   }
 
@@ -25,7 +24,7 @@ const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
   const manager = getStripeManager()
   const customer = stripeId
     ? await manager.retrieveCustomer(stripeId)
-    : await manager.createCustomer(orgId)
+    : await manager.createCustomer(orgId, email)
 
   if (!stripeId) {
     r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
