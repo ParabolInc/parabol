@@ -13,7 +13,7 @@ extend type Mutation {
   """
   Give some organizations advanced features in a flag
   """
-  addFeatureFlagToOrg(
+  updateOrgFeatureFlag(
     """
     a list of organization ids
     """
@@ -23,12 +23,16 @@ extend type Mutation {
     the flag that you want to give to the organization
     """
     flag: OrganizationFeatureFlagsEnum!
-  ): AddFeatureFlagToOrgPayload!
+    """
+    whether or not you want to give the organization the flag
+    """
+    addFlag: Boolean!
+  ): UpdateOrgFeatureFlagPayload!
 }
 
-union AddFeatureFlagToOrgPayload = ErrorPayload | AddFeatureFlagToOrgSuccess
+union UpdateOrgFeatureFlagPayload = ErrorPayload | UpdateOrgFeatureFlagSuccess
 
-type AddFeatureFlagToOrgSuccess {
+type UpdateOrgFeatureFlagSuccess {
   """
   the organizations given the super power
   """
