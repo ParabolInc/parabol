@@ -36,6 +36,15 @@ const query = graphql`
   }
 `
 
+graphql`
+  fragment ExportAllTasksMenu_meetingTasks on Task {
+    id
+    integration {
+      id
+    }
+  }
+`
+
 const ExportAllTasksMenu = (props: Props) => {
   const {menuProps, mutationProps, meetingRef, queryRef, handlePushToIntegration} = props
   const data = usePreloadedQuery<ExportAllTasksMenuQuery>(query, queryRef)
@@ -46,18 +55,17 @@ const ExportAllTasksMenu = (props: Props) => {
         teamId
         ... on RetrospectiveMeeting {
           tasks {
-            id
-            integration {
-              id
-            }
+            ...ExportAllTasksMenu_meetingTasks @relay(mask: false)
           }
         }
         ... on ActionMeeting {
           tasks {
-            id
-            integration {
-              id
-            }
+            ...ExportAllTasksMenu_meetingTasks @relay(mask: false)
+          }
+        }
+        ... on TeamPromptMeeting {
+          tasks {
+            ...ExportAllTasksMenu_meetingTasks @relay(mask: false)
           }
         }
       }

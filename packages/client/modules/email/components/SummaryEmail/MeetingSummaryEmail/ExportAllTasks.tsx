@@ -40,6 +40,16 @@ interface Props {
   meetingRef: ExportAllTasks_meeting$key
 }
 
+graphql`
+  fragment ExportAllTasks_meetingTasks on Task {
+    id
+    taskService
+    integration {
+      id
+    }
+  }
+`
+
 const ExportAllTasks = (props: Props) => {
   const {meetingRef} = props
   const mutationProps = useMutationProps()
@@ -60,20 +70,17 @@ const ExportAllTasks = (props: Props) => {
         ...ExportAllTasksMenuRoot_meeting
         ... on RetrospectiveMeeting {
           tasks {
-            id
-            taskService
-            integration {
-              id
-            }
+            ...ExportAllTasks_meetingTasks @relay(mask: false)
           }
         }
         ... on ActionMeeting {
           tasks {
-            id
-            taskService
-            integration {
-              id
-            }
+            ...ExportAllTasks_meetingTasks @relay(mask: false)
+          }
+        }
+        ... on TeamPromptMeeting {
+          tasks {
+            ...ExportAllTasks_meetingTasks @relay(mask: false)
           }
         }
       }
