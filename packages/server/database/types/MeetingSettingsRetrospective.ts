@@ -20,8 +20,8 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
   totalVotes: number
   selectedTemplateId: string
   disableAnonymity: boolean
-  videoMeetingURL?: string
-  recallBotId?: string
+  videoMeetingURL?: string | null
+  recallBotId?: string | null
   constructor(input: Input) {
     const {
       teamId,

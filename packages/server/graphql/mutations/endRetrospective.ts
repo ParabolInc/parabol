@@ -27,7 +27,7 @@ import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 
-const getTranscription = async (recallBotId?: string) => {
+const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
   const manager = new RecallAIServerManager()
   return await manager.getBotTranscript(recallBotId)
@@ -66,39 +66,49 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       })
     }
   }
-  const recallBotId = (meetingSettings as MeetingSettingsRetrospective).recallBotId
+  const {id: settingsId, recallBotId} = meetingSettings as MeetingSettingsRetrospective
   const [summary, transcription] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     getTranscription(recallBotId)
   ])
 
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        commentCount: r
-          .table('Comment')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .filter((row: RDatum) =>
-            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
-          )
-          .count()
-          .default(0) as unknown as number,
-        taskCount: r
-          .table('Task')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .count()
-          .default(0) as unknown as number,
-        topicCount: reflectionGroupIds.length,
-        reflectionCount: reflections.length,
-        sentimentScore,
-        summary,
-        transcription
-      },
-      {nonAtomic: true}
-    )
-    .run()
+  await Promise.all([
+    r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update(
+        {
+          commentCount: r
+            .table('Comment')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .filter((row: RDatum) =>
+              row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
+            )
+            .count()
+            .default(0) as unknown as number,
+          taskCount: r
+            .table('Task')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .count()
+            .default(0) as unknown as number,
+          topicCount: reflectionGroupIds.length,
+          reflectionCount: reflections.length,
+          sentimentScore,
+          summary,
+          transcription
+        },
+        {nonAtomic: true}
+      )
+      .run(),
+    r
+      .table('MeetingSettings')
+      .get(settingsId)
+      .update({
+        recallBotId: null,
+        videoMeetingURL: null
+      })
+      .run()
+  ])
   dataLoader.get('newMeetings').clear(meetingId)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
