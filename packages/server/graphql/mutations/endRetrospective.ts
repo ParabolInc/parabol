@@ -7,12 +7,14 @@ import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
+import RecallAIServerManager from '../../utils/RecallAIServerManager'
 import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -194,7 +196,16 @@ export default {
         })
     )
     const timelineEventId = events[0]!.id
-    await r.table('TimelineEvent').insert(events).run()
+    const [meetingSettings] = await Promise.all([
+      dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'}),
+      r.table('TimelineEvent').insert(events).run()
+    ])
+    if ('recallBotId' in meetingSettings) {
+      const {recallBotId} = meetingSettings
+      const manager = new RecallAIServerManager()
+      const transcript = await manager.getBotTranscript(recallBotId!)
+    }
+
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')

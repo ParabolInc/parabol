@@ -23,6 +23,24 @@ class RecallAIServerManager {
       return botId as string
     } catch (err) {
       console.error(err)
+      return null
+    }
+  }
+
+  async getBotTranscript(botId: string) {
+    try {
+      const data = await sdk.bot_transcript_list({
+        enhanced_diarization: 'true',
+        id: botId
+      })
+      console.log('🚀 ~ data:', data)
+      return data
+      // const {data} = await sdk.bot_get_transcript({bot_id: botId})
+      // const {transcript} = data
+      // return transcript as string
+    } catch (err) {
+      console.error(err)
+      return null
     }
   }
 }
