@@ -1,6 +1,13 @@
 import {CardTheme} from './ActivityCard'
 
-export type CategoryID = 'retrospective' | 'estimation' | 'standup' | 'feedback' | 'strategy'
+export const MAIN_CATEGORIES = [
+  'retrospective',
+  'estimation',
+  'standup',
+  'feedback',
+  'strategy'
+] as const
+export type CategoryID = typeof MAIN_CATEGORIES[number]
 
 export const DEFAULT_CARD_THEME: CardTheme = {primary: 'bg-slate-500', secondary: 'bg-slate-200'}
 

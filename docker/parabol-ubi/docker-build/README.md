@@ -34,11 +34,8 @@ Recommended:
 | `_NODE_VERSION`      | Node version, used by Docker to use the Docker image node:\_NODE_VERSION as base image to build                         | `Same as in root package.json`                        |                                                                     |
 | `_DOCKERFILE`        | Dockerfile used to build the image                                                                                      | `Relative path from the root level of the repository` | `./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile` |
 | `_SECURITY_ENABLED`  | Enable or disable security configurations. It will add some MBs to the final image, but it will produce a secured image | `true/false`                                          | `true`                                                              |
-| `_NO_DEPS`           | Builds a smaller final image, but at the cost of spending more time to build and using about 12 GB of RAM for it        | `true/false`                                          | `true`                                                              |
 | `_DOCKER_REPOSITORY` | The destination repository                                                                                              | `String`                                              | `parabol`                                                           |
 | `_DOCKER_TAG`        | Tag for the produced image                                                                                              | `String`                                              |                                                                     |
-
-### Building the image
 
 Example of variables:
 
@@ -50,26 +47,77 @@ export _BUILD_ENV_PATH=docker/parabol-ubi/docker-build/environments/pipeline; \
 export _NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json); \
 export _DOCKERFILE=./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile; \
 export _SECURITY_ENABLED=true; \
-export _NO_DEPS=true; \
 export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=test-image
 ```
 
-To build the image, these commands must be executed from the root level of this repository:
+### Building the image
+
+The application must be already built locally using the command `yarn build --no-deps` mode.
+
+To build the image, these commands must be executed from the **root level** of this repository:
+
+- **Set the environment variables** as explained in the precedent section.
+
+- **Copy the env file** for docker build:
+
+> :warning: **THIS WILL DELETE YOUR LOCAL .env file is you have one**. Back it up before proceeding.
 
 ```commandLine
-docker run --name temp-postgres --network=host -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:${postgresql_tag} && \
-docker run --name temp-rethinkdb --network=host -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:${rethinkdb_tag} && \
-docker run --name temp-redis --network=host -d -p 6379:6379 redis:${redis_tag} && \
-docker build --network=host -t ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION --build-arg _BUILD_ENV_PATH=${_BUILD_ENV_PATH} --build-arg _SECURITY_ENABLED=${_SECURITY_ENABLED} . && \
+cp $_BUILD_ENV_PATH ./.env
+```
+
+- **Start the databases:**
+
+> :warning: Stop all database containers you might have running before executing the following command. If other database containers are running, some ports might be already taken.
+
+```commandLine
+docker run --name temp-postgres -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:$postgresql_tag && \
+docker run --name temp-rethinkdb -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:$rethinkdb_tag && \
+docker run --name temp-redis -d -p 6379:6379 redis:$redis_tag
+```
+
+- **Build the application:**
+
+```commandLine
+yarn && \
+yarn db:migrate && \
+yarn pg:migrate up && \
+yarn pg:build && \
+yarn build --no-deps
+```
+
+- **Build the docker image:**
+
+```commandLine
+docker build -t $_DOCKER_REPOSITORY:$_DOCKER_TAG -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION --build-arg _SECURITY_ENABLED=$_SECURITY_ENABLED .
+```
+
+> Some build tips
+>
+> - **Docker cache:** to avoid caching images and using cache, the flag `--no-cache` can be added to the `docker build` command. It will save some space in the workstation, but it might take longer to build.
+> - **Multi platform:** to build images for multiple platforms, you can use `docker builx build --platform linux/arm64 [the rest of the build command]`.
+> - **Debug:** if you want debug the commands executed during the docker build, add the flag `--progress=plain` to the docker build command.
+
+- **Stop and delete all database containers:**
+
+```commandLine
 docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f || docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f
+```
+
+- **Delete the `.env`:**
+
+```commandLine
+rm .env
 ```
 
 It will produce a Docker image tagged as `${_DOCKER_REPOSITORY}:${_DOCKER_TAG}`. Ex: `parabol:test-image`.
 
-To avoid caching images and using cache, the flag `--no-cache` can be added to the `docker build` command. It will save some space in the workstation, but it might take longer to build.
+- **Show the new image:**
 
-If you want debug the commands executed during the docker build, add the flag `--progress=plain` to the docker build command.
+```commandLine
+docker images $_DOCKER_REPOSITORY:$_DOCKER_TAG
+```
 
 ## Build from git
 

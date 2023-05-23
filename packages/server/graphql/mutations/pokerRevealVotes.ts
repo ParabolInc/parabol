@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -52,9 +51,6 @@ const pokerRevealVotes = {
     }
     if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
-    }
-    if (isPhaseComplete('ESTIMATE', phases)) {
-      return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== createdBy) {

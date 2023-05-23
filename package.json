@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.103.0",
+  "version": "6.104.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -57,8 +57,6 @@
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
     "immutable": "3.8.2",
-    "cross-fetch": "^3.1.5",
-    "node-fetch": "^2.6.7",
     "clean-css": "^5.2.2",
     "node-forge": "^1.2.1",
     "glob-parent": "^6.0.2",
@@ -93,6 +91,7 @@
     "@tailwindcss/forms": "^0.5.3",
     "@types/dotenv": "^6.1.1",
     "@types/jscodeshift": "^0.11.3",
+    "@types/lodash.toarray": "^4.4.7",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
     "autoprefixer": "^10.4.13",
@@ -118,7 +117,7 @@
     "raw-loader": "^4.0.2",
     "relay-compiler": "^14.1.0",
     "relay-config": "^12.0.0",
-    "sucrase": "^3.23.0",
+    "sucrase": "^3.32.0",
     "tailwindcss": "^3.2.7",
     "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "9.2.6",
@@ -131,6 +130,7 @@
   "dependencies": {
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
+    "lodash.toarray": "^4.4.0",
     "rethinkdb-ts-migrate": "^0.3.6"
   }
 }

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {useRouteMatch} from 'react-router'
+import {useLocation, useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
 import {BILLING_PAGE, MEMBERS_PAGE} from '../../utils/constants'
@@ -10,6 +10,7 @@ import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.gra
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
+import getTeamIdFromPathname from '../../utils/getTeamIdFromPathname'
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   // 78px is total height of 'Add meeting' block
@@ -90,6 +91,8 @@ const DashSidebar = (props: Props) => {
     viewerRef
   )
 
+  const location = useLocation()
+
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
   const showOrgSidebar = featureFlags.checkoutFlow && match
@@ -100,7 +103,7 @@ const DashSidebar = (props: Props) => {
     const {id: orgId, name} = currentOrg ?? {}
     return (
       <Wrapper>
-        <SideBarStartMeetingButton isOpen={isOpen} />
+        <SideBarStartMeetingButton isOpen={isOpen} hasRid={featureFlags.retrosInDisguise} />
         <Nav isOpen={isOpen}>
           <Contents>
             <NavItemsWrap>
@@ -123,16 +126,15 @@ const DashSidebar = (props: Props) => {
     )
   }
 
+  const teamId = getTeamIdFromPathname()
+
   return (
     <Wrapper>
-      <SideBarStartMeetingButton isOpen={isOpen} />
+      <SideBarStartMeetingButton isOpen={isOpen} hasRid={featureFlags.retrosInDisguise} />
       <Nav isOpen={isOpen}>
         <Contents>
           <NavItemsWrap>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            {featureFlags.retrosInDisguise && (
-              <NavItem icon={'magic'} href={'/activity-library'} label={'Activity Library'} />
-            )}
             <NavItem icon={'history'} href={'/me'} label={'History'} />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </NavItemsWrap>
@@ -143,6 +145,17 @@ const DashSidebar = (props: Props) => {
           <DashHR />
           <NavItemsWrap>
             <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+          </NavItemsWrap>
+          <DashHR />
+          <NavItemsWrap>
+            {featureFlags.retrosInDisguise && (
+              <NavItem
+                icon={'magic'}
+                href={`/new-meeting/${teamId}`}
+                navState={{backgroundLocation: location}}
+                label={'Add meeting (legacy)'}
+              />
+            )}
           </NavItemsWrap>
         </Contents>
       </Nav>

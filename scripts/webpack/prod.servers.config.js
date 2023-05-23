@@ -126,7 +126,7 @@ module.exports = ({isDeploy, noDeps}) => ({
   ].filter(Boolean),
   module: {
     rules: [
-      ...transformRules(PROJECT_ROOT),
+      ...transformRules(PROJECT_ROOT, true),
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         oneOf: [

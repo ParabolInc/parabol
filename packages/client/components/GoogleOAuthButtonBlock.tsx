@@ -31,11 +31,18 @@ const GoogleOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint} = props
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const {history, location} = useRouter()
   const label = isCreate ? 'Sign up with Google' : 'Sign in with Google'
   const openOAuth = () => {
     const mutationProps = {onError, onCompleted, submitMutation, submitting}
-    GoogleClientManager.openOAuth(atmosphere, mutationProps, history, invitationToken, loginHint)
+    GoogleClientManager.openOAuth(
+      atmosphere,
+      mutationProps,
+      history,
+      location.search,
+      invitationToken,
+      loginHint
+    )
   }
   return (
     <React.Fragment>
