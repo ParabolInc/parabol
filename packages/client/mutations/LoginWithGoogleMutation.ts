@@ -12,8 +12,14 @@ const mutation = graphql`
     $invitationToken: ID!
     $segmentId: ID
     $isInvitation: Boolean!
+    $params: String!
   ) {
-    loginWithGoogle(code: $code, segmentId: $segmentId, invitationToken: $invitationToken) {
+    loginWithGoogle(
+      code: $code
+      segmentId: $segmentId
+      invitationToken: $invitationToken
+      params: $params
+    ) {
       error {
         message
       }

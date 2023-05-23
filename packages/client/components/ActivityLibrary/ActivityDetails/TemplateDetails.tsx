@@ -4,16 +4,10 @@ import {useFragment} from 'react-relay'
 import {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
 import {TemplateDetails_templates$key} from '~/__generated__/TemplateDetails_templates.graphql'
-import {
-  CATEGORY_ID_TO_NAME,
-  CATEGORY_THEMES,
-  CategoryID,
-  QUICK_START_CATEGORY_ID
-} from '../Categories'
+import {QUICK_START_CATEGORY_ID} from '../Categories'
 import {IntegrationsTip} from './components/IntegrationsTip'
 import clsx from 'clsx'
 import {useHistory} from 'react-router'
-import {DetailsBadge} from './components/DetailsBadge'
 import {ContentCopy} from '@mui/icons-material'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
@@ -33,6 +27,7 @@ import AddTemplatePrompt from '../../../modules/meeting/components/AddTemplatePr
 import TemplateDimensionList from '../../../modules/meeting/components/TemplateDimensionList'
 import TemplatePromptList from '../../../modules/meeting/components/TemplatePromptList'
 import {ActivityWithTemplate} from './hooks/useActivityDetails'
+import ActivityDetailsBadges from './ActivityDetailsBadges'
 
 interface Props {
   activity: ActivityWithTemplate
@@ -183,19 +178,7 @@ export const TemplateDetails = (props: Props) => {
 
   return (
     <div className='space-y-6'>
-      <div className='flex gap-2'>
-        <DetailsBadge
-          className={clsx(CATEGORY_THEMES[category as CategoryID].primary, 'text-white')}
-        >
-          {CATEGORY_ID_TO_NAME[category as CategoryID]}
-        </DetailsBadge>
-        {!template.isFree &&
-          (lowestScope === 'PUBLIC' ? (
-            <DetailsBadge className='bg-gold-300 text-grape-700'>Premium</DetailsBadge>
-          ) : (
-            <DetailsBadge className='bg-grape-700 text-white'>Custom</DetailsBadge>
-          ))}
-      </div>
+      <ActivityDetailsBadges isEditing={isEditing} templateRef={activity.template} />
       <div className='w-[480px]'>
         <div className='mb-8'>
           {isOwner ? (

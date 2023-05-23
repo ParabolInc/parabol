@@ -28,6 +28,7 @@ graphql`
       editingScaleId
       ...PokerTemplateScaleDetails_team
     }
+    ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
     ...EditableTemplateName_teamTemplates
     ...ReflectTemplateDetailsTemplate @relay(mask: false)

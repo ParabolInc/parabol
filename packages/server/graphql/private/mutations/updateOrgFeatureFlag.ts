@@ -1,9 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
 import {MutationResolvers} from '../resolverTypes'
 
-const addFeatureFlagToOrg: MutationResolvers['addFeatureFlagToOrg'] = async (
+const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
   _source,
-  {orgIds, flag}
+  {orgIds, flag, addFlag}
 ) => {
   const r = await getRethink()
 
@@ -20,9 +20,15 @@ const addFeatureFlagToOrg: MutationResolvers['addFeatureFlagToOrg'] = async (
     .table('Organization')
     .getAll(r.args(orgIds))
     .update(
-      {
-        featureFlags: r.row('featureFlags').default([]).setInsert(flag)
-      },
+      (row) => ({
+        featureFlags: r.branch(
+          addFlag,
+          row('featureFlags').default([]).setInsert(flag),
+          row('featureFlags')
+            .default([])
+            .filter((featureFlag) => featureFlag.ne(flag))
+        )
+      }),
       {returnChanges: true}
     )('changes')('new_val')('id')
     .run()) as string[]
@@ -30,4 +36,4 @@ const addFeatureFlagToOrg: MutationResolvers['addFeatureFlagToOrg'] = async (
   return {updatedOrgIds}
 }
 
-export default addFeatureFlagToOrg
+export default updateOrgFeatureFlag

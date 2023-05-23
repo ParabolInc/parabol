@@ -1,6 +1,7 @@
 // Sometimes, a value cached is redis is harder to get than simply querying the primary key on a table
 // this allows redis to cache the results of arbitrarily complex rethinkdb queries
 
+import {sql} from 'kysely'
 import ms from 'ms'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
@@ -37,6 +38,13 @@ const customRedisQueries = {
           .where('teamId', '=', 'aGhostTeam')
           .where('isActive', '=', true)
           .where('type', '=', templateType)
+          .where(({or, cmpr}) =>
+            or([
+              cmpr('hideStartingAt', 'is', null),
+              sql`make_date(2020 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`,
+              sql`make_date(2019 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`
+            ])
+          )
           .execute()
       })
     )

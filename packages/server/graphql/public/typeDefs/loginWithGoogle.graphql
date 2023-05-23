@@ -17,5 +17,10 @@ extend type Mutation {
     if present, the user is also joining a team
     """
     invitationToken: ID
+
+    """
+    query params on the login page, used to maybe add feature flag
+    """
+    params: String!
   ): UserLogInPayload!
 }

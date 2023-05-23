@@ -9,6 +9,10 @@ import {
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import Atmosphere from '../Atmosphere'
 import {
+  TeamSubscription as TTeamSubscription,
+  TeamSubscription$variables
+} from '../__generated__/TeamSubscription.graphql'
+import {
   acceptTeamInvitationTeamOnNext,
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
@@ -33,10 +37,6 @@ import {
   removeTeamMemberTeamUpdater
 } from '../mutations/RemoveTeamMemberMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
-import {
-  TeamSubscription as TTeamSubscription,
-  TeamSubscription$variables
-} from '../__generated__/TeamSubscription.graphql'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -160,6 +160,9 @@ const subscription = graphql`
       }
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)
+      }
+      UpdateTemplateCategorySuccess {
+        ...UpdateTemplateCategoryMutation_team @relay(mask: false)
       }
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
