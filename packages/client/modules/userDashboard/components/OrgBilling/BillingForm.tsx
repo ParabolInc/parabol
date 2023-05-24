@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
+import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
@@ -8,8 +8,9 @@ import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMu
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
+import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
-import {StripePaymentElementChangeEvent} from '@stripe/stripe-js'
+import {StripeCardElementChangeEvent} from '@stripe/stripe-js'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -54,6 +55,27 @@ const ErrorMsg = styled(StyledError)({
   textTransform: 'none'
 })
 
+const CARD_OPTIONS = {
+  hidePostalCode: true,
+  style: {
+    base: {
+      color: PALETTE.SLATE_800,
+      fontFamily: '"IBM Plex Sans", sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+        color: PALETTE.SLATE_800
+      },
+      marginBottom: '16px',
+      padding: '12px 16px'
+    },
+    invalid: {
+      color: PALETTE.TOMATO_500,
+      iconColor: PALETTE.TOMATO_500
+    }
+  }
+}
+
 type Props = {
   orgId: string
 }
@@ -65,7 +87,7 @@ const BillingForm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
+  const {onError} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
   const [hasStarted, setHasStarted] = useState(false)
 
@@ -74,23 +96,43 @@ const BillingForm = (props: Props) => {
     if (!stripe || !elements) return
     setIsLoading(true)
     if (errorMsg) setErrorMsg(null)
-    const {setupIntent, error} = await stripe.confirmSetup({
-      elements,
-      redirect: 'if_required'
+    const cardElement = elements.getElement(CardElement)
+    if (!cardElement) return
+    const {paymentMethod, error} = await stripe.createPaymentMethod({
+      type: 'card',
+      card: cardElement
     })
-    setIsLoading(false)
+
     if (error) {
       setErrorMsg(error.message)
       return
     }
-    const {payment_method: paymentMethodId, status} = setupIntent
-    if (status === 'succeeded' && typeof paymentMethodId === 'string') {
+
+    const handleCompleted = async (res: UpgradeToTeamTierMutation$data) => {
+      const {upgradeToTeamTier} = res
+      const stripeSubscriptionClientSecret = upgradeToTeamTier?.stripeSubscriptionClientSecret
+      if (!stripeSubscriptionClientSecret) {
+        setIsLoading(false)
+        return
+      }
+      const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      if (error) {
+        setErrorMsg(error.message)
+        setIsLoading(false)
+        return
+      }
+      setIsLoading(false)
       setIsPaymentSuccessful(true)
-      UpgradeToTeamTierMutation(atmosphere, {orgId, paymentMethodId}, {onError, onCompleted})
     }
+
+    UpgradeToTeamTierMutation(
+      atmosphere,
+      {orgId, paymentMethodId: paymentMethod.id},
+      {onError, onCompleted: handleCompleted}
+    )
   }
 
-  const handleChange = (event: StripePaymentElementChangeEvent) => {
+  const handleChange = (event: StripeCardElementChangeEvent) => {
     if (!hasStarted && !event.empty) {
       SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
       setHasStarted(true)
@@ -102,7 +144,7 @@ const BillingForm = (props: Props) => {
 
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      <PaymentElement onChange={handleChange} id='payment-element' options={{layout: 'tabs'}} />
+      <CardElement onChange={handleChange} options={CARD_OPTIONS} />
       <ButtonBlock>
         {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
