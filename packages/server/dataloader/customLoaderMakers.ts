@@ -438,6 +438,7 @@ export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
         .selectAll()
         .where('orgId', 'in', orgIds)
         .where('isActive', '=', true)
+        .orderBy('createdAt', 'desc')
         .execute()
       return orgIds.map((orgId) => docs.filter((doc) => doc.orgId === orgId))
     },

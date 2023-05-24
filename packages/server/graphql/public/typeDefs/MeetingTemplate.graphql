@@ -308,3 +308,74 @@ type PokerTemplateEdge {
   """
   cursor: String!
 }
+
+"""
+An activity that does not have a customizable template
+"""
+type FixedActivity implements MeetingTemplate {
+  """
+  teamPrompt | action
+  """
+  id: ID!
+
+  """
+  Date the activity was created
+  """
+  createdAt: DateTime!
+
+  """
+  Always true
+  """
+  isActive: Boolean!
+
+  """
+  Always true
+  """
+  isFree: Boolean!
+
+  """
+  The time of the meeting the template was last used
+  """
+  lastUsedAt: DateTime
+
+  """
+  The name of the template
+  """
+  name: String!
+
+  """
+  Always aGhostOrg
+  """
+  orgId: ID!
+
+  """
+  Always public
+  """
+  scope: SharingScopeEnum!
+
+  """
+  Always aGhostTeam
+  """
+  teamId: ID!
+
+  """
+  aGhostTeam
+  """
+  team: Team!
+
+  """
+  teamPrompt | action
+  """
+  type: MeetingTypeEnum!
+  updatedAt: DateTime!
+
+  """
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  """
+  category: String!
+
+  """
+  Whether this template should be in the recommended/quick start sections in the UI.
+  """
+  isRecommended: Boolean!
+}
