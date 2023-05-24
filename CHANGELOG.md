@@ -21,6 +21,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 
+- chore: update max token limit (#8267)
 - fix(copy): Make copy for ending meeting consistent (#8256)
 - fix: Fix team change in new meeting window (#8253)
 - fix(tiptap): Prevent showing edit components in readonly mode (#8259)
