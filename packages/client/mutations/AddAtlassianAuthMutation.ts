@@ -9,7 +9,7 @@ graphql`
       integrations {
         atlassian {
           ...AtlassianProviderRowAtlassianIntegration
-          ...TaskFooterIntegrateMenuViewerAtlassianIntegration
+          ...useIsIntegratedAtlassianIntegration
         }
       }
     }

@@ -5822,6 +5822,11 @@ type TeamPromptMeeting implements NewMeeting {
   summarySentAt: DateTime
 
   """
+  The tasks created within the meeting
+  """
+  tasks: [Task!]!
+
+  """
   foreign key for team
   """
   teamId: ID!
