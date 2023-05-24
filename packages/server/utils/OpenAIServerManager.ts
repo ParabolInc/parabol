@@ -116,8 +116,10 @@ class OpenAIServerManager {
         return null
       }
       return answer
-    } catch (error) {
-      console.error(error)
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      console.error(error.message)
+      sendToSentry(error)
       return null
     }
   }
