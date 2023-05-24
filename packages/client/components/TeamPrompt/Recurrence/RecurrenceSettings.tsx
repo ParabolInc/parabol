@@ -13,6 +13,7 @@ import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 import Legitity from '../../../validation/Legitity'
 import {isNotNull} from '../../../utils/predicates'
+import {getJSDateFromRRuleDate} from '../../../shared/rruleUtil'
 dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
@@ -178,16 +179,6 @@ interface Props {
   recurrenceSettings: RecurrenceSettings
 }
 
-const getDateFromRRuleDateTime = (rruleDate: Date) => {
-  return new Date(
-    rruleDate.getUTCFullYear(),
-    rruleDate.getUTCMonth(),
-    rruleDate.getUTCDate(),
-    rruleDate.getUTCHours(),
-    rruleDate.getUTCMinutes()
-  )
-}
-
 export const RecurrenceSettings = (props: Props) => {
   const {parentId, onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
@@ -206,7 +197,7 @@ export const RecurrenceSettings = (props: Props) => {
   )
   const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
     recurrenceRule
-      ? getDateFromRRuleDateTime(recurrenceRule.options.dtstart)
+      ? getJSDateFromRRuleDate(recurrenceRule.options.dtstart)
       : dayjs()
           .add(1, 'day')
           .set('hour', 6)

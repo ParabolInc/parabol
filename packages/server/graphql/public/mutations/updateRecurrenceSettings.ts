@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
 import {RRule, datetime} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
@@ -10,26 +11,6 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
-
-const getRRuleDateTimeFromDate = (date: Date) => {
-  return datetime(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    date.getDate(),
-    date.getHours(),
-    date.getMinutes()
-  )
-}
-
-const getDateFromRRuleDateTime = (rruleDate: Date) => {
-  return new Date(
-    rruleDate.getUTCFullYear(),
-    rruleDate.getUTCMonth(),
-    rruleDate.getUTCDate(),
-    rruleDate.getUTCHours(),
-    rruleDate.getUTCMinutes()
-  )
-}
 
 export const startNewMeetingSeries = async (
   viewerId: string,
@@ -52,15 +33,11 @@ export const startNewMeetingSeries = async (
     facilitatorId: viewerId
   } as const
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
-  console.log('now', now)
-  const rruleNow = getRRuleDateTimeFromDate(now)
-  console.log('rruleNow', rruleNow)
+  const rruleNow = getRRuleDateFromJSDate(now)
   const nextMeetingStartRRuleDate = recurrenceRule.after(rruleNow)
-  console.log('nextMeetingStartRRuleDate', nextMeetingStartRRuleDate)
   const nextMeetingStartDate = nextMeetingStartRRuleDate
-    ? getDateFromRRuleDateTime(nextMeetingStartRRuleDate)
+    ? getJSDateFromRRuleDate(nextMeetingStartRRuleDate)
     : null
-  console.log('nextMeetingStartDate', nextMeetingStartDate)
 
   await r
     .table('NewMeeting')
@@ -82,10 +59,10 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
   const {id: meetingSeriesId} = meetingSeries
 
   const now = new Date()
-  const rruleNow = getRRuleDateTimeFromDate(now)
+  const rruleNow = getRRuleDateFromJSDate(now)
   const nextMeetingStartDateRRule = newRecurrenceRule.after(rruleNow)
   const nextMeetingStartDate = nextMeetingStartDateRRule
-    ? getDateFromRRuleDateTime(nextMeetingStartDateRRule)
+    ? getJSDateFromRRuleDate(nextMeetingStartDateRRule)
     : null
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
