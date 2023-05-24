@@ -40,6 +40,7 @@ export type PortalId =
   | 'reviewRequestToJoinOrgModal'
   | 'topBarNotificationsMenu'
   | 'pokerTemplateScaleDetailsModal'
+  | 'activityDetailsRecurrenceSettings'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void

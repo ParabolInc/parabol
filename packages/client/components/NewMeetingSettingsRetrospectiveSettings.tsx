@@ -11,8 +11,14 @@ import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
 import NewMeetingSettingsToggleTranscription from './NewMeetingSettingsToggleTranscription'
+import NewMeetingSettingsToggleTeamHealth from './NewMeetingSettingsToggleTeamHealth'
 
 const NewMeetingSettingsToggleCheckInMenuEntry = styled(NewMeetingSettingsToggleCheckIn)({
+  background: 'none',
+  borderRadius: 0
+})
+
+const NewMeetingSettingsToggleTeamHealthMenuEntry = styled(NewMeetingSettingsToggleTeamHealth)({
   background: 'none',
   borderRadius: 0
 })
@@ -41,6 +47,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
     graphql`
       fragment NewMeetingSettingsRetrospectiveSettings_settings on TeamMeetingSettings {
         ...NewMeetingSettingsToggleCheckIn_settings
+        ...NewMeetingSettingsToggleTeamHealth_settings
         ...NewMeetingSettingsToggleAnonymity_settings
         ...NewMeetingSettingsToggleTranscription_settings
       }
@@ -53,12 +60,13 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       fragment NewMeetingSettingsRetrospectiveSettings_organization on Organization {
         featureFlags {
           zoomTranscription
+          teamHealth
         }
       }
     `,
     organizationRef
   )
-  const {zoomTranscription} = organization.featureFlags
+  const {zoomTranscription, teamHealth} = organization.featureFlags
 
   return (
     <>
@@ -72,6 +80,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       {menuPortal(
         <div {...menuProps}>
           <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
+          {teamHealth && <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />}
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
           {zoomTranscription && <NewMeetingSettingsToggleTranscription settingsRef={settings} />}
         </div>

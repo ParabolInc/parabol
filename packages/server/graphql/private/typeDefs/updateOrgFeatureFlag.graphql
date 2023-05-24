@@ -2,12 +2,13 @@
 A flag to give an individual organization super powers
 """
 enum OrganizationFeatureFlagsEnum {
-  teamsLimit
   SAMLUI
+  noAISummary
   promptToJoinOrg
   suggestGroups
-  noAISummary
   zoomTranscription
+  teamHealth
+  teamsLimit
 }
 
 extend type Mutation {
