@@ -1,4 +1,4 @@
-FROM postgres:12.10
+FROM postgres:12.14
 
 ADD extensions /extensions
 
