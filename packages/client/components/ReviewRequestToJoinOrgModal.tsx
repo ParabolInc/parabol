@@ -31,6 +31,7 @@ const ReviewRequestToJoinOrgModalViewerFragment = graphql`
           name
           activeDomain
         }
+        ...DashboardAvatars_team
       }
     }
   }
