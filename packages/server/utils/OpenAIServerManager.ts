@@ -18,6 +18,7 @@ class OpenAIServerManager {
 
   async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
+
     try {
       const location = summaryLocation ?? 'retro meeting'
       const response = await this.openAIApi.createCompletion({
@@ -28,7 +29,7 @@ class OpenAIServerManager {
         ${text}
         """`,
         temperature: 0.7,
-        max_tokens: 256,
+        max_tokens: 80,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
