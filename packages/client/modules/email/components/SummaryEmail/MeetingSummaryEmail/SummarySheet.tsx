@@ -95,40 +95,60 @@ const SummarySheet = (props: Props) => {
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
-        {referrer === 'meeting' ? (
-          <>
-            <tr>
-              <td>
-                <table width='90%' align='center' className='mt-8 rounded-lg bg-slate-200 py-4'>
-                  <tbody>
-                    <tr>
-                      <td align='center' width='100%'>
-                        <div className='flex justify-center gap-4'>
-                          {!!taskCount && taskCount > 0 && <ExportAllTasks meetingRef={meeting} />}
-                          <Link
-                            to={emailCSVUrl}
-                            className={
-                              'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
-                            }
-                          >
-                            <TableChart
-                              style={{width: '14px', height: '14px', color: PALETTE.SLATE_600}}
-                            />
-                            Export to CSV
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            {/* :HACK: The 'ExportToCSV' component both downloads the CSV if 'urlAction' is 'csv'
+        {referrer === 'meeting'
+          ? (meetingType !== 'teamPrompt' || (!!taskCount && taskCount > 0)) && (
+              <>
+                <tr>
+                  <td>
+                    <table width='90%' align='center' className='mt-8 rounded-lg bg-slate-200 py-4'>
+                      <tbody>
+                        <tr>
+                          <td align='center' width='100%'>
+                            <div className='flex justify-center gap-4'>
+                              {!!taskCount && taskCount > 0 && (
+                                <ExportAllTasks meetingRef={meeting} />
+                              )}
+                              {meetingType !== 'teamPrompt' && (
+                                <Link
+                                  to={emailCSVUrl}
+                                  className={
+                                    'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                  }
+                                >
+                                  <TableChart
+                                    style={{
+                                      width: '14px',
+                                      height: '14px',
+                                      color: PALETTE.SLATE_600
+                                    }}
+                                  />
+                                  Export to CSV
+                                </Link>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+                {/* :HACK: The 'ExportToCSV' component both downloads the CSV if 'urlAction' is 'csv'
                 and shows the 'Export to CSV' button. We need the download functionality, but we
                 don't want to show the button as-is, so hide it in the DOM */}
-            <div className='hidden'>
-              {/* :TODO: (jmtaber129): Decouple the download and button functionality of this
+                <div className='hidden'>
+                  {/* :TODO: (jmtaber129): Decouple the download and button functionality of this
                   component. */}
+                  <ExportToCSV
+                    emailCSVUrl={emailCSVUrl}
+                    meetingId={meetingId}
+                    urlAction={urlAction}
+                    referrer={referrer}
+                    corsOptions={corsOptions}
+                  />
+                </div>
+              </>
+            )
+          : meetingType !== 'teamPrompt' && (
               <ExportToCSV
                 emailCSVUrl={emailCSVUrl}
                 meetingId={meetingId}
@@ -136,17 +156,7 @@ const SummarySheet = (props: Props) => {
                 referrer={referrer}
                 corsOptions={corsOptions}
               />
-            </div>
-          </>
-        ) : (
-          <ExportToCSV
-            emailCSVUrl={emailCSVUrl}
-            meetingId={meetingId}
-            urlAction={urlAction}
-            referrer={referrer}
-            corsOptions={corsOptions}
-          />
-        )}
+            )}
         <EmailBorderBottom />
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
         {meetingType === 'teamPrompt' ? (
