@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import OrgAvatarInput from '../../../../components/OrgAvatarInput'
 import useModal from '../../../../hooks/useModal'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
+import {OrgDetails_organization$key} from '../../../../__generated__/OrgDetails_organization.graphql'
 import OrgBillingDangerZone from './OrgBillingDangerZone'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import EditableOrgName from '../../../../components/EditableOrgName'
@@ -31,10 +31,6 @@ const OrgNameAndDetails = styled('div')({
   width: '100%'
 })
 
-const BackControlBlock = styled('div')({
-  margin: '16px 0'
-})
-
 const AvatarBlock = styled('div')({
   width: 64
 })
@@ -45,12 +41,8 @@ const OrgNameBlock = styled('div')({
   lineHeight: '36px'
 })
 
-const ToggleNavBlock = styled('div')({
-  margin: 0
-})
-
 type Props = {
-  organizationRef: OrgPlansAndBilling_organization$key
+  organizationRef: OrgDetails_organization$key
 }
 
 const OrgDetails = (props: Props) => {
