@@ -70,14 +70,8 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     role === 'BILLING_LEADER' ? await addNotifications(orgId, userId) : []
 
   const data = {orgId, userId, organizationUserId, notificationIdsAdded}
-  publish(
-    SubscriptionChannel.ORGANIZATION,
-    userId,
-    'SetOrgUserRoleSuccess' as any,
-    data,
-    subOptions
-  )
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'SetOrgUserRoleSuccess' as any, data, subOptions)
+  publish(SubscriptionChannel.ORGANIZATION, userId, 'SetOrgUserRoleSuccess', data, subOptions)
+  publish(SubscriptionChannel.ORGANIZATION, orgId, 'SetOrgUserRoleSuccess', data, subOptions)
   return data
 }
 

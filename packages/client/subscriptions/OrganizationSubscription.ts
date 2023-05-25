@@ -23,12 +23,6 @@ import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflect
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
-// SetOrgUserRoleAddedPayload {
-//   ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
-// }
-// SetOrgUserRoleRemovedPayload {
-//   ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
-// }
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
