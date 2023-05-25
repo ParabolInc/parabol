@@ -42,9 +42,10 @@ const linkStyle = {
 
 interface Props {
   name: string
+  message: string
 }
 const MeetingsDashNoFilteredResults = (props: Props) => {
-  const {name} = props
+  const {name, message} = props
   const clearDashSearch = (atmosphere: Atmosphere) => {
     commitLocalUpdate(atmosphere, (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
@@ -61,11 +62,11 @@ const MeetingsDashNoFilteredResults = (props: Props) => {
     <Section>
       <Heading>{`Hi ${name},`}</Heading>
       <Copy>
-        {'Sorry we could not find any meetings matched with your query. '}
+        {message}
         <Link to={'/meetings'} style={linkStyle} onClick={onClick}>
-          Click here
+          {' Click here'}
         </Link>
-        {'  to see all meetings.'}
+        {'  to see meetings on all of your teams.'}
       </Copy>
     </Section>
   )

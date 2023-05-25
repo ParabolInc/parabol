@@ -61,7 +61,7 @@ const MeetingsDash = (props: Props) => {
     viewerRef
   )
   const atmosphere = useAtmosphere()
-  const {teamIds} = useUserTaskFilters(atmosphere.viewerId)
+  const {teamIds: teamFilterIds} = useUserTaskFilters(atmosphere.viewerId)
   const {
     teams = [],
     preferredName = '',
@@ -91,65 +91,80 @@ const MeetingsDash = (props: Props) => {
 
           return a.createdAt > b.createdAt ? -1 : 1
         }),
-    [teams, dashSearch, teamIds]
+    [teams, dashSearch, teamFilterIds]
   )
   const filteredMeetings = useMemo(() => {
     const searchedMeetings = dashSearch
       ? activeMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
       : activeMeetings
-    const filteredMeetings = teamIds
-      ? searchedMeetings.filter((node) => teamIds.includes(node.teamId))
+    const filteredMeetings = teamFilterIds
+      ? searchedMeetings.filter((node) => teamFilterIds.includes(node.teamId))
       : searchedMeetings
     return filteredMeetings.map((meeting, displayIdx) => ({
       ...meeting,
       key: meeting.id,
       displayIdx
     }))
-  }, [teams, dashSearch, teamIds])
+  }, [teams, dashSearch, teamFilterIds])
   const transitioningMeetings = useTransition(filteredMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const hasMeetings = activeMeetings.length > 0
+  const hasActiveMeetings = activeMeetings.length > 0
   const hasFilteredMeetings = filteredMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
+
+  let meetingCells: JSX.Element
+  if (!hasActiveMeetings) {
+    meetingCells = (
+      <EmptyContainer>
+        <MeetingsDashEmpty
+          name={preferredName}
+          message={EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS}
+        />
+        <Wrapper maybeTabletPlus={maybeTabletPlus}>
+          <DemoMeetingCard />
+          <TutorialMeetingCard />
+        </Wrapper>
+      </EmptyContainer>
+    )
+  } else if (!hasFilteredMeetings) {
+    let message = ''
+    if (dashSearch && teamFilterIds) {
+      message = 'Sorry we could not find any meetings matched with your query on this team.'
+    } else if (dashSearch && !teamFilterIds) {
+      message = 'Sorry we could not find any meetings matched with your query.'
+    } else if (!dashSearch && teamFilterIds) {
+      message = 'Looks like you have no upcoming meetings on this team.'
+    }
+    meetingCells = (
+      <EmptyContainer>
+        <MeetingsDashNoFilteredResults name={preferredName} message={message} />
+      </EmptyContainer>
+    )
+  } else {
+    meetingCells = (
+      <Wrapper maybeTabletPlus={maybeTabletPlus}>
+        {transitioningMeetings.map((meeting) => {
+          const {child} = meeting
+          const {id, displayIdx} = child
+          return (
+            <MeetingCard
+              key={id}
+              displayIdx={displayIdx}
+              meeting={meeting.child}
+              onTransitionEnd={meeting.onTransitionEnd}
+              status={meeting.status}
+            />
+          )
+        })}
+      </Wrapper>
+    )
+  }
   return (
     <>
       <MeetingsDashHeader viewerRef={viewer} />
-      {hasMeetings ? (
-        hasFilteredMeetings ? (
-          <Wrapper maybeTabletPlus={maybeTabletPlus}>
-            {transitioningMeetings.map((meeting) => {
-              const {child} = meeting
-              const {id, displayIdx} = child
-              return (
-                <MeetingCard
-                  key={id}
-                  displayIdx={displayIdx}
-                  meeting={meeting.child}
-                  onTransitionEnd={meeting.onTransitionEnd}
-                  status={meeting.status}
-                />
-              )
-            })}
-          </Wrapper>
-        ) : (
-          <EmptyContainer>
-            <MeetingsDashNoFilteredResults name={preferredName} />
-          </EmptyContainer>
-        )
-      ) : (
-        <EmptyContainer>
-          <MeetingsDashEmpty
-            name={preferredName}
-            message={EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS}
-          />
-          <Wrapper maybeTabletPlus={maybeTabletPlus}>
-            <DemoMeetingCard />
-            <TutorialMeetingCard />
-          </Wrapper>
-        </EmptyContainer>
-      )}
+      {meetingCells}
       <StartMeetingFAB hasRid={featureFlags.retrosInDisguise} />
     </>
   )
