@@ -61,7 +61,7 @@ export interface Discussion {
 }
 
 export interface DomainJoinRequest {
-  id: string
+  id: Generated<number>
   createdBy: string
   domain: string
   expiresAt: Timestamp | null

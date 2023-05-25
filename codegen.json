@@ -37,6 +37,7 @@
         "mappers": {
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
+          "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",
@@ -46,6 +47,7 @@
           "CreateSetupIntentSuccess": "./types/CreateSetupIntentSuccess#CreateSetupIntentSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
+          "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
@@ -62,6 +64,7 @@
           "NotifyResponseReplied": "../../database/types/NotifyResponseReplied#default as NotifyResponseRepliedDB",
           "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
           "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",
+          "NotifyRequestToJoinOrg": "../../database/types/NotificationRequestToJoinOrg#default",
           "Organization": "../../database/types/Organization#default as Organization",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "RRule": "rrule#RRule",
