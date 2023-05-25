@@ -12,7 +12,6 @@ import getSafeRegex from '../utils/getSafeRegex'
 import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
-import MeetingsDashNoFilteredResults from './MeetingsDashNoFilteredResults'
 import MeetingsDashHeader from './MeetingsDashHeader'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
@@ -139,7 +138,7 @@ const MeetingsDash = (props: Props) => {
     }
     meetingCells = (
       <EmptyContainer>
-        <MeetingsDashNoFilteredResults name={preferredName} message={message} />
+        <MeetingsDashEmpty name={preferredName} message={message} filteredResult={true} />
       </EmptyContainer>
     )
   } else {

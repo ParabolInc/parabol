@@ -1,7 +1,11 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {Link} from 'react-router-dom'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import Atmosphere from '../Atmosphere'
+import {commitLocalUpdate} from 'relay-runtime'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 const maybeTabletPlusMediaQuery = makeMinWidthMediaQuery(Breakpoint.FUZZY_TABLET)
 
@@ -30,15 +34,43 @@ const Copy = styled('p')({
 interface Props {
   name: string
   message: string
+  filteredResult?: boolean
 }
-const MeetingsDashNewUser = (props: Props) => {
-  const {name, message} = props
+const MeetingsDashEmpty = (props: Props) => {
+  const clearDashSearch = (atmosphere: Atmosphere) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      viewer.setValue(null, 'dashSearch')
+    })
+  }
+
+  const atmosphere = useAtmosphere()
+  const onClick = () => {
+    clearDashSearch(atmosphere)
+  }
+
+  const {name, message, filteredResult} = props
   return (
     <Section>
       <Heading>{`Hi ${name},`}</Heading>
-      <Copy>{`${message}`}</Copy>
+      <Copy>
+        {message}
+        {filteredResult ? (
+          <>
+            <Link
+              to={'/meetings'}
+              className='font-sans font-semibold text-sky-500 no-underline'
+              onClick={onClick}
+            >
+              {' Click here'}
+            </Link>
+            {'  to see meetings on all of your teams.'}
+          </>
+        ) : null}
+      </Copy>
     </Section>
   )
 }
 
-export default MeetingsDashNewUser
+export default MeetingsDashEmpty
