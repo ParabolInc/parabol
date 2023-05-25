@@ -54,7 +54,6 @@ export default {
     // if they downgrade & are re-upgrading, they'll already have a stripeId
     const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer!
-    let stripeSubscriptionClientSecret: string | null = null
     try {
       await oldUpgradeToTeamTier(orgId, stripeToken, email, dataLoader)
     } catch (e) {
@@ -82,7 +81,7 @@ export default {
       oldTier: 'starter',
       newTier: 'team'
     })
-    const data = {orgId, teamIds, meetingIds, stripeSubscriptionClientSecret}
+    const data = {orgId, teamIds, meetingIds}
     publish(
       SubscriptionChannel.ORGANIZATION,
       orgId,
