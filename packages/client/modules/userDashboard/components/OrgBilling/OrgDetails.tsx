@@ -58,9 +58,6 @@ const OrgDetails = (props: Props) => {
         picture
         tier
         name
-        featureFlags {
-          SAMLUI
-        }
       }
     `,
     organizationRef
