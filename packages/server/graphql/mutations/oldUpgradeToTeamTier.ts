@@ -10,6 +10,7 @@ import OldUpgradeToTeamTierPayload from '../types/OldUpgradeToTeamTierPayload'
 import hideConversionModal from './helpers/hideConversionModal'
 import oldUpgradeToTeamTier from './helpers/oldUpgradeToTeamTier'
 
+// deprecating because we need to split up the subscription and upgrade logic to handle 3D Secure cards in the new checkout flow:  https://github.com/ParabolInc/parabol/issues/8278
 export default {
   type: OldUpgradeToTeamTierPayload,
   description: 'Upgrade an account to the paid service',
@@ -27,6 +28,7 @@ export default {
       description: 'The payment method id'
     }
   },
+
   async resolve(
     _source: unknown,
     {
