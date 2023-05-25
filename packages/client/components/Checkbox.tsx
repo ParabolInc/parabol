@@ -4,7 +4,6 @@ import clsx from 'clsx'
 
 interface Props {
   active: boolean | null
-  color?: string
   className?: string
   disabled?: boolean
   onClick?: (e: React.MouseEvent) => void
