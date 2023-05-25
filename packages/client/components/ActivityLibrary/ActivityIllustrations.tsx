@@ -45,6 +45,7 @@ import winningStreakTemplate from '../../../../static/images/illustrations/winni
 import workingStuckTemplate from '../../../../static/images/illustrations/workingStuckTemplate.png'
 import wsjfTemplate from '../../../../static/images/illustrations/wsjfTemplate.png'
 import estimatedEffortTemplate from '../../../../static/images/illustrations/estimatedEffortTemplate.png'
+import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 
 import action from '../../../../static/images/illustrations/action.png'
 import retrospective from '../../../../static/images/illustrations/retrospective.png'
@@ -113,3 +114,8 @@ export const activityIllustrations = {
   ...retroIllustrations,
   ...pokerIllustrations
 } as const
+
+export type ActivityId = keyof typeof activityIllustrations
+
+export const getActivityIllustration = (activityId: ActivityId) =>
+  activityIllustrations[activityId] ?? customTemplateIllustration

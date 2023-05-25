@@ -83,6 +83,13 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
         link: pokerUrl
       }
       return makeHackedButtonPairFields(estimateButton, summaryButton)
+    case 'teamPrompt':
+      const teamPromptUrl = makeAppURL(appOrigin, `meet/${meetingId}/responses`)
+      const responseButton = {
+        label: 'See responses',
+        link: teamPromptUrl
+      }
+      return makeHackedButtonPairFields(responseButton, summaryButton)
     default:
       throw new Error('Invalid meeting type')
   }
@@ -182,7 +189,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     const {facilitatorUserId, summary} = meeting
     const {webhookUrl} = notificationChannel
 
-    const summaryText = getSummaryText(meeting)
+    const summaryText = await getSummaryText(meeting)
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const fields: Field[] = [
       {

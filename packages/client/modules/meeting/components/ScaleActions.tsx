@@ -19,10 +19,11 @@ interface Props {
   scale: ScaleActions_scale$key
   scaleCount: number
   teamId: string
+  closeMenu: () => void
 }
 
 const ScaleActions = (props: Props) => {
-  const {scale: scaleRef, scaleCount, teamId} = props
+  const {scale: scaleRef, scaleCount, teamId, closeMenu} = props
   const scale = useFragment(
     graphql`
       fragment ScaleActions_scale on TemplateScale {
@@ -51,6 +52,7 @@ const ScaleActions = (props: Props) => {
         {onError, onCompleted}
       )
     }
+    closeMenu()
   }
   const editScale = () => {
     commitLocalUpdate(atmosphere, (store) => {

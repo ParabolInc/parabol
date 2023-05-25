@@ -1,13 +1,16 @@
 import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import {Resolvers} from './resolverTypes'
+import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import isOrgTier from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import isUserViewer from './rules/isUserViewer'
 import isViewerBillingLeader from './rules/isViewerBillingLeader'
+import isViewerOnTeam from './rules/isViewerOnTeam'
 import rateLimit from './rules/rateLimit'
+
 type Wildcard = {
   '*': ShieldRule
 }
@@ -46,7 +49,9 @@ const permissionMap: PermissionMap<Resolvers> = {
       isSuperUser,
       and(isViewerBillingLeader, isOrgTier('enterprise'))
     ),
-    removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader)
+    removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader),
+    updateSAML: and(isViewerBillingLeader, isOrgTier('enterprise')),
+    updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId)
   },
   Query: {
     '*': isAuthenticated,

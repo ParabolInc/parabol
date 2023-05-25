@@ -49,6 +49,9 @@ const MeetingsDash = (props: Props) => {
         id
         dashSearch
         preferredName
+        featureFlags {
+          retrosInDisguise
+        }
         teams {
           ...MeetingsDashActiveMeetings @relay(mask: false)
         }
@@ -59,7 +62,12 @@ const MeetingsDash = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {teamIds} = useUserTaskFilters(atmosphere.viewerId)
-  const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
+  const {
+    teams = [],
+    preferredName = '',
+    dashSearch,
+    featureFlags = {retrosInDisguise: false}
+  } = viewer ?? {}
   const activeMeetings = useMemo(
     () =>
       teams
@@ -142,7 +150,7 @@ const MeetingsDash = (props: Props) => {
           </Wrapper>
         </EmptyContainer>
       )}
-      <StartMeetingFAB />
+      <StartMeetingFAB hasRid={featureFlags.retrosInDisguise} />
     </>
   )
 }

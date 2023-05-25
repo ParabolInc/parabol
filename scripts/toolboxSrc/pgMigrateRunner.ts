@@ -202,7 +202,7 @@ export default async (options: OptsWithMigs): Promise<RunMigration[]> => {
     const toRun: Migration[] = getMigrationsToRun(options, runNames, migrations)
 
     if (!toRun.length) {
-      logger.info('No migrations to run!')
+      logger.info('PostgreSQL - No migrations to run!')
       return []
     }
 

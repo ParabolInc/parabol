@@ -93,7 +93,6 @@ import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
 import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
-import setMeetingSettings from './mutations/setMeetingSettings'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setOrgUserRole from './mutations/setOrgUserRole'
 import setPhaseFocus from './mutations/setPhaseFocus'
@@ -218,7 +217,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       segmentEventTrack,
       selectTemplate,
       setAppLocation,
-      setMeetingSettings,
       setDefaultSlackChannel,
       setOrgUserRole,
       setPhaseFocus,

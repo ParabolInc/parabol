@@ -21,12 +21,19 @@ const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
     fetchAllLines(invoiceId),
     manager.retrieveInvoice(invoiceId)
   ])
+  const stripeCustomer = await manager.retrieveCustomer(invoice.customer as string)
+  if (stripeCustomer.deleted) {
+    throw new Error('Customer was deleted')
+  }
   const {
     metadata: {orgId}
-  } = await manager.retrieveCustomer(invoice.customer as string)
+  } = stripeCustomer
   if (!orgId) throw new Error(`orgId not found on metadata for invoice ${invoiceId}`)
 
-  await updateSubscriptionQuantity(orgId, dataLoader, true)
+  const isTierModeVolume = stripeLineItems.every(({plan}) => plan?.tiers_mode === 'volume')
+  if (!isTierModeVolume) {
+    await updateSubscriptionQuantity(orgId, true)
+  }
 
   await Promise.all([
     generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader),

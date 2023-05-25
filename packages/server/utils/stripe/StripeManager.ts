@@ -17,6 +17,10 @@ export default class StripeManager {
     }
   }
 
+  async attachPaymentToCustomer(customerId: string, paymentMethodId: string) {
+    return this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+  }
+
   async createCustomer(orgId: string, email: string, source?: string) {
     return this.stripe.customers.create({
       email,
@@ -50,14 +54,9 @@ export default class StripeManager {
     })
   }
 
-  async createPaymentIntent(amount: number) {
-    return this.stripe.paymentIntents.create({
-      amount,
-      currency: 'usd',
-      automatic_payment_methods: {
-        // TODO: change this when we're handling webhooks for selected payments
-        enabled: true
-      }
+  async createSetupIntent(customerId: string) {
+    return this.stripe.setupIntents.create({
+      customer: customerId
     })
   }
 
@@ -68,6 +67,7 @@ export default class StripeManager {
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
       proration_behavior: 'none',
+      expand: ['latest_invoice.payment_intent'], // expand the payment intent so we can get the client_secret
       // Use this for testing invoice.created hooks
       // run `yarn ultrahook` and subscribe
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
@@ -86,6 +86,10 @@ export default class StripeManager {
 
   async deleteSubscription(stripeSubscriptionId: string) {
     return this.stripe.subscriptions.del(stripeSubscriptionId)
+  }
+
+  async getCustomersByEmail(email: string) {
+    return this.stripe.customers.list({email})
   }
 
   async getSubscriptionItem(subscriptionId: string) {
@@ -157,6 +161,12 @@ export default class StripeManager {
 
   async updatePayment(customerId: string, source: string) {
     return this.stripe.customers.update(customerId, {source})
+  }
+
+  async updateDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
+    return this.stripe.customers.update(customerId, {
+      invoice_settings: {default_payment_method: paymentMethodId}
+    })
   }
 
   async updateSubscriptionItemQuantity(stripeSubscriptionItemId: string, quantity: number) {

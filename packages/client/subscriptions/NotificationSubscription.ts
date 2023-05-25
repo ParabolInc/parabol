@@ -1,13 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
-import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
-import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
-import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
 import {InvalidateSessionsMutation_notification$data} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
 import {NotificationSubscription_meetingStageTimeLimitEnd$data} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
 import {NotificationSubscription_paymentRejected$data} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
+import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
+import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
+import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
 import Atmosphere from '../Atmosphere'
+import {NotificationSubscription as TNotificationSubscription} from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
@@ -15,7 +16,6 @@ import {
   createTaskNotificationOnNext,
   createTaskNotificationUpdater
 } from '../mutations/CreateTaskMutation'
-import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {
   inviteToTeamNotificationOnNext,
   inviteToTeamNotificationUpdater
@@ -24,11 +24,11 @@ import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
 } from '../mutations/RemoveOrgUserMutation'
+import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
-import {NotificationSubscription as TNotificationSubscription} from '../__generated__/NotificationSubscription.graphql'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -65,6 +65,10 @@ const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       fieldName
+      AcceptTeamInvitationPayload {
+        ...AcceptTeamInvitationMutationReply @relay(mask: false)
+        ...AcceptTeamInvitationMutation_notification @relay(mask: false)
+      }
       AddedNotification {
         addedNotification {
           ...NotificationPicker_notification @relay(mask: false)

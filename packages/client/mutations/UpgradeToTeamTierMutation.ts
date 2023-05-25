@@ -5,6 +5,7 @@ import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__gene
 
 graphql`
   fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierPayload {
+    stripeSubscriptionClientSecret
     organization {
       creditCard {
         brand
@@ -36,8 +37,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID!) {
-    upgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken) {
+  mutation UpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID, $paymentMethodId: ID) {
+    upgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken, paymentMethodId: $paymentMethodId) {
       error {
         message
       }

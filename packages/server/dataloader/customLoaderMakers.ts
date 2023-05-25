@@ -437,6 +437,7 @@ export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
         .selectFrom('MeetingTemplate')
         .selectAll()
         .where('orgId', 'in', orgIds)
+        .where('isActive', '=', true)
         .execute()
       return orgIds.map((orgId) => docs.filter((doc) => doc.orgId === orgId))
     },
@@ -454,6 +455,7 @@ export const meetingTemplatesByTeamId = (parent: RootDataLoader) => {
         .selectFrom('MeetingTemplate')
         .selectAll()
         .where('teamId', 'in', teamIds)
+        .where('isActive', '=', true)
         .execute()
       return teamIds.map((teamId) => docs.filter((doc) => doc.teamId === teamId))
     },

@@ -5,6 +5,125 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.105.0 2023-May-24
+
+### Added
+
+- feat(summaries): Bulk task export button (#7933)
+- feat(checkout-flow): handle 3D Secure cards (#8162)
+- feat(standups): Meeting ended integration notification (#8258)
+- feat(retros-in-disguise): added standup activity details (#8199)
+- feat(Team Health): add new stage to retrospective (#7942)
+- feat(rid): Sidebar for standups + checkins (#8226)
+- feat: mutable category (#8159)
+- chore(metrics): Add event parameter is_patient_0 to GA4 sign up events (#8223)
+- feat(rid): Add feature flag based on params for email + google signups (#8211)
+
+### Fixed
+
+- chore: update max token limit (#8267)
+- fix(copy): Make copy for ending meeting consistent (#8256)
+- fix: Fix team change in new meeting window (#8253)
+- fix(tiptap): Prevent showing edit components in readonly mode (#8259)
+- fix(discussions): Fix editing comments in standups + check-ins (#8248)
+- fix: NewMeeting dialog rendered the dashboard twice (#8246)
+- chore: refactor addFeatureFlagToOrg to updateOrgFeatureFlag (#8244)
+- chore(docker): documentation on how to build the docker image locally improved (#8230)
+- fix(chore): properly count emojis length (#8116)
+- chore: add checkout flow tracking (#8235)
+- chore(prompt-to-join): domainJoinRequest - replace string id with auto increment (#8191)
+- fix: Add subject explicitly to create Jira key script (#8237)
+- fix: regenerate yarn.lock (#8236)
+- chore: remove \_\_jsxRuntime path (#8154)
+- fix(rid): Navigate to activity lib for floating action button (#8215)
+- fix: slack notification race condition (#8197)
+
+## 6.104.0 2023-May-17
+
+### Added
+
+- feat(recurrence): Prev/next meeting navigation (#8157)
+- feat(rid): Enter edit mode automatically for new templates (#8156)
+- feat(pipeline): Docker build pipeline (#8030)
+- feat(checkout-flow): add billing leader functionality (#8121)
+- feat: can edit & delete AI comment (#8164)
+- feat: prime new columns on MeetingTemplate (#8081)
+- feat(rid): Navigate to activity lib by default from CTA (#8210)
+- feat: build no-deps (#8196)
+
+### Fixed
+
+- fix: remove flushall redis on migrate (#8175)
+- fix(rid): Ignore category in search empty state (#8144)
+- fix: more logs for voting error (#8167)
+
+### Changed
+
+- chore(pg-migrations): message when no migrations need to be run on PG showing it is actually PosgreSQL (#8174)
+- chore: ignore generated files in PR size (#8165)
+- chore: Verify all checked in generated files are clean (#8161)
+- chore: AI opt out at org level (#8163)
+- chore(deps): bump vm2 from 3.9.17 to 3.9.18 (#8198)
+- chore: remove node-fetch from app code (#8178)
+
+## 6.103.0 2023-May-05
+
+### Added
+
+- feat(retros-in-disguise): Prompt user to use org scope (#8120)
+- feat(retros-in-disguise):Create new poker template (#8143)
+- feat(retros-in-disguise): Poker details view (#8131)
+- chore(prompt-to-join): Allow to open add teammate dialog from the snackbar (#8136)
+- feat(suggest-groups): Add suggestGroups org feature flag (#8130)
+- feat: add mainCategory and illustrationUrl to MeetingTemplate (#8074)
+
+### Fixed
+
+- fix: subscribe to acceptInvite paylods in subscription (#8127)
+
+## 6.102.0 2023-May-3
+
+### Added
+
+- feat(retros-in-disguise): added create new activity view (#8069)
+- feat(rid): Edit Mode (#8108)
+- feat: add more dd tracing (#7774)
+- feat(templates): Share to org by default (#8129)
+
+### Changed
+
+- chore: remove User table from RethinkDB (#8115)
+- chore: bump webpack to secure version
+- chore: generate kysely schema in dev (#8114)
+- chore(security): bump vulnerable packages (#8135)
+
+### Fixed
+
+- **stripe**: do not update subscription quantity on enterprise annual plan (#8105)
+
+## 6.101.0 2023-Apr-26
+
+### Added
+
+- Throw and catch GraphQL errors on the client (#7932)
+- **retros-in-disguise**: Clone template (#8036)
+- Create new Github Action - Notify on bug assignment (#8058)
+- Create updateSAML mutation (#7685)
+- **checkout-flow**: handle credit card functionality (#8005)
+- **recurrence**: Use the prompt from the most recent meeting in the series (#8095)
+- **prompt-to-join**: Add request to join domain mutation (#8040)
+
+### Changed
+
+- refactor MeetingTemplate reads to PG (#8015)
+- refactor notifications to SDL (example PR) (#8018)
+- bump vm2 from 3.9.16 to 3.9.17 (#8078)
+
+### Fixed
+
+- Fix duplicate charge on failed payment (#8072)
+- Fix default standup name (#8079)
+
 ## 6.100.0 2023-Apr-19
 
 ### Added
