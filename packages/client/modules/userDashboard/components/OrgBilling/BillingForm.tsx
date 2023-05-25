@@ -4,7 +4,7 @@ import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
-import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMutation'
+import OldUpgradeToTeamTierMutation from '../../../../mutations/OldUpgradeToTeamTierMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
@@ -124,7 +124,7 @@ const BillingForm = (props: Props) => {
         setIsLoading(false)
         return
       }
-      UpgradeToTeamTierMutation(atmosphere, {orgId}, {onError, onCompleted})
+      OldUpgradeToTeamTierMutation(atmosphere, {orgId}, {onError, onCompleted})
       setIsLoading(false)
       setIsPaymentSuccessful(true)
     }

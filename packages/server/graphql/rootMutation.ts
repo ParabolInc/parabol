@@ -126,7 +126,7 @@ import updateTaskDueDate from './mutations/updateTaskDueDate'
 import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
 import updateUserProfile from './mutations/updateUserProfile'
-import upgradeToTeamTier from './mutations/upgradeToTeamTier'
+import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
 import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import voteForPokerStory from './mutations/voteForPokerStory'
@@ -244,7 +244,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTeamName,
       updateTemplateScope,
       updateUserProfile,
-      upgradeToTeamTier,
+      oldUpgradeToTeamTier,
       uploadOrgImage,
       uploadUserImage,
       voteForReflectionGroup,

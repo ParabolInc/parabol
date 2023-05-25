@@ -1,0 +1,69 @@
+import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
+// import {OldUpgradeToTeamTierMutation as TOldUpgradeToTeamTierMutation} from '../__generated__/OldUpgradeToTeamTierMutation.graphql'
+
+graphql`
+  fragment OldUpgradeToTeamTierMutation_organization on OldUpgradeToTeamTierPayload {
+    stripeSubscriptionClientSecret
+    organization {
+      creditCard {
+        brand
+        last4
+        expiry
+      }
+      company {
+        tier
+      }
+      tier
+      periodEnd
+      periodStart
+      updatedAt
+      lockedAt
+    }
+    meetings {
+      showConversionModal
+    }
+  }
+`
+
+graphql`
+  fragment OldUpgradeToTeamTierMutation_team on OldUpgradeToTeamTierPayload {
+    teams {
+      isPaid
+      tier
+    }
+  }
+`
+
+const mutation = graphql`
+  mutation OldUpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID, $paymentMethodId: ID) {
+    oldUpgradeToTeamTier(
+      orgId: $orgId
+      stripeToken: $stripeToken
+      paymentMethodId: $paymentMethodId
+    ) {
+      error {
+        message
+      }
+      ...OldUpgradeToTeamTierMutation_organization @relay(mask: false)
+      ...OldUpgradeToTeamTierMutation_team @relay(mask: false)
+    }
+  }
+`
+
+// const OldUpgradeToTeamTierMutation: StandardMutation<TOldUpgradeToTeamTierMutation> = (
+const OldUpgradeToTeamTierMutation: StandardMutation<any> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
+  return commitMutation(atmosphere, {
+    mutation,
+    variables,
+    onCompleted,
+    onError
+  })
+}
+
+export default OldUpgradeToTeamTierMutation

@@ -7217,7 +7217,7 @@ type Mutation {
   """
   Upgrade an account to the paid service
   """
-  upgradeToTeamTier(
+  oldUpgradeToTeamTier(
     """
     the org requesting the upgrade
     """
@@ -7227,7 +7227,7 @@ type Mutation {
     The token that came back from stripe
     """
     stripeToken: ID!
-  ): UpgradeToTeamTierPayload
+  ): OldUpgradeToTeamTierPayload
 
   """
   Upload an image for an org avatar
@@ -9327,7 +9327,7 @@ input UpdateUserProfileInput {
   preferredName: String
 }
 
-type UpgradeToTeamTierPayload {
+type OldUpgradeToTeamTierPayload {
   error: StandardMutationError
 
   """

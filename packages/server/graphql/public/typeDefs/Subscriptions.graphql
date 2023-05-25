@@ -92,7 +92,7 @@ type OrganizationSubscriptionPayload {
   SetOrgUserRoleRemovedPayload: SetOrgUserRoleRemovedPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload
-  UpgradeToTeamTierPayload: UpgradeToTeamTierPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
 }
 
@@ -140,7 +140,7 @@ type TeamSubscriptionPayload {
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
-  UpgradeToTeamTierPayload: UpgradeToTeamTierPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
   AddReflectTemplatePayload: AddReflectTemplatePayload
   AddPokerTemplatePayload: AddPokerTemplatePayload
   AddReflectTemplatePromptPayload: AddReflectTemplatePromptPayload

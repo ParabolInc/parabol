@@ -6,13 +6,12 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import UpgradeToTeamTierPayload from '../types/UpgradeToTeamTierPayload'
+import OldUpgradeToTeamTierPayload from '../types/OldUpgradeToTeamTierPayload'
 import hideConversionModal from './helpers/hideConversionModal'
-import upgradeToTeamTier from './helpers/upgradeToTeamTier'
-import upgradeToTeamTierOld from './helpers/upgradeToTeamTierOld'
+import oldUpgradeToTeamTier from './helpers/oldUpgradeToTeamTier'
 
 export default {
-  type: UpgradeToTeamTierPayload,
+  type: OldUpgradeToTeamTierPayload,
   description: 'Upgrade an account to the paid service',
   args: {
     orgId: {
@@ -63,17 +62,8 @@ export default {
     const {email} = viewer!
     let stripeSubscriptionClientSecret: string | null = null
     try {
-      // TODO: remove upgradeToTeamTierOld once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
-      if (paymentMethodId) {
-        stripeSubscriptionClientSecret = await upgradeToTeamTier(
-          orgId,
-          paymentMethodId,
-          email,
-          dataLoader
-        )
-      } else if (stripeToken) {
-        await upgradeToTeamTierOld(orgId, stripeToken, email, dataLoader)
-      }
+      // TODO: remove oldUpgradeToTeamTier once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
+      await oldUpgradeToTeamTier(orgId, stripeToken, email, dataLoader)
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e
@@ -100,13 +90,19 @@ export default {
       newTier: 'team'
     })
     const data = {orgId, teamIds, meetingIds, stripeSubscriptionClientSecret}
-    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierPayload', data, subOptions)
+    publish(
+      SubscriptionChannel.ORGANIZATION,
+      orgId,
+      'OldUpgradeToTeamTierPayload',
+      data,
+      subOptions
+    )
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
-      publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToTeamTierPayload', teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'OldUpgradeToTeamTierPayload', teamData, subOptions)
     })
     return data
   }
