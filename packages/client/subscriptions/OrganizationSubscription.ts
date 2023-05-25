@@ -23,6 +23,12 @@ import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflect
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
+// SetOrgUserRoleAddedPayload {
+//   ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
+// }
+// SetOrgUserRoleRemovedPayload {
+//   ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
+// }
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
@@ -35,12 +41,6 @@ const subscription = graphql`
       }
       PayLaterPayload {
         ...PayLaterMutation_organization @relay(mask: false)
-      }
-      SetOrgUserRoleAddedPayload {
-        ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
-      }
-      SetOrgUserRoleRemovedPayload {
-        ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
       }
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_organization @relay(mask: false)
@@ -63,14 +63,14 @@ const subscription = graphql`
 
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
-  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
-  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
+  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext
+  // SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
 } as const
 
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
-  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
+  // SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const

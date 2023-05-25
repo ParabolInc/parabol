@@ -11,51 +11,87 @@ import {SetOrgUserRoleMutationAdded_organization$data} from '../__generated__/Se
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
 
-graphql`
-  fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
-    organization {
-      ...CompleteOrganizationFrag @relay(mask: false)
-    }
-    notificationsAdded {
-      type
-      ...PromoteToBillingLeader_notification @relay(mask: false)
-      ...PaymentRejected_notification @relay(mask: false)
-    }
-    updatedOrgMember {
-      user {
-        id
-      }
-      role
-    }
-  }
-`
+// graphql`
+//   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
+//     organization {
+//       billingLeaders {
+//         id
+//       }
+//     }
+//   }
+// `
+// ...CompleteOrganizationFrag @relay(mask: false)
 
-graphql`
-  fragment SetOrgUserRoleMutationRemoved_organization on SetOrgUserRoleRemovedPayload {
-    organization {
-      id
-      isBillingLeader
-    }
-    updatedOrgMember {
-      user {
-        id
-      }
-      role
-    }
-  }
-`
+// notificationsAdded {
+//   type
+//   ...PromoteToBillingLeader_notification @relay(mask: false)
+//   ...PaymentRejected_notification @relay(mask: false)
+// }
+// updatedOrgMember {
+//   user {
+//     id
+//   }
+//   role
+// }
+
+// graphql`
+//   fragment SetOrgUserRoleMutationRemoved_organization on SetOrgUserRoleRemovedPayload {
+//     organization {
+//       id
+//       isBillingLeader
+//       billingLeaders {
+//         id
+//       }
+//     }
+//     updatedOrgMember {
+//       user {
+//         id
+//       }
+//       role
+//     }
+//   }
+// `
 
 const mutation = graphql`
-  mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: String) {
+  mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
     setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-      error {
-        message
+      ... on ErrorPayload {
+        error {
+          message
+        }
       }
-      ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
-      ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
+      ... on SetOrgUserRoleSuccess {
+        organization {
+          billingLeaders {
+            id
+          }
+        }
+      }
     }
   }
 `
+
+// ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
+// ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
+// ... on SetOrgUserRoleSuccess {
+//   organization {
+//     billingLeaders {
+//       id
+//     }
+//     ...CompleteOrganizationFrag @relay(mask: false)
+//   }
+//   notificationsAdded {
+//     type
+//     ...PromoteToBillingLeader_notification @relay(mask: false)
+//     ...PaymentRejected_notification @relay(mask: false)
+//   }
+//   updatedOrgMember {
+//     user {
+//       id
+//     }
+//     role
+//   }
+// }
 
 export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
   SetOrgUserRoleMutationAdded_organization$data,
