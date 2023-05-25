@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import utcPlugin from 'dayjs/plugin/utc'
 import React, {PropsWithChildren, useEffect} from 'react'
-import {Frequency, RRule} from 'rrule'
+import {Frequency, RRule, datetime} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PortalId} from '../../../hooks/usePortal'
@@ -178,6 +178,16 @@ interface Props {
   recurrenceSettings: RecurrenceSettings
 }
 
+const getDateFromRRuleDateTime = (rruleDate: Date) => {
+  return new Date(
+    rruleDate.getUTCFullYear(),
+    rruleDate.getUTCMonth(),
+    rruleDate.getUTCDate(),
+    rruleDate.getUTCHours(),
+    rruleDate.getUTCMinutes()
+  )
+}
+
 export const RecurrenceSettings = (props: Props) => {
   const {parentId, onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
@@ -196,7 +206,7 @@ export const RecurrenceSettings = (props: Props) => {
   )
   const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
     recurrenceRule
-      ? recurrenceRule.options.dtstart
+      ? getDateFromRRuleDateTime(recurrenceRule.options.dtstart)
       : dayjs()
           .add(1, 'day')
           .set('hour', 6)
@@ -251,7 +261,13 @@ export const RecurrenceSettings = (props: Props) => {
             freq: Frequency.WEEKLY,
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
-            dtstart: dayjs(recurrenceStartTime).utc().toDate(),
+            dtstart: datetime(
+              recurrenceStartTime.getFullYear(),
+              recurrenceStartTime.getMonth() + 1,
+              recurrenceStartTime.getDate(),
+              recurrenceStartTime.getHours(),
+              recurrenceStartTime.getMinutes()
+            ),
             tzid: timeZone
           })
         : null

@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RRule} from 'rrule'
+import {RRule, datetime} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
@@ -10,6 +10,26 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
+
+const getRRuleDateTimeFromDate = (date: Date) => {
+  return datetime(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes()
+  )
+}
+
+const getDateFromRRuleDateTime = (rruleDate: Date) => {
+  return new Date(
+    rruleDate.getUTCFullYear(),
+    rruleDate.getUTCMonth(),
+    rruleDate.getUTCDate(),
+    rruleDate.getUTCHours(),
+    rruleDate.getUTCMinutes()
+  )
+}
 
 export const startNewMeetingSeries = async (
   viewerId: string,
@@ -32,7 +52,15 @@ export const startNewMeetingSeries = async (
     facilitatorId: viewerId
   } as const
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
-  const nextMeetingStartDate = recurrenceRule.after(now)
+  console.log('now', now)
+  const rruleNow = getRRuleDateTimeFromDate(now)
+  console.log('rruleNow', rruleNow)
+  const nextMeetingStartRRuleDate = recurrenceRule.after(rruleNow)
+  console.log('nextMeetingStartRRuleDate', nextMeetingStartRRuleDate)
+  const nextMeetingStartDate = nextMeetingStartRRuleDate
+    ? getDateFromRRuleDateTime(nextMeetingStartRRuleDate)
+    : null
+  console.log('nextMeetingStartDate', nextMeetingStartDate)
 
   await r
     .table('NewMeeting')
@@ -54,7 +82,11 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
   const {id: meetingSeriesId} = meetingSeries
 
   const now = new Date()
-  const nextMeetingStartDate = newRecurrenceRule.after(now)
+  const rruleNow = getRRuleDateTimeFromDate(now)
+  const nextMeetingStartDateRRule = newRecurrenceRule.after(rruleNow)
+  const nextMeetingStartDate = nextMeetingStartDateRRule
+    ? getDateFromRRuleDateTime(nextMeetingStartDateRRule)
+    : null
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
   // lets close all active meetings at the time when
