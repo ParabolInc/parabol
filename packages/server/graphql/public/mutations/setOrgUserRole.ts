@@ -72,38 +72,38 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     const notificationIdsAdded = [promotionNotificationId]
     // add the org to the list of owned orgs
     const data = {orgId, userId, organizationUserId, notificationIdsAdded}
-    // publish(
-    //   SubscriptionChannel.ORGANIZATION,
-    //   userId,
-    //   'SetOrgUserRoleAddedPayload' as any,
-    //   data,
-    //   subOptions
-    // )
-    // publish(
-    //   SubscriptionChannel.ORGANIZATION,
-    //   orgId,
-    //   'SetOrgUserRoleAddedPayload' as any,
-    //   data,
-    //   subOptions
-    // )
+    publish(
+      SubscriptionChannel.ORGANIZATION,
+      userId,
+      'SetOrgUserRoleSuccess' as any,
+      data,
+      subOptions
+    )
+    publish(
+      SubscriptionChannel.ORGANIZATION,
+      orgId,
+      'SetOrgUserRoleSuccess' as any,
+      data,
+      subOptions
+    )
     return data
   }
   if (role === null) {
     const data = {orgId, userId, organizationUserId}
-    // publish(
-    //   SubscriptionChannel.ORGANIZATION,
-    //   userId,
-    //   'SetOrgUserRoleRemovedPayload' as any,
-    //   data,
-    //   subOptions
-    // )
-    // publish(
-    //   SubscriptionChannel.ORGANIZATION,
-    //   orgId,
-    //   'SetOrgUserRoleRemovedPayload' as any,
-    //   data,
-    //   subOptions
-    // )
+    publish(
+      SubscriptionChannel.ORGANIZATION,
+      userId,
+      'SetOrgUserRoleSuccess' as any,
+      data,
+      subOptions
+    )
+    publish(
+      SubscriptionChannel.ORGANIZATION,
+      orgId,
+      'SetOrgUserRoleSuccess' as any,
+      data,
+      subOptions
+    )
     return data
   }
   return null

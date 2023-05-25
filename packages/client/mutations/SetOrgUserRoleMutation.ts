@@ -11,15 +11,15 @@ import {SetOrgUserRoleMutationAdded_organization$data} from '../__generated__/Se
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
 
-// graphql`
-//   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
-//     organization {
-//       billingLeaders {
-//         id
-//       }
-//     }
-//   }
-// `
+graphql`
+  fragment SetOrgUserRoleMutation_organization on SetOrgUserRoleSuccess {
+    organization {
+      billingLeaders {
+        id
+      }
+    }
+  }
+`
 // ...CompleteOrganizationFrag @relay(mask: false)
 
 // notificationsAdded {
@@ -60,13 +60,7 @@ const mutation = graphql`
           message
         }
       }
-      ... on SetOrgUserRoleSuccess {
-        organization {
-          billingLeaders {
-            id
-          }
-        }
-      }
+      ...SetOrgUserRoleMutation_organization @relay(mask: false)
     }
   }
 `
@@ -97,6 +91,7 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
   SetOrgUserRoleMutationAdded_organization$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
+  console.log('🚀 ~ payload:', payload)
   if (!payload || !payload.organization) return
   const {id: orgId, name: orgName} = payload.organization
   atmosphere.eventEmitter.emit('addSnackbar', {
