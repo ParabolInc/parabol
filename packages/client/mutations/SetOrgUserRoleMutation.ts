@@ -7,7 +7,7 @@ import {
   StandardMutation
 } from '../types/relayMutations'
 import {SetOrgUserRoleMutation as TSetOrgUserRoleMutation} from '../__generated__/SetOrgUserRoleMutation.graphql'
-import {SetOrgUserRoleMutationAdded_organization$data} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
+import {SetOrgUserRoleMutation_organization$data} from '../__generated__/SetOrgUserRoleMutation_organization.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
 
@@ -17,6 +17,10 @@ graphql`
       ...CompleteOrganizationFrag @relay(mask: false)
       billingLeaders {
         id
+        organizationUsers {
+          id
+          orgId
+        }
       }
     }
     notificationsAdded {
@@ -47,7 +51,7 @@ const mutation = graphql`
 `
 
 export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
-  SetOrgUserRoleMutationAdded_organization$data,
+  SetOrgUserRoleMutation_organization$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload || !payload.organization || !payload.notificationsAdded?.length) return
@@ -66,7 +70,7 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
 }
 
 export const setOrgUserRoleAddedOrganizationUpdater: SharedUpdater<
-  SetOrgUserRoleMutationAdded_organization$data
+  SetOrgUserRoleMutation_organization$data
 > = (payload, {atmosphere, store}) => {
   const {viewerId} = atmosphere
   const notificationsAdded = payload.getLinkedRecords('notificationsAdded')
