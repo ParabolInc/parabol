@@ -14,6 +14,7 @@ import handleAddOrganization from './handlers/handleAddOrganization'
 graphql`
   fragment SetOrgUserRoleMutation_organization on SetOrgUserRoleSuccess {
     organization {
+      ...CompleteOrganizationFrag @relay(mask: false)
       billingLeaders {
         id
       }
@@ -31,37 +32,6 @@ graphql`
     }
   }
 `
-// ...CompleteOrganizationFrag @relay(mask: false)
-
-// notificationsAdded {
-//   type
-//   ...PromoteToBillingLeader_notification @relay(mask: false)
-//   ...PaymentRejected_notification @relay(mask: false)
-// }
-// updatedOrgMember {
-//   user {
-//     id
-//   }
-//   role
-// }
-
-// graphql`
-//   fragment SetOrgUserRoleMutationRemoved_organization on SetOrgUserRoleRemovedPayload {
-//     organization {
-//       id
-//       isBillingLeader
-//       billingLeaders {
-//         id
-//       }
-//     }
-//     updatedOrgMember {
-//       user {
-//         id
-//       }
-//       role
-//     }
-//   }
-// `
 
 const mutation = graphql`
   mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
@@ -76,33 +46,11 @@ const mutation = graphql`
   }
 `
 
-// ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
-// ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
-// ... on SetOrgUserRoleSuccess {
-//   organization {
-//     billingLeaders {
-//       id
-//     }
-//     ...CompleteOrganizationFrag @relay(mask: false)
-//   }
-//   notificationsAdded {
-//     type
-//     ...PromoteToBillingLeader_notification @relay(mask: false)
-//     ...PaymentRejected_notification @relay(mask: false)
-//   }
-//   updatedOrgMember {
-//     user {
-//       id
-//     }
-//     role
-//   }
-// }
-
 export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
   SetOrgUserRoleMutationAdded_organization$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
-  if (!payload || !payload.organization) return
+  if (!payload || !payload.organization || !payload.notificationsAdded?.length) return
   const {id: orgId, name: orgName} = payload.organization
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `promotedToBillingLead:${orgId}`,
@@ -121,6 +69,11 @@ export const setOrgUserRoleAddedOrganizationUpdater: SharedUpdater<
   SetOrgUserRoleMutationAdded_organization$data
 > = (payload, {atmosphere, store}) => {
   const {viewerId} = atmosphere
+  const notificationsAdded = payload.getLinkedRecords('notificationsAdded')
+  const notificationsExist = notificationsAdded.some((notification) =>
+    notification.getValue('type')
+  )
+  if (!notificationsExist) return
   const promotedUserId = payload
     .getLinkedRecord('updatedOrgMember')
     .getLinkedRecord('user')

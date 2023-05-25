@@ -88,8 +88,6 @@ type OrganizationSubscriptionPayload {
   DowngradeToStarterPayload: DowngradeToStarterPayload
   PayLaterPayload: PayLaterPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
-  # SetOrgUserRoleAddedPayload: SetOrgUserRoleAddedPayload
-  # SetOrgUserRoleRemovedPayload: SetOrgUserRoleRemovedPayload
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload

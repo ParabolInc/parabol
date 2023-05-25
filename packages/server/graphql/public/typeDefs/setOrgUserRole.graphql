@@ -1,7 +1,3 @@
-enum OrgUserRole {
-  BILLING_LEADER
-}
-
 extend type Mutation {
   """
   Update the role of the org user
@@ -23,6 +19,6 @@ union SetOrgUserRolePayload = ErrorPayload | SetOrgUserRoleSuccess
 
 type SetOrgUserRoleSuccess {
   organization: Organization!
-  updatedOrgMember: OrganizationUser
-  notificationsAdded: [Notification!]
+  updatedOrgMember: OrganizationUser!
+  notificationsAdded: [Notification!]!
 }
