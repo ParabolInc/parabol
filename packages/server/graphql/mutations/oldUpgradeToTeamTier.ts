@@ -20,22 +20,14 @@ export default {
       description: 'the org requesting the upgrade'
     },
     stripeToken: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The token that came back from stripe'
-    },
-    paymentMethodId: {
-      type: GraphQLID,
-      description: 'The payment method id'
     }
   },
 
   async resolve(
     _source: unknown,
-    {
-      orgId,
-      stripeToken,
-      paymentMethodId
-    }: {orgId: string; stripeToken?: string; paymentMethodId?: string},
+    {orgId, stripeToken}: {orgId: string; stripeToken: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -64,7 +56,6 @@ export default {
     const {email} = viewer!
     let stripeSubscriptionClientSecret: string | null = null
     try {
-      // TODO: remove oldUpgradeToTeamTier once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
       await oldUpgradeToTeamTier(orgId, stripeToken, email, dataLoader)
     } catch (e) {
       const param = (e as any)?.param

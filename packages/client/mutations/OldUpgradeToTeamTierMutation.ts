@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-// import {OldUpgradeToTeamTierMutation as TOldUpgradeToTeamTierMutation} from '../__generated__/OldUpgradeToTeamTierMutation.graphql'
+import {OldUpgradeToTeamTierMutation as TOldUpgradeToTeamTierMutation} from '../__generated__/OldUpgradeToTeamTierMutation.graphql'
 
 graphql`
   fragment OldUpgradeToTeamTierMutation_organization on OldUpgradeToTeamTierPayload {
@@ -37,12 +37,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation OldUpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID, $paymentMethodId: ID) {
-    oldUpgradeToTeamTier(
-      orgId: $orgId
-      stripeToken: $stripeToken
-      paymentMethodId: $paymentMethodId
-    ) {
+  mutation OldUpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID) {
+    oldUpgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken) {
       error {
         message
       }
@@ -52,8 +48,7 @@ const mutation = graphql`
   }
 `
 
-// const OldUpgradeToTeamTierMutation: StandardMutation<TOldUpgradeToTeamTierMutation> = (
-const OldUpgradeToTeamTierMutation: StandardMutation<any> = (
+const OldUpgradeToTeamTierMutation: StandardMutation<TOldUpgradeToTeamTierMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}

@@ -24,7 +24,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   const organization = await r.table('Organization').get(orgId).run()
-  const {stripeId, tier, domain, name: orgName} = organization
+  const {stripeId, tier, activeDomain, name: orgName} = organization
 
   if (stripeId) {
     return standardError(new Error('Organization does not have a stripe id'), {
@@ -39,9 +39,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
 
   // RESOLUTION
-  // if they downgrade & are re-upgrading, they'll already have a stripeId
-  const viewer = await dataLoader.get('users').load(viewerId)
-
   await Promise.all([
     r({
       updatedOrg: r.table('Organization').get(orgId).update({
@@ -78,7 +75,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const teamIds = teams.map(({id}) => id)
   analytics.organizationUpgraded(viewerId, {
     orgId,
-    domain,
+    domain: activeDomain,
     orgName,
     oldTier: 'starter',
     newTier: 'team'
