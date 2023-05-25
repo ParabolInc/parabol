@@ -66,14 +66,14 @@ const subscription = graphql`
 
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
-  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext
-  // SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
+  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
+  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationOnNext
 } as const
 
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
-  // SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
+  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const

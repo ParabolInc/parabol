@@ -127,7 +127,7 @@ const Organization = (props: Props) => {
   const showAuthentication = orgFeatureFlags?.SAMLUI
   const {checkoutFlow} = userFeatureFlags
 
-  if (checkoutFlow) return <OrgPage organizationRef={organization} />
+  if (true) return <OrgPage organizationRef={organization} />
   return (
     <UserSettingsWrapper>
       <SettingsWrapper narrow>

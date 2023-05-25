@@ -18,6 +18,17 @@ graphql`
         id
       }
     }
+    notificationsAdded {
+      type
+      ...PromoteToBillingLeader_notification @relay(mask: false)
+      ...PaymentRejected_notification @relay(mask: false)
+    }
+    updatedOrgMember {
+      user {
+        id
+      }
+      role
+    }
   }
 `
 // ...CompleteOrganizationFrag @relay(mask: false)
@@ -91,7 +102,6 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
   SetOrgUserRoleMutationAdded_organization$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
-  console.log('🚀 ~ payload:', payload)
   if (!payload || !payload.organization) return
   const {id: orgId, name: orgName} = payload.organization
   atmosphere.eventEmitter.emit('addSnackbar', {
