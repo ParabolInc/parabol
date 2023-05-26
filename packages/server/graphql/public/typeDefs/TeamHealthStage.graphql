@@ -102,7 +102,22 @@ type TeamHealthStage implements NewMeetingStage {
   labels: [String!]!
 
   """
-  All the scores, 1 per user
+  Viewer score
   """
-  scores: [TeamHealthUserScore!]!
+  viewerVote: String
+
+  """
+  Score counts for each label
+  """
+  votes: [Int!]!
+
+  """
+  userIds of users who have voted
+  """
+  votedUserIds: [ID!]!
+
+  """
+  Users who have voted
+  """
+  votedUsers: [User!]!
 }

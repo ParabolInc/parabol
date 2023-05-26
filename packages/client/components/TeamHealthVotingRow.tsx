@@ -4,15 +4,14 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerCards} from '../types/constEnums'
-import {TeamHealthVotingRow_scores$key} from '../__generated__/TeamHealthVotingRow_scores.graphql'
+import {TeamHealthVotingRow_stage$key} from '../__generated__/TeamHealthVotingRow_stage.graphql'
 import AvatarList from './AvatarList'
 import {Check as CheckIcon} from '@mui/icons-material'
 import MiniPokerCard from './MiniPokerCard'
 import PokerVotingNoVotes from './PokerVotingNoVotes'
-import PokerVotingRowBase from './PokerVotingRowBase'
 
 interface Props {
-  scores: TeamHealthVotingRow_scores$key
+  stage: TeamHealthVotingRow_stage$key
   isInitialStageRender?: boolean
 }
 
@@ -21,31 +20,29 @@ const MiniCardWrapper = styled('div')({
   marginRight: 16
 })
 
-const PokerVotingRow = (props: Props) => {
-  const {scores: scoresRef, isInitialStageRender} = props
-  const scores = useFragment(
+const TeamHealthVotingRow = (props: Props) => {
+  const {stage: stageRef, isInitialStageRender} = props
+  const stage = useFragment(
     graphql`
-      fragment TeamHealthVotingRow_scores on TeamHealthUserScore @relay(plural: true) {
-        user {
+      fragment TeamHealthVotingRow_stage on TeamHealthStage {
+        votedUsers {
           ...AvatarList_users
         }
       }
     `,
-    scoresRef
+    stageRef
   )
-  const label = undefined//'foo'
-  const color = undefined//PALETTE.SLATE_800
-  const users = scores.map(({user}) => user)
+  const {votedUsers} = stage
   return (
-    <div className='flex items-center py-[5px] pl-4 rounded w-80 h-14 bg-slate-300'>
+    <div className='flex h-14 w-80 items-center rounded bg-slate-300 py-[5px] pl-4'>
       <MiniCardWrapper>
         <MiniPokerCard>
-          <CheckIcon className='text-jade-400'/>
+          <CheckIcon className='text-jade-400' />
         </MiniPokerCard>
       </MiniCardWrapper>
       <AvatarList
         size={PokerCards.AVATAR_WIDTH}
-        users={users}
+        users={votedUsers}
         isAnimated={!isInitialStageRender}
         borderColor={PALETTE.SLATE_300}
         emptyEl={<PokerVotingNoVotes />}
@@ -54,4 +51,4 @@ const PokerVotingRow = (props: Props) => {
   )
 }
 
-export default PokerVotingRow
+export default TeamHealthVotingRow

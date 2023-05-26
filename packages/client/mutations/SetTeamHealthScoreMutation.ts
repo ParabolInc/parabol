@@ -1,17 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import createProxyRecord from '../utils/relay/createProxyRecord'
 import {SetTeamHealthScoreMutation as TSetTeamHealthScoreMutation} from '../__generated__/SetTeamHealthScoreMutation.graphql'
 
 graphql`
   fragment SetTeamHealthScoreMutation_meeting on SetTeamHealthScoreSuccess {
     stage {
+      id
+      labels
+      viewerVote
+      votes
       ...TeamHealthLocalStage
-      scores {
-        userId
-        label
-      }
     }
   }
 `
@@ -43,29 +42,26 @@ const SetTeamHealthScoreMutation: StandardMutation<TSetTeamHealthScoreMutation> 
     variables,
     optimisticUpdater: (store) => {
       const {stageId, label} = variables
-      const {viewerId} = atmosphere
       const stage = store.get<Stage>(stageId)
       if (!stage) return
       const viewer = store.getRoot().getLinkedRecord('viewer')
       if (!stage || !viewer) return
-      const scores = stage.getLinkedRecords('scores') || []
-      const existingScoreIdx = scores.findIndex((item) => item.getValue('userId') === viewerId)
 
-      const optimisticScore = createProxyRecord(store, 'TeamHealthUserScore', {
-        userId: viewerId,
-        stageId,
-        label
-      })
-      optimisticScore.setLinkedRecord(viewer, 'user')
-      const nextScores =
-        existingScoreIdx === -1
-          ? [...scores, optimisticScore]
-          : [
-              ...scores.slice(0, existingScoreIdx),
-              optimisticScore,
-              ...scores.slice(existingScoreIdx + 1)
-            ]
-      stage.setLinkedRecords(nextScores, 'scores')
+      const labels = stage.getValue('labels')
+      const votes = [...stage.getValue('votes')]
+      const viewerVote = stage.getValue('viewerVote')
+
+      if (viewerVote === label) return
+      if (viewerVote) {
+        const labelIdx = labels.findIndex((item) => item === viewerVote)
+        votes[labelIdx] = votes[labelIdx]! - 1
+      }
+      // not updating the votedUsers here until it's official from the server
+
+      const labelIdx = labels.findIndex((item) => item === label)
+      votes[labelIdx] = votes[labelIdx]! - 1
+      stage.setValue(votes, 'votes')
+      stage.setValue(label, 'viewerVote')
     },
     onCompleted,
     onError

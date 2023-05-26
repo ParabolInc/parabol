@@ -5,10 +5,10 @@ import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import updateStage from '../../../database/updateStage'
-import TeamHealthUserScore from '../../../database/types/TeamHealthUserScore'
+import TeamHealthVote from '../../../database/types/TeamHealthVote'
 import {RValue} from '../../../database/stricterR'
 
-const upsertVote = async (meetingId: string, stageId: string, vote: TeamHealthUserScore) => {
+const upsertVote = async (meetingId: string, stageId: string, vote: TeamHealthVote) => {
   const r = await getRethink()
   const updater = (stage: RValue) =>
     stage.merge({
@@ -40,7 +40,7 @@ const setTeamHealthScore: MutationResolvers['setTeamHealthScore'] = async (
   const subOptions = {mutatorId, operationId}
 
   //AUTH
-  const meeting = (await dataLoader.get('newMeetings').load(meetingId))
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
     return {error: {message: 'Meeting not found'}}
   }
@@ -62,12 +62,11 @@ const setTeamHealthScore: MutationResolvers['setTeamHealthScore'] = async (
 
   await upsertVote(meetingId, stageId, {userId: viewerId, label})
   // update dataloader
-  const existingVote = stage.scores.find((score) => score.userId === viewerId)
+  const existingVote = stage.votes.find((score) => score.userId === viewerId)
   if (existingVote) {
     existingVote.label = label
-  }
-  else {
-    stage.scores.push({userId: viewerId, label})
+  } else {
+    stage.votes.push({userId: viewerId, label})
   }
 
   const data = {

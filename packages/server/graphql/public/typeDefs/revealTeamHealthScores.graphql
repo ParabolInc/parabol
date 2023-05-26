@@ -1,0 +1,11 @@
+type RevealTeamHealthScoresSuccess {
+  meetingId: ID!
+  phaseId: ID!
+  phase: TeamHealthPhase!
+}
+
+union RevealTeamHealthScoresPayload = ErrorPayload | RevealTeamHealthScoresSuccess
+
+extend type Mutation {
+  revealTeamHealthScores(meetingId: ID!): RevealTeamHealthScoresPayload!
+}

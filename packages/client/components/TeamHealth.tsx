@@ -32,7 +32,7 @@ const TeamHealth = (props: Props) => {
         id
         endedAt
         showSidebar
-        facilitatorStageId
+        facilitatorUserId
         localStage {
           id
           ...TeamHealthLocalStage @relay(mask: false)
@@ -48,16 +48,21 @@ const TeamHealth = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, endedAt, showSidebar, localStage} = meeting
-  const {id: stageId, question, labels, scores} = localStage
+  const {id: meetingId, endedAt, showSidebar, localStage, facilitatorUserId} = meeting
+  const {id: stageId, question, labels, viewerVote} = localStage
   const {viewerId} = atmosphere
-  const viewerScore = scores?.find((score) => score.userId === viewerId)
-  const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
   const onVote = (label: string) => {
     if (submitting) return
     submitMutation()
     SetTeamHealthScoreMutation(atmosphere, {meetingId, stageId, label}, {onError, onCompleted})
+  }
+
+  const isFacilitator = facilitatorUserId === viewerId
+
+  const onRevealVotes = () => {
+    console.log('GEORG WAS HERE')
   }
 
   return (
@@ -71,28 +76,31 @@ const TeamHealth = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <div className='text-2xl text-center'>{question}</div>
+          <div className='text-center text-2xl'>{question}</div>
           <RadioGroup.Root
             className='flex flex-row'
             onValueChange={onVote}
-            value={viewerScore?.label}
+            value={viewerVote ?? undefined}
           >
             {labels?.map((label) => (
               <RadioGroup.Item
                 key={label}
                 value={label}
-                className='flex items-center justify-center w-24 h-24 p-8 group'
+                className='flex h-24 w-24 items-center justify-center bg-transparent p-8 text-4xl hover:text-5xl data-[state=checked]:text-6xl'
               >
-                <label
-                  className='text-4xl hover:text-5xl group-data-[state=checked]:text-6xl'
-                >
-                  {label}
-                </label>
+                {label}
               </RadioGroup.Item>
             ))}
           </RadioGroup.Root>
-          <TeamHealthVotingRow scores={scores} />
-          <BaseButton className='mt-4 rounded-full h-14 bg-slate-300 text-slate-600'>Reveal Results</RaisedButton>
+          <TeamHealthVotingRow stage={localStage} />
+          {isFacilitator && (
+            <BaseButton
+              onClick={onRevealVotes}
+              className='mt-4 h-14 rounded-full bg-slate-300 text-slate-600'
+            >
+              Reveal Results
+            </BaseButton>
+          )}
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>
@@ -101,14 +109,11 @@ const TeamHealth = (props: Props) => {
 
 graphql`
   fragment TeamHealthLocalStage on TeamHealthStage {
+    ...TeamHealthVotingRow_stage
     question
     labels
-    scores {
-      ...TeamHealthVotingRow_scores
-      id
-      userId
-      label
-    }
+    votes
+    viewerVote
   }
 `
 
