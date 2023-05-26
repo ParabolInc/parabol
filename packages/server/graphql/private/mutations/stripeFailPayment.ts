@@ -6,6 +6,7 @@ import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 export type StripeFailPaymentPayloadSource =
   | {
@@ -56,10 +57,19 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   }
   const {creditCard, stripeSubscriptionId} = org
 
-  if (paid || stripeSubscriptionId !== subscription) return {orgId}
+  if (paid || stripeSubscriptionId !== subscription || stripeSubscriptionId === null) return {orgId}
 
   // RESOLUTION
-  await terminateSubscription(orgId)
+  const subscriptionObject = await manager.retrieveSubscription(stripeSubscriptionId)
+
+  if (subscriptionObject.status === 'incomplete') {
+    // Terminate subscription if it is the first failed payment
+    await terminateSubscription(orgId)
+  } else {
+    // Keep subscription, but disable teams
+    await updateTeamByOrgId({isPaid: false}, orgId)
+  }
+
   const billingLeaderUserIds = (await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
