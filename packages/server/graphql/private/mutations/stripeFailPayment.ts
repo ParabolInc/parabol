@@ -62,8 +62,8 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   // RESOLUTION
   const subscriptionObject = await manager.retrieveSubscription(stripeSubscriptionId)
 
-  if (subscriptionObject.status === 'incomplete') {
-    // Terminate subscription if it is the first failed payment
+  if (subscriptionObject.status === 'incomplete' || subscriptionObject.status === 'canceled') {
+    // Terminate subscription if it is the first failed payment, or it is already canceled
     await terminateSubscription(orgId)
   } else {
     // Keep subscription, but disable teams
