@@ -20,16 +20,19 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import BaseButton from '../../../../components/BaseButton'
 import LimitExceededWarning from '../../../../components/LimitExceededWarning'
+import {Breakpoint} from '~/types/constEnums'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
   paddingBottom: 16
 })
 
-const StyledRow = styled(Row)({
+const StyledRow = styled(Row)<{isTablet: boolean}>(({isTablet}) => ({
   padding: '12px 16px',
   display: 'flex',
   flex: 1,
+  flexDirection: isTablet ? 'row' : 'column',
   alignItems: 'inherit',
   ':first-of-type': {
     paddingTop: 16
@@ -37,7 +40,7 @@ const StyledRow = styled(Row)({
   ':nth-of-type(2)': {
     border: 'none'
   }
-})
+}))
 
 const PlanTitle = styled('h6')({
   color: PALETTE.SLATE_700,
@@ -74,34 +77,48 @@ const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   fontStyle: isItalic ? 'italic' : 'normal'
 }))
 
-const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
-  background:
-    tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
-  fontSize: 12,
-  fontWeight: 600,
-  lineHeight: '16px',
-  textTransform: 'capitalize',
-  textAlign: 'center',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  alignItems: 'center',
-  padding: '16px 8px',
-  borderRadius: 4,
-  border: '2px solid white',
-  outline: '2px solid transparent',
-  transition: 'all ease 0.5s',
-  '&:hover': {
-    cursor: 'pointer',
-    outline: `2px solid ${
-      tier === 'starter'
-        ? PALETTE.GRAPE_500
+const Plan = styled('div')<{tier: TierEnum; isTablet: boolean; outlineColor: boolean}>(
+  ({tier, isTablet, outlineColor}) => ({
+    background:
+      tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
+    fontSize: 12,
+    fontWeight: 600,
+    lineHeight: '16px',
+    textTransform: 'capitalize',
+    textAlign: 'center',
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: isTablet ? 0 : '8px',
+    marginRight: isTablet ? '8px' : 0,
+    padding: '16px 8px',
+    borderRadius: 4,
+    border: '2px solid white',
+    outline: outlineColor
+      ? tier === 'starter'
+        ? `2px solid ${PALETTE.GRAPE_500}`
         : tier === 'team'
-        ? PALETTE.AQUA_400
-        : PALETTE.TOMATO_500
-    }`
-  }
-}))
+        ? `2px solid ${PALETTE.AQUA_400}`
+        : `2px solid ${PALETTE.TOMATO_400}`
+      : '2px solid transparent',
+    transition: 'all ease 0.5s',
+    '&:hover': {
+      cursor: 'pointer',
+      outline: `2px solid ${
+        tier === 'starter'
+          ? PALETTE.GRAPE_500
+          : tier === 'team'
+          ? PALETTE.AQUA_400
+          : PALETTE.TOMATO_500
+      }`
+    },
+    '&:last-of-type': {
+      marginBottom: 0,
+      marginRight: 0
+    }
+  })
+)
 
 const UL = styled('ul')({
   margin: '0 0 16px 0',
@@ -115,8 +132,7 @@ const LI = styled('li')({
   lineHeight: '32px',
   color: PALETTE.SLATE_900,
   textTransform: 'none',
-  fontWeight: 400,
-  textAlign: 'left'
+  fontWeight: 400
 })
 
 const StyledIcon = styled('span')({
@@ -187,6 +203,14 @@ const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
   }
 }
 
+const getActivePlan = (tier: TierEnum, plan: TierEnum) => {
+  if (tier === plan) {
+    return true
+  } else {
+    return false
+  }
+}
+
 type Props = {
   organizationRef: OrgPlans_organization$key
 }
@@ -214,6 +238,7 @@ const OrgPlans = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {id: orgId, tier, scheduledLockAt, lockedAt} = organization
   const showNudge = scheduledLockAt || lockedAt
+  const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const plans = [
     {
@@ -225,21 +250,25 @@ const OrgPlans = (props: Props) => {
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
+      activeColor: PALETTE.GRAPE_500,
       buttonStyle: getButtonStyle(tier, 'starter'),
-      buttonLabel: getButtonLabel(tier, 'starter')
+      buttonLabel: getButtonLabel(tier, 'starter'),
+      outlineColor: getActivePlan(tier, 'starter')
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
       buttonStyle: getButtonStyle(tier, 'team'),
-      buttonLabel: getButtonLabel(tier, 'team')
+      buttonLabel: getButtonLabel(tier, 'team'),
+      outlineColor: getActivePlan(tier, 'team')
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', 'SSO'],
       buttonStyle: getButtonStyle(tier, 'enterprise'),
-      buttonLabel: getButtonLabel(tier, 'enterprise')
+      buttonLabel: getButtonLabel(tier, 'enterprise'),
+      outlineColor: getActivePlan(tier, 'enterprise')
     }
   ] as const
 
@@ -260,16 +289,17 @@ const OrgPlans = (props: Props) => {
   return (
     <>
       <StyledPanel label='Plans'>
-        <StyledRow>
+        <StyledRow isTablet={isTablet}>
           {showNudge && <LimitExceededWarning organizationRef={organization} />}
           <OrgStats organizationRef={organization} />
         </StyledRow>
-        <StyledRow className={'flex-col md:flex-row'}>
+        <StyledRow isTablet={isTablet}>
           {plans.map((plan) => (
             <Plan
               key={plan.tier}
               tier={plan.tier}
-              className={'mb-[8px] last:mb-0 md:mb-0 md:mr-[8px] last:md:mr-0'}
+              isTablet={isTablet}
+              outlineColor={plan.outlineColor}
             >
               <HeadingBlock>
                 <PlanTitle>{plan.tier}</PlanTitle>
@@ -294,9 +324,11 @@ const OrgPlans = (props: Props) => {
                   <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
                 )}
               </HeadingBlock>
-              <UL>
+              <UL className={'flex flex-col items-center md:items-start'}>
                 {plan.details.map((detail) => (
-                  <LI key={detail}>{detail}</LI>
+                  <LI className={'list-none text-center md:list-disc md:text-left'} key={detail}>
+                    {detail}
+                  </LI>
                 ))}
               </UL>
               <CTAButton

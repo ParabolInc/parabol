@@ -13,18 +13,20 @@ const Wrapper = styled('div')({
   alignItems: 'center',
   color: PALETTE.SLATE_700,
   display: 'flex',
+  justifyContent: 'space-between',
   lineHeight: '24px',
   padding: '16px 0px',
   flexWrap: 'wrap',
-  width: ElementWidth.PANEL_WIDTH,
+  maxWidth: ElementWidth.PANEL_WIDTH,
   position: 'relative'
 })
 
-const Title = styled('div')({
+const Title = styled('h1')({
   alignItems: 'center',
   display: 'flex',
   fontSize: 20,
   fontWeight: 600,
+  margin: 0,
   width: '100%'
 })
 
@@ -32,7 +34,8 @@ const Subtitle = styled('span')<{isBold?: boolean}>(({isBold}) => ({
   fontWeight: isBold ? 600 : 400
 }))
 
-const SubtitleBlock = styled('div')({
+const SubtitleBlock = styled('p')({
+  margin: 0,
   padding: '8px 0px'
 })
 
@@ -47,9 +50,7 @@ const StyledIcon = styled('div')({
 const StyledButton = styled(PlainButton)({
   alignItems: 'center',
   display: 'flex',
-  flexDirection: 'column',
-  position: 'absolute',
-  right: 0
+  flexDirection: 'column'
 })
 
 const Label = styled('span')({
