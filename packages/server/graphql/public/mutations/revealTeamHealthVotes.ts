@@ -1,14 +1,13 @@
 import {MutationResolvers} from '../resolverTypes'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import getRethink from '../../../database/rethinkDriver'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import rMapIf from '../../../database/rMapIf'
+import updateStage from '../../../database/updateStage'
 
-const revealTeamHealthScores: MutationResolvers['revealTeamHealthScores'] = async (
+const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async (
   _source,
-  {meetingId},
+  {meetingId, stageId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
@@ -41,40 +40,30 @@ const revealTeamHealthScores: MutationResolvers['revealTeamHealthScores'] = asyn
 
   // VALIDATION
   const teamHealthPhase = getPhase(phases, 'TEAM_HEALTH')
-  if (!teamHealthPhase) {
-    return {error: {message: 'Team health phase not found'}}
+  const {stages} = teamHealthPhase
+  const stage = stages.find((stage) => stage.id === stageId)
+  if (!stage || stage.phaseType !== 'TEAM_HEALTH' || stage.isComplete) {
+    return {error: {message: 'Invalid stageId provided'}}
   }
-  const {id: phaseId, isRevealed} = teamHealthPhase
+  if (stage.isRevealed) {
+    return {error: {message: 'Votes are already revealed'}}
+  }
 
-  if (!isRevealed) {
-    const r = await getRethink()
-    const mapIf = rMapIf(r)
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update((meeting: any) => ({
-        phases: mapIf(
-          meeting('phases'),
-          (phase: any) => phase('phaseType').eq('TEAM_HEALTH'),
-          (phase: any) => phase.update({isRevealed: true})
-        )
-      }))
-      .run()
-    teamHealthPhase.isRevealed = true
-  }
+  updateStage(meetingId, stageId, 'TEAM_HEALTH', (stage) => stage.merge({isRevealed: true}))
+  stage.isRevealed = true
 
   const data = {
     meetingId,
-    phaseId,
-    phase: {
-      ...teamHealthPhase,
+    stageId,
+    stage: {
+      ...stage,
       meetingId
     }
   }
 
-  publish(SubscriptionChannel.MEETING, meetingId, 'RevealTeamHealthScoresSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'RevealTeamHealthVotesSuccess', data, subOptions)
 
   return data
 }
 
-export default revealTeamHealthScores
+export default revealTeamHealthVotes

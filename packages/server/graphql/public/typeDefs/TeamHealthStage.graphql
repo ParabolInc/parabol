@@ -120,4 +120,9 @@ type TeamHealthStage implements NewMeetingStage {
   Users who have voted
   """
   votedUsers: [User!]!
+
+  """
+  True if the votes were revealed, else false
+  """
+  isRevealed: Boolean!
 }

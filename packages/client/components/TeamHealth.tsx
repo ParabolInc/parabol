@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement} from 'react'
+import React, {ReactElement, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
@@ -10,11 +10,13 @@ import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import TeamHealthVotingRow from './TeamHealthVotingRow'
-import BaseButton from './BaseButton'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SetTeamHealthScoreMutation from '../mutations/SetTeamHealthScoreMutation'
+import SetTeamHealthVoteMutation from '../mutations/SetTeamHealthVoteMutation'
+import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMutation'
 import * as RadioGroup from '@radix-ui/react-radio-group'
+import clsx from 'clsx'
+import RaisedButton from './RaisedButton'
 
 interface Props {
   avatarGroup: ReactElement
@@ -22,6 +24,8 @@ interface Props {
   toggleSidebar: () => void
   gotoStageId?: ReturnType<typeof useGotoStageId>
 }
+
+const VoteBackgroundColors = ['bg-grape-500', 'bg-grape-600', 'bg-grape-700']
 
 const TeamHealth = (props: Props) => {
   const {avatarGroup, meeting: meetingRef, toggleSidebar} = props
@@ -49,20 +53,35 @@ const TeamHealth = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, endedAt, showSidebar, localStage, facilitatorUserId} = meeting
-  const {id: stageId, question, labels, viewerVote} = localStage
+  const {id: stageId, question, labels, viewerVote, votes, isRevealed} = localStage
   const {viewerId} = atmosphere
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
   const onVote = (label: string) => {
     if (submitting) return
     submitMutation()
-    SetTeamHealthScoreMutation(atmosphere, {meetingId, stageId, label}, {onError, onCompleted})
+    SetTeamHealthVoteMutation(atmosphere, {meetingId, stageId, label}, {onError, onCompleted})
   }
 
   const isFacilitator = facilitatorUserId === viewerId
+  const canReveal = isFacilitator && votes?.some((vote) => vote > 0)
+
+  const backgroundColorMap = useMemo(() => {
+    const deduped = Array.from(new Set(votes)).sort()
+    const colorMap = new Map<number, string>()
+    deduped.forEach((vote, index) => {
+      colorMap.set(
+        vote,
+        VoteBackgroundColors[index] ?? VoteBackgroundColors[VoteBackgroundColors.length - 1]!
+      )
+    })
+    return colorMap
+  }, [votes])
 
   const onRevealVotes = () => {
-    console.log('GEORG WAS HERE')
+    if (submitting) return
+    submitMutation()
+    RevealTeamHealthVotesMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
   }
 
   return (
@@ -76,31 +95,66 @@ const TeamHealth = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <div className='text-center text-2xl'>{question}</div>
-          <RadioGroup.Root
-            className='flex flex-row'
-            onValueChange={onVote}
-            value={viewerVote ?? undefined}
-          >
-            {labels?.map((label) => (
-              <RadioGroup.Item
-                key={label}
-                value={label}
-                className='flex h-24 w-24 items-center justify-center bg-transparent p-8 text-4xl hover:text-5xl data-[state=checked]:text-6xl'
-              >
-                {label}
-              </RadioGroup.Item>
-            ))}
-          </RadioGroup.Root>
-          <TeamHealthVotingRow stage={localStage} />
-          {isFacilitator && (
-            <BaseButton
-              onClick={onRevealVotes}
-              className='mt-4 h-14 rounded-full bg-slate-300 text-slate-600'
-            >
-              Reveal Results
-            </BaseButton>
-          )}
+          <div className='flex h-[300px] flex-col items-center'>
+            <div className='text-center text-2xl'>{question}</div>
+            {isRevealed && votes ? (
+              <>
+                <div className='flex flex-row'>
+                  {labels?.map((label, index) => (
+                    <div
+                      key={label}
+                      className={clsx(
+                        'm-3 flex h-32 w-20 flex-col justify-start rounded',
+                        backgroundColorMap.get(votes[index]!)
+                      )}
+                    >
+                      <div className='flex h-24 items-center justify-center text-4xl'>{label}</div>
+                      <label className='text-center text-xl font-semibold text-white'>
+                        {votes?.[index]}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <RadioGroup.Root
+                  className='flex flex-row'
+                  onValueChange={onVote}
+                  value={viewerVote ?? undefined}
+                >
+                  {labels?.map((label) => (
+                    <RadioGroup.Item
+                      id={`radio-${label}`}
+                      key={label}
+                      value={label}
+                      className='group m-3 flex h-32 w-20 flex-col items-center justify-start rounded bg-slate-300 p-0 hover:bg-grape-100 data-[state=checked]:bg-grape-300'
+                    >
+                      <label
+                        htmlFor={`radio-${label}`}
+                        className='flex h-24 items-center justify-center text-4xl group-data-[state=checked]:text-5xl'
+                      >
+                        {label}
+                      </label>
+                    </RadioGroup.Item>
+                  ))}
+                </RadioGroup.Root>
+                <TeamHealthVotingRow stage={localStage} />
+                {isFacilitator && (
+                  <>
+                    <RaisedButton
+                      palette='white'
+                      onClick={onRevealVotes}
+                      className='mt-4 h-14 w-44 rounded-full text-slate-600 disabled:bg-slate-300 disabled:text-slate-600'
+                      disabled={!canReveal}
+                    >
+                      Reveal Results
+                    </RaisedButton>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>
@@ -114,6 +168,7 @@ graphql`
     labels
     votes
     viewerVote
+    isRevealed
   }
 `
 

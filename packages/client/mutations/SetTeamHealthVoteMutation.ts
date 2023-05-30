@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {SetTeamHealthScoreMutation as TSetTeamHealthScoreMutation} from '../__generated__/SetTeamHealthScoreMutation.graphql'
+import {SetTeamHealthVoteMutation as TSetTeamHealthVoteMutation} from '../__generated__/SetTeamHealthVoteMutation.graphql'
 
 graphql`
-  fragment SetTeamHealthScoreMutation_meeting on SetTeamHealthScoreSuccess {
+  fragment SetTeamHealthVoteMutation_meeting on SetTeamHealthVoteSuccess {
     stage {
       id
       labels
@@ -16,28 +16,28 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation SetTeamHealthScoreMutation($meetingId: ID!, $stageId: ID!, $label: String!) {
-    setTeamHealthScore(meetingId: $meetingId, stageId: $stageId, label: $label) {
+  mutation SetTeamHealthVoteMutation($meetingId: ID!, $stageId: ID!, $label: String!) {
+    setTeamHealthVote(meetingId: $meetingId, stageId: $stageId, label: $label) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...SetTeamHealthScoreMutation_meeting @relay(mask: false)
+      ...SetTeamHealthVoteMutation_meeting @relay(mask: false)
     }
   }
 `
 
 type Stage = NonNullable<
-  NonNullable<TSetTeamHealthScoreMutation['response']>['setTeamHealthScore']['stage']
+  NonNullable<TSetTeamHealthVoteMutation['response']>['setTeamHealthVote']['stage']
 >
 
-const SetTeamHealthScoreMutation: StandardMutation<TSetTeamHealthScoreMutation> = (
+const SetTeamHealthVoteMutation: StandardMutation<TSetTeamHealthVoteMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TSetTeamHealthScoreMutation>(atmosphere, {
+  return commitMutation<TSetTeamHealthVoteMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
@@ -68,4 +68,4 @@ const SetTeamHealthScoreMutation: StandardMutation<TSetTeamHealthScoreMutation> 
   })
 }
 
-export default SetTeamHealthScoreMutation
+export default SetTeamHealthVoteMutation

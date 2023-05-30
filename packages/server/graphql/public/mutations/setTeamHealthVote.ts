@@ -8,29 +8,29 @@ import updateStage from '../../../database/updateStage'
 import TeamHealthVote from '../../../database/types/TeamHealthVote'
 import {RValue} from '../../../database/stricterR'
 
-const upsertVote = async (meetingId: string, stageId: string, vote: TeamHealthVote) => {
+const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealthVote) => {
   const r = await getRethink()
   const updater = (stage: RValue) =>
     stage.merge({
-      scores: r.branch(
-        stage('scores')
-          .offsetsOf((score: RValue) => score('userId').eq(vote.userId))
+      votes: r.branch(
+        stage('votes')
+          .offsetsOf((oldVote: RValue) => oldVote('userId').eq(newVote.userId))
           .nth(0)
           .default(-1)
           .eq(-1),
-        stage('scores').append(vote),
-        stage('scores').changeAt(
-          stage('scores')
-            .offsetsOf((score: RValue) => score('userId').eq(vote.userId))
+        stage('votes').append(newVote),
+        stage('votes').changeAt(
+          stage('votes')
+            .offsetsOf((oldVote: RValue) => oldVote('userId').eq(newVote.userId))
             .nth(0),
-          vote
+          newVote
         )
       )
     })
   return updateStage(meetingId, stageId, 'TEAM_HEALTH', updater)
 }
 
-const setTeamHealthScore: MutationResolvers['setTeamHealthScore'] = async (
+const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
   _source,
   {meetingId, stageId, label},
   {authToken, dataLoader, socketId: mutatorId}
@@ -59,10 +59,13 @@ const setTeamHealthScore: MutationResolvers['setTeamHealthScore'] = async (
   if (!stage || stage.phaseType !== 'TEAM_HEALTH' || stage.isComplete) {
     return {error: {message: 'Invalid stageId provided'}}
   }
+  if (stage.isRevealed) {
+    return {error: {message: 'Votes are already revealed'}}
+  }
 
   await upsertVote(meetingId, stageId, {userId: viewerId, label})
   // update dataloader
-  const existingVote = stage.votes.find((score) => score.userId === viewerId)
+  const existingVote = stage.votes.find((vote) => vote.userId === viewerId)
   if (existingVote) {
     existingVote.label = label
   } else {
@@ -78,9 +81,9 @@ const setTeamHealthScore: MutationResolvers['setTeamHealthScore'] = async (
     }
   }
 
-  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthScoreSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthVoteSuccess', data, subOptions)
 
   return data
 }
 
-export default setTeamHealthScore
+export default setTeamHealthVote

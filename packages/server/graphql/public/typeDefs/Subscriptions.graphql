@@ -30,7 +30,7 @@ type MeetingSubscriptionPayload {
   SetStageTimerPayload: SetStageTimerPayload
   StartDraggingReflectionPayload: StartDraggingReflectionPayload
   SetTaskHighlightSuccess: SetTaskHighlightSuccess
-  SetTeamHealthScoreSuccess: SetTeamHealthScoreSuccess
+  SetTeamHealthVoteSuccess: SetTeamHealthVoteSuccess
   UpdateCommentContentSuccess: UpdateCommentContentSuccess
   UpdateDragLocationPayload: UpdateDragLocationPayload
   UpdateMeetingPromptSuccess: UpdateMeetingPromptSuccess

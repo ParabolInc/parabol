@@ -36,8 +36,8 @@ const TeamHealthVotingRow = (props: Props) => {
   return (
     <div className='flex h-14 w-80 items-center rounded bg-slate-300 py-[5px] pl-4'>
       <MiniCardWrapper>
-        <MiniPokerCard>
-          <CheckIcon className='text-jade-400' />
+        <MiniPokerCard color={PALETTE.JADE_400}>
+          <CheckIcon className='text-white' />
         </MiniPokerCard>
       </MiniCardWrapper>
       <AvatarList
