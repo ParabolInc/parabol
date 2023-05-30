@@ -15,13 +15,6 @@ graphql`
   fragment SetOrgUserRoleMutation_organization on SetOrgUserRoleSuccess {
     organization {
       ...CompleteOrganizationFrag @relay(mask: false)
-      billingLeaders {
-        id
-        organizationUsers {
-          id
-          orgId
-        }
-      }
     }
     notificationsAdded {
       type

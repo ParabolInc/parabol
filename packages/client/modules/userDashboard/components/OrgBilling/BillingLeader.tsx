@@ -82,7 +82,6 @@ const BillingLeader = (props: Props) => {
     organizationRef
   )
   const {id: orgId, isViewerBillingLeader} = organization
-  console.log('🚀 ~ organization:', organization)
   const {
     tooltipPortal,
     openTooltip,
