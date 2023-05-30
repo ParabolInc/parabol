@@ -11,11 +11,13 @@ import PalettePicker from '../../../components/PalettePicker/PalettePicker'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
+import {PortalId} from '../../../hooks/usePortal'
 
 interface Props {
   isOwner: boolean
   prompt: EditableTemplatePromptColor_prompt$key
   prompts: EditableTemplatePromptColor_prompts$key
+  parentId?: PortalId
 }
 
 const PromptColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
@@ -57,7 +59,7 @@ const DropdownIcon = styled('div')({
 })
 
 const EditableTemplatePromptColor = (props: Props) => {
-  const {isOwner, prompt: promptRef, prompts: promptsRef} = props
+  const {isOwner, prompt: promptRef, prompts: promptsRef, parentId} = props
   const prompts = useFragment(
     graphql`
       fragment EditableTemplatePromptColor_prompts on ReflectPrompt @relay(plural: true) {
@@ -78,7 +80,7 @@ const EditableTemplatePromptColor = (props: Props) => {
   const {groupColor} = prompt
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_LEFT,
-    {parentId: 'templateModal'}
+    {parentId: parentId}
   )
   return (
     <PromptColor ref={originRef} isOwner={isOwner} onClick={isOwner ? togglePortal : undefined}>
