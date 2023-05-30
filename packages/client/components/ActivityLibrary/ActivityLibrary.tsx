@@ -89,7 +89,9 @@ export const ActivityLibrary = (props: Props) => {
   const {viewer} = data
   const {featureFlags, availableTemplates} = viewer
 
-  const templates = availableTemplates.edges.map((edge) => edge.node)
+  const templates = useMemo(() => {
+    return availableTemplates.edges.map((edge) => edge.node)
+  }, [availableTemplates])
 
   const {
     query: searchQuery,
