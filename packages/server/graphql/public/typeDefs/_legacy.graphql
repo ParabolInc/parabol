@@ -5822,6 +5822,11 @@ type TeamPromptMeeting implements NewMeeting {
   summarySentAt: DateTime
 
   """
+  The tasks created within the meeting
+  """
+  tasks: [Task!]!
+
+  """
   foreign key for team
   """
   teamId: ID!
@@ -6901,23 +6906,6 @@ type Mutation {
     """
     location: String
   ): SetAppLocationPayload!
-
-  """
-  Enabled or disable the icebreaker round
-  """
-  setMeetingSettings(
-    settingsId: ID!
-
-    """
-    true to turn icebreaker phase on, false to turn it off
-    """
-    checkinEnabled: Boolean
-
-    """
-    disables anonymity of reflections
-    """
-    disableAnonymity: Boolean
-  ): SetMeetingSettingsPayload!
 
   """
   Update the default Slack channel where notifications are sent

@@ -2,7 +2,7 @@ extend type Mutation {
   """
   This creates a set-up intent so that we're able to use Stripe Elements in the client
   """
-  createSetupIntent: CreateSetupIntentPayload!
+  createSetupIntent(orgId: ID!): CreateSetupIntentPayload!
 }
 
 """

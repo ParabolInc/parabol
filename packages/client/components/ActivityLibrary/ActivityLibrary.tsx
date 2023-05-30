@@ -10,8 +10,7 @@ import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLib
 import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityBadge} from './ActivityBadge'
-import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
-import {activityIllustrations} from './ActivityIllustrations'
+import {ActivityId, getActivityIllustration} from './ActivityIllustrations'
 import useRouter from '../../hooks/useRouter'
 import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
@@ -222,9 +221,7 @@ export const ActivityLibrary = (props: Props) => {
                 <CreateActivityCard category={selectedCategory} />
               )}
               {templatesToRender.map((template) => {
-                const templateIllustration =
-                  activityIllustrations[template.id as keyof typeof activityIllustrations]
-                const activityIllustration = templateIllustration ?? customTemplateIllustration
+                const activityIllustration = getActivityIllustration(template.id as ActivityId)
 
                 return (
                   <Link
