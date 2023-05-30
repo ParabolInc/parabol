@@ -7,7 +7,8 @@ export type TeamHealthPhaseSource = TeamHealthPhaseDB & {
 
 const TeamHealthPhase: TeamHealthPhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'TEAM_HEALTH',
-  stages: ({meetingId, stages}) => stages.map(stage => ({
+  stages: ({meetingId, stages}) =>
+    stages.map((stage) => ({
       ...stage,
       meetingId
     }))
