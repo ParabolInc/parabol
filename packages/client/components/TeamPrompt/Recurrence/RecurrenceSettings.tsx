@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import utcPlugin from 'dayjs/plugin/utc'
 import React, {PropsWithChildren, useEffect} from 'react'
-import {Frequency, RRule, datetime} from 'rrule'
+import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PortalId} from '../../../hooks/usePortal'
@@ -13,7 +13,7 @@ import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 import Legitity from '../../../validation/Legitity'
 import {isNotNull} from '../../../utils/predicates'
-import {getJSDateFromRRuleDate} from '../../../shared/rruleUtil'
+import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from '../../../shared/rruleUtil'
 dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
@@ -252,13 +252,7 @@ export const RecurrenceSettings = (props: Props) => {
             freq: Frequency.WEEKLY,
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
-            dtstart: datetime(
-              recurrenceStartTime.getFullYear(),
-              recurrenceStartTime.getMonth() + 1,
-              recurrenceStartTime.getDate(),
-              recurrenceStartTime.getHours(),
-              recurrenceStartTime.getMinutes()
-            ),
+            dtstart: getRRuleDateFromJSDate(recurrenceStartTime),
             tzid: timeZone
           })
         : null
