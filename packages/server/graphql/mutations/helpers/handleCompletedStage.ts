@@ -8,14 +8,12 @@ import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
 import addSummariesToThreads from './addSummariesToThreads'
 import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
-import addReflectionToGroup from './updateReflectionLocation/addReflectionToGroup'
 
 /*
  * handle side effects when a stage is completed
@@ -43,40 +41,6 @@ const handleCompletedRetrospectiveStage = async (
           .orderBy('createdAt')
           .run()
       ])
-
-      const reflectionText = reflections.map((reflection) => reflection.plaintextContent)
-      const manager = new OpenAIServerManager()
-      const groupedReflections = await manager.groupReflections(reflectionText)
-      console.log('🚀 ~ groupedReflections:', groupedReflections)
-      groupedReflections.forEach(async (group, index) => {
-        const reflectionsTextInGroup = Object.values(group).flat()
-        const smartTitle = Object.keys(group).join(', ')
-        console.log('🚀 ~ reflectionsTextInGroup:', {reflectionsTextInGroup, smartTitle})
-        if (reflectionsTextInGroup.length === 1) {
-          console.log('only one')
-          return
-        }
-        const firstReflection = reflections.find(
-          (reflection) => reflection.plaintextContent === reflectionsTextInGroup[0]
-        )
-        console.log('🚀 ~ firstReflection:', firstReflection)
-        const promises = reflectionsTextInGroup.slice(1).map((reflectionTextInGroup) => {
-          const originalReflection = reflections.find(
-            (reflection) => reflectionTextInGroup === reflection.plaintextContent
-          )
-          console.log('🚀 ~ originalReflection:', originalReflection)
-          if (!originalReflection || !firstReflection) return null
-          return addReflectionToGroup(
-            originalReflection.id,
-            firstReflection.reflectionGroupId,
-            {
-              dataLoader
-            } as any,
-            smartTitle
-          )
-        })
-        await Promise.all(promises)
-      })
 
       const {reflectionGroupMapping} = groupReflections(reflections.slice(), {
         groupingThreshold: AUTO_GROUPING_THRESHOLD

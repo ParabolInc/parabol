@@ -1,0 +1,23 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  autogroup(
+    """
+    Describe the first arg here
+    """
+    meetingId: ID!
+  ): AutogroupPayload!
+}
+
+"""
+Return value for autogroup, which could be an error
+"""
+union AutogroupPayload = ErrorPayload | AutogroupSuccess
+
+type AutogroupSuccess {
+  """
+  Describe the first return field here
+  """
+  successField: Boolean!
+}
