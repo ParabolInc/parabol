@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
 import {useFragment} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
-import {BILLING_PAGE, MEMBERS_PAGE, ORG_DETAILS_PAGE} from '../../../../utils/constants'
+import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE} from '../../../../utils/constants'
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
 
@@ -62,7 +62,7 @@ const OrgPage = (props: Props) => {
         />
         <Route
           exact
-          path={`${match.url}/${ORG_DETAILS_PAGE}`}
+          path={`${match.url}/${ORG_SETTINGS_PAGE}`}
           render={(p) => <OrgDetails {...p} organizationRef={organization} />}
         />
       </Switch>

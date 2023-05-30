@@ -92,7 +92,7 @@ export const NOTIFICATIONS = 'notifications'
 /* Org Settings */
 export const BILLING_PAGE = 'billing'
 export const MEMBERS_PAGE = 'members'
-export const ORG_DETAILS_PAGE = 'org-details'
+export const ORG_SETTINGS_PAGE = 'org-settings'
 export const AUTHENTICATION_PAGE = 'authentication'
 
 /* Stripe */

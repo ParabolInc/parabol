@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
-import {BILLING_PAGE, MEMBERS_PAGE, ORG_DETAILS_PAGE} from '../../utils/constants'
+import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE} from '../../utils/constants'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
@@ -137,8 +137,8 @@ const MobileDashSidebar = (props: Props) => {
               <LeftDashNavItem
                 onClick={handleMenuClick}
                 icon={'work'}
-                href={`/me/organizations/${orgId}/${ORG_DETAILS_PAGE}`}
-                label={'Organization Details'}
+                href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
+                label={'Organization Settings'}
               />
             </NavItemsWrap>
           </Nav>
