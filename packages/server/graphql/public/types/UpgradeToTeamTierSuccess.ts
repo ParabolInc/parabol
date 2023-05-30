@@ -1,4 +1,5 @@
-// import {UpgradeToTeamTierSuccessResolvers} from '../resolverTypes'
+import isValid from '../../isValid'
+import {UpgradeToTeamTierSuccessResolvers} from '../resolverTypes'
 
 export type UpgradeToTeamTierSuccessSource = {
   orgId: string
@@ -6,15 +7,17 @@ export type UpgradeToTeamTierSuccessSource = {
   meetingIds: string[]
 }
 
-const UpgradeToTeamTierSuccess: any = {
+const UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccessResolvers = {
   organization: async ({orgId}, _args, {dataLoader}) => {
     return dataLoader.get('organizations').load(orgId)
   },
   teams: async ({teamIds}, _args, {dataLoader}) => {
-    return dataLoader.get('teams').loadMany(teamIds)
+    const teams = await dataLoader.get('teams').loadMany(teamIds)
+    return teams.filter(isValid)
   },
   meetings: async ({meetingIds}, _args, {dataLoader}) => {
-    return dataLoader.get('newMeetings').loadMany(meetingIds)
+    const meetings = await dataLoader.get('newMeetings').loadMany(meetingIds)
+    return meetings.filter(isValid)
   }
 }
 

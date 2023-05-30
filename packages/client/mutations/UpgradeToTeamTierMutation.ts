@@ -1,11 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-// import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__generated__/UpgradeToTeamTierMutation.graphql'
+import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__generated__/UpgradeToTeamTierMutation.graphql'
 
 graphql`
   fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierSuccess {
-    stripeSubscriptionClientSecret
     organization {
       company {
         tier
@@ -45,12 +44,12 @@ const mutation = graphql`
   }
 `
 
-const UpgradeToTeamTierMutation: StandardMutation<any> = (
+const UpgradeToTeamTierMutation: StandardMutation<TUpgradeToTeamTierMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<any>(atmosphere, {
+  return commitMutation<TUpgradeToTeamTierMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

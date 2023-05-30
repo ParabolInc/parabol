@@ -23,10 +23,10 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const organization = await r.table('Organization').get(orgId).run()
+  const organization = await dataLoader.get('organizations').load(orgId)
   const {stripeId, tier, activeDomain, name: orgName} = organization
 
-  if (stripeId) {
+  if (!stripeId) {
     return standardError(new Error('Organization does not have a stripe id'), {
       userId: viewerId
     })

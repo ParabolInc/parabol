@@ -37,7 +37,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation OldUpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID) {
+  mutation OldUpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID!) {
     oldUpgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken) {
       error {
         message
