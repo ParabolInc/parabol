@@ -25,7 +25,7 @@ interface Props {
   gotoStageId?: ReturnType<typeof useGotoStageId>
 }
 
-const VoteBackgroundColors = ['bg-grape-500', 'bg-grape-600', 'bg-grape-700']
+const VoteBackgroundColors = ['bg-grape-700', 'bg-grape-600', 'bg-grape-500']
 
 const TeamHealth = (props: Props) => {
   const {avatarGroup, meeting: meetingRef, toggleSidebar} = props
@@ -67,7 +67,7 @@ const TeamHealth = (props: Props) => {
   const canReveal = isFacilitator && votes?.some((vote) => vote > 0)
 
   const backgroundColorMap = useMemo(() => {
-    const deduped = Array.from(new Set(votes)).sort()
+    const deduped = Array.from(new Set(votes)).sort().reverse()
     const colorMap = new Map<number, string>()
     deduped.forEach((vote, index) => {
       colorMap.set(

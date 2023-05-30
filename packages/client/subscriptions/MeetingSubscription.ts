@@ -96,6 +96,9 @@ const subscription = graphql`
       ResetRetroMeetingToGroupStagePayload {
         ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
       }
+      RevealTeamHealthVotesSuccess {
+        ...RevealTeamHealthVotesMutation_meeting @relay(mask: false)
+      }
       SetPhaseFocusPayload {
         ...SetPhaseFocusMutation_meeting @relay(mask: false)
       }
