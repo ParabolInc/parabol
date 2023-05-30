@@ -7,7 +7,7 @@ import OrganizationSubscription from '../../subscriptions/OrganizationSubscripti
 import {Route, Switch, useRouteMatch} from 'react-router'
 
 const ActivityDetailsRoute = lazy(
-  () => import(/* webpackChunkName: 'ActivityDetails' */ './ActivityDetailsRoute')
+  () => import(/* webpackChunkName: 'ActivityDetails' */ './ActivityDetails/ActivityDetailsRoute')
 )
 const CreateNewActivityRoute = lazy(
   () =>
@@ -31,7 +31,7 @@ const ActivityLibraryRoutes = () => {
   return (
     <Switch>
       <Route path={`${path}/new-activity/:categoryId`} component={CreateNewActivityRoute} />
-      <Route path={`${path}/details/:templateId`} component={ActivityDetailsRoute} />
+      <Route path={`${path}/details/:activityId`} component={ActivityDetailsRoute} />
       <Route exact path={[path, `${path}/category/:categoryId`]} component={ActivityLibraryRoute} />
     </Switch>
   )

@@ -4,7 +4,6 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
-import {isDiscussionFromMeeting} from '../../utils/isDiscussionFromMeeting'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import DeleteCommentPayload from '../types/DeleteCommentPayload'
@@ -38,7 +37,7 @@ const deleteComment = {
 
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const [comment, viewerMeetingMember, meeting] = await Promise.all([
+    const [comment, viewerMeetingMember] = await Promise.all([
       r.table('Comment').get(commentId).run(),
       dataLoader.get('meetingMembers').load(meetingMemberId),
       dataLoader.get('newMeetings').load(meetingId)
@@ -50,7 +49,8 @@ const deleteComment = {
       return {error: {message: `Not a member of the meeting`}}
     }
     const {createdBy, discussionId} = comment
-    if (!isDiscussionFromMeeting(discussionId, meeting)) {
+    const discussion = await dataLoader.get('discussions').loadNonNull(discussionId)
+    if (discussion.meetingId !== meetingId) {
       return {error: {message: `Comment is not from this meeting`}}
     }
     if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {

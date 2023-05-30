@@ -20,6 +20,7 @@ export const LOBBY = 'lobby'
 
 // lowercase here to match url
 export const CHECKIN = 'checkin'
+export const TEAM_HEALTH = 'teamhealth'
 export const UPDATES = 'updates'
 export const FIRST_CALL = 'firstcall'
 export const AGENDA_ITEMS = 'agendaitems'

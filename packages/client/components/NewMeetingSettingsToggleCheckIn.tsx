@@ -37,14 +37,16 @@ const Label = styled('div')({
 })
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
-  color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
-  svg: {
-    fontSize: 28
-  },
-  width: 28,
-  height: 28,
-  textAlign: 'center',
-  userSelect: 'none'
+  '&&': {
+    color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
+    svg: {
+      fontSize: 28
+    },
+    width: 28,
+    height: 28,
+    textAlign: 'center',
+    userSelect: 'none'
+  }
 }))
 
 interface Props {

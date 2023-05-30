@@ -180,4 +180,5 @@ type TeamSubscriptionPayload {
   UpdateIntegrationProviderSuccess: UpdateIntegrationProviderSuccess
   UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
   UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
+  UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
 }

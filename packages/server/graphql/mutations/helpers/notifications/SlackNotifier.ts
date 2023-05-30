@@ -102,6 +102,13 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
         url: pokerUrl
       }
       return makeButtons([estimateButton, summaryButton])
+    case 'teamPrompt':
+      const teamPromptUrl = makeAppURL(appOrigin, `meet/${meetingId}/responses`)
+      const responsesButton = {
+        text: 'See responses',
+        url: teamPromptUrl
+      }
+      return makeButtons([responsesButton, summaryButton])
     default:
       throw new Error('Invalid meeting type')
   }
@@ -172,7 +179,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   },
 
   async endMeeting(meeting, team) {
-    const summaryText = getSummaryText(meeting)
+    const summaryText = await getSummaryText(meeting)
     const title = 'Meeting completed :tada:'
     const blocks: Array<{type: string}> = [
       makeSection(title),
