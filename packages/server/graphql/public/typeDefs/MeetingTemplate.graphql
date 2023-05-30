@@ -310,7 +310,7 @@ type PokerTemplateEdge {
 }
 
 """
-An activity that does not have a customizable template
+An activity that does not have a customizable template, e.g. standup, check-in
 """
 type FixedActivity implements MeetingTemplate {
   """

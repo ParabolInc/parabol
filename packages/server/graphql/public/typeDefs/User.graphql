@@ -419,6 +419,9 @@ type User {
     userId: ID!
   ): User
 
+  """
+  A connection of activities available to the user
+  """
   availableTemplates(
     first: Int!
 
@@ -428,17 +431,6 @@ type User {
     after: ID
   ): MeetingTemplateConnection!
 
-  """
-  All the activities available to the user
-  """
-  activities(
-    first: Int!
-
-    """
-    The cursor, which is the templateId
-    """
-    after: ID
-  ): MeetingTemplateConnection!
   """
   A prototype for a team experience. Includes meeting templates and meeting types that have no templates
   """
