@@ -4,7 +4,6 @@ import errorFilter from '../../errorFilter'
 
 export type SetOrgUserRoleSuccessSource = {
   orgId: string
-  userId: string
   organizationUserId: string
   notificationIdsAdded: string[]
 }
