@@ -117,17 +117,12 @@ const ActivityDetails = (props: Props) => {
                       isOwner={isOwner && isEditing}
                     />
                   </div>
-                  {true ? (
-                    <TemplateDetails
-                      activityRef={activity}
-                      viewerRef={viewer}
-                      isEditing={isEditing}
-                      setIsEditing={setIsEditing}
-                    />
-                  ) : (
-                    <div>FIXME</div>
-                    // <MeetingDetails activity={activity} />
-                  )}
+                  <TemplateDetails
+                    activityRef={activity}
+                    viewerRef={viewer}
+                    isEditing={isEditing}
+                    setIsEditing={setIsEditing}
+                  />
                 </div>
               </div>
             </div>

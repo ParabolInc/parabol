@@ -86,6 +86,7 @@ export const TemplateDetails = (props: Props) => {
   const activity = useFragment(
     graphql`
       fragment TemplateDetails_activity on MeetingTemplate {
+        __typename
         id
         category
         type
@@ -114,7 +115,16 @@ export const TemplateDetails = (props: Props) => {
     `,
     activityRef
   )
-  const {id: activityId, category, dimensions, prompts, team, type, viewerLowestScope} = activity
+  const {
+    __typename,
+    id: activityId,
+    category,
+    dimensions,
+    prompts,
+    team,
+    type,
+    viewerLowestScope
+  } = activity
   const {id: teamId, editingScaleId} = team
   const {description: activityDescription, integrationsTip} = ACTIVITY_TYPE_DATA_LOOKUP[type]
   const viewer = useFragment(
@@ -200,8 +210,11 @@ export const TemplateDetails = (props: Props) => {
     <div className='space-y-6'>
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='w-[480px]'>
-        <div className='mb-8'>
-          {isOwner ? (
+        <div className='mb-6'>
+          {__typename === 'FixedActivity' && (
+            <div className='text-base font-semibold text-slate-600'>Created by Parabol</div>
+          )}
+          {isOwner && (
             <div className='flex items-center justify-between'>
               <div
                 className={clsx(
@@ -241,7 +254,8 @@ export const TemplateDetails = (props: Props) => {
                 )}
               </div>
             </div>
-          ) : (
+          )}
+          {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
               <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
               <div className='rounded-full border border-solid border-slate-400 text-slate-600'>
@@ -259,7 +273,6 @@ export const TemplateDetails = (props: Props) => {
         </div>
         {activityDescription}
       </div>
-
       <IntegrationsTip>{integrationsTip}</IntegrationsTip>
 
       <div className='-ml-14 pt-4'>
