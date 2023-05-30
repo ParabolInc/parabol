@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import FileStoreManager from '../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 import normalizeAvatarUpload from '../../fileStorage/normalizeAvatarUpload'
 import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
@@ -54,11 +53,8 @@ export default {
 
     // RESOLUTION
     const [normalExt, normalBuffer] = await normalizeAvatarUpload(validExt, validBuffer)
-    const orgAvatarPath = FileStoreManager.getOrgAvatarPath(orgId, normalExt)
-    const publicLocation = await getFileStoreManager().putFile({
-      partialPath: orgAvatarPath,
-      buffer: normalBuffer
-    })
+    const manager = getFileStoreManager()
+    const publicLocation = await manager.putOrgAvatar(normalBuffer, orgId, normalExt)
 
     const updatedOrg = await updateOrgResolver(
       undefined,
