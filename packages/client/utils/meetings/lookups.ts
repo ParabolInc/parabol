@@ -9,6 +9,7 @@ import {ACTION, POKER, RETROSPECTIVE, TEAM_PROMPT} from '../constants'
 /* These are the labels show to the viewer */
 export const phaseLabelLookup = {
   checkin: 'Icebreaker',
+  TEAM_HEALTH: 'Team Health',
   reflect: 'Reflect',
   group: 'Group',
   vote: 'Vote',
@@ -25,6 +26,7 @@ export const phaseLabelLookup = {
 
 export const phaseIconLookup = {
   checkin: 'group',
+  TEAM_HEALTH: 'monitor_heart',
   reflect: 'edit',
   group: 'group_work',
   vote: 'thumbs_up_down',

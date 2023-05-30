@@ -1,3 +1,4 @@
+import Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
@@ -27,14 +28,20 @@ const upgradeToTeamTier = async (
     .run()
 
   const manager = getStripeManager()
-  const customers = await manager.getCustomersByEmail(email)
-  const existingCustomer = customers.data.find((customer) => customer.metadata.orgId === orgId)
-  const customer = existingCustomer ?? (await manager.createCustomer(orgId, email))
+  const {stripeId} = organization
+  const customer = stripeId
+    ? await manager.retrieveCustomer(stripeId)
+    : await manager.createCustomer(orgId, email)
   const {id: customerId} = customer
   await manager.attachPaymentToCustomer(customerId, paymentMethodId)
   // wait until the payment is attached to the customer before updating the default payment method
   await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
   const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
+
+  const latestInvoice = subscription.latest_invoice as Stripe.Invoice
+  const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
+  const clientSecret = paymentIntent.client_secret
+
   const subscriptionFields = {
     periodEnd: fromEpochSeconds(subscription.current_period_end),
     periodStart: fromEpochSeconds(subscription.current_period_start),
@@ -67,6 +74,7 @@ const upgradeToTeamTier = async (
   ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  return clientSecret
 }
 
 export default upgradeToTeamTier

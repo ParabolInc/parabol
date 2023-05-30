@@ -5,6 +5,43 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.105.0 2023-May-24
+
+### Added
+
+- feat(summaries): Bulk task export button (#7933)
+- feat(checkout-flow): handle 3D Secure cards (#8162)
+- feat(standups): Meeting ended integration notification (#8258)
+- feat(retros-in-disguise): added standup activity details (#8199)
+- feat(Team Health): add new stage to retrospective (#7942)
+- feat(rid): Sidebar for standups + checkins (#8226)
+- feat: mutable category (#8159)
+- chore(metrics): Add event parameter is_patient_0 to GA4 sign up events (#8223)
+- feat(rid): Add feature flag based on params for email + google signups (#8211)
+- feat(prompt-to-join): Add teammate mutation (#8160)
+- feat: Don't show discussion mention toast if already on stage (#8270)
+
+### Fixed
+
+- chore: update max token limit (#8267)
+- fix(copy): Make copy for ending meeting consistent (#8256)
+- fix: Fix team change in new meeting window (#8253)
+- fix(tiptap): Prevent showing edit components in readonly mode (#8259)
+- fix(discussions): Fix editing comments in standups + check-ins (#8248)
+- fix: NewMeeting dialog rendered the dashboard twice (#8246)
+- chore: refactor addFeatureFlagToOrg to updateOrgFeatureFlag (#8244)
+- chore(docker): documentation on how to build the docker image locally improved (#8230)
+- fix(chore): properly count emojis length (#8116)
+- chore: add checkout flow tracking (#8235)
+- chore(prompt-to-join): domainJoinRequest - replace string id with auto increment (#8191)
+- fix: Add subject explicitly to create Jira key script (#8237)
+- fix: regenerate yarn.lock (#8236)
+- chore: remove \_\_jsxRuntime path (#8154)
+- fix(rid): Navigate to activity lib for floating action button (#8215)
+- fix: slack notification race condition (#8197)
+- fix(standups): Remove CSV download button in standups (#8255)
+- fix: checkbox color overriden by styled components (#8257)
+
 ## 6.104.0 2023-May-17
 
 ### Added

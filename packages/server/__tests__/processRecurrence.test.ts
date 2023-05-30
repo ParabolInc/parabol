@@ -178,7 +178,7 @@ test('Should end meetings that are scheduled to end in the past', async () => {
 
   const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
   expect(actualMeeting.endedAt).toBeTruthy()
-})
+}, 10000)
 
 test('Should end the current meeting and start a new meeting', async () => {
   const r = await getRethink()
@@ -316,7 +316,7 @@ test('Should only start a new meeting if it would still be active', async () => 
 
   const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
   expect(actualMeeting.endedAt).toBeTruthy()
-})
+}, 10000)
 
 test('Should not start a new meeting if the rrule has not started', async () => {
   const r = await getRethink()

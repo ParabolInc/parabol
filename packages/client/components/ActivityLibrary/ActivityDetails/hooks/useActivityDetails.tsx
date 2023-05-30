@@ -1,12 +1,8 @@
 import React from 'react'
-import {
-  useActivityDetails_templateConnection$data,
-  useActivityDetails_templateConnection$key
-} from '~/__generated__/useActivityDetails_templateConnection.graphql'
+import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {CategoryID} from '../../Categories'
 import {MeetingTypeEnum} from '../../../../../server/postgres/types/Meeting'
 import {ActivityId, getActivityIllustration} from '../../ActivityIllustrations'
-import {graphql, useFragment} from 'react-relay'
 
 export type NoTemplatesMeeting = Exclude<MeetingTypeEnum, 'retrospective' | 'poker'>
 
@@ -79,7 +75,7 @@ interface BaseActivity {
 
 export interface ActivityWithTemplate extends BaseActivity {
   isTemplate: true
-  template: useActivityDetails_templateConnection$data['edges'][number]['node']
+  template: ActivityDetailsQuery['response']['viewer']['availableTemplates']['edges'][number]['node']
 }
 
 export interface ActivityWithNoTemplate extends BaseActivity {
@@ -90,26 +86,10 @@ export type Activity = ActivityWithTemplate | ActivityWithNoTemplate
 
 export const useActivityDetails = (
   activityIdParam: string,
-  viewerRef: useActivityDetails_templateConnection$key
+  data: ActivityDetailsQuery['response']
 ) => {
-  const data = useFragment(
-    graphql`
-      fragment useActivityDetails_templateConnection on MeetingTemplateConnection {
-        edges {
-          node {
-            id
-            category
-            type
-            name
-            teamId
-          }
-        }
-      }
-    `,
-    viewerRef
-  )
-
-  const {edges} = data
+  const {viewer} = data
+  const {availableTemplates} = viewer
 
   // for now, standups and check-ins don't have templates
   const noTemplateActivityIds = ['teamPrompt', 'action']
@@ -133,7 +113,9 @@ export const useActivityDetails = (
     }
   }
 
-  const selectedTemplate = edges.find((edge) => edge.node.id === activityIdParam)?.node
+  const selectedTemplate = availableTemplates.edges.find(
+    (edge) => edge.node.id === activityIdParam
+  )?.node
   if (!selectedTemplate) return {activity: null}
 
   const activityId = selectedTemplate.id as ActivityId

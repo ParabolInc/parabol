@@ -64,12 +64,7 @@ export const TemplateDetails = (props: Props) => {
         name
         type
         teamId
-        team {
-          editingScaleId
-          ...PokerTemplateScaleDetails_team
-        }
         ...TeamPickerModal_templates
-        ...useTemplateDescription_template
       }
     `,
     templatesRef

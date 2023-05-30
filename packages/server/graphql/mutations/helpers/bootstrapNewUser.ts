@@ -19,6 +19,7 @@ import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
+  const r = await getRethink()
   const {
     id: userId,
     createdAt,
@@ -30,11 +31,12 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
     identities
   } = newUser
   const domain = email.split('@')[1]
-  const [isPatient0, usersWithDomain] = await Promise.all([
+  const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
-    getUsersbyDomain(domain)
+    getUsersbyDomain(domain),
+    r.table('SAML').getAll(domain, {index: 'domains'}).limit(1).count().eq(1).run()
   ])
-  const r = await getRethink()
+
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
   const experimentalFlags = [...featureFlags]
@@ -116,7 +118,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
 
   const emailIsVerified = identities[0]?.isEmailVerified
 
-  if (emailIsVerified && isOrganic && tier !== 'enterprise') {
+  if (emailIsVerified && isOrganic && !isSAMLVerified) {
     sendPromptToJoinOrg(email, userId)
   }
 

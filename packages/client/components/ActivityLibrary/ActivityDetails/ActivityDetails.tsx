@@ -20,12 +20,21 @@ graphql`
     name
     type
     category
+    orgId
     teamId
+    isFree
+    scope
+    team {
+      editingScaleId
+      ...PokerTemplateScaleDetails_team
+    }
+    ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
     ...EditableTemplateName_teamTemplates
     ...ReflectTemplateDetailsTemplate @relay(mask: false)
     ...PokerTemplateDetailsTemplate @relay(mask: false)
     ...TemplateDetails_templates
+    ...useTemplateDescription_template
   }
 `
 
@@ -39,7 +48,6 @@ export const query = graphql`
             ...ActivityDetails_template @relay(mask: false)
           }
         }
-        ...useActivityDetails_templateConnection
       }
       teams {
         id
@@ -68,8 +76,7 @@ const ActivityDetails = (props: Props) => {
 
   const history = useHistory<{prevCategory?: string}>()
   const [isEditing, setIsEditing] = useState(false)
-
-  const {activity} = useActivityDetails(activityIdParam, availableTemplates)
+  const {activity} = useActivityDetails(activityIdParam, data)
 
   if (!activity) {
     return <Redirect to='/activity-library' />

@@ -1,29 +1,28 @@
+import ms from 'ms'
+import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import {Threshold} from '../../../../client/types/constEnums'
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
+import MeetingTemplate from '../../../database/types/MeetingTemplate'
+import db from '../../../db'
 import {
   getUserId,
   isSuperUser,
-  isUserBillingLeader,
-  isTeamMember
+  isTeamMember,
+  isUserBillingLeader
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import {TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
-import {UserResolvers} from '../resolverTypes'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import getScoredTemplates from '../../queries/helpers/getScoredTemplates'
 import isValid from '../../isValid'
-import MeetingTemplate from '../../../database/types/MeetingTemplate'
-import db from '../../../db'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
-import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
-import getTemplateIllustrationUrl from '../../mutations/helpers/getTemplateIllustrationUrl'
-import ms from 'ms'
+import getScoredTemplates from '../../queries/helpers/getScoredTemplates'
+import {UserResolvers} from '../resolverTypes'
 
 declare const __PRODUCTION__: string
 
@@ -71,17 +70,14 @@ const User: UserResolvers = {
     return [...new Set(approvedDomains)].map((id) => ({id}))
   },
   domainJoinRequest: async ({email}, {requestId}, {dataLoader}) => {
-    const request = await dataLoader.get('domainJoinRequests').loadNonNull(requestId)
+    const request = await dataLoader
+      .get('domainJoinRequests')
+      .loadNonNull(DomainJoinRequestId.split(requestId))
     const domain = getDomainFromEmail(email)
     if (domain !== request.domain) {
       return null
     }
-    return {
-      id: request.id,
-      createdByEmail: request.createdBy,
-      createdBy: request.createdBy,
-      domain: request.domain
-    }
+    return request
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))

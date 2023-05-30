@@ -141,7 +141,7 @@ export const newMeetingStageFields = () => ({
     description:
       'The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null',
     resolve: ({scheduledEndTime}: {scheduledEndTime?: Date | null}) => {
-      return scheduledEndTime ? (scheduledEndTime as any) - Date.now() : null
+      return scheduledEndTime ? scheduledEndTime.valueOf() - Date.now() : null
     }
   }
 })

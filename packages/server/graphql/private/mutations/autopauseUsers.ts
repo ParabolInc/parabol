@@ -30,7 +30,7 @@ const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
     await Promise.allSettled(
       results.map(async ({group: userId, reduction: orgIds}) => {
         try {
-          return await adjustUserCount(userId, orgIds, InvoiceItemType.AUTO_PAUSE_USER, dataLoader)
+          return await adjustUserCount(userId, orgIds, InvoiceItemType.AUTO_PAUSE_USER)
         } catch (e) {
           console.warn(`Error adjusting user count`)
         }
