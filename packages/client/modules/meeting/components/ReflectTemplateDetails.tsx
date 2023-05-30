@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
+import {retroIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
@@ -19,7 +20,6 @@ import RemoveTemplate from './RemoveTemplate'
 import SelectTemplate from './SelectTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
-import {retroIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -98,7 +98,6 @@ const ReflectTemplateDetails = (props: Props) => {
           ...SelectTemplate_template
         }
         teamTemplates {
-          ...EditableTemplateName_teamTemplates
           ...RemoveTemplate_teamTemplates
         }
         team {
@@ -158,7 +157,6 @@ const ReflectTemplateDetails = (props: Props) => {
               key={templateId}
               name={templateName}
               templateId={templateId}
-              teamTemplates={teamTemplates}
               isOwner={isOwner}
             />
             {isOwner && (

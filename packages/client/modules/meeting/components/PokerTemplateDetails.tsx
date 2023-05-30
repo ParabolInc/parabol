@@ -98,7 +98,6 @@ const PokerTemplateDetails = (props: Props) => {
           ...SelectTemplate_template
         }
         teamTemplates {
-          ...EditableTemplateName_teamTemplates
           ...RemoveTemplate_teamTemplates
         }
         team {
@@ -158,7 +157,6 @@ const PokerTemplateDetails = (props: Props) => {
               key={templateId}
               name={templateName}
               templateId={templateId}
-              teamTemplates={teamTemplates}
               isOwner={isOwner}
             />
             {isOwner && (

@@ -13,7 +13,6 @@ import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {ActivityBadge} from './ActivityBadge'
-import {ActivityId, getActivityIllustration} from './ActivityIllustrations'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {
@@ -35,6 +34,7 @@ graphql`
     name
     type
     category
+    illustrationUrl
     isRecommended
     isFree
   }
@@ -200,8 +200,6 @@ export const ActivityLibrary = (props: Props) => {
                 <CreateActivityCard category={selectedCategory} />
               )}
               {templatesToRender.map((template) => {
-                const activityIllustration = getActivityIllustration(template.id as ActivityId)
-
                 return (
                   <Link
                     key={template.id}
@@ -216,7 +214,7 @@ export const ActivityLibrary = (props: Props) => {
                       key={template.id}
                       theme={CATEGORY_THEMES[template.category as CategoryID]}
                       title={template.name}
-                      imageSrc={activityIllustration}
+                      imageSrc={template.illustrationUrl}
                       badge={
                         !template.isFree ? (
                           <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>

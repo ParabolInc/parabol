@@ -1,31 +1,26 @@
-import React, {useEffect, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useEffect, useState} from 'react'
 
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
-import {MenuPosition} from '../../hooks/useCoords'
-import {
-  MeetingTypeEnum,
-  TeamPickerModal_templates$key
-} from '~/__generated__/TeamPickerModal_templates.graphql'
-import {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
-import sortByTier from '../../utils/sortByTier'
-import useMutationProps from '../../hooks/useMutationProps'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import AddReflectTemplateMutation from '../../mutations/AddReflectTemplateMutation'
-import {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
-import {useHistory} from 'react-router'
-import {Threshold} from '../../types/constEnums'
-import {useFragment} from 'react-relay'
 import clsx from 'clsx'
+import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
+import {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
+import {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
+import {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {MenuPosition} from '../../hooks/useCoords'
+import useMutationProps from '../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
+import AddReflectTemplateMutation from '../../mutations/AddReflectTemplateMutation'
+import sortByTier from '../../utils/sortByTier'
 import {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
+import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 
 const ACTION_BUTTON_CLASSES =
   'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
 
 interface Props {
   teamsRef: TeamPickerModal_teams$key
-  templatesRef: TeamPickerModal_templates$key
   closePortal: () => void
   category: string
   parentTemplateId: string
@@ -33,7 +28,7 @@ interface Props {
 }
 
 const TeamPickerModal = (props: Props) => {
-  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type} = props
+  const {teamsRef, closePortal, category, parentTemplateId, type} = props
   const teams = useFragment(
     graphql`
       fragment TeamPickerModal_teams on Team @relay(plural: true) {
@@ -45,17 +40,6 @@ const TeamPickerModal = (props: Props) => {
       }
     `,
     teamsRef
-  )
-
-  const templates = useFragment(
-    graphql`
-      fragment TeamPickerModal_templates on MeetingTemplate @relay(plural: true) {
-        name
-        type
-        teamId
-      }
-    `,
-    templatesRef
   )
 
   const [selectedTeam, setSelectedTeam] = useState(sortByTier(teams)[0]!)
@@ -71,20 +55,6 @@ const TeamPickerModal = (props: Props) => {
 
   const handleSelectTeam = () => {
     if (submitting) {
-      return
-    }
-
-    const teamTemplates = templates.filter(
-      (template) => template.teamId === selectedTeam.id && template.type === type
-    )
-
-    if (
-      teamTemplates.length >=
-      (type === 'retrospective'
-        ? Threshold.MAX_RETRO_TEAM_TEMPLATES
-        : Threshold.MAX_POKER_TEAM_TEMPLATES)
-    ) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
 
