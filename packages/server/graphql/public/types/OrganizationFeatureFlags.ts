@@ -7,7 +7,8 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
   teamHealth: ({teamHealth}) => !!teamHealth,
   teamsLimit: ({teamsLimit}) => !!teamsLimit,
-  promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg
+  promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg,
+  suggestGroups: ({suggestGroups}) => !!suggestGroups
 }
 
 export default OrganizationFeatureFlags
