@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation, UseMutationConfig} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {AcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/AcceptRequestToJoinDomainMutation.graphql'
+import {useAcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/useAcceptRequestToJoinDomainMutation.graphql'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
-  fragment AcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
+  fragment useAcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
   @argumentDefinitions(requestId: {type: "ID!"}) {
     viewer {
       ...ReviewRequestToJoinOrgModal_viewer @arguments(requestId: $requestId)
@@ -14,14 +14,14 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AcceptRequestToJoinDomainMutation($requestId: ID!, $teamIds: [ID!]!) {
+  mutation useAcceptRequestToJoinDomainMutation($requestId: ID!, $teamIds: [ID!]!) {
     acceptRequestToJoinDomain(requestId: $requestId, teamIds: $teamIds) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...AcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId)
+      ...useAcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId)
     }
   }
 `

@@ -9,7 +9,7 @@ import SecondaryButton from './SecondaryButton'
 import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
 import Checkbox from './Checkbox'
-import useAcceptRequestToJoinDomainMutation from '../mutations/AcceptRequestToJoinDomainMutation'
+import useAcceptRequestToJoinDomainMutation from '../mutations/useAcceptRequestToJoinDomainMutation'
 
 const ReviewRequestToJoinOrgModalViewerFragment = graphql`
   fragment ReviewRequestToJoinOrgModal_viewer on User
