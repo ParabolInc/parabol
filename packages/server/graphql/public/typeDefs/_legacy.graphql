@@ -7207,12 +7207,6 @@ type Mutation {
     """
     scope: SharingScopeEnum!
   ): UpdateTemplateScopePayload!
-  updateUserProfile(
-    """
-    The input object containing the user profile fields that can be changed
-    """
-    updatedUser: UpdateUserProfileInput!
-  ): UpdateUserProfilePayload
 
   """
   Upgrade an account to the paid service
@@ -7243,16 +7237,6 @@ type Mutation {
     """
     orgId: ID!
   ): UpdateOrgPayload!
-
-  """
-  Upload an image for a user avatar
-  """
-  uploadUserImage(
-    """
-    the user avatar image file
-    """
-    file: File!
-  ): UpdateUserProfilePayload
 
   """
   Cast your vote for a reflection group
@@ -9303,28 +9287,6 @@ type UpdateTemplateScopeSuccess {
   The settings that contain the teamTemplates array that was modified
   """
   settings: TeamMeetingSettings!
-}
-
-type UpdateUserProfilePayload {
-  error: StandardMutationError
-  user: User
-
-  """
-  The updated team member
-  """
-  teamMembers: [TeamMember!]
-}
-
-input UpdateUserProfileInput {
-  """
-  A link to the user’s profile image.
-  """
-  picture: URL
-
-  """
-  The name, as confirmed by the user
-  """
-  preferredName: String
 }
 
 type UpgradeToTeamTierPayload {

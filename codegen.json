@@ -1,9 +1,9 @@
 {
   "config": {
-    "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
+    "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck\nimport {File} from './types/GraphQLFileType'",
     "defaultScalarType": "string",
     "enumsAsTypes": true,
-    "scalars": {"DateTime": "Date", "RRule": "RRule"}
+    "scalars": {"DateTime": "Date", "RRule": "RRule", "File": "File"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -94,6 +94,7 @@
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
+          "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
