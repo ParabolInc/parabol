@@ -114,7 +114,6 @@ import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateIntegrationProvider from './mutations/updateIntegrationProvider'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
-import updateOrg from './mutations/updateOrg'
 import updatePokerScope from './mutations/updatePokerScope'
 import updatePokerTemplateDimensionScale from './mutations/updatePokerTemplateDimensionScale'
 import updatePokerTemplateScaleValue from './mutations/updatePokerTemplateScaleValue'
@@ -125,10 +124,7 @@ import updateTask from './mutations/updateTask'
 import updateTaskDueDate from './mutations/updateTaskDueDate'
 import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
-import updateUserProfile from './mutations/updateUserProfile'
 import upgradeToTeamTier from './mutations/upgradeToTeamTier'
-import uploadOrgImage from './mutations/uploadOrgImage'
-import uploadUserImage from './mutations/uploadUserImage'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
@@ -230,7 +226,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,
-      updateOrg,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,
       updateNewCheckInQuestion,
@@ -243,10 +238,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTaskDueDate,
       updateTeamName,
       updateTemplateScope,
-      updateUserProfile,
       upgradeToTeamTier,
-      uploadOrgImage,
-      uploadUserImage,
       voteForReflectionGroup,
       voteForPokerStory,
       pokerRevealVotes,
