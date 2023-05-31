@@ -1,18 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMutation, UseMutationConfig} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {AcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/AcceptRequestToJoinDomainMutation.graphql'
-import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
-
-graphql`
-  fragment AcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
-  @argumentDefinitions(requestId: {type: "ID!"}) {
-    viewer {
-      ...ReviewRequestToJoinOrgModal_viewer @arguments(requestId: $requestId)
-    }
-  }
-`
-
+import {useGenericMutation} from './useGenericMutation'
 const mutation = graphql`
   mutation AcceptRequestToJoinDomainMutation($requestId: ID!, $teamIds: [ID!]!) {
     acceptRequestToJoinDomain(requestId: $requestId, teamIds: $teamIds) {
@@ -25,47 +12,14 @@ const mutation = graphql`
     }
   }
 `
-type Handlers = {
-  onSuccess?: () => void
-  onError?: () => void
-}
-const useAcceptRequestToJoinDomainMutation = () => {
-  const [commit, submitting] = useMutation<TAcceptRequestToJoinDomainMutation>(mutation)
-  const atmosphere = useAtmosphere()
-  const execute = (
-    config: UseMutationConfig<TAcceptRequestToJoinDomainMutation>,
-    handlers?: Handlers
-  ) => {
-    const {variables} = config
-    return commit({
-      onCompleted: (res) => {
-        const error = res.acceptRequestToJoinDomain.error
 
-        if (!error) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: '🎉 Success! User added',
-            autoDismiss: 5,
-            key: 'acceptRequestToJoinDomainSuccess'
-          })
-          SendClientSegmentEventMutation(atmosphere, 'Join Request Reviewed', {
-            action: 'accept',
-            teamIds: variables.teamIds
-          })
-          handlers?.onSuccess && handlers.onSuccess()
-        } else {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'acceptRequestToJoinDomainError'
-          })
-          handlers?.onError && handlers.onError()
-        }
-      },
-      // allow components to override default handlers
-      ...config
-    })
-  }
-  return [execute, submitting] as const
+const useAcceptRequestToJoinDomainMutation = () => {
+  return useGenericMutation(
+    mutation,
+    'acceptRequestToJoinDomain',
+    '🎉 Success! User added',
+    'Error while adding the user'
+  )
 }
 
 export default useAcceptRequestToJoinDomainMutation
