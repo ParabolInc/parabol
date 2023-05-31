@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.105.1 2023-May-31
+
+### Fixed
+
+- fix: dumpHeap PROJECT_ROOT
+
+### Changed
+
+- chore(share-summary): Add feature flag (#8249)
+
 ## 6.105.0 2023-May-24
 
 ### Added
