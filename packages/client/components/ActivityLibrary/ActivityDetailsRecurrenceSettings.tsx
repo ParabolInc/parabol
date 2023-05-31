@@ -2,8 +2,8 @@ import React from 'react'
 import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 import NewMeetingDropdown from '../NewMeetingDropdown'
 import {toHumanReadable} from '../TeamPrompt/Recurrence/HumanReadableRecurrenceRule'
-import useModal from '../../hooks/useModal'
 import DialogContainer from '../DialogContainer'
+import {Dialog, DialogContent, DialogTrigger} from '../RadixDialog'
 
 interface Props {
   onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
@@ -12,22 +12,40 @@ interface Props {
 
 export const ActivityDetailsRecurrenceSettings = (props: Props) => {
   const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
-  const {togglePortal, modalPortal} = useModal({
-    id: 'activityDetailsRecurrenceSettings'
-  })
+  // const {togglePortal, modalPortal} = useModal({
+  //   id: 'activityDetailsRecurrenceSettings'
+  // })
 
   return (
     <>
-      <NewMeetingDropdown
-        label={
-          recurrenceSettings.rrule
-            ? toHumanReadable(recurrenceSettings.rrule, {useShortNames: true, shortDayNameAfter: 1})
-            : 'Does not restart'
-        }
-        title={'Recurrence'}
-        onClick={togglePortal}
-      />
-      {modalPortal(
+      <Dialog>
+        <DialogTrigger>
+          <NewMeetingDropdown
+            label={
+              recurrenceSettings.rrule
+                ? toHumanReadable(recurrenceSettings.rrule, {
+                    useShortNames: true,
+                    shortDayNameAfter: 1
+                  })
+                : 'Does not restart'
+            }
+            title={'Recurrence'}
+            onClick={() => {
+              console.log('click')
+            }}
+          />
+        </DialogTrigger>
+        <DialogContent className='fixed'>
+          <DialogContainer className='bg-white'>
+            <RecurrenceSettings
+              parentId='newMeetingRecurrenceSettings'
+              onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
+              recurrenceSettings={recurrenceSettings}
+            />
+          </DialogContainer>
+        </DialogContent>
+      </Dialog>
+      {/* {modalPortal(
         <DialogContainer className='bg-white'>
           <RecurrenceSettings
             parentId='newMeetingRecurrenceSettings'
@@ -35,7 +53,7 @@ export const ActivityDetailsRecurrenceSettings = (props: Props) => {
             recurrenceSettings={recurrenceSettings}
           />
         </DialogContainer>
-      )}
+      )} */}
     </>
   )
 }
