@@ -18,7 +18,6 @@ const dumpHeap: MutationResolvers['dumpHeap'] = async (_source, {isDangerous}, {
     const now = new Date().toJSON()
     const fileName = `Dumpy_${now}-${usedMB}.heapsnapshot`
     const pathName = path.join(__PROJECT_ROOT__, fileName)
-    console.log({pathName})
     const fd = fs.openSync(pathName, 'w')
     session.connect()
     session.on('HeapProfiler.addHeapSnapshotChunk', (m) => {

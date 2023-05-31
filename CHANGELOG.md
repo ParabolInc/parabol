@@ -16,6 +16,11 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - fix(rid): Fix changing prompt colors in activity library (#8279)
 - fix(recurrence): Incorrect start times due to timezone weirdness (#8269)
 - fix(summaries): Race condition around bulk task exports (#8287)
+
+## 6.105.1 2023-May-31
+
+### Fixed
+
 - fix: dumpHeap PROJECT_ROOT
 
 ### Changed
