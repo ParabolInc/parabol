@@ -3,14 +3,12 @@ import getRethink from '../../../database/rethinkDriver'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {GQLContext} from '../../graphql'
-import {UpdateOrgInputType} from '../../types/UpdateOrgInput'
-import updateOrgValidation from '../helpers/updateOrgValidation'
+import {MutationResolvers} from '../resolverTypes'
 
-const updateOrg = async (
-  _source: unknown,
-  {updatedOrg}: {updatedOrg: UpdateOrgInputType},
-  {authToken, dataLoader, socketId: mutatorId}: GQLContext
+const updateOrg: MutationResolvers['updateOrg'] = async (
+  _source,
+  {updatedOrg},
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
   const now = new Date()
@@ -19,23 +17,28 @@ const updateOrg = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  if (!(await isUserBillingLeader(viewerId, updatedOrg.id, dataLoader))) {
+  const {id: orgId, name} = updatedOrg
+  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
     return standardError(new Error('Not organization lead'), {userId: viewerId})
   }
 
   // VALIDATION
-  const schema = updateOrgValidation()
-  const {
-    errors,
-    data: {id: orgId, ...org}
-  } = schema(updatedOrg) as any
-  if (Object.keys(errors).length) {
-    return standardError(new Error('Failed input validation'), {userId: viewerId})
+  if (!name) {
+    return {error: {message: 'Must provide a name'}}
+  }
+
+  const normalizedName = name.trim()
+  if (normalizedName.length < 2) {
+    return {error: {message: 'The “A Team” had a longer name than that'}}
+  }
+  if (normalizedName.length > 50) {
+    return {error: {message: 'That isn’t very memorable. Maybe shorten it up?'}}
   }
 
   // RESOLUTION
   const dbUpdate = {
-    ...org,
+    id: orgId,
+    name: normalizedName,
     updatedAt: now
   }
   await r.table('Organization').get(orgId).update(dbUpdate).run()
