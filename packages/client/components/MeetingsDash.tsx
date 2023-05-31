@@ -108,39 +108,41 @@ const MeetingsDash = (props: Props) => {
   const transitioningMeetings = useTransition(filteredMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const hasActiveMeetings = activeMeetings.length > 0
   const hasFilteredMeetings = filteredMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
 
-  const MEETING_DASH_WITH_DEMO_CARD = (
-    <EmptyContainer>
-      <MeetingsDashEmpty
-        name={preferredName}
-        message={EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS}
-      />
-      <Wrapper maybeTabletPlus={maybeTabletPlus}>
-        <DemoMeetingCard />
-        <TutorialMeetingCard />
-      </Wrapper>
-    </EmptyContainer>
-  )
   let meetingCells: JSX.Element
-  if (!hasActiveMeetings) {
-    meetingCells = MEETING_DASH_WITH_DEMO_CARD
-  } else if (!hasFilteredMeetings) {
+  if (!hasFilteredMeetings) {
     if (!teamFilterIds) {
-      meetingCells = MEETING_DASH_WITH_DEMO_CARD
-    } else {
-      let message = ''
-      if (dashSearch) {
-        message = 'Sorry we could not find any meetings matched with your query on this team.'
-      } else {
-        message = 'Looks like you have no upcoming meetings on this team.'
-      }
       meetingCells = (
         <EmptyContainer>
-          <MeetingsDashEmpty name={preferredName} message={message} filteredResult={true} />
+          <MeetingsDashEmpty
+            name={preferredName}
+            message={
+              dashSearch
+                ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS
+                : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS
+            }
+          />
+          <Wrapper maybeTabletPlus={maybeTabletPlus}>
+            <DemoMeetingCard />
+            <TutorialMeetingCard />
+          </Wrapper>
+        </EmptyContainer>
+      )
+    } else {
+      meetingCells = (
+        <EmptyContainer>
+          <MeetingsDashEmpty
+            name={preferredName}
+            message={
+              dashSearch
+                ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS_ON_THE_TEAM
+                : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS_ON_THE_TEAM
+            }
+            filteredResult={true}
+          />
         </EmptyContainer>
       )
     }
