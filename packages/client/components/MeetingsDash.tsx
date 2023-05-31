@@ -113,34 +113,37 @@ const MeetingsDash = (props: Props) => {
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
 
+  const MEETING_DASH_WITH_DEMO_CARD = (
+    <EmptyContainer>
+      <MeetingsDashEmpty
+        name={preferredName}
+        message={EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS}
+      />
+      <Wrapper maybeTabletPlus={maybeTabletPlus}>
+        <DemoMeetingCard />
+        <TutorialMeetingCard />
+      </Wrapper>
+    </EmptyContainer>
+  )
   let meetingCells: JSX.Element
   if (!hasActiveMeetings) {
-    meetingCells = (
-      <EmptyContainer>
-        <MeetingsDashEmpty
-          name={preferredName}
-          message={EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS}
-        />
-        <Wrapper maybeTabletPlus={maybeTabletPlus}>
-          <DemoMeetingCard />
-          <TutorialMeetingCard />
-        </Wrapper>
-      </EmptyContainer>
-    )
+    meetingCells = MEETING_DASH_WITH_DEMO_CARD
   } else if (!hasFilteredMeetings) {
-    let message = ''
-    if (dashSearch && teamFilterIds) {
-      message = 'Sorry we could not find any meetings matched with your query on this team.'
-    } else if (dashSearch && !teamFilterIds) {
-      message = 'Sorry we could not find any meetings matched with your query.'
-    } else if (!dashSearch && teamFilterIds) {
-      message = 'Looks like you have no upcoming meetings on this team.'
+    if (!teamFilterIds) {
+      meetingCells = MEETING_DASH_WITH_DEMO_CARD
+    } else {
+      let message = ''
+      if (dashSearch) {
+        message = 'Sorry we could not find any meetings matched with your query on this team.'
+      } else {
+        message = 'Looks like you have no upcoming meetings on this team.'
+      }
+      meetingCells = (
+        <EmptyContainer>
+          <MeetingsDashEmpty name={preferredName} message={message} filteredResult={true} />
+        </EmptyContainer>
+      )
     }
-    meetingCells = (
-      <EmptyContainer>
-        <MeetingsDashEmpty name={preferredName} message={message} filteredResult={true} />
-      </EmptyContainer>
-    )
   } else {
     meetingCells = (
       <Wrapper maybeTabletPlus={maybeTabletPlus}>
