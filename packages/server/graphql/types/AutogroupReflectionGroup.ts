@@ -1,11 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 
-export type AutogroupReflectionGroupType = {
-  groupTitle: string
-  reflectionIds: string[]
-}
-
 const AutogroupReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'AutogroupReflectionGroup',
   description: 'A suggested reflection group created by OpenAI',

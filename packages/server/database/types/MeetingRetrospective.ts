@@ -1,6 +1,10 @@
-import {AutogroupReflectionGroupType} from '../../graphql/types/AutogroupReflectionGroup'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
+
+export type AutogroupReflectionGroupType = {
+  groupTitle: string
+  reflectionIds: string[]
+}
 
 interface Input {
   id?: string

@@ -2,7 +2,7 @@ import getRethink from '../../../database/rethinkDriver'
 import Reflection from '../../../database/types/Reflection'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
-import {AutogroupReflectionGroupType} from '../../types/AutogroupReflectionGroup'
+import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
 
 const generateGroups = async (
   reflections: Reflection[],
