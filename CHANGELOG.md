@@ -18,6 +18,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - feat: mutable category (#8159)
 - chore(metrics): Add event parameter is_patient_0 to GA4 sign up events (#8223)
 - feat(rid): Add feature flag based on params for email + google signups (#8211)
+- feat(prompt-to-join): Add teammate mutation (#8160)
+- feat: Don't show discussion mention toast if already on stage (#8270)
 
 ### Fixed
 
@@ -37,6 +39,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore: remove \_\_jsxRuntime path (#8154)
 - fix(rid): Navigate to activity lib for floating action button (#8215)
 - fix: slack notification race condition (#8197)
+- fix(standups): Remove CSV download button in standups (#8255)
+- fix: checkbox color overriden by styled components (#8257)
 
 ## 6.104.0 2023-May-17
 
