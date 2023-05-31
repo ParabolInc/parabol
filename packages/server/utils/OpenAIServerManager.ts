@@ -50,14 +50,10 @@ class OpenAIServerManager {
       (total, reflectionText) => total + Math.ceil(reflectionText.length / AVG_CHARS_PER_TOKEN),
       0
     )
-    const avgReflectionLength = totalLengthInTokens / reflectionsText.length
-
     const avgReflectionsPerGroup = 3 // assume each group will have around 3 reflections
     const numGroups = Math.ceil(reflectionsText.length / avgReflectionsPerGroup)
 
-    const outputTokens = Math.round(
-      numGroups * (avgGroupNameLength + avgReflectionsPerGroup * avgReflectionLength)
-    )
+    const outputTokens = Math.round(numGroups * avgGroupNameLength + totalLengthInTokens)
 
     return Math.min(MAX_GPT_3_5_TOKENS, outputTokens)
   }
