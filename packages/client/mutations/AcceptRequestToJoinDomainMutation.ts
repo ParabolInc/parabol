@@ -1,5 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useGenericMutation} from './useGenericMutation'
+
+graphql`
+  fragment AcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
+  @argumentDefinitions(requestId: {type: "ID!"}) {
+    viewer {
+      ...ReviewRequestToJoinOrgModal_viewer @arguments(requestId: $requestId)
+    }
+  }
+`
+
 const mutation = graphql`
   mutation AcceptRequestToJoinDomainMutation($requestId: ID!, $teamIds: [ID!]!) {
     acceptRequestToJoinDomain(requestId: $requestId, teamIds: $teamIds) {
