@@ -9,8 +9,7 @@ import SecondaryButton from './SecondaryButton'
 import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
 import Checkbox from './Checkbox'
-import useAtmosphere from '../hooks/useAtmosphere'
-import AcceptRequestToJoinDomainMutation from '../mutations/AcceptRequestToJoinDomainMutation'
+import useAcceptRequestToJoinDomainMutation from '../mutations/AcceptRequestToJoinDomainMutation'
 
 const ReviewRequestToJoinOrgModalViewerFragment = graphql`
   fragment ReviewRequestToJoinOrgModal_viewer on User
@@ -53,7 +52,7 @@ interface Props {
 // TODO: Create generic dialog components using tailwind https://github.com/ParabolInc/parabol/issues/8107
 const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {closePortal, queryRef} = props
-  const atmosphere = useAtmosphere()
+
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
 
   const data = usePreloadedQuery<ReviewRequestToJoinOrgModalQuery>(query, queryRef)
@@ -65,6 +64,9 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {domainJoinRequest} = viewer
 
   const teams = domainJoinRequest?.teams
+
+  const [commit, submitting] = useAcceptRequestToJoinDomainMutation()
+
   const sortedTeams = useMemo(() => {
     if (!teams) {
       return []
@@ -94,17 +96,15 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {createdBy, createdByEmail, id: requestId} = domainJoinRequest
 
   const onAdd = () => {
-    AcceptRequestToJoinDomainMutation(
-      atmosphere,
+    commit(
       {
-        requestId,
-        teamIds: selectedTeams
+        variables: {
+          requestId,
+          teamIds: selectedTeams
+        }
       },
       {
-        onCompleted: closePortal,
-        onError: () => {
-          /* noop */
-        }
+        onSuccess: closePortal
       }
     )
   }
@@ -159,11 +159,11 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
 
         <div className={'mt-6 flex w-full justify-end'}>
           <div className={'mr-2'}>
-            <SecondaryButton onClick={closePortal} size='small'>
+            <SecondaryButton onClick={closePortal} size='small' disabled={submitting}>
               Cancel
             </SecondaryButton>
           </div>
-          <PrimaryButton size='small' onClick={onAdd}>
+          <PrimaryButton size='small' onClick={onAdd} disabled={submitting}>
             Add to teams
           </PrimaryButton>
         </div>

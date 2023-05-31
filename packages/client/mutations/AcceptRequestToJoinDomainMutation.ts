@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
+import {useMutation, UseMutationConfig} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {AcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/AcceptRequestToJoinDomainMutation.graphql'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
@@ -25,37 +25,47 @@ const mutation = graphql`
     }
   }
 `
+type Handlers = {
+  onSuccess?: () => void
+  onError?: () => void
+}
+const useAcceptRequestToJoinDomainMutation = () => {
+  const [commit, submitting] = useMutation<TAcceptRequestToJoinDomainMutation>(mutation)
+  const atmosphere = useAtmosphere()
+  const execute = (
+    config: UseMutationConfig<TAcceptRequestToJoinDomainMutation>,
+    handlers?: Handlers
+  ) => {
+    const {variables} = config
+    return commit({
+      onCompleted: (res) => {
+        const error = res.acceptRequestToJoinDomain.error
 
-const AcceptRequestToJoinDomainMutation: StandardMutation<TAcceptRequestToJoinDomainMutation> = (
-  atmosphere,
-  variables,
-  {onCompleted}
-) => {
-  return commitMutation<TAcceptRequestToJoinDomainMutation>(atmosphere, {
-    mutation,
-    variables,
-    onCompleted: (res) => {
-      const error = res.acceptRequestToJoinDomain.error
-      if (!error) {
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          message: '🎉 Success! User added',
-          autoDismiss: 5,
-          key: 'acceptRequestToJoinDomainSuccess'
-        })
-        SendClientSegmentEventMutation(atmosphere, 'Join Request Reviewed', {
-          action: 'accept',
-          teamIds: variables.teamIds
-        })
-        onCompleted(res)
-      } else {
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          message: error.message,
-          autoDismiss: 5,
-          key: 'acceptRequestToJoinDomainError'
-        })
-      }
-    }
-  })
+        if (!error) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            message: '🎉 Success! User added',
+            autoDismiss: 5,
+            key: 'acceptRequestToJoinDomainSuccess'
+          })
+          SendClientSegmentEventMutation(atmosphere, 'Join Request Reviewed', {
+            action: 'accept',
+            teamIds: variables.teamIds
+          })
+          handlers?.onSuccess && handlers.onSuccess()
+        } else {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            message: error.message,
+            autoDismiss: 5,
+            key: 'acceptRequestToJoinDomainError'
+          })
+          handlers?.onError && handlers.onError()
+        }
+      },
+      // allow components to override default handlers
+      ...config
+    })
+  }
+  return [execute, submitting] as const
 }
 
-export default AcceptRequestToJoinDomainMutation
+export default useAcceptRequestToJoinDomainMutation
