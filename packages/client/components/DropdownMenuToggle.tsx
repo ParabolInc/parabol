@@ -52,7 +52,7 @@ interface Props {
   className?: string
   defaultText: string | ReactElement<any>
   disabled?: boolean
-  onClick: ReturnType<typeof useMenu>['togglePortal']
+  onClick?: ReturnType<typeof useMenu>['togglePortal']
   onMouseEnter?: () => void
   // style hacks until a better pattern
   flat?: boolean

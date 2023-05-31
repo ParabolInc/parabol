@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Link} from 'react-router-dom'
-import React from 'react'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
@@ -18,6 +18,7 @@ import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
+import {Dialog, DialogContent} from '../RadixDialog'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',
@@ -116,8 +117,8 @@ const TeamPromptTopBar = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const {togglePortal: toggleRecurrenceSettingsModal, modalPortal: recurrenceSettingsModal} =
-    useModal({id: 'updateRecurrenceSettingsModal'})
+  const [isRecurrenceSettingsModalOpen, setIsRecurrenceSettingsModalOpen] = useState(false)
+
   const {togglePortal: toggleEndRecurringMeetingModal, modalPortal: endRecurringMeetingModal} =
     useModal({id: 'endRecurringMeetingModal'})
 
@@ -182,18 +183,20 @@ const TeamPromptTopBar = (props: Props) => {
           <ButtonContainer>
             <TeamPromptOptions
               meetingRef={meeting}
-              openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
+              openRecurrenceSettingsModal={() => setIsRecurrenceSettingsModalOpen(true)}
               openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
             />
           </ButtonContainer>
         </RightSectionContainer>
       </RightSection>
-      {recurrenceSettingsModal(
-        <UpdateRecurrenceSettingsModal
-          meeting={meeting}
-          closeModal={toggleRecurrenceSettingsModal}
-        />
-      )}
+      <Dialog open={isRecurrenceSettingsModalOpen}>
+        <DialogContent>
+          <UpdateRecurrenceSettingsModal
+            meeting={meeting}
+            closeModal={() => setIsRecurrenceSettingsModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
       {endRecurringMeetingModal(
         <EndRecurringMeetingModal
           meetingId={meetingId}

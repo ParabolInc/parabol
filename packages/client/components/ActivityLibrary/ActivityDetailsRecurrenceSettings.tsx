@@ -38,22 +38,12 @@ export const ActivityDetailsRecurrenceSettings = (props: Props) => {
         <DialogContent className='fixed'>
           <DialogContainer className='bg-white'>
             <RecurrenceSettings
-              parentId='newMeetingRecurrenceSettings'
               onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
               recurrenceSettings={recurrenceSettings}
             />
           </DialogContainer>
         </DialogContent>
       </Dialog>
-      {/* {modalPortal(
-        <DialogContainer className='bg-white'>
-          <RecurrenceSettings
-            parentId='newMeetingRecurrenceSettings'
-            onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
-            recurrenceSettings={recurrenceSettings}
-          />
-        </DialogContainer>
-      )} */}
     </>
   )
 }

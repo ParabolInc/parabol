@@ -3,9 +3,6 @@ import dayjs from 'dayjs'
 import utcPlugin from 'dayjs/plugin/utc'
 import React, {PropsWithChildren, useEffect, useState} from 'react'
 import {Frequency, RRule} from 'rrule'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu from '../../../hooks/useMenu'
-import {PortalId} from '../../../hooks/usePortal'
 import plural from '../../../utils/plural'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
@@ -172,7 +169,6 @@ export interface RecurrenceSettings {
 }
 
 interface Props {
-  parentId: PortalId
   onRecurrenceSettingsUpdated: (
     recurrenceSettings: RecurrenceSettings,
     validationErrors: string[] | undefined
@@ -181,7 +177,7 @@ interface Props {
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {parentId, onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
   const [name, setName] = React.useState(meetingSeriesName)
   const [nameError, setNameError] = React.useState<string | undefined>()
@@ -209,14 +205,6 @@ export const RecurrenceSettings = (props: Props) => {
   )
 
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
-  const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT,
-    {
-      id: 'recurrenceStartTimePicker',
-      parentId,
-      isDropdown: true
-    }
-  )
 
   const handleIntervalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -349,15 +337,11 @@ export const RecurrenceSettings = (props: Props) => {
             <DropdownMenuToggle
               className='w-full text-sm'
               defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
-              onClick={() => {
-                console.log('foo')
-              }}
               size='small'
             />
           </SelectTrigger>
           <SelectContent className='w-min bg-white' defaultValue={'6:00 AM'}>
             <RecurrenceTimePicker
-              menuProps={menuProps}
               onClick={(newTime) => {
                 setRecurrenceStartTime(newTime)
                 setOpen(false)
@@ -365,16 +349,6 @@ export const RecurrenceSettings = (props: Props) => {
             />
           </SelectContent>
         </Select>
-        {/* <DropdownMenuToggle
-          className='w-full text-sm'
-          defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
-          onClick={togglePortal}
-          ref={originRef}
-          size='small'
-        />
-        {menuPortal(
-          <RecurrenceTimePicker menuProps={menuProps} onClick={setRecurrenceStartTime} />
-        )} */}
       </div>
     </div>
   )
