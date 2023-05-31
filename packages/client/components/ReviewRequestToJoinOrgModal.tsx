@@ -53,7 +53,7 @@ interface Props {
 const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {closePortal, queryRef} = props
 
-  const [selectedTeams, setSelectedTeams] = useState<string[]>([])
+  const [selectedTeamsIds, setSelectedTeamsIds] = useState<string[]>([])
 
   const data = usePreloadedQuery<ReviewRequestToJoinOrgModalQuery>(query, queryRef)
   const viewer = useFragment<ReviewRequestToJoinOrgModal_viewer$key>(
@@ -100,7 +100,7 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
       {
         variables: {
           requestId,
-          teamIds: selectedTeams
+          teamIds: selectedTeamsIds
         }
       },
       {
@@ -124,17 +124,17 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
 
             // TODO: implement userId filter for teamMembers on API side
             const isAlreadyMember = teamMembers.some((member) => member.userId === createdBy)
-            const active = selectedTeams.includes(teamId) || isAlreadyMember
+            const active = selectedTeamsIds.includes(teamId) || isAlreadyMember
 
             const handleClick = () => {
               if (isAlreadyMember) return
 
               if (active) {
-                setSelectedTeams((prevSelectedTeams) =>
-                  prevSelectedTeams.filter((id) => id !== teamId)
+                setSelectedTeamsIds((prevSelectedTeamsIds) =>
+                  prevSelectedTeamsIds.filter((id) => id !== teamId)
                 )
               } else {
-                setSelectedTeams((prevSelectedTeams) => [...prevSelectedTeams, teamId])
+                setSelectedTeamsIds((prevSelectedTeamsIds) => [...prevSelectedTeamsIds, teamId])
               }
             }
 
