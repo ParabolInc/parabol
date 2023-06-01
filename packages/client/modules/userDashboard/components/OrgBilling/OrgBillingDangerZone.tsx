@@ -49,32 +49,26 @@ const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
 
 interface Props {
   organization: OrgBillingDangerZone_organization$key
+  isWide?: boolean
 }
+
 const OrgBillingDangerZone = (props: Props) => {
-  const {organization: organizationRef} = props
+  const {organization: organizationRef, isWide = false} = props
   const organization = useFragment(
     graphql`
       fragment OrgBillingDangerZone_organization on Organization {
         ...ArchiveOrganization_organization
         isBillingLeader
         tier
-        viewerOrganizationUser {
-          user {
-            featureFlags {
-              checkoutFlow
-            }
-          }
-        }
       }
     `,
     organizationRef
   )
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
-  const hasCheckoutFlowFlag = !!organization.viewerOrganizationUser?.user.featureFlags.checkoutFlow
   const isStarter = tier === 'starter'
   return (
-    <StyledPanel isWide={hasCheckoutFlowFlag} label='Danger Zone'>
+    <StyledPanel isWide={isWide} label='Danger Zone'>
       <PanelRow>
         {isStarter ? (
           <ArchiveOrganization organization={organization} />
