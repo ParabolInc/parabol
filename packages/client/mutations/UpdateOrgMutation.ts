@@ -8,7 +8,6 @@ graphql`
   fragment UpdateOrgMutation_organization on UpdateOrgPayload {
     organization {
       name
-      picture
     }
   }
 `
@@ -34,12 +33,9 @@ const UpdateOrgMutation = (
     variables,
     optimisticUpdater: (store) => {
       const {updatedOrg} = variables
-      const {id, picture, name} = updatedOrg
+      const {id, name} = updatedOrg
       const organization = store.get(id)
       if (!organization) return
-      if (picture) {
-        organization.setValue(picture, 'picture')
-      }
       if (name) {
         organization.setValue(name, 'name')
       }

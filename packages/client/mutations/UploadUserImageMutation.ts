@@ -10,7 +10,12 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpdateUserProfileMutation_team @relay(mask: false)
+      teamMembers {
+        picture
+        user {
+          picture
+        }
+      }
     }
   }
 `

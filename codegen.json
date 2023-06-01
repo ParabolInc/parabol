@@ -3,7 +3,7 @@
     "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
     "defaultScalarType": "string",
     "enumsAsTypes": true,
-    "scalars": {"DateTime": "Date", "RRule": "RRule"}
+    "scalars": {"DateTime": "Date", "RRule": "RRule", "File": "TFile"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -24,6 +24,7 @@
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
+          "File": "../public/types/File#TFile",
           "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
@@ -49,6 +50,7 @@
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
+          "File": "./types/File#TFile",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
@@ -100,6 +102,8 @@
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
+          "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
+          "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
