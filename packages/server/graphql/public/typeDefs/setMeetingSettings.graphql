@@ -19,5 +19,9 @@ extend type Mutation {
     disables anonymity of reflections
     """
     disableAnonymity: Boolean
+    """
+    the url of the video meeting, e.g. the Zoom link
+    """
+    videoMeetingURL: String
   ): SetMeetingSettingsPayload!
 }
