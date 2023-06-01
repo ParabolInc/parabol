@@ -9,13 +9,11 @@ import {TEMPLATE_PROMPT} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
 import {TemplatePromptList_prompts$key} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import TemplatePromptItem from './TemplatePromptItem'
-import {PortalId} from '../../../hooks/usePortal'
 
 interface Props {
   isOwner: boolean
   prompts: TemplatePromptList_prompts$key
   templateId: string
-  parentId?: PortalId
 }
 
 const PromptList = styled('div')({
@@ -25,7 +23,7 @@ const PromptList = styled('div')({
 })
 
 const TemplatePromptList = (props: Props) => {
-  const {isOwner, prompts: promptsRef, templateId, parentId} = props
+  const {isOwner, prompts: promptsRef, templateId} = props
   const prompts = useFragment(
     graphql`
       fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
@@ -96,7 +94,6 @@ const TemplatePromptList = (props: Props) => {
                             prompts={prompts}
                             isDragging={dragSnapshot.isDragging}
                             dragProvided={dragProvided}
-                            parentId={parentId}
                           />
                         )
                       }}
