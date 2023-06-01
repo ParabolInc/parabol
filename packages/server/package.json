@@ -81,6 +81,7 @@
     "webpack-s3-plugin": "^1.2.0-rc.0"
   },
   "dependencies": {
+    "api": "^5.0.7",
     "@authenio/samlify-node-xmllint": "^2.0.0",
     "@aws-sdk/client-s3": "^3.315.0",
     "@graphql-tools/schema": "^9.0.16",

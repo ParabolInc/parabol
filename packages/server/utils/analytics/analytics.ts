@@ -52,6 +52,8 @@ export type TaskEstimateProperties = {
 export type MeetingSettings = {
   hasIcebreaker?: boolean
   disableAnonymity?: boolean
+  videoMeetingURL?: string | null
+  recallBotId?: string | null
 }
 
 export type WebSocketProperties = {

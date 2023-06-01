@@ -6,7 +6,8 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import ReflectionGroupType from '../../database/types/ReflectionGroup'
@@ -177,6 +178,10 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     totalVotes: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'the total number of votes allowed for each participant'
+    },
+    transcription: {
+      type: GraphQLString,
+      description: 'The transcription of the meeting'
     },
     votesRemaining: {
       type: new GraphQLNonNull(GraphQLInt),

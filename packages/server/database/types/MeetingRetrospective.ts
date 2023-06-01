@@ -18,6 +18,7 @@ interface Input {
   totalVotes: number
   maxVotesPerGroup: number
   disableAnonymity: boolean
+  transcription?: string
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]
 }
 
@@ -39,6 +40,7 @@ export default class MeetingRetrospective extends Meeting {
   templateId: string
   topicCount?: number
   reflectionCount?: number
+  transcription?: string
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]
 
   constructor(input: Input) {
@@ -54,6 +56,7 @@ export default class MeetingRetrospective extends Meeting {
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
+      transcription,
       autogroupReflectionGroups
     } = input
     super({
@@ -70,6 +73,7 @@ export default class MeetingRetrospective extends Meeting {
     this.showConversionModal = showConversionModal
     this.templateId = templateId
     this.disableAnonymity = disableAnonymity
+    this.transcription = transcription
     this.autogroupReflectionGroups = autogroupReflectionGroups
   }
 }
