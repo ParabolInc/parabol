@@ -73,7 +73,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   )
 
   const handleClick = (userId: string) => {
-    const role = 'BILLING_LEADER'
+    const role = 'BILLING_LEADER' as const
     const variables = {orgId, userId, role}
     SetOrgUserRoleMutation(atmosphere, variables, {onError, onCompleted})
   }

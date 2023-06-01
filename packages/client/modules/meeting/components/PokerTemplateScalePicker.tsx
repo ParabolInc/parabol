@@ -32,7 +32,7 @@ const DropdownIcon = styled(ExpandMore)({
 
 const DropdownBlock = styled('div')<{disabled: boolean; readOnly: boolean}>(
   ({disabled, readOnly}) => ({
-    background: disabled ? PALETTE.SLATE_200 : '#fff',
+    background: disabled && !readOnly ? PALETTE.SLATE_200 : '#fff',
     border: readOnly ? undefined : `1px solid ${PALETTE.SLATE_400}`,
     borderRadius: '30px',
     cursor: readOnly ? undefined : disabled ? 'not-allowed' : 'pointer',
@@ -99,7 +99,7 @@ const PokerTemplateScalePicker = (props: Props) => {
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER, {
-    disabled: isOwner
+    disabled: isOwner || readOnly
   })
   return (
     <>
@@ -115,7 +115,7 @@ const PokerTemplateScalePicker = (props: Props) => {
         <MenuToggleInner>
           <MenuToggleLabel>{selectedScale.name}</MenuToggleLabel>
         </MenuToggleInner>
-        {(!readOnly || !isOwner) && <DropdownIcon />}
+        {!readOnly && <DropdownIcon />}
       </DropdownBlock>
       {menuPortal(<SelectScaleDropdown menuProps={menuProps} dimension={dimension} />)}
       {tooltipPortal(<div>Must be the template owner to change</div>)}
