@@ -3,6 +3,9 @@ graphql`
   fragment CompleteOrganizationFrag on Organization {
     id
     isBillingLeader
+    billingLeaders {
+      id
+    }
     createdAt
     name
     orgUserCount {

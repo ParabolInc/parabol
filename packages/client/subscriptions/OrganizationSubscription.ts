@@ -36,12 +36,6 @@ const subscription = graphql`
       PayLaterPayload {
         ...PayLaterMutation_organization @relay(mask: false)
       }
-      SetOrgUserRoleAddedPayload {
-        ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
-      }
-      SetOrgUserRoleRemovedPayload {
-        ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
-      }
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_organization @relay(mask: false)
       }
@@ -54,6 +48,9 @@ const subscription = graphql`
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_organization @relay(mask: false)
       }
+      SetOrgUserRoleSuccess {
+        ...SetOrgUserRoleMutation_organization @relay(mask: false)
+      }
       UpdateTemplateScopeSuccess {
         ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
       }
@@ -64,13 +61,13 @@ const subscription = graphql`
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
   RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
-  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
+  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationOnNext
 } as const
 
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
-  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
+  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const
