@@ -18,26 +18,23 @@ interface Props {
   query: string
 }
 
-const svgLookup: Record<TaskServiceEnum, React.MemoExoticComponent<() => JSX.Element>> = {
-  jiraServer: JiraServerSVG,
-  gitlab: GitLabSVG,
-  azureDevOps: AzureDevOpsSVG,
-  github: GitHubSVG,
-  jira: JiraSVG,
-  PARABOL: ParabolLogoSVG
+export const integrationSvgLookup: Record<TaskServiceEnum, JSX.Element> = {
+  jiraServer: <JiraServerSVG />,
+  gitlab: <GitLabSVG />,
+  azureDevOps: <AzureDevOpsSVG />,
+  github: <GitHubSVG />,
+  jira: <JiraSVG />,
+  PARABOL: <ParabolLogoSVG />
 }
 
 const TaskIntegrationMenuItem = forwardRef((props: Props, ref: any) => {
   const {label, onClick, service, query} = props
-  const Svg = svgLookup[service]
   return (
     <MenuItem
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemAvatar>
-            <Svg />
-          </MenuItemAvatar>
+          <MenuItemAvatar>{integrationSvgLookup[service]}</MenuItemAvatar>
           <TypeAheadLabel query={query} label={label} />
         </MenuItemLabel>
       }

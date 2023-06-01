@@ -45,6 +45,9 @@ const MeetingsDash = (props: Props) => {
         id
         dashSearch
         preferredName
+        featureFlags {
+          retrosInDisguise
+        }
         teams {
           ...MeetingsDashActiveMeetings @relay(mask: false)
         }
@@ -52,7 +55,12 @@ const MeetingsDash = (props: Props) => {
     `,
     viewerRef
   )
-  const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
+  const {
+    teams = [],
+    preferredName = '',
+    dashSearch,
+    featureFlags = {retrosInDisguise: false}
+  } = viewer ?? {}
   const activeMeetings = useMemo(() => {
     const meetings = teams
       .flatMap((team) => team.activeMeetings)
@@ -124,7 +132,7 @@ const MeetingsDash = (props: Props) => {
           </Wrapper>
         </EmptyContainer>
       )}
-      <StartMeetingFAB />
+      <StartMeetingFAB hasRid={featureFlags.retrosInDisguise} />
     </>
   )
 }

@@ -18,7 +18,8 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
-const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
+const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
+  const r = await getRethink()
   const {
     id: userId,
     createdAt,
@@ -30,20 +31,33 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     identities
   } = newUser
   const domain = email.split('@')[1]
-  const [isPatient0, usersWithDomain] = await Promise.all([
+  const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
-    getUsersbyDomain(domain)
+    getUsersbyDomain(domain),
+    r.table('SAML').getAll(domain, {index: 'domains'}).limit(1).count().eq(1).run()
   ])
-  const r = await getRethink()
+
   const joinEvent = new TimelineEventJoinedParabol({userId})
+
+  const experimentalFlags = [...featureFlags]
 
   // TODO: remove the following after templateLimit experiment is complete: https://github.com/ParabolInc/parabol/issues/7712
   const stopTemplateLimitsP0Experiment = !!process.env.STOP_TEMPLATE_LIMITS_P0_EXPERIMENT
-  const domainUserHasFlag = usersWithDomain.some((user) =>
+  const domainUserHasTemplateFlag = usersWithDomain.some((user) =>
     user.featureFlags.includes('templateLimit')
   )
-  const addTemplateFlag = !stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasFlag)
-  const experimentalFlags = addTemplateFlag ? [...featureFlags, 'templateLimit'] : featureFlags
+
+  if (!stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasTemplateFlag)) {
+    experimentalFlags.push('templateLimit')
+  }
+
+  const domainUserHasRidFlag = usersWithDomain.some((user) =>
+    user.featureFlags.includes('retrosInDisguise')
+  )
+  const params = new URLSearchParams(searchParams)
+  if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
+    experimentalFlags.push('retrosInDisguise')
+  }
 
   await Promise.all([
     r({
@@ -104,7 +118,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
 
   const emailIsVerified = identities[0]?.isEmailVerified
 
-  if (emailIsVerified && isOrganic && tier !== 'enterprise') {
+  if (emailIsVerified && isOrganic && !isSAMLVerified) {
     sendPromptToJoinOrg(email, userId)
   }
 

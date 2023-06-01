@@ -154,7 +154,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
               <StyledIcon>
                 <CloseIcon />
               </StyledIcon>
-              <span>{'End the meeting'}</span>
+              <span>{'End this meeting'}</span>
             </OptionMenuItem>
           }
           onClick={() => {

@@ -7,12 +7,14 @@ import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
+import RecallAIServerManager from '../../utils/RecallAIServerManager'
 import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -25,13 +27,20 @@ import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 
+const getTranscription = async (recallBotId?: string | null) => {
+  if (!recallBotId) return
+  const manager = new RecallAIServerManager()
+  return await manager.getBotTranscript(recallBotId)
+}
+
 const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
   const {dataLoader, authToken} = context
   const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
   const r = await getRethink()
-  const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
+  const [reflectionGroups, reflections, meetingSettings, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'}),
     generateWholeMeetingSentimentScore(meetingId, facilitatorUserId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
@@ -57,9 +66,13 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       })
     }
   }
-
-  await Promise.allSettled([
+  const {id: settingsId, recallBotId} = meetingSettings as MeetingSettingsRetrospective
+  const [summary, transcription] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
+    getTranscription(recallBotId)
+  ])
+
+  await Promise.all([
     r
       .table('NewMeeting')
       .get(meetingId)
@@ -80,12 +93,23 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
             .default(0) as unknown as number,
           topicCount: reflectionGroupIds.length,
           reflectionCount: reflections.length,
-          sentimentScore
+          sentimentScore,
+          summary,
+          transcription
         },
         {nonAtomic: true}
       )
+      .run(),
+    r
+      .table('MeetingSettings')
+      .get(settingsId)
+      .update({
+        recallBotId: null,
+        videoMeetingURL: null
+      })
       .run()
   ])
+  dataLoader.get('newMeetings').clear(meetingId)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
@@ -189,6 +213,7 @@ export default {
     )
     const timelineEventId = events[0]!.id
     await r.table('TimelineEvent').insert(events).run()
+
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')

@@ -11,7 +11,9 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpdateOrgMutation_organization @relay(mask: false)
+      organization {
+        picture
+      }
     }
   }
 `

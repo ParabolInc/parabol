@@ -43,7 +43,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   if (invitationRes.error) {
     const {error: message, teamId, meetingId} = invitationRes
     if (message === InvitationTokenError.ALREADY_ACCEPTED) {
-      return {error: {message}, teamId, meetingId}
+      return {error: {message}, teamId, meetingId, teamMemberId: toTeamMemberId(teamId, viewerId)}
     }
     return {error: {message}}
   }

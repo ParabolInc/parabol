@@ -54,9 +54,9 @@ export default class StripeManager {
     })
   }
 
-  async createSetupIntent() {
+  async createSetupIntent(customerId: string) {
     return this.stripe.setupIntents.create({
-      payment_method_types: ['card']
+      customer: customerId
     })
   }
 
@@ -67,6 +67,7 @@ export default class StripeManager {
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
       proration_behavior: 'none',
+      expand: ['latest_invoice.payment_intent'], // expand the payment intent so we can get the client_secret
       // Use this for testing invoice.created hooks
       // run `yarn ultrahook` and subscribe
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack

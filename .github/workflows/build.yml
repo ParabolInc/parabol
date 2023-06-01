@@ -103,11 +103,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: playwright_browsers-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
+          key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
 
       - name: Setup Playwright
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: yarn workspace integration-tests playwright install-deps
+        run: npx playwright install --with-deps
 
       - name: Run Playwright Tests
         run: yarn workspace integration-tests test --workers 2 --reporter list,junit

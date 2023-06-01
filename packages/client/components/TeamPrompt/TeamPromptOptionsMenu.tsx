@@ -136,7 +136,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         label={
           <OptionMenuItem>
             <FlagIcon />
-            <span>{'End this activity'}</span>
+            <span>{'End this meeting'}</span>
           </OptionMenuItem>
         }
         onClick={() => {

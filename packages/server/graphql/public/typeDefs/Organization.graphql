@@ -168,9 +168,12 @@ type TeamStat {
 The types of flags that give an individual organization super powers
 """
 type OrganizationFeatureFlags {
-  teamsLimit: Boolean!
   SAMLUI: Boolean!
+  noAISummary: Boolean!
   promptToJoinOrg: Boolean!
   suggestGroups: Boolean!
-  noAISummary: Boolean!
+  zoomTranscription: Boolean!
+  shareSummary: Boolean!
+  teamHealth: Boolean!
+  teamsLimit: Boolean!
 }

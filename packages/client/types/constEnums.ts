@@ -123,6 +123,7 @@ export const enum ElementHeight {
 
 export const enum ExternalLinks {
   EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
+  LOGO = 'https://action-files.parabol.co/static/favicon-with-more-padding.jpeg',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_RETRO_VIDEO = 'https://www.parabol.co/resources/retrospective-meetings/#video',
@@ -388,6 +389,7 @@ export const enum Threshold {
   MAX_POKER_TEMPLATE_DIMENSIONS = 12,
   MAX_POKER_TEMPLATE_SCALES = 12,
   MAX_POKER_SCALE_VALUES = 30,
+  POKER_SCALE_VALUE_MAX_LENGTH = 3,
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_POKER_DIMENSION_NAME = 50,
