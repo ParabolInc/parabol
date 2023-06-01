@@ -10,7 +10,6 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
-          "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
@@ -25,6 +24,7 @@
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
+          "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },
@@ -37,15 +37,18 @@
         "mappers": {
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
+          "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",
+          "AutogroupSuccess": "./types/AutogroupSuccess#AutogroupSuccessSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreateSetupIntentSuccess": "./types/CreateSetupIntentSuccess#CreateSetupIntentSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
+          "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
@@ -62,14 +65,19 @@
           "NotifyResponseReplied": "../../database/types/NotifyResponseReplied#default as NotifyResponseRepliedDB",
           "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
           "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",
+          "NotifyRequestToJoinOrg": "../../database/types/NotificationRequestToJoinOrg#default",
           "Organization": "../../database/types/Organization#default as Organization",
+          "OrganizationUser": "../../database/types/OrganizationUser#default as OrganizationUser",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
+          "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
           "RRule": "rrule#RRule",
+          "ReflectPrompt": "../../database/types/RetrospectivePrompt#default",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
           "RemoveTeamMemberPayload": "./types/RemoveTeamMemberPayload#RemoveTeamMemberPayloadSource",
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
+          "SetOrgUserRoleSuccess": "./types/SetOrgUserRoleSuccess#SetOrgUserRoleSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
           "Task": "../../database/types/Task#default",
@@ -81,6 +89,7 @@
           "TeamMember": "../../database/types/TeamMember#default as TeamMemberDB",
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
+          "TemplateDimension": "../../database/types/TemplateDimension#default",
           "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
           "ToggleSummaryEmailSuccess": "./types/ToggleSummaryEmailSuccess#ToggleSummaryEmailSuccessSource",
           "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
@@ -93,9 +102,7 @@
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
-          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
-          "TemplateDimension": "../../database/types/TemplateDimension#default",
-          "ReflectPrompt": "../../database/types/RetrospectivePrompt#default"
+          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],

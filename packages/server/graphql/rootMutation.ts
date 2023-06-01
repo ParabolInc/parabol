@@ -94,7 +94,6 @@ import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
 import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
 import setNotificationStatus from './mutations/setNotificationStatus'
-import setOrgUserRole from './mutations/setOrgUserRole'
 import setPhaseFocus from './mutations/setPhaseFocus'
 import setPokerSpectate from './mutations/setPokerSpectate'
 import setSlackNotification from './mutations/setSlackNotification'
@@ -218,7 +217,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       selectTemplate,
       setAppLocation,
       setDefaultSlackChannel,
-      setOrgUserRole,
       setPhaseFocus,
       setStageTimer,
       setSlackNotification,

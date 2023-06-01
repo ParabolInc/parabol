@@ -5822,6 +5822,11 @@ type TeamPromptMeeting implements NewMeeting {
   summarySentAt: DateTime
 
   """
+  The tasks created within the meeting
+  """
+  tasks: [Task!]!
+
+  """
   foreign key for team
   """
   teamId: ID!
@@ -6906,26 +6911,6 @@ type Mutation {
   Update the default Slack channel where notifications are sent
   """
   setDefaultSlackChannel(slackChannelId: ID!, teamId: ID!): SetDefaultSlackChannelPayload!
-
-  """
-  Set the role of a user
-  """
-  setOrgUserRole(
-    """
-    The org to affect
-    """
-    orgId: ID!
-
-    """
-    the user who is receiving a role change
-    """
-    userId: ID!
-
-    """
-    the user’s new role
-    """
-    role: String
-  ): SetOrgUserRolePayload
 
   """
   Focus (or unfocus) a phase item
@@ -8899,12 +8884,6 @@ type SetDefaultSlackChannelSuccess {
   teamMember: TeamMember!
 }
 
-interface SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
-}
-
 type SetPhaseFocusPayload {
   error: StandardMutationError
   meeting: RetrospectiveMeeting!
@@ -10048,23 +10027,6 @@ type AuthTokenPayload {
   The encoded JWT
   """
   id: ID!
-}
-
-type SetOrgUserRoleAddedPayload implements SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
-
-  """
-  If promoted, notify them and give them all other admin notifications
-  """
-  notificationsAdded: [Notification]
-}
-
-type SetOrgUserRoleRemovedPayload implements SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
 }
 
 type RenamePokerTemplatePayload {

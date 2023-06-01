@@ -105,6 +105,8 @@ export type AnalyticsEvent =
   // snackbar
   | 'Snackbar Clicked'
   | 'Snackbar Viewed'
+  // Join request
+  | 'Join Request Reviewed'
 
 /**
  * Provides a unified inteface for sending all the analytics events

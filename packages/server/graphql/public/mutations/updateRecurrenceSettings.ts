@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RRule} from 'rrule'
+import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
+import {RRule, datetime} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
@@ -32,7 +33,11 @@ export const startNewMeetingSeries = async (
     facilitatorId: viewerId
   } as const
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
-  const nextMeetingStartDate = recurrenceRule.after(now)
+  const rruleNow = getRRuleDateFromJSDate(now)
+  const nextMeetingStartRRuleDate = recurrenceRule.after(rruleNow)
+  const nextMeetingStartDate = nextMeetingStartRRuleDate
+    ? getJSDateFromRRuleDate(nextMeetingStartRRuleDate)
+    : null
 
   await r
     .table('NewMeeting')
@@ -54,7 +59,11 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
   const {id: meetingSeriesId} = meetingSeries
 
   const now = new Date()
-  const nextMeetingStartDate = newRecurrenceRule.after(now)
+  const rruleNow = getRRuleDateFromJSDate(now)
+  const nextMeetingStartDateRRule = newRecurrenceRule.after(rruleNow)
+  const nextMeetingStartDate = nextMeetingStartDateRRule
+    ? getJSDateFromRRuleDate(nextMeetingStartDateRRule)
+    : null
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
   // lets close all active meetings at the time when

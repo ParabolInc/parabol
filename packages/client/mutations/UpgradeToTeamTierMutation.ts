@@ -5,6 +5,7 @@ import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__gene
 
 graphql`
   fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierPayload {
+    stripeSubscriptionClientSecret
     organization {
       creditCard {
         brand

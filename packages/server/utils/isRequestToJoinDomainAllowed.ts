@@ -19,7 +19,6 @@ export const getEligibleOrgIdsByDomain = async (
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})
     .filter((org) => org('featureFlags').contains('promptToJoinOrg'))
-    .filter((org) => org('tier').ne('enterprise'))
     .filter((org) =>
       r
         .table('OrganizationUser')

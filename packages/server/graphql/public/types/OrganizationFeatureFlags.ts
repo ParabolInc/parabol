@@ -5,6 +5,7 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   noAISummary: ({noAISummary}) => !!noAISummary,
   promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg,
   zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,
+  shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
   teamHealth: ({teamHealth}) => !!teamHealth,
   teamsLimit: ({teamsLimit}) => !!teamsLimit

@@ -1,6 +1,11 @@
 import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
 
+export type AutogroupReflectionGroupType = {
+  groupTitle: string
+  reflectionIds: string[]
+}
+
 interface Input {
   id?: string
   teamId: string
@@ -14,6 +19,7 @@ interface Input {
   maxVotesPerGroup: number
   disableAnonymity: boolean
   transcription?: string
+  autogroupReflectionGroups?: AutogroupReflectionGroupType[]
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
@@ -35,6 +41,7 @@ export default class MeetingRetrospective extends Meeting {
   topicCount?: number
   reflectionCount?: number
   transcription?: string
+  autogroupReflectionGroups?: AutogroupReflectionGroupType[]
 
   constructor(input: Input) {
     const {
@@ -49,7 +56,8 @@ export default class MeetingRetrospective extends Meeting {
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
-      transcription
+      transcription,
+      autogroupReflectionGroups
     } = input
     super({
       id,
@@ -66,5 +74,6 @@ export default class MeetingRetrospective extends Meeting {
     this.templateId = templateId
     this.disableAnonymity = disableAnonymity
     this.transcription = transcription
+    this.autogroupReflectionGroups = autogroupReflectionGroups
   }
 }

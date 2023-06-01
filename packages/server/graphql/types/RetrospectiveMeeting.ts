@@ -22,6 +22,7 @@ import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import Task from './Task'
+import AutogroupReflectionGroup from './AutogroupReflectionGroup'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
@@ -52,6 +53,10 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: ({commentCount}) => commentCount || 0
+    },
+    autogroupReflectionGroups: {
+      type: new GraphQLList(new GraphQLNonNull(AutogroupReflectionGroup)),
+      description: 'The suggested reflection groups created by OpenAI'
     },
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),

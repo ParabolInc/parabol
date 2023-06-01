@@ -13,6 +13,7 @@ import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 import Legitity from '../../../validation/Legitity'
 import {isNotNull} from '../../../utils/predicates'
+import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from '../../../shared/rruleUtil'
 dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
@@ -196,7 +197,7 @@ export const RecurrenceSettings = (props: Props) => {
   )
   const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
     recurrenceRule
-      ? recurrenceRule.options.dtstart
+      ? getJSDateFromRRuleDate(recurrenceRule.options.dtstart)
       : dayjs()
           .add(1, 'day')
           .set('hour', 6)
@@ -251,7 +252,7 @@ export const RecurrenceSettings = (props: Props) => {
             freq: Frequency.WEEKLY,
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
-            dtstart: dayjs(recurrenceStartTime).utc().toDate(),
+            dtstart: getRRuleDateFromJSDate(recurrenceStartTime),
             tzid: timeZone
           })
         : null

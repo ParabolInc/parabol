@@ -300,6 +300,7 @@ const initDemoOrg = () => {
     featureFlags: {
       SAMLUI: false,
       zoomTranscription: false,
+      suggestGroups: false,
       teamsLimit: false,
       promptToJoinOrg: false
     },

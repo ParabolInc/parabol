@@ -73,6 +73,7 @@ graphql`
   fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
     meeting {
       ...WholeMeetingSummary_meeting
+      taskCount
     }
   }
 `

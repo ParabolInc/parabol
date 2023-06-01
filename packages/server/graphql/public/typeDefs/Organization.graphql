@@ -173,6 +173,7 @@ type OrganizationFeatureFlags {
   promptToJoinOrg: Boolean!
   suggestGroups: Boolean!
   zoomTranscription: Boolean!
+  shareSummary: Boolean!
   teamHealth: Boolean!
   teamsLimit: Boolean!
 }
