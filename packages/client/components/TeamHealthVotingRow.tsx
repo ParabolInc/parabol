@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -12,16 +11,10 @@ import PokerVotingNoVotes from './PokerVotingNoVotes'
 
 interface Props {
   stage: TeamHealthVotingRow_stage$key
-  isInitialStageRender?: boolean
 }
 
-const MiniCardWrapper = styled('div')({
-  // This adds the gutter between the mini card and the avatars
-  marginRight: 16
-})
-
 const TeamHealthVotingRow = (props: Props) => {
-  const {stage: stageRef, isInitialStageRender} = props
+  const {stage: stageRef} = props
   const stage = useFragment(
     graphql`
       fragment TeamHealthVotingRow_stage on TeamHealthStage {
@@ -34,16 +27,16 @@ const TeamHealthVotingRow = (props: Props) => {
   )
   const {votedUsers} = stage
   return (
-    <div className='flex h-14 w-80 items-center rounded bg-slate-300 py-[5px] pl-4'>
-      <MiniCardWrapper>
+    <div className='flex h-14 w-80 shrink-0 items-center rounded bg-slate-300 pl-4'>
+      <div className='mr-4'>
         <MiniPokerCard color={PALETTE.JADE_400}>
           <CheckIcon className='text-white' />
         </MiniPokerCard>
-      </MiniCardWrapper>
+      </div>
       <AvatarList
         size={PokerCards.AVATAR_WIDTH}
         users={votedUsers}
-        isAnimated={!isInitialStageRender}
+        isAnimated={true}
         borderColor={PALETTE.SLATE_300}
         emptyEl={<PokerVotingNoVotes />}
       />

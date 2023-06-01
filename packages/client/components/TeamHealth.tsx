@@ -53,7 +53,7 @@ const TeamHealth = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, endedAt, showSidebar, localStage, facilitatorUserId} = meeting
-  const {id: stageId, question, labels, viewerVote, votes, isRevealed} = localStage
+  const {id: stageId, question, labels, viewerVote, votes, votedUserIds, isRevealed} = localStage
   const {viewerId} = atmosphere
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -64,7 +64,7 @@ const TeamHealth = (props: Props) => {
   }
 
   const isFacilitator = facilitatorUserId === viewerId
-  const canReveal = isFacilitator && votes?.some((vote) => vote > 0)
+  const canReveal = isFacilitator && votedUserIds && votedUserIds.length > 0
 
   const backgroundColorMap = useMemo(() => {
     const deduped = Array.from(new Set(votes)).sort().reverse()
@@ -128,11 +128,11 @@ const TeamHealth = (props: Props) => {
                       id={`radio-${label}`}
                       key={label}
                       value={label}
-                      className='group m-3 flex h-32 w-20 flex-col items-center justify-start rounded bg-slate-300 p-0 hover:bg-grape-100 data-[state=checked]:bg-grape-300'
+                      className='group m-3 flex h-32 w-20 flex-col items-center justify-start rounded bg-slate-300 p-0 hover:cursor-pointer hover:bg-grape-100 data-[state=checked]:bg-grape-300'
                     >
                       <label
                         htmlFor={`radio-${label}`}
-                        className='flex h-24 items-center justify-center text-4xl group-data-[state=checked]:text-5xl'
+                        className='flex h-24 items-center justify-center text-4xl hover:cursor-pointer group-data-[state=checked]:text-5xl'
                       >
                         {label}
                       </label>
@@ -141,16 +141,14 @@ const TeamHealth = (props: Props) => {
                 </RadioGroup.Root>
                 <TeamHealthVotingRow stage={localStage} />
                 {isFacilitator && (
-                  <>
-                    <RaisedButton
-                      palette='white'
-                      onClick={onRevealVotes}
-                      className='mt-4 h-14 w-44 rounded-full text-slate-600 disabled:bg-slate-300 disabled:text-slate-600'
-                      disabled={!canReveal}
-                    >
-                      Reveal Results
-                    </RaisedButton>
-                  </>
+                  <RaisedButton
+                    palette='white'
+                    onClick={onRevealVotes}
+                    className='mt-4 h-14 w-44 rounded-full text-slate-600 disabled:bg-slate-300 disabled:text-slate-600'
+                    disabled={!canReveal}
+                  >
+                    Reveal Results
+                  </RaisedButton>
                 )}
               </>
             )}
@@ -167,6 +165,7 @@ graphql`
     question
     labels
     votes
+    votedUserIds
     viewerVote
     isRevealed
   }

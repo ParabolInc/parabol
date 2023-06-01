@@ -42,7 +42,7 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
   const teamHealthPhase = getPhase(phases, 'TEAM_HEALTH')
   const {stages} = teamHealthPhase
   const stage = stages.find((stage) => stage.id === stageId)
-  if (!stage || stage.phaseType !== 'TEAM_HEALTH' || stage.isComplete) {
+  if (!stage || stage.phaseType !== 'TEAM_HEALTH') {
     return {error: {message: 'Invalid stageId provided'}}
   }
   if (stage.isRevealed) {

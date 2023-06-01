@@ -96,7 +96,9 @@ const createNewMeetingPhases = async (
           })
         case 'TEAM_HEALTH':
           return new TeamHealthPhase({
-            stages: [new TeamHealthStage('How do you feel?', ['😀', '😐', '☹️'])]
+            stages: [
+              new TeamHealthStage('How are you feeling about work today?', ['😀', '😐', '😢'])
+            ]
           })
         case REFLECT:
           return new ReflectPhase(teamId, durations)
