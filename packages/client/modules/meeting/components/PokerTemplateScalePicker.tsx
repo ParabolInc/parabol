@@ -11,7 +11,6 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
 import {PokerTemplateScalePicker_dimension$key} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
-import {PortalId} from '../../../hooks/usePortal'
 
 const SelectScaleDropdown = lazyPreload(
   () =>
@@ -65,12 +64,11 @@ const MenuToggleLabel = styled('div')({
 interface Props {
   dimension: PokerTemplateScalePicker_dimension$key
   isOwner: boolean
-  parentId?: PortalId
   readOnly?: boolean
 }
 
 const PokerTemplateScalePicker = (props: Props) => {
-  const {dimension: dimensionRef, isOwner, parentId, readOnly} = props
+  const {dimension: dimensionRef, isOwner, readOnly} = props
   const dimension = useFragment(
     graphql`
       fragment PokerTemplateScalePicker_dimension on TemplateDimension {
@@ -89,7 +87,6 @@ const PokerTemplateScalePicker = (props: Props) => {
     {
       isDropdown: true,
       id: 'scaleDropdown',
-      parentId,
       loadingWidth: 300
     }
   )
