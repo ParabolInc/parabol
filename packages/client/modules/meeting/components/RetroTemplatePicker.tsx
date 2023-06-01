@@ -50,8 +50,7 @@ const RetroTemplatePicker = (props: Props) => {
   const {selectedTemplate} = settings
   const {name: templateName, scope} = selectedTemplate
   const {togglePortal, modalPortal, closePortal} = useModal({
-    id: 'templateModal',
-    parentId: 'newMeetingRoot'
+    id: 'templateModal'
   })
   const atmosphere = useAtmosphere()
 
