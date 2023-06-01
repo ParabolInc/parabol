@@ -112,27 +112,26 @@ const MeetingsDash = (props: Props) => {
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
 
-  let meetingCells: JSX.Element
-  if (!hasFilteredMeetings) {
-    if (!teamFilterIds) {
-      meetingCells = (
-        <EmptyContainer>
-          <MeetingsDashEmpty
-            name={preferredName}
-            message={
-              dashSearch
-                ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS
-                : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS
-            }
-          />
-          <Wrapper maybeTabletPlus={maybeTabletPlus}>
-            <DemoMeetingCard />
-            <TutorialMeetingCard />
-          </Wrapper>
-        </EmptyContainer>
-      )
-    } else {
-      meetingCells = (
+  return (
+    <>
+      <MeetingsDashHeader viewerRef={viewer} />
+      {hasFilteredMeetings ? (
+        <Wrapper maybeTabletPlus={maybeTabletPlus}>
+          {transitioningMeetings.map((meeting) => {
+            const {child} = meeting
+            const {id, displayIdx} = child
+            return (
+              <MeetingCard
+                key={id}
+                displayIdx={displayIdx}
+                meeting={meeting.child}
+                onTransitionEnd={meeting.onTransitionEnd}
+                status={meeting.status}
+              />
+            )
+          })}
+        </Wrapper>
+      ) : (
         <EmptyContainer>
           <MeetingsDashEmpty
             name={preferredName}
@@ -141,34 +140,16 @@ const MeetingsDash = (props: Props) => {
                 ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS_ON_THE_TEAM
                 : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS_ON_THE_TEAM
             }
-            filteredResult={true}
+            filteredResult={!!teamFilterIds}
           />
+          {!teamFilterIds ? (
+            <Wrapper maybeTabletPlus={maybeTabletPlus}>
+              <DemoMeetingCard />
+              <TutorialMeetingCard />
+            </Wrapper>
+          ) : null}
         </EmptyContainer>
-      )
-    }
-  } else {
-    meetingCells = (
-      <Wrapper maybeTabletPlus={maybeTabletPlus}>
-        {transitioningMeetings.map((meeting) => {
-          const {child} = meeting
-          const {id, displayIdx} = child
-          return (
-            <MeetingCard
-              key={id}
-              displayIdx={displayIdx}
-              meeting={meeting.child}
-              onTransitionEnd={meeting.onTransitionEnd}
-              status={meeting.status}
-            />
-          )
-        })}
-      </Wrapper>
-    )
-  }
-  return (
-    <>
-      <MeetingsDashHeader viewerRef={viewer} />
-      {meetingCells}
+      )}
       <StartMeetingFAB hasRid={featureFlags.retrosInDisguise} />
     </>
   )
