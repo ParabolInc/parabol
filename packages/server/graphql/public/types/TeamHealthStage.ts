@@ -33,7 +33,8 @@ const TeamHealthStage: TeamHealthStageResolvers = {
     const viewerId = getUserId(authToken)
     return votes.find(({userId}) => userId === viewerId)?.label ?? null
   },
-  votes: ({labels, votes}) => {
+  votes: ({labels, votes, isRevealed}) => {
+    if (!isRevealed) return null
     const counted = new Map<string, number>()
     votes.forEach((vote) => {
       const {label} = vote

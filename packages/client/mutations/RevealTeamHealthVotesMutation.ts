@@ -24,24 +24,15 @@ const mutation = graphql`
   }
 `
 
-type Stage = NonNullable<
-  NonNullable<TRevealTeamHealthVotesMutation['response']>['revealTeamHealthVotes']['stage']
->
-
 const RevealTeamHealthVotesMutation: StandardMutation<TRevealTeamHealthVotesMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
+  // there is no point in optimistic updating because we don't have the votes available
   return commitMutation<TRevealTeamHealthVotesMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {stageId} = variables
-      const stage = store.get<Stage>(stageId)
-      if (!stage) return
-      stage.setValue(true, 'isRevealed')
-    },
     onCompleted,
     onError
   })

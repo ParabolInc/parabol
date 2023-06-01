@@ -47,20 +47,7 @@ const SetTeamHealthVoteMutation: StandardMutation<TSetTeamHealthVoteMutation> = 
       const viewer = store.getRoot().getLinkedRecord('viewer')
       if (!stage || !viewer) return
 
-      const labels = stage.getValue('labels')
-      const votes = [...stage.getValue('votes')]
-      const viewerVote = stage.getValue('viewerVote')
-
-      if (viewerVote === label) return
-      if (viewerVote) {
-        const labelIdx = labels.findIndex((item) => item === viewerVote)
-        votes[labelIdx] = votes[labelIdx]! - 1
-      }
       // not updating the votedUsers here until it's official from the server
-
-      const labelIdx = labels.findIndex((item) => item === label)
-      votes[labelIdx] = votes[labelIdx]! - 1
-      stage.setValue(votes, 'votes')
       stage.setValue(label, 'viewerVote')
     },
     onCompleted,

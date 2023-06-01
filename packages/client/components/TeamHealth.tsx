@@ -57,14 +57,15 @@ const TeamHealth = (props: Props) => {
   const {viewerId} = atmosphere
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
+  const isFacilitator = facilitatorUserId === viewerId
+  const canVote = !isRevealed && !endedAt
+  const canReveal = isFacilitator && votedUserIds && votedUserIds.length > 0 && canVote
+
   const onVote = (label: string) => {
-    if (submitting) return
+    if (!canVote || submitting) return
     submitMutation()
     SetTeamHealthVoteMutation(atmosphere, {meetingId, stageId, label}, {onError, onCompleted})
   }
-
-  const isFacilitator = facilitatorUserId === viewerId
-  const canReveal = isFacilitator && votedUserIds && votedUserIds.length > 0
 
   const backgroundColorMap = useMemo(() => {
     const deduped = Array.from(new Set(votes)).sort().reverse()
@@ -79,7 +80,7 @@ const TeamHealth = (props: Props) => {
   }, [votes])
 
   const onRevealVotes = () => {
-    if (submitting) return
+    if (!canReveal || submitting) return
     submitMutation()
     RevealTeamHealthVotesMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
   }
@@ -128,11 +129,19 @@ const TeamHealth = (props: Props) => {
                       id={`radio-${label}`}
                       key={label}
                       value={label}
-                      className='group m-3 flex h-32 w-20 flex-col items-center justify-start rounded bg-slate-300 p-0 hover:cursor-pointer hover:bg-grape-100 data-[state=checked]:bg-grape-300'
+                      className={clsx(
+                        'group m-3 flex h-32 w-20 flex-col items-center justify-start rounded bg-slate-300 p-0 data-[state=checked]:bg-grape-300',
+                        canVote
+                          ? 'hover:cursor-pointer hover:bg-grape-100'
+                          : 'hover:cursor-not-allowed'
+                      )}
                     >
                       <label
                         htmlFor={`radio-${label}`}
-                        className='flex h-24 items-center justify-center text-4xl hover:cursor-pointer group-data-[state=checked]:text-5xl'
+                        className={clsx(
+                          'flex h-24 items-center justify-center text-4xl group-data-[state=checked]:text-5xl',
+                          canVote ? 'hover:cursor-pointer' : 'hover:cursor-not-allowed'
+                        )}
                       >
                         {label}
                       </label>
