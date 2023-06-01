@@ -208,7 +208,6 @@ const NewMeeting = (props: Props) => {
               onSelectTeam={(teamId) => history.replace(`/new-meeting/${teamId}`)}
               selectedTeamRef={selectedTeam}
               teamsRef={teams}
-              parentId='newMeetingRoot'
             />
           </SettingsFirstRow>
           <SettingsRow>
