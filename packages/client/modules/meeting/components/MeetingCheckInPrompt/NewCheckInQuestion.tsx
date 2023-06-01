@@ -45,6 +45,9 @@ const QuestionBlock = styled('div')({
     },
     '&:focus-within': {
       backgroundColor: 'rgba(255,255,255,0.6)'
+    },
+    '.public-DraftStyleDefault-block': {
+      textAlign: 'center'
     }
   }
 })
