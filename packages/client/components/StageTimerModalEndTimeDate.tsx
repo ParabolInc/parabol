@@ -47,7 +47,6 @@ const StageTimerModalEndTimeDate = (props: Props) => {
     originRef
   } = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
     id: 'StageTimerEndTimePicker',
-    parentId: 'StageTimerModal',
     isDropdown: true
   })
   const handleDayClick = (day: Date, {disabled, selected}: DayModifiers) => {
