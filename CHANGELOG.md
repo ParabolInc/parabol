@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.106.0 2023-May-31
+
+### Added
+
+- feat(suggest-groups): click button to group reflections (#8132)
+
+### Fixed
+
+- fix(rid): Fix changing prompt colors in activity library (#8279)
+- fix(recurrence): Incorrect start times due to timezone weirdness (#8269)
+- fix(summaries): Race condition around bulk task exports (#8287)
+
 ## 6.105.1 2023-May-31
 
 ### Fixed
