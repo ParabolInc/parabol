@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import FileStoreManager from '../../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import normalizeAvatarUpload from '../../../fileStorage/normalizeAvatarUpload'
 import validateAvatarUpload from '../../../fileStorage/validateAvatarUpload'
