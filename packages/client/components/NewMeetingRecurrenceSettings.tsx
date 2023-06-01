@@ -17,7 +17,6 @@ export const NewMeetingRecurrenceSettings = (props: Props) => {
     MenuPosition.LOWER_RIGHT,
     {
       id: 'newMeetingRecurrenceSettings',
-      parentId: 'newMeetingRoot',
       isDropdown: true
     }
   )
