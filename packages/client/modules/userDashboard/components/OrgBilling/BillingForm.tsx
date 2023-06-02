@@ -1,11 +1,10 @@
-import React, {useState} from 'react'
+import React, {useState, FormEvent} from 'react'
 import styled from '@emotion/styled'
 import {
   CardNumberElement,
   CardExpiryElement,
   CardCvcElement,
   useStripe,
-  CardElement,
   useElements
 } from '@stripe/react-stripe-js'
 
@@ -18,7 +17,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
 import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
-import {StripeCardElementChangeEvent} from '@stripe/stripe-js'
+import {StripeElementChangeEvent} from '@stripe/stripe-js'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -64,22 +63,6 @@ const CARD_ELEMENT_OPTIONS = {
       '::placeholder': {
         color: PALETTE.SLATE_600
       }
-    },
-    invalid: {
-      color: PALETTE.TOMATO_500
-    }
-  }
-}
-
-const CARD_CVC_OPTIONS = {
-  ...CARD_ELEMENT_OPTIONS,
-  style: {
-    ...CARD_ELEMENT_OPTIONS.style,
-    base: {
-      ...CARD_ELEMENT_OPTIONS.style.base,
-      '::placeholder': {
-        content: '123'
-      }
     }
   }
 }
@@ -99,13 +82,22 @@ const BillingForm = (props: Props) => {
   const [errorMsg, setErrorMsg] = useState<null | string>()
   const [hasStarted, setHasStarted] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!stripe || !elements) return
     setIsLoading(true)
-    if (errorMsg) setErrorMsg(null)
-    const cardElement = elements.getElement(CardElement)
-    if (!cardElement) return
+    if (errorMsg) {
+      setIsLoading(false)
+      setErrorMsg(null)
+      return
+    }
+    const cardElement = elements.getElement(CardNumberElement)
+    if (!cardElement) {
+      setIsLoading(false)
+      const newErrorMsg = 'Something went wrong. Please try again.'
+      setErrorMsg(newErrorMsg)
+      return
+    }
     const {paymentMethod, error} = await stripe.createPaymentMethod({
       type: 'card',
       card: cardElement
@@ -113,23 +105,23 @@ const BillingForm = (props: Props) => {
 
     if (error) {
       setErrorMsg(error.message)
+      setIsLoading(false)
       return
     }
 
     const handleCompleted = async (res: UpgradeToTeamTierMutation$data) => {
       const {upgradeToTeamTier} = res
       const stripeSubscriptionClientSecret = upgradeToTeamTier?.stripeSubscriptionClientSecret
+      setIsLoading(false)
       if (!stripeSubscriptionClientSecret) {
-        setIsLoading(false)
+        setErrorMsg('Something went wrong. Please try again.')
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
       if (error) {
         setErrorMsg(error.message)
-        setIsLoading(false)
         return
       }
-      setIsLoading(false)
       setIsPaymentSuccessful(true)
     }
 
@@ -140,7 +132,8 @@ const BillingForm = (props: Props) => {
     )
   }
 
-  const handleChange = (event: StripeCardElementChangeEvent) => {
+  const handleChange = (event: StripeElementChangeEvent) => {
+    if (errorMsg) setErrorMsg(null)
     if (!hasStarted && !event.empty) {
       SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
       setHasStarted(true)
@@ -151,7 +144,7 @@ const BillingForm = (props: Props) => {
   }
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className='mb-4'>
         <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
           Card number
