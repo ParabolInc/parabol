@@ -118,7 +118,9 @@ jobs:
         run: yarn postdeploy
 
       - name: Start testing server in background
-        run: yarn start &
+        run: |
+          echo CI: ${{ env.CI }}
+          yarn start &
         env:
           CI: true
 
