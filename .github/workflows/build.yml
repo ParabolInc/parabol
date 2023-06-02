@@ -86,9 +86,13 @@ jobs:
       - name: Build cheap
         if: env.DOCKERIZE != 'true'
         run: yarn build
+
       - name: Build prod
         if: env.DOCKERIZE == 'true'
         run: yarn build --no-deps
+
+      - name: Verify source is clean
+        run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
 
       - name: Check Code Quality
         run: yarn codecheck
@@ -109,8 +113,29 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
+      - name: Run Postdeploy for Testing
+        run: yarn postdeploy
+
+      - name: Start testing server in background
+        run: yarn start &
+
+      - name: Wait for testing server to be healthy
+        run: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
+
+      - name: Run server tests
+        run: yarn test:server -- --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit
+
+      - name: Run client tests
+        run: yarn test:client -- --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit
+
       - name: Run Playwright Tests
         run: yarn workspace integration-tests test --workers 2 --reporter list,junit
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
 
       - name: Store Artifacts from Failed Tests
         if: failure()
