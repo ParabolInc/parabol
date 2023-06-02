@@ -110,7 +110,6 @@ const PaymentDetails = (props: Props) => {
     graphql`
       fragment PaymentDetails_organization on Organization {
         id
-        tier
         orgUserCount {
           activeUserCount
         }
@@ -118,12 +117,11 @@ const PaymentDetails = (props: Props) => {
     `,
     organizationRef
   )
-  const {id: orgId, orgUserCount, tier} = organization
+  const {id: orgId, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
 
   useEffect(() => {
-    if (tier !== 'starter') return
     CreateSetupIntentMutation(atmosphere, {orgId}, {onError, onCompleted})
   }, [])
 
