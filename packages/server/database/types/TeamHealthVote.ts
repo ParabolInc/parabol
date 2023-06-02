@@ -3,7 +3,7 @@ interface Input {
   label: string
 }
 
-export default class TeamHealthUserScore {
+export default class TeamHealthVote {
   userId: string
   label: string
   constructor(input: Input) {

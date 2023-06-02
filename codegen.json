@@ -86,7 +86,6 @@
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",
-          "TeamHealthUserScore": "../../database/types/TeamHealthUserScore#default as TeamHealthUserScoreDB",
           "TeamInvitation": "../../database/types/TeamInvitation#default",
           "TeamMember": "../../database/types/TeamMember#default as TeamMemberDB",
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
