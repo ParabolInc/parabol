@@ -8,6 +8,7 @@ on:
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
+  CI: true
 
 jobs:
   build:
@@ -118,6 +119,8 @@ jobs:
 
       - name: Start testing server in background
         run: yarn start &
+        env:
+          CI: true
 
       - name: Wait for testing server to be healthy
         run: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
