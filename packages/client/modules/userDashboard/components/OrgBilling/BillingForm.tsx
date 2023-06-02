@@ -1,6 +1,14 @@
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js'
+import {
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+  useStripe,
+  CardElement,
+  useElements
+} from '@stripe/react-stripe-js'
+
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
@@ -19,15 +27,6 @@ const ButtonBlock = styled('div')({
   wrap: 'nowrap',
   flexDirection: 'column',
   width: '100%'
-})
-
-const StyledForm = styled('form')({
-  display: 'flex',
-  height: '100%',
-  width: '100%',
-  flexWrap: 'nowrap',
-  flexDirection: 'column',
-  alignItems: 'space-between'
 })
 
 const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
@@ -55,23 +54,32 @@ const ErrorMsg = styled(StyledError)({
   textTransform: 'none'
 })
 
-const CARD_OPTIONS = {
-  hidePostalCode: true,
+const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
       color: PALETTE.SLATE_800,
-      fontFamily: '"IBM Plex Sans", sans-serif',
+      fontFamily: 'Arial, sans-serif',
       fontSmoothing: 'antialiased',
       fontSize: '16px',
       '::placeholder': {
-        color: PALETTE.SLATE_800
-      },
-      marginBottom: '16px',
-      padding: '12px 16px'
+        color: PALETTE.SLATE_600
+      }
     },
     invalid: {
-      color: PALETTE.TOMATO_500,
-      iconColor: PALETTE.TOMATO_500
+      color: PALETTE.TOMATO_500
+    }
+  }
+}
+
+const CARD_CVC_OPTIONS = {
+  ...CARD_ELEMENT_OPTIONS,
+  style: {
+    ...CARD_ELEMENT_OPTIONS.style,
+    base: {
+      ...CARD_ELEMENT_OPTIONS.style.base,
+      '::placeholder': {
+        content: '123'
+      }
     }
   }
 }
@@ -143,8 +151,47 @@ const BillingForm = (props: Props) => {
   }
 
   return (
-    <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      <CardElement onChange={handleChange} options={CARD_OPTIONS} />
+    <form>
+      <div className='mb-4'>
+        <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+          Card number
+        </label>
+
+        <div className='mt-1'>
+          <CardNumberElement
+            className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
+            options={CARD_ELEMENT_OPTIONS}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+      <div className='flex space-x-5'>
+        <div className='w-1/2'>
+          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+            Expiry date
+          </label>
+          <div className='mt-1'>
+            <CardExpiryElement
+              className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
+              options={CARD_ELEMENT_OPTIONS}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+        <div className='w-1/2'>
+          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+            CVC
+          </label>
+          <div className='mt-1'>
+            <CardCvcElement
+              className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
+              options={CARD_ELEMENT_OPTIONS}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </div>
       <ButtonBlock>
         {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
@@ -154,7 +201,7 @@ const BillingForm = (props: Props) => {
       <ConfettiWrapper>
         <Confetti active={isPaymentSuccessful} />
       </ConfettiWrapper>
-    </StyledForm>
+    </form>
   )
 }
 
