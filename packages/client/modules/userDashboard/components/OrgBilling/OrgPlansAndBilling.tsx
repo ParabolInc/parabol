@@ -33,7 +33,7 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <OrgPlansAndBillingHeading organizationRef={organization} />
       <OrgPlans organizationRef={organization} />
-      {tier !== 'starter' && <PaymentDetails organizationRef={organization} />}
+      {tier === 'starter' && <PaymentDetails organizationRef={organization} />}
       <BillingLeaders organizationRef={organization} />
       <OrgPlanDrawer organizationRef={organization} />
     </Suspense>
