@@ -57,7 +57,7 @@ const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
       color: PALETTE.SLATE_800,
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"IBM Plex Sans", sans-serif',
       fontSmoothing: 'antialiased',
       fontSize: '16px',
       '::placeholder': {
