@@ -30,10 +30,9 @@ const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
     r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
   }
 
-  const setupIntent = await manager.createSetupIntent(customer.id)
+  await manager.createSetupIntent(customer.id)
 
-  const {client_secret: clientSecret} = setupIntent
-  const data = {clientSecret}
+  const data = {success: true}
   return data
 }
 

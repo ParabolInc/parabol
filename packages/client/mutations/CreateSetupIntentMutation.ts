@@ -12,7 +12,7 @@ const mutation = graphql`
         }
       }
       ... on CreateSetupIntentSuccess {
-        clientSecret
+        success
       }
     }
   }

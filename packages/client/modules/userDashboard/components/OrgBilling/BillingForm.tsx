@@ -112,12 +112,13 @@ const BillingForm = (props: Props) => {
     const handleCompleted = async (res: UpgradeToTeamTierMutation$data) => {
       const {upgradeToTeamTier} = res
       const stripeSubscriptionClientSecret = upgradeToTeamTier?.stripeSubscriptionClientSecret
-      setIsLoading(false)
       if (!stripeSubscriptionClientSecret) {
         setErrorMsg('Something went wrong. Please try again.')
+        setIsLoading(false)
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      setIsLoading(false)
       if (error) {
         setErrorMsg(error.message)
         return
@@ -143,6 +144,7 @@ const BillingForm = (props: Props) => {
     }
   }
 
+  if (!stripe || !elements) return null
   return (
     <form onSubmit={handleSubmit}>
       <div className='mb-4'>
