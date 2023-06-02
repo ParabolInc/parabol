@@ -13,7 +13,6 @@ import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripe
 import {StripeCardElementChangeEvent} from '@stripe/stripe-js'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import {commitLocalUpdate} from 'relay-runtime'
-import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -90,11 +89,8 @@ const BillingForm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError, error: mutationError} = useMutationProps()
-  const {onError: upgradeOnError, error} = useMutationProps()
+  const {onError} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
-  const errorMessage = mutationError?.message ?? errorMsg
-  console.log('🚀 ~ errorMessage:', {errorMessage, mutationError, error, errorMsg})
   const [hasStarted, setHasStarted] = useState(false)
 
   const handleUpgradeCompleted = () => {
@@ -123,11 +119,11 @@ const BillingForm = (props: Props) => {
       return
     }
 
-    const handleSubCompleted = async (res: CreateStripeSubscriptionMutation$data) => {
+    const handleSubscriptionCompleted = async (res: CreateStripeSubscriptionMutation$data) => {
       const {createStripeSubscription} = res
       const stripeSubscriptionClientSecret =
         createStripeSubscription?.stripeSubscriptionClientSecret
-      if (!stripeSubscriptionClientSecret) {
+      if (!stripeSubscriptionClientSecret || createStripeSubscription?.error) {
         setErrorMsg('Something went wrong. Please try again or contact support.')
         setIsLoading(false)
         return
@@ -144,7 +140,7 @@ const BillingForm = (props: Props) => {
     CreateStripeSubscriptionMutation(
       atmosphere,
       {orgId, paymentMethodId: paymentMethod.id},
-      {onError: upgradeOnError, onCompleted: handleSubCompleted}
+      {onError, onCompleted: handleSubscriptionCompleted}
     )
   }
 
@@ -162,7 +158,7 @@ const BillingForm = (props: Props) => {
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
       <CardElement onChange={handleChange} options={CARD_OPTIONS} />
       <ButtonBlock>
-        {errorMessage && <ErrorMsg>{errorMessage}</ErrorMsg>}
+        {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
           {'Upgrade'}
         </UpgradeButton>
