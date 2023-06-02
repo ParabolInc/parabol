@@ -7,7 +7,7 @@ import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/
 import {OrgBillingDangerZone_organization$key} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout} from '../../../../types/constEnums'
+import {ElementWidth, Layout} from '../../../../types/constEnums'
 
 const EnvelopeIcon = styled('div')({
   height: 18,
@@ -43,11 +43,17 @@ const Unsubscribe = styled('div')({
   }
 })
 
+const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
+  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
+}))
+
 interface Props {
   organization: OrgBillingDangerZone_organization$key
+  isWide?: boolean
 }
+
 const OrgBillingDangerZone = (props: Props) => {
-  const {organization: organizationRef} = props
+  const {organization: organizationRef, isWide = false} = props
   const organization = useFragment(
     graphql`
       fragment OrgBillingDangerZone_organization on Organization {
@@ -62,7 +68,7 @@ const OrgBillingDangerZone = (props: Props) => {
   if (!isBillingLeader) return null
   const isStarter = tier === 'starter'
   return (
-    <Panel label='Danger Zone'>
+    <StyledPanel isWide={isWide} label='Danger Zone'>
       <PanelRow>
         {isStarter ? (
           <ArchiveOrganization organization={organization} />
@@ -81,7 +87,7 @@ const OrgBillingDangerZone = (props: Props) => {
           </Unsubscribe>
         )}
       </PanelRow>
-    </Panel>
+    </StyledPanel>
   )
 }
 
