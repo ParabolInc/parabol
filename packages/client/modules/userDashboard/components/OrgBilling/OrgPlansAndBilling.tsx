@@ -27,6 +27,7 @@ const OrgPlansAndBilling = (props: Props) => {
     `,
     organizationRef
   )
+  const {tier} = organization
 
   return (
     <Suspense fallback={''}>
