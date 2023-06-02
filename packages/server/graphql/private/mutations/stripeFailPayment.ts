@@ -63,7 +63,9 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   const subscriptionObject = await manager.retrieveSubscription(stripeSubscriptionId)
 
   if (subscriptionObject.status === 'incomplete' || subscriptionObject.status === 'canceled') {
-    // Terminate subscription if it is the first failed payment, or it is already canceled
+    // Terminate subscription if the first payment fails or if it is already canceled
+    // After 23 hours subscription updates to incomplete_expired and the invoice becomes void.
+    // Not to handle this particular case in 23 hours, we do it now
     await terminateSubscription(orgId)
   } else {
     // Keep subscription, but disable teams
