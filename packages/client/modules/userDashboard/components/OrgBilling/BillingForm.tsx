@@ -12,6 +12,8 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {StripeCardElementChangeEvent} from '@stripe/stripe-js'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
+import {commitLocalUpdate} from 'relay-runtime'
+import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -88,9 +90,22 @@ const BillingForm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
+  const {onError, error: mutationError} = useMutationProps()
+  const {onError: upgradeOnError, error} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
+  const errorMessage = mutationError?.message ?? errorMsg
+  console.log('🚀 ~ errorMessage:', {errorMessage, mutationError, error, errorMsg})
   const [hasStarted, setHasStarted] = useState(false)
+
+  const handleUpgradeCompleted = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const org = store.get(orgId)
+      if (!org) return
+      org.setValue(true, 'showDrawer')
+    })
+    setIsLoading(false)
+    setIsPaymentSuccessful(true)
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -103,13 +118,12 @@ const BillingForm = (props: Props) => {
       type: 'card',
       card: cardElement
     })
-
     if (error) {
       setErrorMsg(error.message)
       return
     }
 
-    const handleCompleted = async (res: CreateStripeSubscriptionMutation$data) => {
+    const handleSubCompleted = async (res: CreateStripeSubscriptionMutation$data) => {
       const {createStripeSubscription} = res
       const stripeSubscriptionClientSecret =
         createStripeSubscription?.stripeSubscriptionClientSecret
@@ -124,15 +138,13 @@ const BillingForm = (props: Props) => {
         setIsLoading(false)
         return
       }
-      UpgradeToTeamTierMutation(atmosphere, {orgId}, {onError, onCompleted})
-      setIsLoading(false)
-      setIsPaymentSuccessful(true)
+      UpgradeToTeamTierMutation(atmosphere, {orgId}, {onError, onCompleted: handleUpgradeCompleted})
     }
 
     CreateStripeSubscriptionMutation(
       atmosphere,
       {orgId, paymentMethodId: paymentMethod.id},
-      {onError, onCompleted: handleCompleted}
+      {onError: upgradeOnError, onCompleted: handleSubCompleted}
     )
   }
 
@@ -150,7 +162,7 @@ const BillingForm = (props: Props) => {
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
       <CardElement onChange={handleChange} options={CARD_OPTIONS} />
       <ButtonBlock>
-        {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
+        {errorMessage && <ErrorMsg>{errorMessage}</ErrorMsg>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
           {'Upgrade'}
         </UpgradeButton>
