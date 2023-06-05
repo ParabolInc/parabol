@@ -1,6 +1,12 @@
+import {r} from 'rethinkdb-ts'
 import {Client} from 'pg'
 import getPgConfig from '../getPgConfig'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
+import getPg from '../getPg'
+import pgpInit from 'pg-promise'
+import {ParabolR} from '../../database/rethinkDriver'
+import ReflectTemplate from '../../database/types/ReflectTemplate'
+import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 
 interface Prompt {
   question: string
@@ -691,15 +697,15 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
     illustrationUrl: 'preMortemTemplate.png',
     prompts: [
       {
-        question: 'What if [insert]',
+        question: 'What if [insert risk]',
         description: 'Customize this question to address a specific risk.'
       },
       {
-        question: 'What if [insert]',
+        question: 'What if [insert challenge]',
         description: 'Adapt this question to tackle another unique challenge.'
       },
       {
-        question: 'What if [insert]',
+        question: 'What if [insert concern]',
         description: 'Tailor this question to explore an additional concern.'
       }
     ]
@@ -973,18 +979,22 @@ const makeId = (name: string, type: 'template' | 'prompt') => {
   return `${cleanedName}${type === 'template' ? 'Template' : 'Prompt'}`
 }
 
-const makeTemplate = (name: string) => ({
+const makeTemplate = (template: Template): ReflectTemplate => ({
   createdAt,
-  id: makeId(name, 'template'),
+  id: makeId(template.name, 'template'),
   isActive: true,
-  name,
+  name: template.name,
   orgId: 'aGhostOrg',
   scope: 'PUBLIC',
   teamId: 'aGhostTeam',
   type: 'retrospective',
   updatedAt: createdAt,
-  isStarter: true,
-  isFree: false
+  isStarter: false,
+  isFree: true,
+  illustrationUrl: template.illustrationUrl,
+  mainCategory: 'retrospective',
+  lastUsedAt: null,
+  parentTemplateId: null
 })
 
 const promptColors = [
@@ -1005,30 +1015,30 @@ type PromptInfo = {
   sortOrder: number
 }
 
-const makePrompt = (promptInfo: PromptInfo, idx: number) => {
+const makePrompt = (promptInfo: PromptInfo, idx: number): RetrospectivePrompt => {
   const {question, description, templateId, sortOrder} = promptInfo
   const paletteIdx = idx > promptColors.length - 1 ? idx % promptColors.length : idx
   const groupColor = promptColors[paletteIdx]
   return {
     createdAt,
-    description,
+    description: description ?? '',
     groupColor,
     id: makeId(`${templateId}:${question}`, 'prompt'),
-    isActive: true,
     question,
     sortOrder,
     teamId: 'aGhostTeam',
     templateId,
-    title: question,
-    updatedAt: createdAt
+    updatedAt: createdAt,
+    removedAt: null
   }
 }
 
-const templates = NEW_TEMPLATE_CONFIGS.map((templateConfig) => makeTemplate(templateConfig.name))
+const templates = NEW_TEMPLATE_CONFIGS.map((templateConfig) => makeTemplate(templateConfig))
 let colorIndex = 0
 const reflectPrompts = NEW_TEMPLATE_CONFIGS.map((templateConfig) => {
-  templateConfig.prompts.map((prompt, idx) => {
-    makePrompt(
+  return templateConfig.prompts.map((prompt, idx) => {
+    colorIndex++
+    return makePrompt(
       {
         question: prompt.question,
         description: prompt.description,
@@ -1037,23 +1047,63 @@ const reflectPrompts = NEW_TEMPLATE_CONFIGS.map((templateConfig) => {
       },
       colorIndex
     )
-    colorIndex++
   })
-})
+}).flat()
 
-console.log('templates', templates)
-console.log('prompts', reflectPrompts)
+const connectRethinkDB = async () => {
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
+  await r.connectPool({
+    host,
+    port: parseInt(port, 10),
+    db: pathname.split('/')[1]
+  })
+  return r as any as ParabolR
+}
 
 export async function up() {
-  const client = new Client(getPgConfig())
-  await client.connect()
-  await client.query(`` /* Do good magic */)
-  await client.end()
+  const pgp = pgpInit()
+  const pg = pgp(getPgConfig())
+  const columnSet = new pgp.helpers.ColumnSet(
+    [
+      'id',
+      'createdAt',
+      'isActive',
+      'name',
+      'teamId',
+      'updatedAt',
+      'scope',
+      'orgId',
+      'type',
+      'illustrationUrl',
+      'mainCategory',
+      {name: 'isStarter', def: false},
+      {name: 'isFree', def: false}
+    ],
+    {table: 'MeetingTemplate'}
+  )
+  const insert = pgp.helpers.insert(templates, columnSet)
+  await pg.none(insert)
+  try {
+    await connectRethinkDB()
+    await r.table('ReflectPrompt').insert(reflectPrompts).run()
+    await r.getPoolMaster()?.drain()
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 export async function down() {
+  const templateIds = templates.map(({id}) => id)
+  const promptIds = reflectPrompts.map(({id}) => id)
+  try {
+    await connectRethinkDB()
+    await r.table('ReflectPrompt').getAll(r.args(promptIds)).delete().run()
+    await r.getPoolMaster()?.drain()
+  } catch (e) {
+    console.log(e)
+  }
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`` /* Do undo magic */)
+  await client.query(`DELETE FROM "MeetingTemplate" WHERE id = ANY($1);`, [templateIds])
   await client.end()
 }
