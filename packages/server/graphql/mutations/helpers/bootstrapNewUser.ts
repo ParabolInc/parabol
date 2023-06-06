@@ -17,6 +17,7 @@ import isPatientZero from './isPatientZero'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
+import isCompanyDomain from '../../../utils/isCompanyDomain'
 
 const PERCENT_ADDED_TO_RID = 0.05
 
@@ -35,7 +36,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   const domain = email.split('@')[1]
   const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
-    getUsersbyDomain(domain),
+    isCompanyDomain(domain) ? getUsersbyDomain(domain) : [],
     r.table('SAML').getAll(domain, {index: 'domains'}).limit(1).count().eq(1).run()
   ])
 
