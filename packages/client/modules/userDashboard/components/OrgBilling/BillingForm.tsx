@@ -81,6 +81,9 @@ const BillingForm = (props: Props) => {
   const {onError} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
   const [hasStarted, setHasStarted] = useState(false)
+  const [cardNumberError, setCardNumberError] = useState<null | string>()
+  const [expiryDateError, setExpiryDateError] = useState<null | string>()
+  const [cvcError, setCvcError] = useState<null | string>()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -133,7 +136,7 @@ const BillingForm = (props: Props) => {
     )
   }
 
-  const handleChange = (event: StripeElementChangeEvent) => {
+  const handleChange = (type: string) => (event: StripeElementChangeEvent) => {
     if (errorMsg) setErrorMsg(null)
     if (!hasStarted && !event.empty) {
       SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
@@ -141,6 +144,31 @@ const BillingForm = (props: Props) => {
     }
     if (event.complete) {
       SendClientSegmentEventMutation(atmosphere, 'Payment Details Complete', {orgId})
+    }
+    if (event.error) {
+      switch (type) {
+        case 'CardNumber':
+          setCardNumberError(event.error.message)
+          break
+        case 'ExpiryDate':
+          setExpiryDateError(event.error.message)
+          break
+        case 'CVC':
+          setCvcError(event.error.message)
+          break
+      }
+    } else {
+      switch (type) {
+        case 'CardNumber':
+          setCardNumberError(null)
+          break
+        case 'ExpiryDate':
+          setExpiryDateError(null)
+          break
+        case 'CVC':
+          setCvcError(null)
+          break
+      }
     }
   }
 
@@ -156,8 +184,10 @@ const BillingForm = (props: Props) => {
           <CardNumberElement
             className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
             options={CARD_ELEMENT_OPTIONS}
-            onChange={handleChange}
+            // onChange={handleChange}
+            onChange={handleChange('CardNumber')}
           />
+          {cardNumberError && <ErrorMsg>{cardNumberError}</ErrorMsg>}
         </div>
       </div>
 
@@ -170,8 +200,10 @@ const BillingForm = (props: Props) => {
             <CardExpiryElement
               className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
-              onChange={handleChange}
+              // onChange={handleChange}
+              onChange={handleChange('ExpiryDate')}
             />
+            {expiryDateError && <ErrorMsg>{expiryDateError}</ErrorMsg>}
           </div>
         </div>
         <div className='w-1/2'>
@@ -182,8 +214,10 @@ const BillingForm = (props: Props) => {
             <CardCvcElement
               className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
-              onChange={handleChange}
+              // onChange={handleChange}
+              onChange={handleChange('CVC')}
             />
+            {cvcError && <ErrorMsg>{cvcError}</ErrorMsg>}
           </div>
         </div>
       </div>
