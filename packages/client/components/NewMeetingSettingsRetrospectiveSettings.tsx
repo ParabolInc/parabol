@@ -38,7 +38,6 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
-      parentId: 'newMeetingRoot',
       isDropdown: true
     }
   )

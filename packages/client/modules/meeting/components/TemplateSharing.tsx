@@ -68,7 +68,6 @@ const DropdownBlock = styled('div')<{readOnly?: boolean}>(({readOnly}) => ({
 interface Props {
   isOwner: boolean
   template: TemplateSharing_template$key
-  noModal?: boolean
   readOnly?: boolean
 }
 
@@ -88,7 +87,7 @@ const TemplateSharing = (props: Props) => {
 }
 
 export const UnstyledTemplateSharing = (props: Props) => {
-  const {template: templateRef, isOwner, noModal, readOnly} = props
+  const {template: templateRef, isOwner, readOnly} = props
   const template = useFragment(
     graphql`
       fragment TemplateSharing_template on MeetingTemplate {
@@ -113,7 +112,6 @@ export const UnstyledTemplateSharing = (props: Props) => {
     {
       isDropdown: true,
       id: 'sharingScopeDropdown',
-      parentId: noModal ? undefined : 'templateModal',
       menuContentStyles: {
         minWidth: 320
       }

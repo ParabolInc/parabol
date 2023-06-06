@@ -138,7 +138,6 @@ const TeamPickerModal = (props: Props) => {
           <b>Select the team</b> to manage this cloned template
         </div>
         <NewMeetingTeamPicker
-          parentId='templateTeamPickerModal'
           positionOverride={MenuPosition.UPPER_LEFT}
           onSelectTeam={(teamId) => {
             const newTeam = teams.find((team) => team.id === teamId)

@@ -117,8 +117,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     closePortal: closeAddIntegrationPortal
   } = useModal({
     onClose: onDialogClose,
-    id: 'taskFooterTeamAssigneeAddIntegration',
-    parentId: 'taskFooterTeamAssigneeMenu'
+    id: 'taskFooterTeamAssigneeAddIntegration'
   })
   const [newTeam, setNewTeam] = useState({id: '', name: ''})
 

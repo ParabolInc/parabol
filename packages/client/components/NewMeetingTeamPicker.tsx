@@ -5,7 +5,7 @@ import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingT
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PortalId, PortalStatus} from '../hooks/usePortal'
+import {PortalStatus} from '../hooks/usePortal'
 import lazyPreload from '../utils/lazyPreload'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
@@ -22,17 +22,15 @@ interface Props {
   selectedTeamRef: NewMeetingTeamPicker_selectedTeam$key
   teamsRef: NewMeetingTeamPicker_teams$key
   onSelectTeam: (teamId: string) => void
-  parentId?: PortalId
   positionOverride?: MenuPosition
   customPortal?: React.ReactNode
 }
 
 const NewMeetingTeamPicker = (props: Props) => {
-  const {selectedTeamRef, teamsRef, onSelectTeam, parentId, positionOverride, customPortal} = props
+  const {selectedTeamRef, teamsRef, onSelectTeam, positionOverride, customPortal} = props
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     positionOverride ?? MenuPosition.LOWER_RIGHT,
     {
-      parentId: parentId,
       isDropdown: true
     }
   )
