@@ -191,7 +191,6 @@ abstract class SlackManager {
 
   getConversationList(types: ConversationType[] = ['public_channel']) {
     const typeStr = types.join(',')
-
     return this.get<ConversationListResponse>(
       `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=true&types=${typeStr}&limit=1000`
     )
