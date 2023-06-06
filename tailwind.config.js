@@ -8,6 +8,9 @@ module.exports = {
   },
   presets: [require('./packages/client/tailwind.preset.js')],
   content: ['./packages/client/**/*.{ts,tsx,js,jsx,html}', './template.html'],
+  experimental: {
+    optimizeUniversalDefaults: true
+  },
   theme: {
     fontFamily: {
       sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
