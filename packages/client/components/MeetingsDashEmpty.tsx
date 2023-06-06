@@ -34,7 +34,7 @@ const Copy = styled('p')({
 interface Props {
   name: string
   message: string
-  filteredResult?: boolean
+  isTeamFilterSelected?: boolean
 }
 const MeetingsDashEmpty = (props: Props) => {
   const clearDashSearch = (atmosphere: Atmosphere) => {
@@ -50,13 +50,13 @@ const MeetingsDashEmpty = (props: Props) => {
     clearDashSearch(atmosphere)
   }
 
-  const {name, message, filteredResult} = props
+  const {name, message, isTeamFilterSelected} = props
   return (
     <Section>
       <Heading>{`Hi ${name},`}</Heading>
       <Copy>
         {message}
-        {filteredResult ? (
+        {isTeamFilterSelected ? (
           <>
             <Link
               to={'/meetings'}

@@ -140,7 +140,7 @@ const MeetingsDash = (props: Props) => {
                 ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS_ON_THE_TEAM
                 : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS_ON_THE_TEAM
             }
-            filteredResult={!!teamFilterIds}
+            isTeamFilterSelected={!!teamFilterIds}
           />
           {!teamFilterIds ? (
             <Wrapper maybeTabletPlus={maybeTabletPlus}>
