@@ -90,7 +90,7 @@ const MeetingsDash = (props: Props) => {
 
           return a.createdAt > b.createdAt ? -1 : 1
         }),
-    [teams, dashSearch, teamFilterIds]
+    [teams]
   )
   const filteredMeetings = useMemo(() => {
     const searchedMeetings = dashSearch
@@ -104,7 +104,7 @@ const MeetingsDash = (props: Props) => {
       key: meeting.id,
       displayIdx
     }))
-  }, [teams, dashSearch, teamFilterIds])
+  }, [activeMeetings, dashSearch, teamFilterIds])
   const transitioningMeetings = useTransition(filteredMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
