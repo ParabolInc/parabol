@@ -151,7 +151,10 @@ export default {
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt) {
+      await sendNewMeetingSummary(meeting, context).catch(console.log)
+      return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    }
 
     // RESOLUTION
     const currentStageRes = findStageById(phases, facilitatorStageId)

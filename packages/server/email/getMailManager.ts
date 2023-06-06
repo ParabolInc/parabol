@@ -15,7 +15,7 @@ const managers = {
 
 const getMailManager = () => {
   if (!mailManager) {
-    const mailProvider = process.env.MAIL_PROVIDER!
+    const mailProvider = 'mailgun'//process.env.MAIL_PROVIDER!
     const Manager = managers[mailProvider as keyof typeof managers] ?? MailManagerDebug
     mailManager = new Manager()
   }

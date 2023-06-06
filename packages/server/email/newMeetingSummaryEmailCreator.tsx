@@ -38,7 +38,7 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   const {name: meetingName} = newMeeting
   const {name: teamName} = team
   const subject = `${teamName} ${meetingName} ${MEETING_SUMMARY_LABEL}`
-  const html = emailTemplate({
+  const html = await emailTemplate({
     bodyContent,
     title: subject,
     previewText: subject,

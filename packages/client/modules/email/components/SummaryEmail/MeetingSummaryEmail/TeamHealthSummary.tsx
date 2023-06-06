@@ -85,24 +85,14 @@ const TeamHealthSummary = (props: Props) => {
                     {labels.map((label, idx) => (
                       <td
                         key={idx}
+                        className='rounded pt-2 pb-1 text-2xl'
                         style={{
-                          backgroundColor: getTeamHealthVoteColor(votes, votes[idx]!),
-                          fontFamily: FONT_FAMILY.SANS_SERIF,
-                          fontSize: '24px',
-                          borderRadius: '4px',
-                          paddingTop: '8px',
-                          paddingBottom: '4px'
+                          backgroundColor: getTeamHealthVoteColor(votes, votes[idx]!)
                         }}
                         align='center'
                         width={`${100 / labels.length}%`}
                       >
-                        <span
-                          style={{
-                            fontSize: '24px'
-                          }}
-                        >
-                          {label}
-                        </span>
+                        <span>{label}</span>
                         <br />
                         <span
                           style={{

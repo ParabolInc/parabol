@@ -10,7 +10,7 @@ export default async function sendNewMeetingSummary(
   context: Pick<GQLContext, 'dataLoader' | 'authToken'>
 ) {
   const {id: meetingId, teamId, summarySentAt} = newMeeting
-  if (summarySentAt) return
+  //if (summarySentAt) return
   const now = new Date()
   const r = await getRethink()
   const {dataLoader} = context

@@ -1,3 +1,5 @@
+import juice from 'juice'
+
 interface Props {
   title: string
   previewText: string
@@ -31,6 +33,7 @@ const emailTemplate = (props: Props) => {
               width: 100% !important;
             }
           </style>
+          <link type="text/css" href="mail.css" rel="stylesheet" data-inline />
           <!--[if gte mso 9]>
             <xml>
               <o:OfficeDocumentSettings>
@@ -57,4 +60,29 @@ const emailTemplate = (props: Props) => {
     `
 }
 
-export default emailTemplate
+const juicyEmailTemplate = async (props: Props) => {
+  const html = emailTemplate(props)
+
+  return new Promise((resolve, reject) => {
+    juice.juiceResources(html, {
+      webResources: {
+        relativeTo: __dirname,
+        images: false,
+        svgs: false,
+      },
+      applyStyleTags: true,
+      removeStyleTags: false,
+      insertPreservedExtraCss: false,
+      preserveImportant: true
+    },
+    (err, html) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(html)
+      }
+    })
+  })
+}
+
+export default juicyEmailTemplate
