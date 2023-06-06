@@ -5,7 +5,9 @@ export const MAIN_CATEGORIES = [
   'estimation',
   'standup',
   'feedback',
-  'strategy'
+  'strategy',
+  'premortem',
+  'postmortem'
 ] as const
 export type CategoryID = typeof MAIN_CATEGORIES[number]
 
@@ -16,7 +18,9 @@ export const CATEGORY_THEMES: Record<CategoryID, CardTheme> = {
   estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
   retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]'},
   feedback: {primary: 'bg-jade-400', secondary: 'bg-jade-100'},
-  strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100'}
+  strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100'},
+  premortem: {primary: 'bg-rose-500', secondary: 'bg-rose-100'},
+  postmortem: {primary: 'bg-rose-500', secondary: 'bg-rose-100'}
 }
 
 export const QUICK_START_CATEGORY_ID = 'recommended'
@@ -27,5 +31,7 @@ export const CATEGORY_ID_TO_NAME: Record<CategoryID | typeof QUICK_START_CATEGOR
   estimation: 'Estimation',
   standup: 'Standup',
   feedback: 'Feedback',
-  strategy: 'Strategy'
+  strategy: 'Strategy',
+  premortem: 'Pre-Mortem',
+  postmortem: 'Post-Mortem'
 }

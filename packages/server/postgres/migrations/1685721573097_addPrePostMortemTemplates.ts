@@ -15,14 +15,14 @@ interface Prompt {
 
 interface Template {
   name: string
-  illustrationUrl: 'preMortemTemplate.png' | 'postMortemTemplate.png'
+  type: 'premortem' | 'postmortem'
   prompts: Prompt[]
 }
 
 const NEW_TEMPLATE_CONFIGS: Template[] = [
   {
     name: 'Budget review post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '💰 How did our actual spending compare to the initial budget?',
@@ -41,7 +41,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Control range post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🎛️ What was within our control?',
@@ -60,7 +60,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Process improvement post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🔄 What processes worked well during the project?',
@@ -83,7 +83,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Simple post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '✅ What went well during the project?',
@@ -101,7 +101,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Agile post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🔄 How well did we adapt and iterate throughout the project?',
@@ -121,7 +121,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Time management post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '⏱️ How accurate were our initial time estimates?',
@@ -148,7 +148,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'IT project post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question:
@@ -168,7 +168,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Software project post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '👩‍💻 How did our development process perform during the project?',
@@ -187,7 +187,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Engineering post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '📐 Did our project design and planning meet expectations?',
@@ -208,7 +208,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Post-mortem analysis',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: "🎯 What were our project's objectives, and did we achieve them?",
@@ -230,7 +230,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Post-incident review',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🚩 What incidents or issues disrupted our flow?',
@@ -254,7 +254,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Incident response post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '⚠️ What was our incident response strategy, and how well did it work?',
@@ -277,7 +277,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Incident impact post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🔍 What was the impact of the incident?',
@@ -300,7 +300,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Risk management post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🎲 What risks did we identify, and how did we manage them?',
@@ -323,7 +323,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Team performance post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '👥 How did our team dynamics impact the project?',
@@ -341,7 +341,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Feature launch post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '📣 What feedback did we receive from customers?',
@@ -365,7 +365,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Stakeholder satisfaction post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🤝 How aligned were our project outcomes with stakeholder expectations?',
@@ -391,7 +391,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Blameless post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '📉 What challenges arose during the project?',
@@ -412,7 +412,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Remote work post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🌍 What worked well in our remote work environment?',
@@ -434,7 +434,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Superhero post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🦸 What unique superpowers does each team member possess?',
@@ -456,7 +456,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Time travel post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '⌛ If we could go back in time, what would we change?',
@@ -479,7 +479,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Movie director post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🎬 What was the plot of our project movie?',
@@ -501,7 +501,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Game show post-mortem',
-    illustrationUrl: 'postMortemTemplate.png',
+    type: 'postmortem',
     prompts: [
       {
         question: '🎮 What were the key "rounds" of our project game show?',
@@ -523,7 +523,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Why did the project fail pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '⁉️ Why did the project fail?',
@@ -534,7 +534,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Success and failure pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🏆 What does success look like?',
@@ -549,7 +549,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Team efficiency pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '⏳ What slowed us down?',
@@ -573,7 +573,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Obstacle course pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🚧 Hurdles',
@@ -599,7 +599,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Timeline pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '📆 Start',
@@ -620,7 +620,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Resource allocation pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '💼 People',
@@ -645,7 +645,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Best/worst case scenario pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🤦 Worst case scenario',
@@ -666,7 +666,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Risks and precautions pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '💥 Risks',
@@ -680,7 +680,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Blind spot pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '👁️ Visible',
@@ -694,7 +694,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'What if... pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: 'What if [insert risk]',
@@ -712,7 +712,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Threat level pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🔴 Severe',
@@ -733,7 +733,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'How likely to fail pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '💯 Highly likely',
@@ -751,7 +751,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Excited and worried pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🤩 What are you excited about?'
@@ -763,7 +763,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Iguana, Crocodile, Komodo Dragon pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🦎 Iguana',
@@ -781,7 +781,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Glass half-empty pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '⏳ Glass half full:',
@@ -795,7 +795,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Safari pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🦒 Giraffe',
@@ -817,7 +817,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Mad scientist pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '⚗️ Crazy experiments',
@@ -835,7 +835,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Uncertain waters pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🌊 Hidden reefs',
@@ -857,7 +857,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Fortune teller pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🔮 Crystal ball',
@@ -876,7 +876,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Stakeholder concerns pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🤵 Executive concerns',
@@ -898,7 +898,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Communication risks pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '📣 Internal communication:',
@@ -921,7 +921,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Scrum sprint pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🎯 Product backlog',
@@ -945,7 +945,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   },
   {
     name: 'Scrum roles pre-mortem',
-    illustrationUrl: 'preMortemTemplate.png',
+    type: 'premortem',
     prompts: [
       {
         question: '🏃 Scrum Master',
@@ -968,7 +968,7 @@ const createdAt = new Date()
 
 const makeId = (name: string, type: 'template' | 'prompt') => {
   const cleanedName = name
-    .replace(/[^0-9a-z-A-Z ]/g, '') // remove emojis and apostrophes
+    .replace(/[^0-9a-zA-Z ]/g, '') // remove emojis, apostrophes, and dashes
     .split(' ')
     .map(
       (name, idx) =>
@@ -991,8 +991,9 @@ const makeTemplate = (template: Template): ReflectTemplate => ({
   updatedAt: createdAt,
   isStarter: false,
   isFree: true,
-  illustrationUrl: template.illustrationUrl,
-  mainCategory: 'retrospective',
+  illustrationUrl:
+    template.type === 'postmortem' ? 'postMortemTemplate.png' : 'preMortemTemplate.png',
+  mainCategory: template.type,
   lastUsedAt: null,
   parentTemplateId: null
 })
