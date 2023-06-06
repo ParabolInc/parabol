@@ -84,6 +84,17 @@ const BillingForm = (props: Props) => {
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
   const [cvcError, setCvcError] = useState<null | string>()
+  const [cardNumberComplete, setCardNumberComplete] = useState(false)
+  const [expiryDateComplete, setExpiryDateComplete] = useState(false)
+  const [cvcComplete, setCvcComplete] = useState(false)
+  const hasValidCCDetails =
+    cardNumberComplete &&
+    expiryDateComplete &&
+    cvcComplete &&
+    !cardNumberError &&
+    !expiryDateError &&
+    !cvcError
+  const isUpgradeDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -170,6 +181,31 @@ const BillingForm = (props: Props) => {
           break
       }
     }
+    if (event.complete) {
+      switch (type) {
+        case 'CardNumber':
+          setCardNumberComplete(true)
+          break
+        case 'ExpiryDate':
+          setExpiryDateComplete(true)
+          break
+        case 'CVC':
+          setCvcComplete(true)
+          break
+      }
+    } else {
+      switch (type) {
+        case 'CardNumber':
+          setCardNumberComplete(false)
+          break
+        case 'ExpiryDate':
+          setExpiryDateComplete(false)
+          break
+        case 'CVC':
+          setCvcComplete(false)
+          break
+      }
+    }
   }
 
   if (!stripe || !elements) return null
@@ -223,7 +259,12 @@ const BillingForm = (props: Props) => {
       </div>
       <ButtonBlock>
         {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
-        <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
+        <UpgradeButton
+          size='medium'
+          disabled={isUpgradeDisabled}
+          isDisabled={isUpgradeDisabled}
+          type={'submit'}
+        >
           {'Upgrade'}
         </UpgradeButton>
       </ButtonBlock>
