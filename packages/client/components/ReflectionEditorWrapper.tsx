@@ -20,6 +20,8 @@ import './TaskEditor/Draft.css'
 import withEmojis from './TaskEditor/withEmojis'
 import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
 import withMarkdown from './TaskEditor/withMarkdown'
+import completeEntity from '../utils/draftjs/completeEntity'
+import linkify from '../utils/linkify'
 
 interface Props {
   ariaLabel: string
@@ -209,6 +211,18 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
         }
       }
     }
+    const {setEditorState, editorState} = this.props
+    const links = linkify.match(text)
+    const url = links && links[0]!.url.trim()
+    const trimmedText = text.trim()
+    if (url === trimmedText) {
+      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
+        keepSelection: true
+      })
+      setEditorState(nextEditorState)
+      return 'handled'
+    }
+
     return 'not-handled' as const
   }
 
