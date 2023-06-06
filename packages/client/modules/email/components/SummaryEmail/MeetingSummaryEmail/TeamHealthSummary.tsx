@@ -1,4 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {TeamHealthSummary_meeting$key} from 'parabol-client/__generated__/TeamHealthSummary_meeting.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -35,36 +37,91 @@ const TeamHealthSummary = (props: Props) => {
   const stages = teamHealthPhase?.stages?.filter(({isRevealed, votes}) => isRevealed && votes)
   if (!stages || stages.length === 0) return null
   return (
-    <table width='90%' align='center' className='mt-8 rounded-lg bg-slate-200 py-4 pt-2 pb-0'>
-      <tbody>
+    <table
+      width='90%'
+      align='center'
+      style={{
+        padding: '0 16px 16px 8px',
+        marginTop: '32px',
+        borderRadius: '8px',
+        borderCollapse: 'collapse',
+        backgroundColor: PALETTE.SLATE_200
+      }}
+    >
+      <thead>
         <tr>
           <td align='center' width='100%'>
-            <h2 className='m-0 mb-1 text-lg font-semibold'>Team Health</h2>
-            {stages.map(
-              ({question, labels, votes}) =>
-                votes && (
-                  <div key={question}>
-                    <h3 className='m-0 text-base font-normal'>{question}</h3>
-                    <div className='flex flex-row'>
-                      {labels.map((label, index) => (
-                        <div
-                          key={label}
-                          className='m-3 flex flex-grow flex-col justify-start rounded pt-2'
-                          style={{backgroundColor: getTeamHealthVoteColor(votes, votes[index]!)}}
-                        >
-                          <div className='flex items-center justify-center text-2xl'>{label}</div>
-                          <label className='text-center text-lg font-semibold text-white'>
-                            {votes[index]}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )
-            )}
+            <h2
+              style={{
+                color: PALETTE.SLATE_700,
+                fontFamily: FONT_FAMILY.SANS_SERIF,
+                fontSize: '18px',
+                fontWeight: 600
+              }}
+            >
+              Team Health
+            </h2>
           </td>
         </tr>
-      </tbody>
+      </thead>
+      {stages.map(
+        ({question, labels, votes}) =>
+          votes && (
+            <tr key={question}>
+              <td align='center'>
+                <h3
+                  style={{
+                    color: PALETTE.SLATE_700,
+                    fontFamily: FONT_FAMILY.SANS_SERIF,
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    margin: 0
+                  }}
+                >
+                  {question}
+                </h3>
+                <table width='100%' align='center' cellSpacing='16px'>
+                  <tr>
+                    {labels.map((label, idx) => (
+                      <td
+                        key={idx}
+                        style={{
+                          backgroundColor: getTeamHealthVoteColor(votes, votes[idx]!),
+                          fontFamily: FONT_FAMILY.SANS_SERIF,
+                          fontSize: '24px',
+                          borderRadius: '4px',
+                          paddingTop: '8px',
+                          paddingBottom: '4px'
+                        }}
+                        align='center'
+                        width={`${100 / labels.length}%`}
+                      >
+                        <span
+                          style={{
+                            fontSize: '24px'
+                          }}
+                        >
+                          {label}
+                        </span>
+                        <br />
+                        <span
+                          style={{
+                            color: PALETTE.WHITE,
+                            fontSize: '18px',
+                            fontWeight: 600,
+                            textAlign: 'center'
+                          }}
+                        >
+                          {votes[idx]}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          )
+      )}
     </table>
   )
 }
