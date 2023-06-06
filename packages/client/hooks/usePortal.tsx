@@ -41,6 +41,7 @@ export type PortalId =
   | 'topBarNotificationsMenu'
   | 'pokerTemplateScaleDetailsModal'
   | 'activityDetailsRecurrenceSettings'
+  | 'shareTopicModal'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void
