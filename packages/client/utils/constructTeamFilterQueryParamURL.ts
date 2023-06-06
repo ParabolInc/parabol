@@ -1,4 +1,4 @@
-const constructUserTaskFilterQueryParamURL = (
+const constructTeamFilterQueryParamURL = (
   teamIds: string[] | null,
   userIds: string[] | null,
   showArchived?: boolean
@@ -19,4 +19,4 @@ const constructUserTaskFilterQueryParamURL = (
   return `${prefix}${filters.join('&')}`
 }
 
-export default constructUserTaskFilterQueryParamURL
+export default constructTeamFilterQueryParamURL

@@ -8,7 +8,7 @@ import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
-import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {
@@ -193,7 +193,7 @@ const UserTasksHeader = (props: Props) => {
 
         <StyledLinkButton
           onClick={() =>
-            history.push(constructUserTaskFilterQueryParamURL(teamIds, userIds, !showArchived))
+            history.push(constructTeamFilterQueryParamURL(teamIds, userIds, !showArchived))
           }
           dataCy='archived-checkbox'
         >

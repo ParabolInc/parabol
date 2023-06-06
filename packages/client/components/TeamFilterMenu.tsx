@@ -5,7 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
-import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {
   TeamFilterMenu_viewer$data,
@@ -89,7 +89,7 @@ const TeamFilterMenu = (props: Props) => {
           key={'teamFilterNULL'}
           label={UserTaskViewFilterLabels.ALL_TEAMS}
           onClick={() =>
-            history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))
+            history.push(constructTeamFilterQueryParamURL(null, userIds, showArchived))
           }
         />
       )}
@@ -99,7 +99,7 @@ const TeamFilterMenu = (props: Props) => {
           dataCy={`team-filter-${team.id}`}
           label={team.name}
           onClick={() =>
-            history.push(constructUserTaskFilterQueryParamURL([team.id], userIds, showArchived))
+            history.push(constructTeamFilterQueryParamURL([team.id], userIds, showArchived))
           }
         />
       ))}
