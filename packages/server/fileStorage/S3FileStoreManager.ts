@@ -31,12 +31,23 @@ export default class S3Manager extends FileStoreManager {
       region: AWS_REGION
     })
   }
-  protected prependPath(partialPath: string) {
+  private prependPath(partialPath: string) {
     return path.join(this.envSubDir, 'store', partialPath)
   }
 
-  protected getPublicFileLocation(fullPath: string) {
+  private getPublicFileLocation(fullPath: string) {
     return encodeURI(`https://${this.bucket}/${fullPath}`)
+  }
+  protected async putFile(file: Buffer, partialPath: string) {
+    const fullPath = this.prependPath(partialPath)
+    const s3Params = {
+      Body: file,
+      Bucket: this.bucket,
+      Key: fullPath,
+      ContentType: mime.lookup(fullPath) || 'application/octet-stream'
+    }
+    await this.s3.send(new PutObjectCommand(s3Params))
+    return this.getPublicFileLocation(fullPath)
   }
   async checkExists(key: string) {
     const Key = this.prependPath(key)
@@ -46,15 +57,5 @@ export default class S3Manager extends FileStoreManager {
       if (e instanceof Error && e.name === 'NotFound') return false
     }
     return true
-  }
-
-  protected async _putFile(fullPath: string, buffer: Buffer): Promise<void> {
-    const s3Params = {
-      Body: buffer,
-      Bucket: this.bucket,
-      Key: fullPath,
-      ContentType: mime.lookup(fullPath) || 'application/octet-stream'
-    }
-    await this.s3.send(new PutObjectCommand(s3Params))
   }
 }

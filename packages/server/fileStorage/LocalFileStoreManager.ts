@@ -4,7 +4,7 @@ import path from 'path'
 import appOrigin from '../appOrigin'
 import FileStoreManager from './FileStoreManager'
 export default class LocalFileSystemManager extends FileStoreManager {
-  protected prependPath(partialPath: string): string {
+  private prependPath(partialPath: string): string {
     return path.join('self-hosted', partialPath)
   }
 
@@ -12,18 +12,21 @@ export default class LocalFileSystemManager extends FileStoreManager {
     return encodeURI(makeAppURL(appOrigin, fullPath))
   }
 
-  async checkExists(key: string) {
-    const fullPath = this.prependPath(key)
+  protected async putFile(file: Buffer, partialPath: string) {
+    const fullPath = this.prependPath(partialPath)
+    const fsAbsLocation = path.join(process.cwd(), fullPath)
+    await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
+    await fs.promises.writeFile(fsAbsLocation, file)
+    return this.getPublicFileLocation(fullPath)
+  }
+
+  async checkExists(partialPath: string) {
+    const fullPath = this.prependPath(partialPath)
     try {
       await fs.promises.access(fullPath)
       return true
     } catch (e) {
       return false
     }
-  }
-  protected async _putFile(fullPath: string, buffer: Buffer): Promise<void> {
-    const fsAbsLocation = path.join(process.cwd(), fullPath)
-    await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
-    await fs.promises.writeFile(fsAbsLocation, buffer)
   }
 }
