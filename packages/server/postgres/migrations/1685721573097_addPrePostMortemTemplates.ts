@@ -784,11 +784,11 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
     type: 'premortem',
     prompts: [
       {
-        question: '⏳ Glass half full:',
+        question: '⏳ Glass half full',
         description: 'What do we expect to go well?'
       },
       {
-        question: '⌛ Glass half empty:',
+        question: '⌛ Glass half empty',
         description: 'What do we worry will go wrong?'
       }
     ]
@@ -901,7 +901,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
     type: 'premortem',
     prompts: [
       {
-        question: '📣 Internal communication:',
+        question: '📣 Internal communication',
         description: 'What communication issues might arise within the team?'
       },
       {
