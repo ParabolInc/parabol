@@ -1,16 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {Breakpoint, UserTaskViewFilterLabels} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
-import {
-  MeetingsDashHeader_viewer$data,
-  MeetingsDashHeader_viewer$key
-} from '../__generated__/MeetingsDashHeader_viewer.graphql'
+import {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
 import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
@@ -71,12 +68,7 @@ const MeetingsDashHeader = (props: Props) => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const oldTeamsRef = useRef<MeetingsDashHeader_viewer$data['teams']>([])
-  const nextTeams = viewer?.teams ?? oldTeamsRef.current
-  if (nextTeams) {
-    oldTeamsRef.current = nextTeams
-  }
-  const teams = oldTeamsRef.current
+  const teams = viewer?.teams ?? []
   const {teamIds} = useUserTaskFilters(viewerId)
   const teamFilter = useMemo(
     () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),
