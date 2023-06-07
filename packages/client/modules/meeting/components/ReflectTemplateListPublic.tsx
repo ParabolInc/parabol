@@ -29,6 +29,10 @@ interface Props {
   queryRef: PreloadedQuery<ReflectTemplateListPublicQuery>
 }
 
+// We're not showing public templates created after June 5, 2023, since all of these should *only*
+// be shown in the new activity library, and not in the older new meeting modal.
+const MAX_PUBLIC_CREATED_AT = '2023-06-05T00:00:00Z'
+
 const getValue = (item: {node: {id: string; name: string}}) => {
   return item.node.name.toLowerCase()
 }
@@ -51,6 +55,7 @@ const query = graphql`
                   ...ReflectTemplateItem_template
                   id
                   name
+                  createdAt
                 }
               }
             }
@@ -74,7 +79,9 @@ const ReflectTemplateListPublic = (props: Props) => {
   const searchQuery = templateSearchQuery ?? ''
   const activeTemplateId = activeTemplate?.id ?? '-tmp'
   const {edges} = publicTemplates!
-  const filteredEdges = useFilteredItems(searchQuery, edges, getValue)
+  const filteredEdges = useFilteredItems(searchQuery, edges, getValue).filter(
+    ({node}) => node.createdAt < MAX_PUBLIC_CREATED_AT
+  )
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
   if (filteredEdges.length === 0) {
     return <Message>{`No public templates match your search query "${searchQuery}"`}</Message>
