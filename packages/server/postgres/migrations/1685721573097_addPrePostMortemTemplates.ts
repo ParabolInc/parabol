@@ -979,6 +979,20 @@ const makeId = (name: string, type: 'template' | 'prompt') => {
   return `${cleanedName}${type === 'template' ? 'Template' : 'Prompt'}`
 }
 
+const getTemplateIllustrationUrl = (filename: string) => {
+  const cdnType = process.env.FILE_STORE_PROVIDER
+  const partialPath = `Organization/aGhostOrg/${filename}`
+  if (cdnType === 'local') {
+    return `/self-hosted/${partialPath}`
+  } else if (cdnType === 's3') {
+    const {CDN_BASE_URL} = process.env
+    if (!CDN_BASE_URL) throw new Error('Missng Env: CDN_BASE_URL')
+    const hostPath = CDN_BASE_URL.replace(/^\/+/, '')
+    return `https://${hostPath}/store/${partialPath}`
+  }
+  throw new Error('Mssing Env: FILE_STORE_PROVIDER')
+}
+
 const makeTemplate = (template: Template): ReflectTemplate => ({
   createdAt,
   id: makeId(template.name, 'template'),
@@ -991,8 +1005,9 @@ const makeTemplate = (template: Template): ReflectTemplate => ({
   updatedAt: createdAt,
   isStarter: false,
   isFree: true,
-  illustrationUrl:
-    template.type === 'postmortem' ? 'postMortemTemplate.png' : 'preMortemTemplate.png',
+  illustrationUrl: getTemplateIllustrationUrl(
+    template.type === 'postmortem' ? 'postMortemTemplate.png' : 'preMortemTemplate.png'
+  ),
   mainCategory: template.type,
   lastUsedAt: null,
   parentTemplateId: null
