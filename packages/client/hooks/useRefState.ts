@@ -10,7 +10,7 @@ const useRefState = <S>(
 ): [MutableRefObject<S>, Dispatch<SetStateAction<S>>] => {
   const [firstState, _setState] = useState<S>(initialState)
   const latestState = useRef<S>(firstState)
-  const setState = useCallback((nextState) => {
+  const setState = useCallback((nextState: any) => {
     latestState.current = nextState
     _setState(nextState)
   }, [])
