@@ -54,8 +54,8 @@
   "resolutions": {
     "typescript": "4.9.5",
     "hoist-non-react-statics": "^3.3.0",
-    "@types/react": "16.9.11",
-    "@types/react-dom": "16.9.4",
+    "@types/react": "18.2.8",
+    "@types/react-dom": "18.2.4",
     "immutable": "3.8.2",
     "clean-css": "^5.2.2",
     "node-forge": "^1.2.1",

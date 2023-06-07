@@ -4,7 +4,7 @@ import useForceUpdate from './useForceUpdate'
 const useCallbackRef = <T = HTMLDivElement>() => {
   const ref = useRef<T | null>(null)
   const forceUpdate = useForceUpdate()
-  const callbackRef = useCallback((node) => {
+  const callbackRef = useCallback((node: any) => {
     if (node !== null) {
       ref.current = node
       forceUpdate()
