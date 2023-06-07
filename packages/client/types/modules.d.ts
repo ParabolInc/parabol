@@ -20,6 +20,7 @@ declare module 'emoji-mart/dist-modern/utils/data.js'
 declare module 'emoji-mart/dist-modern/components/picker/nimble-picker'
 declare module 'react-textarea-autosize'
 declare module 'react-copy-to-clipboard'
+declare module 'react-dom/client'
 
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: string
