@@ -36,17 +36,17 @@ const Plan = styled('div')({
   display: 'flex',
   padding: '0px 16px 16px 16px',
   flexWrap: 'wrap',
-  width: '50%',
   overflow: 'hidden'
 })
 
-const Title = styled('div')({
+const Title = styled('h6')({
   color: PALETTE.SLATE_800,
   fontSize: 22,
   fontWeight: 600,
   lineHeight: '30px',
   textTransform: 'capitalize',
   display: 'flex',
+  margin: 0,
   width: '100%',
   padding: '8px 0px 16px 0px'
 })
@@ -127,8 +127,8 @@ const PaymentDetails = (props: Props) => {
 
   return (
     <StyledPanel label='Credit Card'>
-      <StyledRow>
-        <Plan>
+      <StyledRow className={'flex-col-reverse md:flex-row'}>
+        <Plan className={'w-full md:w-1/2'}>
           <Title>{'Credit Card Details'}</Title>
           <Content>
             <Elements stripe={stripePromise}>
@@ -136,7 +136,7 @@ const PaymentDetails = (props: Props) => {
             </Elements>
           </Content>
         </Plan>
-        <Plan>
+        <Plan className={'w-full md:w-1/2'}>
           <Title>{'Team Plan Pricing'}</Title>
           <Content>
             <InputLabel>{'Billing Cycle'}</InputLabel>
