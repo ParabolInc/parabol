@@ -198,6 +198,7 @@ test.describe('retrospective-demo / group page', () => {
     page,
     isMobile
   }) => {
+    test.setTimeout(30_000)
     test.skip(
       isMobile,
       'For some reason, we get an "Element is out of viewport" error on this page when toggling the sidebar on mobile. This does not happen in other phases.'
