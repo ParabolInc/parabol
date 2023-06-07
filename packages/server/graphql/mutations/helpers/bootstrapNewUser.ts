@@ -17,6 +17,9 @@ import isPatientZero from './isPatientZero'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
+import isCompanyDomain from '../../../utils/isCompanyDomain'
+
+const PERCENT_ADDED_TO_RID = 0.05
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
   const r = await getRethink()
@@ -33,7 +36,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   const domain = email.split('@')[1]
   const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
-    getUsersbyDomain(domain),
+    isCompanyDomain(domain) ? getUsersbyDomain(domain) : [],
     r.table('SAML').getAll(domain, {index: 'domains'}).limit(1).count().eq(1).run()
   ])
 
@@ -57,6 +60,10 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   const params = new URLSearchParams(searchParams)
   if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
     experimentalFlags.push('retrosInDisguise')
+  } else if (usersWithDomain.length === 0) {
+    if (Math.random() < PERCENT_ADDED_TO_RID) {
+      experimentalFlags.push('retrosInDisguise')
+    }
   }
 
   await Promise.all([
