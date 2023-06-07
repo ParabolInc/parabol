@@ -5,11 +5,11 @@ import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
+import {PokerActiveVoting_meeting$key} from '../__generated__/PokerActiveVoting_meeting.graphql'
+import {PokerActiveVoting_stage$key} from '../__generated__/PokerActiveVoting_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {BezierCurve, PokerCards} from '../types/constEnums'
-import {PokerActiveVoting_meeting$key} from '../__generated__/PokerActiveVoting_meeting.graphql'
-import {PokerActiveVoting_stage$key} from '../__generated__/PokerActiveVoting_stage.graphql'
 import AvatarList from './AvatarList'
 import CircularProgress from './CircularProgress'
 import MiniPokerCard from './MiniPokerCard'
@@ -40,9 +40,10 @@ const RevealButtonBlock = styled('div')({
 
 const StyledError = styled('div')({
   paddingLeft: 8,
+  paddingTop: 4,
   fontSize: 14,
   color: PALETTE.TOMATO_500,
-  fontWeight: 400
+  fontWeight: 600
 })
 
 const RevealLabel = styled('div')<{color: string}>(({color}) => ({
@@ -172,7 +173,7 @@ const PokerActiveVoting = (props: Props) => {
       </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton && (
-          <RevealButton onClick={reveal} color={PALETTE.SLATE_600}>
+          <RevealButton disabled={submitting} onClick={reveal} color={PALETTE.SLATE_600}>
             <Progress radius={22} thickness={4} stroke={PALETTE.JADE_400} progress={votePercent} />
             <RevealButtonIcon color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_400}>
               <CheckIcon />

@@ -7,6 +7,7 @@ import {
   PlaylistAdd,
   Receipt,
   ThumbsUpDown,
+  MonitorHeart,
   Update
 } from '@mui/icons-material'
 import React from 'react'
@@ -192,6 +193,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
               thumbs_up_down: <ThumbsUpDown />,
               comment: <Comment />,
               group_work: <GroupWork />,
+              monitor_heart: <MonitorHeart />,
               playlist_add: <PlaylistAdd />,
               update: <Update />,
               receipt: <Receipt />

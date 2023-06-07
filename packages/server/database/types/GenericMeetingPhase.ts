@@ -7,6 +7,7 @@ export type NewMeetingPhaseTypeEnum =
   | 'SUMMARY'
   | 'agendaitems'
   | 'checkin'
+  | 'TEAM_HEALTH'
   | 'discuss'
   | 'firstcall'
   | 'group'

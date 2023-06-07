@@ -1,27 +1,24 @@
 import generateUID from '../generateUID'
 
-export interface PutFileOptions {
-  partialPath: string
-  buffer: Buffer
-}
-
 export default abstract class FileStoreManager {
-  static getUserAvatarPath(userId: string, ext: string): string {
-    return `User/${userId}/picture/${generateUID()}.${ext}`
+  abstract checkExists(fileName: string): Promise<boolean>
+
+  protected abstract putFile(file: Buffer, partialPath: string): Promise<string>
+  async putUserAvatar(file: Buffer, userId: string, ext: string, name?: string) {
+    const filename = name ?? generateUID()
+    const partialPath = `User/${userId}/picture/${filename}.${ext}`
+    return this.putFile(file, partialPath)
   }
 
-  static getOrgAvatarPath(orgId: string, ext: string): string {
-    return `Organization/${orgId}/picture/${generateUID()}.${ext}`
+  async putOrgAvatar(file: Buffer, orgId: string, ext: string, name?: string) {
+    const filename = name ?? generateUID()
+    const partialPath = `Organization/${orgId}/picture/${filename}.${ext}`
+    return this.putFile(file, partialPath)
   }
 
-  protected abstract prependPath(partialPath: string): string
-  protected abstract _putFile(fullPath: string, buffer: Buffer): Promise<void>
-  protected abstract getPublicFileLocation(fullPath: string): string
-
-  async putFile(options: PutFileOptions): Promise<string> {
-    const {partialPath, buffer} = options
-    const fullPath = this.prependPath(partialPath)
-    await this._putFile(fullPath, buffer)
-    return this.getPublicFileLocation(fullPath)
+  async putTemplateIllustration(file: Buffer, orgId: string, ext: string, name?: string) {
+    const filename = name ?? generateUID()
+    const partialPath = `Organization/${orgId}/template/${filename}.${ext}`
+    return this.putFile(file, partialPath)
   }
 }

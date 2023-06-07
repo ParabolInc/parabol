@@ -14,18 +14,13 @@ import IntegrationProviderOAuth1 from './types/IntegrationProviderOAuth1'
 import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
 import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import JiraDimensionField from './types/JiraDimensionField'
-import MeetingTemplate from './types/MeetingTemplate'
-import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
-import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
-import PokerTemplate from './types/PokerTemplate'
 import ReflectPhase from './types/ReflectPhase'
 import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
-import StripeFailPaymentPayload from './types/StripeFailPaymentPayload'
+import SetMeetingSettingsPayload from './types/SetMeetingSettingsPayload'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
@@ -51,8 +46,6 @@ const rootTypes = [
   AuthIdentityLocal,
   CheckInPhase,
   ReflectPhase,
-  PokerTemplate,
-  MeetingTemplate,
   DiscussPhase,
   UpdatesPhase,
   EstimatePhase,
@@ -60,14 +53,13 @@ const rootTypes = [
   TeamPromptResponsesPhase,
   GenericMeetingPhase,
   EstimatePhase,
-  NotificationTeamInvitation,
-  NotifyPromoteToOrgLeader,
   ActionMeeting,
   ActionMeetingMember,
   PokerMeetingSettings,
   RetrospectiveMeeting,
   RetrospectiveMeetingMember,
   RetrospectiveMeetingSettings,
+  SetMeetingSettingsPayload,
   SuggestedActionInviteYourTeam,
   SuggestedActionTryRetroMeeting,
   SuggestedActionTryActionMeeting,
@@ -86,8 +78,6 @@ const rootTypes = [
   AzureDevOpsWorkItem,
   JiraDimensionField,
   RenamePokerTemplatePayload,
-  StripeFailPaymentPayload,
-  UserTiersCount,
-  NotificationMeetingStageTimeLimitEnd
+  UserTiersCount
 ]
 export default rootTypes

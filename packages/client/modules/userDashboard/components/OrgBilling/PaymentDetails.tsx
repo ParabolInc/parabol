@@ -1,18 +1,20 @@
 import styled from '@emotion/styled'
+import {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
+import graphql from 'babel-plugin-relay/macro'
+import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
+import CreateSetupIntentMutation from '../../../../mutations/CreateSetupIntentMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
-import {CompletedHandler} from '../../../../types/relayMutations'
-import {CreatePaymentIntentMutation as TCreatePaymentIntentMutation} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
 import BillingForm from './BillingForm'
+import {MONTHLY_PRICE} from '../../../../utils/constants'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -93,83 +95,44 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
-const stripeElementOptions = {
-  appearance: {
-    theme: 'stripe',
-    rules: {
-      '.Input': {
-        border: 'none',
-        borderBottom: `1px solid ${PALETTE.SLATE_400}`
-      }
-    },
-    variables: {
-      colorBackground: PALETTE.SLATE_200,
-      border: 'none',
-      borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-      color: PALETTE.SLATE_800,
-      fontSize: 16,
-      marginBottom: 16,
-      padding: '12px 16px',
-      outline: 0
-    }
-  } as const,
-  loader: 'never' as const,
-  fonts: [
-    {
-      family: 'IBM Plex Sans',
-      src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
-      weight: '400'
-    }
-  ]
-}
-
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
-const PaymentDetails = () => {
-  const [clientSecret, setClientSecret] = useState('')
+type Props = {
+  organizationRef: PaymentDetails_organization$key
+}
+
+const PaymentDetails = (props: Props) => {
+  const {organizationRef} = props
   const atmosphere = useAtmosphere()
-  const {onError} = useMutationProps()
+  const {onError, onCompleted} = useMutationProps()
+
+  const organization = useFragment(
+    graphql`
+      fragment PaymentDetails_organization on Organization {
+        id
+        orgUserCount {
+          activeUserCount
+        }
+      }
+    `,
+    organizationRef
+  )
+  const {id: orgId, orgUserCount} = organization
+  const {activeUserCount} = orgUserCount
+  const price = activeUserCount * MONTHLY_PRICE
 
   useEffect(() => {
-    const handleCompleted: CompletedHandler<TCreatePaymentIntentMutation['response']> = (res) => {
-      const {createPaymentIntent} = res
-      const {clientSecret} = createPaymentIntent
-      if (clientSecret) {
-        setClientSecret(clientSecret)
-      }
-    }
-
-    CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
+    CreateSetupIntentMutation(atmosphere, {orgId}, {onError, onCompleted})
   }, [])
 
-  // TODO: add functionality in https://github.com/ParabolInc/parabol/issues/7693
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   // if (submitting) return
-  //   // these 3 calls internally call dispatch (or setState), which are asynchronous in nature.
-  //   // To get the current value of `fields`, we have to wait for the component to rerender
-  //   // the useEffect hook above will continue the process if submitting === true
-
-  //   setDirtyField()
-  //   validateField()
-  //   submitMutation()
-  // }
-
-  if (!clientSecret.length) return null
   return (
     <StyledPanel label='Credit Card'>
       <StyledRow className={'flex-col-reverse md:flex-row'}>
         <Plan className={'w-full md:w-1/2'}>
           <Title>{'Credit Card Details'}</Title>
           <Content>
-            <Elements
-              options={{
-                clientSecret,
-                ...stripeElementOptions
-              }}
-              stripe={stripePromise}
-            >
-              <BillingForm />
+            <Elements stripe={stripePromise}>
+              <BillingForm orgId={orgId} />
             </Elements>
           </Content>
         </Plan>
@@ -183,12 +146,12 @@ const PaymentDetails = () => {
               <InfoText>
                 {'Active users are anyone who uses Parabol within a billing period'}
               </InfoText>
-              <Subtitle>{'27'}</Subtitle>
+              <Subtitle>{activeUserCount}</Subtitle>
             </ActiveUserBlock>
             <Divider />
             <TotalBlock>
               <Subtitle>{'Total'}</Subtitle>
-              <Subtitle>{'$162.00'}</Subtitle>
+              <Subtitle>{`$${price.toFixed(2)}`}</Subtitle>
             </TotalBlock>
             <InfoText>{'All prices are in USD'}</InfoText>
           </Content>

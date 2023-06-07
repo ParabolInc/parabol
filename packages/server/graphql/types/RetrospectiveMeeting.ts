@@ -6,7 +6,8 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import ReflectionGroupType from '../../database/types/ReflectionGroup'
@@ -21,6 +22,7 @@ import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import Task from './Task'
+import AutogroupReflectionGroup from './AutogroupReflectionGroup'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
@@ -51,6 +53,10 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: ({commentCount}) => commentCount || 0
+    },
+    autogroupReflectionGroups: {
+      type: new GraphQLList(new GraphQLNonNull(AutogroupReflectionGroup)),
+      description: 'The suggested reflection groups created by OpenAI'
     },
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -172,6 +178,10 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     totalVotes: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'the total number of votes allowed for each participant'
+    },
+    transcription: {
+      type: GraphQLString,
+      description: 'The transcription of the meeting'
     },
     votesRemaining: {
       type: new GraphQLNonNull(GraphQLInt),

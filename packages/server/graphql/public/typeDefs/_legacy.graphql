@@ -544,411 +544,6 @@ interface NewMeeting {
 }
 
 """
-The user account profile
-"""
-type User {
-  """
-  The userId provided by us
-  """
-  id: ID!
-  archivedTasks(
-    first: Int!
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    The unique team ID
-    """
-    teamId: ID!
-  ): TaskConnection
-  archivedTasksCount(
-    """
-    The unique team ID
-    """
-    teamId: ID!
-  ): Int
-
-  """
-  The assumed company this organizaiton belongs to
-  """
-  company: Company
-
-  """
-  The timestamp the user was created
-  """
-  createdAt: DateTime!
-
-  """
-  The domains the user is a lead of
-  """
-  domains: [Company!]!
-
-  """
-  The user email
-  """
-  email: Email!
-
-  """
-  Any super power given to the user via a super user
-  """
-  featureFlags: UserFeatureFlags!
-
-  """
-  An array of objects with information about the user's identities.
-        More than one will exists in case accounts are linked
-  """
-  identities: [AuthIdentity]
-
-  """
-  true if the user is not currently being billed for service. removed on every websocket handshake
-  """
-  inactive: Boolean
-  invoiceDetails(
-    """
-    The id of the invoice
-    """
-    invoiceId: ID!
-  ): Invoice
-  invoices(
-    first: Int!
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    The id of the organization
-    """
-    orgId: ID!
-  ): InvoiceConnection
-
-  """
-  true if the user is a billing leader on any organization, else false
-  """
-  isAnyBillingLeader: Boolean!
-
-  """
-  true if the user is currently online
-  """
-  isConnected: Boolean
-
-  """
-  true if the user is the first to sign up from their domain, else false
-  """
-  isPatientZero: Boolean!
-
-  """
-  the reason the user account was removed
-  """
-  reasonRemoved: String
-
-  """
-  true if the user was removed from parabol, else false
-  """
-  isRemoved: Boolean!
-
-  """
-  true if all user sessions are being recorded in LogRocket, else false
-  """
-  isWatched: Boolean!
-
-  """
-  the endedAt timestamp of the most recent meeting they were a member of
-  """
-  lastMetAt: DateTime
-
-  """
-  The number of meetings the user has attended
-  """
-  meetingCount: Int!
-
-  """
-  The largest number of consecutive months the user has checked into a meeting
-  """
-  monthlyStreakMax: Int!
-
-  """
-  The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment
-  """
-  monthlyStreakCurrent: Int!
-
-  """
-  the most important actions for the user to perform
-  """
-  suggestedActions: [SuggestedAction!]!
-
-  """
-  the number of times the user clicked pay later
-  """
-  payLaterClickCount: Int!
-
-  """
-  The timeline of important events for the viewer
-  """
-  timeline(
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    the number of timeline events to return
-    """
-    first: Int!
-  ): TimelineEventConnection!
-
-  """
-  the comments and tasks created from the discussion
-  """
-  discussion(
-    """
-    The ID of the discussion
-    """
-    id: ID!
-  ): Discussion
-
-  """
-  the ID of the newest feature, null if the user has dismissed it
-  """
-  newFeatureId: ID
-
-  """
-  The new feature released by Parabol. null if the user already hid it
-  """
-  newFeature: NewFeatureBroadcast
-
-  """
-  url of user’s profile picture
-  """
-  picture: URL!
-
-  """
-  The application-specific name, defaults to email before the tld
-  """
-  preferredName: String!
-
-  """
-  url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
-  """
-  rasterPicture: URL!
-
-  """
-  The last day the user connected via websocket or navigated to a common area
-  """
-  lastSeenAt: DateTime!
-
-  """
-  The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.
-  """
-  lastSeenAtURLs: [String]
-
-  """
-  The meeting member associated with this user, if a meeting is currently in progress
-  """
-  meetingMember(
-    """
-    The specific meeting ID
-    """
-    meetingId: ID!
-  ): MeetingMember
-
-  """
-  A previous meeting that the user was in (present or absent)
-  """
-  meeting(
-    """
-    The meeting ID
-    """
-    meetingId: ID!
-  ): NewMeeting
-
-  """
-  A previous meeting that the user was in (present or absent)
-  """
-  newMeeting(
-    """
-    The meeting ID
-    """
-    meetingId: ID!
-  ): NewMeeting
-
-  """
-  all the notifications for a single user
-  """
-  notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!
-
-  """
-  get a single organization
-  """
-  organization(
-    """
-    the orgId
-    """
-    orgId: ID!
-  ): Organization
-
-  """
-  The connection between a user and an organization
-  """
-  organizationUser(
-    """
-    the orgId
-    """
-    orgId: ID!
-  ): OrganizationUser
-
-  """
-  A single user that is connected to a single organization
-  """
-  organizationUsers: [OrganizationUser!]!
-
-  """
-  Get the list of all organizations a user belongs to
-  """
-  organizations: [Organization!]!
-
-  """
-  a string with message stating that the user is over the free tier limit, else null
-  """
-  overLimitCopy: String
-
-  """
-  The reflection groups that are similar to the selected reflection in the Spotlight
-  """
-  similarReflectionGroups(
-    """
-    The id of the selected reflection group in the Spotlight
-    """
-    reflectionGroupId: ID!
-
-    """
-    Only return reflection groups that match the search query
-    """
-    searchQuery: String!
-  ): [RetroReflectionGroup!]!
-  tasks(
-    """
-    the number of tasks to return
-    """
-    first: Int!
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.
-    """
-    userIds: [ID]
-
-    """
-    a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
-    """
-    teamIds: [ID!]
-
-    """
-    true to only return archived tasks; false to return active tasks
-    """
-    archived: Boolean = false
-
-    """
-    filter tasks by the chosen statuses
-    """
-    statusFilters: [TaskStatusEnum!]
-
-    """
-    only return tasks which match the given filter query
-    """
-    filterQuery: String
-
-    """
-    if true, include unassigned tasks. If false, only return assigned tasks
-    """
-    includeUnassigned: Boolean = false
-  ): TaskConnection!
-
-  """
-  A query for a team
-  """
-  team(
-    """
-    The team ID for the desired team
-    """
-    teamId: ID!
-  ): Team
-
-  """
-  The invitation sent to the user, even if it was sent before they were a user
-  """
-  teamInvitation(
-    """
-    The meetingId to check for the invitation, if teamId not available (e.g. on a meeting route)
-    """
-    meetingId: ID
-
-    """
-    The teamId to check for the invitation
-    """
-    teamId: ID
-  ): TeamInvitationPayload!
-
-  """
-  all the teams the user is on that the viewer can see.
-  """
-  teams: [Team!]!
-
-  """
-  The team member associated with this user
-  """
-  teamMember(
-    """
-    The team the user is on
-    """
-    teamId: ID!
-
-    """
-    If null, defaults to the team member for this user. Else, will grab the team member. Returns null if not on team.
-    """
-    userId: ID
-  ): TeamMember
-
-  """
-  The highest tier of any org the user belongs to
-  """
-  tier: TierEnum!
-
-  """
-  all the teams the user is a part of that the viewer can see
-  """
-  tms: [ID!]!
-
-  """
-  The timestamp the user was last updated
-  """
-  updatedAt: DateTime
-  userOnTeam(
-    """
-    The other user
-    """
-    userId: ID!
-  ): User
-
-  availableTemplates(
-    first: Int!
-
-    """
-    The cursor, which is the templateId
-    """
-    after: ID
-  ): MeetingTemplateConnection!
-}
-
-"""
 A connection to a list of items.
 """
 type TaskConnection {
@@ -2393,73 +1988,6 @@ type ReflectPrompt {
   The datetime that the prompt was removed. Null if it has not been removed.
   """
   removedAt: DateTime
-}
-
-"""
-The team-specific templates for the reflection prompts
-"""
-type ReflectTemplate implements MeetingTemplate {
-  """
-  shortid
-  """
-  id: ID!
-  createdAt: DateTime!
-
-  """
-  True if template can be used, else false
-  """
-  isActive: Boolean!
-
-  """
-  The time of the meeting the template was last used
-  """
-  lastUsedAt: DateTime
-
-  """
-  The name of the template
-  """
-  name: String!
-
-  """
-  *Foreign key. The organization that owns the team that created the template
-  """
-  orgId: ID!
-
-  """
-  Who can see this template
-  """
-  scope: SharingScopeEnum!
-
-  """
-  *Foreign key. The team this template belongs to
-  """
-  teamId: ID!
-
-  """
-  The team this template belongs to
-  """
-  team: Team!
-
-  """
-  The type of the template
-  """
-  type: MeetingTypeEnum!
-  updatedAt: DateTime!
-
-  """
-  The prompts that are part of this template
-  """
-  prompts: [ReflectPrompt!]!
-
-  """
-  The category this template falls under, e.g. retro, feedback, strategy, etc.
-  """
-  category: String!
-
-  """
-  Whether this template should be in the recommended/quick start sections in the UI.
-  """
-  isRecommended: Boolean!
 }
 
 """
@@ -4116,145 +3644,6 @@ type GenericMeetingStage implements NewMeetingStage {
 }
 
 """
-The team-specific templates for sprint poker meeting
-"""
-type PokerTemplate implements MeetingTemplate {
-  """
-  shortid
-  """
-  id: ID!
-  createdAt: DateTime!
-
-  """
-  True if template can be used, else false
-  """
-  isActive: Boolean!
-
-  """
-  The time of the meeting the template was last used
-  """
-  lastUsedAt: DateTime
-
-  """
-  The name of the template
-  """
-  name: String!
-
-  """
-  *Foreign key. The organization that owns the team that created the template
-  """
-  orgId: ID!
-
-  """
-  Who can see this template
-  """
-  scope: SharingScopeEnum!
-
-  """
-  *Foreign key. The team this template belongs to
-  """
-  teamId: ID!
-
-  """
-  The team this template belongs to
-  """
-  team: Team!
-
-  """
-  The type of the template
-  """
-  type: MeetingTypeEnum!
-  updatedAt: DateTime!
-
-  """
-  The dimensions that are part of this template
-  """
-  dimensions: [TemplateDimension!]!
-
-  """
-  A query for the dimension
-  """
-  dimension(
-    """
-    The dimension ID for the desired dimension
-    """
-    dimensionId: ID!
-  ): TemplateDimension!
-
-  """
-  The category this template falls under, e.g. retro, feedback, strategy, etc.
-  """
-  category: String!
-
-  """
-  Whether this template should be in the recommended/quick start sections in the UI.
-  """
-  isRecommended: Boolean!
-}
-
-"""
-A meeting template that can be shared across team, orgnization and public
-"""
-interface MeetingTemplate {
-  """
-  shortid
-  """
-  id: ID!
-  createdAt: DateTime!
-
-  """
-  True if template can be used, else false
-  """
-  isActive: Boolean!
-
-  """
-  The time of the meeting the template was last used
-  """
-  lastUsedAt: DateTime
-
-  """
-  The name of the template
-  """
-  name: String!
-
-  """
-  *Foreign key. The organization that owns the team that created the template
-  """
-  orgId: ID!
-
-  """
-  Who can see this template
-  """
-  scope: SharingScopeEnum!
-
-  """
-  *Foreign key. The team this template belongs to
-  """
-  teamId: ID!
-
-  """
-  The team this template belongs to
-  """
-  team: Team!
-
-  """
-  The type of the template
-  """
-  type: MeetingTypeEnum!
-  updatedAt: DateTime!
-
-  """
-  The category this template falls under, e.g. retro, feedback, strategy, etc.
-  """
-  category: String!
-
-  """
-  Whether this template should be in the recommended/quick start sections in the UI.
-  """
-  isRecommended: Boolean!
-}
-
-"""
 The meeting phase where all team members discuss the topics with the most votes
 """
 type DiscussPhase implements NewMeetingPhase {
@@ -5274,66 +4663,6 @@ type PokerMeetingSettings implements TeamMeetingSettings {
 }
 
 """
-A connection to a list of items.
-"""
-type MeetingTemplateConnection {
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-
-  """
-  A list of edges.
-  """
-  edges: [MeetingTemplateEdge!]!
-}
-
-"""
-An edge in a connection.
-"""
-type MeetingTemplateEdge {
-  """
-  The item at the end of the edge
-  """
-  node: MeetingTemplate!
-
-  """
-  A cursor for use in pagination
-  """
-  cursor: String!
-}
-
-"""
-A connection to a list of items.
-"""
-type PokerTemplateConnection {
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-
-  """
-  A list of edges.
-  """
-  edges: [PokerTemplateEdge!]!
-}
-
-"""
-An edge in a connection.
-"""
-type PokerTemplateEdge {
-  """
-  The item at the end of the edge
-  """
-  node: PokerTemplate!
-
-  """
-  A cursor for use in pagination
-  """
-  cursor: String!
-}
-
-"""
 A retrospective meeting
 """
 type RetrospectiveMeeting implements NewMeeting {
@@ -5622,36 +4951,6 @@ type RetrospectiveMeetingSettings implements TeamMeetingSettings {
     """
     after: ID
   ): ReflectTemplateConnection!
-}
-
-"""
-A connection to a list of items.
-"""
-type ReflectTemplateConnection {
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-
-  """
-  A list of edges.
-  """
-  edges: [ReflectTemplateEdge!]!
-}
-
-"""
-An edge in a connection.
-"""
-type ReflectTemplateEdge {
-  """
-  The item at the end of the edge
-  """
-  node: ReflectTemplate!
-
-  """
-  A cursor for use in pagination
-  """
-  cursor: String!
 }
 
 """
@@ -6523,6 +5822,11 @@ type TeamPromptMeeting implements NewMeeting {
   summarySentAt: DateTime
 
   """
+  The tasks created within the meeting
+  """
+  tasks: [Task!]!
+
+  """
   foreign key for team
   """
   teamId: ID!
@@ -6551,6 +5855,16 @@ type TeamPromptMeeting implements NewMeeting {
   The tasks created within the meeting
   """
   responses: [TeamPromptResponse!]!
+
+  """
+  The previous meeting in the series if this meeting is recurring
+  """
+  prevMeeting: TeamPromptMeeting
+
+  """
+  The next meeting in the series if this meeting is recurring
+  """
+  nextMeeting: TeamPromptMeeting
 }
 
 """
@@ -7594,46 +6908,9 @@ type Mutation {
   ): SetAppLocationPayload!
 
   """
-  Enabled or disable the icebreaker round
-  """
-  setMeetingSettings(
-    settingsId: ID!
-
-    """
-    true to turn icebreaker phase on, false to turn it off
-    """
-    checkinEnabled: Boolean
-
-    """
-    disables anonymity of reflections
-    """
-    disableAnonymity: Boolean
-  ): SetMeetingSettingsPayload!
-
-  """
   Update the default Slack channel where notifications are sent
   """
   setDefaultSlackChannel(slackChannelId: ID!, teamId: ID!): SetDefaultSlackChannelPayload!
-
-  """
-  Set the role of a user
-  """
-  setOrgUserRole(
-    """
-    The org to affect
-    """
-    orgId: ID!
-
-    """
-    the user who is receiving a role change
-    """
-    userId: ID!
-
-    """
-    the user’s new role
-    """
-    role: String
-  ): SetOrgUserRolePayload
 
   """
   Focus (or unfocus) a phase item
@@ -7753,16 +7030,6 @@ type Mutation {
     """
     stripeToken: ID!
   ): UpdateCreditCardPayload
-
-  """
-  Update an with a change in name, avatar
-  """
-  updateOrg(
-    """
-    the updated org including the id, and at least one other field
-    """
-    updatedOrg: UpdateOrgInput!
-  ): UpdateOrgPayload!
 
   """
   Update the scale used for a dimension in a template
@@ -7910,12 +7177,6 @@ type Mutation {
     """
     scope: SharingScopeEnum!
   ): UpdateTemplateScopePayload!
-  updateUserProfile(
-    """
-    The input object containing the user profile fields that can be changed
-    """
-    updatedUser: UpdateUserProfileInput!
-  ): UpdateUserProfilePayload
 
   """
   Upgrade an account to the paid service
@@ -7931,31 +7192,6 @@ type Mutation {
     """
     stripeToken: ID!
   ): UpgradeToTeamTierPayload
-
-  """
-  Upload an image for an org avatar
-  """
-  uploadOrgImage(
-    """
-    the org avatar image file
-    """
-    file: File!
-
-    """
-    The org id to upload an avatar for
-    """
-    orgId: ID!
-  ): UpdateOrgPayload!
-
-  """
-  Upload an image for a user avatar
-  """
-  uploadUserImage(
-    """
-    the user avatar image file
-    """
-    file: File!
-  ): UpdateUserProfilePayload
 
   """
   Cast your vote for a reflection group
@@ -9607,12 +8843,6 @@ type SetDefaultSlackChannelSuccess {
   teamMember: TeamMember!
 }
 
-interface SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
-}
-
 type SetPhaseFocusPayload {
   error: StandardMutationError
   meeting: RetrospectiveMeeting!
@@ -9770,32 +9000,6 @@ type UpdateCreditCardPayload {
   The teams that are now paid up
   """
   teamsUpdated: [Team]
-}
-
-type UpdateOrgPayload {
-  error: StandardMutationError
-
-  """
-  The updated org
-  """
-  organization: Organization
-}
-
-input UpdateOrgInput {
-  """
-  The unique action ID
-  """
-  id: ID!
-
-  """
-  The name of the org
-  """
-  name: String
-
-  """
-  The org avatar
-  """
-  picture: URL
 }
 
 type UpdatePokerTemplateDimensionScalePayload {
@@ -10006,28 +9210,6 @@ type UpdateTemplateScopeSuccess {
   The settings that contain the teamTemplates array that was modified
   """
   settings: TeamMeetingSettings!
-}
-
-type UpdateUserProfilePayload {
-  error: StandardMutationError
-  user: User
-
-  """
-  The updated team member
-  """
-  teamMembers: [TeamMember!]
-}
-
-input UpdateUserProfileInput {
-  """
-  A link to the user’s profile image.
-  """
-  picture: URL
-
-  """
-  The name, as confirmed by the user
-  """
-  preferredName: String
 }
 
 type UpgradeToTeamTierPayload {
@@ -10756,23 +9938,6 @@ type AuthTokenPayload {
   The encoded JWT
   """
   id: ID!
-}
-
-type SetOrgUserRoleAddedPayload implements SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
-
-  """
-  If promoted, notify them and give them all other admin notifications
-  """
-  notificationsAdded: [Notification]
-}
-
-type SetOrgUserRoleRemovedPayload implements SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
 }
 
 type RenamePokerTemplatePayload {

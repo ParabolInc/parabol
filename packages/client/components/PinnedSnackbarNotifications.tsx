@@ -8,6 +8,7 @@ import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMut
 import mapTeamsLimitExceededToToast from '../mutations/toasts/mapTeamsLimitExceededToToast'
 import mapTeamsLimitReminderToToast from '../mutations/toasts/mapTeamsLimitReminderToToast'
 import mapPromptToJoinOrgToToast from '../mutations/toasts/mapPromptToJoinOrgToToast'
+import mapRequestToJoinOrgToToast from '../mutations/toasts/mapRequestToJoinOrgToToast'
 import {OnNextHistoryContext} from '../types/relayMutations'
 import {NotificationEnum} from '../__generated__/popNotificationToast_notification.graphql'
 import {Snack} from './Snackbar'
@@ -21,7 +22,8 @@ const typePicker: Partial<
 > = {
   TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
-  PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast
+  PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
+  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
 }
 
 const PinnedSnackbarNotifications = ({queryRef}: Props) => {
@@ -31,7 +33,12 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
         viewer {
           pinnedNotifications: notifications(
             first: 10
-            types: [TEAMS_LIMIT_EXCEEDED, TEAMS_LIMIT_REMINDER, PROMPT_TO_JOIN_ORG]
+            types: [
+              TEAMS_LIMIT_EXCEEDED
+              TEAMS_LIMIT_REMINDER
+              PROMPT_TO_JOIN_ORG
+              REQUEST_TO_JOIN_ORG
+            ]
           ) {
             edges {
               node {
@@ -41,6 +48,7 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
                 ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
                 ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
                 ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
+                ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
               }
             }
           }

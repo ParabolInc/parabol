@@ -62,7 +62,7 @@ const removeTemplateFromCurrentScope = (
   // not possible for the public list to get mutated because this is an org subscription
 }
 
-const putTemplateInConnection = (
+export const putTemplateInConnection = (
   template: RecordProxy,
   connection: RecordProxy | null | undefined,
   store: RecordSourceSelectorProxy

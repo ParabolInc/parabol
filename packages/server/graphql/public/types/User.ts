@@ -4,7 +4,12 @@ import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isUserBillingLeader,
+  isTeamMember
+} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 import standardError from '../../../utils/standardError'
@@ -17,8 +22,30 @@ import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import db from '../../../db'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
+import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 
 const User: UserResolvers = {
+  canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    switch (entity) {
+      case 'Team':
+        return isTeamMember(authToken, id)
+      case 'Meeting':
+        const meeting = await dataLoader.get('newMeetings').load(id)
+        if (!meeting) {
+          return false
+        }
+        const {teamId} = meeting
+        return isTeamMember(authToken, teamId)
+      case 'Organization':
+        const organizationUser = await dataLoader
+          .get('organizationUsersByUserIdOrgId')
+          .load({userId: viewerId, id})
+        return !!organizationUser
+      default:
+        return false
+    }
+  },
   company: async ({email}, _args, {authToken}) => {
     const domain = getDomainFromEmail(email)
     if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
@@ -35,6 +62,16 @@ const User: UserResolvers = {
     )
     const approvedDomains = organizations.map(({activeDomain}) => activeDomain).filter(isNotNull)
     return [...new Set(approvedDomains)].map((id) => ({id}))
+  },
+  domainJoinRequest: async ({email}, {requestId}, {dataLoader}) => {
+    const request = await dataLoader
+      .get('domainJoinRequests')
+      .loadNonNull(DomainJoinRequestId.split(requestId))
+    const domain = getDomainFromEmail(email)
+    if (domain !== request.domain) {
+      return null
+    }
+    return request
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))

@@ -16,6 +16,7 @@ import {
   NewTemplateScaleValueLabelInput_scale$data
 } from '../../../__generated__/NewTemplateScaleValueLabelInput_scale.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
+import {Threshold} from '../../../types/constEnums'
 
 const Form = styled('form')({
   width: '100%',
@@ -121,7 +122,10 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
     return new Legitity(value)
       .trim()
       .required('Please enter a value')
-      .max(2, 'Value cannot be longer than 2 characters')
+      .max(
+        Threshold.POKER_SCALE_VALUE_MAX_LENGTH,
+        `Value cannot be longer than ${Threshold.POKER_SCALE_VALUE_MAX_LENGTH} characters`
+      )
       .test((mVal) => {
         if (!mVal) return undefined
         const isDupe = values.find(

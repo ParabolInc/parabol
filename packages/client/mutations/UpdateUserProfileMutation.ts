@@ -7,9 +7,7 @@ graphql`
   fragment UpdateUserProfileMutation_team on UpdateUserProfilePayload {
     teamMembers {
       preferredName
-      picture
       user {
-        picture
         preferredName
       }
     }
@@ -40,13 +38,10 @@ const UpdateUserProfileMutation: StandardMutation<TUpdateUserProfileMutation> = 
       const viewer = store.get(viewerId)
       if (!viewer) return
       const {updatedUser} = variables
-      const {picture, preferredName} = updatedUser
+      const {preferredName} = updatedUser
       if (viewer) {
         if (preferredName) {
           viewer.setValue(preferredName, 'preferredName')
-        }
-        if (picture) {
-          viewer.setValue(picture, 'picture')
         }
       }
     },

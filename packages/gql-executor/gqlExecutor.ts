@@ -12,6 +12,7 @@ tracer.init({
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false
 })
+tracer.use('ioredis').use('http').use('pg').use('fs')
 
 const {REDIS_URL, SERVER_ID} = process.env
 interface PubSubPromiseMessage {

@@ -6,13 +6,8 @@
  - Is the variable a string? Create a string union & pass in a plain string to get type safety
 */
 import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
 import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
-
-/**
- * Big stuff:
- */
-export const APP_CDN_USER_ASSET_SUBDIR = '/store'
+import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
@@ -25,6 +20,7 @@ export const LOBBY = 'lobby'
 
 // lowercase here to match url
 export const CHECKIN = 'checkin'
+export const TEAM_HEALTH = 'teamhealth'
 export const UPDATES = 'updates'
 export const FIRST_CALL = 'firstcall'
 export const AGENDA_ITEMS = 'agendaitems'
@@ -96,6 +92,7 @@ export const NOTIFICATIONS = 'notifications'
 /* Org Settings */
 export const BILLING_PAGE = 'billing'
 export const MEMBERS_PAGE = 'members'
+export const ORG_SETTINGS_PAGE = 'settings'
 export const AUTHENTICATION_PAGE = 'authentication'
 
 /* Stripe */
@@ -166,7 +163,16 @@ export const TeamBenefits = [
   'Premium templates',
   'Custom templates',
   'Unlimited meeting history',
-  'Priority customer support'
+  'Priority customer support',
+  'AI Summaries'
+]
+
+export const EnterpriseBenefits = [
+  'Enhanced security',
+  'Priority customer support',
+  'SAML Single Sign-On (SSO)',
+  'Uptime SLA',
+  'Jira Server Integration'
 ]
 
 export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [
@@ -187,3 +193,7 @@ export const reasonsToDowngradeLookup: Record<
   "Not using Parabol's paid features": 'notUsingPaidFeatures',
   'Moving to another tool (please specify)': 'anotherTool'
 }
+
+/* OpenAI */
+export const MAX_GPT_3_5_TOKENS = 4096 // https://platform.openai.com/docs/models/gpt-3-5
+export const AVG_CHARS_PER_TOKEN = 4 // 1 token ~= 4 chars https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them

@@ -1,16 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember, isUserInOrg} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
+import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -39,14 +39,9 @@ const addPokerTemplate = {
     }
 
     // VALIDATION
-    // Will convert to PG by Mar 1, 2023
-    const allTemplates = await r
-      .table('MeetingTemplate')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})
-      .filter({type: 'poker'})
-      .run()
-
+    const allTemplates = await dataLoader
+      .get('meetingTemplatesByType')
+      .load({meetingType: 'poker', teamId})
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       return standardError(new Error('Too many templates'), {userId: viewerId})
     }
@@ -72,26 +67,25 @@ const addPokerTemplate = {
           return standardError(new Error('Template is scoped to team'), {userId: viewerId})
       } else if (scope === 'ORGANIZATION') {
         const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
-        if (viewerTeam.orgId !== parentTemplateTeam?.orgId) {
+        const isInOrg =
+          parentTemplateTeam &&
+          (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader))
+        if (!isInOrg) {
           return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
         }
       }
       const copyName = `${name} Copy`
-      // Will convert to PG by Mar 1, 2023
-      const existingCopyCount = await r
-        .table('MeetingTemplate')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .filter({type: 'poker'})
-        .filter((row: RDatum) => row('name').match(`^${copyName}`) as any)
-        .count()
-        .run()
+      const existingCopyCount = allTemplates.filter((template) =>
+        template.name.startsWith(copyName)
+      ).length
       const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
       const newTemplate = new PokerTemplate({
         name: newName,
         teamId,
         orgId: viewerTeam.orgId,
-        parentTemplateId
+        parentTemplateId,
+        mainCategory: parentTemplate.mainCategory,
+        illustrationUrl: parentTemplate.illustrationUrl
       })
 
       const dimensions = await dataLoader
@@ -118,7 +112,13 @@ const addPokerTemplate = {
       }
       const {orgId} = viewerTeam
 
-      const newTemplate = new PokerTemplate({name: '*New Template', teamId, orgId})
+      const newTemplate = new PokerTemplate({
+        name: '*New Template',
+        teamId,
+        orgId,
+        mainCategory: 'estimation',
+        illustrationUrl: getTemplateIllustrationUrl('estimatedEffortTemplate.png')
+      })
       const templateId = newTemplate.id
       const newDimension = new TemplateDimension({
         scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,

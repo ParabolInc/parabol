@@ -5,13 +5,14 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
 import {AddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
 import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectTemplateMutation_team.graphql'
-import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
+import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
   fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
     reflectTemplate {
       ...TemplateSharing_template
       ...ReflectTemplateDetailsTemplate
+      ...ActivityDetails_template
       id
       teamId
     }
@@ -33,7 +34,7 @@ export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMuta
   const template = payload.getLinkedRecord('reflectTemplate')
   if (!template) return
   const templateId = template.getValue('id')
-  handleAddReflectTemplate(template, store)
+  handleAddMeetingTemplate(template, 'retrospective', store)
   const teamId = template.getValue('teamId')
   const team = store.get(teamId)
   if (!team) return
@@ -84,7 +85,7 @@ const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> 
         })
         proxyTemplate.setLinkedRecords([prompt], 'prompts')
       }
-      handleAddReflectTemplate(proxyTemplate, store)
+      handleAddMeetingTemplate(proxyTemplate, 'retrospective', store)
     }
   })
 }

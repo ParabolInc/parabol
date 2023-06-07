@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {PokerRevealVotesMutation as TPokerRevealVotesMutation} from '../__generated__/PokerRevealVotesMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment PokerRevealVotesMutation_meeting on PokerRevealVotesSuccess {
@@ -36,12 +36,7 @@ const PokerRevealVotesMutation: StandardMutation<TPokerRevealVotesMutation> = (
   return commitMutation<TPokerRevealVotesMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {stageId} = variables
-      const stage = store.get(stageId)
-      if (!stage) return
-      stage.setValue(false, 'isVoting')
-    },
+    // don't be optimistic, we don't know what the scores will be
     onCompleted,
     onError
   })
