@@ -32,9 +32,10 @@ const OrgPlansAndBilling = (props: Props) => {
   return (
     <Suspense fallback={''}>
       <OrgPlansAndBillingHeading organizationRef={organization} />
-      <OrgPlans organizationRef={organization} />
+      {tier === 'starter' && <OrgPlans organizationRef={organization} />}
       {tier === 'starter' && <PaymentDetails organizationRef={organization} />}
       <BillingLeaders organizationRef={organization} />
+      {tier !== 'starter' && <OrgPlans organizationRef={organization} />}
       <OrgPlanDrawer organizationRef={organization} />
     </Suspense>
   )
