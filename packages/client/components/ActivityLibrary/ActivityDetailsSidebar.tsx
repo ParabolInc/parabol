@@ -221,7 +221,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
           <div className='flex grow flex-col justify-end gap-2'>
             {error && <StyledError>{error.message}</StyledError>}
-            <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
+            <NewMeetingActionsCurrentMeetings team={selectedTeam} />
             <FlatPrimaryButton onClick={handleStartActivity} waiting={submitting} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>

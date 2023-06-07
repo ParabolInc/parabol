@@ -59,7 +59,7 @@ const SettingsRow = styled('div')({
 })
 
 const NewMeetingDialog = styled(DialogContainer)({
-  width: '860px',
+  width: '865px',
   borderRadius: Radius.FIELD,
 
   [MEDIA_QUERY_FUZZY_TABLET]: {
@@ -208,7 +208,6 @@ const NewMeeting = (props: Props) => {
               onSelectTeam={(teamId) => history.replace(`/new-meeting/${teamId}`)}
               selectedTeamRef={selectedTeam}
               teamsRef={teams}
-              parentId='newMeetingRoot'
             />
           </SettingsFirstRow>
           <SettingsRow>

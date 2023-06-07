@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -73,7 +72,6 @@ interface Props {
   reflectionGroupRef: ReflectionGroup_reflectionGroup$key
   swipeColumn?: SwipeColumn
   dataCy?: string
-  expandedReflectionGroupPortalParentId?: PortalId
   reflectionIdsToHide?: string[] | null
   isSpotlightEntering?: boolean
   showDragHintAnimation?: boolean
@@ -87,7 +85,6 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroupRef,
     swipeColumn,
     dataCy,
-    expandedReflectionGroupPortalParentId,
     reflectionIdsToHide,
     isSpotlightEntering,
     showDragHintAnimation
@@ -173,13 +170,7 @@ const ReflectionGroup = (props: Props) => {
   }, [visibleReflections])
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} =
-    useExpandedReflections(
-      groupRef,
-      stackRef,
-      visibleReflections.length,
-      headerRef,
-      expandedReflectionGroupPortalParentId
-    )
+    useExpandedReflections(groupRef, stackRef, visibleReflections.length, headerRef)
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === 'group' && !isComplete

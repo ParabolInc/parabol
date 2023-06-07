@@ -115,8 +115,7 @@ const GitHubFieldMenu = (props: Props) => {
     openPortal,
     closePortal: closeModal
   } = useModal({
-    id: 'editGitHubLabel',
-    parentId: 'githubFieldMenu'
+    id: 'editGitHubLabel'
   })
 
   if (task?.integration?.__typename !== '_xGitHubIssue') return null

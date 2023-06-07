@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.106.0 2023-May-31
+
+### Added
+
+- feat(suggest-groups): click button to group reflections (#8132)
+
+### Fixed
+
+- fix(rid): Fix changing prompt colors in activity library (#8279)
+- fix(recurrence): Incorrect start times due to timezone weirdness (#8269)
+- fix(summaries): Race condition around bulk task exports (#8287)
+
+## 6.105.1 2023-May-31
+
+### Fixed
+
+- fix: dumpHeap PROJECT_ROOT
+
+### Changed
+
+- chore(share-summary): Add feature flag (#8249)
+
 ## 6.105.0 2023-May-24
 
 ### Added
@@ -18,6 +40,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - feat: mutable category (#8159)
 - chore(metrics): Add event parameter is_patient_0 to GA4 sign up events (#8223)
 - feat(rid): Add feature flag based on params for email + google signups (#8211)
+- feat(prompt-to-join): Add teammate mutation (#8160)
+- feat: Don't show discussion mention toast if already on stage (#8270)
 
 ### Fixed
 
@@ -37,6 +61,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore: remove \_\_jsxRuntime path (#8154)
 - fix(rid): Navigate to activity lib for floating action button (#8215)
 - fix: slack notification race condition (#8197)
+- fix(standups): Remove CSV download button in standups (#8255)
+- fix: checkbox color overriden by styled components (#8257)
 
 ## 6.104.0 2023-May-17
 

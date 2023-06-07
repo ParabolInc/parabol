@@ -12,7 +12,7 @@ union CreateSetupIntentPayload = ErrorPayload | CreateSetupIntentSuccess
 
 type CreateSetupIntentSuccess {
   """
-  The client secret required to confirm the subscription set-up intent
+  Whether the intent was created successfully
   """
-  clientSecret: String!
+  success: Boolean!
 }

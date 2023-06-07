@@ -24,7 +24,6 @@ const StageTimerModalEndTimeHour = (props: Props) => {
     MenuPosition.LOWER_LEFT,
     {
       id: 'StageTimerEndTimePicker',
-      parentId: 'StageTimerModal',
       isDropdown: true
     }
   )

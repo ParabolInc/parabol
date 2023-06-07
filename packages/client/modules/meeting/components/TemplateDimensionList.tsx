@@ -9,14 +9,12 @@ import {TEMPLATE_DIMENSION} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
 import {TemplateDimensionList_dimensions$key} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
 import TemplateDimensionItem from './TemplateDimensionItem'
-import {PortalId} from '../../../hooks/usePortal'
 
 interface Props {
   isOwner: boolean
   dimensions: TemplateDimensionList_dimensions$key
   templateId: string
   readOnly?: boolean
-  parentId?: PortalId
 }
 
 const DimensionList = styled('div')({
@@ -26,7 +24,7 @@ const DimensionList = styled('div')({
 })
 
 const TemplateDimensionList = (props: Props) => {
-  const {isOwner, dimensions: dimensionsRef, templateId, parentId, readOnly} = props
+  const {isOwner, dimensions: dimensionsRef, templateId, readOnly} = props
   const dimensions = useFragment(
     graphql`
       fragment TemplateDimensionList_dimensions on TemplateDimension @relay(plural: true) {
@@ -98,7 +96,6 @@ const TemplateDimensionList = (props: Props) => {
                             dimensions={dimensions}
                             isDragging={dragSnapshot.isDragging}
                             dragProvided={dragProvided}
-                            parentId={parentId}
                           />
                         )
                       }}

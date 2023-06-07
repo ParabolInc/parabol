@@ -4,7 +4,7 @@ import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
   static PARABOL_TEAM_600 = 'parabol-pro-600' // $6/seat/mo
-  static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
+  static PARABOL_ENTERPRISE_2021_LOW = 'plan_2021_ann_low'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {apiVersion: '2020-08-27'})
 
@@ -47,7 +47,7 @@ export default class StripeManager {
       proration_behavior: 'none',
       items: [
         {
-          plan: plan || StripeManager.PARABOL_ENTERPRISE_2019Q3,
+          plan: plan || StripeManager.PARABOL_ENTERPRISE_2021_LOW,
           quantity
         }
       ]

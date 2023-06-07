@@ -6,6 +6,8 @@ enum OrganizationFeatureFlagsEnum {
   noAISummary
   promptToJoinOrg
   suggestGroups
+  zoomTranscription
+  shareSummary
   teamHealth
   teamsLimit
 }

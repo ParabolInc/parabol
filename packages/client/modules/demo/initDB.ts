@@ -297,6 +297,13 @@ const initDemoOrg = () => {
       activeUserCount: 5,
       inactiveUserCount: 0
     },
+    featureFlags: {
+      SAMLUI: false,
+      zoomTranscription: false,
+      suggestGroups: false,
+      teamsLimit: false,
+      promptToJoinOrg: false
+    },
     showConversionModal: false
   } as const
 }
