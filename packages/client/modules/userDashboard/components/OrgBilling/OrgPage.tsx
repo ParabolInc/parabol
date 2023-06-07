@@ -11,8 +11,8 @@ const Container = styled('div')({
   padding: '0px 48px 24px 48px'
 })
 
-const OrgPlansAndBilling = lazy(
-  () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBilling')
+const OrgPlansAndBillingRoot = lazy(
+  () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBillingRoot')
 )
 const OrgMembers = lazy(
   () =>
@@ -30,7 +30,7 @@ const OrgPage = (props: Props) => {
       fragment OrgPage_organization on Organization {
         id
         ...OrgNav_organization
-        ...OrgPlansAndBilling_organization
+        ...OrgPlansAndBillingRoot_organization
       }
     `,
     organizationRef
@@ -50,7 +50,7 @@ const OrgPage = (props: Props) => {
         <Route
           exact
           path={`${match.url}/${BILLING_PAGE}`}
-          render={() => <OrgPlansAndBilling organizationRef={organization} />}
+          render={() => <OrgPlansAndBillingRoot organizationRef={organization} />}
         />
         <Route
           exact
