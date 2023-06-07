@@ -8,7 +8,6 @@ on:
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
-  CI: true
 
 jobs:
   build:
@@ -84,11 +83,11 @@ jobs:
           yarn pg:migrate up
           yarn pg:build
 
-      - name: Build cheap
+      - name: Build for testing
         if: env.DOCKERIZE != 'true'
         run: yarn build
 
-      - name: Build prod
+      - name: Build for deploying
         if: env.DOCKERIZE == 'true'
         run: yarn build --no-deps
 
@@ -97,22 +96,6 @@ jobs:
 
       - name: Check Code Quality
         run: yarn codecheck
-
-      - name: Store Playwright Version
-        run: |
-          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
-
-      - name: Cache Playwright Browsers
-        id: cache-playwright-browsers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
-
-      - name: Setup Playwright
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
 
       - name: Run Postdeploy for Testing
         run: yarn postdeploy
@@ -138,8 +121,24 @@ jobs:
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
 
+      - name: Store Playwright Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers
+        id: cache-playwright-browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Setup Playwright
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
       - name: Run Playwright Tests
-        run: yarn workspace integration-tests test --workers 2 --reporter list,junit
+        run: yarn workspace integration-tests test --reporter list,junit
         env:
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
 
