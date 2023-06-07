@@ -1,14 +1,15 @@
+import {expect, test} from '@playwright/test'
 import config from '../config'
-import {test, expect} from '@playwright/test'
 import {
-  startDemo,
   dragReflectionCard,
   goToNextPhase,
-  skipToGroupPhase
+  skipToGroupPhase,
+  startDemo
 } from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / group page', () => {
   test('it carries over user-entered input from the reflect phase', async ({page}) => {
+    test.setTimeout(30_000)
     await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
@@ -44,6 +45,7 @@ test.describe('retrospective-demo / group page', () => {
   test('it allows grouping user-entered input from the reflect phase - same column', async ({
     page
   }) => {
+    test.setTimeout(30_000)
     await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
@@ -83,6 +85,7 @@ test.describe('retrospective-demo / group page', () => {
     page,
     isMobile
   }) => {
+    test.setTimeout(30_000)
     test.skip(
       isMobile,
       'Scrolling between columns while dragging presents problems. See https://github.com/microsoft/playwright/issues/12599 and upvote https://github.com/microsoft/playwright/issues/2903.'

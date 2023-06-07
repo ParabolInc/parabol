@@ -70,8 +70,6 @@ test('Draft enterprise invoice payload', async () => {
     },
     isPrivate: true
   })
-  console.log(JSON.stringify(invoice))
-  console.log('SECRET', process.env.STRIPE_SECRET_KEY)
   expect(invoice).toMatchObject({
     data: {
       draftEnterpriseInvoice: {
