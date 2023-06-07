@@ -61,6 +61,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
           teamHealthEnabled ? row('phaseTypes').insertAt(1, 'TEAM_HEALTH') : row('phaseTypes'),
           teamHealthEnabled ? row('phaseTypes').prepend('TEAM_HEALTH') : row('phaseTypes')
         )
+        meetingSettings.hasTeamHealth = teamHealthEnabled
       }
 
       if (isNotNull(disableAnonymity)) {

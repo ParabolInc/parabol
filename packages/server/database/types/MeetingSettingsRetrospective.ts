@@ -32,6 +32,8 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
   disableAnonymity: boolean
   videoMeetingURL?: string | null
   recallBotId?: string | null
+  // store if we've added the team health phase to the meeting
+  addTeamHealth?: boolean
   constructor(input: Input) {
     const {
       teamId,
@@ -53,5 +55,6 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
     this.disableAnonymity = disableAnonymity ?? false
     this.videoMeetingURL = videoMeetingURL
     this.recallBotId = recallBotId
+    this.addTeamHealth = addTeamHealth
   }
 }

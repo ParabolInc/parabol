@@ -18,6 +18,7 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
 import TeamHealthStage from '../../../database/types/TeamHealthStage'
@@ -76,13 +77,31 @@ const createNewMeetingPhases = async (
   meetingType: MeetingTypeEnum,
   dataLoader: DataLoaderWorker
 ) => {
-  const [meetingSettings, stageDurations] = await Promise.all([
+  const [meetingSettings, stageDurations, team] = await Promise.all([
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
-    getPastStageDurations(teamId)
+    getPastStageDurations(teamId),
+    dataLoader.get('teams').load(teamId)
   ])
   const {phaseTypes} = meetingSettings
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const asyncSideEffects = [] as Promise<any>[]
+
+  // sneak in team health to enable it by default
+  if (meetingType === 'retrospective') {
+    const {tier = 'starter'} = team ?? {}
+    console.log('GEORG tier', tier)
+    console.log('GEORG settings', meetingSettings)
+    if (
+      tier !== 'starter' &&
+      (meetingSettings as MeetingSettingsRetrospective).addTeamHealth === undefined
+    ) {
+      if (phaseTypes[0] === CHECKIN) {
+        phaseTypes.splice(1, 0, 'TEAM_HEALTH')
+      } else {
+        phaseTypes.unshift('TEAM_HEALTH')
+      }
+    }
+  }
 
   const phases = (await Promise.all(
     phaseTypes.map(async (phaseType) => {

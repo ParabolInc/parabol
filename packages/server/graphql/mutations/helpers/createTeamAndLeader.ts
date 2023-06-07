@@ -24,8 +24,8 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
   const {id: userId} = user
   const {id: teamId, orgId} = newTeam
   const organization = await r.table('Organization').get(orgId).run()
-  const {tier, featureFlags} = organization
-  const teamHealth = featureFlags?.includes('teamHealth')
+  const {tier} = organization
+  const teamHealth = tier !== 'starter'
   const verifiedTeam = new Team({...newTeam, createdBy: userId, tier})
   const meetingSettings = [
     new MeetingSettingsRetrospective({teamId, addTeamHealth: teamHealth}),
