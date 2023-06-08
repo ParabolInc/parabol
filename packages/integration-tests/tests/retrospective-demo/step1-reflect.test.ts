@@ -18,7 +18,6 @@ test.describe('retrospective-demo / reflect page', () => {
   })
 
   test('allows the user to enter feedback in start column', async ({page}) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
@@ -32,7 +31,6 @@ test.describe('retrospective-demo / reflect page', () => {
   })
 
   test('allows the user to enter feedback in the stop column', async ({page}) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
@@ -46,7 +44,6 @@ test.describe('retrospective-demo / reflect page', () => {
   })
 
   test('allows the user to enter feedback in the continue column', async ({page}) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
@@ -60,7 +57,6 @@ test.describe('retrospective-demo / reflect page', () => {
   })
 
   test('allows the user to delete previously entered feedback', async ({page}) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
@@ -82,7 +78,6 @@ test.describe('retrospective-demo / reflect page', () => {
   })
 
   test('displays simulated users writing reflections in the start column', async ({page}) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     await expect(

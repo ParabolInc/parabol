@@ -70,6 +70,7 @@ test('Draft enterprise invoice payload', async () => {
     },
     isPrivate: true
   })
+
   expect(invoice).toMatchObject({
     data: {
       draftEnterpriseInvoice: {

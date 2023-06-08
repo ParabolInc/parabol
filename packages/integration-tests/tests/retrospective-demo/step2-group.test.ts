@@ -9,7 +9,6 @@ import {
 
 test.describe('retrospective-demo / group page', () => {
   test('it carries over user-entered input from the reflect phase', async ({page}) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
@@ -45,7 +44,6 @@ test.describe('retrospective-demo / group page', () => {
   test('it allows grouping user-entered input from the reflect phase - same column', async ({
     page
   }) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
@@ -85,7 +83,6 @@ test.describe('retrospective-demo / group page', () => {
     page,
     isMobile
   }) => {
-    test.setTimeout(30_000)
     test.skip(
       isMobile,
       'Scrolling between columns while dragging presents problems. See https://github.com/microsoft/playwright/issues/12599 and upvote https://github.com/microsoft/playwright/issues/2903.'
@@ -198,7 +195,6 @@ test.describe('retrospective-demo / group page', () => {
     page,
     isMobile
   }) => {
-    test.setTimeout(30_000)
     test.skip(
       isMobile,
       'For some reason, we get an "Element is out of viewport" error on this page when toggling the sidebar on mobile. This does not happen in other phases.'
