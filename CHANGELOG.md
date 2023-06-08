@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.107.1 2023-June-8
+
+### Fixed:
+
+- fix: Many public templates not displayed
+
 ## 6.107.0 2023-June-7
 
 ### Added
