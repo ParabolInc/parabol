@@ -123,6 +123,7 @@ export const enum ElementHeight {
 
 export const enum ExternalLinks {
   EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
+  LOGO = 'https://action-files.parabol.co/static/favicon-with-more-padding.jpeg',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_RETRO_VIDEO = 'https://www.parabol.co/resources/retrospective-meetings/#video',
@@ -515,5 +516,7 @@ export const enum AIExplainer {
 
 export const enum EmptyMeetingViewMessage {
   NO_ACTIVE_MEETINGS = `Looks like you have no upcoming meetings 😎 Start one now or check out these tips and tricks.`,
-  NO_SEARCH_RESULTS = `Sorry we could not find any meetings matched with your query. Would you like to checkout these tips and tricks?`
+  NO_SEARCH_RESULTS = `Sorry, we could not find any meetings that matched with your query. Would you like to checkout these tips and tricks?`,
+  NO_ACTIVE_MEETINGS_ON_THE_TEAM = `Looks like you have no upcoming meetings on this team.`,
+  NO_SEARCH_RESULTS_ON_THE_TEAM = `Sorry, we could not find any meetings that matched with your query on this team.`
 }

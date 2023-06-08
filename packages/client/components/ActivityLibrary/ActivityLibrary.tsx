@@ -71,7 +71,9 @@ const CREATE_CUSTOM_ACTIVITY_ALLOW_LIST: Array<typeof QUICK_START_CATEGORY_ID | 
   'retrospective',
   'feedback',
   'strategy',
-  'estimation'
+  'estimation',
+  'premortem',
+  'postmortem'
 ]
 
 const CategoryIDToColorClass = {

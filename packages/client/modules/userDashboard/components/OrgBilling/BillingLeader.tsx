@@ -65,7 +65,6 @@ const BillingLeader = (props: Props) => {
   const billingLeader = useFragment(
     graphql`
       fragment BillingLeader_user on User {
-        ...BillingLeaderMenu_user
         id
         preferredName
         picture
@@ -141,8 +140,9 @@ const BillingLeader = (props: Props) => {
               <BillingLeaderMenu
                 toggleLeave={toggleLeave}
                 menuProps={menuProps}
-                billingLeaderRef={billingLeader}
+                userId={userId}
                 toggleRemove={toggleRemove}
+                orgId={orgId}
               />
             )}
           </MenuToggleBlock>

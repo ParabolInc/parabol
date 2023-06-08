@@ -30,7 +30,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flexDirection: 'column',
   height: '100%',
   justifyContent: 'center',
-  margin: '0 auto',
+  margin: '0',
   overflow: 'auto',
   padding: isDesktop ? '0 0 16px' : undefined,
   width: '100%'

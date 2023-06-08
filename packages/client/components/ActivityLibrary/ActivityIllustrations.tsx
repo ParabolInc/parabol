@@ -46,6 +46,8 @@ import workingStuckTemplate from '../../../../static/images/illustrations/workin
 import wsjfTemplate from '../../../../static/images/illustrations/wsjfTemplate.png'
 import estimatedEffortTemplate from '../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
+import preMortemTemplate from '../../../../static/images/illustrations/preMortemTemplate.png'
+import postMortemTemplate from '../../../../static/images/illustrations/postMortemTemplate.png'
 
 import action from '../../../../static/images/illustrations/action.png'
 import retrospective from '../../../../static/images/illustrations/retrospective.png'
@@ -103,7 +105,53 @@ export const retroIllustrations = {
   whatWentWellTemplate: whatWentWellTemplate,
   winningStreakTemplate: winningStreakTemplate,
   workingStuckTemplate: workingStuckTemplate,
-  wsjfTemplate: wsjfTemplate
+  wsjfTemplate: wsjfTemplate,
+  glassHalfemptyPremortemTemplate: preMortemTemplate,
+  blindSpotPremortemTemplate: preMortemTemplate,
+  whatIfPremortemTemplate: preMortemTemplate,
+  threatLevelPremortemTemplate: preMortemTemplate,
+  howLikelyToFailPremortemTemplate: preMortemTemplate,
+  excitedAndWorriedPremortemTemplate: preMortemTemplate,
+  iguanaCrocodileKomodoDragonPremortemTemplate: preMortemTemplate,
+  safariPremortemTemplate: preMortemTemplate,
+  budgetReviewPostmortemTemplate: postMortemTemplate,
+  controlRangePostmortemTemplate: postMortemTemplate,
+  processImprovementPostmortemTemplate: postMortemTemplate,
+  simplePostmortemTemplate: postMortemTemplate,
+  agilePostmortemTemplate: postMortemTemplate,
+  timeManagementPostmortemTemplate: postMortemTemplate,
+  iTProjectPostmortemTemplate: postMortemTemplate,
+  softwareProjectPostmortemTemplate: postMortemTemplate,
+  engineeringPostmortemTemplate: postMortemTemplate,
+  postmortemAnalysisTemplate: postMortemTemplate,
+  postincidentReviewTemplate: postMortemTemplate,
+  incidentResponsePostmortemTemplate: postMortemTemplate,
+  incidentImpactPostmortemTemplate: postMortemTemplate,
+  riskManagementPostmortemTemplate: postMortemTemplate,
+  teamPerformancePostmortemTemplate: postMortemTemplate,
+  featureLaunchPostmortemTemplate: postMortemTemplate,
+  stakeholderSatisfactionPostmortemTemplate: postMortemTemplate,
+  scrumRolesPremortemTemplate: preMortemTemplate,
+  scrumSprintPremortemTemplate: preMortemTemplate,
+  communicationRisksPremortemTemplate: preMortemTemplate,
+  stakeholderConcernsPremortemTemplate: preMortemTemplate,
+  fortuneTellerPremortemTemplate: preMortemTemplate,
+  uncertainWatersPremortemTemplate: preMortemTemplate,
+  madScientistPremortemTemplate: preMortemTemplate,
+  blamelessPostmortemTemplate: postMortemTemplate,
+  remoteWorkPostmortemTemplate: postMortemTemplate,
+  superheroPostmortemTemplate: postMortemTemplate,
+  timeTravelPostmortemTemplate: postMortemTemplate,
+  movieDirectorPostmortemTemplate: postMortemTemplate,
+  gameShowPostmortemTemplate: postMortemTemplate,
+  whyDidTheProjectFailPremortemTemplate: preMortemTemplate,
+  successAndFailurePremortemTemplate: preMortemTemplate,
+  teamEfficiencyPremortemTemplate: preMortemTemplate,
+  obstacleCoursePremortemTemplate: preMortemTemplate,
+  timelinePremortemTemplate: preMortemTemplate,
+  resourceAllocationPremortemTemplate: preMortemTemplate,
+  bestworstCaseScenarioPremortemTemplate: preMortemTemplate,
+  risksAndPrecautionsPremortemTemplate: preMortemTemplate
 } as const
 
 export const activityIllustrations = {

@@ -10,6 +10,7 @@ import {PALETTE} from '../styles/paletteV3'
 import CommentingStatusText from './CommentingStatusText'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
+import Transcription from './Transcription'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -17,7 +18,6 @@ const EmptyWrapper = styled('div')({
   flexDirection: 'column',
   justifyContent: 'center',
   flex: 1,
-  padding: '8px 0',
   overflow: 'auto'
 })
 
@@ -25,8 +25,7 @@ const Wrapper = styled('div')({
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
-  overflow: 'auto',
-  padding: '8px 0'
+  overflow: 'auto'
 })
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
@@ -37,7 +36,7 @@ const PusherDowner = styled('div')({
 export const Header = styled(LabelHeading)({
   borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   margin: '0 0 8px',
-  padding: '6px 12px 12px',
+  padding: '12px',
   textTransform: 'none',
   width: '100%'
 })
@@ -59,6 +58,8 @@ interface Props {
   dataCy: string
   header?: ReactNode
   emptyState?: ReactNode
+  transcription?: string | null
+  showTranscription?: boolean
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
@@ -71,7 +72,9 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     preferredNames,
     viewer: viewerRef,
     header,
-    emptyState
+    transcription,
+    emptyState,
+    showTranscription
   } = props
   const viewer = useFragment(
     graphql`
@@ -101,7 +104,10 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     `,
     threadablesRef
   )
-  const isEmpty = threadables.length === 0
+
+  const isEmpty = showTranscription
+    ? !transcription || transcription.length === 0
+    : threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
   if (isEmpty && emptyState) {
     return (
@@ -119,18 +125,22 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
       {header}
       <PusherDowner />
-      {threadables.map((threadable) => {
-        const {id} = threadable
-        return (
-          <ThreadedItem
-            allowedThreadables={allowedThreadables}
-            viewer={viewer}
-            key={id}
-            threadable={threadable}
-            discussion={discussion}
-          />
-        )
-      })}
+      {showTranscription && transcription ? (
+        <Transcription transcription={transcription} />
+      ) : (
+        threadables.map((threadable) => {
+          const {id} = threadable
+          return (
+            <ThreadedItem
+              allowedThreadables={allowedThreadables}
+              viewer={viewer}
+              key={id}
+              threadable={threadable}
+              discussion={discussion}
+            />
+          )
+        })
+      )}
       <CommentingStatusText preferredNames={preferredNames} />
     </Wrapper>
   )

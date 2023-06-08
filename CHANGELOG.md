@@ -5,6 +5,72 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.107.1 2023-June-8
+
+### Fixed:
+
+- fix: Many public templates not displayed
+
+## 6.107.0 2023-June-7
+
+### Added
+
+- feat: add zoom transcription (#7949)
+- feat(checkout-flow): add org details (#8280)
+- feat(team health): voting and reveal (#8286)
+- feat(Team Health): Add summary (#8298)
+- feat(DX): Infer parent portal IDs through React context (#8310)
+- feat(checkout-flow): credit card UI (#8318)
+- feat(analytics): Track meeting category on meeting start (#8336)
+- feat(rid): Add new users to feature flag (#8337)
+- feat(rid): Add pre-/post-mortem templates (#8319)
+
+### Fixed
+
+- fix: auto update billing leader (#8277)
+- fix(prompt-to-join): fix add teammate routing when opened on a new tab (#8302)
+- fix(rid): Correct styles for non-owner readonly scales (#8301)
+- fix: fix loader.load with undefined in accept team invitation (#8300)
+- fix: Drain rethinkdb pool after running all migrations (#8315)
+- fix(rid): Long team names truncate instead of wrapping (#8311)
+- fix: update the default enterprise plan ID (#8320)
+- fix: dumpHeap to /tmp directory (#8325)
+- fix: show all slack channels in dropdown (#8329)
+- fix: better description for failed to execute removeChild on Node error (#8333)
+
+### Changed
+
+- chore(prompt-to-join): disable buttons when running accept request mutation(#8297)
+- chore: remove slackin broken link from readme (#8307)
+- chore: remove rethink templates (#8217)
+- chore: refactor updateUserProfile (#8295)
+- chore(prompt-to-join): allow non-verified emails (#8313)
+- chore: refactor FileStoreManager API (#8294)
+- style: updating plans UI for mobile screens (#8075)
+- chore: use git clean under the hood of yarn clean (#8342)
+
+## 6.106.0 2023-May-31
+
+### Added
+
+- feat(suggest-groups): click button to group reflections (#8132)
+
+### Fixed
+
+- fix(rid): Fix changing prompt colors in activity library (#8279)
+- fix(recurrence): Incorrect start times due to timezone weirdness (#8269)
+- fix(summaries): Race condition around bulk task exports (#8287)
+
+## 6.105.1 2023-May-31
+
+### Fixed
+
+- fix: dumpHeap PROJECT_ROOT
+
+### Changed
+
+- chore(share-summary): Add feature flag (#8249)
+
 ## 6.105.0 2023-May-24
 
 ### Added

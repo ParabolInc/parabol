@@ -1,4 +1,3 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../../database/rethinkDriver'
@@ -6,12 +5,19 @@ import {RValue} from '../../../database/stricterR'
 import {analytics, MeetingSettings} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
+import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import standardError from '../../../utils/standardError'
-import {GQLContext} from '../../graphql'
+
+const getBotId = async (videoMeetingURL?: string | null) => {
+  if (!videoMeetingURL) return null
+  const manager = new RecallAIServerManager()
+  const botId = await manager.createBot(videoMeetingURL)
+  return botId
+}
 
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,
-  {settingsId, checkinEnabled, teamHealthEnabled, disableAnonymity},
+  {settingsId, checkinEnabled, teamHealthEnabled, disableAnonymity, videoMeetingURL},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
@@ -25,9 +31,14 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     return standardError(new Error('Settings not found'), {userId: viewerId})
   }
   const {teamId, meetingType} = settings
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const organization = await dataLoader.get('organizations').load(team.orgId)
+  const {featureFlags} = organization
+  const hasTranscriptFlag = featureFlags?.includes('zoomTranscription')
+  const recallBotId = hasTranscriptFlag ? await getBotId(videoMeetingURL) : null
 
-  const meetingSettings = {} as MeetingSettings
   // RESOLUTION
+  const meetingSettings = {} as MeetingSettings
   await r
     .table('MeetingSettings')
     .get(settingsId)
@@ -55,6 +66,13 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
       if (isNotNull(disableAnonymity)) {
         updatedSettings.disableAnonymity = disableAnonymity
         meetingSettings.disableAnonymity = disableAnonymity
+      }
+
+      if (isNotNull(videoMeetingURL) && isNotNull(recallBotId)) {
+        updatedSettings.videoMeetingURL = videoMeetingURL
+        updatedSettings.recallBotId = recallBotId
+        meetingSettings.videoMeetingURL = videoMeetingURL
+        meetingSettings.recallBotId = recallBotId
       }
 
       return updatedSettings

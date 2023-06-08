@@ -5,7 +5,6 @@ import React, {PropsWithChildren, useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import {PortalId} from '../../../hooks/usePortal'
 import plural from '../../../utils/plural'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
@@ -171,7 +170,6 @@ export interface RecurrenceSettings {
 }
 
 interface Props {
-  parentId: PortalId
   onRecurrenceSettingsUpdated: (
     recurrenceSettings: RecurrenceSettings,
     validationErrors: string[] | undefined
@@ -180,7 +178,7 @@ interface Props {
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {parentId, onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
   const [name, setName] = React.useState(meetingSeriesName)
   const [nameError, setNameError] = React.useState<string | undefined>()
@@ -212,7 +210,6 @@ export const RecurrenceSettings = (props: Props) => {
     MenuPosition.LOWER_LEFT,
     {
       id: 'recurrenceStartTimePicker',
-      parentId,
       isDropdown: true
     }
   )

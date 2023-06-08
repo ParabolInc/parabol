@@ -189,7 +189,6 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   return (
     <UpdateRecurrenceSettingsModalRoot>
       <RecurrenceSettings
-        parentId='updateRecurrenceSettingsModal'
         recurrenceSettings={newRecurrenceSettings}
         onRecurrenceSettingsUpdated={handleNewRecurrenceSettings}
       />

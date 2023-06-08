@@ -1,13 +1,13 @@
 // Should roughly match runMigrations.js except it isn't run in PM2 in dev
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
-import Redis from 'ioredis'
 import path from 'path'
 import {parse} from 'url'
 import cliPgmConfig from '../../packages/server/postgres/pgmConfig'
 import '../webpack/utils/dotenv'
 import pgMigrate from './pgMigrateRunner'
 import * as rethinkMigrate from './rethinkMigrateRunner'
+import {r} from 'rethinkdb-ts'
 
 const migrateRethinkDB = async () => {
   const {hostname, port, path: urlPath} = parse(process.env.RETHINKDB_URL!)
@@ -61,7 +61,8 @@ const migrateDBs = async () => {
   // RethinkDB must be run first because
   // Some PG migrations depemd on the latest state of RethinkDB
   await migrateRethinkDB()
-  return migratePG()
+  await migratePG()
+  await r.getPoolMaster()?.drain()
 }
 
 migrateDBs()

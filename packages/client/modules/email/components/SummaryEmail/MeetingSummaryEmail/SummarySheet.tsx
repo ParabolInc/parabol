@@ -13,6 +13,7 @@ import MeetingMembersWithoutTasks from './MeetingMembersWithoutTasks'
 import MeetingMembersWithTasks from './MeetingMembersWithTasks'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 import QuickStats from './QuickStats'
+import TeamHealthSummary from './TeamHealthSummary'
 import RetroTopics from './RetroTopics'
 import SummaryHeader from './SummaryHeader'
 import SummaryPokerStories from './SummaryPokerStories'
@@ -70,6 +71,7 @@ const SummarySheet = (props: Props) => {
         ...WholeMeetingSummary_meeting
         ...SummaryHeader_meeting
         ...QuickStats_meeting
+        ...TeamHealthSummary_meeting
         ...MeetingMembersWithTasks_meeting
         ...MeetingMembersWithoutTasks_meeting
         ...RetroTopics_meeting
@@ -92,6 +94,7 @@ const SummarySheet = (props: Props) => {
           <td>
             <SummaryHeader meeting={meeting} corsOptions={corsOptions} />
             <QuickStats meeting={meeting} />
+            <TeamHealthSummary meeting={meeting} />
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
