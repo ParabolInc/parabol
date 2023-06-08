@@ -17,8 +17,16 @@ export default class StripeManager {
     }
   }
 
-  async attachPaymentToCustomer(customerId: string, paymentMethodId: string) {
-    return this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+  async attachPaymentToCustomer(
+    customerId: string,
+    paymentMethodId: string
+  ): Promise<Stripe.Response<Stripe.PaymentMethod> | Error> {
+    try {
+      return await this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
   }
 
   async createCustomer(orgId: string, email: string, source?: string) {

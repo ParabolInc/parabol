@@ -45,7 +45,8 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
     ? await manager.retrieveCustomer(stripeId)
     : await manager.createCustomer(orgId, email)
   const {id: customerId} = customer
-  await manager.attachPaymentToCustomer(customerId, paymentMethodId)
+  const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
+  if (res instanceof Error) return standardError(res, {userId: viewerId})
   // wait until the payment is attached to the customer before updating the default payment method
   await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
   const subscription = await manager.createTeamSubscription(customer.id, orgId, orgUsersCount)

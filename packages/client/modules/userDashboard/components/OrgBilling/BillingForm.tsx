@@ -139,12 +139,15 @@ const BillingForm = (props: Props) => {
       const {createStripeSubscription} = res
       const stripeSubscriptionClientSecret =
         createStripeSubscription?.stripeSubscriptionClientSecret
-      if (!stripeSubscriptionClientSecret) {
-        setErrorMsg('Something went wrong. Please try again or contact support.')
+      if (createStripeSubscription.error || stripeSubscriptionClientSecret) {
+        const newErrMsg =
+          createStripeSubscription.error?.message ??
+          'Something went wrong. Please try again or contact support.'
         setIsLoading(false)
+        setErrorMsg(newErrMsg)
         return
       }
-      const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret!)
       if (error) {
         setIsLoading(false)
         setErrorMsg(error.message)
