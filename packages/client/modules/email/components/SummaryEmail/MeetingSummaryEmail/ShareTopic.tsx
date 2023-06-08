@@ -31,22 +31,25 @@ const style = {
 
 const ShareTopic = (props: Props) => {
   const {isDemo, isEmail, meetingId, stageId, appOrigin} = props
-  const {history} = useRouter()
-  const location = useLocation()
 
   const path = `new-summary/${meetingId}/share/${stageId}`
-
   const href = makeAppURL(appOrigin, path)
 
-  if (isEmail || isDemo) {
+  if (isEmail) {
     return (
-      <AnchorIfEmail isEmail={true} isDemo={isDemo} href={href} style={style} title={label}>
+      <AnchorIfEmail isEmail={true} href={href} style={style} title={label}>
         {label}
       </AnchorIfEmail>
     )
   }
 
+  // Avoid calling hooks when doing SSR
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const {history} = useRouter()
+  const location = useLocation()
+
   const onClick = () => {
+    if (isDemo) return
     history.replace(`/${path}`, {
       backgroundLocation: location
     })
