@@ -5,12 +5,12 @@ import {MeetingTemplateResolvers} from '../resolverTypes'
 const RECOMMENDED_TEMPLATES = [
   'teamCharterTemplate',
   'startStopContinueTemplate',
-  'estimatedEffortTemplate'
+  'estimatedEffortTemplate',
+  'incidentResponsePostmortemTemplate',
+  'successAndFailurePremortemTemplate'
 ]
 
 const MeetingTemplate: MeetingTemplateResolvers = {
-  // hack
-  __resolveType: undefined as any,
   category: ({mainCategory}, _args, _context) => mainCategory,
   isRecommended: ({id}, _args, _context) => {
     return RECOMMENDED_TEMPLATES.includes(id)
