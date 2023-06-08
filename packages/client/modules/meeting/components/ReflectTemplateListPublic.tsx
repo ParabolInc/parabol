@@ -48,7 +48,7 @@ const query = graphql`
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
             templateSearchQuery
-            publicTemplates(first: 50)
+            publicTemplates(first: 100)
               @connection(key: "ReflectTemplateListPublic_publicTemplates") {
               edges {
                 node {
