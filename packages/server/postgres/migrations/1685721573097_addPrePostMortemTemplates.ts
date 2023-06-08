@@ -1,12 +1,10 @@
-import {r} from 'rethinkdb-ts'
-import {Client} from 'pg'
-import getPgConfig from '../getPgConfig'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import getPg from '../getPg'
+import {Client} from 'pg'
 import pgpInit from 'pg-promise'
+import {r} from 'rethinkdb-ts'
 import {ParabolR} from '../../database/rethinkDriver'
-import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import getPgConfig from '../getPgConfig'
 
 interface Prompt {
   question: string
@@ -993,7 +991,7 @@ const getTemplateIllustrationUrl = (filename: string) => {
   throw new Error('Mssing Env: FILE_STORE_PROVIDER')
 }
 
-const makeTemplate = (template: Template): ReflectTemplate => ({
+const makeTemplate = (template: Template) => ({
   createdAt,
   id: makeId(template.name, 'template'),
   isActive: true,
