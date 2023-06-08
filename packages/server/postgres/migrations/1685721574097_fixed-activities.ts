@@ -97,6 +97,7 @@ export async function up() {
   }
 
   await fixIllustrationURLforLocalCDNs()
+  await client.query(`DELETE FROM "MeetingTemplate" WHERE id = 'action' OR id = 'teamPrompt';`)
   const teamPromptActivity = {
     id: 'teamPrompt',
     type: 'teamPrompt',
