@@ -29,6 +29,19 @@ export default class StripeManager {
     }
   }
 
+  async retrieveCardDetails(paymentMethodId: string): Promise<Stripe.PaymentMethod.Card | Error> {
+    try {
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(paymentMethodId)
+      if (paymentMethod.type !== 'card') {
+        throw new Error('Payment method is not a card')
+      }
+      return paymentMethod.card as Stripe.PaymentMethod.Card
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
   async createCustomer(orgId: string, email: string, source?: string) {
     return this.stripe.customers.create({
       email,
