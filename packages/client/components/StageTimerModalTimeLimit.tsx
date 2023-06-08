@@ -78,7 +78,6 @@ const StageTimerModalTimeLimit = (props: Props) => {
     originRef
   } = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
     id: 'StageTimerMinutePicker',
-    parentId: 'StageTimerModal',
     isDropdown: true
   })
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()

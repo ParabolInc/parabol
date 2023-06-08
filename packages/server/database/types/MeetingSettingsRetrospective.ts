@@ -9,6 +9,8 @@ interface Input {
   totalVotes?: number
   selectedTemplateId?: string
   disableAnonymity?: boolean
+  videoMeetingURL?: string
+  recallBotId?: string
   addTeamHealth?: boolean
 }
 
@@ -28,6 +30,8 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
   totalVotes: number
   selectedTemplateId: string
   disableAnonymity: boolean
+  videoMeetingURL?: string | null
+  recallBotId?: string | null
   constructor(input: Input) {
     const {
       teamId,
@@ -36,6 +40,8 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
       selectedTemplateId,
       totalVotes,
       disableAnonymity,
+      videoMeetingURL,
+      recallBotId,
       addTeamHealth
     } = input
     const featurePhaseTypes = addTeamHealth ? teamHealthPhaseTypes : phaseTypes
@@ -45,5 +51,7 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
     this.totalVotes = totalVotes ?? MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT
     this.selectedTemplateId = selectedTemplateId || 'workingStuckTemplate'
     this.disableAnonymity = disableAnonymity ?? false
+    this.videoMeetingURL = videoMeetingURL
+    this.recallBotId = recallBotId
   }
 }

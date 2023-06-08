@@ -172,12 +172,7 @@ const ReflectTemplateDetails = (props: Props) => {
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
-        <TemplatePromptList
-          isOwner={isOwner}
-          prompts={prompts}
-          templateId={templateId}
-          parentId='templateModal'
-        />
+        <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
         <TemplateSharing isOwner={isOwner} template={activeTemplate} />
       </Scrollable>

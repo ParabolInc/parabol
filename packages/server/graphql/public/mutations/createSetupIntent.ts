@@ -1,6 +1,7 @@
 import {MONTHLY_PRICE} from 'parabol-client/utils/constants'
 import {r} from 'rethinkdb-ts'
 import {getUserId} from '../../../utils/authorization'
+import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -17,10 +18,18 @@ const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
   ])
   const {email} = viewer
   if (!organizationUser) {
-    return {error: 'Viewer does not belong to this organization'}
+    return standardError(new Error('Viewer does not belong to this organization'), {
+      userId: viewerId
+    })
   }
 
-  const {stripeId} = organization
+  const {stripeId, tier} = organization
+  if (tier !== 'starter') {
+    return standardError(new Error('Only starter organizations can create setup intents'), {
+      userId: viewerId
+    })
+  }
+
   const manager = getStripeManager()
   const customer = stripeId
     ? await manager.retrieveCustomer(stripeId)
@@ -30,10 +39,9 @@ const createSetupIntent: MutationResolvers['createSetupIntent'] = async (
     r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
   }
 
-  const setupIntent = await manager.createSetupIntent(customer.id)
+  await manager.createSetupIntent(customer.id)
 
-  const {client_secret: clientSecret} = setupIntent
-  const data = {clientSecret}
+  const data = {success: true}
   return data
 }
 

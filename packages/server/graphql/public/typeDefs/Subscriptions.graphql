@@ -26,10 +26,12 @@ type MeetingSubscriptionPayload {
   PromoteNewMeetingFacilitatorPayload: PromoteNewMeetingFacilitatorPayload
   RemoveReflectionPayload: RemoveReflectionPayload
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
+  RevealTeamHealthVotesSuccess: RevealTeamHealthVotesSuccess
   SetPhaseFocusPayload: SetPhaseFocusPayload
   SetStageTimerPayload: SetStageTimerPayload
-  StartDraggingReflectionPayload: StartDraggingReflectionPayload
   SetTaskHighlightSuccess: SetTaskHighlightSuccess
+  SetTeamHealthVoteSuccess: SetTeamHealthVoteSuccess
+  StartDraggingReflectionPayload: StartDraggingReflectionPayload
   UpdateCommentContentSuccess: UpdateCommentContentSuccess
   UpdateDragLocationPayload: UpdateDragLocationPayload
   UpdateMeetingPromptSuccess: UpdateMeetingPromptSuccess
@@ -88,8 +90,7 @@ type OrganizationSubscriptionPayload {
   DowngradeToStarterPayload: DowngradeToStarterPayload
   PayLaterPayload: PayLaterPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
-  SetOrgUserRoleAddedPayload: SetOrgUserRoleAddedPayload
-  SetOrgUserRoleRemovedPayload: SetOrgUserRoleRemovedPayload
+  SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload
   UpgradeToTeamTierPayload: UpgradeToTeamTierPayload

@@ -38,6 +38,7 @@ extend type RetrospectiveMeeting {
   spotlightGroup: RetroReflectionGroup
   spotlightReflectionId: String
   spotlightSearchQuery: String
+  showTranscription: Boolean!
 }
 
 extend type TeamPromptMeeting {

@@ -13,7 +13,6 @@ import {TemplatePromptItem_prompt$key} from '../../../__generated__/TemplateProm
 import EditableTemplateDescription from './EditableTemplateDescription'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 import EditableTemplatePromptColor from './EditableTemplatePromptColor'
-import {PortalId} from '../../../hooks/usePortal'
 
 interface Props {
   isOwner: boolean
@@ -21,7 +20,6 @@ interface Props {
   prompt: TemplatePromptItem_prompt$key
   prompts: TemplatePromptItem_prompts$key
   dragProvided: DraggableProvided
-  parentId?: PortalId
 }
 
 interface StyledProps {
@@ -66,14 +64,7 @@ const PromptAndDescription = styled('div')({
 })
 
 const TemplatePromptItem = (props: Props) => {
-  const {
-    dragProvided,
-    isDragging,
-    isOwner,
-    prompt: promptRef,
-    prompts: promptsRef,
-    parentId
-  } = props
+  const {dragProvided, isDragging, isOwner, prompt: promptRef, prompts: promptsRef} = props
   const prompts = useFragment(
     graphql`
       fragment TemplatePromptItem_prompts on ReflectPrompt @relay(plural: true) {
@@ -127,12 +118,7 @@ const TemplatePromptItem = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <EditableTemplatePromptColor
-        isOwner={isOwner}
-        prompt={prompt}
-        prompts={prompts}
-        parentId={parentId}
-      />
+      <EditableTemplatePromptColor isOwner={isOwner} prompt={prompt} prompts={prompts} />
       <PromptAndDescription>
         <EditableTemplatePrompt
           isOwner={isOwner}

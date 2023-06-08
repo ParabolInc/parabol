@@ -223,7 +223,6 @@ export const TemplateDetails = (props: Props) => {
                 )}
               >
                 <UnstyledTemplateSharing
-                  noModal={true}
                   isOwner={isOwner}
                   template={activity}
                   readOnly={!isEditing}

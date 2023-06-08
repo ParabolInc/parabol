@@ -21,7 +21,7 @@ const ColumnsBlock = styled('div')({
   display: 'flex',
   flex: '1',
   height: '100%',
-  margin: '0 auto',
+  margin: '0',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
   overflow: 'auto',
   padding: `0 10px`,
