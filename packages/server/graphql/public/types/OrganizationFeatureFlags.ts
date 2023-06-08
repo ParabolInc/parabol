@@ -7,7 +7,6 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,
   shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
-  teamHealth: ({teamHealth}) => !!teamHealth,
   teamsLimit: ({teamsLimit}) => !!teamsLimit
 }
 

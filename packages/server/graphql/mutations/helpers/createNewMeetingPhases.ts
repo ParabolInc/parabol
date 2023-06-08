@@ -18,7 +18,6 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
 import TeamHealthStage from '../../../database/types/TeamHealthStage'
@@ -28,6 +27,7 @@ import UpdatesStage from '../../../database/types/UpdatesStage'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
+import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -86,25 +86,9 @@ const createNewMeetingPhases = async (
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const asyncSideEffects = [] as Promise<any>[]
 
-  // sneak in team health to enable it by default
-  if (meetingType === 'retrospective') {
-    const {tier = 'starter'} = team ?? {}
-    console.log('GEORG tier', tier)
-    console.log('GEORG settings', meetingSettings)
-    if (
-      tier !== 'starter' &&
-      (meetingSettings as MeetingSettingsRetrospective).addTeamHealth === undefined
-    ) {
-      if (phaseTypes[0] === CHECKIN) {
-        phaseTypes.splice(1, 0, 'TEAM_HEALTH')
-      } else {
-        phaseTypes.unshift('TEAM_HEALTH')
-      }
-    }
-  }
-
+  const {tier = 'starter'} = team ?? {}
   const phases = (await Promise.all(
-    phaseTypes.map(async (phaseType) => {
+    phaseTypes.filter(isPhaseAvailable(tier)).map(async (phaseType) => {
       const durations = stageDurations[phaseType]
       switch (phaseType) {
         case CHECKIN:

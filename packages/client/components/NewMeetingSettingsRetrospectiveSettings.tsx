@@ -57,15 +57,17 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment NewMeetingSettingsRetrospectiveSettings_organization on Organization {
+        tier
         featureFlags {
           zoomTranscription
-          teamHealth
         }
       }
     `,
     organizationRef
   )
-  const {zoomTranscription, teamHealth} = organization.featureFlags
+  const {tier} = organization
+  const teamHealthAvailable = tier !== 'starter'
+  const {zoomTranscription} = organization.featureFlags
 
   return (
     <>
@@ -79,7 +81,9 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       {menuPortal(
         <div {...menuProps}>
           <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
-          {teamHealth && <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />}
+          {teamHealthAvailable && (
+            <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />
+          )}
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
           {zoomTranscription && <NewMeetingSettingsToggleTranscription settingsRef={settings} />}
         </div>

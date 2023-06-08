@@ -30,6 +30,8 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   if (!settings) {
     return standardError(new Error('Settings not found'), {userId: viewerId})
   }
+
+  // RESOLUTION
   const {teamId, meetingType} = settings
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const organization = await dataLoader.get('organizations').load(team.orgId)
@@ -37,7 +39,6 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   const hasTranscriptFlag = featureFlags?.includes('zoomTranscription')
   const recallBotId = hasTranscriptFlag ? await getBotId(videoMeetingURL) : null
 
-  // RESOLUTION
   const meetingSettings = {} as MeetingSettings
   await r
     .table('MeetingSettings')
