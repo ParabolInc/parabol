@@ -3,6 +3,8 @@ import {useHistory, useLocation} from 'react-router'
 import useRouter from '../hooks/useRouter'
 import useModal from '../hooks/useModal'
 import ShareTopicModal from '~/components/ShareTopicModal'
+import {renderLoader} from '../utils/relay/renderLoader'
+
 const ShareTopicRoot = () => {
   const {match} = useRouter<{stageId: string; meetingId: string}>()
   const {params} = match
@@ -30,7 +32,9 @@ const ShareTopicRoot = () => {
   }, [])
 
   return (
-    <Suspense fallback={''}>{modalPortal(<ShareTopicModal closePortal={closePortal} />)}</Suspense>
+    <Suspense fallback={renderLoader()}>
+      {modalPortal(<ShareTopicModal closePortal={closePortal} />)}
+    </Suspense>
   )
 }
 
