@@ -17,7 +17,7 @@ export type StripeFailPaymentPayloadSource =
 const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   _source,
   {invoiceId},
-  {authToken}
+  {authToken, dataLoader}
 ) => {
   // AUTH
   if (!isSuperUser(authToken)) {
@@ -43,18 +43,18 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   }
   // TS Error doesn't know if orgId stays a string or not
   const orgId = maybeOrgId
-  const org = await r
-    .table('Organization')
-    .get(orgId)
-    .pluck('creditCard', 'stripeSubscriptionId')
-    .default(null)
-    .run()
+  const org = await dataLoader.get('organizations').load(orgId)
 
   if (!org) {
     // org no longer exists, can fail silently (useful for all the staging server bugs)
     return {error: {message: 'Org does not exist'}}
   }
-  const {creditCard, stripeSubscriptionId} = org
+  const {creditCard, stripeSubscriptionId, tier} = org
+
+  if (tier === 'starter') {
+    // 3D Secure auth failed, so the subscription was initiated but not complete
+    return {orgId}
+  }
 
   if (paid || stripeSubscriptionId !== subscription) return {orgId}
 
