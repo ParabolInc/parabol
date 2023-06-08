@@ -112,6 +112,13 @@ export default class StripeManager {
     return this.stripe.customers.listSources(customerId, {object: 'card', limit: 3})
   }
 
+  async listActiveSubscriptions(customerId: string) {
+    return this.stripe.subscriptions.list({
+      customer: customerId,
+      status: 'active'
+    })
+  }
+
   async retrieveCharge(chargeId: string) {
     return this.stripe.charges.retrieve(chargeId)
   }

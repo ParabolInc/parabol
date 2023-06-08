@@ -15,9 +15,10 @@ import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMu
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
-import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
+import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
+import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -78,7 +79,7 @@ const BillingForm = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError} = useMutationProps()
+  const {onError, onCompleted} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
   const [hasStarted, setHasStarted] = useState(false)
   const [cardNumberError, setCardNumberError] = useState<null | string>()
@@ -123,11 +124,12 @@ const BillingForm = (props: Props) => {
       return
     }
 
-    const handleCompleted = async (res: UpgradeToTeamTierMutation$data) => {
-      const {upgradeToTeamTier} = res
-      const stripeSubscriptionClientSecret = upgradeToTeamTier?.stripeSubscriptionClientSecret
+    const handleCompleted = async (res: CreateStripeSubscriptionMutation$data) => {
+      const {createStripeSubscription} = res
+      const stripeSubscriptionClientSecret =
+        createStripeSubscription?.stripeSubscriptionClientSecret
       if (!stripeSubscriptionClientSecret) {
-        setErrorMsg('Something went wrong. Please try again.')
+        setErrorMsg('Something went wrong. Please try again or contact support.')
         setIsLoading(false)
         return
       }
@@ -137,10 +139,11 @@ const BillingForm = (props: Props) => {
         setErrorMsg(error.message)
         return
       }
+      UpgradeToTeamTierMutation(atmosphere, {orgId}, {onError, onCompleted})
       setIsPaymentSuccessful(true)
     }
 
-    UpgradeToTeamTierMutation(
+    CreateStripeSubscriptionMutation(
       atmosphere,
       {orgId, paymentMethodId: paymentMethod.id},
       {onError, onCompleted: handleCompleted}
