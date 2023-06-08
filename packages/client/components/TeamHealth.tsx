@@ -84,18 +84,18 @@ const TeamHealth = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <div className='flex h-[300px] flex-col items-center'>
-            <div className='text-2xl text-center'>{question}</div>
+            <div className='text-center text-2xl'>{question}</div>
             {isRevealed && votes ? (
               <>
                 <div className='flex flex-row'>
                   {labels?.map((label, index) => (
                     <div
                       key={label}
-                      className='flex flex-col justify-start w-20 h-32 m-3 rounded'
+                      className='m-3 flex h-32 w-20 flex-col justify-start rounded'
                       style={{backgroundColor: getTeamHealthVoteColor(votes, votes[index]!)}}
                     >
-                      <div className='flex items-center justify-center h-24 text-4xl'>{label}</div>
-                      <label className='text-xl font-semibold text-center text-white'>
+                      <div className='flex h-24 items-center justify-center text-4xl'>{label}</div>
+                      <label className='text-center text-xl font-semibold text-white'>
                         {votes[index]}
                       </label>
                     </div>
@@ -138,7 +138,7 @@ const TeamHealth = (props: Props) => {
                   <RaisedButton
                     palette='white'
                     onClick={onRevealVotes}
-                    className='mt-4 rounded-full h-14 w-44 text-slate-600 disabled:bg-slate-300 disabled:text-slate-600'
+                    className='mt-4 h-14 w-44 rounded-full text-slate-600 disabled:bg-slate-300 disabled:text-slate-600'
                     disabled={!canReveal}
                   >
                     Reveal Results
