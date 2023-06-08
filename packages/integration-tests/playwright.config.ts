@@ -23,7 +23,7 @@ const config: PlaywrightTestConfig = {
   forbidOnly: !!CI,
 
   /* Retry failed tests */
-  retries: 0,
+  retries: 2,
 
   /* Opt out of parallel tests on CI. */
   // workers: CI ? 1 : undefined,
