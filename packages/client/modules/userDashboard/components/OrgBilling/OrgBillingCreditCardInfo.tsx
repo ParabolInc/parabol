@@ -8,6 +8,7 @@ import {useFragment} from 'react-relay'
 import {OrgBillingCreditCardInfo_organization$key} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
+import Row from '../../../../components/Row/Row'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import StyledError from '../../../../components/StyledError'
 import useModal from '../../../../hooks/useModal'
@@ -119,6 +120,10 @@ const InfoAndUpdate = styled('div')({
   justifyContent: 'space-between'
 })
 
+const StyledRow = styled(Row)({
+  flexWrap: 'nowrap'
+})
+
 const InfoBlocks = styled('div')({
   [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     alignItems: 'center',
@@ -169,9 +174,11 @@ const OrgBillingCreditCardInfo = (props: Props) => {
     return (
       <StyledPanel label='Credit Card' isWide={!!hasCheckoutFlowFlag}>
         <StyledForm id='payment-form'>
-          <Elements stripe={stripePromise}>
-            <UpdatePayment />
-          </Elements>
+          <StyledRow>
+            <Elements stripe={stripePromise}>
+              <UpdatePayment />
+            </Elements>
+          </StyledRow>
         </StyledForm>
       </StyledPanel>
     )
