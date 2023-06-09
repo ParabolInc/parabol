@@ -23,10 +23,7 @@ const OrgPlansAndBillingRoot = (props: Props) => {
     `,
     organizationRef
   )
-  // const queryRef = useQueryLoaderNow<OrgPlansAndBillingQuery>(orgBillingQuery, {
-  //   orgId: organization.id,
-  //   first: 3
-  // })
+
   const queryRef = useQueryLoaderNow<OrgPlansAndBillingQuery>(orgPlansAndBillingQuery, {
     orgId: organization.id,
     first: 3

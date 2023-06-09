@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
-import {useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
+import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
 import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
 import PaymentDetails from './PaymentDetails'
 import BillingLeaders from './BillingLeaders'
@@ -8,16 +8,18 @@ import OrgPlans from './OrgPlans'
 import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
 import OrgPlanDrawer from './OrgPlanDrawer'
 import OrgBillingInvoices from './OrgBillingInvoices'
+import {OrgPlansAndBillingQuery} from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
+import {OrgPlansAndBillingRefetchQuery} from '../../../../__generated__/OrgPlansAndBillingRefetchQuery.graphql'
+import {OrgPlansAndBilling_query$key} from '../../../../__generated__/OrgPlansAndBilling_query.graphql'
 
 type Props = {
   organizationRef: OrgPlansAndBilling_organization$key
-  queryRef: any
+  queryRef: PreloadedQuery<OrgPlansAndBillingQuery>
 }
 
 const OrgPlansAndBilling = (props: Props) => {
   const {organizationRef, queryRef} = props
-  // const data = usePreloadedQuery<OrgPlansAndBillingQuery>(
-  const data = usePreloadedQuery<any>(
+  const data = usePreloadedQuery<OrgPlansAndBillingQuery>(
     graphql`
       query OrgPlansAndBillingQuery($orgId: ID!, $first: Int!, $after: DateTime) {
         ...OrgPlansAndBilling_query
@@ -25,11 +27,9 @@ const OrgPlansAndBilling = (props: Props) => {
     `,
     queryRef
   )
-  const [queryData, refetch] = useRefetchableFragment<
-    any,
-    // OrgPlansAndBillingRefetchQuery,
-    any
-    // OrgPlansAndBilling_query$key
+  const [queryData] = useRefetchableFragment<
+    OrgPlansAndBillingRefetchQuery,
+    OrgPlansAndBilling_query$key
   >(
     graphql`
       fragment OrgPlansAndBilling_query on Query
@@ -69,7 +69,7 @@ const OrgPlansAndBilling = (props: Props) => {
   return (
     <Suspense fallback={''}>
       <OrgPlansAndBillingHeading organizationRef={organization} />
-      <OrgBillingInvoices queryRef={queryData} />
+      <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag={true} />
       <BillingLeaders organizationRef={organization} />
       <OrgPlans organizationRef={organization} />
       <OrgPlanDrawer organizationRef={organization} />
