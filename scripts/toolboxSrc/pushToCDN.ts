@@ -31,7 +31,8 @@ const pushToCDN = async () => {
       const exists = await fileStoreManager.checkExists(partialPath)
       if (exists) return false
       const buffer = await fs.promises.readFile(pathName as string)
-      return fileStoreManager.putFile({partialPath, buffer})
+      const {name, ext} = path.parse(fileName)
+      return fileStoreManager.putTemplateIllustration(buffer, 'aGhostOrg', ext, name)
     })
   )
   const urls = results.filter(Boolean)

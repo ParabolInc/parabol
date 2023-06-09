@@ -1,6 +1,11 @@
 import {ReflectTemplateResolvers} from '../resolverTypes'
 
-const RECOMMENDED_TEMPLATES = ['teamCharterTemplate', 'startStopContinueTemplate']
+const RECOMMENDED_TEMPLATES = [
+  'teamCharterTemplate',
+  'startStopContinueTemplate',
+  'incidentResponsePostmortemTemplate',
+  'successAndFailurePremortemTemplate'
+]
 
 const ReflectTemplate: ReflectTemplateResolvers = {
   __isTypeOf: ({type}) => type === 'retrospective',
