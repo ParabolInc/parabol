@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.107.2 2023-Jun-09
+
+### Fixed:
+
+- Bump max mem restart to 24GB to support heapdumping GQL Executor
+
 ## 6.107.1 2023-June-8
 
 ### Fixed:
