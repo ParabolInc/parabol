@@ -20,7 +20,7 @@ module.exports = {
       increment_var: 'SERVER_ID',
       autorestart: true,
       watch: false,
-      max_memory_restart: '8192M',
+      max_memory_restart: '16384M',
       env_production: {
         NODE_ENV: 'production',
         SERVER_ID: 3
