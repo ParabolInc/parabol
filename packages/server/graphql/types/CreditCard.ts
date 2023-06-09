@@ -7,7 +7,8 @@ const CreditCard = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     brand: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The brand of the credit card, as provided by stripe'
+      description: 'The brand of the credit card, as provided by stripe',
+      resolve: ({brand}) => brand.charAt(0).toUpperCase() + brand.slice(1)
     },
     expiry: {
       type: new GraphQLNonNull(GraphQLString),

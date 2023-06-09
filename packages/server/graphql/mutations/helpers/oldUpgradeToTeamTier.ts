@@ -1,4 +1,3 @@
-import Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
@@ -7,10 +6,11 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
+import getCCFromCustomer from './getCCFromCustomer'
 
-const upgradeToTeamTier = async (
+const oldUpgradeToTeamTier = async (
   orgId: string,
-  paymentMethodId: string,
+  source: string,
   email: string,
   dataLoader: DataLoaderWorker
 ) => {
@@ -20,6 +20,7 @@ const upgradeToTeamTier = async (
   const organization = await r.table('Organization').get(orgId).run()
   if (!organization) throw new Error('Bad orgId')
 
+  const {stripeId, stripeSubscriptionId} = organization
   const quantity = await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
@@ -28,24 +29,18 @@ const upgradeToTeamTier = async (
     .run()
 
   const manager = getStripeManager()
-  const {stripeId} = organization
   const customer = stripeId
-    ? await manager.retrieveCustomer(stripeId)
-    : await manager.createCustomer(orgId, email)
-  const {id: customerId} = customer
-  await manager.attachPaymentToCustomer(customerId, paymentMethodId)
-  // wait until the payment is attached to the customer before updating the default payment method
-  await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
-  const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
+    ? await manager.updatePayment(stripeId, source)
+    : await manager.createCustomer(orgId, email, source)
 
-  const latestInvoice = subscription.latest_invoice as Stripe.Invoice
-  const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
-  const clientSecret = paymentIntent.client_secret
-
-  const subscriptionFields = {
-    periodEnd: fromEpochSeconds(subscription.current_period_end),
-    periodStart: fromEpochSeconds(subscription.current_period_start),
-    stripeSubscriptionId: subscription.id
+  let subscriptionFields = {}
+  if (!stripeSubscriptionId) {
+    const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
+    subscriptionFields = {
+      periodEnd: fromEpochSeconds(subscription.current_period_end),
+      periodStart: fromEpochSeconds(subscription.current_period_start),
+      stripeSubscriptionId: subscription.id
+    }
   }
 
   await Promise.all([
@@ -55,6 +50,7 @@ const upgradeToTeamTier = async (
         .get(orgId)
         .update({
           ...subscriptionFields,
+          creditCard: await getCCFromCustomer(customer),
           tier: 'team',
           stripeId: customer.id,
           tierLimitExceededAt: null,
@@ -74,7 +70,6 @@ const upgradeToTeamTier = async (
   ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
-  return clientSecret
 }
 
-export default upgradeToTeamTier
+export default oldUpgradeToTeamTier

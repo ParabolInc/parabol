@@ -123,7 +123,7 @@ import updateTask from './mutations/updateTask'
 import updateTaskDueDate from './mutations/updateTaskDueDate'
 import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
-import upgradeToTeamTier from './mutations/upgradeToTeamTier'
+import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
@@ -236,7 +236,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTaskDueDate,
       updateTeamName,
       updateTemplateScope,
-      upgradeToTeamTier,
+      oldUpgradeToTeamTier,
       voteForReflectionGroup,
       voteForPokerStory,
       pokerRevealVotes,

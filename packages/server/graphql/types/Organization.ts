@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
+import StripeManager from '../../utils/stripe/StripeManager'
 import {GQLContext} from '../graphql'
 import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCountByOrgIds'
 import {resolveForBillingLeaders} from '../resolvers'
@@ -43,7 +44,32 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     creditCard: {
       type: CreditCard,
       description: 'The safe credit card details',
-      resolve: resolveForBillingLeaders('creditCard')
+      resolve: async (source, _args, context) => {
+        const creditCard = await resolveForBillingLeaders('creditCard')(source, _args, context)
+        // we used to store credit card details in the db, so we need to check there first
+        if (creditCard) {
+          return creditCard
+        } else {
+          const {id: orgId} = source
+          const {dataLoader} = context
+          const organization = await dataLoader.get('organizations').load(orgId)
+          const {stripeId} = organization
+          if (!stripeId) return undefined
+          const manager = new StripeManager()
+          const cardRes = await manager.retrieveDefaultCardDetails(stripeId)
+          if (cardRes instanceof Error) {
+            console.error(cardRes)
+            return undefined
+          }
+          const expiryMonth = cardRes.exp_month.toString().padStart(2, '0')
+          const expiryYear = cardRes.exp_year.toString().slice(2)
+          const expiry = `${expiryMonth}/${expiryYear}`
+          return {
+            ...cardRes,
+            expiry
+          }
+        }
+      }
     },
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),

@@ -36,9 +36,9 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
-          "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",
@@ -47,6 +47,7 @@
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreateSetupIntentSuccess": "./types/CreateSetupIntentSuccess#CreateSetupIntentSuccessSource",
+          "CreateStripeSubscriptionSuccess": "./types/CreateStripeSubscriptionSuccess#CreateStripeSubscriptionSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
@@ -63,11 +64,11 @@
           "NotifyKickedOut": "../../database/types/NotificationKickedOut#default",
           "NotifyPaymentRejected": "../../database/types/NotificationPaymentRejected#default",
           "NotifyPromoteToOrgLeader": "../../database/types/NotificationPromoteToBillingLeader#default",
+          "NotifyRequestToJoinOrg": "../../database/types/NotificationRequestToJoinOrg#default",
           "NotifyResponseMentioned": "../../database/types/NotificationResponseMentioned#default as NotificationResponseMentionedDB",
           "NotifyResponseReplied": "../../database/types/NotifyResponseReplied#default as NotifyResponseRepliedDB",
           "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
           "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",
-          "NotifyRequestToJoinOrg": "../../database/types/NotificationRequestToJoinOrg#default",
           "Organization": "../../database/types/Organization#default as Organization",
           "OrganizationUser": "../../database/types/OrganizationUser#default as OrganizationUser",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
@@ -103,9 +104,7 @@
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
-          "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
-          "User": "../../postgres/types/IUser#default as IUser",
-          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
+          "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],

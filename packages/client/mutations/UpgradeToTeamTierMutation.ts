@@ -4,14 +4,8 @@ import {StandardMutation} from '../types/relayMutations'
 import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__generated__/UpgradeToTeamTierMutation.graphql'
 
 graphql`
-  fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierPayload {
-    stripeSubscriptionClientSecret
+  fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierSuccess {
     organization {
-      creditCard {
-        brand
-        last4
-        expiry
-      }
       company {
         tier
       }
@@ -28,7 +22,7 @@ graphql`
 `
 
 graphql`
-  fragment UpgradeToTeamTierMutation_team on UpgradeToTeamTierPayload {
+  fragment UpgradeToTeamTierMutation_team on UpgradeToTeamTierSuccess {
     teams {
       isPaid
       tier
@@ -37,13 +31,15 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID, $paymentMethodId: ID) {
-    upgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken, paymentMethodId: $paymentMethodId) {
-      error {
-        message
+  mutation UpgradeToTeamTierMutation($orgId: ID!) {
+    upgradeToTeamTier(orgId: $orgId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
       }
-      ...UpgradeToTeamTierMutation_organization @relay(mask: false)
       ...UpgradeToTeamTierMutation_team @relay(mask: false)
+      ...UpgradeToTeamTierMutation_organization @relay(mask: false)
     }
   }
 `
@@ -53,7 +49,7 @@ const UpgradeToTeamTierMutation: StandardMutation<TUpgradeToTeamTierMutation> = 
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation(atmosphere, {
+  return commitMutation<TUpgradeToTeamTierMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
