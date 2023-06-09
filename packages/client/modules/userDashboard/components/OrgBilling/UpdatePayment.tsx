@@ -82,7 +82,7 @@ const UpdatePayment = () => {
       </div>
       <div className='w-1/4'>
         <UpgradeButton isDisabled={false} size='medium' type={'submit'}>
-          {'Upgrade'}
+          {'Update'}
         </UpgradeButton>
       </div>
     </StyledForm>

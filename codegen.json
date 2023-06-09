@@ -104,7 +104,10 @@
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
-          "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource"
+          "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
+          "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
+          "User": "../../postgres/types/IUser#default as IUser",
+          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],
