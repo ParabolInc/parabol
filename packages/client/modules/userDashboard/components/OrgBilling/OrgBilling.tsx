@@ -36,7 +36,7 @@ const OrgBilling = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment OrgBilling_organization on Organization {
-        ...OrgBillingCreditCardInfo_organization
+        ...OrgBillingCreditCardInfoOld_organization
         ...OrgBillingUpgrade_organization
         ...OrgBillingDangerZone_organization
         id

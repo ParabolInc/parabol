@@ -3,7 +3,7 @@ import {CreditCard} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {OrgBillingCreditCardInfo_organization$key} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
+import {OrgBillingCreditCardInfoOld_organization$key} from '~/__generated__/OrgBillingCreditCardInfoOld_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useModal from '../../../../hooks/useModal'
@@ -62,14 +62,14 @@ const CreditCardModal = lazyPreload(
 )
 
 interface Props {
-  organization: OrgBillingCreditCardInfo_organization$key
+  organization: OrgBillingCreditCardInfoOld_organization$key
 }
 
 const OrgBillingCreditCardInfoOld = (props: Props) => {
   const {organization: organizationRef} = props
   const organization = useFragment(
     graphql`
-      fragment OrgBillingCreditCardInfo_organization on Organization {
+      fragment OrgBillingCreditCardInfoOld_organization on Organization {
         id
         orgUserCount {
           activeUserCount

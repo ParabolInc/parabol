@@ -1,4 +1,4 @@
-import React, {useState, FormEvent} from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {
   CardNumberElement,
@@ -18,7 +18,6 @@ import StyledError from '../../../../components/StyledError'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
-import {StripeCardElementChangeEvent} from '@stripe/stripe-js'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import {commitLocalUpdate} from 'relay-runtime'
 

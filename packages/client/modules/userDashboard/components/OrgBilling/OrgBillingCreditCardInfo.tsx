@@ -13,9 +13,9 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint, ElementWidth, Layout} from '../../../../types/constEnums'
 import UpdatePayment from './UpdatePayment'
 
-const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
-}))
+const StyledPanel = styled(Panel)({
+  maxWidth: ElementWidth.PANEL_WIDTH
+})
 
 const CreditCardInfo = styled('div')({
   alignItems: 'center',
@@ -67,11 +67,10 @@ const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 interface Props {
   organization: OrgBillingCreditCardInfo_organization$key
-  hasCheckoutFlowFlag: boolean
 }
 
 const OrgBillingCreditCardInfo = (props: Props) => {
-  const {organization: organizationRef, hasCheckoutFlowFlag} = props
+  const {organization: organizationRef} = props
   const organization = useFragment(
     graphql`
       fragment OrgBillingCreditCardInfo_organization on Organization {
@@ -91,7 +90,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
 
   if (isUpdating) {
     return (
-      <StyledPanel label='Credit Card' isWide={!!hasCheckoutFlowFlag}>
+      <StyledPanel label='Credit Card'>
         <StyledRow>
           <Elements stripe={stripePromise}>
             <UpdatePayment />
@@ -106,7 +105,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
   }
 
   return (
-    <StyledPanel label='Credit Card' isWide={!!hasCheckoutFlowFlag}>
+    <StyledPanel label='Credit Card'>
       <InfoAndUpdate>
         <CreditCardInfo>
           <CreditCardIcon />
