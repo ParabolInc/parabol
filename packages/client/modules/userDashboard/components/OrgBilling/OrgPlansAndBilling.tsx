@@ -71,8 +71,8 @@ const OrgPlansAndBilling = (props: Props) => {
   return (
     <Suspense fallback={''}>
       <OrgPlansAndBillingHeading organizationRef={organization} />
-      <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag={true} />
-      <OrgBillingCreditCardInfo organization={organization} />
+      <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag />
+      <OrgBillingCreditCardInfo organization={organization} hasCheckoutFlowFlag />
       <BillingLeaders organizationRef={organization} />
       <OrgPlans organizationRef={organization} />
       <OrgPlanDrawer organizationRef={organization} />

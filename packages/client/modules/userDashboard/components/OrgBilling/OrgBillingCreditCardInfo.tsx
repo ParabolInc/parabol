@@ -8,8 +8,12 @@ import Panel from '../../../../components/Panel/Panel'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useModal from '../../../../hooks/useModal'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint, Layout} from '../../../../types/constEnums'
+import {Breakpoint, ElementWidth, Layout} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
+
+const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
+  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
+}))
 
 const CreditCardInfo = styled('div')({
   alignItems: 'center',
@@ -63,10 +67,11 @@ const CreditCardModal = lazyPreload(
 
 interface Props {
   organization: OrgBillingCreditCardInfo_organization$key
+  hasCheckoutFlowFlag: boolean
 }
 
 const OrgBillingCreditCardInfo = (props: Props) => {
-  const {organization: organizationRef} = props
+  const {organization: organizationRef, hasCheckoutFlowFlag} = props
   const organization = useFragment(
     graphql`
       fragment OrgBillingCreditCardInfo_organization on Organization {
@@ -89,7 +94,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
   const {activeUserCount} = orgUserCount
   const {brand, last4, expiry} = creditCard
   return (
-    <Panel label='Credit Card Information'>
+    <StyledPanel label='Credit Card Information' isWide={!!hasCheckoutFlowFlag}>
       <InfoAndUpdate>
         <CreditCardInfo>
           <CreditCardIcon />
