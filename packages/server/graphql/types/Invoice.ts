@@ -6,7 +6,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {resolve} from 'path'
 import StripeManager from '../../utils/stripe/StripeManager'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'

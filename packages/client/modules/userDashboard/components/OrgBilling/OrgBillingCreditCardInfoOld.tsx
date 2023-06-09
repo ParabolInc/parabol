@@ -1,21 +1,15 @@
 import styled from '@emotion/styled'
 import {CreditCard} from '@mui/icons-material'
-import {Elements} from '@stripe/react-stripe-js'
-import {loadStripe} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrgBillingCreditCardInfo_organization$key} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import Row from '../../../../components/Row/Row'
 import SecondaryButton from '../../../../components/SecondaryButton'
+import useModal from '../../../../hooks/useModal'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint, ElementWidth, Layout} from '../../../../types/constEnums'
-import UpdatePayment from './UpdatePayment'
-
-const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
-}))
+import {Breakpoint, Layout} from '../../../../types/constEnums'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 const CreditCardInfo = styled('div')({
   alignItems: 'center',
@@ -52,10 +46,6 @@ const InfoAndUpdate = styled('div')({
   justifyContent: 'space-between'
 })
 
-const StyledRow = styled(Row)({
-  flexWrap: 'nowrap'
-})
-
 const InfoBlocks = styled('div')({
   [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     alignItems: 'center',
@@ -63,18 +53,27 @@ const InfoBlocks = styled('div')({
   }
 })
 
-const stripePromise = loadStripe(window.__ACTION__.stripe)
+const CreditCardModal = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'CreditCardModal' */
+      '../CreditCardModal/CreditCardModal'
+    )
+)
 
 interface Props {
   organization: OrgBillingCreditCardInfo_organization$key
-  hasCheckoutFlowFlag: boolean
 }
 
-const OrgBillingCreditCardInfo = (props: Props) => {
-  const {organization: organizationRef, hasCheckoutFlowFlag} = props
+const OrgBillingCreditCardInfoOld = (props: Props) => {
+  const {organization: organizationRef} = props
   const organization = useFragment(
     graphql`
       fragment OrgBillingCreditCardInfo_organization on Organization {
+        id
+        orgUserCount {
+          activeUserCount
+        }
         creditCard {
           brand
           expiry
@@ -84,29 +83,13 @@ const OrgBillingCreditCardInfo = (props: Props) => {
     `,
     organizationRef
   )
-  const {creditCard} = organization
-  const [isUpdating, setIsUpdating] = useState(false)
+  const {creditCard, id: orgId, orgUserCount} = organization
+  const {modalPortal, closePortal, togglePortal} = useModal()
   if (!creditCard) return null
+  const {activeUserCount} = orgUserCount
   const {brand, last4, expiry} = creditCard
-
-  if (isUpdating) {
-    return (
-      <StyledPanel label='Credit Card' isWide={!!hasCheckoutFlowFlag}>
-        <StyledRow>
-          <Elements stripe={stripePromise}>
-            <UpdatePayment />
-          </Elements>
-        </StyledRow>
-      </StyledPanel>
-    )
-  }
-
-  const handleClick = () => {
-    setIsUpdating(true)
-  }
-
   return (
-    <StyledPanel label='Credit Card' isWide={!!hasCheckoutFlowFlag}>
+    <Panel label='Credit Card Information'>
       <InfoAndUpdate>
         <CreditCardInfo>
           <CreditCardIcon />
@@ -124,10 +107,20 @@ const OrgBillingCreditCardInfo = (props: Props) => {
             </div>
           </InfoBlocks>
         </CreditCardInfo>
-        <SecondaryButton onClick={handleClick}>{'Update'}</SecondaryButton>
+        <SecondaryButton onClick={togglePortal} onMouseEnter={CreditCardModal.preload}>
+          {'Update'}
+        </SecondaryButton>
+        {modalPortal(
+          <CreditCardModal
+            activeUserCount={activeUserCount}
+            orgId={orgId}
+            actionType={'update'}
+            closePortal={closePortal}
+          />
+        )}
       </InfoAndUpdate>
-    </StyledPanel>
+    </Panel>
   )
 }
 
-export default OrgBillingCreditCardInfo
+export default OrgBillingCreditCardInfoOld

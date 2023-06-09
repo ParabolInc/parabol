@@ -59,23 +59,27 @@ const OrgPlansAndBilling = (props: Props) => {
   if (tier === 'starter') {
     return (
       <Suspense fallback={''}>
-        <OrgPlansAndBillingHeading organizationRef={organization} />
-        <OrgPlans organizationRef={organization} />
-        <PaymentDetails organizationRef={organization} />
-        <BillingLeaders organizationRef={organization} />
-        <OrgPlanDrawer organizationRef={organization} />
+        <div className='pb-20'>
+          <OrgPlansAndBillingHeading organizationRef={organization} />
+          <OrgPlans organizationRef={organization} />
+          <PaymentDetails organizationRef={organization} />
+          <BillingLeaders organizationRef={organization} />
+          <OrgPlanDrawer organizationRef={organization} />
+        </div>
       </Suspense>
     )
   }
 
   return (
     <Suspense fallback={''}>
-      <OrgPlansAndBillingHeading organizationRef={organization} />
-      <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag />
-      <OrgBillingCreditCardInfo organization={organization} hasCheckoutFlowFlag />
-      <BillingLeaders organizationRef={organization} />
-      <OrgPlans organizationRef={organization} />
-      <OrgPlanDrawer organizationRef={organization} />
+      <div className='pb-20'>
+        <OrgPlansAndBillingHeading organizationRef={organization} />
+        <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag />
+        <OrgBillingCreditCardInfo organization={organization} hasCheckoutFlowFlag />
+        <BillingLeaders organizationRef={organization} />
+        <OrgPlans organizationRef={organization} />
+        <OrgPlanDrawer organizationRef={organization} />
+      </div>
     </Suspense>
   )
 }
