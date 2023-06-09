@@ -12,6 +12,7 @@ import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
+import getKysely from '../../postgres/getKysely'
 
 const moveToOrg = async (
   teamId: string,
@@ -20,12 +21,21 @@ const moveToOrg = async (
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
+
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const [org, teams] = await Promise.all([
+  const [org, teams, isPaidResult] = await Promise.all([
     r.table('Organization').get(orgId).run(),
-    getTeamsByIds([teamId])
+    getTeamsByIds([teamId]),
+    pg
+      .selectFrom('Team')
+      .select('isPaid')
+      .where('orgId', '=', orgId)
+      .where('isArchived', '!=', true)
+      .limit(1)
+      .executeTakeFirst()
   ])
   const team = teams[0]
   if (!team) {
@@ -70,7 +80,7 @@ const moveToOrg = async (
   // RESOLUTION
   const updates = {
     orgId,
-    isPaid: Boolean(org.stripeSubscriptionId),
+    isPaid: !!isPaidResult?.isPaid,
     tier: org.tier,
     updatedAt: new Date()
   }
