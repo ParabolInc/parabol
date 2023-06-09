@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.106.0",
+  "version": "6.107.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -42,6 +42,7 @@
     "typecheck": "nx run-many --target=typecheck",
     "lintcheck": "nx run-many --target=lint:check",
     "stylecheck": "nx run-many --target=prettier:check",
+    "codecheck": "concurrently --names \"typecheck,lintcheck,stylecheck\" \"yarn typecheck\" \"yarn lintcheck\" \"yarn stylecheck\" ",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "precommit": "nx run-many --target=precommit --parallel=1",
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
@@ -96,6 +97,7 @@
     "@typescript-eslint/parser": "5.17.0",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
+    "concurrently": "^8.0.1",
     "copy-webpack-plugin": "^11.0.0",
     "eslint-config-prettier": "^8.5.0",
     "graphql": "15.7.2",

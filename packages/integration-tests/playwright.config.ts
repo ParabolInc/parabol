@@ -3,6 +3,8 @@ import {devices, PlaywrightTestConfig} from '@playwright/test'
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+const CI = process.env.CI === 'true'
+
 const config: PlaywrightTestConfig = {
   testDir: './tests',
 
@@ -14,17 +16,17 @@ const config: PlaywrightTestConfig = {
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: process.env.CI ? 20_000 : 5_000 // ms
+    timeout: CI ? 20_000 : 5_000 // ms
   },
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+  forbidOnly: !!CI,
 
-  /* Retry failed tests twice */
+  /* Retry failed tests */
   retries: 2,
 
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  // workers: CI ? 1 : undefined,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['list'], ['html']],
@@ -50,7 +52,7 @@ const config: PlaywrightTestConfig = {
       use: {
         ...devices['Desktop Chrome']
       }
-    },
+    }
 
     // {
     //   name: 'firefox',

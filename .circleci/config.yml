@@ -242,56 +242,6 @@ jobs:
               cp $DEVOPS_WORKDIR/environments/local .env
               yarn build --deploy
             fi
-      - run:
-          name: Verify source is clean
-          command: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
-      - run:
-          name: Push Assets to Databases
-          # Use the test env so the ports match up (NODE_ENV=testing)
-          command: |
-            cp $DEVOPS_WORKDIR/environments/test .env
-            yarn postdeploy
-      - run:
-          name: Start Testing Server
-          command: yarn start || true
-          background: true
-      - run:
-          name: Wait for testing server to be healthy
-          command: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
-      - run:
-          name: Run server tests
-          command: yarn test:server -- --reporters=default --reporters=jest-junit
-          environment:
-            JEST_JUNIT_OUTPUT_DIR: ./reports/junit
-      - store_test_results:
-          path: ./packages/server/reports/junit/
-      - store_artifacts:
-          path: ./packages/server/reports/junit
-      - run:
-          name: Run client tests
-          command: yarn test:client -- --reporters=default --reporters=jest-junit
-          environment:
-            JEST_JUNIT_OUTPUT_DIR: ./reports/junit
-      - store_test_results:
-          path: ./packages/client/reports/junit/
-      - store_artifacts:
-          path: ./packages/client/reports/junit
-      - run:
-          name: Install Playwright system dependencies
-          command: yarn workspace integration-tests playwright install-deps
-      - run:
-          name: Run Playwright tests
-          command: yarn workspace integration-tests test --workers 2 --reporter list,junit
-          environment:
-            PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
-      - store_test_results:
-          path: ./packages/integration-tests/test-results/junit/
-      - store_artifacts:
-          path: ./packages/integration-tests/test-results
-      - run:
-          name: Kill server
-          command: pkill node
-          when: always
       - deploy:
           name: Commit Deployment
           command: |
@@ -366,18 +316,6 @@ jobs:
 
 workflows:
   version: 2
-  ################################################################
-  # Default pipeline for all branches but staging and production #
-  ################################################################
-  01_build-and-deploy:
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-
   ############################################
   # Main pipeline for Staging and Production #
   ############################################
