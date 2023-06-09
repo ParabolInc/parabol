@@ -11,6 +11,7 @@ import OrgBillingInvoices from './OrgBillingInvoices'
 import {OrgPlansAndBillingQuery} from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
 import {OrgPlansAndBillingRefetchQuery} from '../../../../__generated__/OrgPlansAndBillingRefetchQuery.graphql'
 import {OrgPlansAndBilling_query$key} from '../../../../__generated__/OrgPlansAndBilling_query.graphql'
+import OrgBillingCreditCardInfo from './OrgBillingCreditCardInfo'
 
 type Props = {
   organizationRef: OrgPlansAndBilling_organization$key
@@ -43,6 +44,7 @@ const OrgPlansAndBilling = (props: Props) => {
     graphql`
       fragment OrgPlansAndBilling_organization on Organization {
         ...OrgPlansAndBillingHeading_organization
+        ...OrgBillingCreditCardInfo_organization
         ...OrgPlans_organization
         ...BillingLeaders_organization
         ...PaymentDetails_organization
@@ -70,6 +72,7 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <OrgPlansAndBillingHeading organizationRef={organization} />
       <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag={true} />
+      <OrgBillingCreditCardInfo organization={organization} />
       <BillingLeaders organizationRef={organization} />
       <OrgPlans organizationRef={organization} />
       <OrgPlanDrawer organizationRef={organization} />
