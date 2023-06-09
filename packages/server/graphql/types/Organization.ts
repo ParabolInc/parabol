@@ -46,7 +46,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'The safe credit card details',
       resolve: async (source, _args, context) => {
         const creditCard = await resolveForBillingLeaders('creditCard')(source, _args, context)
-        // we used to store credit card details in the database, so we need to check there first
+        // we used to store credit card details in the db, so we need to check there first
         if (creditCard) {
           return creditCard
         } else {
