@@ -17,7 +17,7 @@ export type StripeFailPaymentPayloadSource =
 const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   _source,
   {invoiceId},
-  {authToken}
+  {authToken, dataLoader}
 ) => {
   // AUTH
   if (!isSuperUser(authToken)) {
@@ -29,11 +29,11 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
 
   // VALIDATION
   const invoice = await manager.retrieveInvoice(invoiceId)
-  const {customer, metadata, subscription, paid} = invoice
-  const customerId = customer as string
+  const {customer: invoiceCustomer, metadata, subscription, paid} = invoice
+  const customerId = invoiceCustomer as string
   let maybeOrgId = metadata?.orgId
+  const customer = await manager.retrieveCustomer(customerId)
   if (!maybeOrgId) {
-    const customer = await manager.retrieveCustomer(customerId)
     if ('metadata' in customer) {
       maybeOrgId = customer.metadata.orgId
     }
@@ -41,20 +41,22 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   if (!maybeOrgId) {
     throw new Error(`Could not find orgId on invoice ${invoiceId}`)
   }
+  if (customer.deleted === true) {
+    throw new Error(`Customer ${customerId} has been deleted`)
+  }
   // TS Error doesn't know if orgId stays a string or not
   const orgId = maybeOrgId
-  const org = await r
-    .table('Organization')
-    .get(orgId)
-    .pluck('creditCard', 'stripeSubscriptionId')
-    .default(null)
-    .run()
+  const org = await dataLoader.get('organizations').load(orgId)
 
   if (!org) {
     // org no longer exists, can fail silently (useful for all the staging server bugs)
     return {error: {message: 'Org does not exist'}}
   }
-  const {creditCard, stripeSubscriptionId} = org
+
+  const {stripeSubscriptionId, tier} = org
+
+  // 3D Secure auth failed, so the subscription was initiated but not complete
+  if (tier === 'starter') return {orgId}
 
   if (paid || stripeSubscriptionId !== subscription) return {orgId}
 
@@ -65,7 +67,21 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     .getAll(orgId, {index: 'orgId'})
     .filter({removedAt: null, role: 'BILLING_LEADER'})('userId')
     .run()) as string[]
-  const {last4, brand} = creditCard!
+
+  const {default_source} = customer
+
+  const creditCardRes = default_source
+    ? await manager.retrieveCardDetails(default_source as string)
+    : null
+  if (creditCardRes instanceof Error) {
+    return {error: {message: creditCardRes.message}}
+  }
+  // customers that used the new checkout flow with Stripe Elements will have a default_source. Previously, we'd store their creditCard in the org table
+  const creditCard = creditCardRes ?? org.creditCard
+  if (!creditCard) {
+    return {error: {message: 'No credit card found'}}
+  }
+  const {last4, brand} = creditCard
 
   const notifications = billingLeaderUserIds.map(
     (userId) => new NotificationPaymentRejected({orgId, last4, brand, userId})
