@@ -5,7 +5,7 @@ const DashSectionHeader = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   flexDirection: 'column',
-  margin: '0 auto',
+  margin: '0',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
   padding: `16px ${Gutters.DASH_GUTTER} 4px`,
   position: 'relative',

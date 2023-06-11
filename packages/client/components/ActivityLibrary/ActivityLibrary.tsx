@@ -43,7 +43,7 @@ graphql`
 const query = graphql`
   query ActivityLibraryQuery {
     viewer {
-      availableTemplates(first: 100) @connection(key: "ActivityLibrary_availableTemplates") {
+      availableTemplates(first: 200) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
             ...ActivityLibrary_template @relay(mask: false)
@@ -71,7 +71,9 @@ const CREATE_CUSTOM_ACTIVITY_ALLOW_LIST: Array<typeof QUICK_START_CATEGORY_ID | 
   'retrospective',
   'feedback',
   'strategy',
-  'estimation'
+  'estimation',
+  'premortem',
+  'postmortem'
 ]
 
 const CategoryIDToColorClass = {
