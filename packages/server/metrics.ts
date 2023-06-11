@@ -6,13 +6,13 @@ collectDefaultMetrics()
 
 // Function to retrieve the metrics
 export function getMetrics(): string {
-  return register.metrics()
+  return String(register.metrics())
 }
 
 // Example function to handle HTTP request and send metrics
 export function handleMetricsRequest(res: HttpResponse): void {
   try {
-    res.writeHeader('Content-Type', register.contentType)
+    res.writeHeader('Content-Type', String(register.contentType))
     res.end(getMetrics())
   } catch (error) {
     console.error('Error sending metrics:', error)
