@@ -5,15 +5,15 @@ import {HttpResponse} from 'uWebSockets.js'
 collectDefaultMetrics()
 
 // Function to retrieve the metrics
-export function getMetrics(): string {
-  return String(register.metrics())
+export async function getMetrics(): Promise<string> {
+  return await register.metrics()
 }
 
 // Example function to handle HTTP request and send metrics
-export function handleMetricsRequest(res: HttpResponse): void {
+export async function handleMetricsRequest(res: HttpResponse): Promise<void> {
   try {
     res.writeHeader('Content-Type', String(register.contentType))
-    res.end(getMetrics())
+    res.end(await getMetrics())
   } catch (error) {
     console.error('Error sending metrics:', error)
     res.writeHeader('Content-Type', 'text/plain')
