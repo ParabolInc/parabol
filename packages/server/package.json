@@ -81,7 +81,6 @@
     "webpack-s3-plugin": "^1.2.0-rc.0"
   },
   "dependencies": {
-    "api": "^5.0.7",
     "@authenio/samlify-node-xmllint": "^2.0.0",
     "@aws-sdk/client-s3": "^3.315.0",
     "@graphql-tools/schema": "^9.0.16",
@@ -92,6 +91,7 @@
     "@sentry/node": "^5.8.0",
     "adaptivecards": "^2.10.0",
     "analytics-node": "^5.0.0",
+    "api": "^5.0.7",
     "base64url": "^3.0.1",
     "bcryptjs": "^2.4.3",
     "cheerio": "^1.0.0-rc.10",
@@ -127,6 +127,7 @@
     "parabol-client": "^6.106.0",
     "pg": "^8.5.1",
     "pm2": "^5.2.0",
+    "prom-client": "^14.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "relay-runtime": "^14.1.0",

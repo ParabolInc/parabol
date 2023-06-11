@@ -23,6 +23,7 @@ import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 import ServerHealthChecker from './utils/ServerHealthChecker'
+import { getMetrics } from './metrics'
 
 tracer.init({
   service: `Web ${process.env.SERVER_ID}`,
@@ -59,6 +60,7 @@ uws
   .get('/sse-ping', SSEPingHandler)
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
+  .get('/metrics', getMetrics)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
