@@ -113,16 +113,11 @@ const PokerTemplateDetails = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment PokerTemplateDetails_viewer on User {
-        featureFlags {
-          templateLimit
-        }
         ...useTemplateDescription_viewer
       }
     `,
     viewerRef
   )
-  const {featureFlags} = viewer
-  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, dimensions} = activeTemplate
@@ -147,7 +142,7 @@ const PokerTemplateDetails = (props: Props) => {
   const headerImg =
     pokerIllustrations[templateId as keyof typeof pokerIllustrations] ?? customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
-  const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
+  const showClone = !isOwner && tier !== 'starter'
   return (
     <DimensionEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>

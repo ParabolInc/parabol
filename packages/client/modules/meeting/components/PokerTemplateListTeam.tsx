@@ -44,12 +44,10 @@ interface Props {
   showPublicTemplates: () => void
   teamTemplatesRef: PokerTemplateListTeam_teamTemplates$key
   teamRef: PokerTemplateListTeam_team$key
-  viewerRef: PokerTemplateListTeam_viewer$key
 }
 
 const PokerTemplateListTeam = (props: Props) => {
-  const {isActive, activeTemplateId, showPublicTemplates, teamTemplatesRef, viewerRef, teamRef} =
-    props
+  const {isActive, activeTemplateId, showPublicTemplates, teamTemplatesRef, teamRef} = props
   const teamTemplates = useFragment(
     graphql`
       fragment PokerTemplateListTeam_teamTemplates on PokerTemplate @relay(plural: true) {
@@ -58,16 +56,6 @@ const PokerTemplateListTeam = (props: Props) => {
       }
     `,
     teamTemplatesRef
-  )
-  const {featureFlags} = useFragment(
-    graphql`
-      fragment PokerTemplateListTeam_viewer on User {
-        featureFlags {
-          templateLimit
-        }
-      }
-    `,
-    viewerRef
   )
   const team = useFragment(
     graphql`
@@ -85,7 +73,7 @@ const PokerTemplateListTeam = (props: Props) => {
   const atmosphere = useAtmosphere()
   const history = useHistory()
   if (teamTemplates.length === 0) {
-    if (tier === 'starter' && featureFlags.templateLimit) {
+    if (tier === 'starter') {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',

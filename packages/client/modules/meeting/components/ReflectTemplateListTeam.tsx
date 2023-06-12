@@ -48,7 +48,6 @@ interface Props {
   showPublicTemplates: () => void
   teamTemplatesRef: ReflectTemplateListTeam_teamTemplates$key
   teamRef: ReflectTemplateListTeam_team$key
-  viewerRef: ReflectTemplateListTeam_viewer$key
   templateSearchQuery: string
 }
 
@@ -63,8 +62,7 @@ const ReflectTemplateListTeam = (props: Props) => {
     showPublicTemplates,
     templateSearchQuery,
     teamTemplatesRef,
-    teamRef,
-    viewerRef
+    teamRef
   } = props
   const teamTemplates = useFragment(
     graphql`
@@ -75,16 +73,6 @@ const ReflectTemplateListTeam = (props: Props) => {
       }
     `,
     teamTemplatesRef
-  )
-  const {featureFlags} = useFragment(
-    graphql`
-      fragment ReflectTemplateListTeam_viewer on User {
-        featureFlags {
-          templateLimit
-        }
-      }
-    `,
-    viewerRef
   )
   const team = useFragment(
     graphql`
@@ -104,7 +92,7 @@ const ReflectTemplateListTeam = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
   const filteredTemplates = useFilteredItems(searchQuery, teamTemplates, getValue)
   if (teamTemplates.length === 0) {
-    if (tier === 'starter' && featureFlags.templateLimit) {
+    if (tier === 'starter') {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',

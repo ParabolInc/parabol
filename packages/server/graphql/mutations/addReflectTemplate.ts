@@ -51,9 +51,7 @@ const addReflectTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-    const hasTemplateLimitFlag = viewer.featureFlags.includes('templateLimit')
-    if (viewerTeam.tier === 'starter' && hasTemplateLimitFlag) {
+    if (viewerTeam.tier === 'starter') {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data

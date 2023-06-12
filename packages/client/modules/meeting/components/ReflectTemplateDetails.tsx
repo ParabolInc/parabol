@@ -113,16 +113,11 @@ const ReflectTemplateDetails = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment ReflectTemplateDetails_viewer on User {
-        featureFlags {
-          templateLimit
-        }
         ...useTemplateDescription_viewer
       }
     `,
     viewerRef
   )
-  const {featureFlags} = viewer
-  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts} = activeTemplate
@@ -147,7 +142,7 @@ const ReflectTemplateDetails = (props: Props) => {
   const headerImg =
     retroIllustrations[templateId as keyof typeof retroIllustrations] ?? customTemplate
   const isActiveTemplate = templateId === settings.selectedTemplate.id
-  const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
+  const showClone = !isOwner && tier !== 'starter'
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
@@ -183,7 +178,6 @@ const ReflectTemplateDetails = (props: Props) => {
           closePortal={closePortal}
           template={activeTemplate}
           teamId={teamId}
-          hasFeatureFlag={templateLimitFlag}
           tier={tier}
           orgId={orgId}
         />
