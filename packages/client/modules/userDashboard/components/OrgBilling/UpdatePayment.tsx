@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {CardCvcElement, CardExpiryElement, CardNumberElement} from '@stripe/react-stripe-js'
 import React from 'react'
 import PrimaryButton from '../../../../components/PrimaryButton'
+import SecondaryButton from '../../../../components/SecondaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const StyledForm = styled('form')({
@@ -40,7 +41,13 @@ const CARD_ELEMENT_OPTIONS = {
   }
 }
 
-const UpdatePayment = () => {
+type Props = {
+  setIsUpdating: (isUpdating: boolean) => void
+}
+
+const UpdatePayment = (props: Props) => {
+  const {setIsUpdating} = props
+
   return (
     <StyledForm id='payment-form'>
       <div className='flex w-full'>
@@ -80,10 +87,17 @@ const UpdatePayment = () => {
           </div>
         </div>
       </div>
-      <div className='w-1/4'>
-        <UpgradeButton isDisabled={false} size='medium' type={'submit'}>
-          {'Update'}
-        </UpgradeButton>
+      <div className='flex w-full flex-nowrap items-center justify-between'>
+        <div className='w-1/4'>
+          <UpgradeButton isDisabled={false} size='medium' type={'submit'}>
+            {'Update'}
+          </UpgradeButton>
+        </div>
+        <div className='mt-4 flex w-1/4 justify-end'>
+          <SecondaryButton size='medium' type={'submit'} onClick={() => setIsUpdating(false)}>
+            {'Cancel'}
+          </SecondaryButton>
+        </div>
       </div>
     </StyledForm>
   )

@@ -93,7 +93,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
       <StyledPanel label='Credit Card'>
         <StyledRow>
           <Elements stripe={stripePromise}>
-            <UpdatePayment />
+            <UpdatePayment setIsUpdating={setIsUpdating} />
           </Elements>
         </StyledRow>
       </StyledPanel>
