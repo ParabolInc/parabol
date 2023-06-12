@@ -8,7 +8,6 @@ import publish from '../../../utils/publish'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
-import {getStripeManager} from '../../../utils/stripe'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -25,7 +24,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   const organization = await dataLoader.get('organizations').load(orgId)
-  const {stripeId, tier, activeDomain, name: orgName} = organization
+  const {stripeId, tier, activeDomain, name: orgName, stripeSubscriptionId} = organization
 
   if (!stripeId) {
     return standardError(new Error('Organization does not have a stripe id'), {
@@ -33,10 +32,8 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     })
   }
 
-  const manager = getStripeManager()
-  const existingSubscriptions = await manager.listActiveSubscriptions(stripeId)
-  if (!existingSubscriptions.data.length) {
-    return standardError(new Error('Organization already has a subscription'), {userId: viewerId})
+  if (!stripeSubscriptionId) {
+    return standardError(new Error('Organization does not have a subscription'), {userId: viewerId})
   }
 
   if (tier !== 'starter') {
