@@ -46,6 +46,9 @@ export const TemplateDetails = (props: Props) => {
       fragment TemplateDetails_user on User {
         tier
         preferredTeamId
+        featureFlags {
+          templateLimit
+        }
         teams {
           id
           ...TeamPickerModal_teams
@@ -70,7 +73,7 @@ export const TemplateDetails = (props: Props) => {
     templatesRef
   )
 
-  const {teams, organizations, tier, preferredTeamId} = viewer
+  const {teams, organizations, tier, preferredTeamId, featureFlags} = viewer
   const history = useHistory<{prevCategory?: string; edit?: boolean}>()
   const prevCategory = history.location.state?.prevCategory
 
@@ -263,6 +266,7 @@ export const TemplateDetails = (props: Props) => {
           closePortal={closeTeamPickerPortal}
           parentTemplateId={template.id}
           type={template.type}
+          showTemplateLimit={featureFlags.templateLimit}
         />
       )}
 
