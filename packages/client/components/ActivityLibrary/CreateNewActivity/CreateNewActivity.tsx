@@ -27,6 +27,8 @@ import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} fr
 import BaseButton from '../../BaseButton'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
+import RaisedButton from '../../RaisedButton'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 
 const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
@@ -113,12 +115,13 @@ const query = graphql`
     viewer {
       preferredTeamId
       featureFlags {
-        retrosInDisguise
+        templateLimit
       }
       teams {
         id
         tier
         name
+        orgId
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
       }
@@ -158,9 +161,10 @@ export const CreateNewActivity = (props: Props) => {
     if (!selectedActivity) return defaultActivity
     return selectedActivity
   })
+  const {viewer} = data
+  const {teams, availableTemplates, featureFlags, preferredTeamId} = viewer
   const [selectedTeam, setSelectedTeam] = useState(
-    data.viewer.teams.find((team) => team.id === data.viewer.preferredTeamId) ??
-      sortByTier(data.viewer.teams)[0]!
+    teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const history = useHistory()
@@ -170,7 +174,7 @@ export const CreateNewActivity = (props: Props) => {
       return
     }
 
-    const teamTemplates = data.viewer.availableTemplates.edges.filter(
+    const teamTemplates = availableTemplates.edges.filter(
       (template) =>
         template.node.teamId === selectedTeam.id && template.node.type === 'retrospective'
     )
@@ -209,7 +213,7 @@ export const CreateNewActivity = (props: Props) => {
       return
     }
 
-    const teamTemplates = data.viewer.availableTemplates.edges.filter(
+    const teamTemplates = availableTemplates.edges.filter(
       (template) => template.node.teamId === selectedTeam.id && template.node.type === 'poker'
     )
 
@@ -240,6 +244,14 @@ export const CreateNewActivity = (props: Props) => {
         }
       }
     )
+  }
+
+  const handleUpgrade = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'createNewTemplateAL',
+      meetingType: selectedActivity.type
+    })
+    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 
   const createCustomActivityLookup: Record<ActivityType, () => void> = {
@@ -309,10 +321,10 @@ export const CreateNewActivity = (props: Props) => {
           </div>
           <div className='w-full px-4'>
             <NewMeetingTeamPicker
-              teamsRef={data.viewer.teams}
+              teamsRef={teams}
               selectedTeamRef={selectedTeam}
               onSelectTeam={(teamId) => {
-                const newTeam = data.viewer.teams.find((team) => team.id === teamId)
+                const newTeam = teams.find((team) => team.id === teamId)
                 newTeam && setSelectedTeam(newTeam)
               }}
             />
@@ -320,12 +332,29 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          <BaseButton
-            className='mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
-            onClick={createCustomActivityLookup[selectedActivity.type]}
-          >
-            Confirm Format & Team
-          </BaseButton>
+          {featureFlags.templateLimit && selectedTeam.tier === 'starter' ? (
+            <div className='mx-auto flex h-12 items-center gap-24'>
+              <div className='w-96'>
+                Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
+                ideal workflow.
+              </div>
+
+              <RaisedButton
+                palette='pink'
+                className='mx-auto h-12 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                onClick={handleUpgrade}
+              >
+                Upgrade to Team Plan
+              </RaisedButton>
+            </div>
+          ) : (
+            <BaseButton
+              className='mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+              onClick={createCustomActivityLookup[selectedActivity.type]}
+            >
+              Confirm Format & Team
+            </BaseButton>
+          )}
         </div>
       </div>
     </div>
