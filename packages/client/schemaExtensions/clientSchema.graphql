@@ -38,6 +38,7 @@ extend type RetrospectiveMeeting {
   spotlightGroup: RetroReflectionGroup
   spotlightReflectionId: String
   spotlightSearchQuery: String
+  showTranscription: Boolean!
 }
 
 extend type TeamPromptMeeting {
@@ -118,4 +119,8 @@ extend type AgendaItemsStage {
 extend type Discussion {
   isAnonymousComment: Boolean!
   replyingToCommentId: String!
+}
+
+extend type Organization {
+  showDrawer: Boolean!
 }

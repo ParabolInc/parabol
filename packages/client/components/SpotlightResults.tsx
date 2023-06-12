@@ -104,7 +104,6 @@ const SpotlightResults = (props: Props) => {
                   meetingRef={meeting!}
                   phaseRef={phaseRef}
                   reflectionGroupRef={group}
-                  expandedReflectionGroupPortalParentId='spotlight'
                   isSpotlightEntering={isSpotlightEntering}
                 />
               ))}

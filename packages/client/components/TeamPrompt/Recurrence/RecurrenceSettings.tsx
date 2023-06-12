@@ -5,7 +5,6 @@ import React, {PropsWithChildren, useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import {PortalId} from '../../../hooks/usePortal'
 import plural from '../../../utils/plural'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
@@ -13,6 +12,7 @@ import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 import Legitity from '../../../validation/Legitity'
 import {isNotNull} from '../../../utils/predicates'
+import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from '../../../shared/rruleUtil'
 dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
@@ -170,7 +170,6 @@ export interface RecurrenceSettings {
 }
 
 interface Props {
-  parentId: PortalId
   onRecurrenceSettingsUpdated: (
     recurrenceSettings: RecurrenceSettings,
     validationErrors: string[] | undefined
@@ -179,7 +178,7 @@ interface Props {
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {parentId, onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
   const [name, setName] = React.useState(meetingSeriesName)
   const [nameError, setNameError] = React.useState<string | undefined>()
@@ -196,7 +195,7 @@ export const RecurrenceSettings = (props: Props) => {
   )
   const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
     recurrenceRule
-      ? recurrenceRule.options.dtstart
+      ? getJSDateFromRRuleDate(recurrenceRule.options.dtstart)
       : dayjs()
           .add(1, 'day')
           .set('hour', 6)
@@ -211,7 +210,6 @@ export const RecurrenceSettings = (props: Props) => {
     MenuPosition.LOWER_LEFT,
     {
       id: 'recurrenceStartTimePicker',
-      parentId,
       isDropdown: true
     }
   )
@@ -251,7 +249,7 @@ export const RecurrenceSettings = (props: Props) => {
             freq: Frequency.WEEKLY,
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
-            dtstart: dayjs(recurrenceStartTime).utc().toDate(),
+            dtstart: getRRuleDateFromJSDate(recurrenceStartTime),
             tzid: timeZone
           })
         : null

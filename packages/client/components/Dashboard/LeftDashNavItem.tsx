@@ -9,7 +9,8 @@ import {
   Group,
   History,
   PlaylistAddCheck,
-  Warning
+  Warning,
+  WorkOutline
 } from '@mui/icons-material'
 import React from 'react'
 import {useHistory, useRouteMatch} from 'react-router'
@@ -65,7 +66,8 @@ const iconLookup = {
   add: <Add />,
   exit_to_app: <ExitToApp />,
   group: <Group />,
-  warning: <Warning />
+  warning: <Warning />,
+  work: <WorkOutline />
 }
 
 interface Props {
@@ -73,16 +75,17 @@ interface Props {
   onClick?: () => void
   label: string
   href: string
+  navState?: unknown
   //FIXME 6062: change to React.ComponentType
   icon: keyof typeof iconLookup
 }
 
 const LeftDashNavItem = (props: Props) => {
-  const {className, label, icon, href, onClick} = props
+  const {className, label, icon, href, navState, onClick} = props
   const history = useHistory()
   const match = useRouteMatch(href)
   const handleClick = () => {
-    history.push(href)
+    history.push(href, navState)
     onClick?.()
   }
   return (

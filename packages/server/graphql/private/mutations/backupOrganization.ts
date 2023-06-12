@@ -204,9 +204,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
     reflectPrompt: (r.table('ReflectPrompt').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('ReflectPrompt').insert(items)),
-    meetingTemplate: (r.table('MeetingTemplate').getAll(r.args(teamIds), {index: 'teamId'}) as any)
-      .coerceTo('array')
-      .do((items: RValue) => r.db(DESTINATION).table('MeetingTemplate').insert(items)),
     templateDimension: (
       r.table('TemplateDimension').filter((row) => r(teamIds).contains(row('teamId'))) as any
     )
@@ -269,10 +266,7 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
               r.branch(row('teamId'), r(teamIds).contains(row('teamId')), true)
             )
             .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('TimelineEvent').insert(items)),
-          user: (r.table('User').getAll(r.args(userIds)) as any)
-            .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('User').insert(items))
+            .do((items: RValue) => r.db(DESTINATION).table('TimelineEvent').insert(items))
         })
       }),
     activeDomains: r

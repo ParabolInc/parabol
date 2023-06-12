@@ -9,6 +9,7 @@ import {GQLContext} from '../graphql'
 import UpgradeToTeamTierPayload from '../types/UpgradeToTeamTierPayload'
 import hideConversionModal from './helpers/hideConversionModal'
 import upgradeToTeamTier from './helpers/upgradeToTeamTier'
+import upgradeToTeamTierOld from './helpers/upgradeToTeamTierOld'
 
 export default {
   type: UpgradeToTeamTierPayload,
@@ -19,13 +20,21 @@ export default {
       description: 'the org requesting the upgrade'
     },
     stripeToken: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The token that came back from stripe'
+    },
+    paymentMethodId: {
+      type: GraphQLID,
+      description: 'The payment method id'
     }
   },
   async resolve(
     _source: unknown,
-    {orgId, stripeToken}: {orgId: string; stripeToken: string},
+    {
+      orgId,
+      stripeToken,
+      paymentMethodId
+    }: {orgId: string; stripeToken?: string; paymentMethodId?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -52,8 +61,19 @@ export default {
     // if they downgrade & are re-upgrading, they'll already have a stripeId
     const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer!
+    let stripeSubscriptionClientSecret: string | null = null
     try {
-      await upgradeToTeamTier(orgId, stripeToken, email, dataLoader)
+      // TODO: remove upgradeToTeamTierOld once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
+      if (paymentMethodId) {
+        stripeSubscriptionClientSecret = await upgradeToTeamTier(
+          orgId,
+          paymentMethodId,
+          email,
+          dataLoader
+        )
+      } else if (stripeToken) {
+        await upgradeToTeamTierOld(orgId, stripeToken, email, dataLoader)
+      }
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e
@@ -79,7 +99,7 @@ export default {
       oldTier: 'starter',
       newTier: 'team'
     })
-    const data = {orgId, teamIds, meetingIds}
+    const data = {orgId, teamIds, meetingIds, stripeSubscriptionClientSecret}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierPayload', data, subOptions)
 
     teamIds.forEach((teamId) => {

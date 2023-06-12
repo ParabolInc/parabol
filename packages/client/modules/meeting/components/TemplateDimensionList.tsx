@@ -14,6 +14,7 @@ interface Props {
   isOwner: boolean
   dimensions: TemplateDimensionList_dimensions$key
   templateId: string
+  readOnly?: boolean
 }
 
 const DimensionList = styled('div')({
@@ -23,7 +24,7 @@ const DimensionList = styled('div')({
 })
 
 const TemplateDimensionList = (props: Props) => {
-  const {isOwner, dimensions: dimensionsRef, templateId} = props
+  const {isOwner, dimensions: dimensionsRef, templateId, readOnly} = props
   const dimensions = useFragment(
     graphql`
       fragment TemplateDimensionList_dimensions on TemplateDimension @relay(plural: true) {
@@ -74,7 +75,7 @@ const TemplateDimensionList = (props: Props) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <DimensionList>
-        <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={!isOwner}>
+        <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={!isOwner || readOnly}>
           {(provided) => {
             return (
               <div ref={provided.innerRef}>
@@ -84,12 +85,13 @@ const TemplateDimensionList = (props: Props) => {
                       key={dimension.id}
                       draggableId={dimension.id}
                       index={idx}
-                      isDragDisabled={!isOwner}
+                      isDragDisabled={!isOwner || readOnly}
                     >
                       {(dragProvided, dragSnapshot) => {
                         return (
                           <TemplateDimensionItem
                             isOwner={isOwner}
+                            readOnly={readOnly}
                             dimension={dimension}
                             dimensions={dimensions}
                             isDragging={dragSnapshot.isDragging}

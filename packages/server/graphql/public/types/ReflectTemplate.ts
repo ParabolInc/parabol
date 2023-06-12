@@ -1,22 +1,26 @@
 import {ReflectTemplateResolvers} from '../resolverTypes'
 
-type ReflectCategory = 'retrospective' | 'strategy' | 'feedback'
-
-const ID_TO_CATEGORY_MAPPING: Record<string, ReflectCategory> = {
-  teamCharterTemplate: 'strategy',
-  sWOTAnalysisTemplate: 'strategy',
-  teamRetreatPlanningTemplate: 'strategy',
-  questionsCommentsConcernsTemplate: 'feedback'
-}
-
-const RECOMMENDED_TEMPLATES = ['teamCharterTemplate', 'startStopContinueTemplate']
+const RECOMMENDED_TEMPLATES = [
+  'teamCharterTemplate',
+  'startStopContinueTemplate',
+  'incidentResponsePostmortemTemplate',
+  'successAndFailurePremortemTemplate'
+]
 
 const ReflectTemplate: ReflectTemplateResolvers = {
-  category: ({id}, _args, _context): ReflectCategory => {
-    return ID_TO_CATEGORY_MAPPING[id] ?? 'retrospective'
-  },
+  __isTypeOf: ({type}) => type === 'retrospective',
+  category: ({mainCategory}, _args, _context) => mainCategory,
   isRecommended: ({id}, _args, _context) => {
     return RECOMMENDED_TEMPLATES.includes(id)
+  },
+  prompts: async ({id: templateId}, _args, {dataLoader}) => {
+    const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+    return prompts
+      .filter((prompt) => !prompt.removedAt)
+      .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+  },
+  team: async ({teamId}, _args, {dataLoader}) => {
+    return dataLoader.get('teams').loadNonNull(teamId)
   }
 }
 

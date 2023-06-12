@@ -52,6 +52,8 @@ export type TaskEstimateProperties = {
 export type MeetingSettings = {
   hasIcebreaker?: boolean
   disableAnonymity?: boolean
+  videoMeetingURL?: string | null
+  recallBotId?: string | null
 }
 
 export type WebSocketProperties = {
@@ -85,6 +87,7 @@ export type AnalyticsEvent =
   | 'Downgrade Clicked'
   | 'Downgrade Continue Clicked'
   | 'Organization Downgraded'
+  | 'Billing Leader Modified'
 
   // task
   | 'Task Created'
@@ -102,6 +105,8 @@ export type AnalyticsEvent =
   // snackbar
   | 'Snackbar Clicked'
   | 'Snackbar Viewed'
+  // Join request
+  | 'Join Request Reviewed'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -386,6 +391,20 @@ class Analytics {
     this.track(userId, 'Account Name Changed', {
       newName
     })
+
+  billingLeaderModified = (
+    userId: string,
+    viewerId: string,
+    orgId: string,
+    modificationType: 'add' | 'remove'
+  ) => {
+    this.track(userId, 'Billing Leader Modified', {
+      userId,
+      viewerId,
+      orgId,
+      modificationType
+    })
+  }
 
   userRemovedFromOrg = (userId: string, orgId: string) =>
     this.track(userId, 'User Removed From Org', {userId, orgId})

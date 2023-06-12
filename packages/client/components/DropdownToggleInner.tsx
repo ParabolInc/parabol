@@ -6,7 +6,6 @@ const Container = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
-  flexWrap: 'wrap',
   minWidth: 0
 })
 
@@ -15,8 +14,7 @@ const IconContainer = styled('div')({
 })
 
 const MenuToggleLabelContainer = styled('div')({
-  // Squeeze in an extra 1% to fit the largest public template "Always Be Learning Retrospective 🌱"
-  maxWidth: '101%'
+  overflow: 'hidden'
 })
 
 const MenuToggleLabel = styled('div')({

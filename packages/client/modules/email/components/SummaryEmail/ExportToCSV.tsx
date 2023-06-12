@@ -10,7 +10,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import {CorsOptions} from '../../../../types/cors'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
-import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 
 interface Props extends WithMutationProps {
@@ -366,7 +365,6 @@ const ExportToCSV = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      <EmailBorderBottom />
     </>
   )
 }

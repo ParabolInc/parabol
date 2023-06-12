@@ -149,7 +149,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     summaryColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
     const summaryColumn = new AdaptiveCards.Column()
     summaryColumn.width = 'stretch'
-    const summaryTextBlock = new AdaptiveCards.TextBlock(getSummaryText(meeting))
+    const summaryTextBlock = new AdaptiveCards.TextBlock(await getSummaryText(meeting))
     summaryTextBlock.wrap = true
     summaryColumn.addItem(summaryTextBlock)
     summaryColumnSet.addColumn(summaryColumn)

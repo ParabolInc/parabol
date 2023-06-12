@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
@@ -30,7 +29,7 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
 
   // VALIDATION
   const invoice = await manager.retrieveInvoice(invoiceId)
-  const {amount_due: amountDue, customer, metadata, subscription, paid} = invoice
+  const {customer, metadata, subscription, paid} = invoice
   const customerId = customer as string
   let maybeOrgId = metadata?.orgId
   if (!maybeOrgId) {
@@ -60,12 +59,6 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   if (paid || stripeSubscriptionId !== subscription) return {orgId}
 
   // RESOLUTION
-  const stripeLineItems = await fetchAllLines(invoiceId)
-  const nextPeriodCharges = stripeLineItems.find(
-    (line) => line.description === null && line.proration === false
-  )
-  const nextPeriodAmount = (nextPeriodCharges && nextPeriodCharges.amount) || 0
-
   await terminateSubscription(orgId)
   const billingLeaderUserIds = (await r
     .table('OrganizationUser')
@@ -73,9 +66,6 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     .filter({removedAt: null, role: 'BILLING_LEADER'})('userId')
     .run()) as string[]
   const {last4, brand} = creditCard!
-  // amount_due includes the old account_balance, so we can (kinda) atomically set this
-  // we take out the charge for future services since we are ending service immediately
-  await manager.updateAccountBalance(customerId, amountDue - nextPeriodAmount)
 
   const notifications = billingLeaderUserIds.map(
     (userId) => new NotificationPaymentRejected({orgId, last4, brand, userId})

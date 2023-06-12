@@ -1,6 +1,5 @@
 # Parabol - We're [hiring](https://www.parabol.co/join)!
 
-[![Slack Status](https://slackin.parabol.co/badge.svg)](https://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/parabol.svg?style=svg)](https://circleci.com/gh/ParabolInc/parabol)
 
 ## Overview

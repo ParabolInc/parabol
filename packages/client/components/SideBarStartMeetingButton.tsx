@@ -30,13 +30,17 @@ const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
   opacity: isOpen ? 1 : 0
 }))
 
-const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
+const SideBarStartMeetingButton = ({isOpen, hasRid}: {isOpen: boolean; hasRid: boolean}) => {
   const location = useLocation()
   const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
 
   const onClick = () => {
-    history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
+    if (hasRid) {
+      history.push('/activity-library')
+    } else {
+      history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
+    }
   }
   return (
     <Button isOpen={isOpen} onClick={onClick}>

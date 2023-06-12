@@ -1,7 +1,9 @@
+import {Insertable} from 'kysely'
 import generateUID from '../../generateUID'
+import {MeetingTemplate as MeetingTemplateDB} from '../../postgres/pg'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 
-export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM'
+export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM' | 'USER'
 
 interface Input {
   name: string
@@ -9,30 +11,45 @@ interface Input {
   scope?: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
-  lastUsedAt?: Date
+  lastUsedAt?: Date | null
   type: MeetingTypeEnum
   isStarter?: boolean
   isFree?: boolean
+  mainCategory: string
+  illustrationUrl: string
 }
 
-export default class MeetingTemplate {
+export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
   id: string
   createdAt: Date
   isActive: boolean
   updatedAt: Date
   name: string
   teamId: string
-  lastUsedAt: Date | undefined
+  lastUsedAt: Date | null
   scope: SharingScopeEnum
   orgId: string
-  parentTemplateId?: string
+  parentTemplateId: string | null
   type: MeetingTypeEnum
-  isStarter?: boolean
+  isStarter: boolean
   isFree: boolean
+  mainCategory: string
+  illustrationUrl: string
 
   constructor(input: Input) {
-    const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt, type, isStarter, isFree} =
-      input
+    const {
+      name,
+      teamId,
+      scope,
+      orgId,
+      parentTemplateId,
+      lastUsedAt,
+      type,
+      isStarter,
+      isFree,
+      mainCategory,
+      illustrationUrl
+    } = input
     const now = new Date()
     this.id = generateUID()
     this.createdAt = now
@@ -40,12 +57,14 @@ export default class MeetingTemplate {
     this.name = name
     this.teamId = teamId
     this.updatedAt = now
-    this.scope = scope || 'TEAM'
+    this.scope = scope || 'ORGANIZATION'
     this.orgId = orgId
-    this.parentTemplateId = parentTemplateId
-    this.lastUsedAt = lastUsedAt ?? undefined
+    this.parentTemplateId = parentTemplateId || null
+    this.lastUsedAt = lastUsedAt || null
     this.type = type
     this.isStarter = isStarter || false
     this.isFree = isFree || false
+    this.mainCategory = mainCategory
+    this.illustrationUrl = illustrationUrl
   }
 }

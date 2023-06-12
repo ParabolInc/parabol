@@ -1,0 +1,25 @@
+name: Bug Notifier
+run-name: Notifying Slack that bugs got assigned.
+on:
+  issues:
+    types: [labeled]
+jobs: 
+  notify-parabol:
+    name: Notify on Slack
+    runs-on: ubuntu-latest
+
+    # Only run this workflow if it target is main branch on pull_request event
+    if: ${{ contains(github.event.issue.labels.*.name, 'bug') && (github.event.label.name == 'Squad - Land & Expand' || github.event.label.name == 'Squad - Self Serve')}}
+    
+    steps:
+      - uses: pullreminders/slack-action@master
+        env:
+          # required
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          # custom message to send to slack
+          args: '{\"channel\":\"${{ secrets.SLACK_BUG_CHANNEL_ID }}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Bug Issue #${{ github.event.issue.number }} got assigned to *${{ github.event.label.name }}*.\",\"type\": \"mrkdwn\"},\"fields\": [{\"type\": \"mrkdwn\",\"text\": \"*Issue Title*\"},{\"type\": \"mrkdwn\",\"text\": \"*Labels*\"},{\"type\": \"plain_text\",\"text\": \"${{ github.event.issue.title }}\" },{\"type\": \"plain_text\",\"text\": \"${{ join(github.event.issue.labels.*.name) }}\" }]},{\"type\": \"divider\"},{\"type\": \"actions\",\"elements\": [{\"type\": \"button\",\"text\": {\"type\": \"plain_text\",\"text\": \"View on Github\",\"emoji\": true},\"url\": \"${{ github.event.issue.html_url }}\" }]}]}' 
+
+        
+        # Pick up events even if the job is success.
+        if: success()

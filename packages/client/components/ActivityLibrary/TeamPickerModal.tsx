@@ -3,7 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {MenuPosition} from '../../hooks/useCoords'
-import {TeamPickerModal_templates$key} from '~/__generated__/TeamPickerModal_templates.graphql'
+import {
+  MeetingTypeEnum,
+  TeamPickerModal_templates$key
+} from '~/__generated__/TeamPickerModal_templates.graphql'
 import {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import sortByTier from '../../utils/sortByTier'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -14,16 +17,23 @@ import {useHistory} from 'react-router'
 import {Threshold} from '../../types/constEnums'
 import {useFragment} from 'react-relay'
 import clsx from 'clsx'
+import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
+import {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
+
+const ACTION_BUTTON_CLASSES =
+  'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
 
 interface Props {
   teamsRef: TeamPickerModal_teams$key
   templatesRef: TeamPickerModal_templates$key
   closePortal: () => void
   category: string
+  parentTemplateId: string
+  type: MeetingTypeEnum
 }
 
 const TeamPickerModal = (props: Props) => {
-  const {teamsRef, templatesRef, closePortal, category} = props
+  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type} = props
   const teams = useFragment(
     graphql`
       fragment TeamPickerModal_teams on Team @relay(plural: true) {
@@ -41,6 +51,7 @@ const TeamPickerModal = (props: Props) => {
     graphql`
       fragment TeamPickerModal_templates on MeetingTemplate @relay(plural: true) {
         name
+        type
         teamId
       }
     `,
@@ -63,46 +74,70 @@ const TeamPickerModal = (props: Props) => {
       return
     }
 
-    const teamTemplates = templates.filter((template) => template.teamId === selectedTeam.id)
+    const teamTemplates = templates.filter(
+      (template) => template.teamId === selectedTeam.id && template.type === type
+    )
 
-    if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
+    if (
+      teamTemplates.length >=
+      (type === 'retrospective'
+        ? Threshold.MAX_RETRO_TEAM_TEMPLATES
+        : Threshold.MAX_POKER_TEAM_TEMPLATES)
+    ) {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
-    if (teamTemplates.find((template) => template.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
-      return
-    }
 
-    closePortal()
-
-    submitMutation()
-    AddReflectTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id},
-      {
-        onError,
-        onCompleted: (res: AddReflectTemplateMutation$data) => {
-          const templateId = res.addReflectTemplate?.reflectTemplate?.id
-          if (templateId) {
-            history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: category
-            })
+    if (type === 'retrospective') {
+      submitMutation()
+      AddReflectTemplateMutation(
+        atmosphere,
+        {teamId: selectedTeam.id, parentTemplateId},
+        {
+          onError,
+          onCompleted: (res: AddReflectTemplateMutation$data) => {
+            closePortal()
+            const templateId = res.addReflectTemplate?.reflectTemplate?.id
+            if (templateId) {
+              history.push(`/activity-library/details/${templateId}`, {
+                prevCategory: category,
+                edit: true
+              })
+            }
+            onCompleted()
           }
-          onCompleted()
         }
-      }
-    )
+      )
+    } else if (type === 'poker') {
+      submitMutation()
+      AddPokerTemplateMutation(
+        atmosphere,
+        {teamId: selectedTeam.id, parentTemplateId},
+        {
+          onError,
+          onCompleted: (res: AddPokerTemplateMutation$data) => {
+            closePortal()
+            const templateId = res.addPokerTemplate?.pokerTemplate?.id
+            if (templateId) {
+              history.push(`/activity-library/details/${templateId}`, {
+                prevCategory: category,
+                edit: true
+              })
+            }
+            onCompleted()
+          }
+        }
+      )
+    }
   }
 
   return (
     <div className='w-[440px] bg-white p-6'>
       <div className='flex flex-col gap-4'>
         <div>
-          <b>Select the team</b> to manage this new activity template:
+          <b>Select the team</b> to manage this cloned template
         </div>
         <NewMeetingTeamPicker
-          parentId='templateTeamPickerModal'
           positionOverride={MenuPosition.UPPER_LEFT}
           onSelectTeam={(teamId) => {
             const newTeam = teams.find((team) => team.id === teamId)
@@ -112,14 +147,27 @@ const TeamPickerModal = (props: Props) => {
           teamsRef={teams}
         />
         {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
-        <button
-          className={clsx(
-            'w-max cursor-pointer self-end rounded-full bg-sky-500 px-4 py-2 text-center font-sans text-base font-medium text-white hover:bg-sky-600'
-          )}
-          onClick={handleSelectTeam}
-        >
-          Select Team
-        </button>
+        <div className='flex gap-2.5 self-end'>
+          <button
+            className={clsx(
+              ACTION_BUTTON_CLASSES,
+              'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-200'
+            )}
+            onClick={closePortal}
+          >
+            Cancel
+          </button>
+          <button
+            className={clsx(
+              ACTION_BUTTON_CLASSES,
+              'bg-sky-500 px-4 py-2 text-white hover:bg-sky-600',
+              submitting && 'cursor-wait'
+            )}
+            onClick={handleSelectTeam}
+          >
+            Clone Template
+          </button>
+        </div>
       </div>
     </div>
   )
