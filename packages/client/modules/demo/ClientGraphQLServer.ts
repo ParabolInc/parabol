@@ -808,9 +808,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           stage.endAt = new Date().toJSON()
         }
       }
-      if (!phaseInitializeData || Object.keys(phaseInitializeData).length === 0) {
-        phaseInitializeData = {[GROUP]: null, [VOTE]: null, [DISCUSS]: null}
-      }
       if (facilitatorStageId) {
         const facilitatorStageRes = findStageById(phases, facilitatorStageId)
         const {stage: facilitatorStage} = facilitatorStageRes!
@@ -830,6 +827,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
         // mutative! sets isNavigable and isNavigableByFacilitator
         unlockedStageIds = unlockNextStages(facilitatorStageId, phases!)
+      }
+      if (!phaseInitializeData || Object.keys(phaseInitializeData).length === 0) {
+        phaseInitializeData = {[GROUP]: null, [VOTE]: null, [DISCUSS]: null}
       }
 
       const oldFacilitatorStageId = this.db.newMeeting.facilitatorStageId!
