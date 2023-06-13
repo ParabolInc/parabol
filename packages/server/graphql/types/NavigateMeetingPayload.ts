@@ -4,7 +4,7 @@ import {GQLContext} from '../graphql'
 import {resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
 import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'
-import PhaseInitializedPayload from './PhaseCompletePayload'
+import PhaseInitializedPayload from './PhaseInitializedPayload'
 import StandardMutationError from './StandardMutationError'
 
 const NavigateMeetingPayload = new GraphQLObjectType<any, GQLContext>({
