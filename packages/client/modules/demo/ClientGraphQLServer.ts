@@ -38,7 +38,7 @@ import unlockNextStages from '../../utils/unlockNextStages'
 import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
-import handleCompletedDemoStage from './handleCompletedDemoStage'
+import handleInitializeDemoStage from './handleInitializeDemoStage'
 import initBotScript from './initBotScript'
 import initDB, {
   DemoComment,
@@ -794,7 +794,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }: {completedStageId: string; facilitatorStageId: string; meetingId: string},
       userId: string
     ) => {
-      let phaseCompleteData: any
+      let phaseInitializeData: any
       let unlockedStageIds = [] as any[]
       const meeting = this.db.newMeeting
       const {phases} = meeting
@@ -806,25 +806,26 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           runBot = true
           stage.isComplete = true
           stage.endAt = new Date().toJSON()
-          phaseCompleteData = await handleCompletedDemoStage(this.db, stage)
-          const groupData = phaseCompleteData[GROUP]
-          if (groupData) {
-            Object.assign(groupData, {
-              meeting: this.db.newMeeting
-            })
-          } else if (phaseCompleteData[VOTE]) {
-            Object.assign(phaseCompleteData[VOTE], {
-              meeting: this.db.newMeeting
-            })
-          }
         }
       }
-      if (!phaseCompleteData || Object.keys(phaseCompleteData).length === 0) {
-        phaseCompleteData = {[REFLECT]: null, [GROUP]: null, [VOTE]: null}
+      if (!phaseInitializeData || Object.keys(phaseInitializeData).length === 0) {
+        phaseInitializeData = {[GROUP]: null, [VOTE]: null, [DISCUSS]: null}
       }
       if (facilitatorStageId) {
         const facilitatorStageRes = findStageById(phases, facilitatorStageId)
         const {stage: facilitatorStage} = facilitatorStageRes!
+
+        phaseInitializeData = await handleInitializeDemoStage(this.db, facilitatorStage)
+        const voteData = phaseInitializeData[VOTE]
+        if (voteData) {
+          Object.assign(voteData, {
+            meeting: this.db.newMeeting
+          })
+        } else if (phaseInitializeData[DISCUSS]) {
+          Object.assign(phaseInitializeData[DISCUSS], {
+            meeting: this.db.newMeeting
+          })
+        }
         startStage_(facilitatorStage)
 
         // mutative! sets isNavigable and isNavigableByFacilitator
@@ -847,7 +848,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         facilitatorStage: findStageById(phases, facilitatorStageId)!.stage,
         unlockedStageIds,
         unlockedStages: unlockedStageIds.map((stageId) => findStageById(phases, stageId)!.stage),
-        phaseComplete: phaseCompleteData,
+        phaseInitialized: phaseInitializeData,
         __typename: 'NavigateMeetingMutation'
       }
       if (userId !== demoViewerId) {

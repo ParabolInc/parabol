@@ -59,7 +59,7 @@ export default {
     }
 
     // VALIDATION
-    let phaseCompleteData
+    let phaseInitializeData
     let unlockedStageIds
     if (completedStageId) {
       const completedStageRes = findStageById(phases, completedStageId)
@@ -98,7 +98,7 @@ export default {
       }
 
       // handle any side effects, this could mutate the meeting object!
-      phaseCompleteData = await handleInitializeStage(facilitatorStage, meeting, dataLoader)
+      phaseInitializeData = await handleInitializeStage(facilitatorStage, meeting, dataLoader)
 
       // mutative
       // NOTE: it is possible to start a stage then move backwards & complete another phase, which would make it seem like this phase took a long time
@@ -133,7 +133,7 @@ export default {
       oldFacilitatorStageId,
       facilitatorStageId,
       unlockedStageIds,
-      ...phaseCompleteData
+      ...phaseInitializeData
     }
     publish(SubscriptionChannel.TEAM, teamId, 'NavigateMeetingPayload', data, subOptions)
     return data

@@ -10,17 +10,17 @@ const PhaseInitializedPayload = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     [GROUP]: {
       type: GroupPhaseInitializedPayload,
-      description: 'payload provided if the retro grouping phase was completed',
+      description: 'payload provided if the retro grouping phase was initialized',
       resolve: (source) => source[GROUP]
     },
     [VOTE]: {
       type: VotePhaseInitializedPayload,
-      description: 'payload provided if the retro voting phase was completed',
+      description: 'payload provided if the retro voting phase was initialized',
       resolve: (source) => source[VOTE]
     },
     [DISCUSS]: {
       type: DiscussPhaseInitializedPayload,
-      description: 'payload provided if the retro reflect phase was completed',
+      description: 'payload provided if the retro discuss phase was initialized',
       resolve: (source) => source[DISCUSS]
     }
   })

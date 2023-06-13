@@ -1,5 +1,5 @@
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
-import {ACTIVE, GROUP, REFLECT, VOTE} from '../../utils/constants'
+import {ACTIVE, DISCUSS, GROUP, VOTE} from '../../utils/constants'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import clientTempId from '../../utils/relay/clientTempId'
@@ -192,18 +192,18 @@ const addDiscussionTopics = (db: RetroDemoDB) => {
   return {meetingId, discussPhaseStages: nextDiscussStages}
 }
 
-const handleCompletedDemoStage = async (db: RetroDemoDB, stage: {phaseType: string}) => {
-  if (stage.phaseType === REFLECT) {
+const handleInitializeDemoStage = async (db: RetroDemoDB, stage: {phaseType: string}) => {
+  if (stage.phaseType === GROUP) {
     const data = removeEmptyReflections(db)
-    return {[REFLECT]: data, [GROUP]: null, [VOTE]: null}
-  } else if (stage.phaseType === GROUP) {
-    const data = removeEmptyReflections(db)
-    return {[REFLECT]: null, [GROUP]: data, [VOTE]: null}
+    return {[GROUP]: data, [VOTE]: null, [DISCUSS]: null}
   } else if (stage.phaseType === VOTE) {
+    const data = removeEmptyReflections(db)
+    return {[GROUP]: null, [VOTE]: data, [DISCUSS]: null}
+  } else if (stage.phaseType === DISCUSS) {
     const data = addDiscussionTopics(db)
-    return {[REFLECT]: null, [GROUP]: null, [VOTE]: data}
+    return {[GROUP]: null, [VOTE]: null, [DISCUSS]: data}
   }
   return {}
 }
 
-export default handleCompletedDemoStage
+export default handleInitializeDemoStage
