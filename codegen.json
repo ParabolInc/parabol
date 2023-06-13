@@ -16,6 +16,7 @@
           "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
           "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
+          "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
           "Organization": "../../database/types/Organization#default as Organization",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
@@ -24,8 +25,10 @@
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
+          "Team": "../../postgres/queries/getTeamsByIds#Team",
           "File": "../public/types/File#TFile",
           "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
+          "UpgradeToTeamTierSuccess": "../public/types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },
@@ -46,7 +49,6 @@
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
-          "CreateSetupIntentSuccess": "./types/CreateSetupIntentSuccess#CreateSetupIntentSuccessSource",
           "CreateStripeSubscriptionSuccess": "./types/CreateStripeSubscriptionSuccess#CreateStripeSubscriptionSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
@@ -102,9 +104,9 @@
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
-          "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
+          "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"

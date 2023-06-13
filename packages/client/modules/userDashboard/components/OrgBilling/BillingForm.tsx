@@ -154,7 +154,6 @@ const BillingForm = (props: Props) => {
         return
       }
       // call both mutations on the client to handle 3D Secure cards: https://stripe.com/docs/issuing/3d-secure?locale=en-GB
-      UpgradeToTeamTierMutation(atmosphere, {orgId}, {onError, onCompleted: handleCompletedUpgrade})
     }
 
     CreateStripeSubscriptionMutation(

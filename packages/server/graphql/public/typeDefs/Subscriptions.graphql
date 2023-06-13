@@ -94,7 +94,7 @@ type OrganizationSubscriptionPayload {
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
-  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
+  # UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
 }
 
@@ -143,7 +143,7 @@ type TeamSubscriptionPayload {
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
-  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
+  # UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplatePayload: AddReflectTemplatePayload
   AddPokerTemplatePayload: AddPokerTemplatePayload
   AddReflectTemplatePromptPayload: AddReflectTemplatePromptPayload
