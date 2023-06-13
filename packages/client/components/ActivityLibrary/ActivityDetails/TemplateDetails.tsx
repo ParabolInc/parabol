@@ -52,7 +52,6 @@ export const TemplateDetails = (props: Props) => {
         organizations {
           id
         }
-        ...useTemplateDescription_viewer
       }
     `,
     viewerRef
@@ -135,7 +134,7 @@ export const TemplateDetails = (props: Props) => {
   const isOwner = teamIds.includes(template.teamId)
 
   const lowestScope = isOwner ? 'TEAM' : orgIds.includes(template.orgId) ? 'ORGANIZATION' : 'PUBLIC'
-  const description = useTemplateDescription(lowestScope, template, viewer, tier)
+  const description = useTemplateDescription(lowestScope, template, tier)
 
   useEffect(() => {
     setIsEditing(!!history.location.state?.edit)

@@ -9,7 +9,6 @@ import SendClientSegmentEventMutation from '../../../mutations/SendClientSegment
 import {PALETTE} from '../../../styles/paletteV3'
 import {PokerTemplateListTeam_team$key} from '../../../__generated__/PokerTemplateListTeam_team.graphql'
 import {PokerTemplateListTeam_teamTemplates$key} from '../../../__generated__/PokerTemplateListTeam_teamTemplates.graphql'
-import {PokerTemplateListTeam_viewer$key} from '../../../__generated__/PokerTemplateListTeam_viewer.graphql'
 import PokerTemplateItem from './PokerTemplateItem'
 
 const TemplateList = styled('ul')({

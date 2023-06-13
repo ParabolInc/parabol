@@ -10,7 +10,6 @@ import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutatio
 import {Threshold} from '../../../types/constEnums'
 import {AddNewPokerTemplate_pokerTemplates$key} from '../../../__generated__/AddNewPokerTemplate_pokerTemplates.graphql'
 import {AddNewPokerTemplate_team$key} from '../../../__generated__/AddNewPokerTemplate_team.graphql'
-import {AddNewPokerTemplate_viewer$key} from '../../../__generated__/AddNewPokerTemplate_viewer.graphql'
 
 const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'

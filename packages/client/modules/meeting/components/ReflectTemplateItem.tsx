@@ -12,7 +12,6 @@ import {PALETTE} from '../../../styles/paletteV3'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateItem_template$key} from '../../../__generated__/ReflectTemplateItem_template.graphql'
-import {ReflectTemplateItem_viewer$key} from '../../../__generated__/ReflectTemplateItem_viewer.graphql'
 import {TierEnum} from '../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
@@ -60,19 +59,10 @@ interface Props {
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
   templateSearchQuery: string
   tier?: TierEnum
-  viewer?: ReflectTemplateItem_viewer$key
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {
-    lowestScope,
-    isActive,
-    teamId,
-    template: templateRef,
-    templateSearchQuery,
-    tier,
-    viewer: viewerRef
-  } = props
+  const {lowestScope, isActive, teamId, template: templateRef, templateSearchQuery, tier} = props
   const template = useFragment(
     graphql`
       fragment ReflectTemplateItem_template on ReflectTemplate {
@@ -88,16 +78,8 @@ const ReflectTemplateItem = (props: Props) => {
     `,
     templateRef
   )
-  const viewer = useFragment(
-    graphql`
-      fragment ReflectTemplateItem_viewer on User {
-        ...useTemplateDescription_viewer
-      }
-    `,
-    viewerRef ?? null
-  )
   const {id: templateId, name: templateName, scope, isFree} = template
-  const description = useTemplateDescription(lowestScope, template, viewer, tier)
+  const description = useTemplateDescription(lowestScope, template, tier)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive, true)

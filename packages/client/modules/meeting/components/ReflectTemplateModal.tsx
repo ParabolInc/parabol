@@ -7,7 +7,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateModal_retroMeetingSettings$key} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
-import {ReflectTemplateModal_viewer$key} from '../../../__generated__/ReflectTemplateModal_viewer.graphql'
 import CustomTemplateUpgradeMsg from './CustomTemplateUpgradeMsg'
 import ReflectTemplateDetails from './ReflectTemplateDetails'
 import ReflectTemplateList from './ReflectTemplateList'
@@ -15,7 +14,6 @@ import ReflectTemplateList from './ReflectTemplateList'
 interface Props {
   closePortal: () => void
   retroMeetingSettingsRef: ReflectTemplateModal_retroMeetingSettings$key
-  viewerRef: ReflectTemplateModal_viewer$key
 }
 
 const StyledDialogContainer = styled(DialogContainer)({
@@ -28,7 +26,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const ReflectTemplateModal = (props: Props) => {
-  const {closePortal, retroMeetingSettingsRef, viewerRef} = props
+  const {closePortal, retroMeetingSettingsRef} = props
   const retroMeetingSettings = useFragment(
     graphql`
       fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
@@ -49,15 +47,6 @@ const ReflectTemplateModal = (props: Props) => {
       }
     `,
     retroMeetingSettingsRef
-  )
-  const viewer = useFragment(
-    graphql`
-      fragment ReflectTemplateModal_viewer on User {
-        ...ReflectTemplateDetails_viewer
-        ...ReflectTemplateList_viewer
-      }
-    `,
-    viewerRef
   )
   const {selectedTemplate, team, activeTemplate, meetingType} = retroMeetingSettings
   const {id: teamId, orgId} = team
@@ -96,7 +85,6 @@ const ReflectTemplateModal = (props: Props) => {
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
         displayUpgradeDetails={displayUpgradeDetails}
-        viewerRef={viewer}
       />
       {showUpgradeDetails ? (
         <CustomTemplateUpgradeMsg orgId={orgId} meetingType={meetingType} />
@@ -106,7 +94,6 @@ const ReflectTemplateModal = (props: Props) => {
           gotoTeamTemplates={gotoTeamTemplates}
           gotoPublicTemplates={gotoPublicTemplates}
           closePortal={closePortal}
-          viewer={viewer}
         />
       )}
     </StyledDialogContainer>

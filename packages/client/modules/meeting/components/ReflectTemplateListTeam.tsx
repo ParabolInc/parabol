@@ -8,7 +8,6 @@ import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ReflectTemplateListTeam_viewer$key} from '../../../__generated__/ReflectTemplateListTeam_viewer.graphql'
 import {
   ReflectTemplateListTeam_teamTemplates$key,
   ReflectTemplateListTeam_teamTemplates$data
