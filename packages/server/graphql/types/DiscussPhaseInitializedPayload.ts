@@ -3,8 +3,8 @@ import {GQLContext} from '../graphql'
 import {resolveNewMeeting} from '../resolvers'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 
-const VotePhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'VotePhaseCompletePayload',
+const DiscussPhaseInitializedPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'DiscussPhaseInitializedPayload',
   fields: () => ({
     meeting: {
       type: RetrospectiveMeeting,
@@ -14,4 +14,4 @@ const VotePhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default VotePhaseCompletePayload
+export default DiscussPhaseInitializedPayload

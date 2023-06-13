@@ -38,14 +38,14 @@ graphql`
       id
       isComplete
     }
-    phaseComplete {
-      reflect {
+    phaseInitialized {
+      group {
         emptyReflectionGroupIds
         reflectionGroups {
           sortOrder
         }
       }
-      group {
+      vote {
         emptyReflectionGroupIds
         meeting {
           phases {
@@ -59,7 +59,7 @@ graphql`
           }
         }
       }
-      vote {
+      discuss {
         meeting {
           phases {
             id
@@ -137,14 +137,14 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   }
 
   const emptyReflectionGroupIds = safeProxy(payload)
-    .getLinkedRecord('phaseComplete')
-    .getLinkedRecord('reflect')
+    .getLinkedRecord('phaseInitialized')
+    .getLinkedRecord('group')
     .getValue('emptyReflectionGroupIds')!
   handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store)
 
   const emptyGroupReflectionGroupIds = safeProxy(payload)
-    .getLinkedRecord('phaseComplete')
-    .getLinkedRecord('group')
+    .getLinkedRecord('phaseInitialized')
+    .getLinkedRecord('vote')
     .getValue('emptyReflectionGroupIds')!
   handleRemoveReflectionGroups(emptyGroupReflectionGroupIds, meetingId, store)
 

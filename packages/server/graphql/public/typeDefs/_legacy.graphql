@@ -8359,7 +8359,7 @@ type NavigateMeetingPayload {
   """
   Additional details triggered by completing certain phases
   """
-  phaseComplete: PhaseCompletePayload
+  phaseInitialized: PhaseInitializedPayload
 
   """
   The stages that were unlocked by navigating
@@ -8367,24 +8367,24 @@ type NavigateMeetingPayload {
   unlockedStages: [NewMeetingStage!]
 }
 
-type PhaseCompletePayload {
-  """
-  payload provided if the retro reflect phase was completed
-  """
-  reflect: ReflectPhaseCompletePayload
-
+type PhaseInitializedPayload {
   """
   payload provided if the retro grouping phase was completed
   """
-  group: GroupPhaseCompletePayload
+  group: GroupPhaseInitializedPayload
 
   """
   payload provided if the retro voting phase was completed
   """
-  vote: VotePhaseCompletePayload
+  vote: VotePhaseInitializedPayload
+
+  """
+  payload provided if the retro voting phase was completed
+  """
+  discuss: DiscussPhaseInitializedPayload
 }
 
-type ReflectPhaseCompletePayload {
+type GroupPhaseInitializedPayload {
   """
   a list of empty reflection groups to remove
   """
@@ -8396,7 +8396,7 @@ type ReflectPhaseCompletePayload {
   reflectionGroups: [RetroReflectionGroup!]!
 }
 
-type GroupPhaseCompletePayload {
+type VotePhaseInitializedPayload {
   """
   a list of empty reflection groups to remove
   """
@@ -8413,7 +8413,7 @@ type GroupPhaseCompletePayload {
   reflectionGroups: [RetroReflectionGroup]
 }
 
-type VotePhaseCompletePayload {
+type DiscussPhaseInitializedPayload {
   """
   the current meeting
   """

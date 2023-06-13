@@ -2,8 +2,8 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql
 import {GQLContext} from '../graphql'
 import RetroReflectionGroup from './RetroReflectionGroup'
 
-const ReflectPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'ReflectPhaseCompletePayload',
+const GroupPhaseInitializedPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'GroupPhaseInitializedPayload',
   fields: () => ({
     emptyReflectionGroupIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
@@ -16,4 +16,4 @@ const ReflectPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default ReflectPhaseCompletePayload
+export default GroupPhaseInitializedPayload

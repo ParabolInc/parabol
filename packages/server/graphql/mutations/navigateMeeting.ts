@@ -9,8 +9,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
-import handleCompletedStage from './helpers/handleCompletedStage'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
+import handleInitializeStage from './helpers/handleInitializeStage'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -80,8 +80,6 @@ export default {
             stage.readyToAdvance.push(facilitatorUserId)
           }
         }
-        // handle any side effects, this could mutate the meeting object!
-        phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader)
         if (stage.scheduledEndTime) {
           // not critical, no await needed
           removeScheduledJobs(stage.scheduledEndTime, {meetingId}).catch(console.error)
@@ -98,6 +96,9 @@ export default {
       if (!facilitatorStage.isNavigableByFacilitator) {
         return standardError(new Error('Stage has not started'), {userId: viewerId})
       }
+
+      // handle any side effects, this could mutate the meeting object!
+      phaseCompleteData = await handleInitializeStage(facilitatorStage, meeting, dataLoader)
 
       // mutative
       // NOTE: it is possible to start a stage then move backwards & complete another phase, which would make it seem like this phase took a long time

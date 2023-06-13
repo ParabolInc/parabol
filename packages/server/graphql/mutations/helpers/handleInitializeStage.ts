@@ -1,9 +1,8 @@
-import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/utils/constants'
+import {AUTO_GROUPING_THRESHOLD, DISCUSS, GROUP, VOTE} from 'parabol-client/utils/constants'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../../database/rethinkDriver'
-import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
@@ -11,25 +10,24 @@ import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
 import addSummariesToThreads from './addSummariesToThreads'
-import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 import generateGroups from './generateGroups'
 
 /*
- * handle side effects when a stage is completed
+ * handle side effects when a stage is initially navigated to.
  * returns an object if the side effect is necessary before the navigation is complete
  * otherwise, returns an empty object
  */
-const handleCompletedRetrospectiveStage = async (
+const handleInitializeRetrospectiveStage = async (
   stage: GenericMeetingStage,
   meeting: MeetingRetrospective,
   dataLoader: DataLoaderWorker
 ) => {
-  if (stage.phaseType === REFLECT || stage.phaseType === GROUP) {
+  if (stage.phaseType === GROUP || stage.phaseType === VOTE) {
     const data: Record<string, any> = await removeEmptyReflections(meeting)
 
-    if (stage.phaseType === REFLECT) {
+    if (stage.phaseType === GROUP) {
       const r = await getRethink()
       const now = new Date()
 
@@ -68,7 +66,7 @@ const handleCompletedRetrospectiveStage = async (
 
       data.reflectionGroups = sortedReflectionGroups
       generateGroups(reflections, meeting.teamId, dataLoader)
-    } else if (stage.phaseType === GROUP) {
+    } else if (stage.phaseType === VOTE) {
       const {facilitatorUserId, phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
       await r
@@ -84,7 +82,7 @@ const handleCompletedRetrospectiveStage = async (
     }
 
     return {[stage.phaseType]: data}
-  } else if (stage.phaseType === VOTE) {
+  } else if (stage.phaseType === DISCUSS) {
     // mutates the meeting discuss phase.stages array
     const data = await addDiscussionTopics(meeting, dataLoader)
     // create new threads
@@ -101,24 +99,20 @@ const handleCompletedRetrospectiveStage = async (
       insertDiscussions(discussions),
       addSummariesToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
     ])
-    return {[VOTE]: data}
-  } else if (stage.phaseType === 'discuss') {
-    const {discussionId} = stage as DiscussStage
-    // dont await for the OpenAI API response
-    generateDiscussionSummary(discussionId, meeting, dataLoader)
+    return {[stage.phaseType]: data}
   }
   return {}
 }
 
-const handleCompletedStage = async (
+const handleInitializeStage = async (
   stage: GenericMeetingStage,
   meeting: AnyMeeting,
   dataLoader: DataLoaderWorker
 ) => {
   if (meeting.meetingType === 'retrospective') {
-    return handleCompletedRetrospectiveStage(stage, meeting as MeetingRetrospective, dataLoader)
+    return handleInitializeRetrospectiveStage(stage, meeting as MeetingRetrospective, dataLoader)
   }
   return {}
 }
 
-export default handleCompletedStage
+export default handleInitializeStage

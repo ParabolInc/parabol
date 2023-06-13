@@ -22,10 +22,11 @@ import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import generateWholeMeetingSentimentScore from './helpers/generateWholeMeetingSentimentScore'
 import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
-import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
+import DiscussStage from '../../database/types/DiscussStage'
+import generateDiscussionSummary from './helpers/generateDiscussionSummary'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -157,7 +158,11 @@ export default {
     const currentStageRes = findStageById(phases, facilitatorStageId)
     if (currentStageRes) {
       const {stage} = currentStageRes
-      await handleCompletedStage(stage, meeting, dataLoader)
+      if (stage.phaseType === 'discuss') {
+        const {discussionId} = stage as DiscussStage
+        // dont await for the OpenAI API response
+        generateDiscussionSummary(discussionId, meeting, dataLoader)
+      }
       stage.isComplete = true
       stage.endAt = now
     }

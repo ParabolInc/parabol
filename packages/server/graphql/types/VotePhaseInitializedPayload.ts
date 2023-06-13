@@ -4,8 +4,8 @@ import {resolveNewMeeting} from '../resolvers'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 
-const GroupPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'GroupPhaseCompletePayload',
+const VotePhaseInitializedPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'VotePhaseInitializedPayload',
   fields: () => ({
     emptyReflectionGroupIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
@@ -28,4 +28,4 @@ const GroupPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default GroupPhaseCompletePayload
+export default VotePhaseInitializedPayload

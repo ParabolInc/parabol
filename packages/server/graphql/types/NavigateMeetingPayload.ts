@@ -4,7 +4,7 @@ import {GQLContext} from '../graphql'
 import {resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
 import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'
-import PhaseCompletePayload from './PhaseCompletePayload'
+import PhaseInitializedPayload from './PhaseCompletePayload'
 import StandardMutationError from './StandardMutationError'
 
 const NavigateMeetingPayload = new GraphQLObjectType<any, GQLContext>({
@@ -37,9 +37,9 @@ const NavigateMeetingPayload = new GraphQLObjectType<any, GQLContext>({
         return stageRes && stageRes.stage
       }
     },
-    phaseComplete: {
-      type: PhaseCompletePayload,
-      description: 'Additional details triggered by completing certain phases',
+    phaseInitialized: {
+      type: PhaseInitializedPayload,
+      description: 'Additional details triggered by initializing certain phases',
       resolve: (source) => source
     },
     unlockedStages: {
