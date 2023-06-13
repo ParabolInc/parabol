@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
@@ -6,7 +6,11 @@ import './types/modules.d'
 
 const container = document.getElementById('root')
 const root = createRoot(container!)
-root.render(<Root />)
+root.render(
+  <StrictMode>
+    <Root />
+  </StrictMode>
+)
 
 if (__PRODUCTION__ && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
