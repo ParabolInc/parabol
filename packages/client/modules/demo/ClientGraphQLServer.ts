@@ -812,17 +812,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         const facilitatorStageRes = findStageById(phases, facilitatorStageId)
         const {stage: facilitatorStage} = facilitatorStageRes!
 
-        phaseInitializeData = await handleInitializeDemoStage(this.db, facilitatorStage)
-        const voteData = phaseInitializeData[VOTE]
-        if (voteData) {
-          Object.assign(voteData, {
-            meeting: this.db.newMeeting
-          })
-        } else if (phaseInitializeData[DISCUSS]) {
-          Object.assign(phaseInitializeData[DISCUSS], {
-            meeting: this.db.newMeeting
-          })
+        if (facilitatorStage.phaseType === DISCUSS && !facilitatorStage.reflectionGroupId) {
+          phaseInitializeData = await handleInitializeDemoStage(this.db, facilitatorStage)
+          const voteData = phaseInitializeData[VOTE]
+          if (voteData) {
+            Object.assign(voteData, {
+              meeting: this.db.newMeeting
+            })
+          } else if (phaseInitializeData[DISCUSS]) {
+            Object.assign(phaseInitializeData[DISCUSS], {
+              meeting: this.db.newMeeting
+            })
+          }
         }
+
         startStage_(facilitatorStage)
 
         // mutative! sets isNavigable and isNavigableByFacilitator

@@ -97,8 +97,10 @@ export default {
         return standardError(new Error('Stage has not started'), {userId: viewerId})
       }
 
-      // handle any side effects, this could mutate the meeting object!
-      phaseInitializeData = await handleInitializeStage(facilitatorStage, meeting, dataLoader)
+      if (!facilitatorStageRes.phase.stages.some((stage) => stage.startAt)) {
+        // handle any side effects, this could mutate the meeting object!
+        phaseInitializeData = await handleInitializeStage(facilitatorStage, meeting, dataLoader)
+      }
 
       // mutative
       // NOTE: it is possible to start a stage then move backwards & complete another phase, which would make it seem like this phase took a long time
