@@ -34,7 +34,7 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
 
   const manager = getStripeManager()
   const {stripeId, stripeSubscriptionId} = organization
-  if (stripeId && stripeSubscriptionId) {
+  if (stripeSubscriptionId) {
     return standardError(new Error('Organization already has a subscription'), {userId: viewerId})
   }
   const {email} = viewer
