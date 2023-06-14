@@ -229,14 +229,14 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
 
           {showTemplateLimit && selectedTeam.tier === 'starter' && !selectedTemplate?.isFree ? (
-            <div className='flex grow flex-col justify-end'>
+            <div className='flex grow flex-col'>
               <div className='my-auto text-center'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
                 ideal workflow.
               </div>
               <RaisedButton
                 palette='pink'
-                className='h-12 w-full shrink text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                className='h-12 w-full text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
                 onClick={handleUpgrade}
               >
                 Upgrade to Team Plan
