@@ -102,7 +102,6 @@ const NewMeetingInner = styled('div')({
 const query = graphql`
   query NewMeetingQuery {
     viewer {
-      ...NewMeetingSettings_viewer
       featureFlags {
         insights
       }
@@ -211,11 +210,7 @@ const NewMeeting = (props: Props) => {
             />
           </SettingsFirstRow>
           <SettingsRow>
-            <NewMeetingSettings
-              selectedTeamRef={selectedTeam}
-              meetingType={meetingType}
-              viewerRef={viewer}
-            />
+            <NewMeetingSettings selectedTeamRef={selectedTeam} meetingType={meetingType} />
             {meetingType === 'teamPrompt' && (
               <NewMeetingRecurrenceSettings
                 onRecurrenceSettingsUpdated={setRecurrenceSettings}

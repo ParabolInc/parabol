@@ -18,7 +18,6 @@ interface Props {
 const query = graphql`
   query PokerTemplateListPublicQuery($teamId: ID!) {
     viewer {
-      ...PokerTemplateItem_viewer
       id
       team(teamId: $teamId) {
         id
@@ -62,7 +61,6 @@ const PokerTemplateListPublic = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'PUBLIC'}
             teamId={teamId}
-            viewerRef={viewer}
           />
         )
       })}

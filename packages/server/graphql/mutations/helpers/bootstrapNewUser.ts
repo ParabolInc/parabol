@@ -23,16 +23,7 @@ const PERCENT_ADDED_TO_RID = 0.05
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
   const r = await getRethink()
-  const {
-    id: userId,
-    createdAt,
-    preferredName,
-    email,
-    featureFlags,
-    tier,
-    segmentId,
-    identities
-  } = newUser
+  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
   const domain = email.split('@')[1]
   const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
@@ -43,16 +34,6 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
   const experimentalFlags = [...featureFlags]
-
-  // TODO: remove the following after templateLimit experiment is complete: https://github.com/ParabolInc/parabol/issues/7712
-  const stopTemplateLimitsP0Experiment = !!process.env.STOP_TEMPLATE_LIMITS_P0_EXPERIMENT
-  const domainUserHasTemplateFlag = usersWithDomain.some((user) =>
-    user.featureFlags.includes('templateLimit')
-  )
-
-  if (!stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasTemplateFlag)) {
-    experimentalFlags.push('templateLimit')
-  }
 
   const domainUserHasRidFlag = usersWithDomain.some((user) =>
     user.featureFlags.includes('retrosInDisguise')
