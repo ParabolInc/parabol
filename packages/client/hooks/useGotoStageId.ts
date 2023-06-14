@@ -49,8 +49,8 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
       const isViewerFacilitator = viewerId === facilitatorUserId
       const res = findStageById(phases, stageId)
       if (!res) return
-      const {stage} = res
-      const {isNavigable, isNavigableByFacilitator} = stage
+      const {stage: newStage} = res
+      const {isNavigable, isNavigableByFacilitator} = newStage
 
       const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
       if (!canNavigate) return
@@ -61,12 +61,27 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
       if (isViewerFacilitator && isNavigableByFacilitator && !endedAt) {
         const res = findStageById(phases, facilitatorStageId)
         if (!res) return
-        const {stage} = res
-        const {isComplete} = stage
+        const {stage: oldStage} = res
+        const {isComplete} = oldStage
         const variables = {
           meetingId,
           facilitatorStageId: stageId
         } as TNavigateMeetingMutation['variables']
+        if (isForwardProgress(phases, facilitatorStageId, stageId)) {
+          if (!isComplete) {
+            variables.completedStageId = facilitatorStageId
+          } else {
+            const oldStagePhaseIndex = phases.findIndex((phase) =>
+              phase.stages.find((stage) => stage.id === facilitatorStageId)
+            )
+            const newStagePhaseIndex = phases.findIndex((phase) =>
+              phase.stages.find((stage) => stage.id === stageId)
+            )
+            if (newStagePhaseIndex - oldStagePhaseIndex > 1) {
+              variables.completedStageId = phases[newStagePhaseIndex - 1]!.stages[0]!.id
+            }
+          }
+        }
         if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
           variables.completedStageId = facilitatorStageId
         }
