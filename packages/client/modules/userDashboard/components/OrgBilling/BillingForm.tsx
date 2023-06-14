@@ -10,7 +10,6 @@ import {
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
-import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
@@ -18,7 +17,6 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
-import {UpgradeToTeamTierMutation$data} from '../../../../__generated__/UpgradeToTeamTierMutation.graphql'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -117,22 +115,10 @@ const BillingForm = (props: Props) => {
       type: 'card',
       card: cardElement
     })
-
     if (error) {
       setErrorMsg(error.message)
       setIsLoading(false)
       return
-    }
-
-    const handleCompletedUpgrade = (res: UpgradeToTeamTierMutation$data) => {
-      const {upgradeToTeamTier} = res
-      setIsLoading(false)
-      if (!upgradeToTeamTier) {
-        setErrorMsg('Something went wrong. Please try again or contact support.')
-        return
-      }
-      setIsPaymentSuccessful(true)
-      onCompleted()
     }
 
     const handleCompletedSubscription = async (res: CreateStripeSubscriptionMutation$data) => {
@@ -148,12 +134,13 @@ const BillingForm = (props: Props) => {
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      setIsLoading(false)
       if (error) {
-        setIsLoading(false)
         setErrorMsg(error.message)
         return
       }
-      // call both mutations on the client to handle 3D Secure cards: https://stripe.com/docs/issuing/3d-secure?locale=en-GB
+      setIsPaymentSuccessful(true)
+      onCompleted()
     }
 
     CreateStripeSubscriptionMutation(
