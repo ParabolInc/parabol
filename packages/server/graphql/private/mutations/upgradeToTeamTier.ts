@@ -12,11 +12,31 @@ import {getStripeManager} from '../../../utils/stripe'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
+// included here to codegen has access to it
+export type UpgradeToTeamTierSuccessSource = {
+  orgId: string
+  teamIds: string[]
+  meetingIds: string[]
+}
+
 const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   _source,
-  {orgId},
+  {invoiceId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const userId = getUserId(authToken)
+  const manager = getStripeManager()
+  const invoice = await manager.retrieveInvoice(invoiceId)
+  const customerId = invoice.customer as string
+  const customer = await manager.retrieveCustomer(customerId)
+  if (customer.deleted) {
+    return standardError(new Error('Customer has been deleted'), {userId})
+  }
+  const orgId = customer.metadata.orgId
+  if (!orgId) {
+    return standardError(new Error('Customer does not have an orgId'), {userId})
+  }
+
   const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -25,7 +45,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   const organization = await dataLoader.get('organizations').load(orgId)
-  const {stripeId, tier, activeDomain, name: orgName} = organization
+  const {stripeId, tier, activeDomain, name: orgName, stripeSubscriptionId} = organization
 
   if (!stripeId) {
     return standardError(new Error('Organization does not have a stripe id'), {
@@ -33,10 +53,8 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     })
   }
 
-  const manager = getStripeManager()
-  const existingSubscriptions = await manager.listActiveSubscriptions(stripeId)
-  if (!existingSubscriptions.data.length) {
-    return standardError(new Error('Organization already has a subscription'), {userId: viewerId})
+  if (!stripeSubscriptionId) {
+    return standardError(new Error('Organization does not have a subscription'), {userId: viewerId})
   }
 
   if (tier !== 'starter') {
@@ -65,6 +83,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     ),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
+  organization.tier = 'team'
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 

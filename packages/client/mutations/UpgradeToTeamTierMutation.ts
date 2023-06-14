@@ -6,6 +6,11 @@ import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__gene
 graphql`
   fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierSuccess {
     organization {
+      creditCard {
+        brand
+        last4
+        expiry
+      }
       company {
         tier
       }
@@ -31,15 +36,15 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpgradeToTeamTierMutation($orgId: ID!) {
-    upgradeToTeamTier(orgId: $orgId) {
+  mutation UpgradeToTeamTierMutation($invoiceId: ID!) {
+    upgradeToTeamTier(invoiceId: $invoiceId) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...UpgradeToTeamTierMutation_team @relay(mask: false)
       ...UpgradeToTeamTierMutation_organization @relay(mask: false)
+      ...UpgradeToTeamTierMutation_team @relay(mask: false)
     }
   }
 `
@@ -49,7 +54,7 @@ const UpgradeToTeamTierMutation: StandardMutation<TUpgradeToTeamTierMutation> = 
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TUpgradeToTeamTierMutation>(atmosphere, {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     onCompleted,

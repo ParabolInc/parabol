@@ -98,12 +98,6 @@ export default class StripeManager {
     })
   }
 
-  async createSetupIntent(customerId: string) {
-    return this.stripe.setupIntents.create({
-      customer: customerId
-    })
-  }
-
   async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
@@ -111,6 +105,7 @@ export default class StripeManager {
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
       proration_behavior: 'none',
+      payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'], // expand the payment intent so we can get the client_secret
       // Use this for testing invoice.created hooks
       // run `yarn ultrahook` and subscribe
@@ -172,7 +167,9 @@ export default class StripeManager {
   }
 
   async retrieveInvoice(invoiceId: string) {
-    return this.stripe.invoices.retrieve(invoiceId)
+    return this.stripe.invoices.retrieve(invoiceId, {
+      expand: ['payment_intent']
+    })
   }
 
   async retrieveInvoiceItem(invoiceItemId: string) {

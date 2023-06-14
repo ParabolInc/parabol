@@ -2,7 +2,7 @@ extend type Mutation {
   """
   Describe the mutation here
   """
-  upgradeToTeamTier(orgId: ID!): UpgradeToTeamTierPayload!
+  upgradeToTeamTier(invoiceId: ID!): UpgradeToTeamTierPayload!
 }
 
 """

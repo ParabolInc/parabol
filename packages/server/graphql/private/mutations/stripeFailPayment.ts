@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
@@ -53,10 +54,13 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     return {error: {message: 'Org does not exist'}}
   }
 
-  const {stripeSubscriptionId, tier} = org
-
-  // 3D Secure auth failed, so the subscription was initiated but not complete
-  if (tier === 'starter') return {orgId}
+  const {stripeSubscriptionId} = org
+  const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent
+  if (paymentIntent && paymentIntent.status === 'requires_action') {
+    // The payment failed because it requires 3D Secure
+    // Don't cancel the subscription. Wait for the client to authenticate
+    return {orgId}
+  }
 
   if (paid || stripeSubscriptionId !== subscription) return {orgId}
 
