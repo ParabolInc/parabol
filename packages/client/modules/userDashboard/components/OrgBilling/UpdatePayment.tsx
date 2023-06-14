@@ -5,15 +5,6 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 
-const StyledForm = styled('form')({
-  display: 'flex',
-  height: '100%',
-  width: '100%',
-  flexWrap: 'nowrap',
-  flexDirection: 'column',
-  alignItems: 'space-between'
-})
-
 const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
   background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
   color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
@@ -49,7 +40,7 @@ const UpdatePayment = (props: Props) => {
   const {setIsUpdating} = props
 
   return (
-    <StyledForm id='payment-form'>
+    <div className='flex h-full w-full flex-col flex-wrap space-y-reverse' id='payment-form'>
       <div className='flex w-full'>
         <div className='w-3/5 pr-4'>
           <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
@@ -99,7 +90,7 @@ const UpdatePayment = (props: Props) => {
           </SecondaryButton>
         </div>
       </div>
-    </StyledForm>
+    </div>
   )
 }
 
