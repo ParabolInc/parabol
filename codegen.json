@@ -28,7 +28,7 @@
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "File": "../public/types/File#TFile",
           "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
-          "UpgradeToTeamTierSuccess": "../public/types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
+          "UpgradeToTeamTierSuccess": "./mutations/upgradeToTeamTier#UpgradeToTeamTierSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },

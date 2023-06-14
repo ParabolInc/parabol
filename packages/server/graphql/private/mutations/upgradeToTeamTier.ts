@@ -12,6 +12,13 @@ import {getStripeManager} from '../../../utils/stripe'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
+// included here to codegen has access to it
+export type UpgradeToTeamTierSuccessSource = {
+  orgId: string
+  teamIds: string[]
+  meetingIds: string[]
+}
+
 const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   _source,
   {invoiceId},
