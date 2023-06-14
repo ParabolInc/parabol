@@ -101,6 +101,9 @@ COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/
 COPY --chown=node yarn.lock ${HOME}/parabol/yarn.lock
 # Required for post-deploy to work
 COPY --chown=node queryMap.json ${HOME}/parabol/queryMap.json
+# Required for pushToCDN to work with FILE_STORE_PROVIDER set to 'local'
+RUN mkdir -p ${HOME}/parabol/self-hosted && \
+    chown node:node ${HOME}/parabol/self-hosted
 
 COPY --chown=node .env.example ${HOME}/parabol/.env.example
 COPY --chown=node build ${HOME}/parabol/build
