@@ -24,7 +24,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   {invoiceId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  console.log('upgrade to team!....')
   const userId = getUserId(authToken)
   const manager = getStripeManager()
   const invoice = await manager.retrieveInvoice(invoiceId)
@@ -34,6 +33,9 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     return standardError(new Error('Customer has been deleted'), {userId})
   }
   const orgId = customer.metadata.orgId
+  if (!orgId) {
+    return standardError(new Error('Customer does not have an orgId'), {userId})
+  }
 
   const r = await getRethink()
   const operationId = dataLoader.share()
@@ -81,6 +83,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     ),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
+  organization.tier = 'team'
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 
@@ -104,7 +107,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     newTier: 'team'
   })
   const data = {orgId, teamIds, meetingIds}
-  console.log('🚀 ~ data:', data)
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierSuccess', data, subOptions)
 
   teamIds.forEach((teamId) => {
