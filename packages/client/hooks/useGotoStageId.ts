@@ -71,6 +71,9 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
           if (!isComplete) {
             variables.completedStageId = facilitatorStageId
           } else {
+            // Check if we're skipping a phase, and mark it as completed if we are.
+            // Note: Only one uncompleted phase should be skippable at a time (the one right before
+            // the unlocked stage).
             const oldStagePhaseIndex = phases.findIndex((phase) =>
               phase.stages.find((stage) => stage.id === facilitatorStageId)
             )
@@ -78,7 +81,10 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
               phase.stages.find((stage) => stage.id === stageId)
             )
             if (newStagePhaseIndex - oldStagePhaseIndex > 1) {
-              variables.completedStageId = phases[newStagePhaseIndex - 1]!.stages[0]!.id
+              const maybeCompletedStage = phases[newStagePhaseIndex - 1]!.stages[0]
+              if (!maybeCompletedStage!.isComplete) {
+                variables.completedStageId = maybeCompletedStage!.id
+              }
             }
           }
         }
