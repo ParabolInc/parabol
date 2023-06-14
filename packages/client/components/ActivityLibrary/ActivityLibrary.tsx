@@ -7,6 +7,7 @@ import * as ScrollArea from '@radix-ui/react-scroll-area'
 import {Link} from 'react-router-dom'
 
 import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityBadge} from './ActivityBadge'
@@ -26,7 +27,7 @@ import {
 } from './Categories'
 
 graphql`
-  fragment ActivityLibrary_templateSearch on MeetingTemplate {
+  fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
     team {
       name
     }
@@ -63,7 +64,7 @@ graphql`
     category
     isRecommended
     isFree
-    ...ActivityLibrary_templateSearch @relay(mask: false)
+    ...ActivityLibrary_templateSearchDocument @relay(mask: false)
   }
 `
 
@@ -88,19 +89,22 @@ interface Props {
   queryRef: PreloadedQuery<ActivityLibraryQuery>
 }
 
-const CATEGORY_TAGS: Partial<Record<CategoryID, string[]>> = {
+const CATEGORY_KEYWORDS: Partial<Record<CategoryID, string[]>> = {
   strategy: ['okrs', 'goalsetting', 'goal-setting', 'planning'],
   estimation: ['sprint'],
   premortem: ['kickoff']
 }
 
-const getTemplateValue = (template: Omit<Template, 'teamId'>) =>
+// Generate a string of concatenated keywords that we can match against for each template.
+const getTemplateDocumentValue = (
+  template: Omit<ActivityLibrary_templateSearchDocument$data, ' $fragmentType'>
+) =>
   [
     template.name,
     template.category,
     template.type,
     template.team.name,
-    CATEGORY_TAGS[template.category as CategoryID] ?? [],
+    CATEGORY_KEYWORDS[template.category as CategoryID] ?? [],
     template.dimensions
       ?.map((dimension) => [dimension.name, dimension.description, dimension.selectedScale.name])
       .flat() ?? [],
@@ -130,8 +134,6 @@ const CategoryIDToColorClass = {
     })
   )
 } as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
-
-type Template = ActivityLibraryQuery['response']['viewer']['availableTemplates']['edges'][0]['node']
 
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
@@ -169,7 +171,7 @@ export const ActivityLibrary = (props: Props) => {
     filteredItems: filteredTemplates,
     onQueryChange,
     resetQuery
-  } = useSearchFilter(templates, getTemplateValue)
+  } = useSearchFilter(templates, getTemplateDocumentValue)
 
   const {match} = useRouter<{categoryId?: string}>()
   const {
