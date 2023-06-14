@@ -25,6 +25,7 @@ const ACTION_BUTTON_CLASSES =
 
 interface Props {
   teamsRef: TeamPickerModal_teams$key
+  defaultTeamId: string | null
   templatesRef: TeamPickerModal_templates$key
   closePortal: () => void
   category: string
@@ -33,7 +34,8 @@ interface Props {
 }
 
 const TeamPickerModal = (props: Props) => {
-  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type} = props
+  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type, defaultTeamId} =
+    props
   const teams = useFragment(
     graphql`
       fragment TeamPickerModal_teams on Team @relay(plural: true) {
@@ -58,7 +60,9 @@ const TeamPickerModal = (props: Props) => {
     templatesRef
   )
 
-  const [selectedTeam, setSelectedTeam] = useState(sortByTier(teams)[0]!)
+  const [selectedTeam, setSelectedTeam] = useState(
+    teams.find((team) => team.id === defaultTeamId) ?? sortByTier(teams)[0]!
+  )
 
   const atmosphere = useAtmosphere()
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()

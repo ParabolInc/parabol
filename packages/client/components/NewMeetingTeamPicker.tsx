@@ -9,6 +9,8 @@ import {PortalStatus} from '../hooks/usePortal'
 import lazyPreload from '../utils/lazyPreload'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
+import useAtmosphere from '../hooks/useAtmosphere'
+import setDefaultTeamId from '../utils/relay/setDefaultTeamId'
 
 const SelectTeamDropdown = lazyPreload(
   () =>
@@ -34,6 +36,13 @@ const NewMeetingTeamPicker = (props: Props) => {
       isDropdown: true
     }
   )
+
+  const atmosphere = useAtmosphere()
+
+  const handleSelectTeam = (teamId: string) => {
+    setDefaultTeamId(atmosphere, teamId)
+    onSelectTeam(teamId)
+  }
 
   const selectedTeam = useFragment(
     graphql`
@@ -73,7 +82,11 @@ const NewMeetingTeamPicker = (props: Props) => {
         customPortal ? (
           customPortal
         ) : (
-          <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={onSelectTeam} />
+          <SelectTeamDropdown
+            menuProps={menuProps}
+            teams={teams}
+            teamHandleClick={handleSelectTeam}
+          />
         )
       )}
     </>

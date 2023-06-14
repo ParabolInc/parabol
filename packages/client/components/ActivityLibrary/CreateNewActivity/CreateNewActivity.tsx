@@ -111,6 +111,7 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
 const query = graphql`
   query CreateNewActivityQuery {
     viewer {
+      defaultTeamId
       featureFlags {
         retrosInDisguise
       }
@@ -157,7 +158,10 @@ export const CreateNewActivity = (props: Props) => {
     if (!selectedActivity) return defaultActivity
     return selectedActivity
   })
-  const [selectedTeam, setSelectedTeam] = useState(sortByTier(data.viewer.teams)[0]!)
+  const [selectedTeam, setSelectedTeam] = useState(
+    data.viewer.teams.find((team) => team.id === data.viewer.defaultTeamId) ??
+      sortByTier(data.viewer.teams)[0]!
+  )
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const history = useHistory()
 
