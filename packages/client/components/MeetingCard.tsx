@@ -8,13 +8,11 @@ import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
-import useAnimatedCard from '../hooks/useAnimatedCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import useMenu from '../hooks/useMenu'
 import useTooltip from '../hooks/useTooltip'
-import {TransitionStatus} from '../hooks/useTransition'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
@@ -27,17 +25,16 @@ import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import useModal from '../hooks/useModal'
 import {EndRecurringMeetingModal} from './TeamPrompt/Recurrence/EndRecurringMeetingModal'
+import {motion} from 'framer-motion'
 
-const CardWrapper = styled('div')<{
+const CardWrapper = styled(motion.div)<{
   maybeTabletPlus: boolean
-  status: TransitionStatus
-}>(({maybeTabletPlus, status}) => ({
+}>(({maybeTabletPlus}) => ({
   position: 'relative',
   flexShrink: 0,
   maxWidth: '100%',
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
+  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}`,
   marginBottom: maybeTabletPlus ? 0 : 16,
-  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   margin: 8,
   width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
   userSelect: 'none'
@@ -187,10 +184,7 @@ const Options = styled(CardButton)({
 })
 
 interface Props {
-  onTransitionEnd: () => void
   meeting: MeetingCard_meeting$key
-  status: TransitionStatus
-  displayIdx: number
 }
 
 const ILLUSTRATIONS = {
@@ -207,7 +201,7 @@ const MEETING_TYPE_LABEL = {
 }
 
 const MeetingCard = (props: Props) => {
-  const {meeting: meetingRef, status, onTransitionEnd, displayIdx} = props
+  const {meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment MeetingCard_meeting on NewMeeting {
@@ -248,7 +242,6 @@ const MeetingCard = (props: Props) => {
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const ref = useAnimatedCard(displayIdx, status)
   const popTooltip = () => {
     openTooltip()
     setTimeout(() => {
@@ -281,10 +274,12 @@ const MeetingCard = (props: Props) => {
 
   return (
     <CardWrapper
-      ref={ref}
       maybeTabletPlus={maybeTabletPlus}
-      status={status}
-      onTransitionEnd={onTransitionEnd}
+      layoutId={meeting.id}
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0, width: 0, overflow: 'hidden', margin: 0}}
+      transition={{duration: 2}}
     >
       <InnerCardWrapper>
         {isRecurring && (

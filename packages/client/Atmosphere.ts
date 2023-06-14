@@ -20,7 +20,6 @@ import {
   Observable,
   OperationType,
   RecordSource,
-  RelayFeatureFlags,
   RequestParameters,
   Store,
   SubscribeFunction,
@@ -36,8 +35,6 @@ import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
 import {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
-;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
-;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
   subKey: string

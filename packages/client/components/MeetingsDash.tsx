@@ -6,7 +6,6 @@ import {MeetingsDash_viewer$key} from '~/__generated__/MeetingsDash_viewer.graph
 import useBreakpoint from '../hooks/useBreakpoint'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import useTransition from '../hooks/useTransition'
 import {Breakpoint, EmptyMeetingViewMessage, Layout} from '../types/constEnums'
 import getSafeRegex from '../utils/getSafeRegex'
 import DemoMeetingCard from './DemoMeetingCard'
@@ -14,13 +13,14 @@ import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
+import {LayoutGroup, motion} from 'framer-motion'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer$key | null
 }
 
-const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+const Wrapper = styled(motion.div)<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   padding: maybeTabletPlus ? 0 : 16,
   display: 'flex',
   flexWrap: 'wrap',
@@ -92,30 +92,22 @@ const MeetingsDash = (props: Props) => {
       displayIdx
     }))
   }, [teams, dashSearch])
-  const transitioningMeetings = useTransition(activeMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
+
   return (
     <>
       {hasMeetings ? (
-        <Wrapper maybeTabletPlus={maybeTabletPlus}>
-          {transitioningMeetings.map((meeting) => {
-            const {child} = meeting
-            const {id, displayIdx} = child
-            return (
-              <MeetingCard
-                key={id}
-                displayIdx={displayIdx}
-                meeting={meeting.child}
-                onTransitionEnd={meeting.onTransitionEnd}
-                status={meeting.status}
-              />
-            )
-          })}
-        </Wrapper>
+        <LayoutGroup>
+          <Wrapper maybeTabletPlus={maybeTabletPlus}>
+            {activeMeetings.map((meeting) => {
+              return <MeetingCard key={meeting.id} meeting={meeting} />
+            })}
+          </Wrapper>
+        </LayoutGroup>
       ) : (
         <EmptyContainer>
           <MeetingsDashEmpty
