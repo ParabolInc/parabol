@@ -7,6 +7,7 @@ import {NewMeetingSettingsRetrospectiveSettings_organization$key} from '~/__gene
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
+import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
@@ -66,7 +67,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
     organizationRef
   )
   const {tier} = organization
-  const teamHealthAvailable = tier !== 'starter'
+  const teamHealthAvailable = isTeamHealthAvailable(tier)
   const {zoomTranscription} = organization.featureFlags
 
   return (
