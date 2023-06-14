@@ -26,6 +26,32 @@ import {
 } from './Categories'
 
 graphql`
+  fragment ActivityLibrary_templateSearch on MeetingTemplate {
+    team {
+      name
+    }
+    name
+    type
+    category
+    ... on PokerTemplate {
+      dimensions {
+        name
+        description
+        selectedScale {
+          name
+        }
+      }
+    }
+    ... on ReflectTemplate {
+      prompts {
+        question
+        description
+      }
+    }
+  }
+`
+
+graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
     id
     teamId
@@ -37,6 +63,7 @@ graphql`
     category
     isRecommended
     isFree
+    ...ActivityLibrary_templateSearch @relay(mask: false)
   }
 `
 
@@ -61,7 +88,26 @@ interface Props {
   queryRef: PreloadedQuery<ActivityLibraryQuery>
 }
 
-const getTemplateValue = (template: {name: string}) => template.name
+const CATEGORY_TAGS: Partial<Record<CategoryID, string[]>> = {
+  strategy: ['okrs', 'goalsetting', 'goal-setting', 'planning'],
+  estimation: ['sprint'],
+  premortem: ['kickoff']
+}
+
+const getTemplateValue = (template: Omit<Template, 'teamId'>) =>
+  [
+    template.name,
+    template.category,
+    template.type,
+    template.team.name,
+    CATEGORY_TAGS[template.category as CategoryID] ?? [],
+    template.dimensions
+      ?.map((dimension) => [dimension.name, dimension.description, dimension.selectedScale.name])
+      .flat() ?? [],
+    template.prompts?.map((prompt) => [prompt.question, prompt.description]).flat() ?? []
+  ]
+    .flat()
+    .join('-')
 
 /**
  * Defines the list of categories where the 'Create Custom Activity' card is allowed to appear
@@ -84,6 +130,8 @@ const CategoryIDToColorClass = {
     })
   )
 } as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
+
+type Template = ActivityLibraryQuery['response']['viewer']['availableTemplates']['edges'][0]['node']
 
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
