@@ -46,10 +46,12 @@ const MyDashboardTimeline = (props: Props) => {
         $after: DateTime
         $userIds: [ID!]
         $eventTypes: [TimelineEventEnum!]
+        $teamIds: [ID!]
       ) {
         viewer {
           ...TimelineSuggestedAction_viewer
           ...TimelineRightDrawer_viewer
+          ...TimelineHeader_viewer
         }
         ...TimelineFeedList_query
       }
@@ -62,7 +64,7 @@ const MyDashboardTimeline = (props: Props) => {
     <FeedAndDrawer>
       <TimelineFeed>
         <TimelineFeedItems>
-          <TimelineHeader />
+          <TimelineHeader viewerRef={viewer} />
           <ErrorBoundary>
             <Suspense fallback={<TimelineLoadingEvents />}>
               <TimelineSuggestedAction viewer={viewer} />

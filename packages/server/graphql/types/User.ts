@@ -49,6 +49,16 @@ import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import TimelineEvent from '../../database/types/TimelineEvent'
 import {RDatum} from '../../database/stricterR'
+import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+
+const getValidTeamIds = (teamIds: null | string[], tms: string[]) => {
+  // the following comments can be removed pending #4070
+  // const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+  // const viewerTeamIds = viewerTeamMembers.map(({teamId}) => teamId)
+  if (teamIds?.length) return teamIds!.filter((teamId) => tms.includes(teamId))
+  // filter the teamIds array to only teams the user has a team member for
+  return tms
+}
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -205,13 +215,34 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           type: new GraphQLNonNull(GraphQLInt),
           description: 'the number of timeline events to return'
         },
+        teamIds: {
+          type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+          description:
+            'a list of team Ids that you want timeline events for. if null, will return timeline events for all possible active teams'
+        },
         eventTypes: {
           type: new GraphQLList(new GraphQLNonNull(TimelineEventTypeEnum))
         }
       },
-      resolve: async ({id}: {id: string}, {after, first, eventTypes}, {authToken}: GQLContext) => {
+      resolve: async (
+        {id}: {id: string},
+        {after, first, teamIds, eventTypes},
+        {authToken}: GQLContext
+      ) => {
         const r = await getRethink()
         const viewerId = getUserId(authToken)
+
+        // VALIDATE
+        if (teamIds?.length > 100) {
+          const err = new Error('Timeline filter is too broad')
+          standardError(err, {
+            userId: viewerId,
+            tags: {teamIds: JSON.stringify(teamIds)}
+          })
+          return connectionFromTasks([], 0, err)
+        }
+        const validTeamIds = getValidTeamIds(teamIds, authToken.tms)
+
         if (viewerId !== id && !isSuperUser(authToken)) return null
         const dbAfter = after ? new Date(after) : r.maxval
         const events = await r
@@ -223,6 +254,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           .filter((t: RDatum<TimelineEvent>) =>
             eventTypes ? r.expr(eventTypes).contains(t('type')) : true
           )
+          .filter((t: RDatum) => r.expr(validTeamIds).contains(t('teamId')))
           .orderBy(r.desc('createdAt'))
           .limit(first + 1)
           .coerceTo('array')
