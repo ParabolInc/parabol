@@ -1,14 +1,13 @@
 import {FirstParam} from 'parabol-client/types/generics'
 import {Client} from 'pg'
-import pgpInit from 'pg-promise'
 import {r} from 'rethinkdb-ts'
 import getPgConfig from '../getPgConfig'
 import connectRethinkDB from '../../database/connectRethinkDB'
+import getPgp from '../getPgp'
 
 export async function up() {
   await connectRethinkDB()
-  const pgp = pgpInit()
-  const pg = pgp(getPgConfig())
+  const {pgp, pg} = getPgp()
   const batchSize = 1000
   // Create an index we can paginate on
   try {
