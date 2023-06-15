@@ -46,7 +46,7 @@ const subscription = graphql`
         ...OldUpgradeToTeamTierMutation_organization @relay(mask: false)
       }
       UpgradeToTeamTierSuccess {
-        ...UpgradeToTeamTierMutation_organization @relay(mask: false)
+        ...UpgradeToTeamTierFrag_organization @relay(mask: false)
       }
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_organization @relay(mask: false)
