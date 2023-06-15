@@ -1,0 +1,23 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  updateCreditCard(
+    """
+    Describe the first arg here
+    """
+    arg1: ID!
+  ): UpdateCreditCardPayload!
+}
+
+"""
+Return value for updateCreditCard, which could be an error
+"""
+union UpdateCreditCardPayload = ErrorPayload | UpdateCreditCardSuccess
+
+type UpdateCreditCardSuccess {
+  """
+  Describe the first return field here
+  """
+  successField: ID!
+}
