@@ -128,21 +128,25 @@ const User: UserResolvers = {
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
       const SEASONAL = 1 << 8 // put seasonal templates at the top
-      const ON_TEAM = 1 << 7 // next put team templates
-      const ON_ORG = 1 << 6 // next put org templates
-      const IS_FREE = 1 << 5 // tiebreaker: free public templates
-      const USED_RECENTLY = 1 << 4 // tiebreaker: if used within the month
+      const USED_LAST_90 = 1 << 7 // next, show all templates used within the last 90 days
+      const ON_TEAM = 1 << 6 // tiebreak by putting team templates first
+      const ON_ORG = 1 << 5 // then org templates
+      const IS_FREE = 1 << 4 // then free parabol templates
+      const USED_LAST_30 = 1 << 3 // tiebreak on being used in last 30
       const {hideStartingAt, teamId, orgId, lastUsedAt, isFree} = activity
       const isSeasonal = !!hideStartingAt
       const isOnTeam = teamIds.includes(teamId)
       const isOnOrg = orgId !== 'aGhostOrg' && !isOnTeam
-      const isUsedRecently = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('30d'))
+      const isUsedLast30 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('30d'))
+      const isUsedLast90 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('90d'))
       let score = 0
       if (isSeasonal) score += SEASONAL
+      if (isUsedLast90) score += USED_LAST_90
       if (isOnTeam) score += ON_TEAM
       if (isOnOrg) score += ON_ORG
-      if (isUsedRecently) score += USED_RECENTLY
       if (isFree) score += IS_FREE
+      if (isUsedLast30) score += USED_LAST_30
+
       return score
     }
     const allActivities = [...parabolActivities, ...allUserActivities]
