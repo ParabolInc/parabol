@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.107.3 2023-Jun-13
+
+### Fixed
+
+- Use latest undici to (hopefully) fix mem leak in fetch
+
 ## 6.107.2 2023-Jun-09
 
 ### Fixed:
