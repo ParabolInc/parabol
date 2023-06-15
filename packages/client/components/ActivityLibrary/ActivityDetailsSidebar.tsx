@@ -9,7 +9,9 @@ import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsS
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {MenuPosition} from '../../hooks/useCoords'
 import sortByTier from '../../utils/sortByTier'
+import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import FlatPrimaryButton from '../FlatPrimaryButton'
@@ -62,6 +64,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
+          ...NewMeetingSettingsToggleTeamHealth_settings
           ...NewMeetingSettingsToggleAnonymity_settings
         }
         pokerSettings: meetingSettings(meetingType: poker) {
@@ -204,6 +207,9 @@ const ActivityDetailsSidebar = (props: Props) => {
           {type === 'retrospective' && (
             <>
               <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+              {isTeamHealthAvailable(selectedTeam.tier) && (
+                <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
+              )}
               <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
             </>
           )}
