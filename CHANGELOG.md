@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.108.0 2023-Jun-15
+
+### Added
+
+- add team filter in meeting view (#7854)
+- text align center for icebreakers (#8306) 
+- **Team Health**: enable team health by default for paid tiers (#8348) 
+- **Team Health**: Add setting to new activity library (#8375)
+
+### Changed
+
+- Adds new template for design issues (#8261)
+- **gh-actions**: merge check and build (#8221) 
+- **docker-image**: self-hosted folder added in HOME directory (#8361)
+- **template-limits**: remove template limit feature flag (#8359) 
+  
+### Fixed
+
+- **standups**: allow selecting text within the standup response drawer (#8339)
+- **teams-limit**: remove teams limit when upgrading to enterprise (#8367 
+
 ## 6.107.3 2023-Jun-13
 
 ### Fixed
