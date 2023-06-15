@@ -70,7 +70,7 @@ extend type User {
   dashSearch: String
   pageName: String
   # The team we should default to in team pickers, etc.
-  defaultTeamId: ID
+  preferredTeamId: ID
 }
 
 extend type Task {

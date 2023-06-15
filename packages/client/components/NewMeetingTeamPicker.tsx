@@ -10,7 +10,7 @@ import lazyPreload from '../utils/lazyPreload'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
 import useAtmosphere from '../hooks/useAtmosphere'
-import setDefaultTeamId from '../utils/relay/setDefaultTeamId'
+import setPreferredTeamId from '../utils/relay/setPreferredTeamId'
 
 const SelectTeamDropdown = lazyPreload(
   () =>
@@ -40,7 +40,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   const handleSelectTeam = (teamId: string) => {
-    setDefaultTeamId(atmosphere, teamId)
+    setPreferredTeamId(atmosphere, teamId)
     onSelectTeam(teamId)
   }
 

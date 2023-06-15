@@ -25,7 +25,7 @@ const ACTION_BUTTON_CLASSES =
 
 interface Props {
   teamsRef: TeamPickerModal_teams$key
-  defaultTeamId: string | null
+  preferredTeamId: string | null
   templatesRef: TeamPickerModal_templates$key
   closePortal: () => void
   category: string
@@ -34,7 +34,7 @@ interface Props {
 }
 
 const TeamPickerModal = (props: Props) => {
-  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type, defaultTeamId} =
+  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type, preferredTeamId} =
     props
   const teams = useFragment(
     graphql`
@@ -61,7 +61,7 @@ const TeamPickerModal = (props: Props) => {
   )
 
   const [selectedTeam, setSelectedTeam] = useState(
-    teams.find((team) => team.id === defaultTeamId) ?? sortByTier(teams)[0]!
+    teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
 
   const atmosphere = useAtmosphere()

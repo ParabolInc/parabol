@@ -32,11 +32,11 @@ interface Props {
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
   isOpen: boolean
-  defaultTeamId: string | null
+  preferredTeamId: string | null
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, isOpen, defaultTeamId} = props
+  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -93,7 +93,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       : []
 
   const [selectedTeam, setSelectedTeam] = useState(
-    availableTeams.find((team) => team.id === defaultTeamId) ??
+    availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
       sortByTier(availableTeams)[0]!
   )
