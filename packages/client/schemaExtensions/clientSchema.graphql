@@ -69,6 +69,8 @@ extend type User {
   clientClockOffset: Int
   dashSearch: String
   pageName: String
+  # The team we should default to in team pickers, etc.
+  preferredTeamId: ID
 }
 
 extend type Task {

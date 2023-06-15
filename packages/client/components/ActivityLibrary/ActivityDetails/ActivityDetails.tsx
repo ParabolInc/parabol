@@ -67,7 +67,7 @@ const ActivityDetails = (props: Props) => {
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
   const {activity, teams} = viewer
-
+  const preferredTeamId = null
   const history = useHistory<{prevCategory?: string}>()
   const [isEditing, setIsEditing] = useState(false)
 
@@ -133,6 +133,7 @@ const ActivityDetails = (props: Props) => {
           teamsRef={teams}
           isOpen={!isEditing}
           type={activity.type}
+          preferredTeamId={preferredTeamId}
         />
       </div>
     </div>
