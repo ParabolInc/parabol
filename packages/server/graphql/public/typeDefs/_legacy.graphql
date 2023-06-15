@@ -7019,7 +7019,7 @@ type Mutation {
   """
   Update an existing credit card on file
   """
-  updateCreditCard(
+  oldUpdateCreditCard(
     """
     the org requesting the changed billing
     """
@@ -7029,7 +7029,7 @@ type Mutation {
     The token that came back from stripe
     """
     stripeToken: ID!
-  ): UpdateCreditCardPayload
+  ): OldUpdateCreditCardPayload
 
   """
   Update the scale used for a dimension in a template
@@ -8988,7 +8988,7 @@ type UpdateCommentContentSuccess {
   comment: Comment!
 }
 
-type UpdateCreditCardPayload {
+type OldUpdateCreditCardPayload {
   error: StandardMutationError
 
   """

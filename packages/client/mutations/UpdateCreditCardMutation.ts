@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {UpdateCreditCardMutation as TUpdateCreditCardMutation} from '../__generated__/UpdateCreditCardMutation.graphql'
+import {OldUpdateCreditCardMutation as TOldUpdateCreditCardMutation} from '../__generated__/OldUpdateCreditCardMutation.graphql'
 graphql`
-  fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload {
+  fragment OldUpdateCreditCardMutation_organization on OldUpdateCreditCardPayload {
     organization {
       creditCard {
         brand
@@ -16,7 +16,7 @@ graphql`
 `
 
 graphql`
-  fragment UpdateCreditCardMutation_team on UpdateCreditCardPayload {
+  fragment OldUpdateCreditCardMutation_team on OldUpdateCreditCardPayload {
     teamsUpdated {
       isPaid
       updatedAt
@@ -25,23 +25,23 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateCreditCardMutation($orgId: ID!, $stripeToken: ID!) {
-    updateCreditCard(orgId: $orgId, stripeToken: $stripeToken) {
+  mutation OldUpdateCreditCardMutation($orgId: ID!, $stripeToken: ID!) {
+    oldUpdateCreditCard(orgId: $orgId, stripeToken: $stripeToken) {
       error {
         message
       }
-      ...UpdateCreditCardMutation_organization @relay(mask: false)
-      ...UpdateCreditCardMutation_team @relay(mask: false)
+      ...OldUpdateCreditCardMutation_organization @relay(mask: false)
+      ...OldUpdateCreditCardMutation_team @relay(mask: false)
     }
   }
 `
 
-const UpdateCreditCardMutation: StandardMutation<TUpdateCreditCardMutation> = (
+const OldUpdateCreditCardMutation: StandardMutation<TOldUpdateCreditCardMutation> = (
   atmosphere,
   {orgId, stripeToken},
   {onError, onCompleted}
 ) => {
-  return commitMutation<TUpdateCreditCardMutation>(atmosphere, {
+  return commitMutation<TOldUpdateCreditCardMutation>(atmosphere, {
     mutation,
     variables: {
       orgId,
@@ -52,4 +52,4 @@ const UpdateCreditCardMutation: StandardMutation<TUpdateCreditCardMutation> = (
   })
 }
 
-export default UpdateCreditCardMutation
+export default OldUpdateCreditCardMutation
