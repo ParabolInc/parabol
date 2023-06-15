@@ -40,10 +40,10 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     }
   }
   if (!maybeOrgId) {
-    throw new Error(`Could not find orgId on invoice ${invoiceId}`)
+    return {error: {message: `Could not find orgId on invoice ${invoiceId}`}}
   }
   if (customer.deleted === true) {
-    throw new Error(`Customer ${customerId} has been deleted`)
+    return {error: {message: 'Customer has been deleted'}}
   }
   // TS Error doesn't know if orgId stays a string or not
   const orgId = maybeOrgId
@@ -59,10 +59,12 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   if (paymentIntent && paymentIntent.status === 'requires_action') {
     // The payment failed because it requires 3D Secure
     // Don't cancel the subscription. Wait for the client to authenticate
-    return {orgId}
+    return {error: {message: 'Required 3D Secure auth'}, orgId}
   }
 
-  if (paid || stripeSubscriptionId !== subscription) return {orgId}
+  if (paid || stripeSubscriptionId !== subscription) {
+    return {orgId}
+  }
 
   // RESOLUTION
   await terminateSubscription(orgId)
@@ -78,12 +80,12 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     ? await manager.retrieveCardDetails(default_source as string)
     : null
   if (creditCardRes instanceof Error) {
-    return {error: {message: creditCardRes.message}}
+    return {error: {message: creditCardRes.message}, orgId}
   }
   // customers that used the new checkout flow with Stripe Elements will have a default_source. Previously, we'd store their creditCard in the org table
   const creditCard = creditCardRes ?? org.creditCard
   if (!creditCard) {
-    return {error: {message: 'No credit card found'}}
+    return {error: {message: 'No credit card found'}, orgId}
   }
   const {last4, brand} = creditCard
 
