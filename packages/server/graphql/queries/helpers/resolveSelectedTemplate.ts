@@ -1,7 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
-import {getUserId} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 
 const resolveSelectedTemplate =
@@ -9,23 +8,15 @@ const resolveSelectedTemplate =
   async (
     source: MeetingSettingsPoker | MeetingSettingsRetrospective,
     _args: unknown,
-    {authToken, dataLoader}: GQLContext
+    {dataLoader}: GQLContext
   ) => {
     const {id: settingsId, selectedTemplateId, teamId} = source
-    const viewerId = getUserId(authToken)
-    const [viewer, team, template] = await Promise.all([
-      dataLoader.get('users').loadNonNull(viewerId),
+    const [team, template] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('meetingTemplates').load(selectedTemplateId)
     ])
     const {tier} = team
-    const hasFeatureFlag = viewer.featureFlags.includes('templateLimit')
-    if (
-      template &&
-      (hasFeatureFlag
-        ? template?.isFree || template?.scope !== 'PUBLIC' || tier !== 'starter'
-        : true)
-    ) {
+    if (template?.isFree || template?.scope !== 'PUBLIC' || tier !== 'starter') {
       return template
     }
     // there may be holes in our template deletion or reselection logic, so doing this to be safe

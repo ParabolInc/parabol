@@ -8,7 +8,6 @@ enum OrganizationFeatureFlagsEnum {
   suggestGroups
   zoomTranscription
   shareSummary
-  teamHealth
   teamsLimit
 }
 

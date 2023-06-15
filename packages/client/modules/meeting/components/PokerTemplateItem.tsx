@@ -11,7 +11,6 @@ import {PALETTE} from '../../../styles/paletteV3'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateItem_template$key} from '../../../__generated__/PokerTemplateItem_template.graphql'
-import {PokerTemplateItem_viewer$key} from '../../../__generated__/PokerTemplateItem_viewer.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
@@ -55,12 +54,11 @@ interface Props {
   isActive: boolean
   teamId: string
   templateRef: PokerTemplateItem_template$key
-  viewerRef?: PokerTemplateItem_viewer$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
 }
 
 const PokerTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, templateRef, viewerRef} = props
+  const {lowestScope, isActive, teamId, templateRef} = props
   const template = useFragment(
     graphql`
       fragment PokerTemplateItem_template on PokerTemplate {
@@ -76,16 +74,8 @@ const PokerTemplateItem = (props: Props) => {
     `,
     templateRef
   )
-  const viewer = useFragment(
-    graphql`
-      fragment PokerTemplateItem_viewer on User {
-        ...useTemplateDescription_viewer
-      }
-    `,
-    viewerRef ?? null
-  )
   const {id: templateId, name: templateName, scope, isFree} = template
-  const description = useTemplateDescription(lowestScope, template, viewer ?? undefined)
+  const description = useTemplateDescription(lowestScope, template)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)

@@ -8,6 +8,7 @@ import {Link} from 'react-router-dom'
 
 import {Close} from '@mui/icons-material'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
@@ -26,6 +27,32 @@ import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
 
 graphql`
+  fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
+    team {
+      name
+    }
+    name
+    type
+    category
+    ... on PokerTemplate {
+      dimensions {
+        name
+        description
+        selectedScale {
+          name
+        }
+      }
+    }
+    ... on ReflectTemplate {
+      prompts {
+        question
+        description
+      }
+    }
+  }
+`
+
+graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
     id
     teamId
@@ -37,6 +64,7 @@ graphql`
     category
     isRecommended
     isFree
+    ...ActivityLibrary_templateSearchDocument @relay(mask: false)
   }
 `
 
@@ -61,7 +89,29 @@ interface Props {
   queryRef: PreloadedQuery<ActivityLibraryQuery>
 }
 
-const getTemplateValue = (template: {name: string}) => template.name
+const CATEGORY_KEYWORDS: Partial<Record<CategoryID, string[]>> = {
+  strategy: ['okrs', 'goalsetting', 'goal-setting', 'planning'],
+  estimation: ['sprint'],
+  premortem: ['kickoff']
+}
+
+// Generate a string of concatenated keywords that we can match against for each template.
+const getTemplateDocumentValue = (
+  template: Omit<ActivityLibrary_templateSearchDocument$data, ' $fragmentType'>
+) =>
+  [
+    template.name,
+    template.category,
+    template.type,
+    template.team.name,
+    CATEGORY_KEYWORDS[template.category as CategoryID] ?? [],
+    template.dimensions
+      ?.map((dimension) => [dimension.name, dimension.description, dimension.selectedScale.name])
+      .flat() ?? [],
+    template.prompts?.map((prompt) => [prompt.question, prompt.description]).flat() ?? []
+  ]
+    .flat()
+    .join('-')
 
 /**
  * Defines the list of categories where the 'Create Custom Activity' card is allowed to appear
@@ -100,7 +150,7 @@ export const ActivityLibrary = (props: Props) => {
     filteredItems: filteredTemplates,
     onQueryChange,
     resetQuery
-  } = useSearchFilter(templates, getTemplateValue)
+  } = useSearchFilter(templates, getTemplateDocumentValue)
 
   const {match} = useRouter<{categoryId?: string}>()
   const {

@@ -11,6 +11,7 @@ import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
+import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 
 const getBillingLeaderUser = async (
   email: string | null | undefined,
@@ -114,6 +115,9 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
           periodStart: fromEpochSeconds(subscription.current_period_start),
           stripeSubscriptionId: subscription.id,
           tier: 'enterprise',
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
           updatedAt: now
         })
     }).run(),
@@ -124,7 +128,8 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
         updatedAt: now
       },
       orgId
-    )
+    ),
+    removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
   await Promise.all([

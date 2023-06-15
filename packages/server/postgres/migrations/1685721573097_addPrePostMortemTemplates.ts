@@ -1,10 +1,7 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import {Client} from 'pg'
-import pgpInit from 'pg-promise'
-import {r} from 'rethinkdb-ts'
-import {ParabolR} from '../../database/rethinkDriver'
+import connectRethinkDB from '../../database/connectRethinkDB'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
-import getPgConfig from '../getPgConfig'
+import getPgp from '../getPgp'
 
 interface Prompt {
   question: string
@@ -1064,19 +1061,8 @@ const reflectPrompts = NEW_TEMPLATE_CONFIGS.map((templateConfig) => {
   })
 }).flat()
 
-const connectRethinkDB = async () => {
-  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
-  await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: pathname.split('/')[1]
-  })
-  return r as any as ParabolR
-}
-
 export async function up() {
-  const pgp = pgpInit()
-  const pg = pgp(getPgConfig())
+  const {pgp, pg} = getPgp()
   const columnSet = new pgp.helpers.ColumnSet(
     [
       'id',
