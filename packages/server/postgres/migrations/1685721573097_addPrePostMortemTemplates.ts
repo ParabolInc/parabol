@@ -1,6 +1,9 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {Client} from 'pg'
+import {r} from 'rethinkdb-ts'
 import connectRethinkDB from '../../database/connectRethinkDB'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import getPgConfig from '../getPgConfig'
 import getPgp from '../getPgp'
 
 interface Prompt {
