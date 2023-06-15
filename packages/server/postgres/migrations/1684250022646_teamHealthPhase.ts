@@ -1,15 +1,5 @@
 import {r, RValue} from 'rethinkdb-ts'
-import {ParabolR} from '../../database/rethinkDriver'
-
-const connectRethinkDB = async () => {
-  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
-  await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: pathname.split('/')[1]
-  })
-  return r as any as ParabolR
-}
+import connectRethinkDB from '../../database/connectRethinkDB'
 
 export async function up() {
   // Noop, using the feature will however create data which is not backwards compatible, thus only a down migration

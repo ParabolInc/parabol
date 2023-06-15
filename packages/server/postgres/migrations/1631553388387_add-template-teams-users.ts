@@ -2,15 +2,7 @@ import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
 import {backupTeamQuery, backupUserQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
-
-const connectRethinkDB = async () => {
-  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
-  await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: pathname.split('/')[1]
-  })
-}
+import connectRethinkDB from '../../database/connectRethinkDB'
 
 export async function up() {
   const client = new Client(getPgConfig())
