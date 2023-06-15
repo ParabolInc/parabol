@@ -140,7 +140,7 @@ export const TemplateDetails = (props: Props) => {
     viewerRef
   )
 
-  const {teams, tier} = viewer
+  const {teams, tier, preferredTeamId} = viewer
   const history = useHistory<{prevCategory?: string; edit?: boolean}>()
   const prevCategory = history.location.state?.prevCategory
 
@@ -319,6 +319,7 @@ export const TemplateDetails = (props: Props) => {
           teamsRef={teams}
           closePortal={closeTeamPickerPortal}
           parentTemplateId={activityId}
+          preferredTeamId={preferredTeamId}
           type={type}
         />
       )}

@@ -40,6 +40,7 @@ graphql`
 export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
+      preferredTeamId
       tier
       activity(activityId: $activityId) {
         ...ActivityDetails_template @relay(mask: false)
@@ -66,8 +67,7 @@ const ActivityDetails = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
-  const {activity, teams} = viewer
-  const preferredTeamId = null
+  const {activity, preferredTeamId, teams} = viewer
   const history = useHistory<{prevCategory?: string}>()
   const [isEditing, setIsEditing] = useState(false)
 
