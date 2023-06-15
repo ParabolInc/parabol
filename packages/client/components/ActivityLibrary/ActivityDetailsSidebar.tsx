@@ -36,19 +36,11 @@ interface Props {
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
   isOpen: boolean
-<<<<<<< HEAD
   preferredTeamId: string | null
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
   const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId} = props
-=======
-  showTemplateLimit: boolean
-}
-
-const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, isOpen, showTemplateLimit} = props
->>>>>>> c7e6c51c1 (Upgrade prompt on premium AL templates)
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -228,7 +220,7 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
 
-          {showTemplateLimit && selectedTeam.tier === 'starter' && !selectedTemplate?.isFree ? (
+          {selectedTeam.tier === 'starter' && !selectedTemplate?.isFree ? (
             <div className='flex grow flex-col'>
               <div className='my-auto text-center'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s

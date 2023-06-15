@@ -32,20 +32,11 @@ interface Props {
   category: string
   parentTemplateId: string
   type: MeetingTypeEnum
-  showTemplateLimit: boolean
 }
 
 const TeamPickerModal = (props: Props) => {
-  const {
-    teamsRef,
-    templatesRef,
-    closePortal,
-    category,
-    parentTemplateId,
-    type,
-    preferredTeamId,
-    showTemplateLimit
-  } = props
+  const {teamsRef, templatesRef, closePortal, category, parentTemplateId, type, preferredTeamId} =
+    props
   const teams = useFragment(
     graphql`
       fragment TeamPickerModal_teams on Team @relay(plural: true) {
@@ -169,7 +160,7 @@ const TeamPickerModal = (props: Props) => {
           selectedTeamRef={selectedTeam}
           teamsRef={teams}
         />
-        {showTemplateLimit && selectedTeam.tier === 'starter' && (
+        {selectedTeam.tier === 'starter' && (
           <div>
             This team is on the <b>Starter</b> plan. <b>Upgrade</b> to clone and edit templates on
             this team.
@@ -186,7 +177,7 @@ const TeamPickerModal = (props: Props) => {
           >
             Cancel
           </button>
-          {showTemplateLimit && selectedTeam.tier === 'starter' ? (
+          {selectedTeam.tier === 'starter' ? (
             <button
               className={clsx(
                 ACTION_BUTTON_CLASSES,

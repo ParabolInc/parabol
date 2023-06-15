@@ -114,9 +114,6 @@ const query = graphql`
   query CreateNewActivityQuery {
     viewer {
       preferredTeamId
-      featureFlags {
-        templateLimit
-      }
       teams {
         id
         tier
@@ -162,7 +159,7 @@ export const CreateNewActivity = (props: Props) => {
     return selectedActivity
   })
   const {viewer} = data
-  const {teams, availableTemplates, featureFlags, preferredTeamId} = viewer
+  const {teams, availableTemplates, preferredTeamId} = viewer
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
@@ -332,7 +329,7 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          {featureFlags.templateLimit && selectedTeam.tier === 'starter' ? (
+          {selectedTeam.tier === 'starter' ? (
             <div className='mx-auto flex h-12 items-center gap-24'>
               <div className='w-96'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
