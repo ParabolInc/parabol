@@ -6,6 +6,7 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import useRouter from '../../hooks/useRouter'
@@ -47,6 +48,7 @@ graphql`
         question
         description
       }
+      subCategories
     }
   }
 `
@@ -122,6 +124,42 @@ const CategoryIDToColorClass = {
     })
   )
 } as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
+
+const activityGridList = (
+  templatesToRender: Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
+  selectedCategory: string
+) => {
+  return templatesToRender.map((template) => {
+    return (
+      <Link
+        key={template.id}
+        to={{
+          pathname: `/activity-library/details/${template.id}`,
+          state: {prevCategory: selectedCategory}
+        }}
+        className='flex focus:rounded-md focus:outline-primary'
+      >
+        <ActivityLibraryCard
+          className='group aspect-[256/160] flex-1'
+          key={template.id}
+          theme={CATEGORY_THEMES[template.category as CategoryID]}
+          title={template.name}
+          badge={
+            !template.isFree ? (
+              <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
+            ) : null
+          }
+        >
+          <ActivityCardImage className='group-hover/card:hidden' src={template.illustrationUrl} />
+          <ActivityLibraryCardDescription
+            className='hidden group-hover/card:flex'
+            templateRef={template}
+          />
+        </ActivityLibraryCard>
+      </Link>
+    )
+  })
+}
 
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
@@ -249,43 +287,70 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className='mx-auto mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-              {templatesToRender.map((template) => {
-                return (
-                  <Link
-                    key={template.id}
-                    to={{
-                      pathname: `/activity-library/details/${template.id}`,
-                      state: {prevCategory: selectedCategory}
-                    }}
-                    className='flex focus:rounded-md focus:outline-primary'
-                  >
-                    <ActivityLibraryCard
-                      className='group aspect-[256/160] flex-1'
-                      key={template.id}
-                      theme={CATEGORY_THEMES[template.category as CategoryID]}
-                      title={template.name}
-                      badge={
-                        !template.isFree ? (
-                          <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>
-                            Premium
-                          </ActivityBadge>
-                        ) : null
-                      }
-                    >
-                      <ActivityCardImage
-                        className='group-hover/card:hidden'
-                        src={template.illustrationUrl}
-                      />
-                      <ActivityLibraryCardDescription
-                        className='hidden group-hover/card:flex'
-                        templateRef={template}
-                      />
-                    </ActivityLibraryCard>
-                  </Link>
-                )
-              })}
-            </div>
+            <>
+              {categoryId === 'retrospective' ? (
+                <>
+                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                    Popular templates
+                  </div>
+                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                    {activityGridList(
+                      templatesToRender.filter((template) =>
+                        template.subCategories?.includes('popular')
+                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
+                      selectedCategory
+                    )}
+                  </div>
+                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                    You used these recently
+                  </div>
+                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                    {activityGridList(
+                      templatesToRender.filter((template) =>
+                        template.subCategories?.includes('recentlyUsed')
+                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
+                      selectedCategory
+                    )}
+                  </div>
+                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                    Others in your org use
+                  </div>
+                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                    {activityGridList(
+                      templatesToRender.filter((template) =>
+                        template.subCategories?.includes('recentlyUsedInOrg')
+                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
+                      selectedCategory
+                    )}
+                  </div>
+                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>You should try</div>
+                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                    {activityGridList(
+                      templatesToRender.filter((template) =>
+                        template.subCategories?.includes('neverTried')
+                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
+                      selectedCategory
+                    )}
+                  </div>
+                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>Others</div>
+                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                    {activityGridList(
+                      templatesToRender.filter(
+                        (template) => template.subCategories?.length === 0
+                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
+                      selectedCategory
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
+                  {activityGridList(
+                    templatesToRender as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
+                    selectedCategory
+                  )}
+                </div>
+              )}
+            </>
           )}
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
