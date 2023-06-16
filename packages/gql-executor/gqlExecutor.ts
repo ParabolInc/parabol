@@ -5,6 +5,7 @@ import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
 import SocketServerChannelId from '../client/shared/gqlIds/SocketServerChannelId'
 import executeGraphQL, {GQLRequest} from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
+import '../server/monkeyPatchFetch'
 import RedisStream from './RedisStream'
 
 tracer.init({
