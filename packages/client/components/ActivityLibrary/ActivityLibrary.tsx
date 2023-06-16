@@ -8,7 +8,6 @@ import {Link} from 'react-router-dom'
 
 import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
-import {ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityId, getActivityIllustration} from './ActivityIllustrations'
@@ -17,7 +16,6 @@ import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import CreateActivityCard from './CreateActivityCard'
-import {Close} from '@mui/icons-material'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import {
   CATEGORY_ID_TO_NAME,
@@ -114,19 +112,6 @@ const getTemplateDocumentValue = (
     .flat()
     .join('-')
 
-/**
- * Defines the list of categories where the 'Create Custom Activity' card is allowed to appear
- */
-const CREATE_CUSTOM_ACTIVITY_ALLOW_LIST: Array<typeof QUICK_START_CATEGORY_ID | CategoryID> = [
-  QUICK_START_CATEGORY_ID,
-  'retrospective',
-  'feedback',
-  'strategy',
-  'estimation',
-  'premortem',
-  'postmortem'
-]
-
 const CategoryIDToColorClass = {
   [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
   ...Object.fromEntries(
@@ -204,41 +189,39 @@ export const ActivityLibrary = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
-      <div className='mx-1 hidden md:flex'>
+      <div className='mx-2 flex'>
         <div className='hidden items-center justify-start gap-x-2 px-4 lg:flex lg:basis-[15%]'>
           <Link title='My Dashboard' to='/meetings'>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
         </div>
 
-        <div className='border-b-solid mt-4 flex flex-1 items-center border-b-[1px] border-slate-300 pb-4 lg:mr-[15%]'>
-          <div className='mx-auto flex w-full items-center justify-between gap-14 md:px-4'>
+        <div className='border-b-solid mt-4 flex flex-1 flex-col items-center border-b-[1px] border-slate-300 pb-4 lg:mr-[15%]'>
+          <div className='mx-auto flex w-full items-center justify-between gap-14 px-2 md:px-4'>
             <div className='flex items-center'>
               <Link className='mr-6 block lg:hidden' title='My Dashboard' to='/meetings'>
                 <IconLabel icon={'arrow_back'} iconLarge />
               </Link>
               <img className='mr-3 w-8' crossOrigin='' alt='Parabol' src={logoMarkPurple} />
-              <div className='shrink-0 text-lg font-semibold lg:text-xl xl:block'>
+              <div className='hidden shrink-0 text-lg font-semibold md:block lg:text-xl'>
                 Start Activity
               </div>
             </div>
+            <div className='hidden grow md:block'>
+              <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+            </div>
+            <Link
+              className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
+              to={`/activity-library/new-activity/${selectedCategory}`}
+            >
+              Create custom activity
+            </Link>
+          </div>
+          <div className='mt-4 flex w-full md:hidden'>
             <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
-            <button className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white'>
-              Create Custom Activity
-            </button>
           </div>
         </div>
       </div>
-      <ActivityLibraryMobileHeader
-        className='flex md:hidden'
-        rightNavigation={
-          <Link className='rounded-full p-2 hover:bg-slate-200' to={`/`} replace={true}>
-            <Close className='m-auto h-8 w-8' />
-          </Link>
-        }
-      >
-        <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
-      </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='mt-6 w-full'>
         <ScrollArea.Viewport className='w-full'>
@@ -283,9 +266,6 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           ) : (
             <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-              {CREATE_CUSTOM_ACTIVITY_ALLOW_LIST.includes(selectedCategory) && (
-                <CreateActivityCard category={selectedCategory} />
-              )}
               {templatesToRender.map((template) => {
                 const activityIllustration = getActivityIllustration(template.id as ActivityId)
 
