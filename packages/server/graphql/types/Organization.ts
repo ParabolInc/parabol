@@ -8,8 +8,9 @@ import {
   GraphQLString
 } from 'graphql'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
-import StripeManager from '../../utils/stripe/StripeManager'
+import {getStripeManager} from '../../utils/stripe'
 import {GQLContext} from '../graphql'
+import getCCFromCustomer from '../mutations/helpers/getCCFromCustomer'
 import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCountByOrgIds'
 import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'
@@ -46,7 +47,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'The safe credit card details',
       resolve: async (source, _args, context) => {
         const creditCard = await resolveForBillingLeaders('creditCard')(source, _args, context)
-        // we used to store credit card details in the db, so we need to check there first
+        // before implementing Stripe Elements, we would store this data in our DB, but now we can retreive it from Stripe
         if (creditCard) {
           return creditCard
         } else {
@@ -55,19 +56,9 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
           const organization = await dataLoader.get('organizations').load(orgId)
           const {stripeId} = organization
           if (!stripeId) return undefined
-          const manager = new StripeManager()
-          const cardRes = await manager.retrieveDefaultCardDetails(stripeId)
-          if (cardRes instanceof Error) {
-            console.error(cardRes)
-            return undefined
-          }
-          const expiryMonth = cardRes.exp_month.toString().padStart(2, '0')
-          const expiryYear = cardRes.exp_year.toString().slice(2)
-          const expiry = `${expiryMonth}/${expiryYear}`
-          return {
-            ...cardRes,
-            expiry
-          }
+          const manager = getStripeManager()
+          const customer = await manager.retrieveCustomer(stripeId)
+          return getCCFromCustomer(customer)
         }
       }
     },

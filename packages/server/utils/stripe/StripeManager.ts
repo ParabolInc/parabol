@@ -181,7 +181,9 @@ export default class StripeManager {
   }
 
   async retrieveSubscription(subscriptionId: string) {
-    return this.stripe.subscriptions.retrieve(subscriptionId)
+    return this.stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['latest_invoice.payment_intent'] // expand the payment intent so we can get the client_secret
+    })
   }
 
   async retrieveUpcomingInvoice(stripeId: string) {

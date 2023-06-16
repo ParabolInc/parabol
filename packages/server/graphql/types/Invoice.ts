@@ -6,9 +6,11 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {getStripeManager} from '../../utils/stripe'
 import StripeManager from '../../utils/stripe/StripeManager'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import getCCFromCustomer from '../mutations/helpers/getCCFromCustomer'
 import Coupon from './Coupon'
 import CreditCard from './CreditCard'
 import GraphQLEmailType from './GraphQLEmailType'
@@ -63,25 +65,16 @@ const Invoice = new GraphQLObjectType<any, GQLContext>({
       type: CreditCard,
       description: 'the card used to pay the invoice',
       resolve: async ({creditCard, orgId}, _args, {dataLoader}) => {
-        // we used to store credit card details in the db, so we need to check there first
+        // before implementing Stripe Elements, we would store this data in our DB, but now we can retreive it from Stripe
         if (creditCard) {
           return creditCard
-        }
-        const organization = await dataLoader.get('organizations').load(orgId)
-        const {stripeId} = organization
-        if (!stripeId) return undefined
-        const manager = new StripeManager()
-        const cardRes = await manager.retrieveDefaultCardDetails(stripeId)
-        if (cardRes instanceof Error) {
-          console.error(cardRes)
-          return undefined
-        }
-        const expiryMonth = cardRes.exp_month.toString().padStart(2, '0')
-        const expiryYear = cardRes.exp_year.toString().slice(2)
-        const expiry = `${expiryMonth}/${expiryYear}`
-        return {
-          ...cardRes,
-          expiry
+        } else {
+          const organization = await dataLoader.get('organizations').load(orgId)
+          const {stripeId} = organization
+          if (!stripeId) return undefined
+          const manager = getStripeManager()
+          const customer = await manager.retrieveCustomer(stripeId)
+          return getCCFromCustomer(customer)
         }
       }
     },

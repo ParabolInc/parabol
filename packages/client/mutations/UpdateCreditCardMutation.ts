@@ -5,6 +5,7 @@ import {UpdateCreditCardMutation as TUpdateCreditCardMutation} from '../__genera
 
 graphql`
   fragment UpdateCreditCardMutation_organization on UpdateCreditCardSuccess {
+    stripeSubscriptionClientSecret
     organization {
       id
       creditCard {

@@ -158,6 +158,9 @@ const subscription = graphql`
       OldUpdateCreditCardPayload {
         ...OldUpdateCreditCardMutation_team @relay(mask: false)
       }
+      UpdateCreditCardPayload {
+        ...UpdateCreditCardMutation_team @relay(mask: false)
+      }
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)
       }

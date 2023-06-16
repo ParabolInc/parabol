@@ -75,7 +75,7 @@ const OrgPlansAndBilling = (props: Props) => {
       <div className='pb-20'>
         <OrgPlansAndBillingHeading organizationRef={organization} />
         <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag />
-        <OrgBillingCreditCardInfo organization={organization} />
+        <OrgBillingCreditCardInfo organizationRef={organization} />
         <BillingLeaders organizationRef={organization} />
         <OrgPlans organizationRef={organization} />
         <OrgPlanDrawer organizationRef={organization} />
