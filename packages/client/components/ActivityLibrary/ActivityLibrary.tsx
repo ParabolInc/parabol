@@ -225,16 +225,19 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
-          <div className='flex flex-wrap gap-2 px-4 pt-6 md:pb-4 lg:mx-[15%]'>
+          <div className='flex gap-2 px-4 pt-6 md:flex-wrap md:pb-4 lg:mx-[15%]'>
             {(
               Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>
             ).map((category) => (
               <Link
                 className={clsx(
-                  'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
+                  'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
                   category === selectedCategory && searchQuery.length === 0
-                    ? [CategoryIDToColorClass[category], 'text-white focus:text-white']
-                    : 'bg-slate-200'
+                    ? [
+                        CategoryIDToColorClass[category],
+                        'font-semibold text-white focus:text-white'
+                      ]
+                    : 'border border-slate-300 bg-white'
                 )}
                 to={`/activity-library/category/${category}`}
                 onClick={() => resetQuery()}
