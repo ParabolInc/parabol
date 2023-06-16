@@ -20,21 +20,36 @@ const addSummariesToThreads = async (
   const {tier} = team
   const commentPromises = stages.map(async (stage, idx) => {
     const group = groups.find((group) => group.id === stage.reflectionGroupId)
-    if (!group?.summary) return
-    const explainerText = tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
-    const html =
+    if (!group?.summary && !group?.discussionPromptQuestion) return
+    const topicSummaryExplainerText =
+      tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
+    const topicSummaryHtml =
       idx === 0
-        ? `<html><body><i>${explainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
+        ? `<html><body><i>${topicSummaryExplainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
         : `<html><body><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
-    const summaryBlock = convertHtmlToTaskContent(html)
-    const commentInput = {
+    const summaryBlock = convertHtmlToTaskContent(topicSummaryHtml)
+    const topicSummaryCommentInput = {
       discussionId: stage.discussionId,
       content: summaryBlock,
       threadSortOrder: 0,
       createdBy: PARABOL_AI_USER_ID
     }
-    const dbComment = new Comment(commentInput)
-    return r.table('Comment').insert(dbComment).run()
+    const topicSummaryComment = new Comment(topicSummaryCommentInput)
+
+    const discussionPromptQuestionHtml = `<html><body><i>${AIExplainer.PREMIUM_DISCUSSION_PROMPT_QUESTION}</i> <b>${group.discussionPromptQuestion}</b></body></html>`
+    const discussionPromptQuestionBlock = convertHtmlToTaskContent(discussionPromptQuestionHtml)
+    const discussionPromptQuestionCommentInput = {
+      discussionId: stage.discussionId,
+      content: discussionPromptQuestionBlock,
+      threadSortOrder: 1, // make sure it's after the topic summary
+      createdBy: PARABOL_AI_USER_ID
+    }
+    const discussionPromptQuestionComment = new Comment(discussionPromptQuestionCommentInput)
+
+    return r({
+      topicSummary: r.table('Comment').insert(topicSummaryComment),
+      discussionPromptQuestion: r.table('Comment').insert(discussionPromptQuestionComment)
+    }).run()
   })
   await Promise.all(commentPromises)
 }

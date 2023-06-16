@@ -37,8 +37,19 @@ const generateGroupSummaries = async (
         ({plaintextContent}) => plaintextContent
       )
       const summary = await manager.getSummary(reflectionTextByGroupId)
-      if (!summary) return
-      return r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
+      const discussionPromptQuestion = await manager.getDiscussionPromptQuestion(
+        group.title ?? 'Unknown',
+        reflectionsByGroupId
+      )
+      if (!summary && !discussionPromptQuestion) return
+
+      return r({
+        summary: r.table('RetroReflectionGroup').get(group.id).update({summary}),
+        discussionPromptQuestion: r
+          .table('RetroReflectionGroup')
+          .get(group.id)
+          .update({discussionPromptQuestion})
+      }).run()
     })
   )
 }

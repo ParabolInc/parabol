@@ -3,6 +3,7 @@ import sendToSentry from './sendToSentry'
 import {isValidJSON} from './isValidJSON'
 import {estimateTokens} from './estimateTokens'
 import {AVG_CHARS_PER_TOKEN, MAX_GPT_3_5_TOKENS} from '../../client/utils/constants'
+import Reflection from '../database/types/Reflection'
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
 
@@ -36,6 +37,50 @@ class OpenAIServerManager {
         presence_penalty: 0
       })
       return (response.data.choices[0]?.text?.trim() as string) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
+
+  async getDiscussionPromptQuestion(topic: string, reflections: Reflection[]) {
+    if (!this.openAIApi) return null
+    const prompt = `You are a meeting facilitator. I will give you a topic people is talking about and the comments they made. I'd like you to facilitate the discussion by asking a good question.
+Step 1: categorize the topic into one of the following 4 groups
+Step 2: come up with a question similar to the example question within that group
+Step 3: return me the question you came up with, do not include the group information
+Group 1: Requirement/Seek for help/Ask for permission. Example Question: what do you need?
+Group 2: Retrospection/Post mortem/Looking back/Incident analysis/Root cause analysis. Example Question: why?
+Group 3: Improvement/Measurement/Experiment. Example Question: What are you trying to maximize/minimize?
+Group 4: New plan/New feature/New launch/Doing something new. Example Question: How could we learn faster? or What is the simplest thing we could do?
+
+Topic: ${topic}
+Comments:
+${reflections
+  .map(({plaintextContent}) => plaintextContent.trim().replaceAll('\n', '\t'))
+  .join('\n')}`
+    try {
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 80,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      return (
+        (response.data.choices[0]?.message?.content?.trim() as string).replaceAll(
+          /^[Qq]uestion:*\s*/gi,
+          ''
+        ) ?? null
+      )
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)

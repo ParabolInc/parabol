@@ -91,6 +91,10 @@ const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLCo
       type: GraphQLString,
       description: `The GPT-3 generated summary of this reflection group`
     },
+    discussionPromptQuestion: {
+      type: GraphQLString,
+      description: `The GPT-3.5 generated question to prompt and engage the discussion of this reflection group`
+    },
     team: {
       type: Team,
       description: 'The team that is running the retro',
