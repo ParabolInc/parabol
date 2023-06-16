@@ -108,6 +108,7 @@ const UpdatePayment = (props: Props) => {
     const handleCompletedUpdate = async (res: UpdateCreditCardMutation$data) => {
       const {updateCreditCard} = res
       const {stripeSubscriptionClientSecret, error} = updateCreditCard
+      console.log('🚀 ~ updateCreditCard:', updateCreditCard)
       if (error || !stripeSubscriptionClientSecret) {
         const newErrMsg =
           error?.message ?? 'Something went wrong. Please try again or contact support.'
@@ -124,7 +125,7 @@ const UpdatePayment = (props: Props) => {
         return
       }
       onCompleted()
-      setIsUpdating(false)
+      // setIsUpdating(false)
     }
 
     UpdateCreditCardMutation(

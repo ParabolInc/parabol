@@ -50,6 +50,8 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
   if (res instanceof Error) return standardError(res, {userId: viewerId})
   await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
+  const resDos = await manager.updateSubscription(subscription.id, paymentMethodId)
+  console.log('🚀 ~ resDos:', resDos)
   const creditCard = await getCCFromCustomer(customer)
 
   try {
@@ -78,7 +80,6 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   } catch (e) {
     const error =
       e instanceof Error ? e : new Error('Failed to update db after updating credit card')
-    console.log('🚀 ~ error:', error)
     return standardError(error, {userId: viewerId, tags: {orgId}})
   }
   organization.creditCard = creditCard

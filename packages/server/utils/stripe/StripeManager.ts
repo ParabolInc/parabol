@@ -29,6 +29,22 @@ export default class StripeManager {
     }
   }
 
+  async updateSubscription(
+    subscriptionId: string,
+    paymentMethodId: string
+  ): Promise<Stripe.Subscription | Error> {
+    try {
+      const subscription = await this.stripe.subscriptions.update(subscriptionId, {
+        default_payment_method: paymentMethodId,
+        expand: ['latest_invoice']
+      })
+      return subscription
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
   async retrieveCardDetails(paymentMethodId: string): Promise<Stripe.PaymentMethod.Card | Error> {
     try {
       const paymentMethod = await this.stripe.paymentMethods.retrieve(paymentMethodId)
