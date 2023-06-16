@@ -223,9 +223,9 @@ export const ActivityLibrary = (props: Props) => {
         </div>
       </div>
 
-      <ScrollArea.Root className='mt-6 w-full'>
+      <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
-          <div className='flex flex-wrap gap-2 px-4 md:pb-4 lg:mx-[15%]'>
+          <div className='flex flex-wrap gap-2 px-4 pt-6 md:pb-4 lg:mx-[15%]'>
             {(
               Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>
             ).map((category) => (
