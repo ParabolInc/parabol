@@ -70,6 +70,14 @@ const UpdatePayment = (props: Props) => {
   const [cardNumberComplete, setCardNumberComplete] = useState(false)
   const [expiryDateComplete, setExpiryDateComplete] = useState(false)
   const [cvcComplete, setCvcComplete] = useState(false)
+  const hasValidCCDetails =
+    cardNumberComplete &&
+    expiryDateComplete &&
+    cvcComplete &&
+    !cardNumberError &&
+    !expiryDateError &&
+    !cvcError
+  const isUpdateDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -173,7 +181,7 @@ const UpdatePayment = (props: Props) => {
 
         <div className='w-1/4 pr-4'>
           <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
-            Expiry date
+            Expiry
           </label>
           <div className='mt-1'>
             <CardExpiryElement
@@ -201,7 +209,12 @@ const UpdatePayment = (props: Props) => {
       </div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
         <div className='w-1/4'>
-          <UpgradeButton isDisabled={false} size='medium' type={'submit'} onClick={handleSubmit}>
+          <UpgradeButton
+            disabled={isUpdateDisabled}
+            isDisabled={isUpdateDisabled}
+            size='medium'
+            type={'submit'}
+          >
             {'Update'}
           </UpgradeButton>
         </div>
