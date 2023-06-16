@@ -45,22 +45,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     creditCard: {
       type: CreditCard,
       description: 'The safe credit card details',
-      resolve: async (source, _args, context) => {
-        const creditCard = await resolveForBillingLeaders('creditCard')(source, _args, context)
-        // before implementing Stripe Elements, we would store this data in our DB, but now we can retreive it from Stripe
-        if (creditCard) {
-          return creditCard
-        } else {
-          const {id: orgId} = source
-          const {dataLoader} = context
-          const organization = await dataLoader.get('organizations').load(orgId)
-          const {stripeId} = organization
-          if (!stripeId) return undefined
-          const manager = getStripeManager()
-          const customer = await manager.retrieveCustomer(stripeId)
-          return getCCFromCustomer(customer)
-        }
-      }
+      resolve: resolveForBillingLeaders('creditCard')
     },
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),

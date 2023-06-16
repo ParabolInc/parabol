@@ -47,30 +47,23 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
     return standardError(new Error('Stripe customer has been deleted'), {userId: viewerId})
   }
   const {id: customerId} = customer
-  console.log('🚀 ~ customer:', customer)
   const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
-  console.log('🚀 ~ res:', res)
   if (res instanceof Error) return standardError(res, {userId: viewerId})
-  const redDos = await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
-  console.log('🚀 ~ redDos:', redDos)
+  await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
+  const creditCard = await getCCFromCustomer(customer)
 
   try {
-    const cc = await getCCFromCustomer(customer)
-    console.log('🚀 ~ cc:', cc)
     await Promise.all([
       r({
-        updatedOrg: r
-          .table('Organization')
-          .get(orgId)
-          .update({
-            creditCard: await getCCFromCustomer(customer),
-            tier: 'team',
-            stripeId: customer.id,
-            tierLimitExceededAt: null,
-            scheduledLockAt: null,
-            lockedAt: null,
-            updatedAt: now
-          })
+        updatedOrg: r.table('Organization').get(orgId).update({
+          creditCard,
+          tier: 'team',
+          stripeId: customer.id,
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: now
+        })
       }).run(),
       updateTeamByOrgId(
         {
@@ -88,15 +81,14 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
     console.log('🚀 ~ error:', error)
     return standardError(error, {userId: viewerId, tags: {orgId}})
   }
+  organization.creditCard = creditCard
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
-  console.log('🚀 ~ subscription:', subscription)
   const latestInvoice = subscription.latest_invoice as Stripe.Invoice
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
   const stripeSubscriptionClientSecret = paymentIntent.client_secret
   const data = {teamIds, orgId, stripeSubscriptionClientSecret}
-  console.log('🚀 ~ data:', data)
 
   teamIds.forEach((teamId) => {
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateCreditCardPayload', data, subOptions)

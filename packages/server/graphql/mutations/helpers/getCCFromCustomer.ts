@@ -26,7 +26,8 @@ export default async function getCCFromCustomer(
     const expiryYear = cardRes.exp_year.toString().slice(2)
     const expiry = `${expiryMonth}/${expiryYear}`
     return {
-      ...cardRes,
+      brand: cardRes.brand,
+      last4: cardRes.last4,
       expiry
     }
   } else {
