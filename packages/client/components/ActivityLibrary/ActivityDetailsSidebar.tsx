@@ -9,7 +9,9 @@ import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsS
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {MenuPosition} from '../../hooks/useCoords'
 import sortByTier from '../../utils/sortByTier'
+import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import FlatPrimaryButton from '../FlatPrimaryButton'
@@ -32,10 +34,11 @@ interface Props {
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
   isOpen: boolean
+  preferredTeamId: string | null
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, isOpen} = props
+  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -62,6 +65,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
+          ...NewMeetingSettingsToggleTeamHealth_settings
           ...NewMeetingSettingsToggleAnonymity_settings
         }
         pokerSettings: meetingSettings(meetingType: poker) {
@@ -91,7 +95,11 @@ const ActivityDetailsSidebar = (props: Props) => {
       ? [templateTeam]
       : []
 
-  const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
+  const [selectedTeam, setSelectedTeam] = useState(
+    availableTeams.find((team) => team.id === preferredTeamId) ??
+      templateTeam ??
+      sortByTier(availableTeams)[0]!
+  )
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
 
@@ -204,6 +212,9 @@ const ActivityDetailsSidebar = (props: Props) => {
           {type === 'retrospective' && (
             <>
               <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+              {isTeamHealthAvailable(selectedTeam.tier) && (
+                <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
+              )}
               <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
             </>
           )}

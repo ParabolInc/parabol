@@ -43,22 +43,38 @@ const oldUpgradeToTeamTier = async (
     }
   }
 
+  await r({
+    updatedOrg: r
+      .table('Organization')
+      .get(orgId)
+      .update({
+        ...subscriptionFields,
+        creditCard: await getCCFromCustomer(customer),
+        tier: 'team',
+        stripeId: customer.id,
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        updatedAt: now
+      })
+  }).run()
+
+  // If subscription already exists and has open invoices, try to process them
+  if (stripeSubscriptionId) {
+    const invoices = (await manager.listSubscriptionOpenInvoices(stripeSubscriptionId)).data
+
+    if (invoices.length) {
+      for (const invoice of invoices) {
+        const invoiceResult = await manager.payInvoice(invoice.id)
+        // Unlock teams only if all invoices are paid
+        if (invoiceResult.status !== 'paid') {
+          throw new Error('Unable to process payment')
+        }
+      }
+    }
+  }
+
   await Promise.all([
-    r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          ...subscriptionFields,
-          creditCard: await getCCFromCustomer(customer),
-          tier: 'team',
-          stripeId: customer.id,
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now
-        })
-    }).run(),
     updateTeamByOrgId(
       {
         isPaid: true,

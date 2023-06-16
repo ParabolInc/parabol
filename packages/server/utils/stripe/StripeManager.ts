@@ -120,6 +120,17 @@ export default class StripeManager {
     return allSubscriptionItems.data[0]
   }
 
+  async listSubscriptionOpenInvoices(subscriptionId: string) {
+    return this.stripe.invoices.list({
+      subscription: subscriptionId,
+      status: 'open'
+    })
+  }
+
+  async payInvoice(invoiceId: string) {
+    return this.stripe.invoices.pay(invoiceId)
+  }
+
   async listLineItems(invoiceId: string, options: Stripe.InvoiceLineItemListParams) {
     return this.stripe.invoices.listLineItems(invoiceId, options)
   }

@@ -10,7 +10,6 @@ import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutatio
 import {Threshold} from '../../../types/constEnums'
 import {AddNewPokerTemplate_pokerTemplates$key} from '../../../__generated__/AddNewPokerTemplate_pokerTemplates.graphql'
 import {AddNewPokerTemplate_team$key} from '../../../__generated__/AddNewPokerTemplate_team.graphql'
-import {AddNewPokerTemplate_viewer$key} from '../../../__generated__/AddNewPokerTemplate_viewer.graphql'
 
 const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'
@@ -31,13 +30,12 @@ const AddPokerTemplateLink = styled(LinkButton)({
 interface Props {
   gotoTeamTemplates: () => void
   pokerTemplatesRef: AddNewPokerTemplate_pokerTemplates$key
-  viewerRef: AddNewPokerTemplate_viewer$key
   teamRef: AddNewPokerTemplate_team$key
   displayUpgradeDetails: () => void
 }
 
 const AddNewPokerTemplate = (props: Props) => {
-  const {gotoTeamTemplates, teamRef, pokerTemplatesRef, viewerRef, displayUpgradeDetails} = props
+  const {gotoTeamTemplates, teamRef, pokerTemplatesRef, displayUpgradeDetails} = props
   const atmosphere = useAtmosphere()
   const pokerTemplates = useFragment(
     graphql`
@@ -46,16 +44,6 @@ const AddNewPokerTemplate = (props: Props) => {
       }
     `,
     pokerTemplatesRef
-  )
-  const {featureFlags} = useFragment(
-    graphql`
-      fragment AddNewPokerTemplate_viewer on User {
-        featureFlags {
-          templateLimit
-        }
-      }
-    `,
-    viewerRef
   )
   const team = useFragment(
     graphql`
@@ -76,7 +64,7 @@ const AddNewPokerTemplate = (props: Props) => {
   }, [])
   const addNewTemplate = () => {
     if (submitting) return
-    if (featureFlags.templateLimit && tier === 'starter') {
+    if (tier === 'starter') {
       displayUpgradeDetails()
       return
     }
@@ -110,7 +98,7 @@ const AddNewPokerTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {featureFlags.templateLimit && tier === 'starter' && '🔒'}
+        Create New Template {tier === 'starter' && '🔒'}
       </AddPokerTemplateLink>
     </div>
   )

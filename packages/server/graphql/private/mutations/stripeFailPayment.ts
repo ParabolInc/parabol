@@ -7,6 +7,7 @@ import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 export type StripeFailPaymentPayloadSource =
   | {
@@ -62,12 +63,23 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     return {error: {message: 'Required 3D Secure auth'}, orgId}
   }
 
-  if (paid || stripeSubscriptionId !== subscription) {
+  if (paid || stripeSubscriptionId !== subscription || !stripeSubscriptionId) {
     return {orgId}
   }
 
   // RESOLUTION
-  await terminateSubscription(orgId)
+  const subscriptionObject = await manager.retrieveSubscription(stripeSubscriptionId)
+
+  if (subscriptionObject.status === 'incomplete' || subscriptionObject.status === 'canceled') {
+    // Terminate subscription if the first payment fails or if it is already canceled
+    // After 23 hours subscription updates to incomplete_expired and the invoice becomes void.
+    // Not to handle this particular case in 23 hours, we do it now
+    await terminateSubscription(orgId)
+  } else {
+    // Keep subscription, but disable teams
+    await updateTeamByOrgId({isPaid: false}, orgId)
+  }
+
   const billingLeaderUserIds = (await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})

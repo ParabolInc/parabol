@@ -7,6 +7,7 @@ import {NewMeetingSettingsRetrospectiveSettings_organization$key} from '~/__gene
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
+import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
@@ -57,15 +58,17 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment NewMeetingSettingsRetrospectiveSettings_organization on Organization {
+        tier
         featureFlags {
           zoomTranscription
-          teamHealth
         }
       }
     `,
     organizationRef
   )
-  const {zoomTranscription, teamHealth} = organization.featureFlags
+  const {tier} = organization
+  const teamHealthAvailable = isTeamHealthAvailable(tier)
+  const {zoomTranscription} = organization.featureFlags
 
   return (
     <>
@@ -79,7 +82,9 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       {menuPortal(
         <div {...menuProps}>
           <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
-          {teamHealth && <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />}
+          {teamHealthAvailable && (
+            <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />
+          )}
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
           {zoomTranscription && <NewMeetingSettingsToggleTranscription settingsRef={settings} />}
         </div>
