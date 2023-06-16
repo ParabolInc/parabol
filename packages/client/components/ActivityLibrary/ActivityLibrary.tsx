@@ -205,7 +205,7 @@ export const ActivityLibrary = (props: Props) => {
   return (
     <div className='flex h-full w-full flex-col bg-white'>
       <div className='mx-1 hidden md:flex'>
-        <div className='flex items-center justify-start gap-x-2 px-2 lg:basis-[15%]'>
+        <div className='hidden items-center justify-start gap-x-2 px-4 lg:flex lg:basis-[15%]'>
           <Link title='My Dashboard' to='/meetings'>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
@@ -213,7 +213,10 @@ export const ActivityLibrary = (props: Props) => {
 
         <div className='flex flex-1 items-center lg:mr-[15%]'>
           <div className='mx-auto flex w-full items-center justify-between gap-14 md:px-4'>
-            <div className='flex'>
+            <div className='flex items-center'>
+              <Link className='mr-6 block lg:hidden' title='My Dashboard' to='/meetings'>
+                <IconLabel icon={'arrow_back'} iconLarge />
+              </Link>
               <img className='mr-3 w-8' crossOrigin='' alt='Parabol' src={logoMarkPurple} />
               <div className='shrink-0 text-lg font-semibold lg:text-xl xl:block'>
                 Start Activity
