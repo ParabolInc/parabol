@@ -8,7 +8,7 @@ import {Link} from 'react-router-dom'
 
 import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
-import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
+import {ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityId, getActivityIllustration} from './ActivityIllustrations'
@@ -17,14 +17,15 @@ import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import CreateActivityCard from './CreateActivityCard'
-import LogoBlock from '../LogoBlock/LogoBlock'
 import {Close} from '@mui/icons-material'
+import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import {
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
   CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
+import IconLabel from '../IconLabel'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -203,18 +204,28 @@ export const ActivityLibrary = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
-      <ActivityLibraryHeader
-        className='hidden md:flex'
-        title='Start Activity'
-        leftNavigation={<LogoBlock className='flex-shrink-0 border-none' />}
-        rightNavigation={
-          <Link className='p-2' to={`/`} replace={true}>
-            <Close className='m-auto h-8 w-8' />
+      <div className='mx-1 hidden md:flex'>
+        <div className='flex items-center justify-start gap-x-2 px-2 lg:basis-[15%]'>
+          <Link title='My Dashboard' to='/meetings'>
+            <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
-        }
-      >
-        <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
-      </ActivityLibraryHeader>
+        </div>
+
+        <div className='flex flex-1 items-center lg:mr-[15%]'>
+          <div className='mx-auto flex w-full items-center justify-between gap-14 md:px-4'>
+            <div className='flex'>
+              <img className='mr-3 w-8' crossOrigin='' alt='Parabol' src={logoMarkPurple} />
+              <div className='shrink-0 text-lg font-semibold lg:text-xl xl:block'>
+                Start Activity
+              </div>
+            </div>
+            <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+            <button className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white'>
+              Create Custom Activity
+            </button>
+          </div>
+        </div>
+      </div>
       <ActivityLibraryMobileHeader
         className='flex md:hidden'
         rightNavigation={
@@ -228,7 +239,7 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
-          <div className='flex gap-x-2 px-4 md:mx-[15%] md:pb-4'>
+          <div className='flex flex-wrap gap-2 px-4 md:pb-4 lg:mx-[15%]'>
             {(
               Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>
             ).map((category) => (
@@ -252,7 +263,7 @@ export const ActivityLibrary = (props: Props) => {
       </ScrollArea.Root>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full flex-col md:mx-[15%]'>
+        <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
           {templatesToRender.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
               <img className='w-32' src={halloweenRetrospectiveTemplate} />

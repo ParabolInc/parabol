@@ -11,13 +11,12 @@ interface Props {
 }
 
 export const ActivityLibraryHeader = (props: Props) => {
-  const {className, children, title = null, leftNavigation = null, rightNavigation = null} = props
+  const {className, children, leftNavigation = null, rightNavigation = null} = props
 
   return (
     <div className={clsx('mx-1', className)}>
       <div className='flex basis-[15%] items-center justify-start gap-x-2 px-2'>
         {leftNavigation}
-        <div className='hidden shrink-0 text-lg font-semibold lg:text-xl xl:block'>{title}</div>
       </div>
 
       <div className='flex flex-1 items-center'>
