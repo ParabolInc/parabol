@@ -46,4 +46,9 @@ export default class ServerEnvironment extends Environment {
       return this.results!.shift()
     }
   }
+  destroy() {
+    Object.keys(this).forEach((key) => {
+      delete (this as any)[key]
+    })
+  }
 }

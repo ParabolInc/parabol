@@ -10,7 +10,12 @@ const renderSSRElement = async (element: ReactElement, environment: ServerEnviro
   await environment.load()
 
   // return html string
-  return ReactDOMServer.renderToStaticMarkup(element)
+  const htmlString = ReactDOMServer.renderToStaticMarkup(element)
+
+  // Relay has a memory leak that they won't fix: https://github.com/facebook/relay/pull/2883
+  // To get around it, we destroy everything in the object so while it still exists, it's as small as possible
+  environment.destroy()
+  return htmlString
 }
 
 export default renderSSRElement
