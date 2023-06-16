@@ -211,7 +211,7 @@ export const ActivityLibrary = (props: Props) => {
           </Link>
         </div>
 
-        <div className='flex flex-1 items-center lg:mr-[15%]'>
+        <div className='border-b-solid mt-4 flex flex-1 items-center border-b-[1px] border-slate-300 pb-4 lg:mr-[15%]'>
           <div className='mx-auto flex w-full items-center justify-between gap-14 md:px-4'>
             <div className='flex items-center'>
               <Link className='mr-6 block lg:hidden' title='My Dashboard' to='/meetings'>
@@ -240,7 +240,7 @@ export const ActivityLibrary = (props: Props) => {
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryMobileHeader>
 
-      <ScrollArea.Root className='w-full'>
+      <ScrollArea.Root className='mt-6 w-full'>
         <ScrollArea.Viewport className='w-full'>
           <div className='flex flex-wrap gap-2 px-4 md:pb-4 lg:mx-[15%]'>
             {(
