@@ -1,12 +1,16 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  Update an org's credit card
   """
   updateCreditCard(
     """
-    Describe the first arg here
+    The id of the org that is updating their credit card
     """
-    arg1: ID!
+    orgId: ID!
+    """
+    The id of the new payment method from Stripe
+    """
+    paymentMethodId: ID!
   ): UpdateCreditCardPayload!
 }
 
@@ -17,7 +21,11 @@ union UpdateCreditCardPayload = ErrorPayload | UpdateCreditCardSuccess
 
 type UpdateCreditCardSuccess {
   """
-  Describe the first return field here
+  The teams that were updated with the new payment method
   """
-  successField: ID!
+  teamsUpdated: [Team!]!
+  """
+  The org that was updated with the new payment method
+  """
+  organization: Organization!
 }

@@ -4,20 +4,38 @@ import {StandardMutation} from '../types/relayMutations'
 import {UpdateCreditCardMutation as TUpdateCreditCardMutation} from '../__generated__/UpdateCreditCardMutation.graphql'
 
 graphql`
-  fragment UpdateCreditCardMutation_part on UpdateCreditCardSuccess {
-    successField
+  fragment UpdateCreditCardMutation_organization on UpdateCreditCardSuccess {
+    organization {
+      id
+      creditCard {
+        brand
+        last4
+        expiry
+      }
+      updatedAt
+    }
+  }
+`
+
+graphql`
+  fragment UpdateCreditCardMutation_team on UpdateCreditCardSuccess {
+    teamsUpdated {
+      isPaid
+      updatedAt
+    }
   }
 `
 
 const mutation = graphql`
-  mutation UpdateCreditCardMutation($arg1: ID!) {
-    updateCreditCard(arg1: $arg1) {
+  mutation UpdateCreditCardMutation($orgId: ID!, $paymentMethodId: ID!) {
+    updateCreditCard(orgId: $orgId, paymentMethodId: $paymentMethodId) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...UpdateCreditCardMutation_part @relay(mask: false)
+      ...UpdateCreditCardMutation_organization @relay(mask: false)
+      ...UpdateCreditCardMutation_team @relay(mask: false)
     }
   }
 `
@@ -30,9 +48,6 @@ const UpdateCreditCardMutation: StandardMutation<TUpdateCreditCardMutation> = (
   return commitMutation<TUpdateCreditCardMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {} = variables
-    },
     onCompleted,
     onError
   })

@@ -1,12 +1,17 @@
-import {UpdateCreditCardSuccessResolvers} from '../resolverTypes'
+// import {UpdateCreditCardSuccessResolvers} from '../resolverTypes'
 
 export type UpdateCreditCardSuccessSource = {
-  id: string
+  orgId: string
+  teamIds: string[]
 }
 
-const UpdateCreditCardSuccess: UpdateCreditCardSuccessResolvers = {
-  successField: async ({id}, _args, {dataLoader}) => {
-    return dataLoader.get('').load(id)
+const UpdateCreditCardSuccess = {
+  // const UpdateCreditCardSuccess: UpdateCreditCardSuccessResolvers = {
+  organization: async ({id}, _args, {dataLoader}) => {
+    return dataLoader.get('organizations').load(id)
+  },
+  teamsUpdated: async ({teamIds}, _args, {dataLoader}) => {
+    return dataLoader.get('teamsByOrgIds').loadMany(teamIds)
   }
 }
 

@@ -52,7 +52,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader),
     updateSAML: and(isViewerBillingLeader, isOrgTier('enterprise')),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
-    updateCreditCard: isFIXME
   },
   Query: {
     '*': isAuthenticated,
