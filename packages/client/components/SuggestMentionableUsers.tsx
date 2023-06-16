@@ -26,6 +26,7 @@ const query = graphql`
           picture
           preferredName
         }
+        ...DashboardAvatars_team
       }
     }
   }

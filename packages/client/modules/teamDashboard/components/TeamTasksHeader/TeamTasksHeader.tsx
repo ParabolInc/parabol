@@ -124,6 +124,7 @@ const TeamTasksHeader = (props: Props) => {
           id
         }
         ...TeamDashTeamMemberMenu_team
+        ...DashboardAvatars_team
       }
     `,
     teamRef

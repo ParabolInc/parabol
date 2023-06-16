@@ -31,6 +31,7 @@ const TeamDashTeamMemberMenu = (props: Props) => {
           id
           preferredName
         }
+        ...DashboardAvatars_team
       }
     `,
     teamRef

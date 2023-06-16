@@ -38,6 +38,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
             userId
             preferredName
           }
+          ...DashboardAvatars_team
         }
       }
     `,

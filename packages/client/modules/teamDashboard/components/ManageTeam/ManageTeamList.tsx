@@ -31,6 +31,7 @@ const ManageTeamList = (props: Props) => {
           preferredName
           ...ManageTeamMember_teamMember
         }
+        ...DashboardAvatars_team
       }
     `,
     props.team

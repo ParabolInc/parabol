@@ -37,6 +37,7 @@ const TeamFilterMenu = (props: Props) => {
             userId
             preferredName
           }
+          ...DashboardAvatars_team
         }
       }
     `,
