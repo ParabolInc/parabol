@@ -6,7 +6,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import StripeManager from '../../utils/stripe/StripeManager'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import Coupon from './Coupon'
@@ -61,29 +60,7 @@ const Invoice = new GraphQLObjectType<any, GQLContext>({
     },
     creditCard: {
       type: CreditCard,
-      description: 'the card used to pay the invoice',
-      resolve: async ({creditCard, orgId}, _args, {dataLoader}) => {
-        // we used to store credit card details in the db, so we need to check there first
-        if (creditCard) {
-          return creditCard
-        }
-        const organization = await dataLoader.get('organizations').load(orgId)
-        const {stripeId} = organization
-        if (!stripeId) return undefined
-        const manager = new StripeManager()
-        const cardRes = await manager.retrieveDefaultCardDetails(stripeId)
-        if (cardRes instanceof Error) {
-          console.error(cardRes)
-          return undefined
-        }
-        const expiryMonth = cardRes.exp_month.toString().padStart(2, '0')
-        const expiryYear = cardRes.exp_year.toString().slice(2)
-        const expiry = `${expiryMonth}/${expiryYear}`
-        return {
-          ...cardRes,
-          expiry
-        }
-      }
+      description: 'the card used to pay the invoice'
     },
     endAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
