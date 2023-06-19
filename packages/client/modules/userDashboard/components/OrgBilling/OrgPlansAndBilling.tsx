@@ -50,11 +50,12 @@ const OrgPlansAndBilling = (props: Props) => {
         ...PaymentDetails_organization
         ...OrgPlanDrawer_organization
         tier
+        isBillingLeader
       }
     `,
     organizationRef
   )
-  const {tier} = organization
+  const {tier, isBillingLeader} = organization
 
   if (tier === 'starter') {
     return (
@@ -74,8 +75,12 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <div className='pb-20'>
         <OrgPlansAndBillingHeading organizationRef={organization} />
-        <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag />
-        <OrgBillingCreditCardInfo organizationRef={organization} />
+        {isBillingLeader && (
+          <>
+            <OrgBillingInvoices queryRef={queryData} hasCheckoutFlowFlag />
+            <OrgBillingCreditCardInfo organizationRef={organization} />
+          </>
+        )}
         <BillingLeaders organizationRef={organization} />
         <OrgPlans organizationRef={organization} />
         <OrgPlanDrawer organizationRef={organization} />
