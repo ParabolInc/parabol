@@ -125,7 +125,7 @@ const UpdatePayment = (props: Props) => {
         return
       }
       onCompleted()
-      // setIsUpdating(false)
+      setIsUpdating(false)
     }
 
     UpdateCreditCardMutation(
