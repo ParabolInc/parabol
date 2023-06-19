@@ -10,7 +10,7 @@ export default class MailManagerDebug extends MailManager {
     Body: ${body}`)
 
     const {html} = options
-    const filename = `/tmp/${to}-${subject.replaceAll(' ', '-')}.html`
+    const filename = `/tmp/${to.slice(0, 50)}-${subject.replaceAll(' ', '-').slice(0, 180)}.html`
     fs.writeFileSync(filename, html)
     console.warn(`Wrote email to ${filename}`)
     return true
