@@ -9212,28 +9212,6 @@ type UpdateTemplateScopeSuccess {
   settings: TeamMeetingSettings!
 }
 
-type UpdateUserProfilePayload {
-  error: StandardMutationError
-  user: User
-
-  """
-  The updated team member
-  """
-  teamMembers: [TeamMember!]
-}
-
-input UpdateUserProfileInput {
-  """
-  A link to the user’s profile image.
-  """
-  picture: URL
-
-  """
-  The name, as confirmed by the user
-  """
-  preferredName: String
-}
-
 type OldUpgradeToTeamTierPayload {
   error: StandardMutationError
 
