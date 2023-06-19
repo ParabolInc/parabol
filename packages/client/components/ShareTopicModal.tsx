@@ -7,6 +7,7 @@ import SecondaryButton from './SecondaryButton'
 
 interface Props {
   closePortal: () => void
+  stageId: string
 }
 
 // TODO: Create generic dialog components using tailwind https://github.com/ParabolInc/parabol/issues/8107

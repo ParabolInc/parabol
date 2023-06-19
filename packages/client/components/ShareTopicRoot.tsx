@@ -9,7 +9,7 @@ const ShareTopicRoot = () => {
   const {match} = useRouter<{stageId: string; meetingId: string}>()
   const {params} = match
 
-  const {meetingId} = params
+  const {meetingId, stageId} = params
 
   const location = useLocation<{backgroundLocation?: Location}>()
   const history = useHistory()
@@ -33,7 +33,7 @@ const ShareTopicRoot = () => {
 
   return (
     <Suspense fallback={renderLoader()}>
-      {modalPortal(<ShareTopicModal closePortal={closePortal} />)}
+      {modalPortal(<ShareTopicModal closePortal={closePortal} stageId={stageId} />)}
     </Suspense>
   )
 }

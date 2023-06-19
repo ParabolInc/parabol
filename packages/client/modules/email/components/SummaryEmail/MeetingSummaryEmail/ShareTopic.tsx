@@ -1,10 +1,11 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React from 'react'
-import {useLocation} from 'react-router'
+import React, {Suspense} from 'react'
 import AnchorIfEmail from './AnchorIfEmail'
-import useRouter from '../../../../../hooks/useRouter'
 import makeAppURL from '../../../../../utils/makeAppURL'
+import useModal from '../../../../../hooks/useModal'
+import {renderLoader} from '../../../../../utils/relay/renderLoader'
+import ShareTopicModal from '../../../../../components/ShareTopicModal'
 
 interface Props {
   isEmail: boolean
@@ -43,22 +44,24 @@ const ShareTopic = (props: Props) => {
     )
   }
 
-  // Avoid calling hooks when doing SSR
-  /* eslint-disable react-hooks/rules-of-hooks */
-  const {history} = useRouter()
-  const location = useLocation()
-
   const onClick = () => {
     if (isDemo) return
-    history.replace(`/${path}`, {
-      backgroundLocation: location
-    })
+    openPortal()
   }
 
+  const {openPortal, closePortal, modalPortal} = useModal({
+    id: 'shareTopicModal'
+  })
+
   return (
-    <span style={style} onClick={onClick}>
-      {label}
-    </span>
+    <>
+      <span style={style} onClick={onClick}>
+        {label}
+      </span>
+      <Suspense fallback={renderLoader()}>
+        {modalPortal(<ShareTopicModal closePortal={closePortal} stageId={stageId} />)}
+      </Suspense>
+    </>
   )
 }
 
