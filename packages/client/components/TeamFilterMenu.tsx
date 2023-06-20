@@ -6,7 +6,7 @@ import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {
   TeamFilterMenu_viewer$data,
   TeamFilterMenu_viewer$key
@@ -49,7 +49,7 @@ const TeamFilterMenu = (props: Props) => {
   }
   const teams = oldTeamsRef.current
   const atmosphere = useAtmosphere()
-  const {teamIds, userIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
+  const {teamIds, userIds, showArchived} = useQueryParameterParser(atmosphere.viewerId)
   const showAllTeams = !!userIds
   const {filteredTeams, defaultActiveIdx} = useMemo(() => {
     const filteredTeams = userIds

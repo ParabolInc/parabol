@@ -6,7 +6,7 @@ import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {MenuProps} from '../hooks/useMenu'
 import {
   UserDashTeamMemberMenu_viewer$key,
@@ -45,7 +45,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
+  const {userIds, teamIds, showArchived} = useQueryParameterParser(atmosphere.viewerId)
 
   const oldTeamsRef = useRef<UserDashTeamMemberMenu_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current

@@ -6,7 +6,7 @@ import lazyPreload from '../utils/lazyPreload'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
 import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
-import {useUserTaskFilters} from '../utils/useUserTaskFilters'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {timelineEventTypeMenuLabels} from '../utils/constants'
 
@@ -30,7 +30,7 @@ const TimelineHeader = () => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const {eventTypes} = useUserTaskFilters(viewerId)
+  const {eventTypes} = useQueryParameterParser(viewerId)
   const eventTypeFilterName =
     eventTypes && eventTypes.length > 0
       ? timelineEventTypeMenuLabels[eventTypes[0]!]!

@@ -10,7 +10,7 @@ import {ICON_SIZE} from '~/styles/typographyV2'
 import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {
   UserTasksHeader_viewer$data,
   UserTasksHeader_viewer$key
@@ -128,7 +128,7 @@ const UserTasksHeader = (props: Props) => {
     oldTeamsRef.current = nextTeams
   }
   const teams = oldTeamsRef.current
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
+  const {userIds, teamIds, showArchived} = useQueryParameterParser(viewerId)
 
   const teamFilter = useMemo(
     () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),

@@ -3,15 +3,12 @@ import {useMemo} from 'react'
 import useRouter from '~/hooks/useRouter'
 import {TimelineEventEnum} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 
-const useUserTaskFilters = (viewerId: string) => {
+const useQueryParameterParser = (viewerId: string) => {
   const {location} = useRouter()
-  return useMemo(() => parseUserTaskFilterQueryParams(viewerId, location), [viewerId, location])
+  return useMemo(() => parseQueryParams(viewerId, location), [viewerId, location])
 }
 
-const parseUserTaskFilterQueryParams = (
-  viewerId: string,
-  location: Location | Window['location']
-) => {
+const parseQueryParams = (viewerId: string, location: Location | Window['location']) => {
   const parsed = new URLSearchParams(location.search)
   const teamIds = parsed.has('teamIds') ? (parsed.get('teamIds') as string).split(',') : null
   const userIdsArray = parsed.has('userIds') ? (parsed.get('userIds') as string).split(',') : null
@@ -23,4 +20,4 @@ const parseUserTaskFilterQueryParams = (
   return {userIds, teamIds, showArchived, eventTypes}
 }
 
-export {parseUserTaskFilterQueryParams, useUserTaskFilters}
+export {parseQueryParams, useQueryParameterParser}

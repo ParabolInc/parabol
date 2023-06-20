@@ -9,7 +9,7 @@ import {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
 import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
-import {useUserTaskFilters} from '../utils/useUserTaskFilters'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 const TeamFilterMenu = lazyPreload(
@@ -51,7 +51,7 @@ const MeetingsDashHeader = (props: Props) => {
     isDropdown: true
   })
   const teams = viewer?.teams ?? []
-  const {teamIds} = useUserTaskFilters(viewerId)
+  const {teamIds} = useQueryParameterParser(viewerId)
   const teamFilter = useMemo(
     () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),
     [teamIds, teams]

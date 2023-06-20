@@ -5,12 +5,12 @@ import myDashboardTimelineQuery, {
   MyDashboardTimelineQuery
 } from '../__generated__/MyDashboardTimelineQuery.graphql'
 import MyDashboardTimeline from './MyDashboardTimeline'
-import {useUserTaskFilters} from '../utils/useUserTaskFilters'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 
 const MyDashboardTimelineRoot = () => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {eventTypes} = useUserTaskFilters(viewerId)
+  const {eventTypes} = useQueryParameterParser(viewerId)
   const queryRef = useQueryLoaderNow<MyDashboardTimelineQuery>(myDashboardTimelineQuery, {
     first: 10,
     userIds: [viewerId],

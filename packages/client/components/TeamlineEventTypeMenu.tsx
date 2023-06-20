@@ -3,7 +3,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
@@ -19,7 +19,11 @@ const TeamFilterMenu = (props: Props) => {
   const {menuProps} = props
   const atmosphere = useAtmosphere()
   const eventTypes = TimelineEventTypeEnum.getValues().map(({value}) => value)
-  const {eventTypes: eventTypeFilters, teamIds, userIds} = useUserTaskFilters(atmosphere.viewerId)
+  const {
+    eventTypes: eventTypeFilters,
+    teamIds,
+    userIds
+  } = useQueryParameterParser(atmosphere.viewerId)
 
   const showAllEvents = !!eventTypeFilters
   const {eventTypeValues, defaultActiveIdx} = useMemo(() => {
