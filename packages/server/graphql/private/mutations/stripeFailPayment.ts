@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
@@ -18,7 +19,7 @@ export type StripeFailPaymentPayloadSource =
 const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   _source,
   {invoiceId},
-  {authToken}
+  {authToken, dataLoader}
 ) => {
   // AUTH
   if (!isSuperUser(authToken)) {
@@ -30,34 +31,41 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
 
   // VALIDATION
   const invoice = await manager.retrieveInvoice(invoiceId)
-  const {customer, metadata, subscription, paid} = invoice
-  const customerId = customer as string
+  const {customer: invoiceCustomer, metadata, subscription, paid} = invoice
+  const customerId = invoiceCustomer as string
   let maybeOrgId = metadata?.orgId
+  const customer = await manager.retrieveCustomer(customerId)
   if (!maybeOrgId) {
-    const customer = await manager.retrieveCustomer(customerId)
     if ('metadata' in customer) {
       maybeOrgId = customer.metadata.orgId
     }
   }
   if (!maybeOrgId) {
-    throw new Error(`Could not find orgId on invoice ${invoiceId}`)
+    return {error: {message: `Could not find orgId on invoice ${invoiceId}`}}
+  }
+  if (customer.deleted === true) {
+    return {error: {message: 'Customer has been deleted'}}
   }
   // TS Error doesn't know if orgId stays a string or not
   const orgId = maybeOrgId
-  const org = await r
-    .table('Organization')
-    .get(orgId)
-    .pluck('creditCard', 'stripeSubscriptionId')
-    .default(null)
-    .run()
+  const org = await dataLoader.get('organizations').load(orgId)
 
   if (!org) {
     // org no longer exists, can fail silently (useful for all the staging server bugs)
     return {error: {message: 'Org does not exist'}}
   }
-  const {creditCard, stripeSubscriptionId} = org
 
-  if (paid || stripeSubscriptionId !== subscription || stripeSubscriptionId === null) return {orgId}
+  const {stripeSubscriptionId} = org
+  const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent
+  if (paymentIntent && paymentIntent.status === 'requires_action') {
+    // The payment failed because it requires 3D Secure
+    // Don't cancel the subscription. Wait for the client to authenticate
+    return {error: {message: 'Required 3D Secure auth'}, orgId}
+  }
+
+  if (paid || stripeSubscriptionId !== subscription || !stripeSubscriptionId) {
+    return {orgId}
+  }
 
   // RESOLUTION
   const subscriptionObject = await manager.retrieveSubscription(stripeSubscriptionId)
@@ -77,7 +85,21 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     .getAll(orgId, {index: 'orgId'})
     .filter({removedAt: null, role: 'BILLING_LEADER'})('userId')
     .run()) as string[]
-  const {last4, brand} = creditCard!
+
+  const {default_source} = customer
+
+  const creditCardRes = default_source
+    ? await manager.retrieveCardDetails(default_source as string)
+    : null
+  if (creditCardRes instanceof Error) {
+    return {error: {message: creditCardRes.message}, orgId}
+  }
+  // customers that used the new checkout flow with Stripe Elements will have a default_source. Previously, we'd store their creditCard in the org table
+  const creditCard = creditCardRes ?? org.creditCard
+  if (!creditCard) {
+    return {error: {message: 'No credit card found'}, orgId}
+  }
+  const {last4, brand} = creditCard
 
   const notifications = billingLeaderUserIds.map(
     (userId) => new NotificationPaymentRejected({orgId, last4, brand, userId})
