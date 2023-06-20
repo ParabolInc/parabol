@@ -9,6 +9,7 @@ import {
   Group,
   History,
   PlaylistAddCheck,
+  Timeline,
   Warning,
   WorkOutline
 } from '@mui/icons-material'
@@ -67,7 +68,8 @@ const iconLookup = {
   exit_to_app: <ExitToApp />,
   group: <Group />,
   warning: <Warning />,
-  work: <WorkOutline />
+  work: <WorkOutline />,
+  timeline: <Timeline />
 }
 
 interface Props {

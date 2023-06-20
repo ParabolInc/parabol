@@ -6,7 +6,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import plural from '../utils/plural'
 import {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
-import CardsSVG from './CardsSVG'
 import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
@@ -78,8 +77,7 @@ const TimelineEventPokerComplete = (props: Props) => {
 
   return (
     <TimelineEventCard
-      IconSVG={locked && canUpgrade ? undefined : <CardsSVG />}
-      iconName={locked && canUpgrade ? 'lock' : undefined}
+      iconName={locked && canUpgrade ? 'lock' : 'style'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >

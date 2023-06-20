@@ -200,7 +200,16 @@ export const timelineEventTypeMenuLabels: Record<string, string> = {
   joinedParabol: 'Joined Parabol',
   createdTeam: 'New Team Created',
   POKER_COMPLETE: 'Sprint Poker',
-  TEAM_PROMPT: 'Standup'
+  TEAM_PROMPT_COMPLETE: 'Standup'
+}
+
+export const timelineEventTypeMenuIcons: Record<string, string> = {
+  retroComplete: 'history',
+  actionComplete: 'change_history',
+  joinedParabol: 'account_circle',
+  createdTeam: 'group_add',
+  POKER_COMPLETE: 'style',
+  TEAM_PROMPT_COMPLETE: 'group_work'
 }
 
 /* OpenAI */

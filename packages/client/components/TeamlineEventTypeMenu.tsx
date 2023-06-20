@@ -1,7 +1,6 @@
 import React, {useMemo} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
-import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {MenuProps} from '../hooks/useMenu'
@@ -9,7 +8,8 @@ import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import TimelineEventTypeEnum from '../../server/graphql/types/TimelineEventTypeEnum'
-import {timelineEventTypeMenuLabels} from '../utils/constants'
+import EventTypeFilterMenuItemLabel from './EventTypeFilterMenuItemLabel'
+
 interface Props {
   menuProps: MenuProps
 }
@@ -47,20 +47,24 @@ const TeamFilterMenu = (props: Props) => {
       {showAllEvents && (
         <MenuItem
           key={'eventTypeFilterNULL'}
-          label={UserTaskViewFilterLabels.ALL_EVENTS}
+          label={<EventTypeFilterMenuItemLabel />}
           onClick={() => history.push(constructTeamFilterQueryParamURL(teamIds, userIds))}
         />
       )}
-      {eventTypeValues.map((eventType, index) => (
-        <MenuItem
-          key={`teamFilter${eventType}-${index}`}
-          dataCy={`team-filter-${eventType}-${index}`}
-          label={timelineEventTypeMenuLabels[eventType]}
-          onClick={() =>
-            history.push(constructTeamFilterQueryParamURL(teamIds, userIds, undefined, [eventType]))
-          }
-        />
-      ))}
+      {eventTypeValues.map((eventType, index) => {
+        return (
+          <MenuItem
+            key={`teamFilter${eventType}-${index}`}
+            dataCy={`team-filter-${eventType}-${index}`}
+            label={<EventTypeFilterMenuItemLabel eventType={eventType} />}
+            onClick={() =>
+              history.push(
+                constructTeamFilterQueryParamURL(teamIds, userIds, undefined, [eventType])
+              )
+            }
+          />
+        )
+      })}
     </Menu>
   )
 }
