@@ -1,29 +1,28 @@
+import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
-import * as ScrollArea from '@radix-ui/react-scroll-area'
 import {Link} from 'react-router-dom'
-
-import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
+import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import useRouter from '../../hooks/useRouter'
+import useSearchFilter from '../../hooks/useSearchFilter'
+import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import IconLabel from '../IconLabel'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityId, getActivityIllustration} from './ActivityIllustrations'
-import useRouter from '../../hooks/useRouter'
-import SearchBar from './SearchBar'
-import useSearchFilter from '../../hooks/useSearchFilter'
-import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import CreateActivityCard from './CreateActivityCard'
-import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {
+  CategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
-  CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
-import IconLabel from '../IconLabel'
+import CreateActivityCard from './CreateActivityCard'
+import SearchBar from './SearchBar'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -127,30 +126,9 @@ export const ActivityLibrary = (props: Props) => {
   const {viewer} = data
   const {featureFlags, availableTemplates} = viewer
 
-  const templates = useMemo(
-    () => [
-      {
-        id: 'action',
-        type: 'action' as MeetingTypeEnum,
-        name: 'Check-in',
-        team: {name: 'Parabol'},
-        category: 'standup',
-        isRecommended: true,
-        isFree: true
-      } as const,
-      {
-        id: 'teamPrompt',
-        type: 'teamPrompt' as MeetingTypeEnum,
-        name: 'Standup',
-        team: {name: 'Parabol'},
-        category: 'standup',
-        isRecommended: true,
-        isFree: true
-      } as const,
-      ...availableTemplates.edges.map((edge) => edge.node)
-    ],
-    [availableTemplates]
-  )
+  const templates = useMemo(() => {
+    return availableTemplates.edges.map((edge) => edge.node)
+  }, [availableTemplates])
 
   const {
     query: searchQuery,
