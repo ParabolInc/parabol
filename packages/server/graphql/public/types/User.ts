@@ -1,30 +1,32 @@
+import ms from 'ms'
+import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import {Threshold} from '../../../../client/types/constEnums'
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
+import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import {
   getUserId,
   isSuperUser,
-  isUserBillingLeader,
-  isTeamMember
+  isTeamMember,
+  isUserBillingLeader
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
-import {UserResolvers} from '../resolverTypes'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import getScoredTemplates from '../../queries/helpers/getScoredTemplates'
-import isValid from '../../isValid'
-import MeetingTemplate from '../../../database/types/MeetingTemplate'
-import db from '../../../db'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
-import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
-import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
+import {UserResolvers} from '../resolverTypes'
+
+declare const __PRODUCTION__: string
 
 const User: UserResolvers = {
+  activity: async (_source, {activityId}, {dataLoader}) => {
+    const activity = await dataLoader.get('meetingTemplates').load(activityId)
+    return activity || null
+  },
   canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     switch (entity) {
@@ -110,41 +112,51 @@ const User: UserResolvers = {
         ? user.tms
         : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
 
-    // Get the templates in the user's teams + orgs.
-    const teams = await dataLoader.get('teams').loadMany(teamIds)
-    const orgIds = [...new Set(teams.filter(isValid).map((team) => team.orgId))]
-    const orgTemplatesResult = await dataLoader.get('meetingTemplatesByOrgId').loadMany(orgIds)
-
-    const organizationTemplates = orgTemplatesResult
-      .filter(isValid)
-      .flat()
-      .filter(
-        (template: MeetingTemplate) =>
-          template.scope !== 'TEAM' || teamIds.includes(template.teamId)
-      )
-    const scoredOrgTemplates = await getScoredTemplates(organizationTemplates, TEAM_HOTNESS_FACTOR)
-    scoredOrgTemplates.sort((a, b) => {
-      if (teamIds.includes(a.teamId) && !teamIds.includes(b.teamId)) {
-        return -1
-      } else if (!teamIds.includes(a.teamId) && teamIds.includes(b.teamId)) {
-        return 1
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
+    const userOrgIds = organizationUsers.map(({id}) => id)
+    const availableOrgIds = ['aGhostOrg', ...userOrgIds]
+    const [parabolActivities, ...userActivities] = await Promise.all(
+      availableOrgIds.map((orgId) => dataLoader.get('meetingTemplatesByOrgId').load(orgId))
+    )
+    const allUserActivities = userActivities.flat()
+    if (!__PRODUCTION__) {
+      if (parabolActivities.length + allUserActivities.length > first) {
+        throw new Error(
+          'Please implement pagination for User.activities or increase `first` for the query'
+        )
       }
-      return 0
-    })
+    }
+    const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
+      const SEASONAL = 1 << 8 // put seasonal templates at the top
+      const USED_LAST_90 = 1 << 7 // next, show all templates used within the last 90 days
+      const ON_TEAM = 1 << 6 // tiebreak by putting team templates first
+      const ON_ORG = 1 << 5 // then org templates
+      const IS_FREE = 1 << 4 // then free parabol templates
+      const USED_LAST_30 = 1 << 3 // tiebreak on being used in last 30
+      const {hideStartingAt, teamId, orgId, lastUsedAt, isFree} = activity
+      const isSeasonal = !!hideStartingAt
+      const isOnTeam = teamIds.includes(teamId)
+      const isOnOrg = orgId !== 'aGhostOrg' && !isOnTeam
+      const isUsedLast30 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('30d'))
+      const isUsedLast90 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('90d'))
+      let score = 0
+      if (isSeasonal) score += SEASONAL
+      if (isUsedLast90) score += USED_LAST_90
+      if (isOnTeam) score += ON_TEAM
+      if (isOnOrg) score += ON_ORG
+      if (isFree) score += IS_FREE
+      if (isUsedLast30) score += USED_LAST_30
 
-    // Get the public templates.
-    const publicRetroTemplates = await db.read('publicTemplates', 'retrospective')
-    const publicPokerTemplates = await db.read('publicTemplates', 'poker')
-    const publicTemplates = [...publicRetroTemplates, ...publicPokerTemplates]
-    publicTemplates.sort((a, b) => {
-      if (a.isFree && !b.isFree) return -1
-      if (!a.isFree && b.isFree) return 1
-      return 0
-    })
+      return score
+    }
+    const allActivities = [...parabolActivities, ...allUserActivities]
+      .map((activity) => ({
+        ...activity,
+        sortOrder: getScore(activity, teamIds)
+      }))
+      .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
 
-    const templates = [...scoredOrgTemplates, ...publicTemplates]
-
-    return connectionFromTemplateArray(templates, first, after)
+    return connectionFromTemplateArray(allActivities, first, after)
   }
 }
 

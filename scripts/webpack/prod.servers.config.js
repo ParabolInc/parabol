@@ -85,6 +85,7 @@ module.exports = ({isDeploy, noDeps}) => ({
   },
   plugins: [
     new webpack.DefinePlugin({
+      __PRODUCTION__: true,
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
       'process.platform': JSON.stringify(process.platform),
