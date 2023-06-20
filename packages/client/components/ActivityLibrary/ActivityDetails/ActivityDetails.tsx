@@ -52,7 +52,6 @@ export const query = graphql`
       }
       teams {
         id
-        tier
         ...ActivityDetailsSidebar_teams
         ...TeamPickerModal_teams
       }
