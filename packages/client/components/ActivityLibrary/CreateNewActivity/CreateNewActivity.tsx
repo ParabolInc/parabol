@@ -13,7 +13,6 @@ import {ActivityCard} from '../ActivityCard'
 import {ActivityBadge} from '../ActivityBadge'
 
 import IconLabel from '../../IconLabel'
-import {ActivityLibraryHeader} from '../ActivityLibraryHeader'
 import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
 import sortByTier from '../../../utils/sortByTier'
 import {useHistory} from 'react-router'
@@ -255,14 +254,16 @@ export const CreateNewActivity = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
-      <ActivityLibraryHeader
-        title='Create New Activity'
-        leftNavigation={
+      <div className='mx-1'>
+        <div className='flex basis-[15%] items-center justify-start gap-x-2 px-2'>
           <Link className='p-4' to={`/activity-library/`} replace={true}>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
-        }
-      />
+          <div className='hidden shrink-0 text-lg font-semibold lg:text-xl xl:block'>
+            Create New Activity
+          </div>
+        </div>
+      </div>
       <div className='flex flex-1 flex-col items-center gap-y-8'>
         <h1 className='text-lg font-normal'>
           Choose an <span className='font-semibold'>Activity Format:</span>
