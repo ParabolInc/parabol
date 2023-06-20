@@ -88,9 +88,6 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
             }
           }
         }
-        if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
-          variables.completedStageId = facilitatorStageId
-        }
         NavigateMeetingMutation(atmosphere, variables)
       }
     },
