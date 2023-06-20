@@ -69,7 +69,7 @@ export const downloadAndCacheImage = async (
     .exec()
   const imageResponse = await manager.getImage(imageUrl)
   if (!imageResponse?.contentType) {
-    await redis.hdel(imageKey)
+    await redis.del(imageKey)
     return
   }
 
