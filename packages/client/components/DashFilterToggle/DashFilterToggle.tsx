@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {FilterList, Group, Person, CircleNotifications} from '@mui/icons-material'
+import {FilterList, Group, Person} from '@mui/icons-material'
 import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import LinkButton from '../LinkButton'
@@ -45,8 +45,7 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
         {
           {
             person: <Person />,
-            group: <Group />,
-            notification: <CircleNotifications />
+            group: <Group />
           }[iconText!]
         }
         {!iconText && <FilterList />}

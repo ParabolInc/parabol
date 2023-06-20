@@ -46,7 +46,6 @@ const TimelineHeader = () => {
           onMouseEnter={TeamlineEventTypeMenu.preload}
           ref={timelineEventTypeFilterOriginRef}
           value={eventTypeFilterName}
-          iconText='notification'
           dataCy='team-member-filter'
         />
         {timelineEventTypeFilterMenuPortal(
