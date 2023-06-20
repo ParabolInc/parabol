@@ -172,7 +172,11 @@ jobs:
           registry: ${{ secrets.GCP_DOCKER_REGISTRY }}
           username: "oauth2accesstoken"
           password: "${{ steps.auth.outputs.access_token }}"
-
+      #
+      # Multi-platform build. Uncomment to be able t build multi-platform images.
+      #
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v2
       - name: Build and push
         if: env.DOCKERIZE == 'true'
         uses: docker/build-push-action@v4
@@ -188,3 +192,4 @@ jobs:
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{ env.GITHUB_REF_NAME_NORMALIZED }}"
+          # platforms: linux/amd64,linux/arm64 # Uncomment to be able to build multi-platform images.
