@@ -251,7 +251,8 @@ export const enum PokerCards {
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
-  ALL_TEAM_MEMBERS = 'All Team Members'
+  ALL_TEAM_MEMBERS = 'All Team Members',
+  ALL_EVENTS = 'All Events'
 }
 
 export const enum MeetingSettingsThreshold {

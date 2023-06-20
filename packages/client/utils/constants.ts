@@ -194,6 +194,15 @@ export const reasonsToDowngradeLookup: Record<
   'Moving to another tool (please specify)': 'anotherTool'
 }
 
+export const timelineEventTypeMenuLabels: Record<string, string> = {
+  retroComplete: 'Retrospective',
+  actionComplete: 'Team Check-in',
+  joinedParabol: 'Joined Parabol',
+  createdTeam: 'New Team Created',
+  POKER_COMPLETE: 'Sprint Poker',
+  TEAM_PROMPT: 'Standup'
+}
+
 /* OpenAI */
 export const MAX_GPT_3_5_TOKENS = 4096 // https://platform.openai.com/docs/models/gpt-3-5
 export const AVG_CHARS_PER_TOKEN = 4 // 1 token ~= 4 chars https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them

@@ -28,7 +28,7 @@ const TimelineFeedList = (props: Props) => {
       fragment TimelineFeedList_query on Query
       @refetchable(queryName: "TimelineFeedListPaginationQuery") {
         viewer {
-          timeline(first: $first, after: $after) @connection(key: "TimelineFeedList_timeline") {
+          timeline(first: $first, after: $after, eventTypes: $eventTypes) @connection(key: "TimelineFeedList_timeline") {
             edges {
               cursor
               node {
