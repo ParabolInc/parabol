@@ -45,6 +45,7 @@ export const TemplateDetails = (props: Props) => {
     graphql`
       fragment TemplateDetails_user on User {
         tier
+        preferredTeamId
         teams {
           id
           ...TeamPickerModal_teams
@@ -52,7 +53,6 @@ export const TemplateDetails = (props: Props) => {
         organizations {
           id
         }
-        ...useTemplateDescription_viewer
       }
     `,
     viewerRef
@@ -70,7 +70,7 @@ export const TemplateDetails = (props: Props) => {
     templatesRef
   )
 
-  const {teams, organizations, tier} = viewer
+  const {teams, organizations, tier, preferredTeamId} = viewer
   const history = useHistory<{prevCategory?: string; edit?: boolean}>()
   const prevCategory = history.location.state?.prevCategory
 
@@ -135,7 +135,7 @@ export const TemplateDetails = (props: Props) => {
   const isOwner = teamIds.includes(template.teamId)
 
   const lowestScope = isOwner ? 'TEAM' : orgIds.includes(template.orgId) ? 'ORGANIZATION' : 'PUBLIC'
-  const description = useTemplateDescription(lowestScope, template, viewer, tier)
+  const description = useTemplateDescription(lowestScope, template, tier)
 
   useEffect(() => {
     setIsEditing(!!history.location.state?.edit)
@@ -190,7 +190,6 @@ export const TemplateDetails = (props: Props) => {
                 )}
               >
                 <UnstyledTemplateSharing
-                  noModal={true}
                   isOwner={isOwner}
                   template={template}
                   readOnly={!isEditing}
@@ -259,6 +258,7 @@ export const TemplateDetails = (props: Props) => {
         <TeamPickerModal
           category={category}
           teamsRef={teams}
+          preferredTeamId={preferredTeamId}
           templatesRef={templates}
           closePortal={closeTeamPickerPortal}
           parentTemplateId={template.id}

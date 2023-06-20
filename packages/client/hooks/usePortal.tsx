@@ -1,4 +1,4 @@
-import React, {ReactNode, useCallback, useEffect, useRef} from 'react'
+import React, {ReactNode, createContext, useCallback, useContext, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from '../utils/hideBodyScroll'
@@ -55,6 +55,8 @@ export interface UsePortalOptions {
   noClose?: boolean
 }
 
+const PortalContext = createContext<PortalId | undefined>(undefined)
+
 const getParent = (parentId: string | undefined) => {
   const parent = parentId ? document.getElementById(parentId) : document.body
   if (!parent) throw new Error('Could not find parent ' + parentId)
@@ -71,6 +73,8 @@ const usePortal = (options: UsePortalOptions = {}) => {
   const timeoutRef = useRef<number | null>(null)
   const showBodyScroll = useRef<() => void>()
   const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
+  const contextParentId = useContext(PortalContext)
+  const parentId = options.parentId ?? contextParentId
 
   const terminatePortal = useEventCallback(() => {
     if (!portalRef.current) return
@@ -79,7 +83,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
     document.removeEventListener('touchstart', handleDocumentClick)
     setPortalStatus(PortalStatus.Exited)
     try {
-      getParent(options.parentId).removeChild(portalRef.current)
+      getParent(parentId).removeChild(portalRef.current)
     } catch (e) {
       /* portal already removed (possible when parent is not document.body) */
     }
@@ -168,7 +172,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
 
       portalRef.current = document.createElement('div')
       portalRef.current.id = options.id || 'portal'
-      getParent(options.parentId).appendChild(portalRef.current)
+      getParent(parentId).appendChild(portalRef.current)
       if (e?.currentTarget) {
         originRef.current = e.currentTarget as HTMLElement
       }
@@ -185,7 +189,10 @@ const usePortal = (options: UsePortalOptions = {}) => {
       const targetEl = portalRef.current
       return !targetEl || portalStatusRef.current === PortalStatus.Exited
         ? null
-        : createPortal(reactEl, targetEl)
+        : createPortal(
+            <PortalContext.Provider value={options.id}>{reactEl} </PortalContext.Provider>,
+            targetEl
+          )
     },
     [portalRef, portalStatusRef]
   )

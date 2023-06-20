@@ -20,32 +20,37 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import BaseButton from '../../../../components/BaseButton'
 import LimitExceededWarning from '../../../../components/LimitExceededWarning'
+import {Breakpoint} from '~/types/constEnums'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
   paddingBottom: 16
 })
 
-const StyledRow = styled(Row)({
+const StyledRow = styled(Row)<{isTablet: boolean}>(({isTablet}) => ({
   padding: '12px 16px',
   display: 'flex',
   flex: 1,
+  flexDirection: isTablet ? 'row' : 'column',
+  alignItems: 'inherit',
   ':first-of-type': {
     paddingTop: 16
   },
   ':nth-of-type(2)': {
     border: 'none'
   }
-})
+}))
 
-const PlanTitle = styled('div')({
-  color: PALETTE.SLATE_800,
+const PlanTitle = styled('h6')({
+  color: PALETTE.SLATE_700,
   fontSize: 22,
   fontWeight: 600,
   lineHeight: '30px',
   textTransform: 'capitalize',
   textAlign: 'center',
   display: 'flex',
+  margin: 0,
   width: '100%',
   paddingBottom: 8,
   justifyContent: 'center'
@@ -61,9 +66,9 @@ const HeadingBlock = styled('div')({
 
 const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   color: PALETTE.SLATE_800,
-  fontSize: 18,
+  fontSize: 16,
   width: '100%',
-  lineHeight: '30px',
+  lineHeight: '24px',
   textTransform: 'none',
   display: 'flex',
   alignItems: 'center',
@@ -72,36 +77,54 @@ const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   fontStyle: isItalic ? 'italic' : 'normal'
 }))
 
-const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
-  background:
-    tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
-  fontSize: 12,
-  fontWeight: 600,
-  lineHeight: '16px',
-  textTransform: 'capitalize',
-  textAlign: 'center',
-  display: 'flex',
-  flex: 1,
-  margin: '0 8px',
-  flexWrap: 'wrap',
-  justifyContent: 'flex-start',
-  padding: '16px 8px',
-  height: 440,
-  borderRadius: 4,
-  border: `2px solid transparent`,
-  '&:hover': {
-    border: `2px solid ${
-      tier === 'starter'
-        ? PALETTE.GRAPE_500
+const Plan = styled('div')<{tier: TierEnum; isTablet: boolean; outlineColor: boolean}>(
+  ({tier, isTablet, outlineColor}) => ({
+    background:
+      tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
+    fontSize: 12,
+    fontWeight: 600,
+    lineHeight: '16px',
+    textTransform: 'capitalize',
+    textAlign: 'center',
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: isTablet ? 0 : '8px',
+    marginRight: isTablet ? '8px' : 0,
+    padding: '16px 8px',
+    borderRadius: 4,
+    border: '2px solid white',
+    outline: outlineColor
+      ? tier === 'starter'
+        ? `2px solid ${PALETTE.GRAPE_500}`
         : tier === 'team'
-        ? PALETTE.AQUA_400
-        : PALETTE.TOMATO_200
-    }`
-  }
-}))
+        ? `2px solid ${PALETTE.AQUA_400}`
+        : `2px solid ${PALETTE.TOMATO_400}`
+      : '2px solid transparent',
+    transition: 'all ease 0.5s',
+    '&:hover': {
+      cursor: 'pointer',
+      outline: `2px solid ${
+        tier === 'starter'
+          ? PALETTE.GRAPE_500
+          : tier === 'team'
+          ? PALETTE.AQUA_400
+          : PALETTE.TOMATO_500
+      }`
+    },
+    '&:last-of-type': {
+      marginBottom: 0,
+      marginRight: 0
+    }
+  })
+)
 
 const UL = styled('ul')({
-  margin: 0
+  margin: '0 0 16px 0',
+  height: '100%',
+  padding: 0,
+  width: '80%'
 })
 
 const LI = styled('li')({
@@ -109,11 +132,10 @@ const LI = styled('li')({
   lineHeight: '32px',
   color: PALETTE.SLATE_900,
   textTransform: 'none',
-  fontWeight: 400,
-  textAlign: 'left'
+  fontWeight: 400
 })
 
-const StyledIcon = styled('div')({
+const StyledIcon = styled('span')({
   width: 18,
   height: 18,
   color: PALETTE.SLATE_600,
@@ -125,21 +147,11 @@ const StyledIcon = styled('div')({
   }
 })
 
-const Content = styled('div')({})
-
-const ButtonBlock = styled('div')({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  position: 'relative'
-})
-
 const CTAButton = styled(BaseButton)<{
   buttonStyle: 'disabled' | 'primary' | 'secondary'
 }>(({buttonStyle}) => ({
   width: '80%',
   boxShadow: buttonStyle === 'primary' ? Elevation.Z8 : Elevation.Z0,
-  position: 'absolute',
   bottom: 0,
   fontWeight: 600,
   borderRadius: Radius.BUTTON_PILL,
@@ -156,14 +168,16 @@ const CTAButton = styled(BaseButton)<{
       ? PALETTE.SLATE_900
       : PALETTE.SLATE_600,
   border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none',
+  transition: 'all ease 0.5s',
   ':hover': {
     cursor: buttonStyle === 'disabled' ? 'default' : 'pointer',
     background:
       buttonStyle === 'primary'
         ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
         : buttonStyle === 'secondary'
-        ? PALETTE.SLATE_100
-        : PALETTE.SLATE_300
+        ? PALETTE.TOMATO_100
+        : PALETTE.SLATE_300,
+    borderColor: buttonStyle === 'secondary' ? PALETTE.TOMATO_500 : 'none'
   }
 }))
 
@@ -186,6 +200,14 @@ const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
     return 'Downgrade'
   } else {
     return 'Select Plan'
+  }
+}
+
+const getActivePlan = (tier: TierEnum, plan: TierEnum) => {
+  if (tier === plan) {
+    return true
+  } else {
+    return false
   }
 }
 
@@ -216,6 +238,7 @@ const OrgPlans = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {id: orgId, tier, scheduledLockAt, lockedAt} = organization
   const showNudge = scheduledLockAt || lockedAt
+  const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const plans = [
     {
@@ -227,21 +250,25 @@ const OrgPlans = (props: Props) => {
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
+      activeColor: PALETTE.GRAPE_500,
       buttonStyle: getButtonStyle(tier, 'starter'),
-      buttonLabel: getButtonLabel(tier, 'starter')
+      buttonLabel: getButtonLabel(tier, 'starter'),
+      outlineColor: getActivePlan(tier, 'starter')
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
       buttonStyle: getButtonStyle(tier, 'team'),
-      buttonLabel: getButtonLabel(tier, 'team')
+      buttonLabel: getButtonLabel(tier, 'team'),
+      outlineColor: getActivePlan(tier, 'team')
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', 'SSO'],
       buttonStyle: getButtonStyle(tier, 'enterprise'),
-      buttonLabel: getButtonLabel(tier, 'enterprise')
+      buttonLabel: getButtonLabel(tier, 'enterprise'),
+      outlineColor: getActivePlan(tier, 'enterprise')
     }
   ] as const
 
@@ -269,53 +296,55 @@ const OrgPlans = (props: Props) => {
   return (
     <>
       <StyledPanel label='Plans'>
-        <StyledRow>
+        <StyledRow isTablet={isTablet}>
           {showNudge && <LimitExceededWarning organizationRef={organization} />}
           <OrgStats organizationRef={organization} />
         </StyledRow>
-        <StyledRow>
+        <StyledRow isTablet={isTablet}>
           {plans.map((plan) => (
-            <Plan key={plan.tier} tier={plan.tier}>
-              <Content>
-                <HeadingBlock>
-                  <PlanTitle>{plan.tier}</PlanTitle>
-                  {plan.tier === 'team' ? (
-                    <>
-                      <PlanSubtitle>
-                        {'$6 per active user '}
-                        <StyledIcon
-                          ref={originRef}
-                          onMouseOver={openTooltip}
-                          onMouseOut={closeTooltip}
-                        >
-                          {<Info />}
-                        </StyledIcon>
-                      </PlanSubtitle>
-                      <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
-                      {tooltipPortal(
-                        'Active users are anyone who uses Parabol within a billing period'
-                      )}
-                    </>
-                  ) : (
-                    <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
-                  )}
-                </HeadingBlock>
-                <UL>
-                  {plan.details.map((detail) => (
-                    <LI key={detail}>{detail}</LI>
-                  ))}
-                </UL>
-              </Content>
-              <ButtonBlock>
-                <CTAButton
-                  disabled={plan.buttonStyle === 'disabled'}
-                  onClick={() => handleClick(plan.buttonLabel, plan.tier)}
-                  buttonStyle={plan.buttonStyle}
-                  size='medium'
-                >
-                  {plan.buttonLabel}
-                </CTAButton>
-              </ButtonBlock>
+            <Plan
+              key={plan.tier}
+              tier={plan.tier}
+              isTablet={isTablet}
+              outlineColor={plan.outlineColor}
+            >
+              <HeadingBlock>
+                <PlanTitle>{plan.tier}</PlanTitle>
+                {plan.tier === 'team' ? (
+                  <>
+                    <PlanSubtitle>
+                      {'$6 per active user '}
+                      <StyledIcon
+                        ref={originRef}
+                        onMouseOver={openTooltip}
+                        onMouseOut={closeTooltip}
+                      >
+                        {<Info />}
+                      </StyledIcon>
+                    </PlanSubtitle>
+                    <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+                    {tooltipPortal(
+                      'Active users are anyone who uses Parabol within a billing period'
+                    )}
+                  </>
+                ) : (
+                  <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
+                )}
+              </HeadingBlock>
+              <UL className={'flex flex-col items-center md:items-start'}>
+                {plan.details.map((detail) => (
+                  <LI className={'list-none text-center md:list-disc md:text-left'} key={detail}>
+                    {detail}
+                  </LI>
+                ))}
+              </UL>
+              <CTAButton
+                onClick={() => handleClick(plan.buttonLabel, plan.tier)}
+                buttonStyle={plan.buttonStyle}
+                size='medium'
+              >
+                {plan.buttonLabel}
+              </CTAButton>
             </Plan>
           ))}
         </StyledRow>

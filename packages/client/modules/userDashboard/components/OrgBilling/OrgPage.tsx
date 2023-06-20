@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,10 +5,6 @@ import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
 import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE} from '../../../../utils/constants'
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
-
-const Container = styled('div')({
-  padding: '0px 48px 24px 48px'
-})
 
 const OrgPlansAndBilling = lazy(
   () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBilling')
@@ -42,7 +37,7 @@ const OrgPage = (props: Props) => {
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
 
   return (
-    <Container>
+    <section className={'px-4 md:px-8'}>
       <OrgNav organizationRef={organization} />
       <Switch>
         <Route
@@ -66,7 +61,7 @@ const OrgPage = (props: Props) => {
           render={(p) => <OrgDetails {...p} organizationRef={organization} />}
         />
       </Switch>
-    </Container>
+    </section>
   )
 }
 

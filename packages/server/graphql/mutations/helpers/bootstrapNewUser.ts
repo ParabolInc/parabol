@@ -17,23 +17,17 @@ import isPatientZero from './isPatientZero'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
+import isCompanyDomain from '../../../utils/isCompanyDomain'
+
+const PERCENT_ADDED_TO_RID = 0.05
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
   const r = await getRethink()
-  const {
-    id: userId,
-    createdAt,
-    preferredName,
-    email,
-    featureFlags,
-    tier,
-    segmentId,
-    identities
-  } = newUser
+  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
   const domain = email.split('@')[1]
   const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
-    getUsersbyDomain(domain),
+    isCompanyDomain(domain) ? getUsersbyDomain(domain) : [],
     r.table('SAML').getAll(domain, {index: 'domains'}).limit(1).count().eq(1).run()
   ])
 
@@ -41,22 +35,16 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
 
   const experimentalFlags = [...featureFlags]
 
-  // TODO: remove the following after templateLimit experiment is complete: https://github.com/ParabolInc/parabol/issues/7712
-  const stopTemplateLimitsP0Experiment = !!process.env.STOP_TEMPLATE_LIMITS_P0_EXPERIMENT
-  const domainUserHasTemplateFlag = usersWithDomain.some((user) =>
-    user.featureFlags.includes('templateLimit')
-  )
-
-  if (!stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasTemplateFlag)) {
-    experimentalFlags.push('templateLimit')
-  }
-
   const domainUserHasRidFlag = usersWithDomain.some((user) =>
     user.featureFlags.includes('retrosInDisguise')
   )
   const params = new URLSearchParams(searchParams)
   if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
     experimentalFlags.push('retrosInDisguise')
+  } else if (usersWithDomain.length === 0) {
+    if (Math.random() < PERCENT_ADDED_TO_RID) {
+      experimentalFlags.push('retrosInDisguise')
+    }
   }
 
   await Promise.all([

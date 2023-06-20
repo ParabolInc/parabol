@@ -5,10 +5,12 @@ import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingT
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PortalId, PortalStatus} from '../hooks/usePortal'
+import {PortalStatus} from '../hooks/usePortal'
 import lazyPreload from '../utils/lazyPreload'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
+import useAtmosphere from '../hooks/useAtmosphere'
+import setPreferredTeamId from '../utils/relay/setPreferredTeamId'
 
 const SelectTeamDropdown = lazyPreload(
   () =>
@@ -22,20 +24,25 @@ interface Props {
   selectedTeamRef: NewMeetingTeamPicker_selectedTeam$key
   teamsRef: NewMeetingTeamPicker_teams$key
   onSelectTeam: (teamId: string) => void
-  parentId?: PortalId
   positionOverride?: MenuPosition
   customPortal?: React.ReactNode
 }
 
 const NewMeetingTeamPicker = (props: Props) => {
-  const {selectedTeamRef, teamsRef, onSelectTeam, parentId, positionOverride, customPortal} = props
+  const {selectedTeamRef, teamsRef, onSelectTeam, positionOverride, customPortal} = props
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     positionOverride ?? MenuPosition.LOWER_RIGHT,
     {
-      parentId: parentId,
       isDropdown: true
     }
   )
+
+  const atmosphere = useAtmosphere()
+
+  const handleSelectTeam = (teamId: string) => {
+    setPreferredTeamId(atmosphere, teamId)
+    onSelectTeam(teamId)
+  }
 
   const selectedTeam = useFragment(
     graphql`
@@ -75,7 +82,11 @@ const NewMeetingTeamPicker = (props: Props) => {
         customPortal ? (
           customPortal
         ) : (
-          <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={onSelectTeam} />
+          <SelectTeamDropdown
+            menuProps={menuProps}
+            teams={teams}
+            teamHandleClick={handleSelectTeam}
+          />
         )
       )}
     </>

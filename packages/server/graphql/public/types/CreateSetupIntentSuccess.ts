@@ -1,11 +1,11 @@
 import {CreateSetupIntentSuccessResolvers} from '../resolverTypes'
 
 export type CreateSetupIntentSuccessSource = {
-  clientSecret: string
+  success: boolean
 }
 
 const CreateSetupIntentSuccess: CreateSetupIntentSuccessResolvers = {
-  clientSecret: async ({clientSecret}) => clientSecret
+  success: async ({success}) => success
 }
 
 export default CreateSetupIntentSuccess

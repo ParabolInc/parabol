@@ -24,6 +24,7 @@ export const createMeetingProperties = (
     meetingTemplateScope: template?.scope,
     meetingTemplateIsFromParabol: template?.isStarter ?? false,
     meetingTemplateIsFree: template?.isFree ?? false,
+    meetingTemplateCategory: template?.mainCategory,
     meetingSeriesId:
       meetingType === 'teamPrompt' ? (meeting as MeetingTeamPrompt).meetingSeriesId : undefined,
     disableAnonymity:

@@ -36,7 +36,6 @@ const getValue = (item: {node: {id: string; name: string}}) => {
 const query = graphql`
   query ReflectTemplateListPublicQuery($teamId: ID!) {
     viewer {
-      ...ReflectTemplateItem_viewer
       id
       team(teamId: $teamId) {
         id
@@ -44,13 +43,15 @@ const query = graphql`
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
             templateSearchQuery
-            publicTemplates(first: 50)
+            publicTemplates(first: 100)
               @connection(key: "ReflectTemplateListPublic_publicTemplates") {
               edges {
                 node {
                   ...ReflectTemplateItem_template
                   id
                   name
+                  createdAt
+                  category
                 }
               }
             }
@@ -74,7 +75,9 @@ const ReflectTemplateListPublic = (props: Props) => {
   const searchQuery = templateSearchQuery ?? ''
   const activeTemplateId = activeTemplate?.id ?? '-tmp'
   const {edges} = publicTemplates!
-  const filteredEdges = useFilteredItems(searchQuery, edges, getValue)
+  const filteredEdges = useFilteredItems(searchQuery, edges, getValue).filter(
+    ({node}) => !['premortem', 'postmortem'].includes(node.category)
+  )
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
   if (filteredEdges.length === 0) {
     return <Message>{`No public templates match your search query "${searchQuery}"`}</Message>
@@ -91,7 +94,6 @@ const ReflectTemplateListPublic = (props: Props) => {
             teamId={teamId}
             tier={tier}
             templateSearchQuery={searchQuery}
-            viewer={viewer}
           />
         )
       })}

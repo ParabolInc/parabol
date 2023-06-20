@@ -5,12 +5,12 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
-import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {
-  UserDashTeamMenu_viewer$data,
-  UserDashTeamMenu_viewer$key
-} from '~/__generated__/UserDashTeamMenu_viewer.graphql'
+  TeamFilterMenu_viewer$data,
+  TeamFilterMenu_viewer$key
+} from '~/__generated__/TeamFilterMenu_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -20,15 +20,15 @@ import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  viewer: UserDashTeamMenu_viewer$key | null
+  viewer: TeamFilterMenu_viewer$key | null
 }
 
-const UserDashTeamMenu = (props: Props) => {
+const TeamFilterMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer: viewerRef} = props
   const viewer = useFragment(
     graphql`
-      fragment UserDashTeamMenu_viewer on User {
+      fragment TeamFilterMenu_viewer on User {
         id
         teams {
           id
@@ -42,7 +42,7 @@ const UserDashTeamMenu = (props: Props) => {
     `,
     viewerRef
   )
-  const oldTeamsRef = useRef<UserDashTeamMenu_viewer$data['teams']>([])
+  const oldTeamsRef = useRef<TeamFilterMenu_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams
@@ -58,7 +58,9 @@ const UserDashTeamMenu = (props: Props) => {
     return {
       filteredTeams,
       defaultActiveIdx:
-        filteredTeams.findIndex((team) => teamIds?.includes(team.id)) + (showAllTeams ? 2 : 1)
+        filteredTeams.findIndex((team) => teamIds?.includes(team.id)) +
+        (showAllTeams ? 3 : 2) +
+        (filteredTeams.length > 5 ? 1 : 0)
     }
   }, [userIds, teamIds])
 
@@ -87,7 +89,7 @@ const UserDashTeamMenu = (props: Props) => {
           key={'teamFilterNULL'}
           label={UserTaskViewFilterLabels.ALL_TEAMS}
           onClick={() =>
-            history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))
+            history.push(constructTeamFilterQueryParamURL(null, userIds, showArchived))
           }
         />
       )}
@@ -97,7 +99,7 @@ const UserDashTeamMenu = (props: Props) => {
           dataCy={`team-filter-${team.id}`}
           label={team.name}
           onClick={() =>
-            history.push(constructUserTaskFilterQueryParamURL([team.id], userIds, showArchived))
+            history.push(constructTeamFilterQueryParamURL([team.id], userIds, showArchived))
           }
         />
       ))}
@@ -105,4 +107,4 @@ const UserDashTeamMenu = (props: Props) => {
   )
 }
 
-export default UserDashTeamMenu
+export default TeamFilterMenu

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, useMemo} from 'react'
+import React, {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
@@ -17,6 +17,7 @@ import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMut
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import clsx from 'clsx'
 import RaisedButton from './RaisedButton'
+import getTeamHealthVoteColor from '../utils/getTeamHealthVoteColor'
 
 interface Props {
   avatarGroup: ReactElement
@@ -24,8 +25,6 @@ interface Props {
   toggleSidebar: () => void
   gotoStageId?: ReturnType<typeof useGotoStageId>
 }
-
-const VoteBackgroundColors = ['bg-grape-700', 'bg-grape-600', 'bg-grape-500']
 
 const TeamHealth = (props: Props) => {
   const {avatarGroup, meeting: meetingRef, toggleSidebar} = props
@@ -67,18 +66,6 @@ const TeamHealth = (props: Props) => {
     SetTeamHealthVoteMutation(atmosphere, {meetingId, stageId, label}, {onError, onCompleted})
   }
 
-  const backgroundColorMap = useMemo(() => {
-    const deduped = Array.from(new Set(votes)).sort().reverse()
-    const colorMap = new Map<number, string>()
-    deduped.forEach((vote, index) => {
-      colorMap.set(
-        vote,
-        VoteBackgroundColors[index] ?? VoteBackgroundColors[VoteBackgroundColors.length - 1]!
-      )
-    })
-    return colorMap
-  }, [votes])
-
   const onRevealVotes = () => {
     if (!canReveal || submitting) return
     submitMutation()
@@ -104,14 +91,12 @@ const TeamHealth = (props: Props) => {
                   {labels?.map((label, index) => (
                     <div
                       key={label}
-                      className={clsx(
-                        'm-3 flex h-32 w-20 flex-col justify-start rounded',
-                        backgroundColorMap.get(votes[index]!)
-                      )}
+                      className='m-3 flex h-32 w-20 flex-col justify-start rounded'
+                      style={{backgroundColor: getTeamHealthVoteColor(votes, votes[index]!)}}
                     >
                       <div className='flex h-24 items-center justify-center text-4xl'>{label}</div>
                       <label className='text-center text-xl font-semibold text-white'>
-                        {votes?.[index]}
+                        {votes[index]}
                       </label>
                     </div>
                   ))}

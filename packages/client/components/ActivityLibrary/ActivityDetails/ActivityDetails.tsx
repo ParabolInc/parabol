@@ -42,6 +42,7 @@ export const query = graphql`
   query ActivityDetailsQuery {
     viewer {
       tier
+      preferredTeamId
       availableTemplates(first: 200) @connection(key: "ActivityDetails_availableTemplates") {
         edges {
           node {
@@ -72,7 +73,7 @@ const ActivityDetails = (props: Props) => {
   const {queryRef, activityId: activityIdParam} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
-  const {availableTemplates, teams} = viewer
+  const {availableTemplates, teams, preferredTeamId} = viewer
 
   const history = useHistory<{prevCategory?: string}>()
   const [isEditing, setIsEditing] = useState(false)
@@ -158,6 +159,7 @@ const ActivityDetails = (props: Props) => {
           teamsRef={teams}
           isOpen={!isEditing}
           type={activity.type}
+          preferredTeamId={preferredTeamId}
         />
       </div>
     </div>
