@@ -15,7 +15,8 @@ export default class ServerEnvironment extends Environment {
   constructor(authToken: AuthToken, dataLoaderId: string) {
     super({
       store: new Store(new RecordSource()),
-      network: Network.create(noop)
+      network: Network.create(noop),
+      isServer: true
     })
     ;(this as any)._network = Network.create(this.fetch)
     this.authToken = authToken
@@ -41,14 +42,10 @@ export default class ServerEnvironment extends Environment {
           dataLoaderId: this.dataLoaderId
         })
       )
-      return undefined as any
+      // relay expects an array of responses, or a single valid response
+      return [] as any
     } else {
       return this.results!.shift()
     }
-  }
-  destroy() {
-    Object.keys(this).forEach((key) => {
-      delete (this as any)[key]
-    })
   }
 }

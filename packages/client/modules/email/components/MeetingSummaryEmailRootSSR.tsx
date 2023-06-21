@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {MeetingSummaryEmailRootSSRQuery} from 'parabol-client/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
 import React from 'react'
-import {QueryRenderer} from 'react-relay'
+import {useLazyLoadQuery} from 'react-relay'
 import {Environment} from 'relay-runtime'
 import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import makeAppURL from '../../../utils/makeAppURL'
@@ -34,39 +34,35 @@ export const meetingSummaryUrlParams = {
 }
 
 const MeetingSummaryEmailRootSSR = (props: Props) => {
-  const {appOrigin, environment, meetingId} = props
-
+  const {appOrigin, meetingId} = props
+  const data = useLazyLoadQuery<MeetingSummaryEmailRootSSRQuery>(
+    query,
+    {meetingId},
+    // fetchKey must change in order to trigger new fetch. fetchPolicy is not enough!
+    {fetchKey: Math.random()}
+  )
+  // viewer will be null on initial SSR render
+  if (!data?.viewer) return null
+  const {viewer} = data
+  const {newMeeting} = viewer
+  if (!newMeeting) return null
+  const {team} = newMeeting
+  const {id: teamId} = team
+  const options = {searchParams: meetingSummaryUrlParams}
+  const referrerUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
+  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
+  const teamDashUrl = makeAppURL(appOrigin, `team/${teamId}`, options)
+  const emailCSVUrl = makeAppURL(appOrigin, `new-summary/${meetingId}/csv`, options)
   return (
-    <QueryRenderer<MeetingSummaryEmailRootSSRQuery>
-      environment={environment}
-      query={query}
-      variables={{meetingId}}
-      render={({props}) => {
-        if (!props) return null
-        const {viewer} = props
-        if (!viewer) return null
-        const {newMeeting} = viewer
-        if (!newMeeting) return null
-        const {team} = newMeeting
-        const {id: teamId} = team
-        const options = {searchParams: meetingSummaryUrlParams}
-        const referrerUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
-        const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
-        const teamDashUrl = makeAppURL(appOrigin, `team/${teamId}`, options)
-        const emailCSVUrl = makeAppURL(appOrigin, `new-summary/${meetingId}/csv`, options)
-        return (
-          <MeetingSummaryEmail
-            meeting={newMeeting}
-            referrer={'email'}
-            teamDashUrl={teamDashUrl}
-            meetingUrl={meetingUrl}
-            referrerUrl={referrerUrl}
-            emailCSVUrl={emailCSVUrl}
-            appOrigin={appOrigin}
-            corsOptions={EMAIL_CORS_OPTIONS}
-          />
-        )
-      }}
+    <MeetingSummaryEmail
+      meeting={newMeeting}
+      referrer={'email'}
+      teamDashUrl={teamDashUrl}
+      meetingUrl={meetingUrl}
+      referrerUrl={referrerUrl}
+      emailCSVUrl={emailCSVUrl}
+      appOrigin={appOrigin}
+      corsOptions={EMAIL_CORS_OPTIONS}
     />
   )
 }
