@@ -4,7 +4,7 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
-import {RValue} from 'rethinkdb-ts'
+import {RValue} from '../../../database/stricterR'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   meetingSeriesId: ({meetingSeriesId}, _args, _context) => {
