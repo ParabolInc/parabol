@@ -23,6 +23,8 @@ import {
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
+import {ActivityCardImage} from './ActivityCard'
+import {Comment, LinearScale, Update} from '@mui/icons-material'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -45,6 +47,7 @@ graphql`
       prompts {
         question
         description
+        groupColor
       }
     }
   }
@@ -246,7 +249,7 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
+            <div className='mx-auto mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
               {templatesToRender.map((template) => {
                 const activityIllustration = getActivityIllustration(template.id as ActivityId)
 
@@ -260,11 +263,10 @@ export const ActivityLibrary = (props: Props) => {
                     className='flex focus:rounded-md focus:outline-primary'
                   >
                     <ActivityLibraryCard
-                      className='flex-1'
+                      className='group aspect-[256/160] flex-1'
                       key={template.id}
                       theme={CATEGORY_THEMES[template.category as CategoryID]}
                       title={template.name}
-                      imageSrc={activityIllustration}
                       badge={
                         !template.isFree ? (
                           <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>
@@ -272,7 +274,52 @@ export const ActivityLibrary = (props: Props) => {
                           </ActivityBadge>
                         ) : null
                       }
-                    />
+                    >
+                      <ActivityCardImage
+                        className='group-hover/card:hidden'
+                        src={activityIllustration}
+                      />
+                      <ScrollArea.Root className='hidden flex-1 overflow-auto group-hover/card:flex'>
+                        <ScrollArea.Viewport>
+                          <div className='flex flex-1 flex-col gap-y-1 px-2 py-1 text-slate-900'>
+                            {'prompts' in template &&
+                              template.prompts?.map((prompt, index) => (
+                                <div key={index} className='flex items-center gap-x-2'>
+                                  <div
+                                    className='mt-1 h-3 w-3 shrink-0 self-start rounded-full'
+                                    style={{backgroundColor: prompt.groupColor}}
+                                  />
+                                  <div className='text-sm font-medium'>{prompt.question}</div>
+                                </div>
+                              ))}
+                            {'dimensions' in template &&
+                              template.dimensions?.map((dimension, index) => (
+                                <div key={index} className='flex items-center gap-x-2'>
+                                  <div className='mt-1 shrink-0 self-start rounded-full'>
+                                    <LinearScale className='h-4 w-4' />
+                                  </div>
+                                  <div className='text-sm font-medium'>
+                                    {dimension.name}:{' '}
+                                    <span className='font-semibold'>
+                                      {dimension.selectedScale.name}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            {'phases' in template &&
+                              template.phases?.map((phase, index) => (
+                                <div key={index} className='flex items-center gap-x-2'>
+                                  <div className='mt-1 shrink-0 self-start rounded-full'>
+                                    {phase.icon}
+                                  </div>
+                                  <div className='text-sm font-medium'>{phase.description}</div>
+                                </div>
+                              ))}
+                          </div>
+                        </ScrollArea.Viewport>
+                        <ScrollArea.Scrollbar orientation='vertical' className='hidden' />
+                      </ScrollArea.Root>
+                    </ActivityLibraryCard>
                   </Link>
                 )
               })}
