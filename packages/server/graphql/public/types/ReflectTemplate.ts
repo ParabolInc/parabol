@@ -33,8 +33,13 @@ const ReflectTemplate: ReflectTemplateResolvers = {
   team: async ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
   },
-  subCategories: async ({id}, _args, {dataLoader, authToken}) => {
+  subCategories: async ({id, name}, _args, {dataLoader, authToken}) => {
+    if (name === '*New Template') {
+      return []
+    }
+
     const subCategories: string[] = []
+
     // Popular
     if (POPULAR_RETROS.includes(id)) {
       subCategories.push('popular')
@@ -63,6 +68,7 @@ const ReflectTemplate: ReflectTemplateResolvers = {
     if (
       allOrgMeetings
         .filter((meeting) => meeting.createdAt > new Date(Date.now() - ms('30d')))
+        .filter((meeting) => !allMeetings.find((selfMeeting) => selfMeeting.id === meeting.id))
         .find((meeting) => meeting.meetingType === 'retrospective' && meeting.templateId === id)
     ) {
       subCategories.push('recentlyUsedInOrg')

@@ -125,6 +125,13 @@ const CategoryIDToColorClass = {
   )
 } as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
 
+const subCategoryMapping: Record<string, string> = {
+  popular: 'Popular templates',
+  recentlyUsed: 'You used these recently',
+  recentlyUsedInOrg: 'Others in your organization are using',
+  neverTried: 'Try these activities'
+}
+
 const activityGridList = (
   templatesToRender: Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
   selectedCategory: string
@@ -161,6 +168,8 @@ const activityGridList = (
   })
 }
 
+const MAX_PER_SUBCATEGORY = 6
+
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
@@ -195,6 +204,24 @@ export const ActivityLibrary = (props: Props) => {
         : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
+
+  const subCategoryTemplates = Object.fromEntries(
+    Object.keys(subCategoryMapping).map((subCategory) => {
+      return [
+        subCategory,
+        templatesToRender
+          .filter((template) => template.subCategories?.includes(subCategory))
+          .slice(0, MAX_PER_SUBCATEGORY) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[]
+      ]
+    })
+  )
+
+  const otherTemplates = templatesToRender.filter(
+    (template) =>
+      !Object.values(subCategoryTemplates)
+        .flat()
+        .find((catTemplate) => catTemplate.id === template.id)
+  ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[]
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
@@ -290,56 +317,22 @@ export const ActivityLibrary = (props: Props) => {
             <>
               {categoryId === 'retrospective' ? (
                 <>
-                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                    Popular templates
-                  </div>
+                  {Object.keys(subCategoryMapping).map(
+                    (subCategory) =>
+                      subCategoryTemplates[subCategory]!.length > 0 && (
+                        <>
+                          <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                            {subCategoryMapping[subCategory]}
+                          </div>
+                          <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                            {activityGridList(subCategoryTemplates[subCategory]!, selectedCategory)}
+                          </div>
+                        </>
+                      )
+                  )}
+                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>Other activities</div>
                   <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                    {activityGridList(
-                      templatesToRender.filter((template) =>
-                        template.subCategories?.includes('popular')
-                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
-                      selectedCategory
-                    )}
-                  </div>
-                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                    You used these recently
-                  </div>
-                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                    {activityGridList(
-                      templatesToRender.filter((template) =>
-                        template.subCategories?.includes('recentlyUsed')
-                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
-                      selectedCategory
-                    )}
-                  </div>
-                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                    Others in your org use
-                  </div>
-                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                    {activityGridList(
-                      templatesToRender.filter((template) =>
-                        template.subCategories?.includes('recentlyUsedInOrg')
-                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
-                      selectedCategory
-                    )}
-                  </div>
-                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>You should try</div>
-                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                    {activityGridList(
-                      templatesToRender.filter((template) =>
-                        template.subCategories?.includes('neverTried')
-                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
-                      selectedCategory
-                    )}
-                  </div>
-                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>Others</div>
-                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                    {activityGridList(
-                      templatesToRender.filter(
-                        (template) => template.subCategories?.length === 0
-                      ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
-                      selectedCategory
-                    )}
+                    {activityGridList(otherTemplates, selectedCategory)}
                   </div>
                 </>
               ) : (
