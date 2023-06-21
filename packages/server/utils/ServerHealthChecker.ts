@@ -31,7 +31,6 @@ export default class ServerHealthChecker {
   // ping all servers
   // if there are servers who say they're alive but they have responded, flag them as dead
   async ping() {
-    console.log('PID', process.pid)
     if (this.pendingPongs) return
     this.pendingPongs = new Set()
     const socketServers = await this.publisher.smembers('socketServers')
