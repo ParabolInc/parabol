@@ -4,18 +4,32 @@ import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
+import useShareTopicMutation from '../mutations/useShareTopicMutation'
 
 interface Props {
   closePortal: () => void
   stageId: string
+  meetingId: string
 }
 
-// TODO: Create generic dialog components using tailwind https://github.com/ParabolInc/parabol/issues/8107
 const ShareTopicModal = (props: Props) => {
-  const {closePortal} = props
+  const {closePortal, stageId, meetingId} = props
+
+  const [commit, submitting] = useShareTopicMutation()
 
   const onShare = () => {
-    /* TODO */
+    commit(
+      {
+        variables: {
+          stageId,
+          meetingId,
+          channelId: 'C05DALX1EKY'
+        }
+      },
+      {
+        onSuccess: closePortal
+      }
+    )
   }
 
   return (
@@ -30,7 +44,7 @@ const ShareTopicModal = (props: Props) => {
               Cancel
             </SecondaryButton>
           </div>
-          <PrimaryButton size='small' onClick={onShare}>
+          <PrimaryButton size='small' onClick={onShare} disabled={submitting}>
             Share
           </PrimaryButton>
         </div>

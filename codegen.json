@@ -36,9 +36,13 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+<<<<<<< HEAD
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
+=======
+          "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
+>>>>>>> 78bccdae48d4647f581698d64dc90a0249c61cb0
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",
@@ -71,6 +75,7 @@
           "Organization": "../../database/types/Organization#default as Organization",
           "OrganizationUser": "../../database/types/OrganizationUser#default as OrganizationUser",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
+<<<<<<< HEAD
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
           "RRule": "rrule#RRule",
           "ReflectPrompt": "../../database/types/RetrospectivePrompt#default",
@@ -83,6 +88,13 @@
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
           "Task": "../../database/types/Task#default",
+=======
+          "RRule": "rrule#RRule",
+          "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
+          "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
+          "ShareTopicSuccess": "./types/ShareTopicSuccess#ShareTopicSuccessSource",
+          "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
+>>>>>>> 78bccdae48d4647f581698d64dc90a0249c61cb0
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",
@@ -98,11 +110,14 @@
           "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
+<<<<<<< HEAD
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
+=======
+>>>>>>> 78bccdae48d4647f581698d64dc90a0249c61cb0
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"

@@ -297,5 +297,116 @@ export const SlackNotifier: Notifier = {
 
   async integrationUpdated() {
     // Slack sends a system message on its own
+  },
+
+  async shareTopic(
+    dataLoader: DataLoaderWorker,
+    userId: string,
+    teamId: string,
+    meetingId: string,
+    reflectionGroupId: string,
+    channelId: string
+  ) {
+    const r = await getRethink()
+    const [user, team, meeting, reflectionGroup, reflections, slackAuth] = await Promise.all([
+      dataLoader.get('users').load(userId),
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
+      r.table('RetroReflection').getAll(reflectionGroupId, {index: 'reflectionGroupId'}).run(),
+      r.table('SlackAuth').getAll(userId, {index: 'userId'}).filter({teamId})(0).run()
+    ])
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    if (!team) {
+      throw new Error('Team not found')
+    }
+
+    if (!slackAuth) {
+      throw new Error('Slack auth not found')
+    }
+
+    const {botAccessToken, slackUserId} = slackAuth
+    const manager = new SlackServerManager(botAccessToken!)
+    const channelInfo = await manager.getConversationInfo(channelId)
+
+    if (channelId !== slackUserId) {
+      if (!channelInfo.ok) {
+        throw new Error(channelInfo.error)
+      }
+      const {channel} = channelInfo
+      const {id: channelId, is_member: isMember, is_archived: isArchived} = channel
+      if (isArchived) {
+        throw new Error('Slack channel archived')
+      }
+      if (!isMember) {
+        const joinConvoRes = await manager.joinConversation(channelId)
+        if (!joinConvoRes.ok) {
+          throw new Error('Unable to join slack channel')
+        }
+      }
+    }
+
+    const reflectionsText = reflections
+      .map((reflection) => '```' + reflection.plaintextContent + '```')
+      .join('\n')
+    const slackBlocks = [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `From ${user.preferredName}: \n*[Custom message from user]*`
+        }
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*Team:*\n${team.name}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `*Meeting:*\n${meeting.name}`
+          }
+        ]
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*Summary:*\n${reflectionGroup.summary}`
+          }
+        ]
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Reflections:* \n${reflectionsText}`
+        }
+      }
+    ]
+
+    const notificationChannel = {
+      id: '',
+      channelId,
+      userId,
+      teamId,
+      event: 'TOPIC_SHARED' as const,
+      auth: slackAuth
+    }
+
+    await notifySlack(
+      notificationChannel,
+      'TOPIC_SHARED',
+      team.id,
+      slackBlocks,
+      'here should be a title'
+    )
   }
 }

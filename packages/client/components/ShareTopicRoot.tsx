@@ -33,7 +33,9 @@ const ShareTopicRoot = () => {
 
   return (
     <Suspense fallback={renderLoader()}>
-      {modalPortal(<ShareTopicModal closePortal={closePortal} stageId={stageId} />)}
+      {modalPortal(
+        <ShareTopicModal closePortal={closePortal} stageId={stageId} meetingId={meetingId} />
+      )}
     </Suspense>
   )
 }
