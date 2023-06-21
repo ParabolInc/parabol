@@ -85,7 +85,6 @@ const OrgBillingCreditCardInfo = (props: Props) => {
     organizationRef
   )
   const {id: orgId, creditCard} = organization
-  console.log('🚀 ~ organization:', organization)
   const [isUpdating, setIsUpdating] = useState(false)
   if (!creditCard) return null
   const {brand, last4, expiry} = creditCard

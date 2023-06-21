@@ -56,7 +56,6 @@ type Props = {
 
 const UpdatePayment = (props: Props) => {
   const {setIsUpdating, orgId} = props
-  console.log('🚀 ~ orgId:', orgId)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const [isLoading, setIsLoading] = useState(false)
@@ -108,7 +107,6 @@ const UpdatePayment = (props: Props) => {
     const handleCompletedUpdate = async (res: UpdateCreditCardMutation$data) => {
       const {updateCreditCard} = res
       const {stripeSubscriptionClientSecret, error} = updateCreditCard
-      console.log('🚀 ~ updateCreditCard:', updateCreditCard)
       if (error || !stripeSubscriptionClientSecret) {
         const newErrMsg =
           error?.message ?? 'Something went wrong. Please try again or contact support.'
@@ -208,6 +206,7 @@ const UpdatePayment = (props: Props) => {
           </div>
         </div>
       </div>
+      <div className='flex justify-start'>{errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}</div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
         <div className='w-1/4'>
           <UpgradeButton
