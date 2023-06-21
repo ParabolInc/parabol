@@ -11,13 +11,15 @@ export const createMeetingProperties = (
   template?: MeetingTemplate
 ) => {
   const {id: meetingId, teamId, facilitatorUserId, meetingType, phases} = meeting
-  const hasIcebreaker = phases[0]?.phaseType === CHECKIN
+  const hasIcebreaker = phases.some(({phaseType}) => phaseType === CHECKIN)
+  const hasTeamHealth = phases.some(({phaseType}) => phaseType === 'TEAM_HEALTH')
   return {
     meetingId,
     teamId,
     facilitatorUserId,
     meetingType,
     hasIcebreaker,
+    hasTeamHealth,
     teamMembersPresentCount: meetingMembers?.length,
     meetingTemplateId: template?.id,
     meetingTemplateName: template?.name,

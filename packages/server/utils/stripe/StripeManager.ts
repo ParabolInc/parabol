@@ -50,8 +50,10 @@ export default class StripeManager {
       const paymentMethod = await this.stripe.paymentMethods.retrieve(paymentMethodId)
       if (paymentMethod.type !== 'card') {
         throw new Error('Payment method is not a card')
+      } else if (!paymentMethod.card) {
+        throw new Error('Payment method does not have a card')
       }
-      return paymentMethod.card as Stripe.PaymentMethod.Card
+      return paymentMethod.card
     } catch (e) {
       const error = e as Error
       return error
@@ -74,7 +76,10 @@ export default class StripeManager {
       if (paymentMethod.type !== 'card') {
         throw new Error('Default payment method is not a card')
       }
-      return paymentMethod.card as Stripe.PaymentMethod.Card
+      if (!paymentMethod.card) {
+        throw new Error('Default payment method does not have a card')
+      }
+      return paymentMethod.card
     } catch (e) {
       const error = e as Error
       return error
@@ -157,6 +162,17 @@ export default class StripeManager {
       sendToSentry(new Error(`${subscriptionId} contains more than one subscription item`))
     }
     return allSubscriptionItems.data[0]
+  }
+
+  async listSubscriptionOpenInvoices(subscriptionId: string) {
+    return this.stripe.invoices.list({
+      subscription: subscriptionId,
+      status: 'open'
+    })
+  }
+
+  async payInvoice(invoiceId: string) {
+    return this.stripe.invoices.pay(invoiceId)
   }
 
   async listLineItems(invoiceId: string, options: Stripe.InvoiceLineItemListParams) {

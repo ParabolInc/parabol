@@ -23,11 +23,11 @@ const LoadMoreButton = styled(SecondaryButton)({
 
 interface Props {
   queryRef: OrgBillingInvoices_query$key
-  hasCheckoutFlowFlag?: boolean
+  isWide?: boolean
 }
 
 const OrgBillingInvoices = (props: Props) => {
-  const {queryRef, hasCheckoutFlowFlag} = props
+  const {queryRef, isWide} = props
   const paginationRes = usePaginationFragment<
     OrgBillingInvoicesPaginationQuery,
     OrgBillingInvoices_query$key
@@ -64,7 +64,7 @@ const OrgBillingInvoices = (props: Props) => {
   }
   if (!invoices || !invoices.edges.length) return null
   return (
-    <StyledPanel label='Invoices' isWide={!!hasCheckoutFlowFlag}>
+    <StyledPanel label='Invoices' isWide={!!isWide}>
       <div>
         {invoices.edges.map(({node: invoice}) => (
           <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} />

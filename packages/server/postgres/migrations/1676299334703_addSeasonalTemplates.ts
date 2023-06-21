@@ -1,6 +1,6 @@
 import {r} from 'rethinkdb-ts'
 import {PALETTE} from '../../../client/styles/paletteV3'
-import {ParabolR} from '../../database/rethinkDriver'
+import connectRethinkDB from '../../database/connectRethinkDB'
 
 const createdAt = new Date()
 
@@ -173,16 +173,6 @@ const promptsInfo = [
 
 const templates = templateNames.map((templateName) => makeTemplate(templateName))
 const reflectPrompts = promptsInfo.map((promptInfo, idx) => makePrompt(promptInfo, idx))
-
-const connectRethinkDB = async () => {
-  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
-  await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: pathname.split('/')[1]
-  })
-  return r as any as ParabolR
-}
 
 export const up = async function () {
   try {

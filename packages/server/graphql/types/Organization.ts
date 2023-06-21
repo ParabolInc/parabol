@@ -8,9 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
-import {getStripeManager} from '../../utils/stripe'
 import {GQLContext} from '../graphql'
-import getCCFromCustomer from '../mutations/helpers/getCCFromCustomer'
 import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCountByOrgIds'
 import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'

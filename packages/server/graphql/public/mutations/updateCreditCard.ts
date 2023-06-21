@@ -50,22 +50,24 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
   if (res instanceof Error) return standardError(res, {userId: viewerId})
   await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
-  const resDos = await manager.updateSubscription(subscription.id, paymentMethodId)
-  console.log('🚀 ~ resDos:', resDos)
+  await manager.updateSubscription(subscription.id, paymentMethodId)
   const creditCard = await getCCFromCustomer(customer)
 
   try {
     await Promise.all([
       r({
-        updatedOrg: r.table('Organization').get(orgId).update({
-          creditCard,
-          tier: 'team',
-          stripeId: customer.id,
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now
-        })
+        updatedOrg: r
+          .table('Organization')
+          .get(orgId)
+          .update({
+            creditCard: await getCCFromCustomer(customer),
+            tier: 'team',
+            stripeId: customer.id,
+            tierLimitExceededAt: null,
+            scheduledLockAt: null,
+            lockedAt: null,
+            updatedAt: now
+          })
       }).run(),
       updateTeamByOrgId(
         {

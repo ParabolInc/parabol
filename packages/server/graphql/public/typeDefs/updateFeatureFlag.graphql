@@ -7,7 +7,6 @@ enum UserFlagEnum {
   msTeams
   insights
   recurrence
-  templateLimit
   noAISummary
   noMeetingHistoryLimit
   checkoutFlow
@@ -23,7 +22,6 @@ type UserFeatureFlags {
   msTeams: Boolean!
   insights: Boolean!
   recurrence: Boolean!
-  templateLimit: Boolean!
   noAISummary: Boolean!
   noMeetingHistoryLimit: Boolean!
   checkoutFlow: Boolean!

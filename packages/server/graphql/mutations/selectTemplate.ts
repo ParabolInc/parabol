@@ -28,8 +28,6 @@ const selectTemplate = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
-    const user = await dataLoader.get('users').loadNonNull(viewerId)
-    const {featureFlags} = user
 
     // AUTH
     const template = (await dataLoader
@@ -52,7 +50,7 @@ const selectTemplate = {
         return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
       }
     } else if (scope === 'PUBLIC') {
-      if (featureFlags.includes('templateLimit') && !isFree && viewerTeam.tier === 'starter') {
+      if (!isFree && viewerTeam.tier === 'starter') {
         return standardError(new Error('User does not have access to this premium template'), {
           userId: viewerId
         })

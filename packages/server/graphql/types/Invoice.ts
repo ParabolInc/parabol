@@ -6,11 +6,8 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {getStripeManager} from '../../utils/stripe'
-import StripeManager from '../../utils/stripe/StripeManager'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import getCCFromCustomer from '../mutations/helpers/getCCFromCustomer'
 import Coupon from './Coupon'
 import CreditCard from './CreditCard'
 import GraphQLEmailType from './GraphQLEmailType'
