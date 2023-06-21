@@ -42,7 +42,7 @@ const User: UserResolvers = {
       case 'Organization':
         const organizationUser = await dataLoader
           .get('organizationUsersByUserIdOrgId')
-          .load({userId: viewerId, id})
+          .load({userId: viewerId, orgId: id})
         return !!organizationUser
       default:
         return false
