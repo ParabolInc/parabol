@@ -8,6 +8,7 @@ import sendToSentry from './sendToSentry'
 
 const REDIS_URL = process.env.REDIS_URL!
 const SERVER_ID = process.env.SERVER_ID!
+const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
 
 export default class ServerHealthChecker {
   publisher = new Redis(REDIS_URL, {connectionName: 'serverHealth_pub'})
@@ -16,25 +17,26 @@ export default class ServerHealthChecker {
   constructor() {
     this.subscriber.on('message', (channel, remoteServerId) => {
       if (channel === 'socketServerPing') {
-        if (remoteServerId === SERVER_ID) return
-        this.publisher.publish(`socketServerPong:${remoteServerId}`, SERVER_ID)
-      } else if (channel === `socketServerPong:${SERVER_ID}`) {
+        if (remoteServerId === INSTANCE_ID) return
+        this.publisher.publish(`socketServerPong:${remoteServerId}`, INSTANCE_ID)
+      } else if (channel === `socketServerPong:${INSTANCE_ID}`) {
         this.pendingPongs?.delete(remoteServerId)
       }
     })
-    this.subscriber.subscribe('socketServerPing', `socketServerPong:${SERVER_ID}`)
-    this.publisher.sadd('socketServers', SERVER_ID)
+    this.subscriber.subscribe('socketServerPing', `socketServerPong:${INSTANCE_ID}`)
+    this.publisher.sadd('socketServers', INSTANCE_ID)
   }
 
   // get a list of servers who should be alive
   // ping all servers
   // if there are servers who say they're alive but they have responded, flag them as dead
   async ping() {
+    console.log('PID', process.pid)
     if (this.pendingPongs) return
     this.pendingPongs = new Set()
     const socketServers = await this.publisher.smembers('socketServers')
-    this.pendingPongs = new Set(...socketServers.filter((id) => id !== SERVER_ID))
-    await this.publisher.publish('socketServerPing', SERVER_ID)
+    this.pendingPongs = new Set(...socketServers.filter((id) => id !== INSTANCE_ID))
+    await this.publisher.publish('socketServerPing', INSTANCE_ID)
     await sleep(500)
     // if a server hasn't replied in 500ms, assume it is offline
     const deadServerIds = [...this.pendingPongs]
@@ -64,8 +66,8 @@ export default class ServerHealthChecker {
           const connections = record[1]
           return connections.map((connection) => {
             const presence = JSON.parse(connection) as UserPresence
-            const {socketServerId, socketId} = presence
-            if (!deadServerIds.includes(socketServerId)) return
+            const {socketInstanceId, socketId} = presence
+            if (!deadServerIds.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
             return publishInternalGQL({
               authToken,

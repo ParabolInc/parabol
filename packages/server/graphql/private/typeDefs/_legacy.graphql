@@ -244,7 +244,7 @@ type Mutation {
     """
     The ID of the server this socket is connected to
     """
-    socketServerId: ID!
+    socketInstanceId: ID!
   ): User!
 
   """
