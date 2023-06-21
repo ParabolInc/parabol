@@ -125,17 +125,18 @@ const CategoryIDToColorClass = {
   )
 } as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
 
-const subCategoryMapping: Record<string, string> = {
+type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
+
+type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried'
+
+const subCategoryMapping: Record<SubCategory, string> = {
   popular: 'Popular templates',
   recentlyUsed: 'You used these recently',
   recentlyUsedInOrg: 'Others in your organization are using',
   neverTried: 'Try these activities'
 }
 
-const activityGridList = (
-  templatesToRender: Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
-  selectedCategory: string
-) => {
+const activityGridList = (templatesToRender: Template[], selectedCategory: string) => {
   return templatesToRender.map((template) => {
     return (
       <Link
@@ -211,17 +212,17 @@ export const ActivityLibrary = (props: Props) => {
         subCategory,
         templatesToRender
           .filter((template) => template.subCategories?.includes(subCategory))
-          .slice(0, MAX_PER_SUBCATEGORY) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[]
+          .slice(0, MAX_PER_SUBCATEGORY) as Template[]
       ]
     })
-  )
+  ) as Record<SubCategory, Template[]>
 
   const otherTemplates = templatesToRender.filter(
     (template) =>
       !Object.values(subCategoryTemplates)
         .flat()
         .find((catTemplate) => catTemplate.id === template.id)
-  ) as Omit<ActivityLibrary_template$data, ' $fragmentType'>[]
+  ) as Template[]
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
@@ -317,30 +318,33 @@ export const ActivityLibrary = (props: Props) => {
             <>
               {categoryId === 'retrospective' ? (
                 <>
-                  {Object.keys(subCategoryMapping).map(
+                  {(Object.keys(subCategoryMapping) as SubCategory[]).map(
                     (subCategory) =>
-                      subCategoryTemplates[subCategory]!.length > 0 && (
+                      subCategoryTemplates[subCategory].length > 0 && (
                         <>
                           <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
                             {subCategoryMapping[subCategory]}
                           </div>
                           <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                            {activityGridList(subCategoryTemplates[subCategory]!, selectedCategory)}
+                            {activityGridList(subCategoryTemplates[subCategory], selectedCategory)}
                           </div>
                         </>
                       )
                   )}
-                  <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>Other activities</div>
-                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                    {activityGridList(otherTemplates, selectedCategory)}
-                  </div>
+                  {otherTemplates.length > 0 && (
+                    <>
+                      <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                        Other activities
+                      </div>
+                      <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                        {activityGridList(otherTemplates, selectedCategory)}
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
                 <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-                  {activityGridList(
-                    templatesToRender as Omit<ActivityLibrary_template$data, ' $fragmentType'>[],
-                    selectedCategory
-                  )}
+                  {activityGridList(templatesToRender as Template[], selectedCategory)}
                 </div>
               )}
             </>
