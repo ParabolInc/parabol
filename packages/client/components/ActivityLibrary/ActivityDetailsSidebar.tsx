@@ -1,35 +1,35 @@
-import React, {useState} from 'react'
+import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
-import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
+import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
-import sortByTier from '../../utils/sortByTier'
+import useMutationProps from '../../hooks/useMutationProps'
+import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
+import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import StartCheckInMutation from '../../mutations/StartCheckInMutation'
+import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
+import {PALETTE} from '../../styles/paletteV3'
 import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
+import sortByTier from '../../utils/sortByTier'
+import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
+import FlatPrimaryButton from '../FlatPrimaryButton'
+import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
+import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
-import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
-import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
-import FlatPrimaryButton from '../FlatPrimaryButton'
-import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import useMutationProps from '../../hooks/useMutationProps'
-import {useHistory} from 'react-router'
-import {LockOpen} from '@mui/icons-material'
-import {PALETTE} from '../../styles/paletteV3'
-import clsx from 'clsx'
-import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
-import StartCheckInMutation from '../../mutations/StartCheckInMutation'
-import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
-import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
-import StyledError from '../StyledError'
+import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import RaisedButton from '../RaisedButton'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import StyledError from '../StyledError'
+import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key | null
@@ -101,7 +101,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   const [selectedTeam, setSelectedTeam] = useState(
     availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
-      sortByTier(availableTeams)[0]!
+      sortByTier(teams)[0]!
   )
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()

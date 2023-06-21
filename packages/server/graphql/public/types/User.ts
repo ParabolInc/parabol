@@ -113,7 +113,7 @@ const User: UserResolvers = {
         : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const userOrgIds = organizationUsers.map(({id}) => id)
+    const userOrgIds = organizationUsers.map(({orgId}) => orgId)
     const availableOrgIds = ['aGhostOrg', ...userOrgIds]
     const [parabolActivities, ...userActivities] = await Promise.all(
       availableOrgIds.map((orgId) => dataLoader.get('meetingTemplatesByOrgId').load(orgId))
