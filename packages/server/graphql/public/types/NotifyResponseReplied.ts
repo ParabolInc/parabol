@@ -8,7 +8,7 @@ const NotifyResponseReplied: NotifyResponseRepliedResolvers = {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     return meeting as MeetingTeamPrompt
   },
-  response: async ({userId, meetingId}, _args: unknown, {dataLoader}) => {
+  response: async ({userId, meetingId}) => {
     // TODO: implement getTeamPromptResponsesByMeetingIdAndUserId
     const responses = await getTeamPromptResponsesByMeetingId(meetingId)
     return responses.find(({userId: responseUserId}) => responseUserId === userId)!

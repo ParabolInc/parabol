@@ -56,6 +56,7 @@
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "File": "./types/File#TFile",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
+          "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default",

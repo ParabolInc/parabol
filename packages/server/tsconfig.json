@@ -30,6 +30,10 @@
     "types/modules.d.ts",
     "server.ts",
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
+  ],
+  "include": [
+    // TODO: make this into "graphql/**/*.ts" after fixing all the type errors
+    "graphql/public/types/*.ts"
   ]
 
   // if "include" or "files" is added, even if they are empty arrays, then strictNullChecks breaks
