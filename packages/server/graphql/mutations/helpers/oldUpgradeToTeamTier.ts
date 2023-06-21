@@ -8,7 +8,7 @@ import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
 import getCCFromCustomer from './getCCFromCustomer'
 
-const upgradeToTeamTierOld = async (
+const oldUpgradeToTeamTier = async (
   orgId: string,
   source: string,
   email: string,
@@ -88,4 +88,4 @@ const upgradeToTeamTierOld = async (
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }
 
-export default upgradeToTeamTierOld
+export default oldUpgradeToTeamTier

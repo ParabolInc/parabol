@@ -28,6 +28,8 @@ import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 import StyledError from '../StyledError'
+import RaisedButton from '../RaisedButton'
+import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key | null
@@ -47,6 +49,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         teamId
         orgId
         scope
+        isFree
       }
     `,
     selectedTemplateRef
@@ -184,6 +187,14 @@ const ActivityDetailsSidebar = (props: Props) => {
     </div>
   )
 
+  const handleUpgrade = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'publicTemplate',
+      meetingType: type
+    })
+    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
+  }
+
   return (
     <>
       {isOpen && <div className='w-96' />}
@@ -209,34 +220,56 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
 
-          {type === 'retrospective' && (
+          {selectedTeam.tier === 'starter' && !selectedTemplate?.isFree ? (
+            <div className='flex grow flex-col'>
+              <div className='my-auto text-center'>
+                Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
+                ideal workflow.
+              </div>
+              <RaisedButton
+                palette='pink'
+                className='h-12 w-full text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                onClick={handleUpgrade}
+              >
+                Upgrade to Team Plan
+              </RaisedButton>
+            </div>
+          ) : (
             <>
-              <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-              {isTeamHealthAvailable(selectedTeam.tier) && (
-                <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
+              {type === 'retrospective' && (
+                <>
+                  <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+                  {isTeamHealthAvailable(selectedTeam.tier) && (
+                    <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
+                  )}
+                  <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+                </>
               )}
-              <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+              {type === 'poker' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+              )}
+              {type === 'action' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
+              )}
+              {type === 'teamPrompt' && (
+                <ActivityDetailsRecurrenceSettings
+                  onRecurrenceSettingsUpdated={setRecurrenceSettings}
+                  recurrenceSettings={recurrenceSettings}
+                />
+              )}
+              <div className='flex grow flex-col justify-end gap-2'>
+                {error && <StyledError>{error.message}</StyledError>}
+                <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                <FlatPrimaryButton
+                  onClick={handleStartActivity}
+                  waiting={submitting}
+                  className='h-14'
+                >
+                  <div className='text-lg'>Start Activity</div>
+                </FlatPrimaryButton>
+              </div>
             </>
           )}
-          {type === 'poker' && (
-            <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
-          )}
-          {type === 'action' && (
-            <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
-          )}
-          {type === 'teamPrompt' && (
-            <ActivityDetailsRecurrenceSettings
-              onRecurrenceSettingsUpdated={setRecurrenceSettings}
-              recurrenceSettings={recurrenceSettings}
-            />
-          )}
-          <div className='flex grow flex-col justify-end gap-2'>
-            {error && <StyledError>{error.message}</StyledError>}
-            <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-            <FlatPrimaryButton onClick={handleStartActivity} waiting={submitting} className='h-14'>
-              <div className='text-lg'>Start Activity</div>
-            </FlatPrimaryButton>
-          </div>
         </div>
       </div>
     </>

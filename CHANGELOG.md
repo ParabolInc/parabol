@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.108.0 2023-Jun-15
+
+### Added
+
+- add team filter in meeting view (#7854)
+- text align center for icebreakers (#8306) 
+- **Team Health**: enable team health by default for paid tiers (#8348) 
+- **Team Health**: Add setting to new activity library (#8375)
+
+### Changed
+
+- Adds new template for design issues (#8261)
+- **gh-actions**: merge check and build (#8221) 
+- **docker-image**: self-hosted folder added in HOME directory (#8361)
+- **template-limits**: remove template limit feature flag (#8359) 
+  
+### Fixed
+
+- **standups**: allow selecting text within the standup response drawer (#8339)
+- **teams-limit**: remove teams limit when upgrading to enterprise (#8367 
+
+## 6.107.3 2023-Jun-13
+
+### Fixed
+
+- Use latest undici to (hopefully) fix mem leak in fetch
+
 ## 6.107.2 2023-Jun-09
 
 ### Fixed:
@@ -15,163 +42,163 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed:
 
-- fix: Many public templates not displayed
+- Many public templates not displayed
 
 ## 6.107.0 2023-June-7
 
 ### Added
 
-- feat: add zoom transcription (#7949)
-- feat(checkout-flow): add org details (#8280)
-- feat(team health): voting and reveal (#8286)
-- feat(Team Health): Add summary (#8298)
-- feat(DX): Infer parent portal IDs through React context (#8310)
-- feat(checkout-flow): credit card UI (#8318)
-- feat(analytics): Track meeting category on meeting start (#8336)
-- feat(rid): Add new users to feature flag (#8337)
-- feat(rid): Add pre-/post-mortem templates (#8319)
+- add zoom transcription (#7949)
+- **checkout-flow**: add org details (#8280)
+- **team health**: voting and reveal (#8286)
+- **Team Health**: Add summary (#8298)
+- **DX**: Infer parent portal IDs through React context (#8310)
+- **checkout-flow**: credit card UI (#8318)
+- **analytics**: Track meeting category on meeting start (#8336)
+- **rid**: Add new users to feature flag (#8337)
+- **rid**: Add pre-/post-mortem templates (#8319)
 
 ### Fixed
 
-- fix: auto update billing leader (#8277)
-- fix(prompt-to-join): fix add teammate routing when opened on a new tab (#8302)
-- fix(rid): Correct styles for non-owner readonly scales (#8301)
-- fix: fix loader.load with undefined in accept team invitation (#8300)
-- fix: Drain rethinkdb pool after running all migrations (#8315)
-- fix(rid): Long team names truncate instead of wrapping (#8311)
-- fix: update the default enterprise plan ID (#8320)
-- fix: dumpHeap to /tmp directory (#8325)
-- fix: show all slack channels in dropdown (#8329)
-- fix: better description for failed to execute removeChild on Node error (#8333)
+- auto update billing leader (#8277)
+- **prompt-to-join**: fix add teammate routing when opened on a new tab (#8302)
+- **rid**: Correct styles for non-owner readonly scales (#8301)
+- fix loader.load with undefined in accept team invitation (#8300)
+- Drain rethinkdb pool after running all migrations (#8315)
+- **rid**: Long team names truncate instead of wrapping (#8311)
+- update the default enterprise plan ID (#8320)
+- dumpHeap to /tmp directory (#8325)
+- show all slack channels in dropdown (#8329)
+- better description for failed to execute removeChild on Node error (#8333)
 
 ### Changed
 
-- chore(prompt-to-join): disable buttons when running accept request mutation(#8297)
-- chore: remove slackin broken link from readme (#8307)
-- chore: remove rethink templates (#8217)
-- chore: refactor updateUserProfile (#8295)
-- chore(prompt-to-join): allow non-verified emails (#8313)
-- chore: refactor FileStoreManager API (#8294)
-- style: updating plans UI for mobile screens (#8075)
-- chore: use git clean under the hood of yarn clean (#8342)
+- **prompt-to-join**: disable buttons when running accept request mutation(#8297)
+- remove slackin broken link from readme (#8307)
+- remove rethink templates (#8217)
+- refactor updateUserProfile (#8295)
+- **prompt-to-join**: allow non-verified emails (#8313)
+- refactor FileStoreManager API (#8294)
+- updating plans UI for mobile screens (#8075)
+- use git clean under the hood of yarn clean (#8342)
 
 ## 6.106.0 2023-May-31
 
 ### Added
 
-- feat(suggest-groups): click button to group reflections (#8132)
+- **suggest-groups**: click button to group reflections (#8132)
 
 ### Fixed
 
-- fix(rid): Fix changing prompt colors in activity library (#8279)
-- fix(recurrence): Incorrect start times due to timezone weirdness (#8269)
-- fix(summaries): Race condition around bulk task exports (#8287)
+- **rid**: Fix changing prompt colors in activity library (#8279)
+- **recurrence**: Incorrect start times due to timezone weirdness (#8269)
+- **summaries**: Race condition around bulk task exports (#8287)
 
 ## 6.105.1 2023-May-31
 
 ### Fixed
 
-- fix: dumpHeap PROJECT_ROOT
+- dumpHeap PROJECT_ROOT
 
 ### Changed
 
-- chore(share-summary): Add feature flag (#8249)
+- **share-summary**: Add feature flag (#8249)
 
 ## 6.105.0 2023-May-24
 
 ### Added
 
-- feat(summaries): Bulk task export button (#7933)
-- feat(checkout-flow): handle 3D Secure cards (#8162)
-- feat(standups): Meeting ended integration notification (#8258)
-- feat(retros-in-disguise): added standup activity details (#8199)
-- feat(Team Health): add new stage to retrospective (#7942)
-- feat(rid): Sidebar for standups + checkins (#8226)
-- feat: mutable category (#8159)
-- chore(metrics): Add event parameter is_patient_0 to GA4 sign up events (#8223)
-- feat(rid): Add feature flag based on params for email + google signups (#8211)
-- feat(prompt-to-join): Add teammate mutation (#8160)
-- feat: Don't show discussion mention toast if already on stage (#8270)
+- **summaries**: Bulk task export button (#7933)
+- **checkout-flow**: handle 3D Secure cards (#8162)
+- **standups**: Meeting ended integration notification (#8258)
+- **retros-in-disguise**: added standup activity details (#8199)
+- **Team Health**: add new stage to retrospective (#7942)
+- **rid**: Sidebar for standups + checkins (#8226)
+- mutable category (#8159)
+- **metrics**: Add event parameter is_patient_0 to GA4 sign up events (#8223)
+- **rid**: Add feature flag based on params for email + google signups (#8211)
+- **prompt-to-join**: Add teammate mutation (#8160)
+- Don't show discussion mention toast if already on stage (#8270)
 
 ### Fixed
 
-- chore: update max token limit (#8267)
-- fix(copy): Make copy for ending meeting consistent (#8256)
-- fix: Fix team change in new meeting window (#8253)
-- fix(tiptap): Prevent showing edit components in readonly mode (#8259)
-- fix(discussions): Fix editing comments in standups + check-ins (#8248)
-- fix: NewMeeting dialog rendered the dashboard twice (#8246)
-- chore: refactor addFeatureFlagToOrg to updateOrgFeatureFlag (#8244)
-- chore(docker): documentation on how to build the docker image locally improved (#8230)
-- fix(chore): properly count emojis length (#8116)
-- chore: add checkout flow tracking (#8235)
-- chore(prompt-to-join): domainJoinRequest - replace string id with auto increment (#8191)
-- fix: Add subject explicitly to create Jira key script (#8237)
-- fix: regenerate yarn.lock (#8236)
-- chore: remove \_\_jsxRuntime path (#8154)
-- fix(rid): Navigate to activity lib for floating action button (#8215)
-- fix: slack notification race condition (#8197)
-- fix(standups): Remove CSV download button in standups (#8255)
-- fix: checkbox color overriden by styled components (#8257)
+- update max token limit (#8267)
+- **copy**: Make copy for ending meeting consistent (#8256)
+- Fix team change in new meeting window (#8253)
+- **tiptap**: Prevent showing edit components in readonly mode (#8259)
+- **discussions**: Fix editing comments in standups + check-ins (#8248)
+- NewMeeting dialog rendered the dashboard twice (#8246)
+- refactor addFeatureFlagToOrg to updateOrgFeatureFlag (#8244)
+- **docker**: documentation on how to build the docker image locally improved (#8230)
+- **chore**: properly count emojis length (#8116)
+- add checkout flow tracking (#8235)
+- **prompt-to-join**: domainJoinRequest - replace string id with auto increment (#8191)
+- Add subject explicitly to create Jira key script (#8237)
+- regenerate yarn.lock (#8236)
+- remove \_\_jsxRuntime path (#8154)
+- **rid**: Navigate to activity lib for floating action button (#8215)
+- slack notification race condition (#8197)
+- **standups**: Remove CSV download button in standups (#8255)
+- checkbox color overriden by styled components (#8257)
 
 ## 6.104.0 2023-May-17
 
 ### Added
 
-- feat(recurrence): Prev/next meeting navigation (#8157)
-- feat(rid): Enter edit mode automatically for new templates (#8156)
-- feat(pipeline): Docker build pipeline (#8030)
-- feat(checkout-flow): add billing leader functionality (#8121)
-- feat: can edit & delete AI comment (#8164)
-- feat: prime new columns on MeetingTemplate (#8081)
-- feat(rid): Navigate to activity lib by default from CTA (#8210)
-- feat: build no-deps (#8196)
+- **recurrence**: Prev/next meeting navigation (#8157)
+- **rid**: Enter edit mode automatically for new templates (#8156)
+- **pipeline**: Docker build pipeline (#8030)
+- **checkout-flow**: add billing leader functionality (#8121)
+- can edit & delete AI comment (#8164)
+- prime new columns on MeetingTemplate (#8081)
+- **rid**: Navigate to activity lib by default from CTA (#8210)
+- build no-deps (#8196)
 
 ### Fixed
 
-- fix: remove flushall redis on migrate (#8175)
-- fix(rid): Ignore category in search empty state (#8144)
-- fix: more logs for voting error (#8167)
+- remove flushall redis on migrate (#8175)
+- **rid**: Ignore category in search empty state (#8144)
+- more logs for voting error (#8167)
 
 ### Changed
 
-- chore(pg-migrations): message when no migrations need to be run on PG showing it is actually PosgreSQL (#8174)
-- chore: ignore generated files in PR size (#8165)
-- chore: Verify all checked in generated files are clean (#8161)
-- chore: AI opt out at org level (#8163)
-- chore(deps): bump vm2 from 3.9.17 to 3.9.18 (#8198)
-- chore: remove node-fetch from app code (#8178)
+- **pg-migrations**: message when no migrations need to be run on PG showing it is actually PosgreSQL (#8174)
+- ignore generated files in PR size (#8165)
+- Verify all checked in generated files are clean (#8161)
+- AI opt out at org level (#8163)
+- **deps**: bump vm2 from 3.9.17 to 3.9.18 (#8198)
+- remove node-fetch from app code (#8178)
 
 ## 6.103.0 2023-May-05
 
 ### Added
 
-- feat(retros-in-disguise): Prompt user to use org scope (#8120)
-- feat(retros-in-disguise):Create new poker template (#8143)
-- feat(retros-in-disguise): Poker details view (#8131)
-- chore(prompt-to-join): Allow to open add teammate dialog from the snackbar (#8136)
-- feat(suggest-groups): Add suggestGroups org feature flag (#8130)
-- feat: add mainCategory and illustrationUrl to MeetingTemplate (#8074)
+- **retros-in-disguise**: Prompt user to use org scope (#8120)
+- **retros-in-disguise**: Create new poker template (#8143)
+- **retros-in-disguise**: Poker details view (#8131)
+- **prompt-to-join**: Allow to open add teammate dialog from the snackbar (#8136)
+- **suggest-groups**: Add suggestGroups org feature flag (#8130)
+- add mainCategory and illustrationUrl to MeetingTemplate (#8074)
 
 ### Fixed
 
-- fix: subscribe to acceptInvite paylods in subscription (#8127)
+- subscribe to acceptInvite paylods in subscription (#8127)
 
 ## 6.102.0 2023-May-3
 
 ### Added
 
-- feat(retros-in-disguise): added create new activity view (#8069)
-- feat(rid): Edit Mode (#8108)
-- feat: add more dd tracing (#7774)
-- feat(templates): Share to org by default (#8129)
+- **retros-in-disguise**: added create new activity view (#8069)
+- **rid**: Edit Mode (#8108)
+- add more dd tracing (#7774)
+- **templates**: Share to org by default (#8129)
 
 ### Changed
 
-- chore: remove User table from RethinkDB (#8115)
-- chore: bump webpack to secure version
-- chore: generate kysely schema in dev (#8114)
-- chore(security): bump vulnerable packages (#8135)
+- remove User table from RethinkDB (#8115)
+- bump webpack to secure version
+- generate kysely schema in dev (#8114)
+- **security**: bump vulnerable packages (#8135)
 
 ### Fixed
 
@@ -427,37 +454,37 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 
-- fix: show invoice coupons in parabol (#7711)
-- chore: fix case-sensitive (#7749)
-- fix: yarn dev remove graphiql from dll (#7750)
-- fix(recurrence): Don't restart meetings on archived teams (#7747)
-- fix: 'Updated time/Created time' is not instantaneous on task cards (#7254)
-- fix: Fix server error when joining a team by invitation link (#7775)
+- show invoice coupons in parabol (#7711)
+- fix case-sensitive (#7749)
+- yarn dev remove graphiql from dll (#7750)
+- **recurrence**: Don't restart meetings on archived teams (#7747)
+- 'Updated time/Created time' is not instantaneous on task cards (#7254)
+- Fix server error when joining a team by invitation link (#7775)
 
 ### Added
 
-- chore(teams-limit): send locked & warning email (#7637)
-- feat(recurrence): Stable link for meeting series (#7707)
-- feat(teams-limit): add 7 days reminder notification and snackbar (#7677)
-- feat(recurrence): Recurrence-specific meeting card (#7716)
-- feat(recurrence): Added advanced recurrence settings (#7585)
-- feat(checkout-flow): left sidebar (#7733)
-- feat: add seasonal retros (#7760)
-- feat(standups): added options menu tooltip (#7768)
+- **teams-limit**: send locked & warning email (#7637)
+- **recurrence**: Stable link for meeting series (#7707)
+- **teams-limit**: add 7 days reminder notification and snackbar (#7677)
+- **recurrence**: Recurrence-specific meeting card (#7716)
+- **recurrence**: Added advanced recurrence settings (#7585)
+- **checkout-flow**: left sidebar (#7733)
+- add seasonal retros (#7760)
+- **standups**: added options menu tooltip (#7768)
 
 ### Changed
 
-- chore: Invert meetingHistoryLimit feature flag (#7725)
-- chore: prevent new rethinkdb migrations in the database/migrations
-- chore(teams-limit): avoid showing nagging snackbar if the limit is fixed
-- chore: Switch to review stats package (#7753)
-- chore(metrics): Do not call identify() on feature flag changes (#7752)
-- feat: create bundles without node_modules (#7402)
-- chore: remove user feature flag (#7765)
-- chore: removed beta badge from standups (#7767)
-- chore(teams-limit): Remove scheduled jobs
-- chore(ai-summary): track no stats in Slack summary (#7759)
-- chore(dx): add updateCache function to dataLoader (#7758)
+- Invert meetingHistoryLimit feature flag (#7725)
+- prevent new rethinkdb migrations in the database/migrations
+- **teams-limit**: avoid showing nagging snackbar if the limit is fixed
+- Switch to review stats package (#7753)
+- **metrics**: Do not call identify() on feature flag changes (#7752)
+- create bundles without node_modules (#7402)
+- remove user feature flag (#7765)
+- removed beta badge from standups (#7767)
+- **teams-limit**: Remove scheduled jobs
+- **ai-summary**: track no stats in Slack summary (#7759)
+- **dx**: add updateCache function to dataLoader (#7758)
 
 ## 6.91.1 2023-Feb-14
 
@@ -470,22 +497,22 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 
 - Bundle tutorial thumbnail (#7742)
-- fix(ai-summary): summary references "the text" (#7739)
-- chore(deps): bump webpack, undici (#7737)
-- chore(deps): bump ua-parser-js from 0.7.31 to 0.7.33 (#7683)
-- chore(deps): bump deps to fix vulns (#7730)
-- chore(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
-- fix: Profile name length should have the upper limit (#7425)
+- **ai-summary**: summary references "the text" (#7739)
+- **deps**: bump webpack, undici (#7737)
+- **deps**: bump ua-parser-js from 0.7.31 to 0.7.33 (#7683)
+- **deps**: bump deps to fix vulns (#7730)
+- **deps**: bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
+- Profile name length should have the upper limit (#7425)
 
 ### Added
 
-- chore: Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
-- chore(checkout-flow): add checkout feature flag (#7709)
+- Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
+- **checkout-flow**: add checkout feature flag (#7709)
 
 ### Changed
 
-- chore: update team invite email (#7710)
-- chore(ai-summary): update meeting summary url (#7705)
+- update team invite email (#7710)
+- **ai-summary**: update meeting summary url (#7705)
 
 ## 6.90.0 2023-February-1
 
@@ -497,8 +524,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Added missing prompts in starfish retro template (#7660)
 - Fixed prompt highlight color does not cover the full-height of the column (#7416)
 - Delete empty groups (#7673)
-- chore(metrics): Add isPatient0 property to sign_up events emitted by GA4 (#7680)
-- fix: Meetings with invalid facilitator stage can now be opened and closed (#7675)
+- **metrics**: Add isPatient0 property to sign_up events emitted by GA4 (#7680)
+- Meetings with invalid facilitator stage can now be opened and closed (#7675)
 
 ### Changed
 
@@ -519,15 +546,15 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 
-- fix: update non-anonymous Reflect description (#7651)
-- fix(ai-summary): remove AI comment from comment count (#7648)
-- fix(ai-summary): update Parabol AI picture (#7657)
+- update non-anonymous Reflect description (#7651)
+- **ai-summary**: remove AI comment from comment count (#7648)
+- **ai-summary**: update Parabol AI picture (#7657)
 
 ### Changed
 
-- chore(metrics): emit sign_up events from GA4 client side (#7635)
-- perf: moved global style creation outside of the render cycle (#7598)
-- chore: sendToSentry if unable to create topic summary (#7665)
+- **metrics**: emit sign_up events from GA4 client side (#7635)
+- moved global style creation outside of the render cycle (#7598)
+- sendToSentry if unable to create topic summary (#7665)
 
 ## 6.88.0 2023-January-12
 
@@ -716,7 +743,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Changed
 
-- CircleCI: split backup from deployment (#7389)
+- **CircleCI**: split backup from deployment (#7389)
 
 ## 6.81.0 2022-November-02
 
@@ -871,37 +898,37 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- feat(metrics): Add metrics about disableAnonymity in retro meetings (#7171)
+- **metrics**: Add metrics about disableAnonymity in retro meetings (#7171)
 
 ### Fixed
 
-- fix: Fix cannot read email of undefined in ErrorBoundary (#7198)
-- fix: 'Estimate phase is already complete' error message (#7194)
+- Fix cannot read email of undefined in ErrorBoundary (#7198)
+- 'Estimate phase is already complete' error message (#7194)
 
 ### Changed
 
-- style(lint): run yarn format on server side (#7186)
-- ci: update to Lerna V5 and integrate with Nx (#7184)
-- ci: setting write permissions to the PR for external contributor (#7195)
-- chore: add Standup smoke test into the testing basics (#7189)
-- chore: Weekly review stats in Slack (#7205)
+- **lint**: run yarn format on server side (#7186)
+- update to Lerna V5 and integrate with Nx (#7184)
+- setting write permissions to the PR for external contributor (#7195)
+- add Standup smoke test into the testing basics (#7189)
+- Weekly review stats in Slack (#7205)
 
 ## 6.74.0 2022-September-15
 
 ### Fixed
 
-- fix: Disallow comments only consisting of whitespace (#7137)
-- fix: New Add Meeting button is pushing the Add Team button out of reach (#7157)
-- fix(demo): prevent demo meeting auto-start after page refresh (#7131)
-- fix: card quick return to original position without hangs (#7138)
-- fix: Misleading error message when inviting existing team mate (#7159)
-- fix: Long title create UI issue on mobile (#7168)
-- fix: only check clientGraphQLServer for isDemoRoute (#7176)
-- fix(poker): fix an bug where task estimate is not written to DB when it's a Parabol task (#7170)
+- Disallow comments only consisting of whitespace (#7137)
+- New Add Meeting button is pushing the Add Team button out of reach (#7157)
+- **demo**: prevent demo meeting auto-start after page refresh (#7131)
+- card quick return to original position without hangs (#7138)
+- Misleading error message when inviting existing team mate (#7159)
+- Long title create UI issue on mobile (#7168)
+- only check clientGraphQLServer for isDemoRoute (#7176)
+- **poker**: fix an bug where task estimate is not written to DB when it's a Parabol task (#7170)
 
 ### Changed
 
-- chore: Automatically add reviewers (#7172)
+- Automatically add reviewers (#7172)
 
 ## 6.73.0 2022-September-08
 
@@ -938,33 +965,33 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 
-- fix: Update stripe.subscription.create prorate parameter (#7119)
+- Update stripe.subscription.create prorate parameter (#7119)
 
 ## 6.72.0 2022-August-25
 
 ### Added
 
-- feat: Update location of "add meeting" to left sidebar (#7012)
-- feat(standups): Recurrence - stopRecurrence mutation (#7023)
-- feat(standups): Recurrence - processRecurrence mutation (#7041)
-- feat: create azure issue (#7053)
-- feat(retro): prompt user to go to next phase (#6942)
-- feat(tiptap): Emoji Support (#7102)
+- Update location of "add meeting" to left sidebar (#7012)
+- **standups**: Recurrence - stopRecurrence mutation (#7023)
+- **standups**: Recurrence - processRecurrence mutation (#7041)
+- create azure issue (#7053)
+- **retro**: prompt user to go to next phase (#6942)
+- **tiptap**: Emoji Support (#7102)
 
 ### Fixed
 
-- fix: show the team lead first in the preview of team selector (#7091)
-- fix(metrics): Move identify inactive up to within changePause() (#7083)
-- fix: title of the reflection columns should not be italic (#7044)
-- fix: Contrast of selected highlight of the current phase is low (#6940)
-- fix: hyperlink default focus (#7078)
-- fix: demo comments are always anonymous (#7065)
-- fix: center new meeting dialog slides on mobile (#7079)
-- fix: support documentation easier to find in-app (#7080)
+- show the team lead first in the preview of team selector (#7091)
+- **metrics**: Move identify inactive up to within changePause() (#7083)
+- title of the reflection columns should not be italic (#7044)
+- Contrast of selected highlight of the current phase is low (#6940)
+- hyperlink default focus (#7078)
+- demo comments are always anonymous (#7065)
+- center new meeting dialog slides on mobile (#7079)
+- support documentation easier to find in-app (#7080)
 
 ### Changed
 
-- chore: update vscode import settings (#7077)
+- update vscode import settings (#7077)
 
 ## 6.71.0 2022-August-17
 
@@ -985,112 +1012,112 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 
-- fix: Email summaries not sending for non-standup meetings.
+- Email summaries not sending for non-standup meetings.
 
 ## 6.70.0 2022-August-10
 
 ### Added
 
-- feat(graphiql): persist schema for tabs (#6813)
-- feat(metrics): Add isActive and featureFlags as new User Properties for Segment identify calls (#6997)
-- feat(standups): startRecurrence mutation (#6957)
-- feat(metrics): identify user's tier upon login (#7003)
-- feat(metrics): Use HubSpot Private apps access token for HubSpot calls ( #7010)
+- **graphiql**: persist schema for tabs (#6813)
+- **metrics**: Add isActive and featureFlags as new User Properties for Segment identify calls (#6997)
+- **standups**: startRecurrence mutation (#6957)
+- **metrics**: identify user's tier upon login (#7003)
+- **metrics**: Use HubSpot Private apps access token for HubSpot calls ( #7010)
 
 ### Fixed
 
-- fix(resetPassword): Reset request count daily (#6955)
-- fix: add billing info (#7000)
-- fix: fix truncated sprint poker description in new meeting dialog (#7027)
-- fix(metrics): remove duplicate viewerId in various Segment events (#7009)
-- fix: bug that set org count to 0 (#7008)
-- fix(standups): Update 'lastMeetingType' after a team prompt meeting starts (#7029)
+- **resetPassword**: Reset request count daily (#6955)
+- add billing info (#7000)
+- fix truncated sprint poker description in new meeting dialog (#7027)
+- **metrics**: remove duplicate viewerId in various Segment events (#7009)
+- bug that set org count to 0 (#7008)
+- **standups**: Update 'lastMeetingType' after a team prompt meeting starts (#7029)
 
 ## 6.69.0 2022-August-03
 
 ### Added
 
-- feat(standups): Added beta badge to standups on new meeting view (#6961)
-- feat(standups): Customized start standup notification (#6879)
-- feat(standups): Summary Page (#6885)
+- **standups**: Added beta badge to standups on new meeting view (#6961)
+- **standups**: Customized start standup notification (#6879)
+- **standups**: Summary Page (#6885)
 
 ### Fixed
 
-- fix: Text in reflection cards is not selectable during vote period (#6924)
-- fix: allow to go to the discuss phase without voting (#6966)
-- fix: css mobile version use template button (#6824)
-- fix(metrics): update activeUserCount & activeTeamCount for companies in HubSpot more often (#6983)
+- Text in reflection cards is not selectable during vote period (#6924)
+- allow to go to the discuss phase without voting (#6966)
+- css mobile version use template button (#6824)
+- **metrics**: update activeUserCount & activeTeamCount for companies in HubSpot more often (#6983)
 
 ### Changed
 
-- feat: remove manual pausing (#6962)
-- feat: removed standups feature flag (#6953)
-- feat(standups): Rename Async standup -> standup (#6991)
-- feat(metrics): Refactor meeting related events (#6981)
-- chore: upgrade stripe (#6895)
+- remove manual pausing (#6962)
+- removed standups feature flag (#6953)
+- **standups**: Rename Async standup -> standup (#6991)
+- **metrics**: Refactor meeting related events (#6981)
+- upgrade stripe (#6895)
 
 ## 6.68.0 2022-July-27
 
 ### Added
 
-- feat: New meeting dialog is now a modal (#6866)
-- feat: New meeting type carousel (#6950)
-- feat: mattermost info icon (#6911)
-- feat(standups): Beta badge within meeting (#6928)
-- feat(metrics): Add more Segment events to Standups (#6908)
-- feat(Azure DevOps): Add SaaS url to sprint poker estimation (#6892)
+- New meeting dialog is now a modal (#6866)
+- New meeting type carousel (#6950)
+- mattermost info icon (#6911)
+- **standups**: Beta badge within meeting (#6928)
+- **metrics**: Add more Segment events to Standups (#6908)
+- **Azure DevOps**: Add SaaS url to sprint poker estimation (#6892)
 
 ### Fixed
 
-- fix: impersonate user bug (#6901)
-- fix: Added dismiss button to snackbar messages (#6847)
-- fix: add query parameter to identify the page source (#6967)
-- chore: Fix browser translation (#6927)
+- impersonate user bug (#6901)
+- Added dismiss button to snackbar messages (#6847)
+- add query parameter to identify the page source (#6967)
+- Fix browser translation (#6927)
 
 ### Changed
 
-- feat(chore): edit PR template to add Metrics Representative (#6770)
-- chore(deps): bump terser from 4.8.0 to 4.8.1 (#6903)
+- **chore**: edit PR template to add Metrics Representative (#6770)
+- **deps**: bump terser from 4.8.0 to 4.8.1 (#6903)
 
 ## 6.67.0 2022-July-20
 
 ### Added
 
-- feat(Azure DevOps): Adding additional project types (#6593)
-- feat(Azure DevOps): Add global provider (#6808)
+- **Azure DevOps**: Adding additional project types (#6593)
+- **Azure DevOps**: Add global provider (#6808)
 
 ### Fixed
 
-- fix: access more than 10 Jira projects in task footer (#6881)
+- access more than 10 Jira projects in task footer (#6881)
 
 ### Changed
 
-- feat: Improve clarity of Integrations page (#6804)
+- Improve clarity of Integrations page (#6804)
 
 ## 6.66.0 2022-July-13
 
 ### Changed
 
-- chore(poker): use generic components for GitHub and GitLab (#6782)
-- feat(standups): Decrease top/bottom list margins in standup response editor (#6823)
-- feat(standups): Changed standups default title to contain a date, not seq number (#6857)
-- refactor: new GitHub & Jira issue queries (#6819)
-- chore: update invite modal illustration (#6859)
+- **poker**: use generic components for GitHub and GitLab (#6782)
+- **standups**: Decrease top/bottom list margins in standup response editor (#6823)
+- **standups**: Changed standups default title to contain a date, not seq number (#6857)
+- new GitHub & Jira issue queries (#6819)
+- update invite modal illustration (#6859)
 
 ### Fixed
 
-- chore(deps): bump parse-url from 6.0.0 to 6.0.2 (#6853)
-- fix(standups): Do not show active standup as completed on meeting dashboard (#6816)
-- fix(demo): fix timer of demo meeting (#6865)
-- chore(deps): bump moment from 2.29.3 to 2.29.4 (#6860)
-- fix(security): package bumps for dependabot fixes (#6874)
-- fix(dd-trace): enabled comes from env var (#6876)
-- feat(standups): Display standups as active instead of started (#6878)
+- **deps**: bump parse-url from 6.0.0 to 6.0.2 (#6853)
+- **standups**: Do not show active standup as completed on meeting dashboard (#6816)
+- **demo**: fix timer of demo meeting (#6865)
+- **deps**: bump moment from 2.29.3 to 2.29.4 (#6860)
+- **security**: package bumps for dependabot fixes (#6874)
+- **dd-trace**: enabled comes from env var (#6876)
+- **standups**: Display standups as active instead of started (#6878)
 
 ### Added
 
-- feat(standups): Basic editor bubble menu (#6812)
-- feat(standups): Allow facilitator to update the standup meeting title (#6821)
+- **standups**: Basic editor bubble menu (#6812)
+- **standups**: Allow facilitator to update the standup meeting title (#6821)
 
 ## 6.65.0 2022-July-6
 
@@ -1139,44 +1166,44 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- feat: add integrations task for first-time users, use jsdom to attach…
-- feat: add team charter template (#6745)
-- feat(Onboarding): Added demo link to empty meeting dash (#6704)
-- feat(insights): toggle insights (#6672)
-- feat(Onboarding): Added video tutorial to empty meetings dash (#6705)
-- feat(metrics): merge 'Upgrade to Pro' and 'Enterprise invoice draft'
-- feat(standups): Make response in discussion drawer scrollable (#6753)
-- feat(insights): Add /usage route (#6687)
+- add integrations task for first-time users, use jsdom to attach…
+- add team charter template (#6745)
+- **Onboarding**: Added demo link to empty meeting dash (#6704)
+- **insights**: toggle insights (#6672)
+- **Onboarding**: Added video tutorial to empty meetings dash (#6705)
+- **metrics**: merge 'Upgrade to Pro' and 'Enterprise invoice draft'
+- **standups**: Make response in discussion drawer scrollable (#6753)
+- **insights**: Add /usage route (#6687)
 
 ### Fixed
 
-- fix(poker): Fix wrong controls when estimating Parabol tasks (#6716)
-- fix: center add/start meeting button content (#6732)
-- fix: handle duplicates in changeEmailDomain (#6725)
-- fix: updates caniuse-lite version in yarn lock file (#6736)
-- fix(standups): reduced list padding in standups response (#6754)
-- fix(standups): removed user select none property from standup respons
+- **poker**: Fix wrong controls when estimating Parabol tasks (#6716)
+- center add/start meeting button content (#6732)
+- handle duplicates in changeEmailDomain (#6725)
+- updates caniuse-lite version in yarn lock file (#6736)
+- **standups**: reduced list padding in standups response (#6754)
+- **standups**: removed user select none property from standup respons
 
 ### Changed
 
-- chore: update release_test.md (#6717)
-- refactor: update createFragmentContainer to usePaginationFragment (#6431)
-- chore(dx): delete remaining generated pg queries (#6752)
-- refactor: Stop writes to RethinkDB Team table (#6239)
-- chore: fix delete team migration (#6763)
-- chore: Refresh HubSpot chat widget on page changes (#6759)
+- update release_test.md (#6717)
+- update createFragmentContainer to usePaginationFragment (#6431)
+- **dx**: delete remaining generated pg queries (#6752)
+- Stop writes to RethinkDB Team table (#6239)
+- fix delete team migration (#6763)
+- Refresh HubSpot chat widget on page changes (#6759)
 
 ## 6.62.2 2022-June-12
 
 ### Added
 
-- feat: Add start meeting button to top bar (#6707)
-- feat: change email domain (#6708)
-- feat: remove auth identity (#6713)
+- Add start meeting button to top bar (#6707)
+- change email domain (#6708)
+- remove auth identity (#6713)
 
 ### Fixed
 
-- fix(jira): Fix add missing jira field new algorithm (#6722)
+- **jira**: Fix add missing jira field new algorithm (#6722)
 
 ## 6.62.1 2022-June-10
 
@@ -1188,105 +1215,105 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- feat(restrictDomains): Add table and mutations (#6476)
-- feat(standups): Update relative createdAt automatically (#6658)
-- feat(domainStats): Support querying domain stat fields (#6664)
-- feat(integration-tests): add more testing to the 2-minute demo (#6183)
-- feat(restrictDomains): Add restriction to acceptTeamInvitation (#6487)
+- **restrictDomains**: Add table and mutations (#6476)
+- **standups**: Update relative createdAt automatically (#6658)
+- **domainStats**: Support querying domain stat fields (#6664)
+- **integration-tests**: add more testing to the 2-minute demo (#6183)
+- **restrictDomains**: Add restriction to acceptTeamInvitation (#6487)
 
 ### Fixed
 
-- fix: github repos filter menu shows limited selection (#6627)
-- fix(sprint-poker): Prevent kicking facilitator off the meeting while modifying the scope (#6667)
-- fix(jira): Show meaningful field update error for team-managed projects (#6656)
+- github repos filter menu shows limited selection (#6627)
+- **sprint-poker**: Prevent kicking facilitator off the meeting while modifying the scope (#6667)
+- **jira**: Show meaningful field update error for team-managed projects (#6656)
 - fix bad merge on Organization.ts (#6682)
-- fix(Retro Templates): Added missing prompts (#6671)
-- fix(jira): Handle a case with a huge number of Jira projects and avoid timeout error when trying to fix Jira field automatically (#6676)
-- fix(standups): Discussion thread drawer is cut off on mobile (#6695)
+- **Retro Templates**: Added missing prompts (#6671)
+- **jira**: Handle a case with a huge number of Jira projects and avoid timeout error when trying to fix Jira field automatically (#6676)
+- **standups**: Discussion thread drawer is cut off on mobile (#6695)
 
 ### Changed
 
-- chore(deps): bump protobufjs from 6.11.2 to 6.11.3 (#6669)
-- chore(deps): bump sharp from 0.30.3 to 0.30.5 (#6665)
-- chore(dx): remove generated pg files from git (#6519)
+- **deps**: bump protobufjs from 6.11.2 to 6.11.3 (#6669)
+- **deps**: bump sharp from 0.30.3 to 0.30.5 (#6665)
+- **dx**: remove generated pg files from git (#6519)
 
 ## 6.61.0 2022-June-1
 
 ### Added
 
-- feat(jira-server): Add pagination of results in sprint poker (#6607)
-- feat(standups): Card ordering w/ animated transitions (#6618)
-- feat(standups): Improved standups options button size (#6629)
-- feat(jira-server): Save and allow to reuse recent search queries in the scope phase of poker meeting for JiraServer (#6551)
-- chore: added PR template (#6565)
-- feat(standups): Basic editable prompt (#6640)
+- **jira-server**: Add pagination of results in sprint poker (#6607)
+- **standups**: Card ordering w/ animated transitions (#6618)
+- **standups**: Improved standups options button size (#6629)
+- **jira-server**: Save and allow to reuse recent search queries in the scope phase of poker meeting for JiraServer (#6551)
+- added PR template (#6565)
+- **standups**: Basic editable prompt (#6640)
 
 ### Fixed
 
-- fix(standups): Include TeamPromptMeetingMember on MeetingMember type (#6352)
-- fix(Sprint Poker): An exception could occur when modifying the scope in fast succession (#6599)
+- **standups**: Include TeamPromptMeetingMember on MeetingMember type (#6352)
+- **Sprint Poker**: An exception could occur when modifying the scope in fast succession (#6599)
 
 ## 6.60.0 2022-May-25
 
 ### Added
 
-- feat(Jira Server): Use the newer Jira Software logo (#6578)
-- feat(standups): Response Reactjis (#6407)
-- feat(standups): Summary Card (#6529)
-- feat(standups): Sending meeting completed event when standup ends (#6587)
-- feat(Azure DevOps): Correctly format Sprint Poker comments as HTML (#6597)
-- feat: added avatar group in standups (#6614)
-- feat(metrics): migrate and consolidate integration related metrics (#6617)
-- feat(gitlab): refresh gitlab tokens (#6594)
+- **Jira Server**: Use the newer Jira Software logo (#6578)
+- **standups**: Response Reactjis (#6407)
+- **standups**: Summary Card (#6529)
+- **standups**: Sending meeting completed event when standup ends (#6587)
+- **Azure DevOps**: Correctly format Sprint Poker comments as HTML (#6597)
+- added avatar group in standups (#6614)
+- **metrics**: migrate and consolidate integration related metrics (#6617)
+- **gitlab**: refresh gitlab tokens (#6594)
 
 ### Changed
 
-- chore: added PR template (#6565)
-- chore(DX): Fix Postgres DB path in dev.yml (#6486)
-- docs: Fix code policy link in PR template (#6600)
-- refactor: handle default value for isOnboardTeam (#6598)
-- chore: Convert components using HOCs to function components (#6591)
-- chore: Migrate withAtmosphere -> useAtmosphere (#6595)
-- chore: remove gitlab flag (#6619)
+- added PR template (#6565)
+- **DX**: Fix Postgres DB path in dev.yml (#6486)
+- Fix code policy link in PR template (#6600)
+- handle default value for isOnboardTeam (#6598)
+- Convert components using HOCs to function components (#6591)
+- Migrate withAtmosphere -> useAtmosphere (#6595)
+- remove gitlab flag (#6619)
 
 ### Fixed
 
-- fix: Due date month could sometimes not be set to the current month (#6581)
-- fix: pr template location (#6586)
-- fix: display search on archived tasks page (#6548)
-- fix(metrics): fix the bug where user deletion event won't update HubSpot (#6542)
-- fix: added write permission to pull request labeler workflow (#6603)
-- fix: stop-color warning in SVG (#6612)
-- fix(jira): Fix server error when pushing task to jira (#6613)
-- fix: Enforce mapping completeness for 'meetingTypeToIcon' (#6611)
+- Due date month could sometimes not be set to the current month (#6581)
+- pr template location (#6586)
+- display search on archived tasks page (#6548)
+- **metrics**: fix the bug where user deletion event won't update HubSpot (#6542)
+- added write permission to pull request labeler workflow (#6603)
+- stop-color warning in SVG (#6612)
+- **jira**: Fix server error when pushing task to jira (#6613)
+- Enforce mapping completeness for 'meetingTypeToIcon' (#6611)
 
 ## 6.59.0 2022-May-18
 
 ### Added
 
-- chore: added PR labeler workflow (#6525)
-- feat(standups): Activities from other team members get real-time updates (#6504)
-- feat(standups): Integrate response cards with discussion drawer (#6469)
-- feat(standups): Place viewer's card at the start of the list (#6559)
-- feat(notifications): Refactor Slack/Mattermost into NotificationHelper (#6262)
-- feat: Notifications support for MS Teams (#6494)
-- feat(Jira Server): Voting to different fields in Sprint Poker is now supported (#6437)
+- added PR labeler workflow (#6525)
+- **standups**: Activities from other team members get real-time updates (#6504)
+- **standups**: Integrate response cards with discussion drawer (#6469)
+- **standups**: Place viewer's card at the start of the list (#6559)
+- **notifications**: Refactor Slack/Mattermost into NotificationHelper (#6262)
+- Notifications support for MS Teams (#6494)
+- **Jira Server**: Voting to different fields in Sprint Poker is now supported (#6437)
 
 ### Changed
 
-- docs: Added general rules to code review policy (#6507)
-- docs: Added code review experiment proposal (#6508)
-- refactor: Set updateAt field via a Postgres trigger (#6493)
-- chore: remove MAX_GITLAB_POKER_STORIES (#6547)
-- chore: remove GitLab feature flag (#6554)
-- chore: readd gitlab feature flag (#6566)
+- Added general rules to code review policy (#6507)
+- Added code review experiment proposal (#6508)
+- Set updateAt field via a Postgres trigger (#6493)
+- remove MAX_GITLAB_POKER_STORIES (#6547)
+- remove GitLab feature flag (#6554)
+- readd gitlab feature flag (#6566)
 
 ### Fixed
 
-- fix(devOps): reduce max pg connections to 30 (#6521)
-- fix: ignore updateAt field in checkTableEq for Teams (#6490)
-- fix: nested GitLab query batching (#6541)
-- fix: increase initial page size for archived tasks (#6555)
+- **devOps**: reduce max pg connections to 30 (#6521)
+- ignore updateAt field in checkTableEq for Teams (#6490)
+- nested GitLab query batching (#6541)
+- increase initial page size for archived tasks (#6555)
 
 ## 6.58.0 2022-May-12
 
@@ -1318,99 +1345,99 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- feat(standups): upsertTeamPromptResponse (#6333)
-- feat(ado): Initial Azure DevOps integration (#6260)
-- feat(jira-server): Allow searching for issues in Sprint Poker (#6406)
-- feat(sprint-poker): Can vote on GitLab issue (#6398)
-- feat(sprint-poker): Push task to GitLab (#6427)
+- **standups**: upsertTeamPromptResponse (#6333)
+- **ado**: Initial Azure DevOps integration (#6260)
+- **jira-server**: Allow searching for issues in Sprint Poker (#6406)
+- **sprint-poker**: Can vote on GitLab issue (#6398)
+- **sprint-poker**: Push task to GitLab (#6427)
 
 ### Changed
 
-- chore: Create manualTestingGuide.md (#6426)
-- chore: removed unused video related components (#6497)
+- Create manualTestingGuide.md (#6426)
+- removed unused video related components (#6497)
 
 ### Fixed
 
-- fix(rethinkdb): attempt to fix the table rename (#6480)
+- **rethinkdb**: attempt to fix the table rename (#6480)
 
 ## 6.56.0 2022-April-27
 
 ### Added
 
-- feat(sprint-poker): Track GitLab events (#6367)
-- feat(standups): Responses grid with static prompt (#6353)
-- feat(standups): Response Cards (#6392)
-- feat(standups): Discussion Drawer (#6370)
-- feat(standups): Standup UI - last updated time (#6557)
-- feat(CI): use prod build for integration tests (#6379)
-- feat(lint): Lint client (#6335)
-- feat(DX): Fast dev mode (#6337)
-- feat: Update illustration of empty discussion threads (#6423)
+- **sprint-poker**: Track GitLab events (#6367)
+- **standups**: Responses grid with static prompt (#6353)
+- **standups**: Response Cards (#6392)
+- **standups**: Discussion Drawer (#6370)
+- **standups**: Standup UI - last updated time (#6557)
+- **CI**: use prod build for integration tests (#6379)
+- **lint**: Lint client (#6335)
+- **DX**: Fast dev mode (#6337)
+- Update illustration of empty discussion threads (#6423)
 
 ### Changed
 
-- docs: Update CONTRIBUTING (#6432)
-- chore(deps): bump nconf from 0.11.3 to 0.11.4 (#6438)
-- refactor: update renderQuery to Suspense + Relay Hooks #5297 (#6251)
+- Update CONTRIBUTING (#6432)
+- **deps**: bump nconf from 0.11.3 to 0.11.4 (#6438)
+- update renderQuery to Suspense + Relay Hooks #5297 (#6251)
 
 ### Fixed
 
-- fix: viewerMeetingMember can be undefined (#6441)
-- fix: ignore comparison order for equality (#6411)
+- viewerMeetingMember can be undefined (#6441)
+- ignore comparison order for equality (#6411)
 
 ## 6.55.0 2022-April-20
 
 ### Added
 
-- feat(jira-server): sprint poker vote to comment (#6341)
-- feat(sprint-poker): Add GitLab issue (#6267)
-- feat(sprint-poker): Search GitLab issues (#6290)
-- feat(sprint-poker): New Poker Scope UI (#6344)
-- feat(standups): Options menu - end meeting (#6342)
-- feat: Display a message when there are no more items to paginate (#6338)
-- chore: Track integrations in createTask (#6332)
-- chore(dx): Don't truncate TypeScript types (#6387)
+- **jira-server**: sprint poker vote to comment (#6341)
+- **sprint-poker**: Add GitLab issue (#6267)
+- **sprint-poker**: Search GitLab issues (#6290)
+- **sprint-poker**: New Poker Scope UI (#6344)
+- **standups**: Options menu - end meeting (#6342)
+- Display a message when there are no more items to paginate (#6338)
+- Track integrations in createTask (#6332)
+- **dx**: Don't truncate TypeScript types (#6387)
 
 ### Changed
 
-- build: update sharp library (#6383)
+- update sharp library (#6383)
 
 ## 6.54.0 2022-April-13
 
 ### Fixed
 
-- fix(standups): Include TeamPromptMeetingMember in MeetingMember type resolution
+- **standups**: Include TeamPromptMeetingMember in MeetingMember type resolution
 
 ### Added
 
-- feat(gitlab): bump nest-graphql-endpoint (#6363)
-- feat(scale): give a pubsub channel to each socket server (#6317)
-- feat(standups): Top Bar Back Button (#6318)
-- feat(standups): Top Bar Component Stub (#6307)
+- **gitlab**: bump nest-graphql-endpoint (#6363)
+- **scale**: give a pubsub channel to each socket server (#6317)
+- **standups**: Top Bar Back Button (#6318)
+- **standups**: Top Bar Component Stub (#6307)
 
 ### Changed
 
-- refactor(requireSU): Remove requireSU (#6330)
+- **requireSU**: Remove requireSU (#6330)
 
 ## 6.53.0 2022-April-06
 
 ### Fixed
 
-- fix(lint): faster, deterministic linting (#6313)
+- **lint**: faster, deterministic linting (#6313)
 
 ### Added
 
-- feat(standups): Added end team prompt mutation (#6250)
-- feat(sdl): Add SDL to public schema (#6263)
-- feat(standups): Integrate TipTap (#6255)
-- feat(jira-server): add issue to poker scope (#6214)
-- feat(impersonate): keep impersonate token until last tab closes (#6300)
-- feat(integrations): save favorite integration to local storage (#6331)
+- **standups**: Added end team prompt mutation (#6250)
+- **sdl**: Add SDL to public schema (#6263)
+- **standups**: Integrate TipTap (#6255)
+- **jira-server**: add issue to poker scope (#6214)
+- **impersonate**: keep impersonate token until last tab closes (#6300)
+- **integrations**: save favorite integration to local storage (#6331)
 
 ### Changed
 
 - gitignore github/gitlabTypes
-- refactor(lint): Lint server (#6329)
+- **lint**: Lint server (#6329)
 
 ## 6.52.0 2022-March-31
 
@@ -1433,9 +1460,9 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- feat(standups): Added empty team prompt meeting component (#6170)
+- **standups**: Added empty team prompt meeting component (#6170)
 - More typesafety for GraphQL code (#6167
-- chore: enforce conventional commit PR titles (#6258)
+- enforce conventional commit PR titles (#6258)
 - Add flow diagram for services (#6235)
 - GitLab Issues Functionality (#6160)
 
@@ -1443,20 +1470,20 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - remove icebreaker question (#6142)
 - Remove backfilling invoices logic from migration (#6237)
-- ci: use official postgres image & sync with digital ocean version (#6182)
-- chore: remove postcommit git command (#6253)
-- feat: allow admins to call set org user role mutation (#6148)
-- feat: disable rate limiter in test (#6146)
-- chore(deps): bump node-forge from 1.2.1 to 1.3.0 (#6256)
-- chore(deps-dev): bump minimist from 1.2.5 to 1.2.6 (#6264)
-- chore(sdl): codemod it all (#6228)
-- chore: Remove LogRocket (#6266)
+- use official postgres image & sync with digital ocean version (#6182)
+- remove postcommit git command (#6253)
+- allow admins to call set org user role mutation (#6148)
+- disable rate limiter in test (#6146)
+- **deps**: bump node-forge from 1.2.1 to 1.3.0 (#6256)
+- **deps-dev**: bump minimist from 1.2.5 to 1.2.6 (#6264)
+- **sdl**: codemod it all (#6228)
+- Remove LogRocket (#6266)
 
 ### Fixed
 
 - Fix type mismatch GraphQL (#6151)
-- chore(noImplicitAny): fix more errors (#6161)
-- fix(sdl): Default resolveType on mutation payloads (#6270)
+- **noImplicitAny**: fix more errors (#6161)
+- **sdl**: Default resolveType on mutation payloads (#6270)
 
 ## 6.50.0 2022-Mar-16
 
@@ -1537,8 +1564,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 
 - GitLab is null fatal error on meeting join (#6038)
-- Security: Bump follow-redirects (#6044)
-- Security: Bup vm2 (#6057)
+- **Security**: Bump follow-redirects (#6044)
+- **Security**: Bup vm2 (#6057)
 - ID users with datadog (#5990)
 - Log when reflections is null (#6010)
 - Send CC errors to client (#5906)
@@ -1571,7 +1598,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Changed
 
 - Upgrade nest-graphql-endpoint to 0.3.2
-- chore: improve GH issue templates (#5962)
+- improve GH issue templates (#5962)
 - better impersonation (#5924)
 - Bump packages to secure version (#5899)
 - Ironbank 6.25.0 security fixes
@@ -1618,7 +1645,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Changed
 
 - enforce server side lock (#5840)
-- SECURITY: bump react-refresh-webpack-plugin #5896
+- **SECURITY**: bump react-refresh-webpack-plugin #5896
 - Security/bump graphql jit #5897
 
 -
@@ -1699,8 +1726,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Added
 
 - Language tooltip is updated on New Meeting CheckIn Greeting (#5682)
-- Spotlight: support searchQuery business logic for similarReflections (#5469)
-- Spotlight: animate remote reflection when it enters or leaves Spotlight (#5600)
+- **Spotlight**: support searchQuery business logic for similarReflections (#5469)
+- **Spotlight**: animate remote reflection when it enters or leaves Spotlight (#5600)
 
 ### Fixed
 
@@ -1712,7 +1739,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- Spotlight: remote animation edge cases (#5621)
+- **Spotlight**: remote animation edge cases (#5621)
 - Make RetroReflection opened in spotlight by another member non-droppable (#5556)
 - Added set new team lead mutation to internal schema (#5658)
 
@@ -1757,8 +1784,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Changed
 
-- build(deps): bump tmpl from 1.0.4 to 1.0.5 (#5618)
-- build(deps): bump vm2 from 3.9.3 to 3.9.5 (#5619)
+- **deps**: bump tmpl from 1.0.4 to 1.0.5 (#5618)
+- **deps**: bump vm2 from 3.9.3 to 3.9.5 (#5619)
 - bump graphiql (#5646)
 - add final newline on save vscode (#5647)
 - Rename and document dataLoader (#5649)
@@ -1767,10 +1794,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- Spotlight: groups UI (#5390)
-- GitHub: Persist favorite queries (#5435)
-- Spotlight: drag source to result (#5412)
-- Spotlight: drag result to source (#5414)
+- **Spotlight**: groups UI (#5390)
+- **GitHub**: Persist favorite queries (#5435)
+- **Spotlight**: drag source to result (#5412)
+- **Spotlight**: drag result to source (#5414)
 - Allow to push integration tasks with assignee's and own integration (#5342)
 
 ### Fixed
@@ -1970,7 +1997,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - Refactor pokerSetFinalScore to setTaskEstimate #5171
 - DB migration: migrate jira poker stages to jira-integrated stages #5161
-- Redis: Persist discussion commentors #5022
+- **Redis**: Persist discussion commentors #5022
 - Updated tar, mediasoup-client dependencies
 
 ### Fixed
@@ -2344,7 +2371,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Changed
 
-- TypeError: Cannot destructure property 'atlassian' of 'r' as it is undefined. #4736
+- **TypeError**: Cannot destructure property 'atlassian' of 'r' as it is undefined. #4736
 - Refactor gql2ts enums to unions #4693
 - Prevent Poker drawer from jumping up #4743
 
@@ -5298,14 +5325,14 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- Organizations: teams can be tied together into organizations
+- **Organizations**: teams can be tied together into organizations
 - User trials & billing: hey look! A business model!
   - New & grandfathered users start a 30 day trial
   - Trial & access expiry
   - Payment information & stripe integration
   - Invoicing
-- Notifications: a new channel to communicate with our users
-- Portals: we're using [react-portal-hoc](https://github.com/mattkrick/react-portal-hoc)
+- **Notifications**: a new channel to communicate with our users
+- **Portals**: we're using [react-portal-hoc](https://github.com/mattkrick/react-portal-hoc)
   to implement our dropdown menus and modals
 - Updated to Node.js 7.6.0, native async/await
 - Switched to [jest](https://facebook.github.io/jest/) for unit testing
@@ -5652,7 +5679,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 
 ### Fixed
 
-- Fixed: #322, #323, #334, #335, #336
+- **Fixed**: #322, #323, #334, #335, #336
 
 ## v0.7.0 - 2016-Oct-04
 
@@ -5668,7 +5695,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 
 ### Fixed
 
-- Fixed: #124, #190, #221, #227, #252, #276, #282, #290, #295, #302, #305,
+- **Fixed**: #124, #190, #221, #227, #252, #276, #282, #290, #295, #302, #305,
   #307, #313
 
 ## v0.6.3 - 2016-Sep-28
