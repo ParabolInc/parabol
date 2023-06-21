@@ -1,3 +1,4 @@
+import enumLookup from '../../client/types/enumLookup'
 import MailManager from './MailManager'
 import MailManagerDebug from './MailManagerDebug'
 import MailManagerGoogle from './MailManagerGoogle'
@@ -16,7 +17,7 @@ const managers = {
 const getMailManager = () => {
   if (!mailManager) {
     const mailProvider = process.env.MAIL_PROVIDER!
-    const Manager = managers[mailProvider as keyof typeof managers] ?? MailManagerDebug
+    const Manager = enumLookup(managers, mailProvider) ?? MailManagerDebug//managers[mailProvider as keyof typeof managers] ?? MailManagerDebug
     mailManager = new Manager()
   }
   return mailManager
