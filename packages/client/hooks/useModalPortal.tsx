@@ -16,7 +16,7 @@ const ModalBlock = styled('div')({
   justifyContent: 'center',
   left: 0,
   // no margins or paddings since they could force it too low & cause a scrollbar to appear
-  position: 'absolute',
+  position: 'fixed',
   top: 0,
   width: '100%',
   zIndex: ZIndex.DIALOG,
@@ -81,7 +81,7 @@ const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus
   display: 'flex',
   flex: '0 1 auto',
   flexDirection: 'column',
-  position: 'fixed',
+  position: 'relative',
   marginTop: 'auto',
   marginBottom: 'auto',
   ...modalStyles[portalStatus as keyof typeof backdropStyles]
