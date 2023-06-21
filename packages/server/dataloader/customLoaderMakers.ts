@@ -26,8 +26,8 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
-import RootDataLoader from './RootDataLoader'
 import normalizeResults from './normalizeResults'
+import RootDataLoader from './RootDataLoader'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -438,6 +438,14 @@ export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
         .selectAll()
         .where('orgId', 'in', orgIds)
         .where('isActive', '=', true)
+        // .where(({or, cmpr}) =>
+        //   or([
+        //     cmpr('hideStartingAt', 'is', null),
+        //     sql`make_date(2020 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`,
+        //     sql`make_date(2019 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`
+        //   ])
+        // )
+        .orderBy('createdAt', 'desc')
         .execute()
       return orgIds.map((orgId) => docs.filter((doc) => doc.orgId === orgId))
     },

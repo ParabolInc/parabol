@@ -3,6 +3,7 @@
     "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
     "defaultScalarType": "string",
     "enumsAsTypes": true,
+    "optionalResolveType": true,
     "scalars": {"DateTime": "Date", "RRule": "RRule", "File": "TFile"}
   },
   "generates": {
