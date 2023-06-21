@@ -60,7 +60,10 @@ export default class StripeManager {
       if (paymentMethod.type !== 'card') {
         throw new Error('Default payment method is not a card')
       }
-      return paymentMethod.card as Stripe.PaymentMethod.Card
+      if (!paymentMethod.card) {
+        throw new Error('Default payment method does not have a card')
+      }
+      return paymentMethod.card
     } catch (e) {
       const error = e as Error
       return error

@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import {MeetingTypeEnum as TMeetingTypeEnum} from '../../postgres/types/Meeting'
+import {NewMeetingPhaseTypeEnum as TNewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {resolveTeam} from '../resolvers'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import MeetingTypeEnum from './MeetingTypeEnum'
@@ -8,6 +9,8 @@ import PokerMeetingSettings from './PokerMeetingSettings'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import Team from './Team'
 import TeamPromptMeetingSettings from './TeamPromptMeetingSettings'
+import isPhaseAvailable from '../../utils/isPhaseAvailable'
+import {GQLContext} from '../graphql'
 
 export const teamMeetingSettingsFields = () => ({
   id: {
@@ -19,7 +22,15 @@ export const teamMeetingSettingsFields = () => ({
   },
   phaseTypes: {
     description: 'The broad phase types that will be addressed during the meeting',
-    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhaseTypeEnum)))
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhaseTypeEnum))),
+    resolve: async (
+      {phaseTypes, teamId}: {phaseTypes: TNewMeetingPhaseTypeEnum[]; teamId: string},
+      _args: unknown,
+      {dataLoader}: GQLContext
+    ) => {
+      const team = await dataLoader.get('teams').loadNonNull(teamId)
+      return phaseTypes.filter(isPhaseAvailable(team.tier))
+    }
   },
   teamId: {
     description: 'FK',

@@ -7,7 +7,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateModal_pokerMeetingSettings$key} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
-import {PokerTemplateModal_viewer$key} from '../../../__generated__/PokerTemplateModal_viewer.graphql'
 import CustomTemplateUpgradeMsg from './CustomTemplateUpgradeMsg'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
@@ -16,7 +15,6 @@ import PokerTemplateScaleDetails from './PokerTemplateScaleDetails'
 interface Props {
   closePortal: () => void
   pokerMeetingSettingsRef: PokerTemplateModal_pokerMeetingSettings$key
-  viewerRef: PokerTemplateModal_viewer$key
 }
 
 const StyledDialogContainer = styled(DialogContainer)({
@@ -29,7 +27,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const PokerTemplateModal = (props: Props) => {
-  const {closePortal, pokerMeetingSettingsRef, viewerRef} = props
+  const {closePortal, pokerMeetingSettingsRef} = props
   const pokerMeetingSettings = useFragment(
     graphql`
       fragment PokerTemplateModal_pokerMeetingSettings on PokerMeetingSettings {
@@ -52,15 +50,6 @@ const PokerTemplateModal = (props: Props) => {
       }
     `,
     pokerMeetingSettingsRef
-  )
-  const viewer = useFragment(
-    graphql`
-      fragment PokerTemplateModal_viewer on User {
-        ...PokerTemplateDetails_viewer
-        ...PokerTemplateList_viewer
-      }
-    `,
-    viewerRef
   )
 
   const {selectedTemplate, team, activeTemplate, meetingType} = pokerMeetingSettings
@@ -99,7 +88,6 @@ const PokerTemplateModal = (props: Props) => {
         settingsRef={pokerMeetingSettings}
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
-        viewerRef={viewer}
         displayUpgradeDetails={displayUpgradeDetails}
       />
       {showUpgradeDetails ? (
@@ -112,7 +100,6 @@ const PokerTemplateModal = (props: Props) => {
           gotoTeamTemplates={gotoTeamTemplates}
           gotoPublicTemplates={gotoPublicTemplates}
           closePortal={closePortal}
-          viewer={viewer}
         />
       )}
     </StyledDialogContainer>

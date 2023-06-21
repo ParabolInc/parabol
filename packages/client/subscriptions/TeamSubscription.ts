@@ -171,7 +171,7 @@ const subscription = graphql`
         ...OldUpgradeToTeamTierMutation_team @relay(mask: false)
       }
       UpgradeToTeamTierSuccess {
-        ...UpgradeToTeamTierMutation_team @relay(mask: false)
+        ...UpgradeToTeamTierFrag_team @relay(mask: false)
       }
       UpdateIntegrationProviderSuccess {
         ...UpdateIntegrationProviderMutation_team @relay(mask: false)
