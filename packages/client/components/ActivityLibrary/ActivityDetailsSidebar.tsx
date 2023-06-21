@@ -101,7 +101,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   const [selectedTeam, setSelectedTeam] = useState(
     availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
-      sortByTier(teams)[0]!
+      sortByTier(availableTeams)[0]!
   )
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
