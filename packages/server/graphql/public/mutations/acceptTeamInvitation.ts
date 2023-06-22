@@ -23,11 +23,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   {invitationToken, notificationId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  // AUTH WORKAROUND
-  if (!isAuthenticated(authToken) || !invitationToken) {
-    // Workaround for https://github.com/zalando-incubator/graphql-jit/issues/171
-    return {}
-  }
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -43,7 +38,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   if (invitationRes.error) {
     const {error: message, teamId, meetingId} = invitationRes
     if (message === InvitationTokenError.ALREADY_ACCEPTED) {
-      return {error: {message}, teamId, meetingId, teamMemberId: toTeamMemberId(teamId, viewerId)}
+      return {error: {message}, teamId, meetingId, teamMemberId: toTeamMemberId(teamId!, viewerId)}
     }
     return {error: {message}}
   }

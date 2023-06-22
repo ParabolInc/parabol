@@ -103,7 +103,7 @@
     "emoji-mart": "^3.0.1",
     "fast-json-stable-stringify": "^2.1.0",
     "graphql": "15.7.2",
-    "graphql-jit": "^0.7.2",
+    "graphql-jit": "^0.7.4",
     "graphql-middleware": "^6.1.18",
     "graphql-relay": "^0.10.0",
     "graphql-shield": "^7.5.0",
