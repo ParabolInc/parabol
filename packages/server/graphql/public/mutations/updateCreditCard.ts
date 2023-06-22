@@ -9,7 +9,7 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
-import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
+import {stripeCardToDBCard} from '../../mutations/helpers/stripeCardToDBCard'
 import {MutationResolvers} from '../resolverTypes'
 
 const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
@@ -51,23 +51,22 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   if (res instanceof Error) return standardError(res, {userId: viewerId})
   await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
   await manager.updateSubscription(subscription.id, paymentMethodId)
-  const creditCard = await getCCFromCustomer(customer)
+  const stripeCard = await manager.retrieveCardDetails(paymentMethodId)
+  if (stripeCard instanceof Error) return standardError(stripeCard, {userId: viewerId})
+  const creditCard = stripeCardToDBCard(stripeCard)
 
   try {
     await Promise.all([
       r({
-        updatedOrg: r
-          .table('Organization')
-          .get(orgId)
-          .update({
-            creditCard: await getCCFromCustomer(customer),
-            tier: 'team',
-            stripeId: customer.id,
-            tierLimitExceededAt: null,
-            scheduledLockAt: null,
-            lockedAt: null,
-            updatedAt: now
-          })
+        updatedOrg: r.table('Organization').get(orgId).update({
+          creditCard,
+          tier: 'team',
+          stripeId: customer.id,
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: now
+        })
       }).run(),
       updateTeamByOrgId(
         {
