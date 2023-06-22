@@ -61,9 +61,6 @@ const subscription = graphql`
     }
   }
 `
-// UpdateCreditCardSuccess {
-// ...UpdateCreditCardMutation_organization @relay(mask: false)
-// }
 
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
