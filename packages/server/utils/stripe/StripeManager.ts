@@ -74,6 +74,7 @@ export default class StripeManager {
       ]
     })
   }
+
   async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
