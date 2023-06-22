@@ -56,7 +56,6 @@ const gqlQuery = graphql`
           userId
           preferredName
         }
-        ...DashboardAvatars_team
       }
     }
   }
@@ -66,8 +65,6 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {menuProps, task: taskRef, queryRef} = props
   const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef)
   const {viewer} = data
-
-  console.log('task')
 
   const {closePortal: closeTeamAssigneeMenu} = menuProps
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)

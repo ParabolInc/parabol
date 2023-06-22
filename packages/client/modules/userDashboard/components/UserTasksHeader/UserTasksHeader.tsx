@@ -101,7 +101,6 @@ const UserTasksHeader = (props: Props) => {
               tms
             }
           }
-          ...DashboardAvatars_team
         }
       }
     `,

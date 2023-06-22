@@ -42,7 +42,6 @@ const gqlQuery = graphql`
           preferredName
           userId
         }
-        ...DashboardAvatars_team
       }
     }
   }

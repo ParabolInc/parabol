@@ -55,7 +55,6 @@ const query = graphql`
           isSelf
           preferredName
         }
-        ...DashboardAvatars_team
       }
     }
   }

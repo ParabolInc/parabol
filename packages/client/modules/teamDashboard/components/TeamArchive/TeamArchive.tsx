@@ -166,7 +166,6 @@ const TeamArchive = (props: Props) => {
           picture
           preferredName
         }
-        ...DashboardAvatars_team
       }
     `,
     teamRef || null
