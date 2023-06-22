@@ -316,7 +316,7 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           ) : (
             <>
-              {categoryId === 'retrospective' ? (
+              {categoryId === 'retrospective' && searchQuery.length === 0 ? (
                 <>
                   {(Object.keys(subCategoryMapping) as SubCategory[]).map(
                     (subCategory) =>
