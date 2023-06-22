@@ -1,3 +1,4 @@
+import Stripe from 'stripe'
 import getRethink from '../../../database/rethinkDriver'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
@@ -24,7 +25,7 @@ const stripeInvoiceFinalized: MutationResolvers['stripeInvoiceFinalized'] = asyn
   const {
     livemode,
     metadata: {orgId}
-  } = await manager.retrieveCustomer(customerId)
+  } = (await manager.retrieveCustomer(customerId)) as Stripe.Customer
   const org = await r.table('Organization').get(orgId).run()
   if (!org) {
     if (livemode) {

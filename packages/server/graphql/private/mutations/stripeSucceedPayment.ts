@@ -1,3 +1,4 @@
+import Stripe from 'stripe'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {isSuperUser} from '../../../utils/authorization'
@@ -25,7 +26,7 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
   const {
     livemode,
     metadata: {orgId}
-  } = await manager.retrieveCustomer(customerId)
+  } = (await manager.retrieveCustomer(customerId)) as Stripe.Customer
   const org = await r.table('Organization').get(orgId).run()
   if (!org || !orgId) {
     if (livemode) {

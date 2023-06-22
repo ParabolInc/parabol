@@ -7709,13 +7709,6 @@
   resolved "https://registry.yarnpkg.com/@types/stripe-v2/-/stripe-v2-2.0.2.tgz#b174b75342f537f36c8ba0e91164b719c14397b5"
   integrity sha512-YhXpV+x01wAmI44mBAKLGmeJ6q8iY9+cmwAXwfeXuNATSMgIwoB8ZsCgX4SvgQ3GiYot68ekiGnMrxDjY4beYg==
 
-"@types/stripe@^6.32.0":
-  version "6.32.13"
-  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.32.13.tgz#d292ce2e7f4b9530fc144d00d3746a19a2fe9fc8"
-  integrity sha512-qMcM3ecF/4a0dtfMN2rm1w5TjSDzUqIIADI7BwXpkSUdXfekc4JjL2s7oAp9htB44nPsTYw5mxCCz9j1zTAXwA==
-  dependencies:
-    "@types/node" "*"
-
 "@types/tapable@^1":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.8.tgz#b94a4391c85666c7b73299fd3ad79d4faa435310"
@@ -9338,9 +9331,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001286, caniuse-lite@^1.0.30001317, caniuse-lite@^1.0.30001359, caniuse-lite@^1.0.30001400, caniuse-lite@^1.0.30001426, caniuse-lite@^1.0.30001449, caniuse-lite@~1.0.0:
-  version "1.0.30001502"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001502.tgz#f7e4a76eb1d2d585340f773767be1fefc118dca8"
-  integrity sha512-AZ+9tFXw1sS0o0jcpJQIXvFTOB/xGiQ4OQ2t98QX3NDn2EZTSRBC801gxrsGgViuq2ak/NLkNgSNEPtCr5lfKg==
+  version "1.0.30001506"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001506.tgz#35bd814b310a487970c585430e9e80ee23faf14b"
+  integrity sha512-6XNEcpygZMCKaufIcgpQNZNf00GEqc7VQON+9Rd0K1bMYo8xhMZRAo5zpbnbMNizi4YNgIDAFrdykWsvY3H4Hw==
 
 capital-case@^1.0.4:
   version "1.0.4"
