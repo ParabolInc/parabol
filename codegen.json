@@ -83,6 +83,7 @@
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
           "RemoveTeamMemberPayload": "./types/RemoveTeamMemberPayload#RemoveTeamMemberPayloadSource",
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
+          "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
           "SetOrgUserRoleSuccess": "./types/SetOrgUserRoleSuccess#SetOrgUserRoleSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",

@@ -53,7 +53,7 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
   }
   const {integration} = task
   const service = integration?.service
-  if (service !== 'jira') {
+  if (!integration || service !== 'jira') {
     return {error: {message: 'Not a Jira task'}}
   }
 

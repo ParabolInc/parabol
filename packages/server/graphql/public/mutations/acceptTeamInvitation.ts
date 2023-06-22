@@ -7,7 +7,7 @@ import {
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isAuthenticated} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
