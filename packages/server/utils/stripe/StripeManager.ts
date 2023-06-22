@@ -144,6 +144,30 @@ export default class StripeManager {
     })
   }
 
+  async createTeamSubscriptionOld(customerId: string, orgId: string, quantity: number) {
+    return this.stripe.subscriptions.create({
+      // USE THIS FOR TESTING A FAILING PAYMENT
+      // https://stripe.com/docs/billing/testing
+      // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
+      customer: customerId,
+      proration_behavior: 'none',
+      expand: ['latest_invoice.payment_intent'], // expand the payment intent so we can get the client_secret
+      // Use this for testing invoice.created hooks
+      // run `yarn ultrahook` and subscribe
+      // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
+      // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
+      metadata: {
+        orgId
+      },
+      items: [
+        {
+          plan: StripeManager.PARABOL_TEAM_600,
+          quantity
+        }
+      ]
+    })
+  }
+
   async deleteSubscription(stripeSubscriptionId: string) {
     return this.stripe.subscriptions.del(stripeSubscriptionId)
   }

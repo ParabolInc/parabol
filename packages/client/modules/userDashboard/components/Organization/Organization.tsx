@@ -128,7 +128,6 @@ const Organization = (props: Props) => {
   const {checkoutFlow} = userFeatureFlags
 
   if (checkoutFlow) return <OrgPage organizationRef={organization} />
-  // if (false) return <OrgPage organizationRef={organization} />
   return (
     <UserSettingsWrapper>
       <SettingsWrapper narrow>
