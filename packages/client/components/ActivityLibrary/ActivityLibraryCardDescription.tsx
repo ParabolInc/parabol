@@ -132,7 +132,7 @@ export const ActivityLibraryCardDescription = (props: Props) => {
   )
 
   return (
-    <ScrollArea.Root className={clsx('hidden flex-1 overflow-auto', className)}>
+    <ScrollArea.Root className={clsx('flex-1 overflow-auto', className)}>
       <ScrollArea.Viewport>
         <div className='flex flex-1 flex-col gap-y-1 px-2 py-1 text-slate-900'>
           {template.type === 'retrospective' && <RetroDescription prompts={template.prompts} />}
