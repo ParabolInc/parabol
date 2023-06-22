@@ -118,7 +118,10 @@ const User: UserResolvers = {
     const [parabolActivities, ...userActivities] = await Promise.all(
       availableOrgIds.map((orgId) => dataLoader.get('meetingTemplatesByOrgId').load(orgId))
     )
-    const allUserActivities = userActivities.flat()
+    const allUserActivities = userActivities.flat().filter((activity) => {
+      return activity.scope !== 'TEAM' || teamIds.includes(activity.teamId)
+    })
+
     if (!__PRODUCTION__) {
       if (parabolActivities.length + allUserActivities.length > first) {
         throw new Error(
