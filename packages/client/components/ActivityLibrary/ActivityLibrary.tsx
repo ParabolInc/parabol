@@ -24,7 +24,7 @@ import {
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
 import {ActivityCardImage} from './ActivityCard'
-import {Comment, LinearScale, Update} from '@mui/icons-material'
+import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -66,6 +66,7 @@ graphql`
     isRecommended
     isFree
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
+    ...ActivityLibraryCardDescription_template
   }
 `
 
@@ -279,46 +280,10 @@ export const ActivityLibrary = (props: Props) => {
                         className='group-hover/card:hidden'
                         src={activityIllustration}
                       />
-                      <ScrollArea.Root className='hidden flex-1 overflow-auto group-hover/card:flex'>
-                        <ScrollArea.Viewport>
-                          <div className='flex flex-1 flex-col gap-y-1 px-2 py-1 text-slate-900'>
-                            {'prompts' in template &&
-                              template.prompts?.map((prompt, index) => (
-                                <div key={index} className='flex items-center gap-x-2'>
-                                  <div
-                                    className='mt-1 h-3 w-3 shrink-0 self-start rounded-full'
-                                    style={{backgroundColor: prompt.groupColor}}
-                                  />
-                                  <div className='text-sm font-medium'>{prompt.question}</div>
-                                </div>
-                              ))}
-                            {'dimensions' in template &&
-                              template.dimensions?.map((dimension, index) => (
-                                <div key={index} className='flex items-center gap-x-2'>
-                                  <div className='mt-1 shrink-0 self-start rounded-full'>
-                                    <LinearScale className='h-4 w-4' />
-                                  </div>
-                                  <div className='text-sm font-medium'>
-                                    {dimension.name}:{' '}
-                                    <span className='font-semibold'>
-                                      {dimension.selectedScale.name}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                            {'phases' in template &&
-                              template.phases?.map((phase, index) => (
-                                <div key={index} className='flex items-center gap-x-2'>
-                                  <div className='mt-1 shrink-0 self-start rounded-full'>
-                                    {phase.icon}
-                                  </div>
-                                  <div className='text-sm font-medium'>{phase.description}</div>
-                                </div>
-                              ))}
-                          </div>
-                        </ScrollArea.Viewport>
-                        <ScrollArea.Scrollbar orientation='vertical' className='hidden' />
-                      </ScrollArea.Root>
+                      <ActivityLibraryCardDescription
+                        className='hidden group-hover/card:flex'
+                        templateRef={template}
+                      />
                     </ActivityLibraryCard>
                   </Link>
                 )
