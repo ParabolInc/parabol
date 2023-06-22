@@ -33,8 +33,7 @@
   ],
   "include": [
     // TODO: make this into "graphql/**/*.ts" after fixing all the type errors
-    "graphql/public/**/*.ts",
-    "graphql/private/**/*.ts"
+    "graphql/**/*.ts",
   ]
 
   // if "include" or "files" is added, even if they are empty arrays, then strictNullChecks breaks

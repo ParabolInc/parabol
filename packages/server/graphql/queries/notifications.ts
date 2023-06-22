@@ -2,8 +2,9 @@ import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphq
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
-import NotificationEnum from '../types/NotificationEnum'
+import NotificationEnum, {NotificationEnumType} from '../types/NotificationEnum'
 
 export default {
   type: new GraphQLNonNull(new GraphQLObjectType({name: 'NotificationConnection', fields: {}})),
@@ -20,7 +21,11 @@ export default {
     }
   },
   description: 'all the notifications for a single user',
-  resolve: async (_source: unknown, {first, after, types}, {authToken}) => {
+  resolve: async (
+    _source: unknown,
+    {first, after, types}: {first: number; after: Date; types: NotificationEnumType},
+    {authToken}: GQLContext
+  ) => {
     const r = await getRethink()
     // AUTH
     const userId = getUserId(authToken)
