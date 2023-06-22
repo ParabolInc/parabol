@@ -103,7 +103,12 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     customerId = stripeId
   }
 
-  const subscription = await manager.createEnterpriseSubscription(customerId, orgId, quantity, plan ?? undefined)
+  const subscription = await manager.createEnterpriseSubscription(
+    customerId,
+    orgId,
+    quantity,
+    plan ?? undefined
+  )
 
   await Promise.all([
     r({

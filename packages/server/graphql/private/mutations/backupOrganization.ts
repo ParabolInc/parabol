@@ -115,10 +115,7 @@ const backupPgOrganization = async (orgIds: string[]) => {
   await pg.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
 }
 
-const backupOrganization: MutationResolvers['backupOrganization'] = async (
-  _source,
-  {orgIds},
-) => {
+const backupOrganization: MutationResolvers['backupOrganization'] = async (_source, {orgIds}) => {
   // RESOLUTION
   await backupPgOrganization(orgIds)
 
@@ -204,7 +201,9 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('ReflectPrompt').insert(items)),
     templateDimension: (
-      r.table('TemplateDimension').filter((row: RDatum) => r(teamIds).contains(row('teamId'))) as any
+      r
+        .table('TemplateDimension')
+        .filter((row: RDatum) => r(teamIds).contains(row('teamId'))) as any
     )
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('TemplateDimension').insert(items)),
@@ -259,7 +258,9 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
             .coerceTo('array')
             .do((items: RValue) => r.db(DESTINATION).table('SuggestedAction').insert(items)),
           timelineEvent: (
-            r.table('TimelineEvent').filter((row: RDatum) => r(userIds).contains(row('userId'))) as any
+            r
+              .table('TimelineEvent')
+              .filter((row: RDatum) => r(userIds).contains(row('userId'))) as any
           )
             .filter((row: RValue) =>
               r.branch(row('teamId'), r(teamIds).contains(row('teamId')), true)

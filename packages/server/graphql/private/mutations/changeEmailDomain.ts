@@ -54,7 +54,9 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     r
       .table('TeamMember')
       .filter((row: RDatum) => row('email').match(`@${normalizedOldDomain}$`))
-      .update((row: RDatum) => ({email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)}))
+      .update((row: RDatum) => ({
+        email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)
+      }))
       .run(),
     r
       .table('SAML')

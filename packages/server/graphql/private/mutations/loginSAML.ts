@@ -28,10 +28,7 @@ const getRelayState = (body: any) => {
   return relayState
 }
 
-const loginSAML: MutationResolvers['loginSAML'] = async (
-  _source,
-  {samlName, queryString},
-) => {
+const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
   const r = await getRethink()
   const body = querystring.parse(queryString)
   const normalizedName = samlName.trim().toLowerCase()
