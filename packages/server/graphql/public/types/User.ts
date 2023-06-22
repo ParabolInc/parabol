@@ -120,7 +120,7 @@ const User: UserResolvers = {
     )
     const allUserActivities = userActivities.flat()
     if (!__PRODUCTION__) {
-      if (parabolActivities.length + allUserActivities.length > first) {
+      if (parabolActivities!.length + allUserActivities.length > first) {
         throw new Error(
           'Please implement pagination for User.activities or increase `first` for the query'
         )
@@ -149,7 +149,7 @@ const User: UserResolvers = {
 
       return score
     }
-    const allActivities = [...parabolActivities, ...allUserActivities]
+    const allActivities = [...parabolActivities!, ...allUserActivities]
       .map((activity) => ({
         ...activity,
         sortOrder: getScore(activity, teamIds)
