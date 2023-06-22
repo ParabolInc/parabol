@@ -47,7 +47,6 @@ graphql`
       prompts {
         question
         description
-        groupColor
       }
     }
   }
