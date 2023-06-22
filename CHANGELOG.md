@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.109.1 2023-Jun-22
+
+### Fixed
+
+- Seasonal templates appropriately hidden (#8426)
+- Users not on team but on same org don't see team-scoped templates (#8426)
+
 ## 6.109.0 2023-Jun-22
 
 ### Added
