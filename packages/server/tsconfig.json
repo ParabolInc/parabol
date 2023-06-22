@@ -32,7 +32,6 @@
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
   ],
   "include": [
-    // TODO: make this into "graphql/**/*.ts" after fixing all the type errors
     "graphql/**/*.ts",
   ]
 

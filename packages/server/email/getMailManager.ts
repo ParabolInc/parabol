@@ -17,7 +17,7 @@ const managers = {
 const getMailManager = () => {
   if (!mailManager) {
     const mailProvider = process.env.MAIL_PROVIDER!
-    const Manager = enumLookup(managers, mailProvider) ?? MailManagerDebug//managers[mailProvider as keyof typeof managers] ?? MailManagerDebug
+    const Manager = enumLookup(managers, mailProvider) ?? MailManagerDebug
     mailManager = new Manager()
   }
   return mailManager
