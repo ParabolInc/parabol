@@ -4,11 +4,7 @@ import getRethink from '../../../database/rethinkDriver'
 import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
 import {MutationResolvers} from '../resolverTypes'
 
-const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
-  _source,
-  _args,
-  {dataLoader}
-) => {
+const autopauseUsers: MutationResolvers['autopauseUsers'] = async () => {
   const r = await getRethink()
 
   // RESOLUTION

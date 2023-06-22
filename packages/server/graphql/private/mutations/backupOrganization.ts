@@ -4,7 +4,7 @@ import path from 'path'
 import util from 'util'
 import getProjectRoot from '../../../../../scripts/webpack/utils/getProjectRoot'
 import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
+import {RDatum, RValue} from '../../../database/stricterR'
 import getPg from '../../../postgres/getPg'
 import getPgConfig from '../../../postgres/getPgConfig'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
@@ -32,7 +32,7 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
       r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row.hasFields('templateRefId')) as any
+        .filter((row: RDatum) => row.hasFields('templateRefId')) as any
     )('templateRefId')
       .coerceTo('array')
       .distinct()
@@ -118,7 +118,6 @@ const backupPgOrganization = async (orgIds: string[]) => {
 const backupOrganization: MutationResolvers['backupOrganization'] = async (
   _source,
   {orgIds},
-  {authToken}
 ) => {
   // RESOLUTION
   await backupPgOrganization(orgIds)
@@ -178,11 +177,11 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
     atlassianAuth: (r.table('AtlassianAuth').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('AtlassianAuth').insert(items)),
-    invoice: (r.table('Invoice').filter((row) => r(orgIds).contains(row('orgId'))) as any)
+    invoice: (r.table('Invoice').filter((row: RDatum) => r(orgIds).contains(row('orgId'))) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('Invoice').insert(items)),
     invoiceItemHook: (
-      r.table('InvoiceItemHook').filter((row) => r(orgIds).contains(row('orgId'))) as any
+      r.table('InvoiceItemHook').filter((row: RDatum) => r(orgIds).contains(row('orgId'))) as any
     )
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('InvoiceItemHook').insert(items)),
@@ -205,12 +204,12 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('ReflectPrompt').insert(items)),
     templateDimension: (
-      r.table('TemplateDimension').filter((row) => r(teamIds).contains(row('teamId'))) as any
+      r.table('TemplateDimension').filter((row: RDatum) => r(teamIds).contains(row('teamId'))) as any
     )
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('TemplateDimension').insert(items)),
     templateScale: (
-      r.table('TemplateScale').filter((row) => r(teamIds).contains(row('teamId'))) as any
+      r.table('TemplateScale').filter((row: RDatum) => r(teamIds).contains(row('teamId'))) as any
     )
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('TemplateScale').insert(items)),
@@ -260,7 +259,7 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
             .coerceTo('array')
             .do((items: RValue) => r.db(DESTINATION).table('SuggestedAction').insert(items)),
           timelineEvent: (
-            r.table('TimelineEvent').filter((row) => r(userIds).contains(row('userId'))) as any
+            r.table('TimelineEvent').filter((row: RDatum) => r(userIds).contains(row('userId'))) as any
           )
             .filter((row: RValue) =>
               r.branch(row('teamId'), r(teamIds).contains(row('teamId')), true)

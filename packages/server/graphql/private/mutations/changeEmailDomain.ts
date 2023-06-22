@@ -1,4 +1,5 @@
 import {r} from 'rethinkdb-ts'
+import {RDatum, RValue} from '../../../database/stricterR'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import updateDomainsInOrganizationApprovedDomainToPG from '../../../postgres/queries/updateDomainsInOrganizationApprovedDomainToPG'
 import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
@@ -47,32 +48,32 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
     r
       .table('Organization')
-      .filter((row) => row('activeDomain').eq(normalizedOldDomain))
+      .filter((row: RDatum) => row('activeDomain').eq(normalizedOldDomain))
       .update({activeDomain: normalizedNewDomain})
       .run(),
     r
       .table('TeamMember')
-      .filter((row) => row('email').match(`@${normalizedOldDomain}$`))
-      .update((row) => ({email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)}))
+      .filter((row: RDatum) => row('email').match(`@${normalizedOldDomain}$`))
+      .update((row: RDatum) => ({email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)}))
       .run(),
     r
       .table('SAML')
-      .filter((row) => row('domains').contains(normalizedOldDomain))
-      .update((row) => ({
-        domains: row('domains').map((domain) =>
+      .filter((row: RDatum) => row('domains').contains(normalizedOldDomain))
+      .update((row: RDatum) => ({
+        domains: row('domains').map((domain: RValue) =>
           r.branch(domain.eq(normalizedOldDomain), normalizedNewDomain, domain)
         )
       }))
       .run(),
     r
       .table('Invoice')
-      .filter((row) =>
-        row('billingLeaderEmails').contains((email) =>
+      .filter((row: RDatum) =>
+        row('billingLeaderEmails').contains((email: RValue) =>
           email.split('@').nth(1).eq(normalizedOldDomain)
         )
       )
-      .update((row) => ({
-        billingLeaderEmails: row('billingLeaderEmails').map((email) =>
+      .update((row: RDatum) => ({
+        billingLeaderEmails: row('billingLeaderEmails').map((email: RValue) =>
           r.branch(
             email.split('@').nth(1).eq(normalizedOldDomain),
             email.split('@').nth(0).add(`@${normalizedNewDomain}`),

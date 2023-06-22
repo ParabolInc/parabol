@@ -28,7 +28,7 @@ const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) =>
       [quantityName]: quantity,
       stripeSubscriptionId: subscription as string
     })
-    .filter((row) => row(invoiceItemName).default(null).eq(null))
+    .filter((row: RValue) => row(invoiceItemName).default(null).eq(null))
     .orderBy(r.desc('prorationDate'))
     .run()
   if (proratedHooks.length) return proratedHooks
@@ -36,7 +36,7 @@ const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) =>
     .table('InvoiceItemHook')
     .getAll(subscription as string, {index: 'stripeSubscriptionId'})
     .filter({[quantityName]: quantity, isProrated: false})
-    .filter((row) => row(invoiceItemName).default(null).eq(null))
+    .filter((row: RValue) => row(invoiceItemName).default(null).eq(null))
     .orderBy(r.desc('createdAt'))
     .run()
 }
