@@ -35,7 +35,7 @@ const oldUpgradeToTeamTier = async (
 
   let subscriptionFields = {}
   if (!stripeSubscriptionId) {
-    const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
+    const subscription = await manager.createTeamSubscriptionOld(customer.id, orgId, quantity)
     subscriptionFields = {
       periodEnd: fromEpochSeconds(subscription.current_period_end),
       periodStart: fromEpochSeconds(subscription.current_period_start),
