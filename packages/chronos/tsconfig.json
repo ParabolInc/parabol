@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {},
+    "outDir": "lib",
+    "lib": ["esnext"],
+    "types": ["node"]
+  },
+  "files": ["chronos.ts"]
+}
