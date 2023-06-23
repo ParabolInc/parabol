@@ -34,7 +34,7 @@ export default class ServerHealthChecker {
     if (this.pendingPongs) return
     this.pendingPongs = new Set()
     const socketServers = await this.publisher.smembers('socketServers')
-    this.pendingPongs = new Set(...socketServers.filter((id) => id !== INSTANCE_ID))
+    this.pendingPongs = new Set(socketServers.filter((id) => id !== INSTANCE_ID))
     await this.publisher.publish('socketServerPing', INSTANCE_ID)
     await sleep(500)
     // if a server hasn't replied in 500ms, assume it is offline
