@@ -14,14 +14,19 @@
 //   Asterisks: all
 //      Ranges: e.g. 1-3,5
 //      Steps: e.g. */2
+
 import {CronJob} from 'cron'
+import getGraphQLExecutor from 'parabol-server/utils/getGraphQLExecutor'
 import publishWebhookGQL from 'parabol-server/utils/publishWebhookGQL'
 
-const timeZone = 'America/New_York'
-
 const chronos = () => {
-  const {CHRONOS_PULSE_EMAIL, CHRONOS_PULSE_CHANNEL} = process.env
+  const {CHRONOS_PULSE_EMAIL, CHRONOS_PULSE_CHANNEL, SERVER_ID} = process.env
+  if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
   const canPulse = !!CHRONOS_PULSE_EMAIL && !!CHRONOS_PULSE_CHANNEL
+  const timeZone = 'America/New_York'
+
+  // listen to responses
+  getGraphQLExecutor().subscribe()
 
   new CronJob({
     cronTime: '0 0 0 * * *' /* at 12:00am */,
@@ -105,6 +110,8 @@ const chronos = () => {
       publishWebhookGQL(query, {})
     }
   })
+
+  console.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID}. Ready for Chronos           🌾🌾🌾`)
 }
 
 chronos()
