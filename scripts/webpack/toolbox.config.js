@@ -20,6 +20,7 @@ module.exports = {
     __dirname: false
   },
   entry: {
+    assignSURole: [DOTENV, path.join(TOOLBOX_SRC, 'assignSURole.ts')],
     pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')],
     postDeploy: [DOTENV, path.join(TOOLBOX_SRC, 'postDeploy.ts')],
     renameDB: [DOTENV, path.join(TOOLBOX_SRC, 'renameDB.ts')],
