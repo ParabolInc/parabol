@@ -9,7 +9,7 @@ import newTemplate from '../../../../../static/images/illustrations/newTemplate.
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 
 import {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
-import {ActivityCard} from '../ActivityCard'
+import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import {ActivityBadge} from '../ActivityBadge'
 
 import IconLabel from '../../IconLabel'
@@ -291,12 +291,13 @@ export const CreateNewActivity = (props: Props) => {
                 value={activity.type}
               >
                 <ActivityCard
-                  className='w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
+                  className='aspect-[320/190] w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
                   theme={DEFAULT_CARD_THEME}
                   title={activity.title}
                   titleAs={CategoryTitle}
-                  imageSrc={activity.image}
-                />
+                >
+                  <ActivityCardImage src={activity.image} />
+                </ActivityCard>
                 <div className='flex gap-x-3 p-3'>
                   {activity.includedCategories.map((badge) => (
                     <ActivityBadge

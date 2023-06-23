@@ -2,6 +2,14 @@ import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import {JiraIssueResolvers} from '../resolverTypes'
 
+export type JiraIssueSource = {
+  cloudId: string
+  issueKey: string
+  teamId: string
+  userId: string
+  description?: string
+}
+
 const JiraIssue: JiraIssueResolvers = {
   __isTypeOf: ({cloudId, issueKey}) => !!(cloudId && issueKey),
   id: ({cloudId, issueKey}) => {
@@ -20,13 +28,15 @@ const JiraIssue: JiraIssueResolvers = {
     const jiraRemoteProjectRes = await dataLoader
       .get('jiraRemoteProject')
       .load({cloudId, projectKey, teamId, userId})
-    return {
-      ...jiraRemoteProjectRes,
-      service: 'jira',
-      cloudId,
-      userId,
-      teamId
-    }
+    return jiraRemoteProjectRes
+      ? {
+          ...jiraRemoteProjectRes,
+          service: 'jira',
+          cloudId,
+          userId,
+          teamId
+        }
+      : null
   },
   description: ({description}) => (description ? JSON.stringify(description) : '')
 }

@@ -12,9 +12,9 @@ const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganization
 
   // VALIDATION
   const normalizedEmailDomains = emailDomains.map((domain) => domain.toLowerCase().trim())
-  const invalidEmailDomain = normalizedEmailDomains.find((domain) => {
-    if (!emailRegex.test(domain) && !domainRegex.test(domain)) return true
-  })
+  const invalidEmailDomain = normalizedEmailDomains.find(
+    (domain) => !emailRegex.test(domain) && !domainRegex.test(domain)
+  )
   if (invalidEmailDomain) {
     return {error: {message: `${invalidEmailDomain} is not a valid domain or email`}}
   }

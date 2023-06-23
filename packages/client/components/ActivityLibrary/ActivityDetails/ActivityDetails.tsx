@@ -7,7 +7,7 @@ import {Link} from 'react-router-dom'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
 import IconLabel from '../../IconLabel'
-import {ActivityCard} from '../ActivityCard'
+import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
 import {CategoryID, CATEGORY_THEMES, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
@@ -104,9 +104,10 @@ const ActivityDetails = (props: Props) => {
               <ActivityCard
                 className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
                 theme={CATEGORY_THEMES[category as CategoryID]}
-                imageSrc={illustrationUrl}
                 badge={null}
-              />
+              >
+                <ActivityCardImage src={illustrationUrl} />
+              </ActivityCard>
               <div className='pb-20'>
                 <div className='mb-10 space-y-2 pl-14'>
                   <div className='flex min-h-[40px] items-center'>

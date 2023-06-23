@@ -13,7 +13,9 @@ import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import IconLabel from '../IconLabel'
 import {ActivityBadge} from './ActivityBadge'
+import {ActivityCardImage} from './ActivityCard'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
+import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
@@ -63,6 +65,7 @@ graphql`
     isRecommended
     isFree
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
+    ...ActivityLibraryCardDescription_template
   }
 `
 
@@ -246,7 +249,7 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
+            <div className='mx-auto mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
               {templatesToRender.map((template) => {
                 return (
                   <Link
@@ -258,11 +261,10 @@ export const ActivityLibrary = (props: Props) => {
                     className='flex focus:rounded-md focus:outline-primary'
                   >
                     <ActivityLibraryCard
-                      className='flex-1'
+                      className='group aspect-[256/160] flex-1'
                       key={template.id}
                       theme={CATEGORY_THEMES[template.category as CategoryID]}
                       title={template.name}
-                      imageSrc={template.illustrationUrl}
                       badge={
                         !template.isFree ? (
                           <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>
@@ -270,7 +272,16 @@ export const ActivityLibrary = (props: Props) => {
                           </ActivityBadge>
                         ) : null
                       }
-                    />
+                    >
+                      <ActivityCardImage
+                        className='group-hover/card:hidden'
+                        src={template.illustrationUrl}
+                      />
+                      <ActivityLibraryCardDescription
+                        className='hidden group-hover/card:flex'
+                        templateRef={template}
+                      />
+                    </ActivityLibraryCard>
                   </Link>
                 )
               })}

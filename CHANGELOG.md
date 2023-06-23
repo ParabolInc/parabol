@@ -5,26 +5,57 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.109.1 2023-Jun-22
+
+### Fixed
+
+- Seasonal templates appropriately hidden (#8426)
+- Users not on team but on same org don't see team-scoped templates (#8426)
+
+## 6.109.0 2023-Jun-22
+
+### Added
+
+- chore(metrics): Add hasTeamHealth to meeting properties for meeting related events (#8396)
+- feat(al): New header (#8388)
+- feat(templateLimits): Show upgrade prompts in Activity Library (#8358)
+- chore: add comments for supporting multi-platform builds (#8403)
+
+### Changed
+
+- chore: Limit MailManagerDebug filename length (#8391)
+- chore(checkout-flow): handle failing 3D Secure card auth (#8289)
+- chore: Cleanup CHANGELOG (#8379)
+- chore: removed old apollo gql extension config (#8399)
+- Remove default_incomplete payment behaviour for old subscription flow (#8418)
+
+### Fixed
+
+- fix(prompt-to-join): fix add teammate dialog scroll (#8393)
+- fix: reset retro groups with team health (#8392)
+- fix: del instead of hdel
+- fix(retros): When skipping phases, mark interim stages as complete (#8374)
+
 ## 6.108.0 2023-Jun-15
 
 ### Added
 
 - add team filter in meeting view (#7854)
-- text align center for icebreakers (#8306) 
-- **Team Health**: enable team health by default for paid tiers (#8348) 
+- text align center for icebreakers (#8306)
+- **Team Health**: enable team health by default for paid tiers (#8348)
 - **Team Health**: Add setting to new activity library (#8375)
 
 ### Changed
 
 - Adds new template for design issues (#8261)
-- **gh-actions**: merge check and build (#8221) 
+- **gh-actions**: merge check and build (#8221)
 - **docker-image**: self-hosted folder added in HOME directory (#8361)
-- **template-limits**: remove template limit feature flag (#8359) 
-  
+- **template-limits**: remove template limit feature flag (#8359)
+
 ### Fixed
 
 - **standups**: allow selecting text within the standup response drawer (#8339)
-- **teams-limit**: remove teams limit when upgrading to enterprise (#8367 
+- **teams-limit**: remove teams limit when upgrading to enterprise (#8367
 
 ## 6.107.3 2023-Jun-13
 

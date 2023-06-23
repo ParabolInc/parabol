@@ -259,7 +259,7 @@ type Mutation {
     """
     the userId to disconnect
     """
-    userId: ID
+    userId: ID!
   ): DisconnectSocketPayload
 
   """
@@ -344,7 +344,7 @@ type Mutation {
     """
     List of teams to target
     """
-    teamIds: [ID]!
+    teamIds: [ID!]!
 
     """
     true to unlock the teams, false to lock

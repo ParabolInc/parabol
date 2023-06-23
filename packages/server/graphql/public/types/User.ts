@@ -42,7 +42,7 @@ const User: UserResolvers = {
       case 'Organization':
         const organizationUser = await dataLoader
           .get('organizationUsersByUserIdOrgId')
-          .load({userId: viewerId, id})
+          .load({userId: viewerId, orgId: id})
         return !!organizationUser
       default:
         return false
@@ -113,14 +113,17 @@ const User: UserResolvers = {
         : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const userOrgIds = organizationUsers.map(({id}) => id)
+    const userOrgIds = organizationUsers.map(({orgId}) => orgId)
     const availableOrgIds = ['aGhostOrg', ...userOrgIds]
     const [parabolActivities, ...userActivities] = await Promise.all(
       availableOrgIds.map((orgId) => dataLoader.get('meetingTemplatesByOrgId').load(orgId))
     )
-    const allUserActivities = userActivities.flat()
+    const allUserActivities = userActivities.flat().filter((activity) => {
+      return activity.scope !== 'TEAM' || teamIds.includes(activity.teamId)
+    })
+
     if (!__PRODUCTION__) {
-      if (parabolActivities.length + allUserActivities.length > first) {
+      if (parabolActivities!.length + allUserActivities.length > first) {
         throw new Error(
           'Please implement pagination for User.activities or increase `first` for the query'
         )
@@ -149,7 +152,7 @@ const User: UserResolvers = {
 
       return score
     }
-    const allActivities = [...parabolActivities, ...allUserActivities]
+    const allActivities = [...parabolActivities!, ...allUserActivities]
       .map((activity) => ({
         ...activity,
         sortOrder: getScore(activity, teamIds)

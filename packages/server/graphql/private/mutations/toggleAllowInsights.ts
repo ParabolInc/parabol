@@ -1,4 +1,4 @@
-import {r} from 'rethinkdb-ts'
+import {r, RValue} from 'rethinkdb-ts'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -30,7 +30,7 @@ const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
         .filter({
           userId
         })
-        .filter((row) => row('removedAt').default(null).eq(null))
+        .filter((row: RValue) => row('removedAt').default(null).eq(null))
         .update({suggestedTier})('replaced')
         .run()
     })
