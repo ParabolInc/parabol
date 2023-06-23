@@ -82,6 +82,9 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   }
 
   const user = await getUserById(createdBy)
+  if (!user) {
+    return standardError(new Error('User not found'))
+  }
 
   const {id: userId} = user
 
@@ -113,6 +116,9 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
 
   // Send the new team member a welcome & a new token
   const updatedUser = await getUserById(createdBy)
+  if (!updatedUser) {
+    return standardError(new Error('User not found'))
+  }
   publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: updatedUser.tms})
 
   validTeams.forEach((team) => {

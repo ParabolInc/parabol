@@ -24,7 +24,8 @@ const PERCENT_ADDED_TO_RID = 0.05
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
   const r = await getRethink()
   const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
-  const domain = email.split('@')[1]
+  // email is checked by the caller
+  const domain = email.split('@')[1]!
   const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
     isPatientZero(domain),
     isCompanyDomain(domain) ? getUsersbyDomain(domain) : [],

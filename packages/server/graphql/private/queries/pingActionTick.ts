@@ -1,6 +1,6 @@
 import {QueryResolvers} from '../resolverTypes'
 
-const pingActionTick: QueryResolvers['pingActionTick'] = async (_source, _args, {authToken}) => {
+const pingActionTick: QueryResolvers['pingActionTick'] = async () => {
   return 'pong!'
 }
 

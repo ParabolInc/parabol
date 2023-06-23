@@ -4,6 +4,7 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
+import {RValue} from '../../../database/stricterR'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   meetingSeriesId: ({meetingSeriesId}, _args, _context) => {
@@ -36,7 +37,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .table('NewMeeting')
       .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
       .filter({meetingType: 'teamPrompt'})
-      .filter((row) => row('createdAt').lt(createdAt))
+      .filter((row: RValue) => row('createdAt').lt(createdAt))
       .orderBy(r.desc('createdAt'))
       .limit(1)
       .run()
@@ -56,7 +57,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .table('NewMeeting')
       .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
       .filter({meetingType: 'teamPrompt'})
-      .filter((doc) => doc('createdAt').gt(createdAt))
+      .filter((doc: RValue) => doc('createdAt').gt(createdAt))
       .orderBy(r.asc('createdAt'))
       .limit(1)
       .run()

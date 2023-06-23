@@ -16,7 +16,7 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
   const r = await getRethink()
 
   const [viewer, organization, orgUsersCount, organizationUser] = await Promise.all([
-    dataLoader.get('users').load(viewerId),
+    dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('organizations').load(orgId),
     r
       .table('OrganizationUser')
