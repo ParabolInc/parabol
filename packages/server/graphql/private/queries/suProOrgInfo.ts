@@ -12,7 +12,7 @@ const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeIna
         .table('OrganizationUser')
         .getAll(organization('id'), {index: 'orgId'})
         .filter({removedAt: null})
-        .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
+        .filter((user: RValue) => r.branch(includeInactive, true, user('inactive').not()))
         .count()
     }))
     .filter((org: RValue) => r.branch(includeInactive, true, org('users').ge(1)))

@@ -5,7 +5,7 @@ const user: QueryResolvers['user'] = async (_source, {email, userId}, {dataLoade
   if (email) {
     return getUserByEmail(email)
   }
-  return dataLoader.get('users').load(userId)
+  return (userId && (await dataLoader.get('users').load(userId))) || null
 }
 
 export default user

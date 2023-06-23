@@ -6,20 +6,20 @@ import isValid from '../../isValid'
 import {AcceptTeamInvitationPayloadResolvers} from '../resolverTypes'
 
 export type AcceptTeamInvitationPayloadSource = {
-  meetingId: string | undefined | null
-  teamId: string
-  teamMemberId: string
-  invitationNotificationIds: string[]
+  meetingId?: string
+  teamId?: string
+  teamMemberId?: string
+  invitationNotificationIds?: string[]
   authToken?: string
   teamLeadId?: string
 }
 
 const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
   team: ({teamId}, _args, {dataLoader}: GQLContext) => {
-    return dataLoader.get('teams').loadNonNull(teamId)
+    return teamId ? dataLoader.get('teams').loadNonNull(teamId) : null
   },
   teamMember: async ({teamMemberId}, _args, {dataLoader}: GQLContext) => {
-    return dataLoader.get('teamMembers').load(teamMemberId)
+    return teamMemberId ? dataLoader.get('teamMembers').load(teamMemberId) : null
   },
   meeting: async ({meetingId}, _args, {dataLoader, authToken}) => {
     if (!meetingId) {
@@ -40,6 +40,9 @@ const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
   },
 
   notifications: async ({invitationNotificationIds}, _args, {dataLoader}) => {
+    if (!invitationNotificationIds) {
+      return null
+    }
     const teamInvitationNotifications = (
       await dataLoader.get('notifications').loadMany(invitationNotificationIds)
     ).filter(isValid) as NotificationTeamInvitation[]

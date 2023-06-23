@@ -15,7 +15,7 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   const redis = getRedis()
 
   // AUTH
-  if (!socketId) return undefined
+  if (!socketId) return null
 
   // RESOLUTION
   const [user, userPresence] = await Promise.all([
