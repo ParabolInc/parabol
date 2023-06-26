@@ -29,14 +29,12 @@ const generateGroups = async (
     console.warn('ChatGPT was unable to group the reflections')
     return
   }
-  // const parsedGroupedReflections = JSON.parse(groupedReflectionsJSON)
   const autogroupReflectionGroups: AutogroupReflectionGroupType[] = []
 
-  for (const theme of Object.keys(groupedReflections)) {
-    console.log('🚀 ~ theme:', theme)
-    if (!theme) continue
-    const reflectionTexts = groupedReflections[theme]
-    console.log('🚀 ~ reflectionTexts:', reflectionTexts)
+  for (const groupTitle of Object.keys(groupedReflections)) {
+    if (!groupTitle) continue
+    const reflectionTexts = groupedReflections[groupTitle]
+    if (!reflectionTexts) continue
     const reflectionIds: string[] = []
 
     for (const reflectionText of reflectionTexts) {
@@ -48,7 +46,7 @@ const generateGroups = async (
       }
     }
     autogroupReflectionGroups.push({
-      groupTitle: theme,
+      groupTitle,
       reflectionIds
     })
   }

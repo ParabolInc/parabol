@@ -2,7 +2,6 @@ import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
-import generateGroups from '../../mutations/helpers/generateGroups'
 import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -21,10 +20,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
-  const autogroupReflectionGroups = await generateGroups(reflections, meeting.teamId, dataLoader)
-  console.log('🚀 ~ autogroupReflectionGroups:', autogroupReflectionGroups)
-  // const {meetingType, autogroupReflectionGroups, teamId} = meeting as MeetingRetrospective
-  const {meetingType, teamId} = meeting as MeetingRetrospective
+  const {meetingType, autogroupReflectionGroups, teamId} = meeting as MeetingRetrospective
   if (!autogroupReflectionGroups) {
     return standardError(new Error('No autogroup reflection groups found'), {userId: viewerId})
   }

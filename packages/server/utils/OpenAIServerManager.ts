@@ -1,8 +1,6 @@
 import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
-import {isValidJSON} from './isValidJSON'
-import {estimateTokens} from './estimateTokens'
-import {AVG_CHARS_PER_TOKEN, MAX_GPT_3_5_TOKENS} from '../../client/utils/constants'
+
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
 
@@ -52,24 +50,19 @@ class OpenAIServerManager {
     )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} or ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
 
     try {
-      const response = await this.openAIApi.createChatCompletion(
-        {
-          model: 'gpt-4',
-          messages: [
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          top_p: 1,
-          frequency_penalty: 0,
-          presence_penalty: 0
-        },
-        {
-          timeout: 60000
-        }
-      )
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
       const themes = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
       return themes.split(', ')
     } catch (e) {
@@ -80,28 +73,12 @@ class OpenAIServerManager {
     }
   }
 
-  // setting the minimal max_tokens limit increases the speed of the request and reduces the tokens used
-  estimateOutputTokens(reflectionsText: string[]) {
-    const avgGroupNameLength = 10 // assume an average group name length of 10 tokens
-    const totalLengthInTokens = reflectionsText.reduce(
-      (total, reflectionText) => total + Math.ceil(reflectionText.length / AVG_CHARS_PER_TOKEN),
-      0
-    )
-    const avgReflectionsPerGroup = 3 // assume each group will have around 3 reflections
-    const numGroups = Math.ceil(reflectionsText.length / avgReflectionsPerGroup)
-
-    const outputTokens = Math.round(numGroups * avgGroupNameLength + totalLengthInTokens)
-
-    return Math.min(16384, outputTokens)
-    // return Math.min(MAX_GPT_3_5_TOKENS, outputTokens)
-  }
-
   async groupReflections(reflectionsText: string[], themes: string[]) {
     if (!this.openAIApi) return null
 
     const getThemeForReflection = async (
       reflection: string,
-      retry: boolean = false
+      retry = false
     ): Promise<string | null> => {
       const prompt = `Given the themes ${themes.join(
         ', '
