@@ -94,9 +94,8 @@ const ActivityDetailsSidebar = (props: Props) => {
       ? teams
       : selectedTemplate.scope === 'ORGANIZATION'
       ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-      : templateTeam
-      ? [templateTeam]
-      : []
+      : // it is a team-scoped template, templateTeam  must exist
+        [templateTeam!]
 
   const [selectedTeam, setSelectedTeam] = useState(
     () =>
