@@ -2,8 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
-import {pokerIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
@@ -82,10 +80,12 @@ const PokerTemplateDetails = (props: Props) => {
     graphql`
       fragment PokerTemplateDetails_settings on PokerMeetingSettings {
         activeTemplate {
+          illustrationUrl
           ...PokerTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
         }
         selectedTemplate {
+          illustrationUrl
           ...PokerTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
         }
@@ -103,7 +103,7 @@ const PokerTemplateDetails = (props: Props) => {
   )
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
-  const {id: templateId, name: templateName, dimensions} = activeTemplate
+  const {id: templateId, name: templateName, dimensions, illustrationUrl} = activeTemplate
   const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
@@ -122,14 +122,12 @@ const PokerTemplateDetails = (props: Props) => {
     )
     gotoTeamTemplates()
   }
-  const headerImg =
-    pokerIllustrations[templateId as keyof typeof pokerIllustrations] ?? customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   const showClone = !isOwner && tier !== 'starter'
   return (
     <DimensionEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
-        <TemplateImg src={headerImg} />
+        <TemplateImg src={illustrationUrl} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName
