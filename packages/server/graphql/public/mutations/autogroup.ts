@@ -17,12 +17,12 @@ const autogroup: MutationResolvers['autogroup'] = async (
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
-  const autogroupReflectionGroups = await generateGroups(reflections, meeting.teamId, dataLoader)
-  console.log('🚀 ~ autogroupReflectionGroups:', autogroupReflectionGroups)
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
+  const autogroupReflectionGroups = await generateGroups(reflections, meeting.teamId, dataLoader)
+  console.log('🚀 ~ autogroupReflectionGroups:', autogroupReflectionGroups)
   // const {meetingType, autogroupReflectionGroups, teamId} = meeting as MeetingRetrospective
   const {meetingType, teamId} = meeting as MeetingRetrospective
   if (!autogroupReflectionGroups) {
