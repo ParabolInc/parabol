@@ -1,4 +1,4 @@
-import React, {useState, FormEvent} from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {
   CardNumberElement,
@@ -17,6 +17,7 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
+import {commitLocalUpdate} from 'relay-runtime'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -95,7 +96,7 @@ const BillingForm = (props: Props) => {
     !cvcError
   const isUpgradeDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!stripe || !elements) return
     setIsLoading(true)
@@ -139,6 +140,11 @@ const BillingForm = (props: Props) => {
         setErrorMsg(error.message)
         return
       }
+      commitLocalUpdate(atmosphere, (store) => {
+        const org = store.get(orgId)
+        if (!org) return
+        org.setValue(true, 'showDrawer')
+      })
       setIsPaymentSuccessful(true)
       onCompleted()
     }
