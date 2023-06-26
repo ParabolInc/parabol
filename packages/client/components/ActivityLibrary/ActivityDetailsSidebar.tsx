@@ -32,7 +32,7 @@ import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 
 interface Props {
-  selectedTemplateRef: ActivityDetailsSidebar_template$key | null
+  selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
   isOpen: boolean
@@ -87,10 +87,10 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   const atmosphere = useAtmosphere()
 
-  const templateTeam = teams.find((team) => team.id === selectedTemplate?.teamId)
+  const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
 
   const availableTeams =
-    !selectedTemplate || selectedTemplate.scope === 'PUBLIC'
+    selectedTemplate.scope === 'PUBLIC'
       ? teams
       : selectedTemplate.scope === 'ORGANIZATION'
       ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
@@ -99,7 +99,8 @@ const ActivityDetailsSidebar = (props: Props) => {
       : []
 
   const [selectedTeam, setSelectedTeam] = useState(
-    availableTeams.find((team) => team.id === preferredTeamId) ??
+    () =>
+      availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
       sortByTier(availableTeams)[0]!
   )
@@ -109,7 +110,21 @@ const ActivityDetailsSidebar = (props: Props) => {
   const handleStartActivity = () => {
     if (submitting) return
     submitMutation()
-    if (selectedTemplate) {
+    if (type === 'teamPrompt') {
+      StartTeamPromptMutation(
+        atmosphere,
+        {
+          teamId: selectedTeam.id,
+          recurrenceSettings: {
+            rrule: recurrenceSettings.rrule?.toString(),
+            name: recurrenceSettings.name
+          }
+        },
+        {history, onError, onCompleted}
+      )
+    } else if (type === 'action') {
+      StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
+    } else {
       SelectTemplateMutation(
         atmosphere,
         {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
@@ -132,22 +147,6 @@ const ActivityDetailsSidebar = (props: Props) => {
           onError
         }
       )
-    } else {
-      if (type === 'teamPrompt') {
-        StartTeamPromptMutation(
-          atmosphere,
-          {
-            teamId: selectedTeam.id,
-            recurrenceSettings: {
-              rrule: recurrenceSettings.rrule?.toString(),
-              name: recurrenceSettings.name
-            }
-          },
-          {history, onError, onCompleted}
-        )
-      } else if (type === 'action') {
-        StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
-      }
     }
   }
 
@@ -165,7 +164,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       )
   }
 
-  const teamScopePopover = templateTeam && selectedTemplate?.scope === 'TEAM' && (
+  const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
     <div className='w-[352px] p-4'>
       <div>
         This custom activity is private to the <b>{templateTeam.name}</b> team.
@@ -207,20 +206,18 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
-          {availableTeams.length > 0 && (
-            <NewMeetingTeamPicker
-              positionOverride={MenuPosition.UPPER_LEFT}
-              onSelectTeam={(teamId) => {
-                const newTeam = availableTeams.find((team) => team.id === teamId)
-                newTeam && setSelectedTeam(newTeam)
-              }}
-              selectedTeamRef={selectedTeam}
-              teamsRef={availableTeams}
-              customPortal={teamScopePopover}
-            />
-          )}
+          <NewMeetingTeamPicker
+            positionOverride={MenuPosition.UPPER_LEFT}
+            onSelectTeam={(teamId) => {
+              const newTeam = availableTeams.find((team) => team.id === teamId)
+              newTeam && setSelectedTeam(newTeam)
+            }}
+            selectedTeamRef={selectedTeam}
+            teamsRef={availableTeams}
+            customPortal={teamScopePopover}
+          />
 
-          {selectedTeam.tier === 'starter' && selectedTemplate && !selectedTemplate.isFree ? (
+          {selectedTeam.tier === 'starter' && !selectedTemplate.isFree ? (
             <div className='flex grow flex-col'>
               <div className='my-auto text-center'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s

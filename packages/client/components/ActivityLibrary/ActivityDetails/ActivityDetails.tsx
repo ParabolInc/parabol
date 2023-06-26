@@ -24,10 +24,6 @@ graphql`
     isFree
     scope
     viewerLowestScope
-    team {
-      editingScaleId
-      ...PokerTemplateScaleDetails_team
-    }
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
