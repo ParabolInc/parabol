@@ -34,8 +34,36 @@ export default class StripeManager {
       const paymentMethod = await this.stripe.paymentMethods.retrieve(paymentMethodId)
       if (paymentMethod.type !== 'card') {
         throw new Error('Payment method is not a card')
+      } else if (!paymentMethod.card) {
+        throw new Error('Payment method does not have a card')
       }
-      return paymentMethod.card as Stripe.PaymentMethod.Card
+      return paymentMethod.card
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
+  async retrieveDefaultCardDetails(customerId: string): Promise<Stripe.PaymentMethod.Card | Error> {
+    try {
+      const customer = await this.stripe.customers.retrieve(customerId)
+      if (customer.deleted) {
+        throw new Error('Customer has been deleted')
+      }
+      const defaultPaymentMethodId = customer.invoice_settings.default_payment_method
+      if (!defaultPaymentMethodId) {
+        throw new Error('No default payment method found for this customer')
+      }
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(
+        defaultPaymentMethodId as string
+      )
+      if (paymentMethod.type !== 'card') {
+        throw new Error('Default payment method is not a card')
+      }
+      if (!paymentMethod.card) {
+        throw new Error('Default payment method does not have a card')
+      }
+      return paymentMethod.card
     } catch (e) {
       const error = e as Error
       return error
