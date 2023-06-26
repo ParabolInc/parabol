@@ -89,6 +89,10 @@ const OrgBillingCreditCardInfo = (props: Props) => {
   const {brand, last4, expiry} = creditCard
 
   const handleCancel = () => {
+    setIsUpdating(false)
+  }
+
+  const handleStartUpdating = () => {
     setIsUpdating(true)
   }
 
@@ -123,7 +127,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
             </div>
           </InfoBlocks>
         </CreditCardInfo>
-        <SecondaryButton onClick={handleCancel}>{'Update'}</SecondaryButton>
+        <SecondaryButton onClick={handleStartUpdating}>{'Update'}</SecondaryButton>
       </InfoAndUpdate>
     </StyledPanel>
   )
