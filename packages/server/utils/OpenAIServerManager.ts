@@ -116,22 +116,28 @@ class OpenAIServerManager {
       return theme
     }
 
-    const promises = reflectionsText.map((reflection) => getThemeForReflection(reflection))
-    const themesByReflections = await Promise.all(promises)
+    try {
+      const promises = reflectionsText.map((reflection) => getThemeForReflection(reflection))
+      const themesByReflections = await Promise.all(promises)
 
-    const groupedReflections = themes.reduce<{[key: string]: string[]}>((acc, theme) => {
-      acc[theme] = []
-      return acc
-    }, {})
+      const groupedReflections = themes.reduce<{[key: string]: string[]}>((acc, theme) => {
+        acc[theme] = []
+        return acc
+      }, {})
 
-    themesByReflections.forEach((theme, index) => {
-      const reflection = reflectionsText[index]
-      if (theme && reflection) {
-        groupedReflections[theme]?.push(reflection)
-      }
-    })
+      themesByReflections.forEach((theme, index) => {
+        const reflection = reflectionsText[index]
+        if (theme && reflection) {
+          groupedReflections[theme]?.push(reflection)
+        }
+      })
 
-    return groupedReflections
+      return groupedReflections
+    } catch (error) {
+      const e = error instanceof Error ? error : new Error('OpenAI failed to group reflections')
+      sendToSentry(e)
+      return null
+    }
   }
 }
 
