@@ -33,11 +33,11 @@ const CARD_ELEMENT_OPTIONS = {
 }
 
 type Props = {
-  setIsUpdating: (isUpdating: boolean) => void
+  handleCancel: () => void
 }
 
 const UpdatePayment = (props: Props) => {
-  const {setIsUpdating} = props
+  const {handleCancel} = props
 
   return (
     <div className='flex h-full w-full flex-col flex-wrap space-y-reverse' id='payment-form'>
@@ -80,12 +80,12 @@ const UpdatePayment = (props: Props) => {
       </div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
         <div className='w-1/4'>
-          <UpgradeButton isDisabled={false} size='medium' type={'submit'}>
+          <UpgradeButton isDisabled={false} size='medium' type='submit'>
             {'Update'}
           </UpgradeButton>
         </div>
         <div className='mt-4 flex w-1/4 justify-end'>
-          <SecondaryButton size='medium' type={'submit'} onClick={() => setIsUpdating(false)}>
+          <SecondaryButton size='medium' type='button' onClick={handleCancel}>
             {'Cancel'}
           </SecondaryButton>
         </div>
