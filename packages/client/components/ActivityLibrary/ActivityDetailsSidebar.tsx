@@ -220,7 +220,7 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
 
-          {selectedTeam.tier === 'starter' && !selectedTemplate?.isFree ? (
+          {selectedTeam.tier === 'starter' && selectedTemplate && !selectedTemplate.isFree ? (
             <div className='flex grow flex-col'>
               <div className='my-auto text-center'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
