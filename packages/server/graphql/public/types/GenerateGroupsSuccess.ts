@@ -1,12 +1,11 @@
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
-// import {GenerateGroupsSuccessResolvers} from '../resolverTypes'
+import {GenerateGroupsSuccessResolvers} from '../resolverTypes'
 
 export type GenerateGroupsSuccessSource = {
   meetingId: string
 }
 
-// const GenerateGroupsSuccess: GenerateGroupsSuccessResolvers = {
-const GenerateGroupsSuccess = {
+const GenerateGroupsSuccess: GenerateGroupsSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     return meeting as MeetingRetrospective
