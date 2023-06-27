@@ -56,6 +56,7 @@ const RetroGroupPhase = (props: Props) => {
         endedAt
         showSidebar
         organization {
+          tier
           featureFlags {
             suggestGroups
           }
@@ -69,7 +70,7 @@ const RetroGroupPhase = (props: Props) => {
   const {onError, onCompleted} = useMutationProps()
   const [hasSuggestedGroups, setHasSuggestedGroups] = useState(false)
   const {id: meetingId, endedAt, showSidebar, organization} = meeting
-  const {featureFlags} = organization
+  const {featureFlags, tier} = organization
   const {suggestGroups} = featureFlags
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
@@ -121,7 +122,11 @@ const RetroGroupPhase = (props: Props) => {
         </MeetingHeaderAndPhase>
       </MeetingContent>
       {tooltipPortal(
-        `Click to group cards by common topics. Don't worry, you'll be able to undo this!`
+        `Click to group cards by common topics. Don't worry, you'll be able to undo this! ${
+          tier === 'starter'
+            ? `This is a premium feature that we'll share with you during your first few retros.`
+            : ''
+        }`
       )}
     </>
   )
