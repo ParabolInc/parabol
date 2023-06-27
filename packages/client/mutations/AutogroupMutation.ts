@@ -7,9 +7,6 @@ graphql`
   fragment AutogroupMutation_meeting on AutogroupSuccess {
     meeting {
       id
-      autogroupReflectionGroups {
-        groupTitle
-      }
       reflectionGroups {
         id
         title
