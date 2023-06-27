@@ -28,6 +28,15 @@ const chronos = () => {
   getGraphQLExecutor().subscribe()
 
   new CronJob({
+    cronTime: '0 0 5 * * *' /* 5AM UTC */,
+    start: true,
+    onTick() {
+      const query = 'mutation AutoPauseUsers { autopauseUsers }'
+      publishWebhookGQL(query, {})
+    }
+  })
+
+  new CronJob({
     cronTime: '0 0 4 * * *' /* 4AM UTC */,
     start: canPulse,
     onTick() {
