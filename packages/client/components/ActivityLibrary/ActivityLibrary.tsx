@@ -13,8 +13,9 @@ import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import IconLabel from '../IconLabel'
 import {ActivityBadge} from './ActivityBadge'
-import {ActivityId, getActivityIllustration} from './ActivityIllustrations'
+import {ActivityCardImage} from './ActivityCard'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
+import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
@@ -23,8 +24,6 @@ import {
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
-import {ActivityCardImage} from './ActivityCard'
-import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -62,6 +61,7 @@ graphql`
     name
     type
     category
+    illustrationUrl
     isRecommended
     isFree
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
@@ -251,8 +251,6 @@ export const ActivityLibrary = (props: Props) => {
           ) : (
             <div className='mx-auto mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
               {templatesToRender.map((template) => {
-                const activityIllustration = getActivityIllustration(template.id as ActivityId)
-
                 return (
                   <Link
                     key={template.id}
@@ -277,7 +275,7 @@ export const ActivityLibrary = (props: Props) => {
                     >
                       <ActivityCardImage
                         className='group-hover/card:hidden'
-                        src={activityIllustration}
+                        src={template.illustrationUrl}
                       />
                       <ActivityLibraryCardDescription
                         className='hidden group-hover/card:flex'

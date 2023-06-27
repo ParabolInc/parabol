@@ -1,7 +1,7 @@
 // this can be removed after we sunset the old meeting template UI
 const getTemplateIllustrationUrl = (filename: string) => {
   const cdnType = process.env.FILE_STORE_PROVIDER
-  const partialPath = `Organization/aGhostOrg/${filename}`
+  const partialPath = `Organization/aGhostOrg/template/${filename}`
   if (cdnType === 'local') {
     return `/self-hosted/${partialPath}`
   } else if (cdnType === 's3') {
