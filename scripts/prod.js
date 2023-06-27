@@ -28,7 +28,7 @@ const prod = async (isDeploy, noDeps) => {
   await Promise.all([compile(serversConfig), compile(clientConfig)])
   if (!isDeploy && !noDeps) {
     // run in development
-    require('./toolbox/postDeploy.js')
+    require('./toolbox/preDeploy.js')
   }
 }
 

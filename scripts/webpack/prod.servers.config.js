@@ -36,9 +36,8 @@ module.exports = ({isDeploy, noDeps}) => ({
   entry: {
     web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-    postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
-    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
-    pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')]
+    preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
+    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')]
   },
   output: {
     filename: '[name].js',

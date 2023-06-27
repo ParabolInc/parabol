@@ -1,4 +1,4 @@
 #!/bin/sh
 
-yarn postdeploy
+yarn predeploy
 exec "$@"

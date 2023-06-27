@@ -43,4 +43,4 @@ const pushToCDN = async () => {
   }
 }
 
-pushToCDN()
+export default pushToCDN

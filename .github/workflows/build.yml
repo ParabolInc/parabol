@@ -82,6 +82,7 @@ jobs:
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
+          yarn predeploy
 
       - name: Build for testing
         if: env.DOCKERIZE != 'true'
@@ -96,9 +97,6 @@ jobs:
 
       - name: Check Code Quality
         run: yarn codecheck
-
-      - name: Run Postdeploy for Testing
-        run: yarn postdeploy
 
       - name: Start testing server in background
         run: |
