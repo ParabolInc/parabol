@@ -13,6 +13,7 @@ const CreateTaskPayload: CreateTaskPayloadResolvers = {
   error: async ({error}) => {
     if (!error) return null
     return {
+      // although the error already has the correct shape, without this resolver, the error member in source would not be used as source here, but treated as if it was thrown by graphql
       message: error.message
     }
   },
