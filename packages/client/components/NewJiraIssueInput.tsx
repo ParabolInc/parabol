@@ -241,7 +241,7 @@ const NewJiraIssueInput = (props: Props) => {
 
   if (createTaskError) {
     return (
-      <Item onBlur={() => setCreateTaskError(undefined)}>
+      <Item>
         <Checkbox active disabled />
         <Issue>
           <Error>{createTaskError}</Error>
