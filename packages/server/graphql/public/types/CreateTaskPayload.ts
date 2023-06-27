@@ -4,13 +4,20 @@ import errorFilter from '../../errorFilter'
 import {CreateTaskPayloadResolvers} from '../resolverTypes'
 
 export type CreateTaskPayloadSource = {
-  taskId: string
+  error?: Error
+  taskId?: string
   notificationIds?: string[]
 }
 
 const CreateTaskPayload: CreateTaskPayloadResolvers = {
+  error: async ({error}) => {
+    if (!error) return null
+    return {
+      message: error.message
+    }
+  },
   task: async ({taskId}, _args, {authToken, dataLoader}) => {
-    const taskDoc = await dataLoader.get('tasks').load(taskId)
+    const taskDoc = taskId && (await dataLoader.get('tasks').load(taskId))
     if (!taskDoc) return null
     const {userId, tags, teamId} = taskDoc
     const isViewer = userId === getUserId(authToken)

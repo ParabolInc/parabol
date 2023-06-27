@@ -10,6 +10,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
+import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
@@ -149,6 +150,12 @@ const NewJiraIssueInput = (props: Props) => {
   const {integrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
+  const [createTaskError, setCreateTaskError] = useTimedState()
+  useEffect(() => {
+    if (isEditing) {
+      setCreateTaskError(undefined)
+    }
+  }, [isEditing])
   const projects = integrations.atlassian?.projects
   const firstProject = projects?.find((project) => project.key)
   const cloudId = firstProject?.cloudId
@@ -201,7 +208,12 @@ const NewJiraIssueInput = (props: Props) => {
       }
     }
     const handleCompleted: CompletedHandler = (res) => {
-      const integration = res.createTask?.task?.integration ?? null
+      const {error, task} = res.createTask
+      if (error) {
+        setCreateTaskError(error.message)
+      }
+      if (error || !task) return
+      const {integration} = task
       if (!integration) return
       const {issueKey} = integration
       const pokerScopeVariables = {
@@ -227,6 +239,17 @@ const NewJiraIssueInput = (props: Props) => {
     setSelectedProjectKey(projectKey)
   }
 
+  if (createTaskError) {
+    return (
+      <Item onBlur={() => setCreateTaskError(undefined)}>
+        <Checkbox active disabled />
+        <Issue>
+          <Error>{createTaskError}</Error>
+          <StyledLink>{selectedProjectKey}</StyledLink>
+        </Issue>
+      </Item>
+    )
+  }
   if (!isEditing) return null
   return (
     <>
