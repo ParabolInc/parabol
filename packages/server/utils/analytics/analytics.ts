@@ -30,6 +30,7 @@ export type OrgTierChangeEventProperties = {
   newTier: string
   reasonsForLeaving?: ReasonToDowngradeEnum[]
   otherTool?: string
+  billingLeaderEmail?: string
 }
 
 export type TaskProperties = {

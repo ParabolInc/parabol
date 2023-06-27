@@ -59,8 +59,14 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     .filter({orgId, removedAt: null})
     .nth(0)
     .run()
-  if (organizationUser.role === role) return null
   const {id: organizationUserId} = organizationUser
+  if (organizationUser.role === role) {
+    return {
+      orgId,
+      organizationUserId,
+      notificationIdsAdded: []
+    }
+  }
   await r.table('OrganizationUser').get(organizationUserId).update({role}).run()
 
   const modificationType = role === 'BILLING_LEADER' ? 'add' : 'remove'

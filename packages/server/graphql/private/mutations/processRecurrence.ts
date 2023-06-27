@@ -1,7 +1,7 @@
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
-import {RRule, datetime} from 'rrule'
+import {RRule} from 'rrule'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt, {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
@@ -49,6 +49,7 @@ const startRecurringTeamPrompt = async (
   analytics.meetingStarted(facilitatorId, meeting)
   const data = {teamId, meetingId: meeting.id}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+  return undefined
 }
 
 const processRecurrence: MutationResolvers['processRecurrence'] = async (_source, {}, context) => {

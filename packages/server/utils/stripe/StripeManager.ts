@@ -17,8 +17,57 @@ export default class StripeManager {
     }
   }
 
-  async attachPaymentToCustomer(customerId: string, paymentMethodId: string) {
-    return this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+  async attachPaymentToCustomer(
+    customerId: string,
+    paymentMethodId: string
+  ): Promise<Stripe.Response<Stripe.PaymentMethod> | Error> {
+    try {
+      return await this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
+  async retrieveCardDetails(paymentMethodId: string): Promise<Stripe.PaymentMethod.Card | Error> {
+    try {
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(paymentMethodId)
+      if (paymentMethod.type !== 'card') {
+        throw new Error('Payment method is not a card')
+      } else if (!paymentMethod.card) {
+        throw new Error('Payment method does not have a card')
+      }
+      return paymentMethod.card
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
+  async retrieveDefaultCardDetails(customerId: string): Promise<Stripe.PaymentMethod.Card | Error> {
+    try {
+      const customer = await this.stripe.customers.retrieve(customerId)
+      if (customer.deleted) {
+        throw new Error('Customer has been deleted')
+      }
+      const defaultPaymentMethodId = customer.invoice_settings.default_payment_method
+      if (!defaultPaymentMethodId) {
+        throw new Error('No default payment method found for this customer')
+      }
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(
+        defaultPaymentMethodId as string
+      )
+      if (paymentMethod.type !== 'card') {
+        throw new Error('Default payment method is not a card')
+      }
+      if (!paymentMethod.card) {
+        throw new Error('Default payment method does not have a card')
+      }
+      return paymentMethod.card
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
   }
 
   async createCustomer(orgId: string, email: string, source?: string) {
@@ -54,12 +103,6 @@ export default class StripeManager {
     })
   }
 
-  async createSetupIntent(customerId: string) {
-    return this.stripe.setupIntents.create({
-      customer: customerId
-    })
-  }
-
   async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
@@ -67,7 +110,31 @@ export default class StripeManager {
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
       proration_behavior: 'none',
+      payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'], // expand the payment intent so we can get the client_secret
+      // Use this for testing invoice.created hooks
+      // run `yarn ultrahook` and subscribe
+      // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
+      // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
+      metadata: {
+        orgId
+      },
+      items: [
+        {
+          plan: StripeManager.PARABOL_TEAM_600,
+          quantity
+        }
+      ]
+    })
+  }
+
+  async createTeamSubscriptionOld(customerId: string, orgId: string, quantity: number) {
+    return this.stripe.subscriptions.create({
+      // USE THIS FOR TESTING A FAILING PAYMENT
+      // https://stripe.com/docs/billing/testing
+      // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
+      customer: customerId,
+      proration_behavior: 'none',
       // Use this for testing invoice.created hooks
       // run `yarn ultrahook` and subscribe
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
@@ -123,6 +190,13 @@ export default class StripeManager {
     return this.stripe.customers.listSources(customerId, {object: 'card', limit: 3})
   }
 
+  async listActiveSubscriptions(customerId: string) {
+    return this.stripe.subscriptions.list({
+      customer: customerId,
+      status: 'active'
+    })
+  }
+
   async retrieveCharge(chargeId: string) {
     return this.stripe.charges.retrieve(chargeId)
   }
@@ -132,7 +206,9 @@ export default class StripeManager {
   }
 
   async retrieveInvoice(invoiceId: string) {
-    return this.stripe.invoices.retrieve(invoiceId)
+    return this.stripe.invoices.retrieve(invoiceId, {
+      expand: ['payment_intent']
+    })
   }
 
   async retrieveInvoiceItem(invoiceItemId: string) {

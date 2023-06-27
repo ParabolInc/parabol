@@ -10,9 +10,12 @@ export default class MailManagerDebug extends MailManager {
     Body: ${body}`)
 
     const {html} = options
-    const filename = `/tmp/${to}-${subject.replaceAll(' ', '-')}.html`
-    fs.writeFileSync(filename, html)
-    console.warn(`Wrote email to ${filename}`)
+    // limit filename length so it does not exceed filesystem limits
+    const filename = `${to.slice(0, 50)}-${subject.replaceAll(' ', '-').slice(0, 180)}.html`
+    const folder = '/tmp'
+    fs.writeFileSync(`${folder}/${filename}`, html)
+    // make it a link so you can click it in the terminal
+    console.warn(`Wrote email to file://${folder}/${encodeURIComponent(filename)}`)
     return true
   }
 }

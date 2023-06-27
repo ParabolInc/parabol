@@ -19,6 +19,7 @@ import {useFragment} from 'react-relay'
 import clsx from 'clsx'
 import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
 import {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
+import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
 
 const ACTION_BUTTON_CLASSES =
   'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
@@ -42,6 +43,7 @@ const TeamPickerModal = (props: Props) => {
         id
         tier
         name
+        orgId
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
       }
@@ -135,6 +137,14 @@ const TeamPickerModal = (props: Props) => {
     }
   }
 
+  const handleUpgrade = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'cloneTemplateAL',
+      meetingType: type
+    })
+    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
+  }
+
   return (
     <div className='w-[440px] bg-white p-6'>
       <div className='flex flex-col gap-4'>
@@ -150,6 +160,12 @@ const TeamPickerModal = (props: Props) => {
           selectedTeamRef={selectedTeam}
           teamsRef={teams}
         />
+        {selectedTeam.tier === 'starter' && (
+          <div>
+            This team is on the <b>Starter</b> plan. <b>Upgrade</b> to clone and edit templates on
+            this team.
+          </div>
+        )}
         {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
         <div className='flex gap-2.5 self-end'>
           <button
@@ -161,16 +177,29 @@ const TeamPickerModal = (props: Props) => {
           >
             Cancel
           </button>
-          <button
-            className={clsx(
-              ACTION_BUTTON_CLASSES,
-              'bg-sky-500 px-4 py-2 text-white hover:bg-sky-600',
-              submitting && 'cursor-wait'
-            )}
-            onClick={handleSelectTeam}
-          >
-            Clone Template
-          </button>
+          {selectedTeam.tier === 'starter' ? (
+            <button
+              className={clsx(
+                ACTION_BUTTON_CLASSES,
+                'bg-rose-500 px-4 py-2 text-white hover:bg-rose-600',
+                submitting && 'cursor-wait'
+              )}
+              onClick={handleUpgrade}
+            >
+              Upgrade Now
+            </button>
+          ) : (
+            <button
+              className={clsx(
+                ACTION_BUTTON_CLASSES,
+                'bg-sky-500 px-4 py-2 text-white hover:bg-sky-600',
+                submitting && 'cursor-wait'
+              )}
+              onClick={handleSelectTeam}
+            >
+              Clone Template
+            </button>
+          )}
         </div>
       </div>
     </div>

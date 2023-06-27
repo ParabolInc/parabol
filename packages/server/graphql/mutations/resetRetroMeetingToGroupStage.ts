@@ -65,6 +65,7 @@ const resetRetroMeetingToGroupStage = {
     const newPhases = phases.map((phase, index) => {
       switch (phase.phaseType) {
         case CHECKIN:
+        case 'TEAM_HEALTH':
         case REFLECT:
           return phase
         case GROUP: {
