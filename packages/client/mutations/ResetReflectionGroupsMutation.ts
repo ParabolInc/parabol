@@ -7,13 +7,18 @@ graphql`
   fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsSuccess {
     meeting {
       id
+      resetReflectionGroups {
+        groupTitle
+      }
       reflectionGroups {
         id
         title
+        promptId
         smartTitle
         reflections {
           id
           plaintextContent
+          reflectionGroupId
         }
       }
     }
@@ -28,7 +33,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ResetReflectionGroupsMutation_part @relay(mask: false)
+      ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
     }
   }
 `

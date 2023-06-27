@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -28,13 +27,13 @@ const autogroup: MutationResolvers['autogroup'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
-  const {meetingType, autogroupReflectionGroups, teamId} = meeting as MeetingRetrospective
-  if (!autogroupReflectionGroups) {
-    return standardError(new Error('No autogroup reflection groups found'), {userId: viewerId})
+  if (meeting.meetingType !== 'retrospective') {
+    return standardError(new Error('Incorrect meeting type'), {userId: viewerId})
   }
 
-  if (meetingType !== 'retrospective') {
-    return standardError(new Error('Incorrect meeting type'), {userId: viewerId})
+  const {autogroupReflectionGroups, teamId} = meeting
+  if (!autogroupReflectionGroups) {
+    return standardError(new Error('No autogroup reflection groups found'), {userId: viewerId})
   }
 
   if (!isTeamMember(authToken, teamId)) {
@@ -71,6 +70,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
     }),
     r.table('NewMeeting').get(meetingId).update({resetReflectionGroups}).run()
   ])
+  meeting.resetReflectionGroups = resetReflectionGroups
 
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
