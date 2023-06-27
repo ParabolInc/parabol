@@ -57,7 +57,6 @@ const autogroup: MutationResolvers['autogroup'] = async (
   )
 
   const data = {meetingId}
-
   publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
   return data
 }
