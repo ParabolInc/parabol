@@ -35,7 +35,7 @@ tracer.use('ioredis').use('http').use('pg').use('fs')
 const onKill = async () => {
   r.getPoolMaster()?.drain()
   const healthChecker = new ServerHealthChecker()
-  await healthChecker.reportDeadServers([process.env.SERVER_ID!])
+  await healthChecker.cleanUserPresence()
   process.exit()
 }
 

@@ -10,8 +10,8 @@ const listenHandler = (listenSocket: us_listen_socket) => {
     console.log(`\n🔥🔥🔥 Server ID: ${SERVER_ID}. Ready for Sockets: Port ${PORT} 🔥🔥🔥`)
     getGraphQLExecutor().subscribe()
     const healthChecker = new ServerHealthChecker()
-    // pinging on startup isn't required, but if one shutdown abruptly, checking on startup will fix that
-    healthChecker.ping()
+    // cleaning on startup is useful in case a server shutdown abruptly
+    healthChecker.cleanUserPresence()
   } else {
     console.log(`❌❌❌    Port ${PORT} is in use!    ❌❌❌`)
   }

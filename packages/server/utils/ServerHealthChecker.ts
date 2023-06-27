@@ -11,43 +11,38 @@ const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
 
 export default class ServerHealthChecker {
-  publisher = new Redis(REDIS_URL, {connectionName: 'serverHealth_pub'})
-  subscriber = new Redis(REDIS_URL, {connectionName: 'serverHealth_sub'})
-  pendingPongs: null | Set<string> = null
+  private publisher = new Redis(REDIS_URL, {connectionName: 'serverHealth_pub'})
+  private subscriber = new Redis(REDIS_URL, {connectionName: 'serverHealth_sub'})
+  private remoteSocketServers: null | string[] = null
   constructor() {
     this.subscriber.on('message', (channel, remoteServerId) => {
       if (channel === 'socketServerPing') {
         if (remoteServerId === INSTANCE_ID) return
         this.publisher.publish(`socketServerPong:${remoteServerId}`, INSTANCE_ID)
       } else if (channel === `socketServerPong:${INSTANCE_ID}`) {
-        this.pendingPongs?.delete(remoteServerId)
+        if (!this.remoteSocketServers) {
+          console.error('unsolicited pong received before getLivingServers was called')
+        } else {
+          this.remoteSocketServers.push(remoteServerId)
+        }
       }
     })
     this.subscriber.subscribe('socketServerPing', `socketServerPong:${INSTANCE_ID}`)
-    this.publisher.sadd('socketServers', INSTANCE_ID)
   }
 
-  // get a list of servers who should be alive
-  // ping all servers
-  // if there are servers who say they're alive but they have responded, flag them as dead
-  async ping() {
-    if (this.pendingPongs) return
-    this.pendingPongs = new Set()
-    const socketServers = await this.publisher.smembers('socketServers')
-    this.pendingPongs = new Set(socketServers.filter((id) => id !== INSTANCE_ID))
+  async getLivingServers() {
+    this.remoteSocketServers = []
     await this.publisher.publish('socketServerPing', INSTANCE_ID)
     await sleep(500)
-    // if a server hasn't replied in 500ms, assume it is offline
-    const deadServerIds = [...this.pendingPongs]
-    await this.reportDeadServers(deadServerIds)
-    this.pendingPongs = null
+    const socketServers = [INSTANCE_ID, ...this.remoteSocketServers]
+    this.remoteSocketServers = null
+    return socketServers
   }
 
-  async reportDeadServers(deadServerIds: string[]) {
-    if (deadServerIds.length === 0) return
+  async cleanUserPresence() {
+    const socketServers = await this.getLivingServers()
     const authToken = new ServerAuthToken()
-    // remove the dead servers from the set of socket servers in redis
-    await this.publisher.srem('socketServers', deadServerIds)
+
     // find all connected users and prune the dead servers from their list of connections
     const userPresenceStream = this.publisher.scanStream({match: 'presence:*'})
     userPresenceStream.on('data', async (keys) => {
@@ -66,7 +61,7 @@ export default class ServerHealthChecker {
           return connections.map((connection) => {
             const presence = JSON.parse(connection) as UserPresence
             const {socketInstanceId, socketId} = presence
-            if (!deadServerIds.includes(socketInstanceId)) return
+            if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
             return publishInternalGQL({
               authToken,
