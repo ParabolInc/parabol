@@ -23,15 +23,13 @@ const chronos = () => {
   const {CHRONOS_PULSE_EMAIL, CHRONOS_PULSE_CHANNEL, SERVER_ID} = process.env
   if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
   const canPulse = !!CHRONOS_PULSE_EMAIL && !!CHRONOS_PULSE_CHANNEL
-  const timeZone = 'America/New_York'
 
   // listen to responses
   getGraphQLExecutor().subscribe()
 
   new CronJob({
-    cronTime: '0 0 0 * * *' /* at 12:00am */,
+    cronTime: '0 0 4 * * *' /* 4AM UTC */,
     start: canPulse,
-    timeZone,
     onTick() {
       const query = `query DailyPulse($after: DateTime!, $email: String!, $channelId: ID!) { dailyPulse(after: $after, email: $email, channelId: $channelId)}`
       const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24).toJSON()
@@ -45,9 +43,8 @@ const chronos = () => {
   })
 
   new CronJob({
-    cronTime: '0 0 0 * * 1' /* at 12:00am on Monday */,
+    cronTime: '0 0 4 * * 1' /* 4AM UTC on Monday */,
     start: canPulse,
-    timeZone,
     onTick() {
       const query = `query WeeklyPulse($after: DateTime!, $email: String!, $channelId: ID!) { dailyPulse(after: $after, email: $email, channelId: $channelId)}`
       const lastWeek = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toJSON()
@@ -61,9 +58,8 @@ const chronos = () => {
   })
 
   new CronJob({
-    cronTime: '0 0 6 * * *' /* at 6:00 am daily */,
+    cronTime: '0 0 10 * * *' /* 10AM UTC */,
     start: true,
-    timeZone,
     onTick() {
       const query = 'mutation SendBatchNotificationEmails { sendBatchNotificationEmails }'
       publishWebhookGQL(query, {})
@@ -74,7 +70,6 @@ const chronos = () => {
     cronTime:
       '0 */10 * * * *' /* every 10th minute, set up jobs scheduled within the next 10:05mins */,
     start: true,
-    timeZone,
     onTick() {
       const query = 'mutation RunScheduledJobs { runScheduledJobs(seconds: 605) }'
       publishWebhookGQL(query, {})
@@ -84,7 +79,6 @@ const chronos = () => {
   new CronJob({
     cronTime: '0 0 0 1,15 * *' /* every 1st and 15th day of the month */,
     start: true,
-    timeZone,
     onTick() {
       const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
       const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
@@ -95,7 +89,6 @@ const chronos = () => {
   new CronJob({
     cronTime: '0 */5 * * * *' /* every 5 minutes */,
     start: true,
-    timeZone,
     onTick() {
       const query = `
         mutation ProcessRecurrence{

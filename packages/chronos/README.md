@@ -13,6 +13,11 @@ When it is time for a job to run, it sends a request to the gql-executor via Red
 
 Chronos can be started with `node dist/chronos.js`.
 
+## ENV Vars
+
+Any env vars with the `CHRONOS_` prefix is used exclusively by chronos.
+Chronos additionally uses the `SERVER_ID` env var to name itself, jobs, and redis channels
+
 ## Development
 
 To test new CronJobs:
