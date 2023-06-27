@@ -1,12 +1,11 @@
-// import {ResetReflectionGroupsSuccessResolvers} from '../resolverTypes'
+import {ResetReflectionGroupsSuccessResolvers} from '../resolverTypes'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 
 export type ResetReflectionGroupsSuccessSource = {
-  id: string
+  meetingId: string
 }
 
-// const ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccessResolvers = {
-const ResetReflectionGroupsSuccess: any = {
+const ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     return meeting as MeetingRetrospective

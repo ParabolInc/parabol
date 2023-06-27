@@ -65,8 +65,11 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     .flat()
 
   await Promise.all(addReflectionPromises)
-
-  await r.table('NewMeeting').get(meetingId).replace(r.row.without('resetReflectionGroups')).run()
+  await r
+    .table('NewMeeting')
+    .get(meetingId)
+    .replace(r.row.without('resetReflectionGroups') as any)
+    .run()
   meeting.resetReflectionGroups = undefined
 
   const data = {meetingId}
