@@ -27,6 +27,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import {Elevation} from '../styles/elevation'
 import useTooltip from '../hooks/useTooltip'
 import {MenuPosition} from '../hooks/useCoords'
+import SecondaryButton from './SecondaryButton'
 
 const ButtonWrapper = styled('div')({
   display: 'flex',
@@ -100,24 +101,27 @@ const RetroGroupPhase = (props: Props) => {
             <PhaseHeaderDescription>
               {'Drag cards to group by common topics'}
             </PhaseHeaderDescription>
-            {suggestGroups && (
-              <ButtonWrapper>
-                <StyledButton
-                  disabled={!autogroupReflectionGroups?.length}
-                  onClick={handleAutoGroupClick}
-                >
-                  {'Suggest Groups ✨'}
-                </StyledButton>
-                <div
-                  onMouseEnter={openTooltip}
-                  onMouseLeave={closeTooltip}
-                  className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
-                  ref={originRef}
-                >
-                  <InfoIcon />
-                </div>
-              </ButtonWrapper>
-            )}
+            {suggestGroups &&
+              (true ? (
+                <StyledButton onClick={handleAutoGroupClick}>{'Reset Groups'}</StyledButton>
+              ) : (
+                <ButtonWrapper>
+                  <StyledButton
+                    disabled={!autogroupReflectionGroups?.length}
+                    onClick={handleAutoGroupClick}
+                  >
+                    {'Suggest Groups ✨'}
+                  </StyledButton>
+                  <div
+                    onMouseEnter={openTooltip}
+                    onMouseLeave={closeTooltip}
+                    className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
+                    ref={originRef}
+                  >
+                    <InfoIcon />
+                  </div>
+                </ButtonWrapper>
+              ))}
           </MeetingTopBar>
           <PhaseWrapper>
             <StageTimerDisplay meeting={meeting} canUndo={true} />

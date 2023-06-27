@@ -51,10 +51,9 @@ const autogroup: MutationResolvers['autogroup'] = async (
       reflectionIds
     }
   })
-  await r.table('NewMeeting').get(meetingId).update({resetReflectionGroups}).run()
 
-  await Promise.all(
-    autogroupReflectionGroups.flatMap((group) => {
+  await Promise.all([
+    ...autogroupReflectionGroups.flatMap((group) => {
       const {groupTitle, reflectionIds} = group
       const reflectionsInGroup = reflections.filter(({id}) => reflectionIds.includes(id))
       const firstReflectionInGroup = reflectionsInGroup[0]
@@ -69,8 +68,9 @@ const autogroup: MutationResolvers['autogroup'] = async (
           groupTitle
         )
       )
-    })
-  )
+    }),
+    r.table('NewMeeting').get(meetingId).update({resetReflectionGroups}).run()
+  ])
 
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
