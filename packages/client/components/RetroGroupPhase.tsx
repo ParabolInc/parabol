@@ -79,13 +79,24 @@ const RetroGroupPhase = (props: Props) => {
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
+  const tooltipSuggestGroupsText = `Click to group cards by common topics. Don't worry, you'll be able to undo this! ${
+    tier === 'starter'
+      ? `This is a premium feature that we'll share with you during your first few retros.`
+      : ''
+  }`
+  const tooltipResetText = `Reset your groups to the way they were before you clicked Suggest Groups`
+  const tooltipText = hasSuggestedGroups ? tooltipResetText : tooltipSuggestGroupsText
 
   const handleAutoGroupClick = () => {
     if (!hasSuggestedGroups) {
-      AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
+      // AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
       // TODO: show ungroup button instead
       setHasSuggestedGroups(true)
     }
+  }
+
+  const handleResetGroupsClick = () => {
+    setHasSuggestedGroups(false)
   }
 
   return (
@@ -102,8 +113,18 @@ const RetroGroupPhase = (props: Props) => {
               {'Drag cards to group by common topics'}
             </PhaseHeaderDescription>
             {suggestGroups &&
-              (true ? (
-                <StyledButton onClick={handleAutoGroupClick}>{'Reset Groups'}</StyledButton>
+              (hasSuggestedGroups ? (
+                <ButtonWrapper>
+                  <StyledButton onClick={handleResetGroupsClick}>{'Reset Groups'}</StyledButton>
+                  <div
+                    onMouseEnter={openTooltip}
+                    onMouseLeave={closeTooltip}
+                    className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
+                    ref={originRef}
+                  >
+                    <InfoIcon />
+                  </div>
+                </ButtonWrapper>
               ) : (
                 <ButtonWrapper>
                   <StyledButton
@@ -131,13 +152,7 @@ const RetroGroupPhase = (props: Props) => {
           </PhaseWrapper>
         </MeetingHeaderAndPhase>
       </MeetingContent>
-      {tooltipPortal(
-        `Click to group cards by common topics. Don't worry, you'll be able to undo this! ${
-          tier === 'starter'
-            ? `This is a premium feature that we'll share with you during your first few retros.`
-            : ''
-        }`
-      )}
+      {tooltipPortal(tooltipText)}
     </>
   )
 }
