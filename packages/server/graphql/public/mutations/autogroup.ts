@@ -1,5 +1,7 @@
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
@@ -10,8 +12,10 @@ const autogroup: MutationResolvers['autogroup'] = async (
   {meetingId}: {meetingId: string},
   context: GQLContext
 ) => {
-  const {authToken, dataLoader} = context
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId}
   const [meeting, reflections] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
@@ -53,6 +57,8 @@ const autogroup: MutationResolvers['autogroup'] = async (
   )
 
   const data = {meetingId}
+
+  publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
   return data
 }
 
