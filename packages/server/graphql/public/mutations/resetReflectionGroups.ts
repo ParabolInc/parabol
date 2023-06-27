@@ -4,6 +4,7 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
+import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from '../../mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -55,25 +56,15 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     resetGroupsMapper[newReflectionGroupId] = {reflectionIds, groupTitle}
   }
 
-  // // Second loop: Add reflections to groups
-  // const addReflectionPromises = Object.entries(resetGroupsMapper).flatMap(
-  //   ([newReflectionGroupId, {reflectionIds: oldReflectionIds, groupTitle}]) =>
-  //     oldReflectionIds.map((reflectionId) =>
-  //       addReflectionToGroup(reflectionId, newReflectionGroupId, context, groupTitle)
-  //     )
-  // )
-  const entries = Object.entries(resetGroupsMapper)
+  const addReflectionPromises = Object.entries(resetGroupsMapper)
+    .map(([newReflectionGroupId, {reflectionIds, groupTitle}]) => {
+      return reflectionIds.map((reflectionId) => {
+        return addReflectionToGroup(reflectionId, newReflectionGroupId, context, groupTitle)
+      })
+    })
+    .flat()
 
-  // const addReflectionPromises = entries
-  //   .map(([newReflectionGroupId, {reflectionIds, groupTitle}]) => {
-  //     return reflectionIds.map((reflectionId) => {
-  //       return addReflectionToGroup(reflectionId, newReflectionGroupId, context, groupTitle)
-  //     })
-  //   })
-  //   .flat()
-
-  // const res = await Promise.all(addReflectionPromises)
-  // console.log('🚀 ~ res:', res)
+  await Promise.all(addReflectionPromises)
 
   await r.table('NewMeeting').get(meetingId).replace(r.row.without('resetReflectionGroups')).run()
   meeting.resetReflectionGroups = undefined
