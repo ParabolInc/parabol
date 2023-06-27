@@ -1,29 +1,30 @@
+import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
-import * as ScrollArea from '@radix-ui/react-scroll-area'
 import {Link} from 'react-router-dom'
-
-import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
+import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import useRouter from '../../hooks/useRouter'
+import useSearchFilter from '../../hooks/useSearchFilter'
+import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import IconLabel from '../IconLabel'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityId, getActivityIllustration} from './ActivityIllustrations'
-import useRouter from '../../hooks/useRouter'
-import SearchBar from './SearchBar'
-import useSearchFilter from '../../hooks/useSearchFilter'
-import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import CreateActivityCard from './CreateActivityCard'
-import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {
+  CategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
-  CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
-import IconLabel from '../IconLabel'
+import CreateActivityCard from './CreateActivityCard'
+import SearchBar from './SearchBar'
+import {ActivityCardImage} from './ActivityCard'
+import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -64,6 +65,7 @@ graphql`
     isRecommended
     isFree
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
+    ...ActivityLibraryCardDescription_template
   }
 `
 
@@ -127,30 +129,9 @@ export const ActivityLibrary = (props: Props) => {
   const {viewer} = data
   const {featureFlags, availableTemplates} = viewer
 
-  const templates = useMemo(
-    () => [
-      {
-        id: 'action',
-        type: 'action' as MeetingTypeEnum,
-        name: 'Check-in',
-        team: {name: 'Parabol'},
-        category: 'standup',
-        isRecommended: true,
-        isFree: true
-      } as const,
-      {
-        id: 'teamPrompt',
-        type: 'teamPrompt' as MeetingTypeEnum,
-        name: 'Standup',
-        team: {name: 'Parabol'},
-        category: 'standup',
-        isRecommended: true,
-        isFree: true
-      } as const,
-      ...availableTemplates.edges.map((edge) => edge.node)
-    ],
-    [availableTemplates]
-  )
+  const templates = useMemo(() => {
+    return availableTemplates.edges.map((edge) => edge.node)
+  }, [availableTemplates])
 
   const {
     query: searchQuery,
@@ -268,7 +249,7 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
+            <div className='mx-auto mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
               {templatesToRender.map((template) => {
                 const activityIllustration = getActivityIllustration(template.id as ActivityId)
 
@@ -282,11 +263,10 @@ export const ActivityLibrary = (props: Props) => {
                     className='flex focus:rounded-md focus:outline-primary'
                   >
                     <ActivityLibraryCard
-                      className='flex-1'
+                      className='group aspect-[256/160] flex-1'
                       key={template.id}
                       theme={CATEGORY_THEMES[template.category as CategoryID]}
                       title={template.name}
-                      imageSrc={activityIllustration}
                       badge={
                         !template.isFree ? (
                           <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>
@@ -294,7 +274,16 @@ export const ActivityLibrary = (props: Props) => {
                           </ActivityBadge>
                         ) : null
                       }
-                    />
+                    >
+                      <ActivityCardImage
+                        className='group-hover/card:hidden'
+                        src={activityIllustration}
+                      />
+                      <ActivityLibraryCardDescription
+                        className='hidden group-hover/card:flex'
+                        templateRef={template}
+                      />
+                    </ActivityLibraryCard>
                   </Link>
                 )
               })}

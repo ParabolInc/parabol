@@ -25,7 +25,7 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
     r
       .table('Notification')
       // Only include notifications which occurred within the last day
-      .filter((row) => row('createdAt').gt(yesterday))
+      .filter((row: RValue) => row('createdAt').gt(yesterday))
       .filter({status: 'UNREAD'})
       // de-dup users
       .group('userId') as any

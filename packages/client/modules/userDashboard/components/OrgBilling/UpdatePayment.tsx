@@ -50,12 +50,12 @@ const CARD_ELEMENT_OPTIONS = {
 }
 
 type Props = {
-  setIsUpdating: (isUpdating: boolean) => void
+  handleClose: () => void
   orgId: string
 }
 
 const UpdatePayment = (props: Props) => {
-  const {setIsUpdating, orgId} = props
+  const {handleClose, orgId} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const [isLoading, setIsLoading] = useState(false)
@@ -123,7 +123,7 @@ const UpdatePayment = (props: Props) => {
         return
       }
       onCompleted()
-      setIsUpdating(false)
+      handleClose()
     }
 
     UpdateCreditCardMutation(
@@ -219,7 +219,7 @@ const UpdatePayment = (props: Props) => {
           </UpgradeButton>
         </div>
         <div className='mt-4 flex w-1/4 justify-end'>
-          <SecondaryButton size='medium' type={'submit'} onClick={() => setIsUpdating(false)}>
+          <SecondaryButton size='medium' type='button' onClick={handleClose}>
             {'Cancel'}
           </SecondaryButton>
         </div>

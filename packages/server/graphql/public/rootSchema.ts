@@ -83,7 +83,8 @@ const legacyParabolWithNestedSchema = mergeSchemas({
 // See https://github.com/ardatan/graphql-tools/issues/4367
 const parabolWithNestedResolversSchema = addResolversToSchema({
   schema: legacyParabolWithNestedSchema,
-  resolvers: composeResolvers(resolvers, permissions)
+  resolvers: composeResolvers(resolvers, permissions),
+  inheritResolversFromInterfaces: true
 })
 
 const addRequestors = (schema: GraphQLSchema) => {

@@ -89,20 +89,24 @@ const OrgBillingCreditCardInfo = (props: Props) => {
   if (!creditCard) return null
   const {brand, last4, expiry} = creditCard
 
+  const handleClose = () => {
+    setIsUpdating(false)
+  }
+
+  const handleStartUpdating = () => {
+    setIsUpdating(true)
+  }
+
   if (isUpdating) {
     return (
       <StyledPanel label='Credit Card'>
         <StyledRow>
           <Elements stripe={stripePromise}>
-            <UpdatePayment setIsUpdating={setIsUpdating} orgId={orgId} />
+            <UpdatePayment handleClose={handleClose} orgId={orgId} />
           </Elements>
         </StyledRow>
       </StyledPanel>
     )
-  }
-
-  const handleClick = () => {
-    setIsUpdating(true)
   }
 
   return (
@@ -124,7 +128,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
             </div>
           </InfoBlocks>
         </CreditCardInfo>
-        <SecondaryButton onClick={handleClick}>{'Update'}</SecondaryButton>
+        <SecondaryButton onClick={handleStartUpdating}>{'Update'}</SecondaryButton>
       </InfoAndUpdate>
     </StyledPanel>
   )

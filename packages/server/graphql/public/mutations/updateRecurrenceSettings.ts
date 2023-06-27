@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
-import {RRule, datetime} from 'rrule'
+import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
@@ -25,7 +25,7 @@ export const startNewMeetingSeries = async (
 
   const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
-    title: meetingSeriesName || meetingName.split('-')[0].trim(), // if no name is provided, we use the name of the first meeting without the date
+    title: meetingSeriesName || meetingName.split('-')[0]!.trim(), // if no name is provided, we use the name of the first meeting without the date
     recurrenceRule: recurrenceRule.toString(),
     // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
     duration: 0,

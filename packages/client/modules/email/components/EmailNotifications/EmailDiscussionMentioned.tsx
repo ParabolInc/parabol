@@ -68,7 +68,7 @@ const EmailDiscussionMentioned = (props: Props) => {
   const {meeting, author, comment, discussion} = notification
   const {rasterPicture: authorPicture, preferredName: authorName} = author
   const {stage} = discussion
-  const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
+  const {id: meetingId, name: meetingName} = meeting
   const {id: stageId, response} = stage ?? {}
 
   const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`

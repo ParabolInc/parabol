@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
 import IconLabel from '../../IconLabel'
-import {ActivityCard} from '../ActivityCard'
+import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import {useActivityDetails} from './hooks/useActivityDetails'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
@@ -118,9 +118,10 @@ const ActivityDetails = (props: Props) => {
               <ActivityCard
                 className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
                 theme={CATEGORY_THEMES[activity.category]}
-                imageSrc={activity.illustration}
                 badge={null}
-              />
+              >
+                <ActivityCardImage src={activity.illustration} />
+              </ActivityCard>
               <div className='pb-20'>
                 <div className='mb-10 space-y-2 pl-14'>
                   <div className='flex min-h-[40px] items-center'>
