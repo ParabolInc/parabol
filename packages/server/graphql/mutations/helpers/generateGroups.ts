@@ -3,6 +3,10 @@ import Reflection from '../../../database/types/Reflection'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
+import publish from '../../../utils/publish'
+
+const SERVER_ID = process.env.SERVER_ID
 
 const generateGroups = async (
   reflections: Reflection[],
@@ -53,6 +57,10 @@ const generateGroups = async (
 
   const r = await getRethink()
   await r.table('NewMeeting').get(meetingId).update({autogroupReflectionGroups}).run()
+  const data = {meetingId}
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId: SERVER_ID}
+  publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
   return autogroupReflectionGroups
 }
 

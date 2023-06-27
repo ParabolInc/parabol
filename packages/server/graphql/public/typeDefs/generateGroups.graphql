@@ -1,0 +1,6 @@
+"""
+The success response needed by the meeting subscription
+"""
+type GenerateGroupsSuccess {
+  meeting: RetrospectiveMeeting!
+}
