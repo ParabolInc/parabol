@@ -136,37 +136,49 @@ const subCategoryMapping: Record<SubCategory, string> = {
   neverTried: 'Try these activities'
 }
 
-const activityGridList = (templatesToRender: Template[], selectedCategory: string) => {
-  return templatesToRender.map((template) => {
-    return (
-      <Link
-        key={template.id}
-        to={{
-          pathname: `/activity-library/details/${template.id}`,
-          state: {prevCategory: selectedCategory}
-        }}
-        className='flex focus:rounded-md focus:outline-primary'
-      >
-        <ActivityLibraryCard
-          className='group aspect-[256/160] flex-1'
-          key={template.id}
-          theme={CATEGORY_THEMES[template.category as CategoryID]}
-          title={template.name}
-          badge={
-            !template.isFree ? (
-              <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
-            ) : null
-          }
-        >
-          <ActivityCardImage className='group-hover/card:hidden' src={template.illustrationUrl} />
-          <ActivityLibraryCardDescription
-            className='hidden group-hover/card:flex'
-            templateRef={template}
-          />
-        </ActivityLibraryCard>
-      </Link>
-    )
-  })
+interface ActivityGridProps {
+  templates: Template[]
+  selectedCategory: string
+}
+
+const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
+  return (
+    <>
+      {templates.map((template) => {
+        return (
+          <Link
+            key={template.id}
+            to={{
+              pathname: `/activity-library/details/${template.id}`,
+              state: {prevCategory: selectedCategory}
+            }}
+            className='flex focus:rounded-md focus:outline-primary'
+          >
+            <ActivityLibraryCard
+              className='group aspect-[256/160] flex-1'
+              key={template.id}
+              theme={CATEGORY_THEMES[template.category as CategoryID]}
+              title={template.name}
+              badge={
+                !template.isFree ? (
+                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
+                ) : null
+              }
+            >
+              <ActivityCardImage
+                className='group-hover/card:hidden'
+                src={template.illustrationUrl}
+              />
+              <ActivityLibraryCardDescription
+                className='hidden group-hover/card:flex'
+                templateRef={template}
+              />
+            </ActivityLibraryCard>
+          </Link>
+        )
+      })}
+    </>
+  )
 }
 
 const MAX_PER_SUBCATEGORY = 6
@@ -326,7 +338,10 @@ export const ActivityLibrary = (props: Props) => {
                             {subCategoryMapping[subCategory]}
                           </div>
                           <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                            {activityGridList(subCategoryTemplates[subCategory], selectedCategory)}
+                            <ActivityGrid
+                              templates={subCategoryTemplates[subCategory]}
+                              selectedCategory={selectedCategory}
+                            />
                           </div>
                         </>
                       )
@@ -337,14 +352,20 @@ export const ActivityLibrary = (props: Props) => {
                         Other activities
                       </div>
                       <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                        {activityGridList(otherTemplates, selectedCategory)}
+                        <ActivityGrid
+                          templates={otherTemplates}
+                          selectedCategory={selectedCategory}
+                        />
                       </div>
                     </>
                   )}
                 </>
               ) : (
                 <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-                  {activityGridList(templatesToRender as Template[], selectedCategory)}
+                  <ActivityGrid
+                    templates={templatesToRender as Template[]}
+                    selectedCategory={selectedCategory}
+                  />
                 </div>
               )}
             </>
