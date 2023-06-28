@@ -6,6 +6,7 @@ import getRethink from '../../packages/server/database/rethinkDriver'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 import primeIntegrations from './primeIntegrations'
 import pushToCDN from './pushToCDN'
+import standaloneMigrations from './standaloneMigrations'
 
 const PROJECT_ROOT = getProjectRoot()!
 
@@ -21,6 +22,7 @@ const storePersistedQueries = async () => {
 
   const r = await getRethink()
   const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
+  await r.getPoolMaster()?.drain()
   console.log(`Added ${res.inserted} records to the queryMap`)
 }
 
@@ -30,10 +32,11 @@ const preDeploy = async () => {
   dotenvExpand(myEnv)
 
   try {
-    const r = await getRethink()
-    await storePersistedQueries()
-    await r.getPoolMaster()?.drain()
-    await Promise.all([primeIntegrations(), pushToCDN()])
+    // first we migrate DBs
+    await standaloneMigrations()
+
+    // The we can prime the DB & CDN
+    await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])
   } catch (e) {
     console.log('Post deploy error', e)
   }

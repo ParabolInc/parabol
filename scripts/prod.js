@@ -22,13 +22,13 @@ const compile = (config, isSilent) => {
 
 const prod = async (isDeploy, noDeps) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  await generateGraphQLArtifacts()
+  // await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy, noDeps})
   const clientConfig = makeClientConfig({isDeploy, noDeps})
-  await Promise.all([compile(serversConfig), compile(clientConfig)])
+  await Promise.all([compile(serversConfig)])
   if (!isDeploy && !noDeps) {
     // run in development
-    require('./toolbox/preDeploy.js')
+    require('../dist/preDeploy.js')
   }
 }
 

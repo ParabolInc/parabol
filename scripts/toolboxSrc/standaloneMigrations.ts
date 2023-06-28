@@ -2,12 +2,12 @@
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
 import path from 'path'
+import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import cliPgmConfig from '../../packages/server/postgres/pgmConfig'
 import '../webpack/utils/dotenv'
 import pgMigrate from './pgMigrateRunner'
 import * as rethinkMigrate from './rethinkMigrateRunner'
-import {r} from 'rethinkdb-ts'
 
 const migrateRethinkDB = async () => {
   const {hostname, port, path: urlPath} = parse(process.env.RETHINKDB_URL!)
@@ -65,4 +65,7 @@ const migrateDBs = async () => {
   await r.getPoolMaster()?.drain()
 }
 
-migrateDBs()
+// If called via CLI
+if (require.main === module) migrateDBs()
+
+export default migrateDBs

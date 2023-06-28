@@ -34,7 +34,7 @@
     "db:stop": "docker compose -f docker/dev.yml down",
     "db:migrate": "node scripts/migrate.js",
     "deduplicate": "yarn yarn-deduplicate yarn.lock",
-    "predeploy": "node scripts/toolbox/preDeploy.js",
+    "predeploy": "node dist/preDeploy.js",
     "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",
     "lint": "nx run-many --target=lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",

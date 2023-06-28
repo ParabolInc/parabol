@@ -9,7 +9,7 @@ To run in production,
 
 - build the assets with `node scripts/prod.js`
 - If you'd like to uglify & upload assets to the CDN, use `--deploy`
-- Run `node scripts/toolbox/preDeploy.js` to prime the DBs and CDN
+- Run `node dist/preDeploy.js` to prime the DBs and CDN
 
 ## Background
 
