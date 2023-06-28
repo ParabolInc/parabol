@@ -43,6 +43,16 @@ We do this for a couple reasons:
 - It's a single file (...and node_modules)
 - No monkeypatching `require`, all heavy lifting happens during buildtime
 
+## Predeploy
+
+Some scripts must run before the server can start. For example, DB migrations.
+Other scripts are included in the `predeploy` script.
+These scripts include the following:
+
+- Storing persisted GraphQL queries in the DB
+- Priming the database with integration keys pulled from ENV vars
+- pushing assets to a CDN listed in the ENV
+
 ## Why not use X instead?
 
 ### Typescript Composite
