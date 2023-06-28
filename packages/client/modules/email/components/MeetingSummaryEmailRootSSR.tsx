@@ -23,7 +23,6 @@ const query = graphql`
 
 interface Props {
   appOrigin: string
-  environment: Environment
   meetingId: string
 }
 
