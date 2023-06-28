@@ -287,3 +287,9 @@ Anything in the `tailwind.config.js` can be configured to use a CSS variable. Th
 2. When working with old components, the preferred way would be to migrate styles to Tailwind CSS. If the component is big enough, it’s ok to fix/change something and leave Emotion in place. Do your best, though ;)
 3. Gradually improve our `tailwind.config.js` i.e. if you see a spacing value, color, breakpoint or something we use for styling in many places, configure the value in the config and use it via Tailwind CSS generated classes.
 4. When migrating exisiting Emotion components, it might be useful to use Chat GPT with a given prompt: TODO
+
+
+#### Examples of using Tailwind CSS
+
+1. [shadcn/ui](https://ui.shadcn.com/)
+2. [calcom/cal.com: Scheduling infrastructure for absolutely everyone.](https://github.com/calcom/cal.com)
