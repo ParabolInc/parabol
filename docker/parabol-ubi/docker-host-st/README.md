@@ -13,5 +13,3 @@ To run the Parabol UBI in single tenant mode (e.g. simple docker-compose on a do
 💧💧💧 Server ID: 0. Ready for GraphQL Execution 💧💧💧
 💧💧💧 Server ID: 01. Ready for GraphQL Execution 💧💧💧
 ```
-
-6. Run command `docker exec <name>-app-1 yarn predeploy`

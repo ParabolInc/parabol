@@ -37,7 +37,7 @@ services:
     image: #image:tag
     restart: always
     env_file: .env
-    command: bash -c "yarn db:migrate && yarn pg:migrate up && NODE_ENV=production && yarn start"
+    command: bash -c "yarn db:migrate && yarn pg:migrate up && yarn predeploy && NODE_ENV=production && yarn start"
     ports:
       - '3000:3000'
     volumes:
