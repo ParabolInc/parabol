@@ -2,6 +2,8 @@ import ms from 'ms'
 import errorFilter from '../../errorFilter'
 import {ReflectTemplateResolvers} from '../resolverTypes'
 import {getUserId} from '../../../utils/authorization'
+import {DataLoaderWorker} from '../../graphql'
+import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 
 const POPULAR_RETROS = [
   'workingStuckTemplate',
@@ -12,14 +14,16 @@ const POPULAR_RETROS = [
   'fourLsTemplate'
 ]
 
-const getAllMeetingsForTeamIds = async (teamIds: string[], dataLoader) => {
+const getAllRetroMeetingsForTeamIds = async (teamIds: string[], dataLoader: DataLoaderWorker) => {
   const activeMeetings = (await dataLoader.get('activeMeetingsByTeamId').loadMany(teamIds))
     .filter(errorFilter)
     .flat()
+    .filter((meeting) => meeting.meetingType === 'retrospective')
   const completedMeetings = (await dataLoader.get('completedMeetingsByTeamId').loadMany(teamIds))
     .filter(errorFilter)
     .flat()
-  return [...activeMeetings, ...completedMeetings]
+    .filter((meeting) => meeting.meetingType === 'retrospective')
+  return [...activeMeetings, ...completedMeetings] as MeetingRetrospective[]
 }
 
 const ReflectTemplate: ReflectTemplateResolvers = {
@@ -48,12 +52,12 @@ const ReflectTemplate: ReflectTemplateResolvers = {
     }
 
     // Recently Used
-    const allMeetings = await getAllMeetingsForTeamIds(authToken.tms, dataLoader)
+    const allMeetings = await getAllRetroMeetingsForTeamIds(authToken.tms, dataLoader)
 
     if (
       allMeetings
         .filter((meeting) => meeting.createdAt > new Date(Date.now() - ms('30d')))
-        .find((meeting) => meeting.meetingType === 'retrospective' && meeting.templateId === id)
+        .find((meeting) => meeting.templateId === id)
     ) {
       subCategories.push('recentlyUsed')
     }
@@ -66,12 +70,12 @@ const ReflectTemplate: ReflectTemplateResolvers = {
       .filter(errorFilter)
       .flat()
       .map((team) => team.id)
-    const allOrgMeetings = await getAllMeetingsForTeamIds(orgTeamIds, dataLoader)
+    const allOrgMeetings = await getAllRetroMeetingsForTeamIds(orgTeamIds, dataLoader)
     if (
       allOrgMeetings
         .filter((meeting) => meeting.createdAt > new Date(Date.now() - ms('30d')))
         .filter((meeting) => !allMeetings.find((selfMeeting) => selfMeeting.id === meeting.id))
-        .find((meeting) => meeting.meetingType === 'retrospective' && meeting.templateId === id)
+        .find((meeting) => meeting.templateId === id)
     ) {
       subCategories.push('recentlyUsedInOrg')
     }
