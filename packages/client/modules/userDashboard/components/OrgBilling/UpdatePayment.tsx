@@ -17,16 +17,16 @@ import StyledError from '../../../../components/StyledError'
 import {UpdateCreditCardMutation$data} from '../../../../__generated__/UpdateCreditCardMutation.graphql'
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 
-const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
-  background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
-  color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
+const UpgradeButton = styled(PrimaryButton)<{disabled: boolean}>(({disabled}) => ({
+  background: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
+  color: disabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
   boxShadow: 'none',
   marginTop: 16,
   width: '100%',
   elevation: 0,
   '&:hover, &:focus': {
     boxShadow: 'none',
-    background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
+    background: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
   }
 }))
 
@@ -209,12 +209,7 @@ const UpdatePayment = (props: Props) => {
       <div className='flex justify-start'>{errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}</div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
         <div className='w-1/4'>
-          <UpgradeButton
-            disabled={isUpdateDisabled}
-            isDisabled={isUpdateDisabled}
-            size='medium'
-            type={'submit'}
-          >
+          <UpgradeButton disabled={isUpdateDisabled} size='medium' type={'submit'}>
             {'Update'}
           </UpgradeButton>
         </div>
