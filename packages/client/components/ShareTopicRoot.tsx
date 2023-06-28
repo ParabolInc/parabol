@@ -1,7 +1,6 @@
 import React, {Suspense, useCallback, useEffect} from 'react'
 import {useHistory, useLocation} from 'react-router'
 import useRouter from '../hooks/useRouter'
-import useModal from '../hooks/useModal'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import {renderLoader} from '../utils/relay/renderLoader'
 
@@ -14,26 +13,23 @@ const ShareTopicRoot = () => {
   const location = useLocation<{backgroundLocation?: Location}>()
   const history = useHistory()
 
+  const [open, setOpen] = React.useState(false)
+
   const onClose = useCallback(() => {
     const state = location.state
     history.replace(state?.backgroundLocation ?? `/new-summary/${meetingId}`)
   }, [location])
 
-  const {openPortal, closePortal, modalPortal} = useModal({
-    id: 'shareTopicModal',
-    onClose
-  })
-
   useEffect(() => {
-    openPortal()
+    setOpen(true)
     return () => {
-      closePortal()
+      setOpen(false)
     }
   }, [])
 
   return (
     <Suspense fallback={renderLoader()}>
-      {modalPortal(<ShareTopicModal closePortal={closePortal} stageId={stageId} />)}
+      <ShareTopicModal stageId={stageId} open={open} onClose={onClose} />
     </Suspense>
   )
 }

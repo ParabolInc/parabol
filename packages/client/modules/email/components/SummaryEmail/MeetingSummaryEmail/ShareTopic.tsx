@@ -3,7 +3,6 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React, {Suspense} from 'react'
 import AnchorIfEmail from './AnchorIfEmail'
 import makeAppURL from '../../../../../utils/makeAppURL'
-import useModal from '../../../../../hooks/useModal'
 import {renderLoader} from '../../../../../utils/relay/renderLoader'
 import ShareTopicModal from '../../../../../components/ShareTopicModal'
 
@@ -33,6 +32,8 @@ const style = {
 const ShareTopic = (props: Props) => {
   const {isDemo, isEmail, meetingId, stageId, appOrigin} = props
 
+  const [open, setOpen] = React.useState(false)
+
   const path = `new-summary/${meetingId}/share/${stageId}`
   const href = makeAppURL(appOrigin, path)
 
@@ -46,12 +47,12 @@ const ShareTopic = (props: Props) => {
 
   const onClick = () => {
     if (isDemo) return
-    openPortal()
+    setOpen(true)
   }
 
-  const {openPortal, closePortal, modalPortal} = useModal({
-    id: 'shareTopicModal'
-  })
+  const onClose = () => {
+    setOpen(false)
+  }
 
   return (
     <>
@@ -59,7 +60,7 @@ const ShareTopic = (props: Props) => {
         {label}
       </span>
       <Suspense fallback={renderLoader()}>
-        {modalPortal(<ShareTopicModal closePortal={closePortal} stageId={stageId} />)}
+        <ShareTopicModal stageId={stageId} open={open} onClose={onClose} />
       </Suspense>
     </>
   )
