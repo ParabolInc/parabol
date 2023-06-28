@@ -1,3 +1,4 @@
+import {RValue} from 'rethinkdb-ts'
 import getRethink from '../../../database/rethinkDriver'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -20,13 +21,13 @@ const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
     .table('Organization')
     .getAll(r.args(orgIds))
     .update(
-      (row) => ({
+      (row: RValue) => ({
         featureFlags: r.branch(
           addFlag,
           row('featureFlags').default([]).setInsert(flag),
           row('featureFlags')
             .default([])
-            .filter((featureFlag) => featureFlag.ne(flag))
+            .filter((featureFlag: RValue) => featureFlag.ne(flag))
         )
       }),
       {returnChanges: true}

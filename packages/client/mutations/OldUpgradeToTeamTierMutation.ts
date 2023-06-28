@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__generated__/UpgradeToTeamTierMutation.graphql'
+import {OldUpgradeToTeamTierMutation as TOldUpgradeToTeamTierMutation} from '../__generated__/OldUpgradeToTeamTierMutation.graphql'
 
 graphql`
-  fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierPayload {
+  fragment OldUpgradeToTeamTierMutation_organization on OldUpgradeToTeamTierPayload {
     stripeSubscriptionClientSecret
     organization {
       creditCard {
@@ -28,7 +28,7 @@ graphql`
 `
 
 graphql`
-  fragment UpgradeToTeamTierMutation_team on UpgradeToTeamTierPayload {
+  fragment OldUpgradeToTeamTierMutation_team on OldUpgradeToTeamTierPayload {
     teams {
       isPaid
       tier
@@ -37,18 +37,18 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID, $paymentMethodId: ID) {
-    upgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken, paymentMethodId: $paymentMethodId) {
+  mutation OldUpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID!) {
+    oldUpgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken) {
       error {
         message
       }
-      ...UpgradeToTeamTierMutation_organization @relay(mask: false)
-      ...UpgradeToTeamTierMutation_team @relay(mask: false)
+      ...OldUpgradeToTeamTierMutation_organization @relay(mask: false)
+      ...OldUpgradeToTeamTierMutation_team @relay(mask: false)
     }
   }
 `
 
-const UpgradeToTeamTierMutation: StandardMutation<TUpgradeToTeamTierMutation> = (
+const OldUpgradeToTeamTierMutation: StandardMutation<TOldUpgradeToTeamTierMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
@@ -61,4 +61,4 @@ const UpgradeToTeamTierMutation: StandardMutation<TUpgradeToTeamTierMutation> = 
   })
 }
 
-export default UpgradeToTeamTierMutation
+export default OldUpgradeToTeamTierMutation

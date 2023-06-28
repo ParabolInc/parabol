@@ -7,6 +7,7 @@ import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import standardError from '../../../utils/standardError'
+import {MutationResolvers} from '../resolverTypes'
 
 const getBotId = async (videoMeetingURL?: string | null) => {
   if (!videoMeetingURL) return null
