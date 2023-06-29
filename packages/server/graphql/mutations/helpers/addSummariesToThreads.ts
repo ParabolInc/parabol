@@ -36,7 +36,10 @@ const addSummariesToThreads = async (
     }
     const topicSummaryComment = new Comment(topicSummaryCommentInput)
 
-    const discussionPromptQuestionHtml = `<html><body><i>${AIExplainer.PREMIUM_DISCUSSION_PROMPT_QUESTION}</i> <b>${group.discussionPromptQuestion}</b></body></html>`
+    const discussionPromptQuestionHtml =
+      idx === 0
+        ? `<html><body><i>${AIExplainer.PREMIUM_DISCUSSION_PROMPT_QUESTION}</i><br><p><b>🤖 Discussion Question</b></p><p>${group.discussionPromptQuestion}</p></body></html>`
+        : `<html><body><p><b>🤖 Discussion Question</b></p><p>${group.discussionPromptQuestion}</p></body></html>`
     const discussionPromptQuestionBlock = convertHtmlToTaskContent(discussionPromptQuestionHtml)
     const discussionPromptQuestionCommentInput = {
       discussionId: stage.discussionId,

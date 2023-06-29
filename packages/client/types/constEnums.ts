@@ -512,7 +512,7 @@ export const enum AIExplainer {
   STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you for a few retros so you can see what they're like.`,
   PREMIUM_MEETING = `Our friendly AI 🤖 is here to save you time by summarizing your meeting`,
   PREMIUM_REFLECTIONS = `Our friendly AI 🤖 is here to save you time by summarizing your reflections`,
-  PREMIUM_DISCUSSION_PROMPT_QUESTION = `Don't know where to start the discussion? Try this AI-generated question:`
+  PREMIUM_DISCUSSION_PROMPT_QUESTION = `Our friendly AI 🤖 is here to help facilitate the discussion by prompting you a question`
 }
 
 export const enum EmptyMeetingViewMessage {
