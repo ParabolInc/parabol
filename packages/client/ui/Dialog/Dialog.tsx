@@ -2,16 +2,16 @@ import React from 'react'
 import * as RadixDialog from '@radix-ui/react-dialog'
 
 interface DialogProps {
-  open: boolean
+  isOpen: boolean
   onClose: () => void
   children: React.ReactNode
 }
 
 export const Dialog = (props: DialogProps) => {
-  const {open, onClose, children} = props
+  const {isOpen, onClose, children} = props
   return (
     <RadixDialog.Root
-      open={open}
+      open={isOpen}
       onOpenChange={(newOpen) => {
         if (!newOpen) {
           onClose()

@@ -5,6 +5,7 @@ import AnchorIfEmail from './AnchorIfEmail'
 import makeAppURL from '../../../../../utils/makeAppURL'
 import {renderLoader} from '../../../../../utils/relay/renderLoader'
 import ShareTopicModal from '../../../../../components/ShareTopicModal'
+import {useDialog} from '../../../../../ui/Dialog/useDialog'
 
 interface Props {
   isEmail: boolean
@@ -32,8 +33,6 @@ const style = {
 const ShareTopic = (props: Props) => {
   const {isDemo, isEmail, meetingId, stageId, appOrigin} = props
 
-  const [open, setOpen] = React.useState(false)
-
   const path = `new-summary/${meetingId}/share/${stageId}`
   const href = makeAppURL(appOrigin, path)
 
@@ -45,13 +44,12 @@ const ShareTopic = (props: Props) => {
     )
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [isOpen, open, close] = useDialog()
+
   const onClick = () => {
     if (isDemo) return
-    setOpen(true)
-  }
-
-  const onClose = () => {
-    setOpen(false)
+    open()
   }
 
   return (
@@ -60,7 +58,7 @@ const ShareTopic = (props: Props) => {
         {label}
       </span>
       <Suspense fallback={renderLoader()}>
-        <ShareTopicModal stageId={stageId} open={open} onClose={onClose} />
+        <ShareTopicModal stageId={stageId} isOpen={isOpen} onClose={close} />
       </Suspense>
     </>
   )

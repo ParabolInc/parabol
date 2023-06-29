@@ -9,20 +9,20 @@ import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogClose} from '../ui/Dialog/DialogClose'
 
 interface Props {
-  open: boolean
+  isOpen: boolean
   onClose: () => void
   stageId: string
 }
 
 const ShareTopicModal = (props: Props) => {
-  const {open, onClose} = props
+  const {isOpen, onClose} = props
 
   const onShare = () => {
     /* TODO */
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle>Share topic</DialogTitle>
         <DialogDescription>Where would you like to share the topic to?</DialogDescription>
