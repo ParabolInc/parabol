@@ -23,6 +23,7 @@ const storePersistedQueries = async () => {
   const r = await getRethink()
   const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
   await r.getPoolMaster()?.drain()
+
   console.log(`Added ${res.inserted} records to the queryMap`)
 }
 
