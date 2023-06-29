@@ -5,13 +5,11 @@ interface DialogDescriptionProps {
   children: React.ReactNode
 }
 
-const DialogDescription = (props: DialogDescriptionProps) => {
+export const DialogDescription = (props: DialogDescriptionProps) => {
   const {children} = props
   return (
-    <RadixDialog.Description className='mt-[10px] mb-5 text-[15px] leading-normal'>
+    <RadixDialog.Description className='mt-3 mb-5 text-base leading-normal'>
       {children}
     </RadixDialog.Description>
   )
 }
-
-export default DialogDescription

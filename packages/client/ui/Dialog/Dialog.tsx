@@ -7,7 +7,7 @@ interface DialogProps {
   children: React.ReactNode
 }
 
-const Dialog = (props: DialogProps) => {
+export const Dialog = (props: DialogProps) => {
   const {open, onClose, children} = props
   return (
     <RadixDialog.Root
@@ -25,5 +25,3 @@ const Dialog = (props: DialogProps) => {
     </RadixDialog.Root>
   )
 }
-
-export default Dialog

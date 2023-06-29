@@ -2,11 +2,11 @@ import React from 'react'
 import {Close} from '@mui/icons-material'
 import * as RadixDialog from '@radix-ui/react-dialog'
 
-const DialogClose = () => {
+export const DialogClose = () => {
   return (
     <RadixDialog.Close asChild>
       <button
-        className='absolute top-[16px] right-[10px] inline-flex h-[25px] w-[25px] cursor-pointer appearance-none items-center justify-center bg-transparent'
+        className='absolute top-4 right-3 inline-flex h-6 w-6 cursor-pointer appearance-none items-center justify-center bg-transparent'
         aria-label='Close'
       >
         <Close className='text-slate-500 hover:opacity-50' />
@@ -14,5 +14,3 @@ const DialogClose = () => {
     </RadixDialog.Close>
   )
 }
-
-export default DialogClose

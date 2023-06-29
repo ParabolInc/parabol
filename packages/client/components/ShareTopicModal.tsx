@@ -1,12 +1,12 @@
 import React from 'react'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
-import Dialog from './Dialog/Dialog'
-import DialogContent from './Dialog/DialogContent'
-import DialogTitle from './Dialog/DialogTitle'
-import DialogDescription from './Dialog/DialogDescription'
-import DialogActions from './Dialog/DialogActions'
-import DialogClose from './Dialog/DialogClose'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
+import {DialogDescription} from '../ui/Dialog/DialogDescription'
+import {DialogActions} from '../ui/Dialog/DialogActions'
+import {DialogClose} from '../ui/Dialog/DialogClose'
 
 interface Props {
   open: boolean
