@@ -69,7 +69,6 @@ const generateGroups = async (
   const data = {meetingId}
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: SERVER_ID}
-
   analytics.suggestGroupsGenerated(facilitatorUserId, meetingId, teamId)
   publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
   return autogroupReflectionGroups
