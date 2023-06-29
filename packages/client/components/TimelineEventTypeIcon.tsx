@@ -16,16 +16,6 @@ interface Props {
   iconName?: string
 }
 
-const EventIcon = styled('div')({
-  alignSelf: 'flex-start',
-  borderRadius: '100%',
-  color: PALETTE.SLATE_600,
-  display: 'block',
-  height: 24,
-  userSelect: 'none',
-  width: 24
-})
-
 const GrapeLock = styled(Lock)({
   color: PALETTE.GRAPE_500
 })
@@ -34,7 +24,7 @@ const TimelineEventTypeIcon = (props: Props) => {
   const {iconName} = props
   if (!iconName) return null
   return (
-    <EventIcon>
+    <div className='block h-6 w-6 select-none self-start rounded text-slate-600'>
       {
         {
           change_history: <ChangeHistory />,
@@ -47,7 +37,7 @@ const TimelineEventTypeIcon = (props: Props) => {
           timeline: <Timeline />
         }[iconName]
       }
-    </EventIcon>
+    </div>
   )
 }
 
