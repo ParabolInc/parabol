@@ -5,7 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
-import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
+import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {MenuProps} from '../hooks/useMenu'
 import {
@@ -105,9 +105,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
         <MenuItem
           key={'teamMemberFilterNULL'}
           label={FilterLabels.ALL_TEAM_MEMBERS}
-          onClick={() =>
-            history.push(constructTeamFilterQueryParamURL(teamIds, null, showArchived))
-          }
+          onClick={() => history.push(constructFilterQueryParamURL(teamIds, null, showArchived))}
         />
       )}
       {matchedFilteredTeamMembers.map((teamMember) => (
@@ -116,9 +114,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
           dataCy={`team-member-filter-${teamMember.userId}`}
           label={teamMember.preferredName}
           onClick={() =>
-            history.push(
-              constructTeamFilterQueryParamURL(teamIds, [teamMember.userId], showArchived)
-            )
+            history.push(constructFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))
           }
         />
       ))}

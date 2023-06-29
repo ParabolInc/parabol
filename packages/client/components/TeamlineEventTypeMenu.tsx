@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
-import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
+import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -48,7 +48,7 @@ const TeamlineEventTypeMenu = (props: Props) => {
         <MenuItem
           key={'eventTypeFilterNULL'}
           label={<EventTypeFilterMenuItemLabel />}
-          onClick={() => history.push(constructTeamFilterQueryParamURL(teamIds, userIds))}
+          onClick={() => history.push(constructFilterQueryParamURL(teamIds, userIds))}
         />
       )}
       {eventTypeValues.map((eventType, index) => {
@@ -58,9 +58,7 @@ const TeamlineEventTypeMenu = (props: Props) => {
             dataCy={`team-filter-${eventType}-${index}`}
             label={<EventTypeFilterMenuItemLabel eventType={eventType} />}
             onClick={() =>
-              history.push(
-                constructTeamFilterQueryParamURL(teamIds, userIds, undefined, [eventType])
-              )
+              history.push(constructFilterQueryParamURL(teamIds, userIds, undefined, [eventType]))
             }
           />
         )
