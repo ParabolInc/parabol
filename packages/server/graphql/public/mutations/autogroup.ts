@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -71,7 +72,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
     r.table('NewMeeting').get(meetingId).update({resetReflectionGroups}).run()
   ])
   meeting.resetReflectionGroups = resetReflectionGroups
-
+  analytics.suggestGroupsClicked(viewerId, meetingId, teamId)
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
   return data

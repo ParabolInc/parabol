@@ -109,6 +109,10 @@ export type AnalyticsEvent =
   | 'Snackbar Viewed'
   // Join request
   | 'Join Request Reviewed'
+  // Suggest Groups
+  | 'Suggest Groups Generated'
+  | 'Suggest Groups Clicked'
+  | 'Reset Groups Clicked'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -425,6 +429,18 @@ class Analytics {
 
   notificationEmailSent = (userId: string, orgId: string, type: TeamLimitsEmailType) => {
     this.track(userId, 'Notification Email Sent', {type, orgId})
+  }
+
+  suggestGroupsGenerated = (userId: string, meetingId: string, teamId: string) => {
+    this.track(userId, 'Suggest Groups Generated', {meetingId, teamId})
+  }
+
+  suggestGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
+    this.track(userId, 'Suggest Groups Clicked', {meetingId, teamId})
+  }
+
+  resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
+    this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>

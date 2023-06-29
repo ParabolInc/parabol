@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -71,7 +72,7 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     .replace(r.row.without('resetReflectionGroups') as any)
     .run()
   meeting.resetReflectionGroups = undefined
-
+  analytics.resetGroupsClicked(viewerId, meetingId, teamId)
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'ResetReflectionGroupsSuccess', data, subOptions)
   return data
