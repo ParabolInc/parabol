@@ -1,7 +1,7 @@
 import React from 'react'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
-import {Dialog} from '../ui/Dialog/Dialog'
+import {SimpleModalDialog} from '../ui/Dialog/SimpleModalDialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {DialogDescription} from '../ui/Dialog/DialogDescription'
@@ -22,7 +22,7 @@ const ShareTopicModal = (props: Props) => {
   }
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose}>
+    <SimpleModalDialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle>Share topic</DialogTitle>
         <DialogDescription>Where would you like to share the topic to?</DialogDescription>
@@ -37,7 +37,7 @@ const ShareTopicModal = (props: Props) => {
         </DialogActions>
         <DialogClose />
       </DialogContent>
-    </Dialog>
+    </SimpleModalDialog>
   )
 }
 
