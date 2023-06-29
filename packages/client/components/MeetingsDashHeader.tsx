@@ -3,7 +3,7 @@ import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {UserTaskViewFilterLabels} from '../types/constEnums'
+import {FilterLabels} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
 import DashSectionControls from './Dashboard/DashSectionControls'
@@ -57,7 +57,7 @@ const MeetingsDashHeader = (props: Props) => {
     [teamIds, teams]
   )
 
-  const teamFilterName = (teamFilter && teamFilter.name) || UserTaskViewFilterLabels.ALL_TEAMS
+  const teamFilterName = (teamFilter && teamFilter.name) || FilterLabels.ALL_TEAMS
 
   return (
     <DashSectionHeader>

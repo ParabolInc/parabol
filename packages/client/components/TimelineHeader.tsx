@@ -1,7 +1,7 @@
 import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {UserTaskViewFilterLabels} from '../types/constEnums'
+import {FilterLabels} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
@@ -34,7 +34,7 @@ const TimelineHeader = () => {
   const eventTypeFilterName =
     eventTypes && eventTypes.length > 0
       ? timelineEventTypeMenuLabels[eventTypes[0]!]!
-      : UserTaskViewFilterLabels.ALL_EVENTS
+      : FilterLabels.ALL_EVENTS
 
   return (
     <DashSectionHeader>

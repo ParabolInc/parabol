@@ -2,7 +2,7 @@ import React from 'react'
 import {timelineEventTypeMenuIcons, timelineEventTypeMenuLabels} from '../utils/constants'
 import TimelineEventTypeIcon from './TimelineEventTypeIcon'
 import MenuItemLabel from './MenuItemLabel'
-import {UserTaskViewFilterLabels} from '../types/constEnums'
+import {FilterLabels} from '../types/constEnums'
 
 interface Props {
   eventType?: string
@@ -12,7 +12,7 @@ const EventTypeFilterMenuItemLabel = (props: Props) => {
   const {eventType} = props
   const eventTypeLabel = eventType
     ? timelineEventTypeMenuLabels[eventType]
-    : UserTaskViewFilterLabels.ALL_EVENTS
+    : FilterLabels.ALL_EVENTS
   const eventTypeIconName = eventType ? timelineEventTypeMenuIcons[eventType] : 'timeline'
   return (
     <>

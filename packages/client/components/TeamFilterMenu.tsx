@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {UserTaskViewFilterLabels} from '~/types/constEnums'
+import {FilterLabels} from '~/types/constEnums'
 import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {
@@ -87,7 +87,7 @@ const TeamFilterMenu = (props: Props) => {
       {query === '' && showAllTeams && (
         <MenuItem
           key={'teamFilterNULL'}
-          label={UserTaskViewFilterLabels.ALL_TEAMS}
+          label={FilterLabels.ALL_TEAMS}
           onClick={() =>
             history.push(constructTeamFilterQueryParamURL(null, userIds, showArchived))
           }

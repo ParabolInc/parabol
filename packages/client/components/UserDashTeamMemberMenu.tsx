@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {UserTaskViewFilterLabels} from '~/types/constEnums'
+import {FilterLabels} from '~/types/constEnums'
 import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {MenuProps} from '../hooks/useMenu'
@@ -104,7 +104,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
       {query === '' && showAllTeamMembers && (
         <MenuItem
           key={'teamMemberFilterNULL'}
-          label={UserTaskViewFilterLabels.ALL_TEAM_MEMBERS}
+          label={FilterLabels.ALL_TEAM_MEMBERS}
           onClick={() =>
             history.push(constructTeamFilterQueryParamURL(teamIds, null, showArchived))
           }

@@ -249,7 +249,7 @@ export const enum PokerCards {
   AVATAR_WIDTH = 46,
   AVATAR_BORDER = 3
 }
-export const enum UserTaskViewFilterLabels {
+export const enum FilterLabels {
   ALL_TEAMS = 'All Teams',
   ALL_TEAM_MEMBERS = 'All Team Members',
   ALL_EVENTS = 'All Events'
