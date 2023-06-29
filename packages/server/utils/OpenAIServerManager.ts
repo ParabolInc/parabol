@@ -46,14 +46,25 @@ class OpenAIServerManager {
 
   async getDiscussionPromptQuestion(topic: string, reflections: Reflection[]) {
     if (!this.openAIApi) return null
-    const prompt = `You are a meeting facilitator. I will give you a topic people is talking about and the comments they made. I'd like you to facilitate the discussion by asking a good question.
-Step 1: categorize the topic into one of the following 4 groups
-Step 2: come up with a question similar to the example question within that group
-Step 3: return me the question you came up with, do not include the group information
-Group 1: Requirement/Seek for help/Ask for permission. Example Question: what do you need?
-Group 2: Retrospection/Post mortem/Looking back/Incident analysis/Root cause analysis. Example Question: why?
-Group 3: Improvement/Measurement/Experiment. Example Question: What are you trying to maximize/minimize?
-Group 4: New plan/New feature/New launch/Doing something new. Example Question: How could we learn faster? or What is the simplest thing we could do?
+    const prompt = `As the meeting facilitator, your primary task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants. Your job is to generate a thought-provoking question based on these inputs. Here's an improved process that ensures the exclusion of group information:
+
+    Step 1: Categorize the topic into one of the following four groups:
+
+    Group 1: Requirement/Seeking help/Requesting permission
+    Example Question: "What specific assistance do you need to move forward?"
+
+    Group 2: Retrospection/Post-mortem/Looking back/Incident analysis/Root cause analysis
+    Example Question: "What were the underlying factors contributing to the situation?"
+
+    Group 3: Improvement/Measurement/Experiment
+    Example Question: "What factors are you aiming to optimize or minimize?"
+
+    Group 4: New plan/New feature/New launch/Exploring new approaches
+    Example Question: "How can we expedite the learning process or streamline our approach?"
+
+    Step 2: Once you have categorized the topic, formulate a question that aligns with the example question provided for that group.
+
+    Step 3: Finally, provide me with the question you have formulated without disclosing any information about the group it belongs to.
 
 Topic: ${topic}
 Comments:
@@ -82,7 +93,10 @@ ${reflections
         ) ?? null
       )
     } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      const error =
+        e instanceof Error
+          ? e
+          : new Error(`OpenAI failed to generate a question for the topic ${topic}`)
       sendToSentry(error)
       return null
     }
