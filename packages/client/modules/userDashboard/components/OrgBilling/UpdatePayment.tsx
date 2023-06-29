@@ -30,6 +30,10 @@ const UpgradeButton = styled(PrimaryButton)<{disabled: boolean}>(({disabled}) =>
   }
 }))
 
+const CancelButton = styled(SecondaryButton)({
+  width: '100%'
+})
+
 const ErrorMsg = styled(StyledError)({
   paddingTop: 8,
   textTransform: 'none'
@@ -62,7 +66,6 @@ const UpdatePayment = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
   const [errorMsg, setErrorMsg] = useState<null | string>()
-  const [hasStarted, setHasStarted] = useState(false)
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
   const [cvcError, setCvcError] = useState<null | string>()
@@ -136,9 +139,6 @@ const UpdatePayment = (props: Props) => {
   const handleChange =
     (type: 'CardNumber' | 'ExpiryDate' | 'CVC') => (event: StripeElementChangeEvent) => {
       if (errorMsg) setErrorMsg(null)
-      if (!hasStarted && !event.empty) {
-        setHasStarted(true)
-      }
 
       const errorSetters = {
         CardNumber: setCardNumberError,
@@ -208,15 +208,15 @@ const UpdatePayment = (props: Props) => {
       </div>
       <div className='flex justify-start'>{errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}</div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
-        <div className='w-1/4'>
+        <div className='w-1/8 mt-4'>
+          <CancelButton size='medium' type='button' onClick={handleClose}>
+            {'Cancel'}
+          </CancelButton>
+        </div>
+        <div className='flex w-1/6 justify-end'>
           <UpgradeButton disabled={isUpdateDisabled} size='medium' type={'submit'}>
             {'Update'}
           </UpgradeButton>
-        </div>
-        <div className='mt-4 flex w-1/4 justify-end'>
-          <SecondaryButton size='medium' type='button' onClick={handleClose}>
-            {'Cancel'}
-          </SecondaryButton>
         </div>
       </div>
     </form>

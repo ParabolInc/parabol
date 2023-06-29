@@ -55,34 +55,29 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   if (stripeCard instanceof Error) return standardError(stripeCard, {userId: viewerId})
   const creditCard = stripeCardToDBCard(stripeCard)
 
-  try {
-    await Promise.all([
-      r({
-        updatedOrg: r.table('Organization').get(orgId).update({
-          creditCard,
-          tier: 'team',
-          stripeId: customer.id,
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now
-        })
-      }).run(),
-      updateTeamByOrgId(
-        {
-          isPaid: true,
-          tier: 'team'
-        },
-        orgId
-      ),
-      removeTeamsLimitObjects(orgId, dataLoader)
-    ])
-    await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
-  } catch (e) {
-    const error =
-      e instanceof Error ? e : new Error('Failed to update db after updating credit card')
-    return standardError(error, {userId: viewerId, tags: {orgId}})
-  }
+  await Promise.all([
+    r({
+      updatedOrg: r.table('Organization').get(orgId).update({
+        creditCard,
+        tier: 'team',
+        stripeId: customer.id,
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        updatedAt: now
+      })
+    }).run(),
+    updateTeamByOrgId(
+      {
+        isPaid: true,
+        tier: 'team'
+      },
+      orgId
+    ),
+    removeTeamsLimitObjects(orgId, dataLoader)
+  ])
+  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+
   organization.creditCard = creditCard
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
@@ -90,7 +85,7 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   const latestInvoice = subscription.latest_invoice as Stripe.Invoice
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
   const stripeSubscriptionClientSecret = paymentIntent.client_secret
-  const data = {teamIds, orgId, stripeSubscriptionClientSecret}
+  const data = {teamIds, orgId}
 
   teamIds.forEach((teamId) => {
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateCreditCardPayload', data, subOptions)
@@ -98,7 +93,10 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
 
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateCreditCardPayload', data, subOptions)
 
-  return data
+  return {
+    ...data,
+    stripeSubscriptionClientSecret
+  }
 }
 
 export default updateCreditCard
