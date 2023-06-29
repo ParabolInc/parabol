@@ -136,6 +136,7 @@
     "rrule": "^2.7.2",
     "string-score": "^1.0.1",
     "swiper": "^8.3.1",
+    "tailwind-merge": "^1.13.2",
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
     "tslib": "^2.4.0",

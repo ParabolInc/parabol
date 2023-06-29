@@ -1,10 +1,6 @@
 import React from 'react'
+import {twMerge} from 'tailwind-merge'
 
-interface DialogActionsProps {
-  children: React.ReactNode
-}
-
-export const DialogActions = (props: DialogActionsProps) => {
-  const {children} = props
-  return <div className='mt-6 flex justify-end space-x-2'>{children}</div>
-}
+export const DialogActions = ({className, ...props}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={twMerge('mt-6 flex justify-end space-x-2', className)} {...props} />
+)
