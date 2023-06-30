@@ -3,26 +3,30 @@ import * as RadixSelect from '@radix-ui/react-select'
 import {Check} from '@mui/icons-material'
 import {twMerge} from 'tailwind-merge'
 
-export const SelectItem = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof RadixSelect.Item>
->(({className, children, ...props}, ref) => (
-  <RadixSelect.Item
-    ref={ref}
-    className={twMerge(
-      'relative flex w-full cursor-default select-none items-center rounded py-2 text-sm outline-none focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      className
-    )}
-    {...props}
-  >
-    <span className='absolute right-2 top-2 flex items-center justify-center'>
-      <RadixSelect.ItemIndicator>
-        <Check className='h-5 w-5' />
-      </RadixSelect.ItemIndicator>
-    </span>
+interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Item> {
+  endAdornment?: React.ReactNode
+}
 
-    <span className='pl-2'>
-      <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
-    </span>
-  </RadixSelect.Item>
-))
+export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
+  ({className, children, endAdornment, ...props}, ref) => (
+    <RadixSelect.Item
+      ref={ref}
+      className={twMerge(
+        'flex h-10 w-full cursor-default select-none items-center justify-between rounded text-sm outline-none hover:bg-slate-100 focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        className
+      )}
+      {...props}
+    >
+      <span className='pl-2'>
+        <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
+      </span>
+
+      <div className='flex items-center space-x-2 pr-2'>
+        <RadixSelect.ItemIndicator className='pt-1'>
+          <Check className='h-5 w-5' />
+        </RadixSelect.ItemIndicator>
+        {endAdornment && endAdornment}
+      </div>
+    </RadixSelect.Item>
+  )
+)

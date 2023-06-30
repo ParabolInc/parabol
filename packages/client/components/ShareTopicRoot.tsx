@@ -3,12 +3,22 @@ import {useHistory, useLocation} from 'react-router'
 import useRouter from '../hooks/useRouter'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import {renderLoader} from '../utils/relay/renderLoader'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import shareTopicModalQuery, {
+  ShareTopicModalQuery
+} from '../__generated__/ShareTopicModalQuery.graphql'
 
 const ShareTopicRoot = () => {
   const {match} = useRouter<{stageId: string; meetingId: string}>()
   const {params} = match
 
   const {meetingId, stageId} = params
+
+  const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
+    shareTopicModalQuery,
+    {meetingId},
+    'store-or-network'
+  )
 
   const location = useLocation<{backgroundLocation?: Location}>()
   const history = useHistory()
@@ -20,7 +30,9 @@ const ShareTopicRoot = () => {
 
   return (
     <Suspense fallback={renderLoader()}>
-      <ShareTopicModal stageId={stageId} isOpen={true} onClose={onClose} />
+      {queryRef && (
+        <ShareTopicModal stageId={stageId} isOpen={true} onClose={onClose} queryRef={queryRef} />
+      )}
     </Suspense>
   )
 }
