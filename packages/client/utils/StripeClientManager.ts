@@ -57,7 +57,7 @@ export default class StripeClientManager {
   stripe: stripe.StripeStatic | undefined
 
   init = (stripe: stripe.StripeStatic = (window as any).Stripe) => {
-    if (stripe) {
+    if (stripe && stripe.setPublishableKey) {
       stripe.setPublishableKey(window.__ACTION__.stripe)
       this.stripe = stripe
     }

@@ -9,6 +9,7 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
+import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -66,13 +67,17 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   // RESOLUTION
   await Promise.all([
     r({
-      updatedOrg: r.table('Organization').get(orgId).update({
-        tier: 'team',
-        tierLimitExceededAt: null,
-        scheduledLockAt: null,
-        lockedAt: null,
-        updatedAt: now
-      })
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          creditCard: await getCCFromCustomer(customer),
+          tier: 'team',
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: now
+        })
     }).run(),
     updateTeamByOrgId(
       {

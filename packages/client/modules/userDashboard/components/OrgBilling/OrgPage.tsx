@@ -6,8 +6,8 @@ import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE} from '../../../../utils/c
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
 
-const OrgPlansAndBilling = lazy(
-  () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBilling')
+const OrgPlansAndBillingRoot = lazy(
+  () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBillingRoot')
 )
 const OrgMembers = lazy(
   () =>
@@ -27,7 +27,7 @@ const OrgPage = (props: Props) => {
       fragment OrgPage_organization on Organization {
         id
         ...OrgNav_organization
-        ...OrgPlansAndBilling_organization
+        ...OrgPlansAndBillingRoot_organization
         ...OrgDetails_organization
       }
     `,
@@ -48,7 +48,7 @@ const OrgPage = (props: Props) => {
         <Route
           exact
           path={`${match.url}/${BILLING_PAGE}`}
-          render={() => <OrgPlansAndBilling organizationRef={organization} />}
+          render={() => <OrgPlansAndBillingRoot organizationRef={organization} />}
         />
         <Route
           exact

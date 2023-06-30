@@ -92,6 +92,7 @@ type OrganizationSubscriptionPayload {
   PayLaterPayload: PayLaterPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
@@ -141,6 +142,7 @@ type TeamSubscriptionPayload {
   StartSprintPokerSuccess: StartSprintPokerSuccess
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
