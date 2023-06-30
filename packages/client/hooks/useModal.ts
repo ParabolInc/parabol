@@ -19,7 +19,8 @@ const useModal = (options: Options = {}) => {
     id,
     parentId,
     onOpen,
-    onClose
+    onClose,
+    allowScroll: false
   })
   const {loadingDelay, loadingDelayRef} = useLoadingDelay()
   const modalPortal = useModalPortal(

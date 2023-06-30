@@ -1,51 +1,37 @@
-import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {
-  CardNumberElement,
-  CardExpiryElement,
   CardCvcElement,
-  useStripe,
-  useElements
+  CardExpiryElement,
+  CardNumberElement,
+  useElements,
+  useStripe
 } from '@stripe/react-stripe-js'
+import React, {useState} from 'react'
 import PrimaryButton from '../../../../components/PrimaryButton'
+import SecondaryButton from '../../../../components/SecondaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
-import Confetti from '../../../../components/Confetti'
+import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import {UpdateCreditCardMutation$data} from '../../../../__generated__/UpdateCreditCardMutation.graphql'
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
-import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
-import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
-import {commitLocalUpdate} from 'relay-runtime'
 
-const ButtonBlock = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  paddingTop: 16,
-  wrap: 'nowrap',
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
-  background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
-  color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
+const UpgradeButton = styled(PrimaryButton)<{disabled: boolean}>(({disabled}) => ({
+  background: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
+  color: disabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
   boxShadow: 'none',
   marginTop: 16,
   width: '100%',
   elevation: 0,
   '&:hover, &:focus': {
     boxShadow: 'none',
-    background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
+    background: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
   }
 }))
 
-const ConfettiWrapper = styled('div')({
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)'
+const CancelButton = styled(SecondaryButton)({
+  width: '100%'
 })
 
 const ErrorMsg = styled(StyledError)({
@@ -68,19 +54,18 @@ const CARD_ELEMENT_OPTIONS = {
 }
 
 type Props = {
+  handleClose: () => void
   orgId: string
 }
 
-const BillingForm = (props: Props) => {
-  const {orgId} = props
-  const stripe = useStripe()
-  const elements = useElements()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
+const UpdatePayment = (props: Props) => {
+  const {handleClose, orgId} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
+  const [isLoading, setIsLoading] = useState(false)
+  const stripe = useStripe()
+  const elements = useElements()
   const [errorMsg, setErrorMsg] = useState<null | string>()
-  const [hasStarted, setHasStarted] = useState(false)
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
   const [cvcError, setCvcError] = useState<null | string>()
@@ -94,7 +79,7 @@ const BillingForm = (props: Props) => {
     !cardNumberError &&
     !expiryDateError &&
     !cvcError
-  const isUpgradeDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
+  const isUpdateDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -122,50 +107,38 @@ const BillingForm = (props: Props) => {
       return
     }
 
-    const handleCompletedSubscription = async (res: CreateStripeSubscriptionMutation$data) => {
-      const {createStripeSubscription} = res
-      const stripeSubscriptionClientSecret =
-        createStripeSubscription?.stripeSubscriptionClientSecret
-      if (createStripeSubscription.error || !stripeSubscriptionClientSecret) {
+    const handleCompletedUpdate = async (res: UpdateCreditCardMutation$data) => {
+      const {updateCreditCard} = res
+      const {stripeSubscriptionClientSecret, error} = updateCreditCard
+      if (error || !stripeSubscriptionClientSecret) {
         const newErrMsg =
-          createStripeSubscription.error?.message ??
-          'Something went wrong. Please try again or contact support.'
+          error?.message ?? 'Something went wrong. Please try again or contact support.'
         setIsLoading(false)
         setErrorMsg(newErrMsg)
         return
       }
-      const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      const {error: confirmationError} = await stripe.confirmCardPayment(
+        stripeSubscriptionClientSecret
+      )
       setIsLoading(false)
-      if (error) {
-        setErrorMsg(error.message)
+      if (confirmationError) {
+        setErrorMsg(confirmationError.message)
         return
       }
-      commitLocalUpdate(atmosphere, (store) => {
-        const org = store.get(orgId)
-        if (!org) return
-        org.setValue(true, 'showDrawer')
-      })
-      setIsPaymentSuccessful(true)
       onCompleted()
+      handleClose()
     }
 
-    CreateStripeSubscriptionMutation(
+    UpdateCreditCardMutation(
       atmosphere,
       {orgId, paymentMethodId: paymentMethod.id},
-      {onError, onCompleted: handleCompletedSubscription}
+      {onError, onCompleted: handleCompletedUpdate}
     )
   }
 
   const handleChange =
     (type: 'CardNumber' | 'ExpiryDate' | 'CVC') => (event: StripeElementChangeEvent) => {
       if (errorMsg) setErrorMsg(null)
-      if (!hasStarted && !event.empty) {
-        SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
-        setHasStarted(true)
-      }
-      if (event.complete) {
-        SendClientSegmentEventMutation(atmosphere, 'Payment Details Complete', {orgId})
-      }
 
       const errorSetters = {
         CardNumber: setCardNumberError,
@@ -188,28 +161,26 @@ const BillingForm = (props: Props) => {
       completionSetters[type](event.complete)
     }
 
-  if (!stripe || !elements) return null
   return (
-    <form onSubmit={handleSubmit}>
-      <div className='mb-4'>
-        <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
-          Card number
-        </label>
-
-        <div className='mt-1'>
-          <CardNumberElement
-            className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
-            options={CARD_ELEMENT_OPTIONS}
-            onChange={handleChange('CardNumber')}
-          />
+    <form className='flex h-full w-full flex-col flex-wrap space-y-reverse' onSubmit={handleSubmit}>
+      <div className='flex w-full'>
+        <div className='w-3/5 pr-4'>
+          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+            Card number
+          </label>
+          <div className='mt-1'>
+            <CardNumberElement
+              className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
+              options={CARD_ELEMENT_OPTIONS}
+              onChange={handleChange('CardNumber')}
+            />
+          </div>
           {cardNumberError && <ErrorMsg>{cardNumberError}</ErrorMsg>}
         </div>
-      </div>
 
-      <div className='flex space-x-5'>
-        <div className='w-1/2'>
+        <div className='w-1/4 pr-4'>
           <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
-            Expiry date
+            Expiry
           </label>
           <div className='mt-1'>
             <CardExpiryElement
@@ -220,7 +191,8 @@ const BillingForm = (props: Props) => {
             {expiryDateError && <ErrorMsg>{expiryDateError}</ErrorMsg>}
           </div>
         </div>
-        <div className='w-1/2'>
+
+        <div className='w-1/6'>
           <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
             CVC
           </label>
@@ -234,22 +206,21 @@ const BillingForm = (props: Props) => {
           </div>
         </div>
       </div>
-      <ButtonBlock>
-        {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
-        <UpgradeButton
-          size='medium'
-          disabled={isUpgradeDisabled}
-          isDisabled={isUpgradeDisabled}
-          type={'submit'}
-        >
-          {'Upgrade'}
-        </UpgradeButton>
-      </ButtonBlock>
-      <ConfettiWrapper>
-        <Confetti active={isPaymentSuccessful} />
-      </ConfettiWrapper>
+      <div className='flex justify-start'>{errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}</div>
+      <div className='flex w-full flex-nowrap items-center justify-between'>
+        <div className='w-1/8 mt-4'>
+          <CancelButton size='medium' type='button' onClick={handleClose}>
+            {'Cancel'}
+          </CancelButton>
+        </div>
+        <div className='flex w-1/6 justify-end'>
+          <UpgradeButton disabled={isUpdateDisabled} size='medium' type={'submit'}>
+            {'Update'}
+          </UpgradeButton>
+        </div>
+      </div>
     </form>
   )
 }
 
-export default BillingForm
+export default UpdatePayment

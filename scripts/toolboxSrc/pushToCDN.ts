@@ -11,7 +11,7 @@ const pushToCDN = async () => {
   const context = (require as any).context(
     '../../static/images/illustrations',
     false,
-    /Template.png$/
+    /\/action.png$|\/teamPrompt.png$|Template.png$/
   )
 
   context.keys().forEach((relativePath) => {
