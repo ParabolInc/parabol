@@ -15,7 +15,7 @@ const REQUEST_EXPIRATION_DAYS = 30
 const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   _source,
   {},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader}
 ) => {
   const r = await getRethink()
   const operationId = dataLoader.share()
@@ -50,7 +50,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
 
   const teamIds = await getTeamIdsByOrgIds(orgIds)
 
-  const leadUserIds = await r
+  const leadUserIds = (await r
     .table('TeamMember')
     .getAll(r.args(teamIds), {index: 'teamId'})
     .filter({
@@ -59,7 +59,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
     })
     .pluck('userId')
     .distinct()('userId')
-    .run()
+    .run()) as string[]
 
   const notificationsToInsert = leadUserIds.map((userId) => {
     return new NotificationRequestToJoinOrg({

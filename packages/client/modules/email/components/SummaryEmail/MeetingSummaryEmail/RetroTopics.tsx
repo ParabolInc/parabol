@@ -60,6 +60,7 @@ const RetroTopics = (props: Props) => {
             }
           }
         }
+        ...RetroTopic_meeting
       }
     `,
     meetingRef
@@ -106,7 +107,9 @@ const RetroTopics = (props: Props) => {
                 isDemo={isDemo}
                 isEmail={isEmail}
                 stageRef={stage}
+                meetingRef={meeting}
                 to={topicUrl}
+                appOrigin={appOrigin}
               />
             )
           })

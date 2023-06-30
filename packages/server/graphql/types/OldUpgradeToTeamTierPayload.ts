@@ -6,8 +6,8 @@ import Organization from './Organization'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 
-const UpgradeToTeamTierPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'UpgradeToTeamTierPayload',
+const OldUpgradeToTeamTierPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'OldUpgradeToTeamTierPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -32,13 +32,8 @@ const UpgradeToTeamTierPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: ({meetingIds}, _args: unknown, {dataLoader}) => {
         return meetingIds ? dataLoader.get('newMeetings').loadMany(meetingIds) : null
       }
-    },
-    stripeSubscriptionClientSecret: {
-      type: GraphQLID,
-      description:
-        'The client secret from the Stripe subscription. Used for client-side retrieval using a publishable key.'
     }
   })
 })
 
-export default UpgradeToTeamTierPayload
+export default OldUpgradeToTeamTierPayload

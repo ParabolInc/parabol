@@ -9,8 +9,8 @@ import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useScript from '../../../../hooks/useScript'
 import useSegmentTrack from '../../../../hooks/useSegmentTrack'
-import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
-import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMutation'
+import OldUpdateCreditCardMutation from '../../../../mutations/OldUpdateCreditCardMutation'
+import OldUpgradeToTeamTierMutation from '../../../../mutations/OldUpgradeToTeamTierMutation'
 import {CompletedHandler} from '../../../../types/relayMutations'
 import StripeClientManager, {StripeError} from '../../../../utils/StripeClientManager'
 import CreditCardErrorLine from './CreditCardErrorLine'
@@ -144,13 +144,13 @@ const CreditCardForm = (props: Props) => {
     }
 
     if (actionType === 'update') {
-      UpdateCreditCardMutation(
+      OldUpdateCreditCardMutation(
         atmosphere,
         {orgId, stripeToken},
         {onError, onCompleted: handleCompleted}
       )
     } else {
-      UpgradeToTeamTierMutation(
+      OldUpgradeToTeamTierMutation(
         atmosphere,
         {orgId, stripeToken},
         {onError, onCompleted: handleCompleted}

@@ -108,7 +108,7 @@ import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateCommentContent from './mutations/updateCommentContent'
-import updateCreditCard from './mutations/updateCreditCard'
+import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateIntegrationProvider from './mutations/updateIntegrationProvider'
@@ -123,7 +123,7 @@ import updateTask from './mutations/updateTask'
 import updateTaskDueDate from './mutations/updateTaskDueDate'
 import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
-import upgradeToTeamTier from './mutations/upgradeToTeamTier'
+import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
@@ -223,7 +223,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       setTaskHighlight,
       updateAgendaItem,
       updateCommentContent,
-      updateCreditCard,
+      oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,
       updateNewCheckInQuestion,
@@ -236,7 +236,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTaskDueDate,
       updateTeamName,
       updateTemplateScope,
-      upgradeToTeamTier,
+      oldUpgradeToTeamTier,
       voteForReflectionGroup,
       voteForPokerStory,
       pokerRevealVotes,

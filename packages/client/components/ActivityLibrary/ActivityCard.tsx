@@ -6,10 +6,21 @@ export interface CardTheme {
   secondary: string
 }
 
-const ActivityCardImage = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {
+export const ActivityCardImage = (
+  props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>
+) => {
   const {className, src} = props
 
-  return <img className={clsx('h-16 w-auto object-contain sm:h-24', className)} src={src} />
+  return (
+    <div
+      className={clsx(
+        'my-1 flex flex-1 items-center justify-center overflow-hidden px-4',
+        className
+      )}
+    >
+      <img className={'h-full w-full object-contain'} src={src} />
+    </div>
+  )
 }
 
 const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
@@ -33,13 +44,12 @@ export interface ActivityCardProps {
   theme: CardTheme
   titleAs?: React.ElementType
   title?: string
-  imageSrc?: string
   badge?: React.ReactNode
   children?: React.ReactNode
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, theme, title, titleAs, imageSrc, badge, children} = props
+  const {className, theme, title, titleAs, badge, children} = props
   const Title = titleAs ?? ActivityCardTitle
 
   return (
@@ -48,13 +58,8 @@ export const ActivityCard = (props: ActivityCardProps) => {
         <Title>{title}</Title>
         <div className={clsx('ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full', theme.primary)} />
       </div>
-      {imageSrc && (
-        <div className='my-1 flex flex-1 items-center justify-center px-4'>
-          <ActivityCardImage src={imageSrc} />
-        </div>
-      )}
       {children}
-      <div className='flex flex-shrink-0'>
+      <div className='flex flex-shrink-0 group-hover/card:hidden'>
         <div className={clsx('mt-auto h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} />
         <div className='ml-auto'>{badge}</div>
       </div>

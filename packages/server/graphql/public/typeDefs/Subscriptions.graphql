@@ -8,6 +8,7 @@ type Subscription {
 
 type MeetingSubscriptionPayload {
   fieldName: String!
+  AutogroupSuccess: AutogroupSuccess
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess
   AddReactjiToReflectionSuccess: AddReactjiToReflectionSuccess
@@ -91,9 +92,11 @@ type OrganizationSubscriptionPayload {
   PayLaterPayload: PayLaterPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload
-  UpgradeToTeamTierPayload: UpgradeToTeamTierPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
+  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
 }
 
@@ -139,9 +142,11 @@ type TeamSubscriptionPayload {
   StartSprintPokerSuccess: StartSprintPokerSuccess
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
-  UpgradeToTeamTierPayload: UpgradeToTeamTierPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
+  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplatePayload: AddReflectTemplatePayload
   AddPokerTemplatePayload: AddPokerTemplatePayload
   AddReflectTemplatePromptPayload: AddReflectTemplatePromptPayload

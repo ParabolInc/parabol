@@ -28,11 +28,7 @@ const getRelayState = (body: any) => {
   return relayState
 }
 
-const loginSAML: MutationResolvers['loginSAML'] = async (
-  _source,
-  {samlName, queryString},
-  {dataLoader}
-) => {
+const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
   const r = await getRethink()
   const body = querystring.parse(queryString)
   const normalizedName = samlName.trim().toLowerCase()
@@ -40,7 +36,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
 
   if (!doc) return {error: {message: `${normalizedName} has not been created in Parabol yet`}}
   const {domains, metadata} = doc
-  const idp = samlify.IdentityProvider({metadata})
+  const idp = samlify.IdentityProvider({metadata: metadata ?? undefined})
   let loginResponse
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
@@ -55,13 +51,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const {isInvited} = relayState
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
-  const caseInsensitiveAtttributes = {} as Record<Lowercase<string>, string | undefined>
+  const caseInsensitiveAttributes = {} as Record<string, string | undefined>
   Object.keys(attributes).forEach((key) => {
     const lowercaseKey = key.toLowerCase()
     const value = attributes[key]
-    caseInsensitiveAtttributes[lowercaseKey] = String(value)
+    caseInsensitiveAttributes[lowercaseKey] = String(value)
   })
-  const {email: inputEmail, emailaddress, displayname} = caseInsensitiveAtttributes
+  const {email: inputEmail, emailaddress, displayname} = caseInsensitiveAttributes
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {

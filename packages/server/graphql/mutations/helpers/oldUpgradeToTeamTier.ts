@@ -8,7 +8,7 @@ import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
 import getCCFromCustomer from './getCCFromCustomer'
 
-const upgradeToTeamTierOld = async (
+const oldUpgradeToTeamTier = async (
   orgId: string,
   source: string,
   email: string,
@@ -35,7 +35,7 @@ const upgradeToTeamTierOld = async (
 
   let subscriptionFields = {}
   if (!stripeSubscriptionId) {
-    const subscription = await manager.createTeamSubscription(customer.id, orgId, quantity)
+    const subscription = await manager.createTeamSubscriptionOld(customer.id, orgId, quantity)
     subscriptionFields = {
       periodEnd: fromEpochSeconds(subscription.current_period_end),
       periodStart: fromEpochSeconds(subscription.current_period_start),
@@ -88,4 +88,4 @@ const upgradeToTeamTierOld = async (
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }
 
-export default upgradeToTeamTierOld
+export default oldUpgradeToTeamTier

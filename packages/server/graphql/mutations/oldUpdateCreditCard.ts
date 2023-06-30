@@ -4,11 +4,11 @@ import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import UpdateCreditCardPayload from '../types/UpdateCreditCardPayload'
-import upgradeToTeamTierOld from './helpers/upgradeToTeamTierOld'
+import OldUpdateCreditCardPayload from '../types/OldUpdateCreditCardPayload'
+import oldUpgradeToTeamTier from './helpers/oldUpgradeToTeamTier'
 
 export default {
-  type: UpdateCreditCardPayload,
+  type: OldUpdateCreditCardPayload,
   description: 'Update an existing credit card on file',
   args: {
     orgId: {
@@ -37,7 +37,7 @@ export default {
     // RESOLUTION
     const viewer = (await dataLoader.get('users').load(viewerId))! // authenticated user
     try {
-      await upgradeToTeamTierOld(orgId, stripeToken, viewer.email, dataLoader)
+      await oldUpgradeToTeamTier(orgId, stripeToken, viewer.email, dataLoader)
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e
@@ -49,10 +49,10 @@ export default {
     const data = {teamIds, orgId}
 
     teamIds.forEach((teamId) => {
-      publish(SubscriptionChannel.TEAM, teamId, 'UpdateCreditCardPayload', data, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'OldUpdateCreditCardPayload', data, subOptions)
     })
 
-    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateCreditCardPayload', data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'OldUpdateCreditCardPayload', data, subOptions)
 
     return data
   }

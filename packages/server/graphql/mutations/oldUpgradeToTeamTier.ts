@@ -6,13 +6,13 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import UpgradeToTeamTierPayload from '../types/UpgradeToTeamTierPayload'
+import OldUpgradeToTeamTierPayload from '../types/OldUpgradeToTeamTierPayload'
 import hideConversionModal from './helpers/hideConversionModal'
-import upgradeToTeamTier from './helpers/upgradeToTeamTier'
-import upgradeToTeamTierOld from './helpers/upgradeToTeamTierOld'
+import oldUpgradeToTeamTier from './helpers/oldUpgradeToTeamTier'
 
+// deprecating because we need to split up the subscription and upgrade logic to handle 3D Secure cards in the new checkout flow:  https://github.com/ParabolInc/parabol/issues/8278
 export default {
-  type: UpgradeToTeamTierPayload,
+  type: OldUpgradeToTeamTierPayload,
   description: 'Upgrade an account to the paid service',
   args: {
     orgId: {
@@ -20,21 +20,14 @@ export default {
       description: 'the org requesting the upgrade'
     },
     stripeToken: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The token that came back from stripe'
-    },
-    paymentMethodId: {
-      type: GraphQLID,
-      description: 'The payment method id'
     }
   },
+
   async resolve(
     _source: unknown,
-    {
-      orgId,
-      stripeToken,
-      paymentMethodId
-    }: {orgId: string; stripeToken?: string; paymentMethodId?: string},
+    {orgId, stripeToken}: {orgId: string; stripeToken: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -61,19 +54,8 @@ export default {
     // if they downgrade & are re-upgrading, they'll already have a stripeId
     const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer!
-    let stripeSubscriptionClientSecret: string | null = null
     try {
-      // TODO: remove upgradeToTeamTierOld once we rollout the new checkout flow: https://github.com/ParabolInc/parabol/milestone/150
-      if (paymentMethodId) {
-        stripeSubscriptionClientSecret = await upgradeToTeamTier(
-          orgId,
-          paymentMethodId,
-          email,
-          dataLoader
-        )
-      } else if (stripeToken) {
-        await upgradeToTeamTierOld(orgId, stripeToken, email, dataLoader)
-      }
+      await oldUpgradeToTeamTier(orgId, stripeToken, email, dataLoader)
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e
@@ -99,14 +81,20 @@ export default {
       oldTier: 'starter',
       newTier: 'team'
     })
-    const data = {orgId, teamIds, meetingIds, stripeSubscriptionClientSecret}
-    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierPayload', data, subOptions)
+    const data = {orgId, teamIds, meetingIds}
+    publish(
+      SubscriptionChannel.ORGANIZATION,
+      orgId,
+      'OldUpgradeToTeamTierPayload',
+      data,
+      subOptions
+    )
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
-      publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToTeamTierPayload', teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'OldUpgradeToTeamTierPayload', teamData, subOptions)
     })
     return data
   }

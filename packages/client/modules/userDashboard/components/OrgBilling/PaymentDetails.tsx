@@ -5,12 +5,9 @@ import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
-import React, {useEffect} from 'react'
+import React from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import CreateSetupIntentMutation from '../../../../mutations/CreateSetupIntentMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import BillingForm from './BillingForm'
@@ -103,8 +100,6 @@ type Props = {
 
 const PaymentDetails = (props: Props) => {
   const {organizationRef} = props
-  const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
 
   const organization = useFragment(
     graphql`
@@ -120,10 +115,6 @@ const PaymentDetails = (props: Props) => {
   const {id: orgId, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
-
-  useEffect(() => {
-    CreateSetupIntentMutation(atmosphere, {orgId}, {onError, onCompleted})
-  }, [])
 
   return (
     <StyledPanel label='Credit Card'>
