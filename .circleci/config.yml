@@ -201,20 +201,20 @@ jobs:
               curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `staging` CI and Deployment..."}' $SLACK_DEVOPS_URL
             fi
       - checkout
-      # - restore_cache:
-      #     keys:
-      #       - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      #       - yarn-packages-v1-{{ .Branch }}-
-      #       - yarn-packages-v1-
+      - restore_cache:
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
       - run:
           name: Install dependencies
           command: |
             yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
-      # - save_cache:
-      #     key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      #     paths:
-      #       - ~/.cache/yarn
+      - save_cache:
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - run:
           name: DevOps checkout
           command: |
