@@ -35,10 +35,7 @@ const generateGroups = async (
   }
   const autogroupReflectionGroups: AutogroupReflectionGroupType[] = []
 
-  for (const groupTitle of Object.keys(groupedReflections)) {
-    if (!groupTitle) continue
-    const reflectionTexts = groupedReflections[groupTitle]
-    if (!reflectionTexts) continue
+  for (const [groupTitle, reflectionTexts] of Object.entries(groupedReflections)) {
     const reflectionIds: string[] = []
 
     for (const reflectionText of reflectionTexts) {

@@ -26,10 +26,9 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
-  const [isPatient0, usersWithDomain, isSAMLVerified] = await Promise.all([
+  const [isPatient0, usersWithDomain] = await Promise.all([
     isPatientZero(domain),
-    isCompanyDomain(domain) ? getUsersbyDomain(domain) : [],
-    r.table('SAML').getAll(domain, {index: 'domains'}).limit(1).count().eq(1).run()
+    isCompanyDomain(domain) ? getUsersbyDomain(domain) : []
   ])
 
   const joinEvent = new TimelineEventJoinedParabol({userId})
@@ -105,7 +104,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   }
   analytics.accountCreated(userId, !isOrganic, isPatient0)
 
-  if (isOrganic && !isSAMLVerified) {
+  if (isOrganic) {
     sendPromptToJoinOrg(email, userId)
   }
 
