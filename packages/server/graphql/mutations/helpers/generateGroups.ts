@@ -17,18 +17,21 @@ const generateGroups = async (
   if (!hasSuggestGroupsFlag) return
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
   const manager = new OpenAIServerManager()
-  const groupedReflectionsJSON = await manager.groupReflections(groupReflectionsInput)
-  if (!groupedReflectionsJSON) {
+
+  const themes = await manager.generateThemes(groupReflectionsInput)
+  if (!themes) {
+    console.warn('ChatGPT was unable to generate themes')
+    return
+  }
+  const groupedReflections = await manager.groupReflections(groupReflectionsInput, themes)
+
+  if (!groupedReflections) {
     console.warn('ChatGPT was unable to group the reflections')
     return
   }
-  const parsedGroupedReflections = JSON.parse(groupedReflectionsJSON)
   const autogroupReflectionGroups: AutogroupReflectionGroupType[] = []
 
-  for (const group of parsedGroupedReflections) {
-    const groupTitle = Object.keys(group)[0]
-    if (!groupTitle) continue
-    const reflectionTexts = group[groupTitle]
+  for (const [groupTitle, reflectionTexts] of Object.entries(groupedReflections)) {
     const reflectionIds: string[] = []
 
     for (const reflectionText of reflectionTexts) {
@@ -47,6 +50,7 @@ const generateGroups = async (
 
   const r = await getRethink()
   await r.table('NewMeeting').get(meetingId).update({autogroupReflectionGroups}).run()
+  return autogroupReflectionGroups
 }
 
 export default generateGroups
