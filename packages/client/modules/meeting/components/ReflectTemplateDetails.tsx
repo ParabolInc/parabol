@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
@@ -18,7 +17,6 @@ import RemoveTemplate from './RemoveTemplate'
 import SelectTemplate from './SelectTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
-import {retroIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -84,13 +82,13 @@ const ReflectTemplateDetails = (props: Props) => {
         activeTemplate {
           ...ReflectTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
+          illustrationUrl
         }
         selectedTemplate {
           ...ReflectTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
         }
         teamTemplates {
-          ...EditableTemplateName_teamTemplates
           ...RemoveTemplate_teamTemplates
         }
         team {
@@ -104,7 +102,7 @@ const ReflectTemplateDetails = (props: Props) => {
   )
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
-  const {id: templateId, name: templateName, prompts} = activeTemplate
+  const {id: templateId, name: templateName, prompts, illustrationUrl} = activeTemplate
   const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
@@ -123,21 +121,18 @@ const ReflectTemplateDetails = (props: Props) => {
     )
     gotoTeamTemplates()
   }
-  const headerImg =
-    retroIllustrations[templateId as keyof typeof retroIllustrations] ?? customTemplate
   const isActiveTemplate = templateId === settings.selectedTemplate.id
   const showClone = !isOwner && tier !== 'starter'
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
-        <TemplateImage src={headerImg} />
+        <TemplateImage src={illustrationUrl} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName
               key={templateId}
               name={templateName}
               templateId={templateId}
-              teamTemplates={teamTemplates}
               isOwner={isOwner}
             />
             {isOwner && (

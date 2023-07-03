@@ -13,6 +13,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {NewAzureIssueInput_viewer$key} from '~/__generated__/NewAzureIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
+import useTimedState from '../hooks/useTimedState'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {CompletedHandler} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
@@ -137,6 +138,12 @@ const NewAzureIssueInput = (props: Props) => {
   const projects = teamMember?.integrations?.azureDevOps.projects ?? []
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
+  const [createTaskError, setCreateTaskError] = useTimedState()
+  useEffect(() => {
+    if (isEditing) {
+      setCreateTaskError(undefined)
+    }
+  }, [isEditing])
   const [selectedProjectName, setSelectedProjectName] = useState(projects[0]?.name ?? '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
@@ -189,7 +196,12 @@ const NewAzureIssueInput = (props: Props) => {
       }
     }
     const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
-      const integrationHash = res.createTask?.task?.integrationHash ?? null
+      const {error, task} = res.createTask
+      if (error) {
+        setCreateTaskError(error.message)
+      }
+      if (error || !task) return
+      const {integrationHash} = task
       if (!integrationHash) return
       const pokerScopeVariables = {
         meetingId,
@@ -210,6 +222,17 @@ const NewAzureIssueInput = (props: Props) => {
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
+  if (createTaskError) {
+    return (
+      <Item>
+        <Checkbox active disabled />
+        <Issue>
+          <Error>{createTaskError}</Error>
+          <StyledLink>{selectedProjectName}</StyledLink>
+        </Issue>
+      </Item>
+    )
+  }
   if (!isEditing) return null
   return (
     <>

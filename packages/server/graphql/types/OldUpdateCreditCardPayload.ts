@@ -5,8 +5,8 @@ import Organization from './Organization'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 
-const UpdateCreditCardPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'UpdateCreditCardPayload',
+const OldUpdateCreditCardPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'OldUpdateCreditCardPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -24,4 +24,4 @@ const UpdateCreditCardPayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default UpdateCreditCardPayload
+export default OldUpdateCreditCardPayload

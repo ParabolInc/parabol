@@ -6,8 +6,6 @@ import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetro
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import publish from '../../../utils/publish'
 
-const SERVER_ID = process.env.SERVER_ID
-
 const generateGroups = async (
   reflections: Reflection[],
   teamId: string,
@@ -35,10 +33,7 @@ const generateGroups = async (
   }
   const autogroupReflectionGroups: AutogroupReflectionGroupType[] = []
 
-  for (const groupTitle of Object.keys(groupedReflections)) {
-    if (!groupTitle) continue
-    const reflectionTexts = groupedReflections[groupTitle]
-    if (!reflectionTexts) continue
+  for (const [groupTitle, reflectionTexts] of Object.entries(groupedReflections)) {
     const reflectionIds: string[] = []
 
     for (const reflectionText of reflectionTexts) {
@@ -59,7 +54,7 @@ const generateGroups = async (
   await r.table('NewMeeting').get(meetingId).update({autogroupReflectionGroups}).run()
   const data = {meetingId}
   const operationId = dataLoader.share()
-  const subOptions = {operationId, mutatorId: SERVER_ID}
+  const subOptions = {operationId}
   publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
   return autogroupReflectionGroups
 }
