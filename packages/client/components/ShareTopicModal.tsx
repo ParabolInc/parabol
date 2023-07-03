@@ -23,6 +23,7 @@ import {ShareTopicModal_viewer$key} from '../__generated__/ShareTopicModal_viewe
 import SlackClientManager from '../utils/SlackClientManager'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useSlackChannels from '../hooks/useSlackChannels'
 
 interface Props {
   isOpen: boolean
@@ -40,6 +41,9 @@ const ShareTopicModalViewerFragment = graphql`
           integrations {
             slack {
               isActive
+              botAccessToken
+              slackUserId
+              defaultTeamChannelId
             }
           }
         }
@@ -61,6 +65,7 @@ type Integration = 'slack'
 const ShareTopicModal = (props: Props) => {
   const {isOpen, onClose, queryRef} = props
   const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>('')
+  const [selectedChannel, setSelectedChannel] = React.useState<string>('')
 
   const onShare = () => {
     /* TODO */
@@ -72,15 +77,19 @@ const ShareTopicModal = (props: Props) => {
   const viewer = useFragment<ShareTopicModal_viewer$key>(ShareTopicModalViewerFragment, data.viewer)
   const {meeting} = viewer
 
+  const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
+  const slackChannels = useSlackChannels(slack)
+
   if (!meeting) {
     return null
   }
 
   const {teamId} = meeting
 
-  const labelStyles = `w-[90px] text-left text-sm font-semibold`
+  const labelStyles = `w-[110px] text-left text-sm font-semibold`
+  const fieldsetStyles = `mx-0 mb-[15px] mb-2 flex items-center gap-5 p-0`
 
-  const isSlackConnected = meeting.viewerMeetingMember?.teamMember.integrations.slack?.isActive
+  const isSlackConnected = slack?.isActive
 
   const onIntegrationChange = (integration: Integration) => {
     if (integration === 'slack') {
@@ -98,6 +107,10 @@ const ShareTopicModal = (props: Props) => {
         })
       }
     }
+  }
+
+  const onChannelChange = (channel: string) => {
+    setSelectedChannel(channel)
   }
 
   const comingSoonBadge = (
@@ -118,7 +131,7 @@ const ShareTopicModal = (props: Props) => {
         <DialogTitle>Share topic</DialogTitle>
         <DialogDescription>Where would you like to share the topic to?</DialogDescription>
 
-        <fieldset className='mx-0 mb-[15px] mb-2 flex items-center gap-5 p-0'>
+        <fieldset className={fieldsetStyles}>
           <label className={labelStyles}>Integration</label>
           <Select
             onValueChange={onIntegrationChange}
@@ -139,7 +152,7 @@ const ShareTopicModal = (props: Props) => {
                 </SelectItem>
                 <SelectItem
                   value='teams'
-                  disabled={false}
+                  disabled={true}
                   endAdornment={comingSoonBadge}
                   className='data-[disabled]:opacity-100'
                 >
@@ -147,7 +160,7 @@ const ShareTopicModal = (props: Props) => {
                 </SelectItem>
                 <SelectItem
                   value='mattermost'
-                  disabled={false}
+                  disabled={true}
                   endAdornment={comingSoonBadge}
                   className='data-[disabled]:opacity-100'
                 >
@@ -158,6 +171,28 @@ const ShareTopicModal = (props: Props) => {
           </Select>
         </fieldset>
 
+        <fieldset className={fieldsetStyles}>
+          <label className={labelStyles}>Channel</label>
+          <Select
+            onValueChange={onChannelChange}
+            value={selectedChannel}
+            disabled={submitting || selectedIntegration === ''}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent position='item-aligned'>
+              <SelectGroup>
+                {selectedIntegration === 'slack' &&
+                  slackChannels.map((channel) => (
+                    <SelectItem value={channel.id} key={channel.id}>
+                      {channel.name}
+                    </SelectItem>
+                  ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </fieldset>
         <DialogActions>
           <SecondaryButton onClick={onClose} size='small'>
             Cancel
