@@ -77,7 +77,7 @@
     "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@radix-ui/react-radio-group": "^1.1.2",
     "@radix-ui/react-scroll-area": "^1.0.3",
-    "@radix-ui/react-select": "^2.0.0-rc.7",
+    "@radix-ui/react-select": "^1.2.2",
     "@sentry/browser": "^5.8.0",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^1.47.0",

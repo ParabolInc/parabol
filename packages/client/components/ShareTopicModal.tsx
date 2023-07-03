@@ -20,6 +20,9 @@ import {
 import graphql from 'babel-plugin-relay/macro'
 import {ShareTopicModalQuery} from '../__generated__/ShareTopicModalQuery.graphql'
 import {ShareTopicModal_viewer$key} from '../__generated__/ShareTopicModal_viewer.graphql'
+import SlackClientManager from '../utils/SlackClientManager'
+import useMutationProps from '../hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   isOpen: boolean
@@ -31,6 +34,7 @@ interface Props {
 const ShareTopicModalViewerFragment = graphql`
   fragment ShareTopicModal_viewer on User @argumentDefinitions(meetingId: {type: "ID!"}) {
     meeting(meetingId: $meetingId) {
+      teamId
       viewerMeetingMember {
         teamMember {
           integrations {
@@ -56,27 +60,42 @@ type Integration = 'slack'
 
 const ShareTopicModal = (props: Props) => {
   const {isOpen, onClose, queryRef} = props
+  const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>('')
 
   const onShare = () => {
     /* TODO */
   }
 
+  const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const data = usePreloadedQuery<ShareTopicModalQuery>(query, queryRef)
   const viewer = useFragment<ShareTopicModal_viewer$key>(ShareTopicModalViewerFragment, data.viewer)
+  const {meeting} = viewer
 
-  const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>('')
+  if (!meeting) {
+    return null
+  }
+
+  const {teamId} = meeting
 
   const labelStyles = `w-[90px] text-left text-sm font-semibold`
 
-  const isSlackConnected =
-    viewer.meeting?.viewerMeetingMember?.teamMember.integrations.slack?.isActive
+  const isSlackConnected = meeting.viewerMeetingMember?.teamMember.integrations.slack?.isActive
 
   const onIntegrationChange = (integration: Integration) => {
     if (integration === 'slack') {
       if (isSlackConnected) {
         setSelectedIntegration('slack')
       } else {
-        // TODO: trigger auth window
+        SlackClientManager.openOAuth(atmosphere, teamId, {
+          submitting,
+          submitMutation,
+          onError,
+          onCompleted: () => {
+            onCompleted()
+            setSelectedIntegration('slack')
+          }
+        })
       }
     }
   }
@@ -101,9 +120,17 @@ const ShareTopicModal = (props: Props) => {
 
         <fieldset className='mx-0 mb-[15px] mb-2 flex items-center gap-5 p-0'>
           <label className={labelStyles}>Integration</label>
-          <Select onValueChange={onIntegrationChange} value={selectedIntegration}>
+          <Select
+            onValueChange={onIntegrationChange}
+            value={selectedIntegration}
+            disabled={submitting}
+          >
             <SelectTrigger>
-              <SelectValue placeholder='Select one' />
+              {selectedIntegration !== '' ? (
+                <SelectValue />
+              ) : (
+                <span className='text-slate-600'>Select one</span>
+              )}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -112,7 +139,7 @@ const ShareTopicModal = (props: Props) => {
                 </SelectItem>
                 <SelectItem
                   value='teams'
-                  disabled={true}
+                  disabled={false}
                   endAdornment={comingSoonBadge}
                   className='data-[disabled]:opacity-100'
                 >
@@ -120,7 +147,7 @@ const ShareTopicModal = (props: Props) => {
                 </SelectItem>
                 <SelectItem
                   value='mattermost'
-                  disabled={true}
+                  disabled={false}
                   endAdornment={comingSoonBadge}
                   className='data-[disabled]:opacity-100'
                 >
