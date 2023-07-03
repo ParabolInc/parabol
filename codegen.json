@@ -4,7 +4,7 @@
     "defaultScalarType": "string",
     "enumsAsTypes": true,
     "optionalResolveType": true,
-    "scalars": {"DateTime": "Date", "RRule": "RRule", "File": "TFile"}
+    "scalars": {"DateTime": "Date", "File": "TFile", "RRule": "RRule"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -83,6 +83,7 @@
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
           "RemoveTeamMemberPayload": "./types/RemoveTeamMemberPayload#RemoveTeamMemberPayloadSource",
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
+          "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",

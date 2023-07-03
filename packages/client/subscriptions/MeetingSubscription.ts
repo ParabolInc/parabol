@@ -33,6 +33,9 @@ const subscription = graphql`
       AutogroupSuccess {
         ...AutogroupMutation_meeting @relay(mask: false)
       }
+      ResetReflectionGroupsSuccess {
+        ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
+      }
       GenerateGroupsSuccess {
         ...GenerateGroupsFrag_meeting @relay(mask: false)
       }

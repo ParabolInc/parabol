@@ -27,6 +27,7 @@ type MeetingSubscriptionPayload {
   NewMeetingCheckInPayload: NewMeetingCheckInPayload
   PromoteNewMeetingFacilitatorPayload: PromoteNewMeetingFacilitatorPayload
   RemoveReflectionPayload: RemoveReflectionPayload
+  ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccess
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
   RevealTeamHealthVotesSuccess: RevealTeamHealthVotesSuccess
   SetPhaseFocusPayload: SetPhaseFocusPayload

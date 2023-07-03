@@ -20,6 +20,7 @@ interface Input {
   disableAnonymity: boolean
   transcription?: string
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]
+  resetReflectionGroups?: AutogroupReflectionGroupType[]
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
@@ -42,6 +43,7 @@ export default class MeetingRetrospective extends Meeting {
   reflectionCount?: number
   transcription?: string
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]
+  resetReflectionGroups?: AutogroupReflectionGroupType[]
 
   constructor(input: Input) {
     const {
@@ -57,7 +59,8 @@ export default class MeetingRetrospective extends Meeting {
       maxVotesPerGroup,
       disableAnonymity,
       transcription,
-      autogroupReflectionGroups
+      autogroupReflectionGroups,
+      resetReflectionGroups
     } = input
     super({
       id,
@@ -75,5 +78,6 @@ export default class MeetingRetrospective extends Meeting {
     this.disableAnonymity = disableAnonymity
     this.transcription = transcription
     this.autogroupReflectionGroups = autogroupReflectionGroups
+    this.resetReflectionGroups = resetReflectionGroups
   }
 }
