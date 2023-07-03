@@ -64,8 +64,6 @@ type Integration = 'slack'
 
 const ShareTopicModal = (props: Props) => {
   const {isOpen, onClose, queryRef} = props
-  const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>('')
-  const [selectedChannel, setSelectedChannel] = React.useState<string>('')
 
   const onShare = () => {
     /* TODO */
@@ -78,18 +76,23 @@ const ShareTopicModal = (props: Props) => {
   const {meeting} = viewer
 
   const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
+  const isSlackConnected = slack?.isActive
+  const slackDefaultTeamChannelId = slack?.defaultTeamChannelId
   const slackChannels = useSlackChannels(slack)
+
+  const defaultSelectedIntegration = isSlackConnected ? 'slack' : ''
+  const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>(
+    defaultSelectedIntegration
+  )
+  const [selectedChannel, setSelectedChannel] = React.useState<string>(
+    slackDefaultTeamChannelId ?? ''
+  )
 
   if (!meeting) {
     return null
   }
 
   const {teamId} = meeting
-
-  const labelStyles = `w-[110px] text-left text-sm font-semibold`
-  const fieldsetStyles = `mx-0 mb-[15px] mb-2 flex items-center gap-5 p-0`
-
-  const isSlackConnected = slack?.isActive
 
   const onIntegrationChange = (integration: Integration) => {
     if (integration === 'slack') {
@@ -124,6 +127,9 @@ const ShareTopicModal = (props: Props) => {
       <div className='text-center text-xs font-semibold text-slate-700'>connect</div>
     </div>
   )
+
+  const labelStyles = `w-[110px] text-left text-sm font-semibold`
+  const fieldsetStyles = `mx-0 mb-[15px] mb-2 flex items-center gap-5 p-0`
 
   return (
     <SimpleModalDialog isOpen={isOpen} onClose={onClose}>
