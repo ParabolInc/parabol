@@ -45,6 +45,7 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
     const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
     const suggestedThemeCountMax = Math.floor(reflectionsText.length / 4)
+    // Specify the approximate number of themes as it will often create too many themes otherwise
     const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
       ', '
     )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} or ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
@@ -117,8 +118,9 @@ class OpenAIServerManager {
     }
 
     try {
-      const promises = reflectionsText.map((reflection) => getThemeForReflection(reflection))
-      const themesByReflections = await Promise.all(promises)
+      const themesByReflections = await Promise.all(
+        reflectionsText.map((reflection) => getThemeForReflection(reflection))
+      )
 
       const groupedReflections = themes.reduce<{[key: string]: string[]}>((acc, theme) => {
         acc[theme] = []

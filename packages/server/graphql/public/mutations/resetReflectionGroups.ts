@@ -32,6 +32,10 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
+  if (!isTeamMember(authToken, meeting.teamId)) {
+    return standardError(new Error('Team not found'), {userId: viewerId})
+  }
+
   if (meeting.meetingType !== 'retrospective') {
     return standardError(new Error('Incorrect meeting type'), {userId: viewerId})
   }
@@ -39,10 +43,6 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   const {resetReflectionGroups, teamId} = meeting
   if (!resetReflectionGroups) {
     return standardError(new Error('No reset reflection groups found'), {userId: viewerId})
-  }
-
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
   }
 
   const resetGroupsMapper: ResetGroupsMapper = {}
@@ -57,15 +57,16 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     resetGroupsMapper[newReflectionGroupId] = {reflectionIds, groupTitle}
   }
 
-  const addReflectionPromises = Object.entries(resetGroupsMapper)
-    .map(([newReflectionGroupId, {reflectionIds, groupTitle}]) => {
-      return reflectionIds.map((reflectionId) => {
-        return addReflectionToGroup(reflectionId, newReflectionGroupId, context, groupTitle)
+  await Promise.all(
+    Object.entries(resetGroupsMapper)
+      .map(([newReflectionGroupId, {reflectionIds, groupTitle}]) => {
+        return reflectionIds.map((reflectionId) => {
+          return addReflectionToGroup(reflectionId, newReflectionGroupId, context, groupTitle)
+        })
       })
-    })
-    .flat()
+      .flat()
+  )
 
-  await Promise.all(addReflectionPromises)
   await r
     .table('NewMeeting')
     .get(meetingId)

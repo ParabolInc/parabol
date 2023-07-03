@@ -2,9 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 import {UpdateCreditCardMutation as TUpdateCreditCardMutation} from '../__generated__/UpdateCreditCardMutation.graphql'
+
 graphql`
-  fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload {
+  fragment UpdateCreditCardMutation_organization on UpdateCreditCardSuccess {
+    stripeSubscriptionClientSecret
     organization {
+      id
       creditCard {
         brand
         last4
@@ -16,7 +19,7 @@ graphql`
 `
 
 graphql`
-  fragment UpdateCreditCardMutation_team on UpdateCreditCardPayload {
+  fragment UpdateCreditCardMutation_team on UpdateCreditCardSuccess {
     teamsUpdated {
       isPaid
       updatedAt
@@ -25,10 +28,12 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateCreditCardMutation($orgId: ID!, $stripeToken: ID!) {
-    updateCreditCard(orgId: $orgId, stripeToken: $stripeToken) {
-      error {
-        message
+  mutation UpdateCreditCardMutation($orgId: ID!, $paymentMethodId: ID!) {
+    updateCreditCard(orgId: $orgId, paymentMethodId: $paymentMethodId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
       }
       ...UpdateCreditCardMutation_organization @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
@@ -38,15 +43,12 @@ const mutation = graphql`
 
 const UpdateCreditCardMutation: StandardMutation<TUpdateCreditCardMutation> = (
   atmosphere,
-  {orgId, stripeToken},
+  variables,
   {onError, onCompleted}
 ) => {
   return commitMutation<TUpdateCreditCardMutation>(atmosphere, {
     mutation,
-    variables: {
-      orgId,
-      stripeToken
-    },
+    variables,
     onCompleted,
     onError
   })
