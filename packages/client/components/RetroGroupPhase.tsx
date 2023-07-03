@@ -55,6 +55,9 @@ const RetroGroupPhase = (props: Props) => {
         id
         endedAt
         showSidebar
+        autogroupReflectionGroups {
+          groupTitle
+        }
         organization {
           tier
           featureFlags {
@@ -69,7 +72,7 @@ const RetroGroupPhase = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const [hasSuggestedGroups, setHasSuggestedGroups] = useState(false)
-  const {id: meetingId, endedAt, showSidebar, organization} = meeting
+  const {id: meetingId, endedAt, showSidebar, organization, autogroupReflectionGroups} = meeting
   const {featureFlags, tier} = organization
   const {suggestGroups} = featureFlags
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
@@ -99,7 +102,10 @@ const RetroGroupPhase = (props: Props) => {
             </PhaseHeaderDescription>
             {suggestGroups && (
               <ButtonWrapper>
-                <StyledButton disabled={hasSuggestedGroups} onClick={handleAutoGroupClick}>
+                <StyledButton
+                  disabled={!autogroupReflectionGroups?.length}
+                  onClick={handleAutoGroupClick}
+                >
                   {'Suggest Groups ✨'}
                 </StyledButton>
                 <div
