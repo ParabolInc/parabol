@@ -6,7 +6,6 @@ import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {DialogDescription} from '../ui/Dialog/DialogDescription'
 import {DialogActions} from '../ui/Dialog/DialogActions'
-import {DialogClose} from '../ui/Dialog/DialogClose'
 
 interface Props {
   isOpen: boolean
@@ -35,7 +34,6 @@ const ShareTopicModal = (props: Props) => {
             Share
           </PrimaryButton>
         </DialogActions>
-        <DialogClose />
       </DialogContent>
     </SimpleModalDialog>
   )
