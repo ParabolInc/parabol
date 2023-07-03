@@ -5,6 +5,7 @@ import {DataLoaderWorker} from '../../graphql'
 import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import publish from '../../../utils/publish'
+import {analytics} from '../../../utils/analytics/analytics'
 
 const generateGroups = async (
   reflections: Reflection[],
@@ -51,10 +52,19 @@ const generateGroups = async (
   }
 
   const r = await getRethink()
-  await r.table('NewMeeting').get(meetingId).update({autogroupReflectionGroups}).run()
+  const meetingRes = await r
+    .table('NewMeeting')
+    .get(meetingId)
+    .update(
+      {autogroupReflectionGroups},
+      {returnChanges: true}
+    )('changes')(0)('new_val')
+    .run()
+  const {facilitatorUserId} = meetingRes
   const data = {meetingId}
   const operationId = dataLoader.share()
   const subOptions = {operationId}
+  analytics.suggestedGroupsGenerated(facilitatorUserId, meetingId, teamId)
   publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
   return autogroupReflectionGroups
 }
