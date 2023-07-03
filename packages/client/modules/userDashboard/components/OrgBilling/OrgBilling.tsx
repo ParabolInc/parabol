@@ -46,6 +46,7 @@ const OrgBilling = (props: Props) => {
     organizationRef
   )
   const {tier} = organization
+
   return (
     <div>
       <OrgBillingUpgrade organization={organization} invoiceListRefetch={refetch} />
