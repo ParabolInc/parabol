@@ -110,7 +110,7 @@ export type AnalyticsEvent =
   // Join request
   | 'Join Request Reviewed'
   // Suggest Groups
-  | 'Suggest Groups Generated'
+  | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
   | 'Reset Groups Clicked'
 
@@ -431,8 +431,8 @@ class Analytics {
     this.track(userId, 'Notification Email Sent', {type, orgId})
   }
 
-  suggestGroupsGenerated = (userId: string, meetingId: string, teamId: string) => {
-    this.track(userId, 'Suggest Groups Generated', {meetingId, teamId})
+  suggestedGroupsGenerated = (userId: string, meetingId: string, teamId: string) => {
+    this.track(userId, 'Suggested Groups Generated', {meetingId, teamId})
   }
 
   suggestGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
