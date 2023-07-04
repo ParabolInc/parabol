@@ -1,4 +1,11 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
+import {
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLString
+} from 'graphql'
+import GraphQLEmailType from './GraphQLEmailType'
 
 const NewTeamInput = new GraphQLInputObjectType({
   name: 'NewTeamInput',
@@ -10,6 +17,10 @@ const NewTeamInput = new GraphQLInputObjectType({
     orgId: {
       type: GraphQLID,
       description: 'The unique orginization ID that pays for the team'
+    },
+    invitees: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLEmailType))),
+      description: 'The emails of the users to invite to the team'
     }
   })
 })

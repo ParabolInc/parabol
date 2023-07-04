@@ -190,7 +190,8 @@ const NewTeamForm = (props: Props) => {
     } else {
       const newTeam = {
         name: teamName,
-        orgId
+        orgId,
+        invitees
       }
       submitMutation()
       AddTeamMutation(atmosphere, {newTeam}, {onError, onCompleted, history})
@@ -211,7 +212,6 @@ const NewTeamForm = (props: Props) => {
     const nextValue = e.target.value
     if (rawInvitees === nextValue) return
     const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
-    console.log('🚀 ~ invalidEmailExists:', invalidEmailExists)
     const allInvitees = parsedInvitees
       ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
       : []
@@ -224,7 +224,6 @@ const NewTeamForm = (props: Props) => {
     } else {
       onCompleted()
     }
-    console.log('🚀 ~ uniqueInvitees:', uniqueInvitees)
     setRawInvitees(nextValue)
     setInvitees(uniqueInvitees)
   }
@@ -279,7 +278,7 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </WarningMsg>
           )}
-          <p className='mt-8 mb-4 text-xs leading-4'>
+          <p className='mt-8 mb-3 text-xs leading-4'>
             {'Invite others to your new team. Invites expire in 30 days.'}
           </p>
           <BasicTextArea
