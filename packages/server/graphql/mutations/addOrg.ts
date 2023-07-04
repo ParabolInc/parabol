@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
@@ -11,10 +11,12 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import rateLimit from '../rateLimit'
 import AddOrgPayload from '../types/AddOrgPayload'
+import GraphQLEmailType from '../types/GraphQLEmailType'
 import NewTeamInput from '../types/NewTeamInput'
 import addOrgValidation from './helpers/addOrgValidation'
 import createNewOrg from './helpers/createNewOrg'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
+import inviteToTeamHelper from './helpers/inviteToTeamHelper'
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
@@ -27,69 +29,78 @@ export default {
     orgName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the new team'
+    },
+    invitees: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLEmailType))),
+      description: 'The emails of the users to invite to the new org'
     }
   },
-  resolve: rateLimit({perMinute: 2, perHour: 8})(
-    async (_source: unknown, args, {authToken, dataLoader, socketId: mutatorId}) => {
-      const operationId = dataLoader.share()
-      const subOptions = {mutatorId, operationId}
+  resolve: rateLimit({perMinute: 2, perHour: 8})(async (_source: unknown, args, context) => {
+    const {invitees} = args
+    const {authToken, dataLoader, socketId: mutatorId} = context
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
-      // AUTH
-      const viewerId = getUserId(authToken)
+    // AUTH
+    const viewerId = getUserId(authToken)
 
-      // VALIDATION
-      const {
-        data: {newTeam, orgName},
-        errors
-      } = addOrgValidation()(args) as any
-      if (Object.keys(errors).length) {
-        return standardError(new Error('Failed input validation'), {userId: viewerId})
-      }
-      const user = await dataLoader.get('users').load(viewerId)
-      if (!user) {
-        return standardError(new Error('Authorization error'), {userId: viewerId})
-      }
-
-      // RESOLUTION
-      const orgId = generateUID()
-      const teamId = generateUID()
-      const {email} = user
-      await createNewOrg(orgId, orgName, viewerId, email)
-      await createTeamAndLeader(user, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
-
-      const {tms} = authToken
-      // MUTATIVE
-      tms.push(teamId)
-      segmentIo.track({
-        userId: viewerId,
-        event: 'New Org',
-        properties: {orgId, teamId, fromSignup: false}
-      })
-      publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
-
-      const teamMemberId = toTeamMemberId(teamId, viewerId)
-      const data = {
-        orgId,
-        teamId,
-        teamMemberId
-      }
-
-      const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
-      if (removedSuggestedActionId) {
-        publish(
-          SubscriptionChannel.NOTIFICATION,
-          viewerId,
-          'AddOrgPayload',
-          {removedSuggestedActionId},
-          subOptions
-        )
-      }
-      publish(SubscriptionChannel.ORGANIZATION, viewerId, 'AddOrgPayload', data, subOptions)
-
-      return {
-        ...data,
-        authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId, rol: authToken.rol}))
-      }
+    // VALIDATION
+    const {
+      data: {newTeam, orgName},
+      errors
+    } = addOrgValidation()(args) as any
+    if (Object.keys(errors).length) {
+      return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
-  )
+    const user = await dataLoader.get('users').load(viewerId)
+    if (!user) {
+      return standardError(new Error('Authorization error'), {userId: viewerId})
+    }
+
+    // RESOLUTION
+    const orgId = generateUID()
+    const teamId = generateUID()
+    const {email} = user
+    await createNewOrg(orgId, orgName, viewerId, email)
+    await createTeamAndLeader(user, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
+
+    const {tms} = authToken
+    // MUTATIVE
+    tms.push(teamId)
+    segmentIo.track({
+      userId: viewerId,
+      event: 'New Org',
+      properties: {orgId, teamId, fromSignup: false}
+    })
+    publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
+
+    const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const data = {
+      orgId,
+      teamId,
+      teamMemberId
+    }
+
+    const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
+    if (removedSuggestedActionId) {
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        viewerId,
+        'AddOrgPayload',
+        {removedSuggestedActionId},
+        subOptions
+      )
+    }
+    publish(SubscriptionChannel.ORGANIZATION, viewerId, 'AddOrgPayload', data, subOptions)
+
+    if (invitees) {
+      const data = await inviteToTeamHelper(invitees, teamId, context)
+      console.log('🚀 ~ add org data...:', data)
+    }
+
+    return {
+      ...data,
+      authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId, rol: authToken.rol}))
+    }
+  })
 }

@@ -184,7 +184,7 @@ const NewTeamForm = (props: Props) => {
       const newTeam = {
         name: teamName
       }
-      const variables = {newTeam, orgName}
+      const variables = {newTeam, orgName, invitees}
       submitMutation()
       AddOrgMutation(atmosphere, variables, {history, onError, onCompleted})
     } else {
