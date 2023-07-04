@@ -94,8 +94,7 @@ export default {
     publish(SubscriptionChannel.ORGANIZATION, viewerId, 'AddOrgPayload', data, subOptions)
 
     if (invitees) {
-      const data = await inviteToTeamHelper(invitees, teamId, context)
-      console.log('🚀 ~ add org data...:', data)
+      await inviteToTeamHelper(invitees, teamId, context)
     }
 
     return {

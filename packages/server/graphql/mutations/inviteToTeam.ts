@@ -56,9 +56,7 @@ export default {
       }: {invitees: string[]; meetingId?: string | null; teamId: string},
       context: GQLContext
     ) => {
-      const {authToken, dataLoader, socketId: mutatorId} = context
-      const operationId = dataLoader.share()
-      const subOptions = {mutatorId, operationId}
+      const {authToken} = context
 
       // AUTH
       const viewerId = getUserId(authToken)
@@ -67,27 +65,6 @@ export default {
       }
 
       const data = await inviteToTeamHelper(inviteesInput, teamId, context, meetingId)
-      if (data instanceof Error || data.error) {
-        const error = data instanceof Error ? data : new Error(data.error.message)
-        return standardError(error, {userId: viewerId})
-      }
-      const {notificationsToInsert} = data
-
-      // Tell each invitee
-      notificationsToInsert.forEach((notification) => {
-        const {userId, id: teamInvitationNotificationId} = notification
-        const subscriberData = {
-          ...data,
-          teamInvitationNotificationId
-        }
-        publish(
-          SubscriptionChannel.NOTIFICATION,
-          userId,
-          'InviteToTeamPayload',
-          subscriberData,
-          subOptions
-        )
-      })
       return data
     }
   )

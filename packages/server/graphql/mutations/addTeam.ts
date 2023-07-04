@@ -120,7 +120,7 @@ export default {
       publish(SubscriptionChannel.TEAM, viewerId, 'AddTeamPayload', data, subOptions)
 
       if (invitees) {
-        const data = await inviteToTeamHelper(invitees, teamId, context)
+        await inviteToTeamHelper(invitees, teamId, context)
       }
 
       return {

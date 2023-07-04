@@ -1,5 +1,5 @@
 import appOrigin from '../../../appOrigin'
-import {Threshold} from '../../../../client/types/constEnums'
+import {SubscriptionChannel, Threshold} from '../../../../client/types/constEnums'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../../database/types/NotificationTeamInvitation'
@@ -19,6 +19,7 @@ import getMailManager from '../../../email/getMailManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import util from 'util'
 import crypto from 'crypto'
+import publish from '../../../utils/publish'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -59,10 +60,11 @@ const inviteToTeamHelper = async (
   context: GQLContext,
   meetingId?: string | null
 ) => {
-  console.log('helper....')
-  const {authToken, dataLoader} = context
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
   const r = await getRethink()
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
 
   const trustScore = await getInviteTrustScore(viewerId, teamId, dataLoader)
   if (trustScore < 0.15)
@@ -192,6 +194,28 @@ const inviteToTeamHelper = async (
   })
   console.log('🚀 ~ newAllowedInvitees:', newAllowedInvitees)
   const successfulInvitees = newAllowedInvitees.filter((_email, idx) => emailResults[idx])
+  const data = {
+    removedSuggestedActionId,
+    teamId,
+    invitees: successfulInvitees
+  }
+
+  // Tell each invitee
+  notificationsToInsert.forEach((notification) => {
+    const {userId, id: teamInvitationNotificationId} = notification
+    const subscriberData = {
+      ...data,
+      teamInvitationNotificationId
+    }
+    publish(
+      SubscriptionChannel.NOTIFICATION,
+      userId,
+      'InviteToTeamPayload',
+      subscriberData,
+      subOptions
+    )
+  })
+
   return {
     removedSuggestedActionId,
     invitees: successfulInvitees,
