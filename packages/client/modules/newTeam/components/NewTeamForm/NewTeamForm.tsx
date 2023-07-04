@@ -190,11 +190,10 @@ const NewTeamForm = (props: Props) => {
     } else {
       const newTeam = {
         name: teamName,
-        orgId,
-        invitees
+        orgId
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam}, {onError, onCompleted, history})
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, history})
     }
   }
 

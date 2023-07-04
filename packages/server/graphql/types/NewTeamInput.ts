@@ -17,10 +17,6 @@ const NewTeamInput = new GraphQLInputObjectType({
     orgId: {
       type: GraphQLID,
       description: 'The unique orginization ID that pays for the team'
-    },
-    invitees: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLEmailType))),
-      description: 'The emails of the users to invite to the team'
     }
   })
 })
@@ -28,7 +24,6 @@ const NewTeamInput = new GraphQLInputObjectType({
 export type NewTeamInputType = {
   name: string
   orgId?: string
-  invitees: string[]
 }
 
 export default NewTeamInput

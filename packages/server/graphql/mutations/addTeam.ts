@@ -1,4 +1,4 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
@@ -13,6 +13,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
+import GraphQLEmailType from '../types/GraphQLEmailType'
 import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
@@ -25,17 +26,25 @@ export default {
     newTeam: {
       type: new GraphQLNonNull(NewTeamInput),
       description: 'The new team object'
+    },
+    invitees: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLEmailType))),
+      description: 'The emails of the users to invite to the team'
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
-    async (_source: unknown, args: {newTeam: NewTeamInputType}, context: GQLContext) => {
+    async (
+      _source: unknown,
+      args: {newTeam: NewTeamInputType; invitees: string[]},
+      context: GQLContext
+    ) => {
       const {authToken, dataLoader, socketId: mutatorId} = context
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
       // AUTH
+      const {invitees} = args
       const orgId = args.newTeam.orgId ?? ''
-      const invitees = args.newTeam.invitees
       const viewerId = getUserId(authToken)
       const viewer = await dataLoader.get('users').load(viewerId)
 
