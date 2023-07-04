@@ -1,4 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
+import {RValue} from '../../../database/stricterR'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
 import {MutationResolvers} from '../resolverTypes'
 import normalizeSlugName from './helpers/normalizeSlugName'
@@ -11,7 +12,7 @@ const validateDomains = async (domains: string[] | null | undefined, slugName: s
   const domainOwner = await r
     .table('SAML')
     .getAll(r.args(normalizedDomains), {index: 'domains'})
-    .filter((row) => row('id').ne(slugName))
+    .filter((row: RValue) => row('id').ne(slugName))
     .limit(1)
     .nth(0)
     .default(null)

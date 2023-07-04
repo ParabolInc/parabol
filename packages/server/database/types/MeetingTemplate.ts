@@ -35,6 +35,8 @@ export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
   isFree: boolean
   mainCategory: string
   illustrationUrl: string
+  hideStartingAt: Date | null
+  hideEndingAt: Date | null
 
   constructor(input: Input) {
     const {
@@ -66,5 +68,7 @@ export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
     this.isFree = isFree || false
     this.mainCategory = mainCategory
     this.illustrationUrl = illustrationUrl
+    this.hideStartingAt = null
+    this.hideEndingAt = null
   }
 }

@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
@@ -44,7 +45,7 @@ export default {
       .between([teamId, r.minval], [teamId, dbAfter], {
         index: 'teamIdUpdatedAt'
       })
-      .filter((task) =>
+      .filter((task: RValue) =>
         task('tags')
           .contains('archived')
           .and(

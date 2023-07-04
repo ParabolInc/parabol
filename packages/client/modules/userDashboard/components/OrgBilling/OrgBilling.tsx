@@ -5,7 +5,7 @@ import {OrgBillingQuery} from '../../../../__generated__/OrgBillingQuery.graphql
 import {OrgBillingRefetchQuery} from '../../../../__generated__/OrgBillingRefetchQuery.graphql'
 import {OrgBilling_organization$key} from '../../../../__generated__/OrgBilling_organization.graphql'
 import {OrgBilling_query$key} from '../../../../__generated__/OrgBilling_query.graphql'
-import OrgBillingCreditCardInfo from './OrgBillingCreditCardInfo'
+import OrgBillingCreditCardInfoOld from './OrgBillingCreditCardInfoOld'
 import OrgBillingDangerZone from './OrgBillingDangerZone'
 import OrgBillingInvoices from './OrgBillingInvoices'
 import OrgBillingUpgrade from './OrgBillingUpgrade'
@@ -36,7 +36,7 @@ const OrgBilling = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment OrgBilling_organization on Organization {
-        ...OrgBillingCreditCardInfo_organization
+        ...OrgBillingCreditCardInfoOld_organization
         ...OrgBillingUpgrade_organization
         ...OrgBillingDangerZone_organization
         id
@@ -47,7 +47,7 @@ const OrgBilling = (props: Props) => {
   return (
     <div>
       <OrgBillingUpgrade organization={organization} invoiceListRefetch={refetch} />
-      <OrgBillingCreditCardInfo organization={organization} />
+      <OrgBillingCreditCardInfoOld organization={organization} />
       <OrgBillingInvoices queryRef={queryData} />
       <OrgBillingDangerZone organization={organization} />
     </div>

@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import updateMeetingTemplateFreeStatusById from '../../../postgres/queries/updateMeetingTemplateFreeStatusById'
 import updateMeetingTemplateFreeStatusByName from '../../../postgres/queries/updateMeetingTemplateFreeStatusByName'
 import {MutationResolvers} from '../resolverTypes'
@@ -7,7 +6,6 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
   _source,
   {isFree, templateIds, templateNames}
 ) => {
-  const r = await getRethink()
   // VALIDATION
   if (!templateIds?.length && !templateNames?.length) {
     return {error: {message: 'Must provide template ids or names'}}

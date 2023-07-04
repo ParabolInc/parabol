@@ -31,9 +31,9 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
     return standardError(new Error('Stage not found'), {userId: viewerId})
   }
 
-  const {reflectionGroupId} = stage
+  const {reflectionGroupId} = stage as any // FIXME
 
-  SlackNotifier.shareTopic(dataLoader, viewerId, teamId, meetingId, reflectionGroupId, channelId)
+  SlackNotifier.shareTopic?.(dataLoader, viewerId, teamId, meetingId, reflectionGroupId, channelId)
 
   const data = {meetingId}
   return data

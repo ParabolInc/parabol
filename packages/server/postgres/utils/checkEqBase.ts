@@ -26,7 +26,7 @@ export const checkRowCount = async (tableName: string) => {
       .run(),
     pg.query<{count: number}>(`SELECT COUNT(*) FROM "${tableName}";`)
   ])
-  const pgCount = Number(pgRes.rows[0].count)
+  const pgCount = Number(pgRes?.rows[0]?.count)
   return rCount === pgCount
     ? `Row count matches. ${rCount} in both DBs.`
     : `Row count mismatch. RethinkDB: ${rCount}. PG: ${pgCount}`
@@ -66,7 +66,7 @@ export async function checkTableEq(
         const eqFn = equalityMap[prop]
         const rVal = rethinkRow[prop]
         const pgVal = pgRow[prop]
-        const isEqual = eqFn(rVal, pgVal)
+        const isEqual = eqFn?.(rVal, pgVal)
         if (!isEqual) {
           errors.push({id, prop, rVal, pgVal})
           if (errors.length >= maxErrors) return errors

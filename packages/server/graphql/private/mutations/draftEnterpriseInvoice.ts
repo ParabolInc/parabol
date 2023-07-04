@@ -103,7 +103,12 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     customerId = stripeId
   }
 
-  const subscription = await manager.createEnterpriseSubscription(customerId, orgId, quantity, plan)
+  const subscription = await manager.createEnterpriseSubscription(
+    customerId,
+    orgId,
+    quantity,
+    plan ?? undefined
+  )
 
   await Promise.all([
     r({
@@ -124,8 +129,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     updateTeamByOrgId(
       {
         isPaid: true,
-        tier: 'enterprise',
-        updatedAt: now
+        tier: 'enterprise'
       },
       orgId
     ),

@@ -7181,7 +7181,7 @@ type Mutation {
   """
   Upgrade an account to the paid service
   """
-  upgradeToTeamTier(
+  oldUpgradeToTeamTier(
     """
     the org requesting the upgrade
     """
@@ -7191,7 +7191,7 @@ type Mutation {
     The token that came back from stripe
     """
     stripeToken: ID!
-  ): UpgradeToTeamTierPayload
+  ): OldUpgradeToTeamTierPayload
 
   """
   Cast your vote for a reflection group
@@ -9212,7 +9212,7 @@ type UpdateTemplateScopeSuccess {
   settings: TeamMeetingSettings!
 }
 
-type UpgradeToTeamTierPayload {
+type OldUpgradeToTeamTierPayload {
   error: StandardMutationError
 
   """
