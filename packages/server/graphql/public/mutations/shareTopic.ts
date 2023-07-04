@@ -2,6 +2,7 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {SlackNotifier} from '../../mutations/helpers/notifications/SlackNotifier'
 import {MutationResolvers} from '../resolverTypes'
+import DiscussStage from '../../../database/types/DiscussStage'
 
 const shareTopic: MutationResolvers['shareTopic'] = async (
   _source,
@@ -31,7 +32,7 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
     return standardError(new Error('Stage not found'), {userId: viewerId})
   }
 
-  const {reflectionGroupId} = stage as any // FIXME
+  const {reflectionGroupId} = stage as DiscussStage
 
   SlackNotifier.shareTopic?.(dataLoader, viewerId, teamId, meetingId, reflectionGroupId, channelId)
 
