@@ -40,16 +40,9 @@ const useShareTopicMutation = () => {
         const error = res.shareTopic.error
         if (!error) {
           atmosphere.eventEmitter.emit('addSnackbar', {
-            key: `topicShared:todo123`,
+            key: `topicShared`,
             autoDismiss: 5,
-            message: `Topic is shared to #growth_retreat_temp_hack_crappy_test`,
-            action: {
-              label: `Check out Slack`,
-              callback: () => {
-                const url = 'https://app.slack.com/client/T08FL6336/C04Q273JT6J'
-                window.open(url, '_blank', 'noopener')?.focus()
-              }
-            }
+            message: `Topic is shared successfully`
           })
           handlers?.onSuccess && handlers.onSuccess()
         } else {
