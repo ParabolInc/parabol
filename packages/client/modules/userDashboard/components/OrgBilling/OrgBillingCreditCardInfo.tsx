@@ -66,14 +66,15 @@ const InfoBlocks = styled('div')({
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 interface Props {
-  organization: OrgBillingCreditCardInfo_organization$key
+  organizationRef: OrgBillingCreditCardInfo_organization$key
 }
 
 const OrgBillingCreditCardInfo = (props: Props) => {
-  const {organization: organizationRef} = props
+  const {organizationRef} = props
   const organization = useFragment(
     graphql`
       fragment OrgBillingCreditCardInfo_organization on Organization {
+        id
         creditCard {
           brand
           expiry
@@ -83,12 +84,12 @@ const OrgBillingCreditCardInfo = (props: Props) => {
     `,
     organizationRef
   )
-  const {creditCard} = organization
+  const {id: orgId, creditCard} = organization
   const [isUpdating, setIsUpdating] = useState(false)
   if (!creditCard) return null
   const {brand, last4, expiry} = creditCard
 
-  const handleCancel = () => {
+  const handleClose = () => {
     setIsUpdating(false)
   }
 
@@ -101,7 +102,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
       <StyledPanel label='Credit Card'>
         <StyledRow>
           <Elements stripe={stripePromise}>
-            <UpdatePayment handleCancel={handleCancel} />
+            <UpdatePayment handleClose={handleClose} orgId={orgId} />
           </Elements>
         </StyledRow>
       </StyledPanel>

@@ -6,6 +6,7 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import useRouter from '../../hooks/useRouter'
@@ -47,6 +48,7 @@ graphql`
         question
         description
       }
+      subCategories
     }
   }
 `
@@ -123,6 +125,64 @@ const CategoryIDToColorClass = {
   )
 } as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
 
+type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
+
+type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried'
+
+const subCategoryMapping: Record<SubCategory, string> = {
+  popular: 'Popular templates',
+  recentlyUsed: 'You used these recently',
+  recentlyUsedInOrg: 'Others in your organization are using',
+  neverTried: 'Try these activities'
+}
+
+interface ActivityGridProps {
+  templates: Template[]
+  selectedCategory: string
+}
+
+const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
+  return (
+    <>
+      {templates.map((template) => {
+        return (
+          <Link
+            key={template.id}
+            to={{
+              pathname: `/activity-library/details/${template.id}`,
+              state: {prevCategory: selectedCategory}
+            }}
+            className='flex focus:rounded-md focus:outline-primary'
+          >
+            <ActivityLibraryCard
+              className='group aspect-[256/160] flex-1'
+              key={template.id}
+              theme={CATEGORY_THEMES[template.category as CategoryID]}
+              title={template.name}
+              badge={
+                !template.isFree ? (
+                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
+                ) : null
+              }
+            >
+              <ActivityCardImage
+                className='group-hover/card:hidden'
+                src={template.illustrationUrl}
+              />
+              <ActivityLibraryCardDescription
+                className='hidden group-hover/card:flex'
+                templateRef={template}
+              />
+            </ActivityLibraryCard>
+          </Link>
+        )
+      })}
+    </>
+  )
+}
+
+const MAX_PER_SUBCATEGORY = 6
+
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
@@ -157,6 +217,24 @@ export const ActivityLibrary = (props: Props) => {
         : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
+
+  const subCategoryTemplates = Object.fromEntries(
+    Object.keys(subCategoryMapping).map((subCategory) => {
+      return [
+        subCategory,
+        templatesToRender
+          .filter((template) => template.subCategories?.includes(subCategory))
+          .slice(0, MAX_PER_SUBCATEGORY) as Template[]
+      ]
+    })
+  ) as Record<SubCategory, Template[]>
+
+  const otherTemplates = templatesToRender.filter(
+    (template) =>
+      !Object.values(subCategoryTemplates)
+        .flat()
+        .find((catTemplate) => catTemplate.id === template.id)
+  ) as Template[]
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
@@ -249,43 +327,48 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className='mx-auto mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-              {templatesToRender.map((template) => {
-                return (
-                  <Link
-                    key={template.id}
-                    to={{
-                      pathname: `/activity-library/details/${template.id}`,
-                      state: {prevCategory: selectedCategory}
-                    }}
-                    className='flex focus:rounded-md focus:outline-primary'
-                  >
-                    <ActivityLibraryCard
-                      className='group aspect-[256/160] flex-1'
-                      key={template.id}
-                      theme={CATEGORY_THEMES[template.category as CategoryID]}
-                      title={template.name}
-                      badge={
-                        !template.isFree ? (
-                          <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>
-                            Premium
-                          </ActivityBadge>
-                        ) : null
-                      }
-                    >
-                      <ActivityCardImage
-                        className='group-hover/card:hidden'
-                        src={template.illustrationUrl}
-                      />
-                      <ActivityLibraryCardDescription
-                        className='hidden group-hover/card:flex'
-                        templateRef={template}
-                      />
-                    </ActivityLibraryCard>
-                  </Link>
-                )
-              })}
-            </div>
+            <>
+              {categoryId === 'retrospective' && searchQuery.length === 0 ? (
+                <>
+                  {(Object.keys(subCategoryMapping) as SubCategory[]).map(
+                    (subCategory) =>
+                      subCategoryTemplates[subCategory].length > 0 && (
+                        <>
+                          <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                            {subCategoryMapping[subCategory]}
+                          </div>
+                          <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                            <ActivityGrid
+                              templates={subCategoryTemplates[subCategory]}
+                              selectedCategory={selectedCategory}
+                            />
+                          </div>
+                        </>
+                      )
+                  )}
+                  {otherTemplates.length > 0 && (
+                    <>
+                      <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                        Other activities
+                      </div>
+                      <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                        <ActivityGrid
+                          templates={otherTemplates}
+                          selectedCategory={selectedCategory}
+                        />
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
+                  <ActivityGrid
+                    templates={templatesToRender as Template[]}
+                    selectedCategory={selectedCategory}
+                  />
+                </div>
+              )}
+            </>
           )}
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar

@@ -29,6 +29,22 @@ export default class StripeManager {
     }
   }
 
+  async updateSubscription(
+    subscriptionId: string,
+    paymentMethodId: string
+  ): Promise<Stripe.Subscription | Error> {
+    try {
+      const subscription = await this.stripe.subscriptions.update(subscriptionId, {
+        default_payment_method: paymentMethodId,
+        expand: ['latest_invoice']
+      })
+      return subscription
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
   async retrieveCardDetails(paymentMethodId: string): Promise<Stripe.PaymentMethod.Card | Error> {
     try {
       const paymentMethod = await this.stripe.paymentMethods.retrieve(paymentMethodId)
@@ -220,7 +236,9 @@ export default class StripeManager {
   }
 
   async retrieveSubscription(subscriptionId: string) {
-    return this.stripe.subscriptions.retrieve(subscriptionId)
+    return this.stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['latest_invoice.payment_intent'] // expand the payment intent so we can get the client_secret
+    })
   }
 
   async retrieveUpcomingInvoice(stripeId: string) {
