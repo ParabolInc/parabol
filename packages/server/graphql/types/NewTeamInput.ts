@@ -28,6 +28,7 @@ const NewTeamInput = new GraphQLInputObjectType({
 export type NewTeamInputType = {
   name: string
   orgId?: string
+  invitees: string[]
 }
 
 export default NewTeamInput

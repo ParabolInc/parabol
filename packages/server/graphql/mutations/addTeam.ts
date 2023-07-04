@@ -16,6 +16,7 @@ import AddTeamPayload from '../types/AddTeamPayload'
 import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
+import inviteToTeamHelper from './helpers/inviteToTeamHelper'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -27,16 +28,14 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
-    async (
-      _source: unknown,
-      args: {newTeam: NewTeamInputType},
-      {authToken, dataLoader, socketId: mutatorId}: GQLContext
-    ) => {
+    async (_source: unknown, args: {newTeam: NewTeamInputType}, context: GQLContext) => {
+      const {authToken, dataLoader, socketId: mutatorId} = context
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
       // AUTH
       const orgId = args.newTeam.orgId ?? ''
+      const invitees = args.newTeam.invitees
       const viewerId = getUserId(authToken)
       const viewer = await dataLoader.get('users').load(viewerId)
 
@@ -110,6 +109,10 @@ export default {
         )
       }
       publish(SubscriptionChannel.TEAM, viewerId, 'AddTeamPayload', data, subOptions)
+
+      if (invitees) {
+        const data = await inviteToTeamHelper(invitees, teamId, context)
+      }
 
       return {
         ...data,
