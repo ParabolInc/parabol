@@ -351,14 +351,15 @@ export const SlackNotifier: Notifier = {
     }
 
     const reflectionsText = reflections
-      .map((reflection) => '```' + reflection.plaintextContent + '```')
+      .map((reflection) => `• ${reflection.plaintextContent}`)
       .join('\n')
+
     const slackBlocks = [
       {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `From ${user.preferredName}: \n*[Custom message from user]*`
+          text: `<@${slackAuth.slackUserId}> has shared reflections from their retrospective`
         }
       },
       {
@@ -376,12 +377,10 @@ export const SlackNotifier: Notifier = {
       },
       {
         type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: `*Summary:*\n${reflectionGroup.summary}`
-          }
-        ]
+        text: {
+          type: 'mrkdwn',
+          text: `*Summary:*\n${reflectionGroup.summary}`
+        }
       },
       {
         type: 'section',
@@ -401,12 +400,6 @@ export const SlackNotifier: Notifier = {
       auth: slackAuth
     }
 
-    await notifySlack(
-      notificationChannel,
-      'TOPIC_SHARED',
-      team.id,
-      slackBlocks,
-      'here should be a title'
-    )
+    await notifySlack(notificationChannel, 'TOPIC_SHARED', team.id, slackBlocks)
   }
 }
