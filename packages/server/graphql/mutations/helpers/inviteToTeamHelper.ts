@@ -194,7 +194,7 @@ const inviteToTeamHelper = async (
   const successfulInvitees = newAllowedInvitees.filter((_email, idx) => emailResults[idx])
   return {
     removedSuggestedActionId,
-    successfulInvitees,
+    invitees: successfulInvitees,
     notificationsToInsert
   }
 }
