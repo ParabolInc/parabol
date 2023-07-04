@@ -2,12 +2,11 @@ import React from 'react'
 import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
-import {SimpleModalDialog} from '../ui/Dialog/SimpleModalDialog'
+import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {DialogDescription} from '../ui/Dialog/DialogDescription'
 import {DialogActions} from '../ui/Dialog/DialogActions'
-import {DialogClose} from '../ui/Dialog/DialogClose'
 
 import {
   Select,
@@ -132,8 +131,8 @@ const ShareTopicModal = (props: Props) => {
   const fieldsetStyles = `mx-0 mb-[15px] mb-2 flex items-center gap-5 p-0`
 
   return (
-    <SimpleModalDialog isOpen={isOpen} onClose={onClose}>
-      <DialogContent>
+    <Dialog isOpen={isOpen} onClose={onClose}>
+      <DialogContent className='z-10'>
         <DialogTitle>Share topic</DialogTitle>
         <DialogDescription>Where would you like to share the topic to?</DialogDescription>
 
@@ -207,9 +206,8 @@ const ShareTopicModal = (props: Props) => {
             Share
           </PrimaryButton>
         </DialogActions>
-        <DialogClose />
       </DialogContent>
-    </SimpleModalDialog>
+    </Dialog>
   )
 }
 
