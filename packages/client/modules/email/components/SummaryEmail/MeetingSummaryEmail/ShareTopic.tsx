@@ -5,7 +5,7 @@ import AnchorIfEmail from './AnchorIfEmail'
 import makeAppURL from '../../../../../utils/makeAppURL'
 import {renderLoader} from '../../../../../utils/relay/renderLoader'
 import ShareTopicModal from '../../../../../components/ShareTopicModal'
-import {useDialog} from '../../../../../ui/Dialog/useDialog'
+import {useDialogState} from '../../../../../ui/Dialog/useDialogState'
 
 interface Props {
   isEmail: boolean
@@ -45,7 +45,7 @@ const ShareTopic = (props: Props) => {
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [isOpen, open, close] = useDialog()
+  const [isOpen, open, close] = useDialogState()
 
   const onClick = () => {
     if (isDemo) return

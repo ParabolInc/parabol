@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react'
 
-export const useDialog = () => {
+export const useDialogState = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const open = useCallback(() => setIsOpen(true), [])
