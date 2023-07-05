@@ -17,8 +17,7 @@ const getIsUserIdApprovedByOrg = async (
   const {email, identities} = user
   const isApproved = approvedDomains.some((domain) => email.endsWith(domain))
   if (!isApproved) {
-    const domainList = approvedDomains.join(', ')
-    const message = `Cannot accept invitation. Your email must end with ${domainList}`
+    const message = `Your email is not on your company's approved list of users. Please reach out to your account admin or support@parabol.co for more information`
     return new Error(message)
   }
   const isEmailUnverified = identities.some((identity) => !identity.isEmailVerified)

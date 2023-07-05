@@ -3,8 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
-import React, {useState} from 'react'
+import React from 'react'
 import {useFragment} from 'react-relay'
+import {Info as InfoIcon} from '@mui/icons-material'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -21,12 +22,16 @@ import StageTimerDisplay from './StageTimerDisplay'
 import PrimaryButton from './PrimaryButton'
 import styled from '@emotion/styled'
 import AutogroupMutation from '../mutations/AutogroupMutation'
+import ResetReflectionGroupsMutation from '../mutations/ResetReflectionGroupsMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {Elevation} from '../styles/elevation'
+import useTooltip from '../hooks/useTooltip'
+import {MenuPosition} from '../hooks/useCoords'
 
 const ButtonWrapper = styled('div')({
   display: 'flex',
+  alignItems: 'center',
   padding: '16px 0px 8px 0px'
 })
 
@@ -51,7 +56,14 @@ const RetroGroupPhase = (props: Props) => {
         id
         endedAt
         showSidebar
+        autogroupReflectionGroups {
+          groupTitle
+        }
+        resetReflectionGroups {
+          groupTitle
+        }
         organization {
+          tier
           featureFlags {
             suggestGroups
           }
@@ -63,45 +75,91 @@ const RetroGroupPhase = (props: Props) => {
   const [callbackRef, phaseRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
-  const [hasSuggestedGroups, setHasSuggestedGroups] = useState(false)
-  const {id: meetingId, endedAt, showSidebar, organization} = meeting
-  const {featureFlags} = organization
-  const {suggestGroups} = featureFlags
+  const {
+    id: meetingId,
+    endedAt,
+    showSidebar,
+    organization,
+    autogroupReflectionGroups,
+    resetReflectionGroups
+  } = meeting
+  const {featureFlags, tier} = organization
+  const {suggestGroups: hasSuggestGroupsFlag} = featureFlags
+  const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
+  const showSuggestGroups = !resetReflectionGroups // resetReflectionGroups only exists after clicking suggest groups and is removed after clicking reset
+  const tooltipSuggestGroupsText = `Click to group cards by common topics. Don't worry, you'll be able to undo this! ${
+    tier === 'starter'
+      ? `This is a premium feature that we'll share with you during your first few retros.`
+      : ''
+  }`
+  const tooltipResetText = `Reset your groups to the way they were before you clicked Suggest Groups`
+  const tooltipText = showSuggestGroups ? tooltipSuggestGroupsText : tooltipResetText
 
   const handleAutoGroupClick = () => {
-    if (!hasSuggestedGroups) {
-      AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
-      // TODO: show ungroup button instead
-      setHasSuggestedGroups(true)
-    }
+    AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
+  }
+
+  const handleResetGroupsClick = () => {
+    ResetReflectionGroupsMutation(atmosphere, {meetingId}, {onError, onCompleted})
   }
 
   return (
-    <MeetingContent ref={callbackRef}>
-      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
-        <MeetingTopBar
-          avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!showSidebar}
-          toggleSidebar={toggleSidebar}
-        >
-          <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
-          <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
-          {suggestGroups && (
-            <ButtonWrapper>
-              <StyledButton disabled={hasSuggestedGroups} onClick={handleAutoGroupClick}>
-                {'Suggest Groups ✨'}
-              </StyledButton>
-            </ButtonWrapper>
-          )}
-        </MeetingTopBar>
-        <PhaseWrapper>
-          <StageTimerDisplay meeting={meeting} canUndo={true} />
-          <MeetingPhaseWrapper>
-            <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
-          </MeetingPhaseWrapper>
-        </PhaseWrapper>
-      </MeetingHeaderAndPhase>
-    </MeetingContent>
+    <>
+      <MeetingContent ref={callbackRef}>
+        <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
+          <MeetingTopBar
+            avatarGroup={avatarGroup}
+            isMeetingSidebarCollapsed={!showSidebar}
+            toggleSidebar={toggleSidebar}
+          >
+            <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
+            <PhaseHeaderDescription>
+              {'Drag cards to group by common topics'}
+            </PhaseHeaderDescription>
+            {hasSuggestGroupsFlag &&
+              (showSuggestGroups ? (
+                <ButtonWrapper>
+                  <StyledButton
+                    disabled={!autogroupReflectionGroups?.length}
+                    onClick={handleAutoGroupClick}
+                  >
+                    {'Suggest Groups ✨'}
+                  </StyledButton>
+                  <div
+                    onMouseEnter={openTooltip}
+                    onMouseLeave={closeTooltip}
+                    className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
+                    ref={originRef}
+                  >
+                    <InfoIcon />
+                  </div>
+                </ButtonWrapper>
+              ) : (
+                <ButtonWrapper>
+                  <StyledButton onClick={handleResetGroupsClick}>{'Reset Groups'}</StyledButton>
+                  <div
+                    onMouseEnter={openTooltip}
+                    onMouseLeave={closeTooltip}
+                    className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
+                    ref={originRef}
+                  >
+                    <InfoIcon />
+                  </div>
+                </ButtonWrapper>
+              ))}
+          </MeetingTopBar>
+          <PhaseWrapper>
+            <StageTimerDisplay meeting={meeting} canUndo={true} />
+            <MeetingPhaseWrapper>
+              <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
+            </MeetingPhaseWrapper>
+          </PhaseWrapper>
+        </MeetingHeaderAndPhase>
+      </MeetingContent>
+      {tooltipPortal(tooltipText)}
+    </>
   )
 }
 

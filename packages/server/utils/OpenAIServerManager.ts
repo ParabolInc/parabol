@@ -1,8 +1,6 @@
 import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
-import {isValidJSON} from './isValidJSON'
-import {estimateTokens} from './estimateTokens'
-import {AVG_CHARS_PER_TOKEN, MAX_GPT_3_5_TOKENS} from '../../client/utils/constants'
+
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
 
@@ -43,107 +41,103 @@ class OpenAIServerManager {
     }
   }
 
-  // setting the minimal max_tokens limit increases the speed of the request and reduces the tokens used
-  estimateOutputTokens(reflectionsText: string[]) {
-    const avgGroupNameLength = 10 // assume an average group name length of 10 tokens
-    const totalLengthInTokens = reflectionsText.reduce(
-      (total, reflectionText) => total + Math.ceil(reflectionText.length / AVG_CHARS_PER_TOKEN),
-      0
-    )
-    const avgReflectionsPerGroup = 3 // assume each group will have around 3 reflections
-    const numGroups = Math.ceil(reflectionsText.length / avgReflectionsPerGroup)
-
-    const outputTokens = Math.round(numGroups * avgGroupNameLength + totalLengthInTokens)
-
-    return Math.min(MAX_GPT_3_5_TOKENS, outputTokens)
-  }
-
-  async groupReflections(reflectionsText: string[]) {
+  async generateThemes(reflectionsText: string[]) {
     if (!this.openAIApi) return null
-    const prompt = `You are given a list of reflections from a meeting, separated by commas. Your task is to group these reflections into topics and return an array of JavaScript objects. Each object represents a topic and contains an array of reflections that belong to that topic. Don't change the input text at all, even if it's spelt incorrectly or has special characters. Groups should have at least 2 reflections.
+    const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
+    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 4)
+    // Specify the approximate number of themes as it will often create too many themes otherwise
+    const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
+      ', '
+    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} or ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
 
-    Example Input:
-    ['The retreat went well', 'The project might not be ready in time', 'The deadline is really tight', 'I liked that the length of the retreat', 'I enjoyed the hotel', 'Feeling overworked']
-
-    Example Output:
-    [
-    {
-    "The Retreat": [
-      "The retreat went well",
-      "I liked that the length of the retreat",
-      "I enjoyed the hotel"
-    ]
-    },
-    {
-    "Deadlines": [
-      "Feeling overworked",
-      "The project might not be ready in time",
-      "The deadline is really tight"
-    ]
-    }
-    ]
-
-    In the output, "The Retreat" and "Deadlines" are example topic names that you can create to group the reflections.
-    Do not give me code to run. Give me the output as valid JSON in the format above.
-
-    Here is the list of reflections: """
-    ${reflectionsText}
-    """
-    `
-
-    const buffer = 1.2 // add a 20% buffer to be on the safe side
-    const estimatedInputTokens = estimateTokens(prompt) * buffer
-    const estimatedOutputTokens = this.estimateOutputTokens(reflectionsText) * buffer
-
-    const max_tokens = Math.round(
-      Math.min(MAX_GPT_3_5_TOKENS, estimatedInputTokens + estimatedOutputTokens)
-    )
     try {
-      const response = await this.openAIApi.createChatCompletion(
-        {
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          top_p: 1,
-          max_tokens,
-          frequency_penalty: 0,
-          presence_penalty: 0
-        },
-        {
-          timeout: 60000
-        }
-      )
-      const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      if (!isValidJSON(answer)) {
-        sendToSentry(new Error(`Invalid JSON when creating AI groups. Answer: ${answer}`))
-        return null
-      }
-      const parsedOutput = JSON.parse(answer)
-      if (!Array.isArray(parsedOutput)) {
-        sendToSentry(new Error(`Parsed output when creating AI groups is not an array: ${answer}`))
-        return null
-      }
-      const invalidGroup = parsedOutput.some(
-        (group) =>
-          typeof group !== 'object' ||
-          group === null ||
-          Array.isArray(group) ||
-          Object.keys(group).length !== 1
-      )
-      if (invalidGroup) {
-        sendToSentry(new Error(`AI group is in an invalid format: ${answer}`))
-        return null
-      }
-      return answer
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      const themes = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      return themes.split(', ')
     } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
       console.error(error.message)
       sendToSentry(error)
+      return null
+    }
+  }
+
+  async groupReflections(reflectionsText: string[], themes: string[]) {
+    if (!this.openAIApi) return null
+
+    const getThemeForReflection = async (
+      reflection: string,
+      retry = false
+    ): Promise<string | null> => {
+      const prompt = `Given the themes ${themes.join(
+        ', '
+      )}, and the following reflection: "${reflection}", classify the reflection into the theme it fits in best. The reflection can only be added to one theme. Do not edit the reflection text. Your output should just be the theme name, and must be one of the themes I've provided.`
+
+      const response = await this.openAIApi!.createChatCompletion({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const theme = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      if (!theme || !themes.includes(theme)) {
+        if (!retry) {
+          return getThemeForReflection(reflection, true)
+        } else {
+          sendToSentry(
+            new Error(
+              `Couldn't find a suitable theme for reflection: "${reflection}" from the following themes: ${themes.join(
+                ', '
+              )}`
+            )
+          )
+          return null
+        }
+      }
+      return theme
+    }
+
+    try {
+      const themesByReflections = await Promise.all(
+        reflectionsText.map((reflection) => getThemeForReflection(reflection))
+      )
+
+      const groupedReflections = themes.reduce<{[key: string]: string[]}>((acc, theme) => {
+        acc[theme] = []
+        return acc
+      }, {})
+
+      themesByReflections.forEach((theme, index) => {
+        const reflection = reflectionsText[index]
+        if (theme && reflection) {
+          groupedReflections[theme]?.push(reflection)
+        }
+      })
+
+      return groupedReflections
+    } catch (error) {
+      const e = error instanceof Error ? error : new Error('OpenAI failed to group reflections')
+      sendToSentry(e)
       return null
     }
   }

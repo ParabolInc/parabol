@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import {getStripeManager} from '../../../utils/stripe'
+import {stripeCardToDBCard} from './stripeCardToDBCard'
 
 export default async function getCCFromCustomer(
   customer: Stripe.Customer | Stripe.DeletedCustomer
@@ -18,15 +19,7 @@ export default async function getCCFromCustomer(
       console.error(cardRes)
       return undefined
     }
-    const expiryMonth = cardRes.exp_month.toString().padStart(2, '0')
-    const expiryYear = cardRes.exp_year.toString().slice(2)
-    const expiry = `${expiryMonth}/${expiryYear}`
-    const brand = cardRes.brand.charAt(0).toUpperCase() + cardRes.brand.slice(1)
-    return {
-      brand,
-      last4: cardRes.last4,
-      expiry
-    }
+    return stripeCardToDBCard(cardRes)
   } else {
     // old customers have default_source
     const defaultSource =
