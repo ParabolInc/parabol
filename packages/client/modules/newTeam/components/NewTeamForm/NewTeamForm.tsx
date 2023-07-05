@@ -256,6 +256,7 @@ const NewTeamForm = (props: Props) => {
             placeholder='My new organization'
           />
           <NewTeamFormTeamName
+            autoFocus
             error={fields.teamName.error}
             disabled={disableFields}
             onChange={onChange}
@@ -274,7 +275,6 @@ const NewTeamForm = (props: Props) => {
             {'Invite others to your new team. Invites expire in 30 days.'}
           </p>
           <BasicTextArea
-            autoFocus
             name='rawInvitees'
             onChange={onInvitesChange}
             placeholder='email@example.co, another@example.co'
