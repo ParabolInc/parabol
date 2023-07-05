@@ -111,6 +111,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     setUserTierForOrgId(orgId),
     setTierForOrgUsers(orgId)
   ])
+
   const activeMeetings = await hideConversionModal(orgId, dataLoader)
   const meetingIds = activeMeetings.map(({id}) => id)
 
