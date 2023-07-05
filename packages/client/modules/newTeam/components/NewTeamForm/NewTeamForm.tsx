@@ -133,7 +133,6 @@ const NewTeamForm = (props: Props) => {
   )
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
   const showInviteAll = !!(!isNewOrg && selectedOrg && uniqueEmailsFromSelectedOrg.length)
-  console.log('🚀 ~ uniqueEmailsFromSelectedOrg:', {uniqueEmailsFromSelectedOrg, showInviteAll})
 
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
