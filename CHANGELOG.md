@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.111.0 2023-Jul-05
+
+### Added
+
+- **checkout-flow**: update credit card functionality (#8423)
+- **suggest-groups**: improve suggest groups prompt (#8436)
+- **suggest-groups**: update groups for subscribers (#8437)
+- **suggest-groups**: add suggest groups tooltip (#8439)
+- **suggest-groups**: add loading feedback while waiting for OpenAI response (#8440)
+- **suggest-groups**: add reset groups button (#8445)
+- **suggest-groups**: add suggest groups metrics (#8459)
+
+### Changed
+
+- added Tailwind CSS migration readme (#8321)
+- add task and comment to release checks (#8473)
+- hide invoices for enterprise users (#8474)
+
+### Fixed
+
+- Fix optimistic update for create task in Sprint Poker (#8451)
+- replacing the azure devops icon with the correct size (#8067)
+- Show error message when creating Jira task fails (#8438)
+- revert setting integration as null in CreateTaskMutation (#8472)
+
 ## 6.110.0 2023-Jun-28
 
 ### Added
@@ -46,25 +71,25 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- chore(metrics): Add hasTeamHealth to meeting properties for meeting related events (#8396)
-- feat(al): New header (#8388)
-- feat(templateLimits): Show upgrade prompts in Activity Library (#8358)
-- chore: add comments for supporting multi-platform builds (#8403)
+- **metrics**: Add hasTeamHealth to meeting properties for meeting related events (#8396)
+- **al**: New header (#8388)
+- **templateLimits**: Show upgrade prompts in Activity Library (#8358)
+- add comments for supporting multi-platform builds (#8403)
 
 ### Changed
 
-- chore: Limit MailManagerDebug filename length (#8391)
-- chore(checkout-flow): handle failing 3D Secure card auth (#8289)
-- chore: Cleanup CHANGELOG (#8379)
-- chore: removed old apollo gql extension config (#8399)
+- Limit MailManagerDebug filename length (#8391)
+- **checkout-flow**: handle failing 3D Secure card auth (#8289)
+- Cleanup CHANGELOG (#8379)
+- removed old apollo gql extension config (#8399)
 - Remove default_incomplete payment behaviour for old subscription flow (#8418)
 
 ### Fixed
 
-- fix(prompt-to-join): fix add teammate dialog scroll (#8393)
-- fix: reset retro groups with team health (#8392)
-- fix: del instead of hdel
-- fix(retros): When skipping phases, mark interim stages as complete (#8374)
+- **prompt-to-join**: fix add teammate dialog scroll (#8393)
+- reset retro groups with team health (#8392)
+- del instead of hdel
+- **retros**: When skipping phases, mark interim stages as complete (#8374)
 
 ## 6.108.0 2023-Jun-15
 
