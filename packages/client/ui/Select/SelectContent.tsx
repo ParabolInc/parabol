@@ -10,7 +10,7 @@ export const SelectContent = React.forwardRef<
     <RadixSelect.Content
       ref={ref}
       className={twMerge(
-        'relative z-50 min-w-[8rem] overflow-hidden rounded bg-white shadow-md',
+        'relative z-50 min-w-[8rem] overflow-hidden rounded bg-white shadow-card-1',
         className
       )}
       position={position}

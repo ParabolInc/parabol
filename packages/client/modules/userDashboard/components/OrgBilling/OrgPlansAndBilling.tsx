@@ -75,7 +75,7 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <div className='pb-20'>
         <OrgPlansAndBillingHeading organizationRef={organization} />
-        {isBillingLeader && (
+        {isBillingLeader && tier === 'team' && (
           <>
             <OrgBillingInvoices queryRef={queryData} isWide />
             <OrgBillingCreditCardInfo organizationRef={organization} />

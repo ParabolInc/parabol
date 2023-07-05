@@ -10,7 +10,7 @@ export const SelectTrigger = React.forwardRef<
   <RadixSelect.Trigger
     ref={ref}
     className={twMerge(
-      'flex h-10 w-full items-center justify-between rounded border-2 border-slate-300 bg-transparent px-2 py-1 text-sm font-semibold focus:outline-none focus-visible:border-sky-500 disabled:cursor-not-allowed disabled:opacity-50 data-[state=open]:border-sky-500 data-[placeholder]:text-slate-600',
+      'flex h-10 w-full cursor-pointer items-center justify-between rounded border-2 border-slate-300 bg-transparent px-2 py-1 text-sm font-semibold focus:outline-none focus-visible:border-sky-500 disabled:cursor-not-allowed disabled:opacity-50 data-[state=open]:border-sky-500 data-[placeholder]:text-slate-600',
       className
     )}
     {...props}
