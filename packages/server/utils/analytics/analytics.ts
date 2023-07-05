@@ -310,14 +310,16 @@ class Analytics {
     inviteeEmail: string,
     isInviteeParabolUser: boolean,
     inviteTo: 'meeting' | 'team',
-    success: boolean
+    success: boolean,
+    isInvitedOnCreation: boolean
   ) => {
     this.track(userId, 'Invite Email Sent', {
       teamId,
       inviteeEmail,
       isInviteeParabolUser,
       inviteTo,
-      success
+      success,
+      isInvitedOnCreation
     })
   }
 

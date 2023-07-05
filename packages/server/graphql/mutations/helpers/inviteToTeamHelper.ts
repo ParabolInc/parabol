@@ -80,7 +80,8 @@ const inviteToTeamHelper = async (
   if (!team) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
-  const {name: teamName, isOnboardTeam, orgId} = team
+
+  const {name: teamName, createdAt, isOnboardTeam, orgId} = team
   const organization = await dataLoader.get('organizations').load(orgId)
   const {tier, name: orgName} = organization
   const uniqueInvitees = Array.from(new Set(invitees as string[]))
@@ -180,6 +181,9 @@ const inviteToTeamHelper = async (
 
   const parabolUserEmails = users.map(({email}) => email)
   const inviteTo = meetingId ? 'meeting' : 'team'
+  const now = new Date()
+  const tenSecondsAgo = new Date(now.getTime() - 10 * 1000)
+  const isInvitedOnCreation = createdAt > tenSecondsAgo // if the team was created in the last 30 seconds, we assume the invite was sent on creation
   newAllowedInvitees.forEach(async (inviteeEmail, idx) => {
     const isInviteeParabolUser = parabolUserEmails.includes(inviteeEmail)
     const success = !!emailResults[idx]
@@ -189,7 +193,8 @@ const inviteToTeamHelper = async (
       inviteeEmail,
       isInviteeParabolUser,
       inviteTo,
-      success
+      success,
+      isInvitedOnCreation
     )
   })
   const successfulInvitees = newAllowedInvitees.filter((_email, idx) => emailResults[idx])
