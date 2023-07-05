@@ -131,8 +131,9 @@ const NewTeamForm = (props: Props) => {
   const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap(({teamMembers}) =>
     teamMembers.filter(({isSelf}) => !isSelf).map(({email}) => email)
   )
-
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
+  const showInviteAll = !!(!isNewOrg && selectedOrg && uniqueEmailsFromSelectedOrg.length)
+  console.log('🚀 ~ uniqueEmailsFromSelectedOrg:', {uniqueEmailsFromSelectedOrg, showInviteAll})
 
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
@@ -230,6 +231,7 @@ const NewTeamForm = (props: Props) => {
     setRawInvitees(nextValue)
     setInvitees(uniqueInvitees)
   }
+
   const handleToggleInviteAll = () => {
     if (!inviteAll) {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
@@ -257,6 +259,7 @@ const NewTeamForm = (props: Props) => {
       setRawInvitees(remainingInvitees.join(', '))
       setInvitees(remainingInvitees)
     }
+    onCompleted()
     setInviteAll((inviteAll) => !inviteAll)
   }
 
@@ -320,14 +323,14 @@ const NewTeamForm = (props: Props) => {
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
-          <div className='flex items-center pt-2'>
-            <Checkbox active={inviteAll} onClick={handleToggleInviteAll} />
-            {selectedOrg && (
-              <label htmlFor='checkbox' className='text-gray-700 ml-2'>
+          {showInviteAll && (
+            <div className='flex cursor-pointer items-center pt-2' onClick={handleToggleInviteAll}>
+              <Checkbox active={inviteAll} />
+              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
                 {`Invite team members from ${selectedOrg.name}`}
               </label>
-            )}
-          </div>
+            </div>
+          )}
           <StyledButton disabled={disableFields} size='large' waiting={submitting}>
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
           </StyledButton>
