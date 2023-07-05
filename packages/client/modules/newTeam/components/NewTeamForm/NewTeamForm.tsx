@@ -128,9 +128,10 @@ const NewTeamForm = (props: Props) => {
   const [inviteAll, setInviteAll] = useState(false)
   const disableFields = !!lockedSelectedOrg && !isNewOrg
   const selectedOrg = organizations.find((org) => org.id === orgId)
-  const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap((team) =>
-    team.teamMembers.map((teamMember) => teamMember.email)
+  const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap(({teamMembers}) =>
+    teamMembers.filter(({isSelf}) => !isSelf).map(({email}) => email)
   )
+
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
 
   const validateOrgName = (orgName: string) => {
@@ -231,16 +232,18 @@ const NewTeamForm = (props: Props) => {
   }
 
   const handleToggleInviteAll = () => {
+    const selfEmail = 'your-email@domain.com' // replace with your email or a way to fetch it
     if (!inviteAll) {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
       const currentInvitees = parsedInvitees
         ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
         : []
       const emailsToAdd = uniqueEmailsFromSelectedOrg.filter(
-        (email) => !currentInvitees.includes(email)
+        (email) => !currentInvitees.includes(email) && email !== selfEmail
       )
+      const lastInvitee = currentInvitees[currentInvitees.length - 1]
       const formattedCurrentInvitees =
-        currentInvitees.length && !currentInvitees[currentInvitees.length - 1]!.endsWith(',')
+        currentInvitees.length && lastInvitee && lastInvitee.endsWith(',')
           ? `${currentInvitees.join(', ')}, `
           : currentInvitees.join(', ')
       setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
