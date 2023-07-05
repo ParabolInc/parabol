@@ -134,7 +134,7 @@ const ShareTopicModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
         <DialogTitle>Share topic</DialogTitle>
-        <DialogDescription>Where would you like to share the topic to?</DialogDescription>
+        <DialogDescription>Where would you like to share the topic?</DialogDescription>
 
         <fieldset className={fieldsetStyles}>
           <label className={labelStyles}>Integration</label>
@@ -147,7 +147,7 @@ const ShareTopicModal = (props: Props) => {
               {selectedIntegration !== '' ? (
                 <SelectValue />
               ) : (
-                <span className='text-slate-600'>Select one</span>
+                <span className='text-slate-600'>Select Integration</span>
               )}
             </SelectTrigger>
             <SelectContent>
