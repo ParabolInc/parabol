@@ -180,7 +180,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecord(userId ? store.get(userId)! : null, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
         .setLinkedRecords([], 'replies')
-        .setLinkedRecord(null, 'integration')
       if (integration) {
         const {service, serviceProjectHash} = integration
         if (service === 'jira') {
