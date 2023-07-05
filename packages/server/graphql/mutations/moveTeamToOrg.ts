@@ -152,6 +152,8 @@ export default {
     {authToken, dataLoader}: GQLContext
   ) {
     if (teamIds.length > MAX_NUM_TEAMS) {
+      // Running this mutation with more than ~50 team IDs usually times out on prod. Splitting into
+      // batches is the workaround, so fail quickly with a descriptive error when this is the case.
       return standardError(
         new Error(
           `Can only move ${MAX_NUM_TEAMS} teams at once. Please split team IDs into batches.`
