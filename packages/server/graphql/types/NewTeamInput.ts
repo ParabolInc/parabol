@@ -1,11 +1,4 @@
-import {
-  GraphQLID,
-  GraphQLInputObjectType,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLString
-} from 'graphql'
-import GraphQLEmailType from './GraphQLEmailType'
+import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
 
 const NewTeamInput = new GraphQLInputObjectType({
   name: 'NewTeamInput',

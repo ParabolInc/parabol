@@ -35,13 +35,6 @@ const StyledForm = styled('form')({
   width: '100%'
 })
 
-const StyledTip = styled('p')({
-  fontSize: 13,
-  lineHeight: '16px',
-  margin: 0,
-  padding: '0 0 16px'
-})
-
 const StyledPanel = styled(Panel)({
   margin: '16px 0'
 })
