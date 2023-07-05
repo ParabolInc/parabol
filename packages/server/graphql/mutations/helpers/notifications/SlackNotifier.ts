@@ -305,6 +305,7 @@ export const SlackNotifier: Notifier = {
     teamId: string,
     meetingId: string,
     reflectionGroupId: string,
+    stageIndex: number,
     channelId: string
   ) {
     const r = await getRethink()
@@ -350,6 +351,8 @@ export const SlackNotifier: Notifier = {
       }
     }
 
+    const discussionUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/${stageIndex + 1}`)
+
     const reflectionsText = reflections
       .map((reflection) => `• ${reflection.plaintextContent}`)
       .join('\n')
@@ -374,6 +377,13 @@ export const SlackNotifier: Notifier = {
             text: `*Meeting:*\n${meeting.name}`
           }
         ]
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Topic:*\n<${discussionUrl}|${reflectionGroup.title}>`
+        }
       },
       {
         type: 'section',

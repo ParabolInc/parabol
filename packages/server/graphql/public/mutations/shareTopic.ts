@@ -18,14 +18,13 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
   }
 
   let stage = null
-  for (const phase of meeting.phases) {
-    if (phase.phaseType === 'discuss') {
-      for (const possibleStage of phase.stages) {
-        if (possibleStage.id === stageId) {
-          stage = possibleStage
-        }
-      }
-    }
+  let stageIndex = -1
+
+  const discussPhase = meeting.phases.find((phase) => phase.phaseType === 'discuss')
+
+  if (discussPhase) {
+    stageIndex = discussPhase.stages.findIndex((possibleStage) => possibleStage.id === stageId)
+    stage = discussPhase.stages[stageIndex]
   }
 
   if (stage === null) {
@@ -34,7 +33,15 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
 
   const {reflectionGroupId} = stage as DiscussStage
 
-  SlackNotifier.shareTopic?.(dataLoader, viewerId, teamId, meetingId, reflectionGroupId, channelId)
+  SlackNotifier.shareTopic?.(
+    dataLoader,
+    viewerId,
+    teamId,
+    meetingId,
+    reflectionGroupId,
+    stageIndex,
+    channelId
+  )
 
   const data = {meetingId}
   return data

@@ -17,6 +17,7 @@ export type Notifier = {
     teamId: string,
     meetingId: string,
     reflectionGroupId: string,
+    stageIndex: number,
     channelId: string
   ): Promise<void>
 }
