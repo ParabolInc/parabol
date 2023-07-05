@@ -230,23 +230,22 @@ const NewTeamForm = (props: Props) => {
     setRawInvitees(nextValue)
     setInvitees(uniqueInvitees)
   }
-
   const handleToggleInviteAll = () => {
-    const selfEmail = 'your-email@domain.com' // replace with your email or a way to fetch it
     if (!inviteAll) {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
       const currentInvitees = parsedInvitees
         ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
         : []
       const emailsToAdd = uniqueEmailsFromSelectedOrg.filter(
-        (email) => !currentInvitees.includes(email) && email !== selfEmail
+        (email) => !currentInvitees.includes(email)
       )
       const lastInvitee = currentInvitees[currentInvitees.length - 1]
       const formattedCurrentInvitees =
-        currentInvitees.length && lastInvitee && lastInvitee.endsWith(',')
+        currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
           ? `${currentInvitees.join(', ')}, `
           : currentInvitees.join(', ')
       setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
+      setInvitees([...currentInvitees, ...emailsToAdd])
     } else {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
       const currentInvitees = parsedInvitees
@@ -256,6 +255,7 @@ const NewTeamForm = (props: Props) => {
         (email) => !uniqueEmailsFromSelectedOrg.includes(email)
       )
       setRawInvitees(remainingInvitees.join(', '))
+      setInvitees(remainingInvitees)
     }
     setInviteAll((inviteAll) => !inviteAll)
   }
