@@ -351,7 +351,9 @@ export const SlackNotifier: Notifier = {
       }
     }
 
+    const topic = reflectionGroup.title
     const discussionUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/${stageIndex + 1}`)
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
     const reflectionsText = reflections
       .map((reflection) => `• ${reflection.plaintextContent}`)
@@ -362,7 +364,7 @@ export const SlackNotifier: Notifier = {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `<@${slackAuth.slackUserId}> has shared reflections from their retrospective`
+          text: `<@${slackAuth.slackUserId}> has shared reflections about *"${topic}"* from their retrospective`
         }
       },
       {
@@ -374,7 +376,7 @@ export const SlackNotifier: Notifier = {
           },
           {
             type: 'mrkdwn',
-            text: `*Meeting:*\n${meeting.name}`
+            text: `*Meeting:*\n<${meetingUrl}|${meeting.name}>`
           }
         ]
       },
@@ -382,7 +384,7 @@ export const SlackNotifier: Notifier = {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `*Topic:*\n<${discussionUrl}|${reflectionGroup.title}>`
+          text: `*Topic:*\n<${discussionUrl}|${topic}>`
         }
       },
       {
