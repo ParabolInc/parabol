@@ -10,7 +10,7 @@ export const SelectItem = React.forwardRef<
   <RadixSelect.Item
     ref={ref}
     className={twMerge(
-      'relative flex w-full cursor-default select-none items-center rounded py-2 text-sm outline-none focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex w-full cursor-pointer select-none items-center rounded py-2 text-sm outline-none focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className
     )}
     {...props}
