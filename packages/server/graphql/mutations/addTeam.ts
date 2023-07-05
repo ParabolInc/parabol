@@ -119,7 +119,7 @@ export default {
       }
       publish(SubscriptionChannel.TEAM, viewerId, 'AddTeamPayload', data, subOptions)
 
-      if (invitees) {
+      if (invitees.length) {
         await inviteToTeamHelper(invitees, teamId, context)
       }
 
