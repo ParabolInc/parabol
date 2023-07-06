@@ -1,4 +1,5 @@
 import Redis from 'ioredis'
+import RedisInstance from './RedisInstance'
 
 let redis: Redis
 type RedisPipelineError = [Error, null]
@@ -7,7 +8,7 @@ export type RedisPipelineResponse<TSuccess> = RedisPipelineError | RedisPipeline
 
 const getRedis = () => {
   if (!redis) {
-    redis = new Redis(process.env.REDIS_URL!, {connectionName: 'getRedis'})
+    redis = new RedisInstance('getRedis')
   }
   return redis
 }

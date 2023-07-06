@@ -1,17 +1,16 @@
-import Redis from 'ioredis'
 import sleep from '../../client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
 import {disconnectQuery} from '../socketHandlers/handleDisconnect'
 import publishInternalGQL from './publishInternalGQL'
+import RedisInstance from './RedisInstance'
 import sendToSentry from './sendToSentry'
 
-const REDIS_URL = process.env.REDIS_URL!
 const SERVER_ID = process.env.SERVER_ID!
 
 export default class ServerHealthChecker {
-  publisher = new Redis(REDIS_URL, {connectionName: 'serverHealth_pub'})
-  subscriber = new Redis(REDIS_URL, {connectionName: 'serverHealth_sub'})
+  publisher = new RedisInstance('serverHealth_pub')
+  subscriber = new RedisInstance('serverHealth_sub')
   pendingPongs: null | Set<string> = null
   constructor() {
     this.subscriber.on('message', (channel, remoteServerId) => {

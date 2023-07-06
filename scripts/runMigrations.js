@@ -1,8 +1,8 @@
 require('./webpack/utils/dotenv')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
-const Redis = require('ioredis')
 const path = require('path')
+const RedisInstance = require('../packages/server/utils/RedisInstance')
 
 const migrateRethinkDB = async () => {
   return require('./migrate')()
@@ -19,7 +19,7 @@ const migratePG = async () => {
 }
 
 const clearRedis = async () => {
-  const redis = new Redis(process.env.REDIS_URL, {connectionName: 'devRedis'})
+  const redis = new RedisInstance('devRedis')
   await redis.flushall()
   redis.disconnect()
 }
