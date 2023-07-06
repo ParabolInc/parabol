@@ -1,7 +1,6 @@
 import * as React from 'react'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import {twMerge} from 'tailwind-merge'
-import {DialogPortal} from './DialogPortal'
 import {DialogOverlay} from './DialogOverlay'
 import {DialogClose} from './DialogClose'
 
@@ -9,12 +8,12 @@ export const DialogContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof RadixDialog.Content>
 >(({className, children, ...props}, ref) => (
-  <DialogPortal>
+  <RadixDialog.Portal>
     <DialogOverlay />
     <RadixDialog.Content
       ref={ref}
       className={twMerge(
-        'fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-md translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-4 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none data-[state=open]:animate-contentShow',
+        'fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-md translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-4 shadow-dialog focus:outline-none data-[state=open]:animate-contentShow',
         className
       )}
       {...props}
@@ -22,5 +21,5 @@ export const DialogContent = React.forwardRef<
       {children}
       <DialogClose />
     </RadixDialog.Content>
-  </DialogPortal>
+  </RadixDialog.Portal>
 ))

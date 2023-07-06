@@ -37,7 +37,7 @@ const ShareTopicModal = (props: Props) => {
         <DialogTitle>Share topic</DialogTitle>
         <DialogDescription>Where would you like to share the topic to?</DialogDescription>
 
-        <fieldset className='mx-0 mb-[15px] mb-2 flex items-center gap-5 p-0'>
+        <fieldset className='mx-0 mb-4 mb-2 flex items-center gap-5 p-0'>
           <label className={labelStyles} htmlFor='name'>
             Integration
           </label>
