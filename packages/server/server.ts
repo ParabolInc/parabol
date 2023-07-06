@@ -23,7 +23,6 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
-import ServerHealthChecker from './utils/ServerHealthChecker'
 
 tracer.init({
   service: `Web ${process.env.SERVER_ID}`,
@@ -32,19 +31,9 @@ tracer.init({
 })
 tracer.use('ioredis').use('http').use('pg').use('fs')
 
-const onKill = async () => {
-  r.getPoolMaster()?.drain()
-  const healthChecker = new ServerHealthChecker()
-  await healthChecker.cleanUserPresence()
-  process.exit()
-}
-
-// If the process is getting killed, remove all the user presence from redis
-process.on('SIGTERM', onKill)
 if (!PROD) {
   process.on('SIGINT', async () => {
     r.getPoolMaster()?.drain()
-    onKill()
   })
 }
 

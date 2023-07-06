@@ -1,7 +1,7 @@
 import {us_listen_socket} from 'uWebSockets.js'
 import PROD from './PROD'
 import getGraphQLExecutor from './utils/getGraphQLExecutor'
-import ServerHealthChecker from './utils/ServerHealthChecker'
+import serverHealthChecker from './utils/serverHealthChecker'
 
 const listenHandler = (listenSocket: us_listen_socket) => {
   const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
@@ -9,9 +9,8 @@ const listenHandler = (listenSocket: us_listen_socket) => {
   if (listenSocket) {
     console.log(`\n🔥🔥🔥 Server ID: ${SERVER_ID}. Ready for Sockets: Port ${PORT} 🔥🔥🔥`)
     getGraphQLExecutor().subscribe()
-    const healthChecker = new ServerHealthChecker()
     // cleaning on startup is useful in case a server shutdown abruptly
-    healthChecker.cleanUserPresence()
+    serverHealthChecker.cleanUserPresence()
   } else {
     console.log(`❌❌❌    Port ${PORT} is in use!    ❌❌❌`)
   }

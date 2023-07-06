@@ -10,11 +10,14 @@ const REDIS_URL = process.env.REDIS_URL!
 const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
 
-export default class ServerHealthChecker {
+class ServerHealthChecker {
   private publisher = new Redis(REDIS_URL, {connectionName: 'serverHealth_pub'})
   private subscriber = new Redis(REDIS_URL, {connectionName: 'serverHealth_sub'})
   private remoteSocketServers: null | string[] = null
-  constructor() {
+  private joinPoolPromise: null | Promise<void> = null
+  private async joinPool() {
+    if (this.joinPoolPromise) throw new Error('joinPool can only be called once')
+    await this.subscriber.subscribe('socketServerPing', `socketServerPong:${INSTANCE_ID}`)
     this.subscriber.on('message', (channel, remoteServerId) => {
       if (channel === 'socketServerPing') {
         if (remoteServerId === INSTANCE_ID) return
@@ -27,10 +30,13 @@ export default class ServerHealthChecker {
         }
       }
     })
-    this.subscriber.subscribe('socketServerPing', `socketServerPong:${INSTANCE_ID}`)
   }
 
   async getLivingServers() {
+    if (!this.joinPoolPromise) {
+      this.joinPoolPromise = this.joinPool()
+    }
+    await this.joinPoolPromise
     this.remoteSocketServers = []
     await this.publisher.publish('socketServerPing', INSTANCE_ID)
     await sleep(500)
@@ -83,3 +89,6 @@ export default class ServerHealthChecker {
     })
   }
 }
+
+// singleton because the same server should not subscribe to the same channels more than once
+export default new ServerHealthChecker()
