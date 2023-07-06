@@ -134,6 +134,7 @@ const BillingForm = (props: Props) => {
       commitLocalUpdate(atmosphere, (store) => {
         const org = store.get(orgId)
         if (!org) return
+        // stripe webhooks will trigger upgradeToTeamTier which will update the tier, but we want to show the confetti and correct drawer info immediately
         org.setValue('team', 'tier')
         org.setValue(true, 'showConfetti')
         org.setValue(true, 'showDrawer')
