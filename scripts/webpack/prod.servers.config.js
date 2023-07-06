@@ -34,6 +34,7 @@ module.exports = ({isDeploy, noDeps}) => ({
     __dirname: false
   },
   entry: {
+    chronos: [DOTENV, path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
     web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
