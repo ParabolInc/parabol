@@ -9,7 +9,6 @@ import {
 } from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
-import Confetti from '../../../../components/Confetti'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
@@ -41,13 +40,6 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   }
 }))
 
-const ConfettiWrapper = styled('div')({
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)'
-})
-
 const ErrorMsg = styled(StyledError)({
   paddingTop: 8,
   textTransform: 'none'
@@ -76,7 +68,6 @@ const BillingForm = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
-  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
@@ -143,9 +134,10 @@ const BillingForm = (props: Props) => {
       commitLocalUpdate(atmosphere, (store) => {
         const org = store.get(orgId)
         if (!org) return
+        org.setValue('team', 'tier')
+        org.setValue(true, 'showConfetti')
         org.setValue(true, 'showDrawer')
       })
-      setIsPaymentSuccessful(true)
       onCompleted()
     }
 
@@ -245,9 +237,6 @@ const BillingForm = (props: Props) => {
           {'Upgrade'}
         </UpgradeButton>
       </ButtonBlock>
-      <ConfettiWrapper>
-        <Confetti active={isPaymentSuccessful} />
-      </ConfettiWrapper>
     </form>
   )
 }
