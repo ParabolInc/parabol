@@ -9,7 +9,6 @@ import {
 } from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
-import Confetti from '../../../../components/Confetti'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
@@ -143,6 +142,8 @@ const BillingForm = (props: Props) => {
       commitLocalUpdate(atmosphere, (store) => {
         const org = store.get(orgId)
         if (!org) return
+        org.setValue('team', 'tier')
+        org.setValue(true, 'showConfetti')
         org.setValue(true, 'showDrawer')
       })
       setIsPaymentSuccessful(true)
@@ -245,9 +246,6 @@ const BillingForm = (props: Props) => {
           {'Upgrade'}
         </UpgradeButton>
       </ButtonBlock>
-      <ConfettiWrapper>
-        <Confetti active={isPaymentSuccessful} />
-      </ConfettiWrapper>
     </form>
   )
 }

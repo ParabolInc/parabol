@@ -14,6 +14,14 @@ import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import OrgPlanDrawerContent from './OrgPlanDrawerContent'
+import Confetti from '../../../../components/Confetti'
+
+const ConfettiWrapper = styled('div')({
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)'
+})
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -78,11 +86,12 @@ const OrgPlanDrawer = (props: Props) => {
         id
         showDrawer
         tier
+        showConfetti
       }
     `,
     organizationRef
   )
-  const {id: orgId, tier, showDrawer} = organization
+  const {id: orgId, tier, showDrawer, showConfetti} = organization
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.ORG_DRAWER)
 
@@ -96,23 +105,28 @@ const OrgPlanDrawer = (props: Props) => {
   }
 
   return (
-    <ResponsiveDashSidebar
-      isOpen={showDrawer}
-      isDesktop={isDesktop}
-      onToggle={toggleSidebar}
-      isRightDrawer
-      sidebarWidth={DiscussionThreadEnum.WIDTH}
-    >
-      <Drawer isDesktop={isDesktop} isOpen={showDrawer}>
-        <DrawerHeader>
-          <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
-          <StyledCloseButton onClick={toggleSidebar}>
-            <CloseIcon />
-          </StyledCloseButton>
-        </DrawerHeader>
-        <OrgPlanDrawerContent tier={tier} />
-      </Drawer>
-    </ResponsiveDashSidebar>
+    <>
+      <ResponsiveDashSidebar
+        isOpen={showDrawer}
+        isDesktop={isDesktop}
+        onToggle={toggleSidebar}
+        isRightDrawer
+        sidebarWidth={DiscussionThreadEnum.WIDTH}
+      >
+        <Drawer isDesktop={isDesktop} isOpen={showDrawer}>
+          <DrawerHeader>
+            <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
+            <StyledCloseButton onClick={toggleSidebar}>
+              <CloseIcon />
+            </StyledCloseButton>
+          </DrawerHeader>
+          <OrgPlanDrawerContent tier={tier} />
+        </Drawer>
+      </ResponsiveDashSidebar>
+      <ConfettiWrapper>
+        <Confetti active={showConfetti} />
+      </ConfettiWrapper>
+    </>
   )
 }
 
