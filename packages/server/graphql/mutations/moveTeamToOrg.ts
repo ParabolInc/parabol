@@ -154,11 +154,7 @@ export default {
     if (teamIds.length > MAX_NUM_TEAMS) {
       // Running this mutation with more than ~50 team IDs usually times out on prod. Splitting into
       // batches is the workaround, so fail quickly with a descriptive error when this is the case.
-      return standardError(
-        new Error(
-          `Can only move ${MAX_NUM_TEAMS} teams at once. Please split team IDs into batches.`
-        )
-      )
+      return `Error: Can only move ${MAX_NUM_TEAMS} teams at once. Please split team IDs into batches.`
     }
     const results = [] as (string | any)[]
     for (let i = 0; i < teamIds.length; i++) {
