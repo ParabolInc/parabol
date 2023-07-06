@@ -11,6 +11,7 @@ import standaloneMigrations from './standaloneMigrations'
 const PROJECT_ROOT = getProjectRoot()!
 
 const storePersistedQueries = async () => {
+  console.log('🔗 QueryMap Persistence Started')
   const queryMap = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'queryMap.json')).toString())
   const hashes = Object.keys(queryMap)
   const now = new Date()
@@ -24,7 +25,7 @@ const storePersistedQueries = async () => {
   const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
   await r.getPoolMaster()?.drain()
 
-  console.log(`Added ${res.inserted} records to the queryMap`)
+  console.log(`🔗 QueryMap Persistence Complete: ${res.inserted} records added`)
 }
 
 const preDeploy = async () => {

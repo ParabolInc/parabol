@@ -7,6 +7,7 @@ import path from 'path'
    That way each PPMI can function without access to our cloud CDN. #8101
 */
 const pushToCDN = async () => {
+  console.log('⛅️ Push to CDN Started')
   const collector = {}
   const context = (require as any).context(
     '../../static/images/illustrations',
@@ -36,11 +37,12 @@ const pushToCDN = async () => {
     })
   )
   const urls = results.filter(Boolean)
-  if (urls.length === 0) {
-    console.log('No files pushed to CDN')
-  } else {
-    console.log('New files pushed to CDN:\n' + urls.join('\n'))
+
+  if (urls.length > 0) {
+    console.log(urls.join('\n'))
   }
+
+  console.log(`⛅️ Push to CDN Complete: ${urls.length} files pushed`)
 }
 
 // If called via CLI
