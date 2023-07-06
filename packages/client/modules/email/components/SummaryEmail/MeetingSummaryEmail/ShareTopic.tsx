@@ -45,7 +45,7 @@ const ShareTopic = (props: Props) => {
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [isOpen, open, close] = useDialogState()
+  const {isOpen, open, close} = useDialogState()
 
   const onClick = () => {
     if (isDemo) return
