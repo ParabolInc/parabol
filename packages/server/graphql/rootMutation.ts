@@ -108,7 +108,7 @@ import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateCommentContent from './mutations/updateCommentContent'
-import updateCreditCard from './mutations/updateCreditCard'
+import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateIntegrationProvider from './mutations/updateIntegrationProvider'
@@ -223,7 +223,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       setTaskHighlight,
       updateAgendaItem,
       updateCommentContent,
-      updateCreditCard,
+      oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,
       updateNewCheckInQuestion,

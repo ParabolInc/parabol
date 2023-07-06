@@ -154,6 +154,19 @@ export default {
         '800': '#2D2D39',
         '900': '#1C1C21'
       }
+    },
+    keyframes: {
+      overlayShow: {
+        from: {opacity: 0},
+        to: {opacity: 1}
+      },
+      contentShow: {
+        from: {opacity: 0, transform: 'translate(-50%, -50%) translateY(32px) scale(0.96)'}
+      }
+    },
+    animation: {
+      overlayShow: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
+      contentShow: 'contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)'
     }
   }
 } as const

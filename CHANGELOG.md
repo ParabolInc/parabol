@@ -5,6 +5,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.110.0 2023-Jun-28
+
+### Added
+
+- **Checkout flow**: update checkout flow after upgrade (#8354)
+- **Share summary**: Add share topic button to meeting summary (#8331)
+- **Activity library**: Activity subsections for retros (#8413)
+- **Activity library**: Show activity description when hovering over activity card (#8394)
+
+### Changed
+
+- **Prompt to join** remove isSAMLVerified check (#8441)
+- add sql to kill all pg connections (#8427)
+- add assignSURole script (#8428)
+- revert add temporary story points update result logging (#8417)
+- remove useActivityDetails (#8293)
+  improve error message when a user cannot join an org (#8455)
+
+### Fixed
+
+- canAccess for organization (#8411)
+- types in meeting tips; prevent rendering undefined (#8443)
+- dd-trace and relay mem leaks (#8389)
+
+## 6.109.2 2023-Jun-26
+
+### Fixed
+
+- Do not show upgrade prompt for fixed activities
+
 ## 6.109.1 2023-Jun-22
 
 ### Fixed
@@ -65,13 +95,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## 6.107.2 2023-Jun-09
 
-### Fixed:
+### Fixed
 
 - Bump max mem restart to 24GB to support heapdumping GQL Executor
 
 ## 6.107.1 2023-June-8
 
-### Fixed:
+### Fixed
 
 - Many public templates not displayed
 

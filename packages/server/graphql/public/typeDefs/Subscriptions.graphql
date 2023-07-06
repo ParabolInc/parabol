@@ -8,6 +8,7 @@ type Subscription {
 
 type MeetingSubscriptionPayload {
   fieldName: String!
+  AutogroupSuccess: AutogroupSuccess
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess
   AddReactjiToReflectionSuccess: AddReactjiToReflectionSuccess
@@ -22,9 +23,11 @@ type MeetingSubscriptionPayload {
   EndDraggingReflectionPayload: EndDraggingReflectionPayload
   EndRetrospectiveSuccess: EndRetrospectiveSuccess
   FlagReadyToAdvanceSuccess: FlagReadyToAdvanceSuccess
+  GenerateGroupsSuccess: GenerateGroupsSuccess
   NewMeetingCheckInPayload: NewMeetingCheckInPayload
   PromoteNewMeetingFacilitatorPayload: PromoteNewMeetingFacilitatorPayload
   RemoveReflectionPayload: RemoveReflectionPayload
+  ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccess
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
   RevealTeamHealthVotesSuccess: RevealTeamHealthVotesSuccess
   SetPhaseFocusPayload: SetPhaseFocusPayload
@@ -91,6 +94,7 @@ type OrganizationSubscriptionPayload {
   PayLaterPayload: PayLaterPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
@@ -140,6 +144,7 @@ type TeamSubscriptionPayload {
   StartSprintPokerSuccess: StartSprintPokerSuccess
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload

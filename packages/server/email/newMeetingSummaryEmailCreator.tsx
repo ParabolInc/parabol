@@ -7,6 +7,7 @@ import {GQLContext} from '../graphql/graphql'
 import emailTemplate from './emailTemplate'
 import renderSSRElement from './renderSSRElement'
 import ServerEnvironment from './ServerEnvironment'
+
 interface Props {
   meetingId: string
   context: Pick<GQLContext, 'authToken' | 'dataLoader'>
@@ -27,11 +28,7 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   const MeetingSummaryEmailRootSSR =
     require('parabol-client/modules/email/components/MeetingSummaryEmailRootSSR').default
   const bodyContent = await renderSSRElement(
-    <MeetingSummaryEmailRootSSR
-      appOrigin={appOrigin}
-      environment={environment}
-      meetingId={meetingId}
-    />,
+    <MeetingSummaryEmailRootSSR appOrigin={appOrigin} meetingId={meetingId} />,
     environment
   )
   const team = await dataLoader.get('teams').loadNonNull(newMeeting.teamId)
