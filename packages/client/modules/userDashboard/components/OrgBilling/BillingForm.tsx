@@ -40,13 +40,6 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   }
 }))
 
-const ConfettiWrapper = styled('div')({
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)'
-})
-
 const ErrorMsg = styled(StyledError)({
   paddingTop: 8,
   textTransform: 'none'
@@ -75,7 +68,6 @@ const BillingForm = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
-  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
@@ -142,11 +134,11 @@ const BillingForm = (props: Props) => {
       commitLocalUpdate(atmosphere, (store) => {
         const org = store.get(orgId)
         if (!org) return
+        // stripe webhooks will trigger upgradeToTeamTier which will update the tier, but we want to show the confetti and correct drawer info immediately
         org.setValue('team', 'tier')
         org.setValue(true, 'showConfetti')
         org.setValue(true, 'showDrawer')
       })
-      setIsPaymentSuccessful(true)
       onCompleted()
     }
 
