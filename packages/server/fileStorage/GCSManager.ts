@@ -126,7 +126,7 @@ export default class GCSManager extends FileStoreManager {
     return this.getPublicFileLocation(fullPath)
   }
   async checkExists(partialPath: string) {
-    const fullPath = this.prependPath(partialPath)
+    const fullPath = encodeURIComponent(this.prependPath(partialPath))
     const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}`
     const res = await fetch(url)
     return res.status !== 404
