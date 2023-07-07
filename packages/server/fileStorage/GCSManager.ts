@@ -16,7 +16,7 @@ export default class GCSManager extends FileStoreManager {
   private envSubDir: string
   // e.g. action-files.parabol.co
   private bucket: string
-  accessToken: string | undefined
+  private accessToken: string | undefined
 
   private cloudKey: CloudKey
   constructor() {
@@ -65,8 +65,8 @@ export default class GCSManager extends FileStoreManager {
     const authUrl = 'https://www.googleapis.com/oauth2/v4/token'
     const {clientEmail, privateKeyId, privateKey} = this.cloudKey
     try {
-      // GCS only access OAuth2 Tokens
-      // First we self-sign a JWT, then trade it in for an OAuth2 Token
+      // GCS only accepts OAuth2 Tokens
+      // To get a token, we self-sign a JWT, then trade it in for an OAuth2 Token
       const jwt = sign(
         {
           scope: 'https://www.googleapis.com/auth/devstorage.read_write'
