@@ -14,7 +14,7 @@ const TeamlineEventTypeMenu = lazyPreload(
   () =>
     import(
       /* webpackChunkName: 'TeamFilterMenu' */
-      './TeamlineEventTypeMenu'
+      './TimelineEventTypeMenu'
     )
 )
 

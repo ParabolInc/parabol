@@ -14,7 +14,7 @@ interface Props {
   menuProps: MenuProps
 }
 
-const TeamlineEventTypeMenu = (props: Props) => {
+const TimelineEventTypeMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps} = props
   const atmosphere = useAtmosphere()
@@ -67,4 +67,4 @@ const TeamlineEventTypeMenu = (props: Props) => {
   )
 }
 
-export default TeamlineEventTypeMenu
+export default TimelineEventTypeMenu
