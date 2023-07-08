@@ -71,7 +71,7 @@ const sendUpcomingInvoiceEmails: MutationResolvers['sendUpcomingInvoiceEmails'] 
   const organizations = (await r
     .table('Organization')
     .getAll('team', {index: 'tier'})
-    .filter((organization) =>
+    .filter((organization: RValue) =>
       r.and(
         organization('periodEnd').le(periodEndThresh).default(false),
         organization('upcomingInvoiceEmailSentAt').le(lastSentThresh).default(true)
@@ -82,11 +82,11 @@ const sendUpcomingInvoiceEmails: MutationResolvers['sendUpcomingInvoiceEmails'] 
       newUserIds: r
         .table('OrganizationUser')
         .getAll(organization('id'), {index: 'orgId'})
-        .filter((organizationUser) => organizationUser('newUserUntil').ge(now))
+        .filter((organizationUser: RValue) => organizationUser('newUserUntil').ge(now))
         .filter({removedAt: null, role: null})('userId')
         .coerceTo('array')
     }))
-    .filter((organization) => organization('newUserIds').count().ge(1))
+    .filter((organization: RValue) => organization('newUserIds').count().ge(1))
     .merge((organization: RValue) => ({
       billingLeaderIds: r
         .table('OrganizationUser')

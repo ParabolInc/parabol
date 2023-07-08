@@ -1,25 +1,25 @@
 import React, {Suspense} from 'react'
+import {Redirect} from 'react-router'
 import activityDetailsQuery, {
   ActivityDetailsQuery
 } from '~/__generated__/ActivityDetailsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import useRouter from '../../../hooks/useRouter'
 import {renderLoader} from '../../../utils/relay/renderLoader'
 import ActivityDetails from './ActivityDetails'
-import useRouter from '../../../hooks/useRouter'
-import {Redirect} from 'react-router'
 
 const ActivityDetailsRoute = () => {
   const {match} = useRouter<{activityId: string}>()
   const {params} = match
   const {activityId} = params
 
-  const queryRef = useQueryLoaderNow<ActivityDetailsQuery>(activityDetailsQuery)
+  const queryRef = useQueryLoaderNow<ActivityDetailsQuery>(activityDetailsQuery, {activityId})
 
   if (!activityId) return <Redirect to='/activity-library' />
 
   return (
     <Suspense fallback={renderLoader()}>
-      {queryRef && <ActivityDetails queryRef={queryRef} activityId={activityId} />}
+      {queryRef && <ActivityDetails queryRef={queryRef} />}
     </Suspense>
   )
 }

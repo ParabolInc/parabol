@@ -22,6 +22,7 @@ We no longer use pgm because we want every migration to run independently.
 In other words, migration 3 should have a guarantee that migration 2 has already run. PGM doesn't do this.
 
 ## Migrating RethinkDB to PG (Massive Inserts)
+
 To perform massive inserts, like migrating RethinkDB tables to PG, we use pg-promise, which offers a [simple pattern](https://github.com/vitaly-t/pg-promise/wiki/Data-Imports#massive-inserts).
 
 Since most tables can't be read into the memory of our NodeJS container, we have to paginate the data.
@@ -55,3 +56,13 @@ Parameters are capped at 16-bit, so if you're doing a bulk insert, you'll need t
 In other words, if `# rows * columns per row > 65,535` you need to do it in batches.
 `pg-protocol` shows this here: <https://github.com/brianc/node-postgres/blob/master/packages/pg-protocol/src/serializer.ts#L155>
 Issue here: <https://github.com/brianc/node-postgres/issues/581>
+
+#### Too many connections
+
+Sometimes pg pool will hit its connection limit. This should never happen in prod, but happens on occassion in dev.
+You'll know it's happening because PG will say there are too many connections.
+To fix, you can run the following SQL to remove all the connections except the one that is running the script
+
+```sql
+select pg_terminate_backend(pid) from pg_stat_activity where datname='parabol-saas' AND pid <> pg_backend_pid();
+```

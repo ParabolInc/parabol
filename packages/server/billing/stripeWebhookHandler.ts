@@ -30,6 +30,20 @@ const eventLookup = {
         }
       `
     },
+    payment_succeeded: {
+      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
+      query: `
+        mutation UpgradeToTeamTier($invoiceId: ID!) {
+          upgradeToTeamTier(invoiceId: $invoiceId) {
+            ... on UpgradeToTeamTierSuccess {
+              organization {
+                id
+              }
+            }
+          }
+        }
+      `
+    },
     paid: {
       getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `

@@ -58,6 +58,10 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       type: new GraphQLList(new GraphQLNonNull(AutogroupReflectionGroup)),
       description: 'The suggested reflection groups created by OpenAI'
     },
+    resetReflectionGroups: {
+      type: new GraphQLList(new GraphQLNonNull(AutogroupReflectionGroup)),
+      description: 'The groups that existed before the autogrouping'
+    },
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'the number of votes allowed for each participant to cast on a single group'

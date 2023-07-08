@@ -9,7 +9,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const MAX_STRIPE_DELAY = 3 // seconds
 
-const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) => {
+const getPossibleHooks = async (invoiceItem: Stripe.InvoiceItem) => {
   const r = await getRethink()
   const {
     subscription,
@@ -28,7 +28,7 @@ const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) =>
       [quantityName]: quantity,
       stripeSubscriptionId: subscription as string
     })
-    .filter((row) => row(invoiceItemName).default(null).eq(null))
+    .filter((row: RValue) => row(invoiceItemName).default(null).eq(null))
     .orderBy(r.desc('prorationDate'))
     .run()
   if (proratedHooks.length) return proratedHooks
@@ -36,7 +36,7 @@ const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) =>
     .table('InvoiceItemHook')
     .getAll(subscription as string, {index: 'stripeSubscriptionId'})
     .filter({[quantityName]: quantity, isProrated: false})
-    .filter((row) => row(invoiceItemName).default(null).eq(null))
+    .filter((row: RValue) => row(invoiceItemName).default(null).eq(null))
     .orderBy(r.desc('createdAt'))
     .run()
 }
@@ -49,9 +49,7 @@ const getBestHook = (possibleHooks: InvoiceItemHook[]) => {
   return firstHook
 }
 
-const tagInvoiceItemWithHook = async (
-  invoiceItem: Stripe.invoiceItems.InvoiceItem
-): Promise<boolean> => {
+const tagInvoiceItemWithHook = async (invoiceItem: Stripe.InvoiceItem): Promise<boolean> => {
   const r = await getRethink()
   const {id: invoiceItemId, amount} = invoiceItem
   const isRefund = amount < 0

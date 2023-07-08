@@ -80,15 +80,15 @@ const EstimateHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'EstimateHelpMenu' */ './MeetingHelp/EstimateHelpMenu')
 )
 
-const demoHelps = {
+const demoHelps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>> = {
   checkin: DemoReflectHelpMenu,
   reflect: DemoReflectHelpMenu,
   group: DemoGroupHelpMenu,
   vote: DemoVoteHelpMenu,
   discuss: DemoDiscussHelpMenu
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+}
 
-const helps = {
+const helps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>> = {
   checkin: CheckInHelpMenu,
   reflect: ReflectHelpMenu,
   group: GroupHelpMenu,
@@ -100,7 +100,7 @@ const helps = {
   lastcall: ActionMeetingLastCallHelpMenu,
   SCOPE: ScopeHelpMenu,
   ESTIMATE: EstimateHelpMenu
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+}
 
 interface Props {
   cancelConfirm: (() => void) | undefined
@@ -108,6 +108,7 @@ interface Props {
   status: TransitionStatus
   onTransitionEnd: () => void
 }
+
 const BottomControlBarTips = (props: Props) => {
   const {cancelConfirm, meeting: meetingRef, status, onTransitionEnd} = props
   const meeting = useFragment(
@@ -148,6 +149,11 @@ const BottomControlBarTips = (props: Props) => {
       }
     }
   }, [demoPauseOpen, openPortal])
+
+  if (!MenuContent) {
+    return null
+  }
+
   return (
     <BottomNavControl
       dataCy={`tip-menu-toggle`}

@@ -18,7 +18,7 @@ const MeetingSeries: MeetingSeriesResolvers = {
       .orderBy((doc) => (doc('endedAt') ? 0 : 1), r.desc('createdAt'))
       .limit(1)
       .run()
-    return meetings[0]
+    return meetings[0]!
   }
 }
 

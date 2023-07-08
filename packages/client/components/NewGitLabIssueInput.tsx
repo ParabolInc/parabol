@@ -12,6 +12,7 @@ import getNonNullEdges from '~/utils/getNonNullEdges'
 import {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
+import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {CompletedHandler} from '../types/relayMutations'
@@ -156,6 +157,12 @@ const NewGitLabIssueInput = (props: Props) => {
   const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
+  const [createTaskError, setCreateTaskError] = useTimedState()
+  useEffect(() => {
+    if (isEditing) {
+      setCreateTaskError(undefined)
+    }
+  }, [isEditing])
   const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
@@ -203,7 +210,12 @@ const NewGitLabIssueInput = (props: Props) => {
       }
     }
     const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
-      const integrationHash = res.createTask?.task?.integrationHash ?? null
+      const {error, task} = res.createTask
+      if (error) {
+        setCreateTaskError(error.message)
+      }
+      if (error || !task) return
+      const {integrationHash} = task
       if (!integrationHash) return
       const pokerScopeVariables = {
         meetingId,
@@ -224,6 +236,17 @@ const NewGitLabIssueInput = (props: Props) => {
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
+  if (createTaskError) {
+    return (
+      <Item>
+        <Checkbox active disabled />
+        <Issue>
+          <Error>{createTaskError}</Error>
+          <StyledLink>{selectedFullPath}</StyledLink>
+        </Issue>
+      </Item>
+    )
+  }
   if (!isEditing) return null
   return (
     <>
