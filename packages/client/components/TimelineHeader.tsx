@@ -10,10 +10,10 @@ import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {timelineEventTypeMenuLabels} from '../utils/constants'
 
-const TeamlineEventTypeMenu = lazyPreload(
+const TimelineEventTypeMenu = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'TeamFilterMenu' */
+      /* webpackChunkName: 'TimelineEventTypeMenu' */
       './TimelineEventTypeMenu'
     )
 )
@@ -43,13 +43,12 @@ const TimelineHeader = () => {
           className='mt-4 mr-16 mb-4 ml-0 sidebar-left:mt-0 sidebar-left:mr-24 sidebar-left:mb-0 sidebar-left:ml-0'
           label='Event Type'
           onClick={timelineEventTypeFilterTogglePortal}
-          onMouseEnter={TeamlineEventTypeMenu.preload}
+          onMouseEnter={TimelineEventTypeMenu.preload}
           ref={timelineEventTypeFilterOriginRef}
           value={eventTypeFilterName}
-          dataCy='team-member-filter'
         />
         {timelineEventTypeFilterMenuPortal(
-          <TeamlineEventTypeMenu menuProps={timelineEventTypeFilterMenuProps} />
+          <TimelineEventTypeMenu menuProps={timelineEventTypeFilterMenuProps} />
         )}
       </DashSectionControls>
     </DashSectionHeader>

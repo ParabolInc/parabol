@@ -50,8 +50,7 @@ const TimelineEventTypeMenu = (props: Props) => {
       {eventTypeValues.map((eventType, index) => {
         return (
           <MenuItem
-            key={`teamFilter${eventType}-${index}`}
-            dataCy={`team-filter-${eventType}-${index}`}
+            key={`eventTypeFilter${eventType}-${index}`}
             label={<EventTypeFilterMenuItemLabel eventType={eventType} />}
             onClick={() =>
               history.push(constructFilterQueryParamURL(teamIds, userIds, undefined, [eventType]))
