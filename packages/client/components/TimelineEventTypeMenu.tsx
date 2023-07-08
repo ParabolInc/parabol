@@ -25,14 +25,12 @@ const TimelineEventTypeMenu = (props: Props) => {
     userIds
   } = useQueryParameterParser(atmosphere.viewerId)
 
-  const showAllEvents = !!eventTypeFilters
   const {eventTypeValues, defaultActiveIdx} = useMemo(() => {
     const eventTypeValues = eventTypes
     return {
       eventTypeValues,
       defaultActiveIdx:
-        eventTypeValues.findIndex((eventType) => eventTypeFilters?.includes(eventType)) +
-        (showAllEvents ? 2 : 1)
+        eventTypeValues.findIndex((eventType) => eventTypeFilters?.includes(eventType)) + 2
     }
   }, [eventTypeFilters])
 
@@ -44,13 +42,11 @@ const TimelineEventTypeMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by event type:'}</DropdownMenuLabel>
-      {showAllEvents && (
-        <MenuItem
-          key={'eventTypeFilterNULL'}
-          label={<EventTypeFilterMenuItemLabel />}
-          onClick={() => history.push(constructFilterQueryParamURL(teamIds, userIds))}
-        />
-      )}
+      <MenuItem
+        key={'eventTypeFilterNULL'}
+        label={<EventTypeFilterMenuItemLabel />}
+        onClick={() => history.push(constructFilterQueryParamURL(teamIds, userIds))}
+      />
       {eventTypeValues.map((eventType, index) => {
         return (
           <MenuItem
