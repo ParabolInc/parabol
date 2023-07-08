@@ -37,10 +37,11 @@ const generateGroupSummaries = async (
         ({plaintextContent}) => plaintextContent
       )
       const summary = await manager.getSummary(reflectionTextByGroupId)
-      const discussionPromptQuestion = await manager.getDiscussionPromptQuestion(
-        group.title ?? 'Unknown',
-        reflectionsByGroupId
+      const discussionPromptQuestion = facilitator.featureFlags.includes(
+        'AIGeneratedDiscussionPrompt'
       )
+        ? await manager.getDiscussionPromptQuestion(group.title ?? 'Unknown', reflectionsByGroupId)
+        : undefined
       if (!summary && !discussionPromptQuestion) return
 
       return r({
