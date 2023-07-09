@@ -44,9 +44,9 @@ class OpenAIServerManager {
 
   async getDiscussionPromptQuestion(topic: string, reflections: Reflection[]) {
     if (!this.openAIApi) return null
-    const prompt = `As the meeting facilitator, your primary task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants. Your job is to generate a thought-provoking question based on these inputs. Here's an improved process that ensures the exclusion of group information:
+    const prompt = `As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:
 
-    Step 1: Categorize the topic into one of the following four groups:
+    Step 1: Categorize the discussion into one of the following four groups:
 
     Group 1: Requirement/Seeking help/Requesting permission
     Example Question: "What specific assistance do you need to move forward?"
@@ -60,7 +60,7 @@ class OpenAIServerManager {
     Group 4: New plan/New feature/New launch/Exploring new approaches
     Example Question: "How can we expedite the learning process or streamline our approach?"
 
-    Step 2: Once you have categorized the topic, formulate a question that aligns with the example question provided for that group.
+    Step 2: Once you have categorized the topic, formulate a question that aligns with the example question provided for that group. If the topic does not belong to any of the groups, come up with a good question yourself for a productive discussion.
 
     Step 3: Finally, provide me with the question you have formulated without disclosing any information about the group it belongs to.
 
