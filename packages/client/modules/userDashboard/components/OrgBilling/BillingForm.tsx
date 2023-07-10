@@ -16,7 +16,6 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
-import {commitLocalUpdate} from 'relay-runtime'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -126,19 +125,11 @@ const BillingForm = (props: Props) => {
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
-      setIsLoading(false)
       if (error) {
         setErrorMsg(error.message)
+        setIsLoading(false)
         return
       }
-      commitLocalUpdate(atmosphere, (store) => {
-        const org = store.get(orgId)
-        if (!org) return
-        // stripe webhooks will trigger upgradeToTeamTier which will update the tier, but we want to show the confetti and correct drawer info immediately
-        org.setValue('team', 'tier')
-        org.setValue(true, 'showConfetti')
-        org.setValue(true, 'showDrawer')
-      })
       onCompleted()
     }
 
