@@ -11,7 +11,7 @@ const compile = (config, isSilent) => {
       }
       const {errors} = stats.compilation
       if (errors.length > 0 && !isSilent) {
-        console.log('COMPILATION ERRORS:', errors)
+        console.log('PROD COMPILATION ERRORS:', errors)
       }
       resolve()
     }
@@ -26,10 +26,6 @@ const prod = async (isDeploy, noDeps) => {
   const serversConfig = makeServersConfig({isDeploy, noDeps})
   const clientConfig = makeClientConfig({isDeploy, noDeps})
   await Promise.all([compile(serversConfig), compile(clientConfig)])
-  if (!isDeploy && !noDeps) {
-    // run in development
-    require('./toolbox/postDeploy.js')
-  }
 }
 
 if (require.main === module) {

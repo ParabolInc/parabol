@@ -4,6 +4,13 @@ import path from 'path'
 import appOrigin from '../appOrigin'
 import FileStoreManager from './FileStoreManager'
 export default class LocalFileSystemManager extends FileStoreManager {
+  constructor() {
+    super()
+    const {PROTO, HOST} = process.env
+    if (!PROTO || !HOST) {
+      throw new Error('Env Vars PROTO and HOST must be set if FILE_STORE_PROVIDER=local')
+    }
+  }
   private prependPath(partialPath: string): string {
     return path.join('self-hosted', partialPath)
   }
