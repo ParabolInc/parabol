@@ -6,5 +6,5 @@ export const useDialogState = () => {
   const open = useCallback(() => setIsOpen(true), [])
   const close = useCallback(() => setIsOpen(false), [])
 
-  return [isOpen, open, close] as const
+  return {isOpen, open, close}
 }

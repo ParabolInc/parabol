@@ -169,7 +169,7 @@ The commands below will start a Parabol container on the target tag specified in
 export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=vX.X.X
 
-docker run --name=parabolgraphql --network=host -v $(pwd)/.env:/home/node/parabol/.env ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "yarn db:migrate && yarn pg:migrate up && yarn postdeploy && NODE_ENV=production && node ./dist/gqlExecutor.js" || docker container rm parabolgraphql -f
+docker run --name=parabolgraphql --network=host -v $(pwd)/.env:/home/node/parabol/.env ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "yarn predeploy && NODE_ENV=production && node ./dist/gqlExecutor.js" || docker container rm parabolgraphql -f
 ```
 
 - Start Web Server
@@ -178,7 +178,7 @@ docker run --name=parabolgraphql --network=host -v $(pwd)/.env:/home/node/parabo
 export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=vX.X.X
 
-docker run --name=parabol --network=host -v $(pwd)/.env:/home/node/parabol/.env -p 3000:3000 ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "yarn db:migrate && yarn pg:migrate up && yarn postdeploy && NODE_ENV=production && node ./dist/web.js" || docker container rm parabol -f
+docker run --name=parabol --network=host -v $(pwd)/.env:/home/node/parabol/.env -p 3000:3000 ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "yarn predeploy && NODE_ENV=production && node ./dist/web.js" || docker container rm parabol -f
 ```
 
 To stop the container, just open another terminal and enter `docker container stop parabol`

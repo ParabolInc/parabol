@@ -12,12 +12,15 @@ export default class RelayPersistServer {
   constructor(port = 2999) {
     this.server = http.createServer(this.requestListener)
     this.server.listen(port)
-    this.prepareArtifactDirectory()
+    let flushArtifacts = false
     try {
       this.queryMap = JSON.parse(fs.readFileSync(this.queryMapPath, 'utf-8'))
     } catch {
+      // If queryMap doesn't exist, make sure artifacts doesn't either so it isn't missing any
+      flushArtifacts = true
       this.queryMap = {}
     }
+    this.prepareArtifactDirectory(flushArtifacts)
   }
 
   close() {
@@ -63,8 +66,9 @@ export default class RelayPersistServer {
     })
     res.end(JSON.stringify({id}))
   }
-  prepareArtifactDirectory() {
+  prepareArtifactDirectory(flushArtifacts: boolean) {
     const {artifactDirectory} = config
+    if (flushArtifacts) fs.rmSync(artifactDirectory, {recursive: true, force: true})
     if (!fs.existsSync(artifactDirectory)) {
       fs.mkdirSync(artifactDirectory)
     }

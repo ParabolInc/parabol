@@ -7,15 +7,12 @@ import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {DialogDescription} from '../ui/Dialog/DialogDescription'
 import {DialogActions} from '../ui/Dialog/DialogActions'
-
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectGroup,
-  SelectValue,
-  SelectContent
-} from '../ui/Select'
+import {Select} from '../ui/Select/Select'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectTrigger} from '../ui/Select/SelectTrigger'
+import {SelectGroup} from '../ui/Select/SelectGroup'
+import {SelectValue} from '../ui/Select/SelectValue'
+import {SelectContent} from '../ui/Select/SelectContent'
 import graphql from 'babel-plugin-relay/macro'
 import {ShareTopicModalQuery} from '../__generated__/ShareTopicModalQuery.graphql'
 import {ShareTopicModal_viewer$key} from '../__generated__/ShareTopicModal_viewer.graphql'

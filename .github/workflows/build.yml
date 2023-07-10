@@ -97,8 +97,8 @@ jobs:
       - name: Check Code Quality
         run: yarn codecheck
 
-      - name: Run Postdeploy for Testing
-        run: yarn postdeploy
+      - name: Run Predeploy for Testing
+        run: yarn predeploy
 
       - name: Start testing server in background
         run: |
