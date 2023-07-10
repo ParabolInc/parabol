@@ -16,27 +16,28 @@ class ServerHealthChecker {
   private remoteSocketServers: null | string[] = null
   private joinPoolPromise: null | Promise<void> = null
   private async joinPool() {
-    if (this.joinPoolPromise) throw new Error('joinPool can only be called once')
-    await this.subscriber.subscribe('socketServerPing', `socketServerPong:${INSTANCE_ID}`)
-    this.subscriber.on('message', (channel, remoteServerId) => {
-      if (channel === 'socketServerPing') {
-        if (remoteServerId === INSTANCE_ID) return
-        this.publisher.publish(`socketServerPong:${remoteServerId}`, INSTANCE_ID)
-      } else if (channel === `socketServerPong:${INSTANCE_ID}`) {
-        if (!this.remoteSocketServers) {
-          console.error('unsolicited pong received before getLivingServers was called')
-        } else {
-          this.remoteSocketServers.push(remoteServerId)
-        }
-      }
-    })
+    if (!this.joinPoolPromise) {
+      this.joinPoolPromise = (async () => {
+        await this.subscriber.subscribe('socketServerPing', `socketServerPong:${INSTANCE_ID}`)
+        this.subscriber.on('message', (channel, remoteServerId) => {
+          if (channel === 'socketServerPing') {
+            if (remoteServerId === INSTANCE_ID) return
+            this.publisher.publish(`socketServerPong:${remoteServerId}`, INSTANCE_ID)
+          } else if (channel === `socketServerPong:${INSTANCE_ID}`) {
+            if (!this.remoteSocketServers) {
+              console.error('unsolicited pong received before getLivingServers was called')
+            } else {
+              this.remoteSocketServers.push(remoteServerId)
+            }
+          }
+        })
+      })()
+    }
+    return this.joinPoolPromise
   }
 
   async getLivingServers() {
-    if (!this.joinPoolPromise) {
-      this.joinPoolPromise = this.joinPool()
-    }
-    await this.joinPoolPromise
+    await this.joinPool()
     this.remoteSocketServers = []
     await this.publisher.publish('socketServerPing', INSTANCE_ID)
     await sleep(500)
