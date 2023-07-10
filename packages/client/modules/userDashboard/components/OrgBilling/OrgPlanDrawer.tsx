@@ -24,13 +24,6 @@ const DrawerHeader = styled('div')({
   width: '100%'
 })
 
-const ConfettiWrapper = styled('div')({
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)'
-})
-
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
   backgroundColor: '#FFFFFF',
@@ -123,9 +116,9 @@ const OrgPlanDrawer = (props: Props) => {
           <OrgPlanDrawerContent tier={tier} />
         </Drawer>
       </ResponsiveDashSidebar>
-      <ConfettiWrapper>
+      <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
         <Confetti active={showConfetti} />
-      </ConfettiWrapper>
+      </div>
     </>
   )
 }
