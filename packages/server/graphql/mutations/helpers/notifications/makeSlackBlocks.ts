@@ -1,20 +1,40 @@
 import generateUID from '../../../../generateUID'
 
-export const makeSection = (text: string) => ({
-  type: 'section',
-  text: {
-    type: 'mrkdwn',
-    text
-  }
-})
+// Slack has the limit of 3000 chars per block
+const SLACK_MAX_BLOCK_CHAR_COUNT = 3000
+const truncationString = `[...]`
 
-export const makeSections = (fields: string[]) => ({
-  type: 'section',
-  fields: fields.map((field) => ({
-    type: 'mrkdwn',
-    text: field
-  }))
-})
+const maybeTruncate = (text: string) => {
+  if (text.length > SLACK_MAX_BLOCK_CHAR_COUNT) {
+    return text.slice(0, SLACK_MAX_BLOCK_CHAR_COUNT - truncationString.length) + truncationString
+  }
+  return text
+}
+
+export const makeSection = (text: string) => {
+  text = maybeTruncate(text)
+  return {
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text
+    }
+  }
+}
+
+export const makeSections = (fields: string[]) => {
+  const truncatedFields = fields.map((field) => {
+    field = maybeTruncate(field)
+    return {
+      type: 'mrkdwn',
+      text: field
+    }
+  })
+  return {
+    type: 'section',
+    fields: truncatedFields
+  }
+}
 
 type ButtonInput = {
   text: string

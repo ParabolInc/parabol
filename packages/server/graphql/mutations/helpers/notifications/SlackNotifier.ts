@@ -44,6 +44,8 @@ const notifySlack = async (
       notificationEvent: event
     }
   })
+
+  console.log('res', res)
   if ('error' in res) {
     const {error} = res
     if (error === 'channel_not_found') {
@@ -368,77 +370,12 @@ export const SlackNotifier: Notifier = {
       makeSection(
         `<@${slackAuth.slackUserId}> has shared reflections about *"${topic}"* from their retrospective`
       ),
-      {
-        type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: `*Team:*\n${team.name}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `*Meeting:*\n<${meetingUrl}|${meeting.name}>`
-          }
-        ]
-      },
+      makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n<${meetingUrl}|${meeting.name}>`]),
       makeSection(`*Topic:*\n<${discussionUrl}|${topic}>`)
     ]
 
     if (reflectionGroup.summary) {
-      const test = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales nec dolor eu egestas. Aenean nec dictum leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sed tincidunt purus. Cras eget vestibulum sem, eu ultrices ante. Proin tempor ligula urna, eu sollicitudin dolor viverra non. In nec lobortis tortor. Mauris vehicula sed nibh vel tempus. Duis porttitor libero eu nulla tempus, ut mollis magna ultrices. Nullam massa tortor, molestie at consectetur quis, dictum dignissim nibh.
-
-Curabitur facilisis, quam vitae auctor viverra, turpis libero cursus diam, ac venenatis erat quam quis nisl. Morbi in facilisis odio, et sodales orci. Vestibulum accumsan laoreet justo, quis lobortis sem convallis at. Proin at urna sapien. Fusce mollis aliquam sapien, id iaculis nisl sodales vel. Phasellus odio elit, molestie ut rhoncus sed, tempor quis nisi. Aenean at sapien ac ipsum commodo ullamcorper eu id ante. Donec at leo sed arcu dignissim lacinia non ac neque. Maecenas faucibus diam vitae lectus ultrices dignissim. Duis commodo ac metus at egestas. Cras erat urna, rhoncus at tellus sed, viverra viverra ipsum. Morbi nec nisi facilisis, eleifend risus eu, sagittis est. In tincidunt mollis dui a interdum. Sed sit amet felis sit amet magna ultricies aliquam egestas a eros. Integer erat lectus, cursus a lorem ut, congue maximus ex. Donec consectetur magna metus, non placerat eros sodales non.
-
-Nunc gravida tellus tortor, at pretium est ultricies eget. Nunc accumsan leo at finibus suscipit. Ut sed vestibulum ante. Aliquam erat volutpat. Praesent vel diam ante. In eu leo accumsan, tincidunt nulla vel, ultrices sem. Morbi mattis est tellus, at dapibus tellus tincidunt sit amet. Praesent iaculis aliquet est, et finibus est placerat a. Suspendisse finibus sit amet arcu eu posuere. Nullam ullamcorper rhoncus nunc, non tempor nisl ornare et. Maecenas vestibulum consectetur leo sit amet egestas.
-
-Sed laoreet lorem vitae velit dignissim, vel luctus tellus aliquet. Mauris vulputate mauris in nibh iaculis, a scelerisque nunc pharetra. Cras laoreet, nulla et consectetur elementum, lectus ipsum interdum odio, sit amet faucibus elit nisl sit amet urna. Pellentesque vel iaculis justo, et viverra ipsum. Sed tempus maximus est, vitae egestas est commodo eu. Nulla at molestie libero. Donec eu urna rhoncus, viverra lacus ac, aliquet risus. In hac habitasse platea dictumst.
-
-Cras laoreet, felis id bibendum tincidunt, nulla justo aliquam ex, id fringilla augue libero eu nibh. Cras nec neque sed tortor porta dignissim. Cras tempus a nisi quis feugiat. Curabitur ut feugiat nisi. Aliquam sed ex sed ante rutrum volutpat congue vel justo. Suspendisse mollis urna vel lacus ornare fermentum. Proin vestibulum tempor malesuada. Proin elementum vel libero sit amet ultrices. Sed semper justo sit amet urna lobortis faucibus. In molestie pellentesque eros vel rhoncus. Sed ut iaculis ligula. Quisque enim velit, porta a turpis a, lacinia convallis tortor.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales nec dolor eu egestas. Aenean nec dictum leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sed tincidunt purus. Cras eget vestibulum sem, eu ultrices ante. Proin tempor ligula urna, eu sollicitudin dolor viverra non. In nec lobortis tortor. Mauris vehicula sed nibh vel tempus. Duis porttitor libero eu nulla tempus, ut mollis magna ultrices. Nullam massa tortor, molestie at consectetur quis, dictum dignissim nibh.
-
-Curabitur facilisis, quam vitae auctor viverra, turpis libero cursus diam, ac venenatis erat quam quis nisl. Morbi in facilisis odio, et sodales orci. Vestibulum accumsan laoreet justo, quis lobortis sem convallis at. Proin at urna sapien. Fusce mollis aliquam sapien, id iaculis nisl sodales vel. Phasellus odio elit, molestie ut rhoncus sed, tempor quis nisi. Aenean at sapien ac ipsum commodo ullamcorper eu id ante. Donec at leo sed arcu dignissim lacinia non ac neque. Maecenas faucibus diam vitae lectus ultrices dignissim. Duis commodo ac metus at egestas. Cras erat urna, rhoncus at tellus sed, viverra viverra ipsum. Morbi nec nisi facilisis, eleifend risus eu, sagittis est. In tincidunt mollis dui a interdum. Sed sit amet felis sit amet magna ultricies aliquam egestas a eros. Integer erat lectus, cursus a lorem ut, congue maximus ex. Donec consectetur magna metus, non placerat eros sodales non.
-
-Nunc gravida tellus tortor, at pretium est ultricies eget. Nunc accumsan leo at finibus suscipit. Ut sed vestibulum ante. Aliquam erat volutpat. Praesent vel diam ante. In eu leo accumsan, tincidunt nulla vel, ultrices sem. Morbi mattis est tellus, at dapibus tellus tincidunt sit amet. Praesent iaculis aliquet est, et finibus est placerat a. Suspendisse finibus sit amet arcu eu posuere. Nullam ullamcorper rhoncus nunc, non tempor nisl ornare et. Maecenas vestibulum consectetur leo sit amet egestas.
-
-Sed laoreet lorem vitae velit dignissim, vel luctus tellus aliquet. Mauris vulputate mauris in nibh iaculis, a scelerisque nunc pharetra. Cras laoreet, nulla et consectetur elementum, lectus ipsum interdum odio, sit amet faucibus elit nisl sit amet urna. Pellentesque vel iaculis justo, et viverra ipsum. Sed tempus maximus est, vitae egestas est commodo eu. Nulla at molestie libero. Donec eu urna rhoncus, viverra lacus ac, aliquet risus. In hac habitasse platea dictumst.
-
-Cras laoreet, felis id bibendum tincidunt, nulla justo aliquam ex, id fringilla augue libero eu nibh. Cras nec neque sed tortor porta dignissim. Cras tempus a nisi quis feugiat. Curabitur ut feugiat nisi. Aliquam sed ex sed ante rutrum volutpat congue vel justo. Suspendisse mollis urna vel lacus ornare fermentum. Proin vestibulum tempor malesuada. Proin elementum vel libero sit amet ultrices. Sed semper justo sit amet urna lobortis faucibus. In molestie pellentesque eros vel rhoncus. Sed ut iaculis ligula. Quisque enim velit, porta a turpis a, lacinia convallis tortor.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales nec dolor eu egestas. Aenean nec dictum leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sed tincidunt purus. Cras eget vestibulum sem, eu ultrices ante. Proin tempor ligula urna, eu sollicitudin dolor viverra non. In nec lobortis tortor. Mauris vehicula sed nibh vel tempus. Duis porttitor libero eu nulla tempus, ut mollis magna ultrices. Nullam massa tortor, molestie at consectetur quis, dictum dignissim nibh.
-
-Curabitur facilisis, quam vitae auctor viverra, turpis libero cursus diam, ac venenatis erat quam quis nisl. Morbi in facilisis odio, et sodales orci. Vestibulum accumsan laoreet justo, quis lobortis sem convallis at. Proin at urna sapien. Fusce mollis aliquam sapien, id iaculis nisl sodales vel. Phasellus odio elit, molestie ut rhoncus sed, tempor quis nisi. Aenean at sapien ac ipsum commodo ullamcorper eu id ante. Donec at leo sed arcu dignissim lacinia non ac neque. Maecenas faucibus diam vitae lectus ultrices dignissim. Duis commodo ac metus at egestas. Cras erat urna, rhoncus at tellus sed, viverra viverra ipsum. Morbi nec nisi facilisis, eleifend risus eu, sagittis est. In tincidunt mollis dui a interdum. Sed sit amet felis sit amet magna ultricies aliquam egestas a eros. Integer erat lectus, cursus a lorem ut, congue maximus ex. Donec consectetur magna metus, non placerat eros sodales non.
-
-Nunc gravida tellus tortor, at pretium est ultricies eget. Nunc accumsan leo at finibus suscipit. Ut sed vestibulum ante. Aliquam erat volutpat. Praesent vel diam ante. In eu leo accumsan, tincidunt nulla vel, ultrices sem. Morbi mattis est tellus, at dapibus tellus tincidunt sit amet. Praesent iaculis aliquet est, et finibus est placerat a. Suspendisse finibus sit amet arcu eu posuere. Nullam ullamcorper rhoncus nunc, non tempor nisl ornare et. Maecenas vestibulum consectetur leo sit amet egestas.
-
-Sed laoreet lorem vitae velit dignissim, vel luctus tellus aliquet. Mauris vulputate mauris in nibh iaculis, a scelerisque nunc pharetra. Cras laoreet, nulla et consectetur elementum, lectus ipsum interdum odio, sit amet faucibus elit nisl sit amet urna. Pellentesque vel iaculis justo, et viverra ipsum. Sed tempus maximus est, vitae egestas est commodo eu. Nulla at molestie libero. Donec eu urna rhoncus, viverra lacus ac, aliquet risus. In hac habitasse platea dictumst.
-
-Cras laoreet, felis id bibendum tincidunt, nulla justo aliquam ex, id fringilla augue libero eu nibh. Cras nec neque sed tortor porta dignissim. Cras tempus a nisi quis feugiat. Curabitur ut feugiat nisi. Aliquam sed ex sed ante rutrum volutpat congue vel justo. Suspendisse mollis urna vel lacus ornare fermentum. Proin vestibulum tempor malesuada. Proin elementum vel libero sit amet ultrices. Sed semper justo sit amet urna lobortis faucibus. In molestie pellentesque eros vel rhoncus. Sed ut iaculis ligula. Quisque enim velit, porta a turpis a, lacinia convallis tortor.
-
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales nec dolor eu egestas. Aenean nec dictum leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sed tincidunt purus. Cras eget vestibulum sem, eu ultrices ante. Proin tempor ligula urna, eu sollicitudin dolor viverra non. In nec lobortis tortor. Mauris vehicula sed nibh vel tempus. Duis porttitor libero eu nulla tempus, ut mollis magna ultrices. Nullam massa tortor, molestie at consectetur quis, dictum dignissim nibh.
-
-Curabitur facilisis, quam vitae auctor viverra, turpis libero cursus diam, ac venenatis erat quam quis nisl. Morbi in facilisis odio, et sodales orci. Vestibulum accumsan laoreet justo, quis lobortis sem convallis at. Proin at urna sapien. Fusce mollis aliquam sapien, id iaculis nisl sodales vel. Phasellus odio elit, molestie ut rhoncus sed, tempor quis nisi. Aenean at sapien ac ipsum commodo ullamcorper eu id ante. Donec at leo sed arcu dignissim lacinia non ac neque. Maecenas faucibus diam vitae lectus ultrices dignissim. Duis commodo ac metus at egestas. Cras erat urna, rhoncus at tellus sed, viverra viverra ipsum. Morbi nec nisi facilisis, eleifend risus eu, sagittis est. In tincidunt mollis dui a interdum. Sed sit amet felis sit amet magna ultricies aliquam egestas a eros. Integer erat lectus, cursus a lorem ut, congue maximus ex. Donec consectetur magna metus, non placerat eros sodales non.
-
-Nunc gravida tellus tortor, at pretium est ultricies eget. Nunc accumsan leo at finibus suscipit. Ut sed vestibulum ante. Aliquam erat volutpat. Praesent vel diam ante. In eu leo accumsan, tincidunt nulla vel, ultrices sem. Morbi mattis est tellus, at dapibus tellus tincidunt sit amet. Praesent iaculis aliquet est, et finibus est placerat a. Suspendisse finibus sit amet arcu eu posuere. Nullam ullamcorper rhoncus nunc, non tempor nisl ornare et. Maecenas vestibulum consectetur leo sit amet egestas.
-
-Sed laoreet lorem vitae velit dignissim, vel luctus tellus aliquet. Mauris vulputate mauris in nibh iaculis, a scelerisque nunc pharetra. Cras laoreet, nulla et consectetur elementum, lectus ipsum interdum odio, sit amet faucibus elit nisl sit amet urna. Pellentesque vel iaculis justo, et viverra ipsum. Sed tempus maximus est, vitae egestas est commodo eu. Nulla at molestie libero. Donec eu urna rhoncus, viverra lacus ac, aliquet risus. In hac habitasse platea dictumst.
-
-Cras laoreet, felis id bibendum tincidunt, nulla justo aliquam ex, id fringilla augue libero eu nibh. Cras nec neque sed tortor porta dignissim. Cras tempus a nisi quis feugiat. Curabitur ut feugiat nisi. Aliquam sed ex sed ante rutrum volutpat congue vel justo. Suspendisse mollis urna vel lacus ornare fermentum. Proin vestibulum tempor malesuada. Proin elementum vel libero sit amet ultrices. Sed semper justo sit amet urna lobortis faucibus. In molestie pellentesque eros vel rhoncus. Sed ut iaculis ligula. Quisque enim velit, porta a turpis a, lacinia convallis tortor.
-
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales nec dolor eu egestas. Aenean nec dictum leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sed tincidunt purus. Cras eget vestibulum sem, eu ultrices ante. Proin tempor ligula urna, eu sollicitudin dolor viverra non. In nec lobortis tortor. Mauris vehicula sed nibh vel tempus. Duis porttitor libero eu nulla tempus, ut mollis magna ultrices. Nullam massa tortor, molestie at consectetur quis, dictum dignissim nibh.
-
-Curabitur facilisis, quam vitae auctor viverra, turpis libero cursus diam, ac venenatis erat quam quis nisl. Morbi in facilisis odio, et sodales orci. Vestibulum accumsan laoreet justo, quis lobortis sem convallis at. Proin at urna sapien. Fusce mollis aliquam sapien, id iaculis nisl sodales vel. Phasellus odio elit, molestie ut rhoncus sed, tempor quis nisi. Aenean at sapien ac ipsum commodo ullamcorper eu id ante. Donec at leo sed arcu dignissim lacinia non ac neque. Maecenas faucibus diam vitae lectus ultrices dignissim. Duis commodo ac metus at egestas. Cras erat urna, rhoncus at tellus sed, viverra viverra ipsum. Morbi nec nisi facilisis, eleifend risus eu, sagittis est. In tincidunt mollis dui a interdum. Sed sit amet felis sit amet magna ultricies aliquam egestas a eros. Integer erat lectus, cursus a lorem ut, congue maximus ex. Donec consectetur magna metus, non placerat eros sodales non.
-
-Nunc gravida tellus tortor, at pretium est ultricies eget. Nunc accumsan leo at finibus suscipit. Ut sed vestibulum ante. Aliquam erat volutpat. Praesent vel diam ante. In eu leo accumsan, tincidunt nulla vel, ultrices sem. Morbi mattis est tellus, at dapibus tellus tincidunt sit amet. Praesent iaculis aliquet est, et finibus est placerat a. Suspendisse finibus sit amet arcu eu posuere. Nullam ullamcorper rhoncus nunc, non tempor nisl ornare et. Maecenas vestibulum consectetur leo sit amet egestas.
-
-Sed laoreet lorem vitae velit dignissim, vel luctus tellus aliquet. Mauris vulputate mauris in nibh iaculis, a scelerisque nunc pharetra. Cras laoreet, nulla et consectetur elementum, lectus ipsum interdum odio, sit amet faucibus elit nisl sit amet urna. Pellentesque vel iaculis justo, et viverra ipsum. Sed tempus maximus est, vitae egestas est commodo eu. Nulla at molestie libero. Donec eu urna rhoncus, viverra lacus ac, aliquet risus. In hac habitasse platea dictumst.
-
-Cras laoreet, felis id bibendum tincidunt, nulla justo aliquam ex, id fringilla augue libero eu nibh. Cras nec neque sed tortor porta dignissim. Cras tempus a nisi quis feugiat. Curabitur ut feugiat nisi. Aliquam sed ex sed ante rutrum volutpat congue vel justo. Suspendisse mollis urna vel lacus ornare fermentum. Proin vestibulum tempor malesuada. Proin elementum vel libero sit amet ultrices. Sed semper justo sit amet urna lobortis faucibus. In molestie pellentesque eros vel rhoncus. Sed ut iaculis ligula. Quisque enim velit, porta a turpis a, lacinia convallis tortor.
-
-`
-      slackBlocks.push(makeSection(`*Summary:*\n${test}`))
+      slackBlocks.push(makeSection(`*Summary:*\n${reflectionGroup.summary}`))
     }
 
     slackBlocks.push(makeSection(`*Reflections:* \n${reflectionsText}`))
