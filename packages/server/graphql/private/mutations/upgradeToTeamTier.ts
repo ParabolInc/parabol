@@ -65,52 +65,34 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
 
   // RESOLUTION
-  await Promise.all([
-    r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          creditCard: await getCCFromCustomer(customer),
-          tier: 'team',
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now
-        })
-    }).run(),
-    updateTeamByOrgId(
-      {
-        isPaid: true,
-        tier: 'team'
-      },
-      orgId
-    )
-  ])
+  await Promise.all(
+    [
+      r({
+        updatedOrg: r
+          .table('Organization')
+          .get(orgId)
+          .update({
+            creditCard: await getCCFromCustomer(customer),
+            tier: 'team',
+            tierLimitExceededAt: null,
+            scheduledLockAt: null,
+            lockedAt: null,
+            updatedAt: now
+          })
+      }).run(),
+      updateTeamByOrgId(
+        {
+          isPaid: true,
+          tier: 'team'
+        },
+        orgId
+      )
+    ],
+    removeTeamsLimitObjects(orgId, dataLoader)
+  )
   organization.tier = 'team'
 
-  // If subscription already exists and has open invoices, try to process them
-  const openInvoices = (await manager.listSubscriptionOpenInvoices(stripeSubscriptionId)).data
-
-  let unpaidInvoice = false
-  if (openInvoices.length) {
-    for (const invoice of openInvoices) {
-      const invoiceResult = await manager.payInvoice(invoice.id)
-      // Unlock teams only if all invoices are paid
-      if (invoiceResult.status !== 'paid') {
-        unpaidInvoice = true
-      }
-    }
-  }
-  if (unpaidInvoice) {
-    return standardError(new Error('Could not pay failed invoices'), {userId: viewerId})
-  }
-
-  await Promise.all([
-    removeTeamsLimitObjects(orgId, dataLoader),
-    setUserTierForOrgId(orgId),
-    setTierForOrgUsers(orgId)
-  ])
+  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 
   const activeMeetings = await hideConversionModal(orgId, dataLoader)
   const meetingIds = activeMeetings.map(({id}) => id)
