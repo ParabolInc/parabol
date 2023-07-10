@@ -6,15 +6,12 @@ import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {DialogDescription} from '../ui/Dialog/DialogDescription'
 import {DialogActions} from '../ui/Dialog/DialogActions'
-
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectGroup,
-  SelectValue,
-  SelectContent
-} from '../ui/Select'
+import {Select} from '../ui/Select/Select'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectTrigger} from '../ui/Select/SelectTrigger'
+import {SelectGroup} from '../ui/Select/SelectGroup'
+import {SelectValue} from '../ui/Select/SelectValue'
+import {SelectContent} from '../ui/Select/SelectContent'
 
 interface Props {
   isOpen: boolean
