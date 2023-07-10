@@ -18,7 +18,6 @@ import * as RadioGroup from '@radix-ui/react-radio-group'
 import clsx from 'clsx'
 import RaisedButton from './RaisedButton'
 import getTeamHealthVoteColor from '../utils/getTeamHealthVoteColor'
-import replaceEmojis from '../utils/replaceEmojis'
 
 interface Props {
   avatarGroup: ReactElement
@@ -95,9 +94,7 @@ const TeamHealth = (props: Props) => {
                       className='m-3 flex h-32 w-20 flex-col justify-start rounded'
                       style={{backgroundColor: getTeamHealthVoteColor(votes, votes[index]!)}}
                     >
-                      <div className='flex h-24 items-center justify-center text-4xl'>
-                        {replaceEmojis(label)}
-                      </div>
+                      <div className='flex h-24 items-center justify-center text-4xl'>{label}</div>
                       <label className='text-center text-xl font-semibold text-white'>
                         {votes[index]}
                       </label>
@@ -131,7 +128,7 @@ const TeamHealth = (props: Props) => {
                           canVote ? 'hover:cursor-pointer' : 'hover:cursor-not-allowed'
                         )}
                       >
-                        {replaceEmojis(label)}
+                        {label}
                       </label>
                     </RadioGroup.Item>
                   ))}

@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import replaceEmojis from 'parabol-client/utils/replaceEmojis'
 import {TeamHealthSummary_meeting$key} from 'parabol-client/__generated__/TeamHealthSummary_meeting.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -102,7 +101,7 @@ const TeamHealthSummary = (props: Props) => {
                             fontSize: '24px'
                           }}
                         >
-                          {replaceEmojis(label)}
+                          {label}
                         </span>
                         <br />
                         <span
