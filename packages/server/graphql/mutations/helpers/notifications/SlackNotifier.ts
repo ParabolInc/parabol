@@ -360,13 +360,9 @@ export const SlackNotifier: Notifier = {
       .join('\n')
 
     const slackBlocks = [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `<@${slackAuth.slackUserId}> has shared reflections about *"${topic}"* from their retrospective`
-        }
-      },
+      makeSection(
+        `<@${slackAuth.slackUserId}> has shared reflections about *"${topic}"* from their retrospective`
+      ),
       {
         type: 'section',
         fields: [
@@ -380,27 +376,9 @@ export const SlackNotifier: Notifier = {
           }
         ]
       },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*Topic:*\n<${discussionUrl}|${topic}>`
-        }
-      },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*Summary:*\n${reflectionGroup.summary}`
-        }
-      },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*Reflections:* \n${reflectionsText}`
-        }
-      }
+      makeSection(`*Topic:*\n<${discussionUrl}|${topic}>`),
+      makeSection(`*Summary:*\n${reflectionGroup.summary}`),
+      makeSection(`*Reflections:* \n${reflectionsText}`)
     ]
 
     const notificationChannel = {

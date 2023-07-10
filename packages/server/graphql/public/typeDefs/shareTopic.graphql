@@ -1,10 +1,10 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  Shares retro discussion to integration
   """
   shareTopic(
     """
-    reflectionGroupId
+    Discussion stage id
     """
     stageId: ID!
 
@@ -14,7 +14,7 @@ extend type Mutation {
     meetingId: ID!
 
     """
-    Slack channelId
+    Integration channelId
     """
     channelId: ID!
   ): ShareTopicPayload!
@@ -27,7 +27,7 @@ union ShareTopicPayload = ErrorPayload | ShareTopicSuccess
 
 type ShareTopicSuccess {
   """
-  Describe the first return field here
+  Meeting
   """
   meeting: NewMeeting
 }

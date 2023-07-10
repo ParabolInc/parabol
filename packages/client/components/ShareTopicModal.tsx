@@ -65,12 +65,12 @@ const ShareTopicModal = (props: Props) => {
   const atmosphere = useAtmosphere()
   const [commit, shareTopicSubmitting] = useShareTopicMutation()
   const {
-    submitting: slackOauthSubmitting,
+    submitting: slackOAuthSubmitting,
     submitMutation,
     onError,
     onCompleted
   } = useMutationProps()
-  const submitting = slackOauthSubmitting || shareTopicSubmitting
+  const submitting = slackOAuthSubmitting || shareTopicSubmitting
 
   const data = usePreloadedQuery<ShareTopicModalQuery>(query, queryRef)
   const viewer = useFragment<ShareTopicModal_viewer$key>(ShareTopicModalViewerFragment, data.viewer)
@@ -101,7 +101,7 @@ const ShareTopicModal = (props: Props) => {
         setSelectedIntegration('slack')
       } else {
         SlackClientManager.openOAuth(atmosphere, teamId, {
-          submitting: slackOauthSubmitting,
+          submitting: slackOAuthSubmitting,
           submitMutation,
           onError,
           onCompleted: () => {

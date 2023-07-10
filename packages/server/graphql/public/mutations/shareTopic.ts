@@ -3,6 +3,7 @@ import standardError from '../../../utils/standardError'
 import {SlackNotifier} from '../../mutations/helpers/notifications/SlackNotifier'
 import {MutationResolvers} from '../resolverTypes'
 import DiscussStage from '../../../database/types/DiscussStage'
+import getPhase from '../../../utils/getPhase'
 
 const shareTopic: MutationResolvers['shareTopic'] = async (
   _source,
@@ -20,7 +21,7 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
   let stage = null
   let stageIndex = -1
 
-  const discussPhase = meeting.phases.find((phase) => phase.phaseType === 'discuss')
+  const discussPhase = getPhase(meeting.phases, 'discuss')
 
   if (discussPhase) {
     stageIndex = discussPhase.stages.findIndex((possibleStage) => possibleStage.id === stageId)
