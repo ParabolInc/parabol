@@ -81,7 +81,7 @@ const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus
   display: 'flex',
   flex: '0 1 auto',
   flexDirection: 'column',
-  position: 'fixed',
+  position: 'relative',
   marginTop: 'auto',
   marginBottom: 'auto',
   ...modalStyles[portalStatus as keyof typeof backdropStyles]
