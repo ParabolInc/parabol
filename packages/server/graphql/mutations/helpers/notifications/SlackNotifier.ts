@@ -376,10 +376,14 @@ export const SlackNotifier: Notifier = {
           }
         ]
       },
-      makeSection(`*Topic:*\n<${discussionUrl}|${topic}>`),
-      makeSection(`*Summary:*\n${reflectionGroup.summary}`),
-      makeSection(`*Reflections:* \n${reflectionsText}`)
+      makeSection(`*Topic:*\n<${discussionUrl}|${topic}>`)
     ]
+
+    if (reflectionGroup.summary) {
+      slackBlocks.push(makeSection(`*Summary:*\n${reflectionGroup.summary}`))
+    }
+
+    slackBlocks.push(makeSection(`*Reflections:* \n${reflectionsText}`))
 
     const notificationChannel = {
       id: '',
