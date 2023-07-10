@@ -1,5 +1,5 @@
 import Redis from 'ioredis'
-import sleep from '../../client/utils/sleep'
+import sleep from 'parabol-client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
 import {disconnectQuery} from '../socketHandlers/handleDisconnect'
