@@ -19,14 +19,20 @@ import getSummaryText from './getSummaryText'
 import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper, NotifyResponse} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
+import SlackAuth from '../../../../database/types/SlackAuth'
 
 type SlackNotification = {
   title: string
   blocks: string | Array<{type: string}>
 }
 
+type NotificationChannel = {
+  auth: SlackAuth
+  channelId: string | null
+}
+
 const notifySlack = async (
-  notificationChannel: SlackNotificationAuth,
+  notificationChannel: NotificationChannel,
   event: SlackNotificationEvent,
   teamId: string,
   slackMessage: string | Array<{type: string}>,
@@ -336,24 +342,22 @@ export const SlackNotifier: Notifier = {
       throw new Error('Slack auth not found')
     }
 
-    const {botAccessToken, slackUserId} = slackAuth
+    const {botAccessToken} = slackAuth
     const manager = new SlackServerManager(botAccessToken!)
-    const channelInfo = await manager.getConversationInfo(channelId)
 
-    if (channelId !== slackUserId) {
-      if (!channelInfo.ok) {
-        throw new Error(channelInfo.error)
-      }
-      const {channel} = channelInfo
-      const {id: channelId, is_member: isMember, is_archived: isArchived} = channel
-      if (isArchived) {
-        throw new Error('Slack channel archived')
-      }
-      if (!isMember) {
-        const joinConvoRes = await manager.joinConversation(channelId)
-        if (!joinConvoRes.ok) {
-          throw new Error('Unable to join slack channel')
-        }
+    const channelInfo = await manager.getConversationInfo(channelId)
+    if (!channelInfo.ok) {
+      throw new Error(channelInfo.error)
+    }
+    const {channel} = channelInfo
+    const {is_member: isMember, is_archived: isArchived} = channel
+    if (isArchived) {
+      throw new Error('Slack channel archived')
+    }
+    if (!isMember) {
+      const joinConvoRes = await manager.joinConversation(channelId)
+      if (!joinConvoRes.ok) {
+        throw new Error('Unable to join slack channel')
       }
     }
 
@@ -380,11 +384,7 @@ export const SlackNotifier: Notifier = {
     slackBlocks.push(makeSection(`*Reflections:* \n${reflectionsText}`))
 
     const notificationChannel = {
-      id: '',
       channelId,
-      userId,
-      teamId,
-      event: 'TOPIC_SHARED' as const,
       auth: slackAuth
     }
 
