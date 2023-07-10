@@ -34,7 +34,7 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
 
   const {reflectionGroupId} = stage as DiscussStage
 
-  SlackNotifier.shareTopic?.(
+  const res = await SlackNotifier.shareTopic?.(
     dataLoader,
     viewerId,
     teamId,
@@ -43,6 +43,13 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
     stageIndex,
     channelId
   )
+
+  if (typeof res === 'object' && 'error' in res) {
+    return standardError(
+      new Error('Error sharing topic. If the problem persists, please re-integrate'),
+      {userId: viewerId}
+    )
+  }
 
   const data = {meetingId}
   return data

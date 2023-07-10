@@ -1,4 +1,5 @@
 import {DataLoaderWorker} from '../../../graphql'
+import {NotifyResponse} from './NotificationIntegrationHelper'
 
 export type Notifier = {
   startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string): Promise<void>
@@ -19,5 +20,5 @@ export type Notifier = {
     reflectionGroupId: string,
     stageIndex: number,
     channelId: string
-  ): Promise<void>
+  ): Promise<NotifyResponse>
 }
