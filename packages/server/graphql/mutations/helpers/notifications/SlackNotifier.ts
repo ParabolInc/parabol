@@ -45,7 +45,6 @@ const notifySlack = async (
     }
   })
 
-  console.log('res', res)
   if ('error' in res) {
     const {error} = res
     if (error === 'channel_not_found') {
