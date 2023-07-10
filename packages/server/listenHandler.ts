@@ -9,7 +9,7 @@ const listenHandler = (listenSocket: us_listen_socket) => {
   if (listenSocket) {
     console.log(`\n🔥🔥🔥 Server ID: ${SERVER_ID}. Ready for Sockets: Port ${PORT} 🔥🔥🔥`)
     getGraphQLExecutor().subscribe()
-    // cleaning on startup is useful in case a server shutdown abruptly
+    // Cleaning on startup because shutdowns may be abrupt
     serverHealthChecker.cleanUserPresence()
   } else {
     console.log(`❌❌❌    Port ${PORT} is in use!    ❌❌❌`)
