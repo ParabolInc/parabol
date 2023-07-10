@@ -7,6 +7,7 @@ import {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedList
 import {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
 import TimelineEvent from './TimelineEvent'
 import TimelineHistoryLockedCard from './TimelineHistoryLockedCard'
+import {Link} from 'react-router-dom'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -99,6 +100,18 @@ const TimelineFeedList = (props: Props) => {
       lockedHistory: timeline.edges.slice(firstLocked)
     }
   }, [timeline.edges])
+
+  if (freeHistory === undefined || freeHistory.length === 0) {
+    return (
+      <div className='text-base'>
+        Looks like you have no events of this type.
+        <Link to={'/me'} className='font-sans font-semibold text-sky-500 no-underline'>
+          {' Click here'}
+        </Link>
+        {'  to see all of the events.'}
+      </div>
+    )
+  }
 
   return (
     <ResultScroller>
