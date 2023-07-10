@@ -65,31 +65,29 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
 
   // RESOLUTION
-  await Promise.all(
-    [
-      r({
-        updatedOrg: r
-          .table('Organization')
-          .get(orgId)
-          .update({
-            creditCard: await getCCFromCustomer(customer),
-            tier: 'team',
-            tierLimitExceededAt: null,
-            scheduledLockAt: null,
-            lockedAt: null,
-            updatedAt: now
-          })
-      }).run(),
-      updateTeamByOrgId(
-        {
-          isPaid: true,
-          tier: 'team'
-        },
-        orgId
-      )
-    ],
+  await Promise.all([
+    r({
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          creditCard: await getCCFromCustomer(customer),
+          tier: 'team',
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: now
+        })
+    }).run(),
+    updateTeamByOrgId(
+      {
+        isPaid: true,
+        tier: 'team'
+      },
+      orgId
+    ),
     removeTeamsLimitObjects(orgId, dataLoader)
-  )
+  ])
   organization.tier = 'team'
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
