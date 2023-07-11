@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ChangeEvent, FormEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
+import Checkbox from '../../../../components/Checkbox'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
@@ -109,6 +110,10 @@ const NewTeamForm = (props: Props) => {
         name
         teams {
           name
+          teamMembers {
+            email
+            isSelf
+          }
         }
       }
     `,
@@ -120,7 +125,14 @@ const NewTeamForm = (props: Props) => {
   const [invitees, setInvitees] = useState([] as string[])
   const [isSubmitted, setIsSubmitted] = useState(false)
   const lockedSelectedOrg = organizations.find((org) => org.id === orgId && org.lockedAt)
+  const [inviteAll, setInviteAll] = useState(false)
   const disableFields = !!lockedSelectedOrg && !isNewOrg
+  const selectedOrg = organizations.find((org) => org.id === orgId)
+  const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap(({teamMembers}) =>
+    teamMembers.filter(({isSelf}) => !isSelf).map(({email}) => email)
+  )
+  const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
+  const showInviteAll = !!(!isNewOrg && selectedOrg && uniqueEmailsFromSelectedOrg.length)
 
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
@@ -134,9 +146,8 @@ const NewTeamForm = (props: Props) => {
   const validateTeamName = (teamName: string) => {
     let teamNames: string[] = []
     if (!isNewOrg) {
-      const org = organizations.find((org) => org.id === orgId)
-      if (org) {
-        teamNames = org.teams.map((team) => team.name)
+      if (selectedOrg) {
+        teamNames = selectedOrg.teams.map((team) => team.name)
       }
     }
     return teamNameValidation(teamName, teamNames)
@@ -220,6 +231,37 @@ const NewTeamForm = (props: Props) => {
     setInvitees(uniqueInvitees)
   }
 
+  const handleToggleInviteAll = () => {
+    if (!inviteAll) {
+      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+      const currentInvitees = parsedInvitees
+        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+        : []
+      const emailsToAdd = uniqueEmailsFromSelectedOrg.filter(
+        (email) => !currentInvitees.includes(email)
+      )
+      const lastInvitee = currentInvitees[currentInvitees.length - 1]
+      const formattedCurrentInvitees =
+        currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
+          ? `${currentInvitees.join(', ')}, `
+          : currentInvitees.join(', ')
+      setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
+      setInvitees([...currentInvitees, ...emailsToAdd])
+    } else {
+      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+      const currentInvitees = parsedInvitees
+        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+        : []
+      const remainingInvitees = currentInvitees.filter(
+        (email) => !uniqueEmailsFromSelectedOrg.includes(email)
+      )
+      setRawInvitees(remainingInvitees.join(', '))
+      setInvitees(remainingInvitees)
+    }
+    onCompleted()
+    setInviteAll((inviteAll) => !inviteAll)
+  }
+
   return (
     <StyledForm onSubmit={onSubmit}>
       <Header>
@@ -280,6 +322,14 @@ const NewTeamForm = (props: Props) => {
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
+          {showInviteAll && (
+            <div className='flex cursor-pointer items-center pt-2' onClick={handleToggleInviteAll}>
+              <Checkbox active={inviteAll} />
+              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+                {`Invite team members from ${selectedOrg.name}`}
+              </label>
+            </div>
+          )}
           <StyledButton disabled={disableFields} size='large' waiting={submitting}>
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
           </StyledButton>
