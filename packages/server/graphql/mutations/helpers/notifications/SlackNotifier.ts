@@ -321,22 +321,19 @@ export const SlackNotifier: Notifier = {
     channelId: string
   ) {
     const r = await getRethink()
-    const [user, team, meeting, reflectionGroup, reflections, slackAuth] = await Promise.all([
-      dataLoader.get('users').load(userId),
-      dataLoader.get('teams').load(teamId),
+    const [team, meeting, reflectionGroup, reflections, slackAuth] = await Promise.all([
+      dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
       r.table('RetroReflection').getAll(reflectionGroupId, {index: 'reflectionGroupId'}).run(),
-      r.table('SlackAuth').getAll(userId, {index: 'userId'}).filter({teamId})(0).run()
+      r
+        .table('SlackAuth')
+        .getAll(userId, {index: 'userId'})
+        .filter({teamId})
+        .nth(0)
+        .default(null)
+        .run()
     ])
-
-    if (!user) {
-      throw new Error('User not found')
-    }
-
-    if (!team) {
-      throw new Error('Team not found')
-    }
 
     if (!slackAuth) {
       throw new Error('Slack auth not found')

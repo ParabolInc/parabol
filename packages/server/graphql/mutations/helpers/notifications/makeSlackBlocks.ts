@@ -12,22 +12,22 @@ const maybeTruncate = (text: string) => {
 }
 
 export const makeSection = (text: string) => {
-  text = maybeTruncate(text)
+  const maybeTruncatedText = maybeTruncate(text)
   return {
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text
+      text: maybeTruncatedText
     }
   }
 }
 
 export const makeSections = (fields: string[]) => {
   const truncatedFields = fields.map((field) => {
-    field = maybeTruncate(field)
+    const maybeTruncatedField = maybeTruncate(field)
     return {
       type: 'mrkdwn',
-      text: field
+      text: maybeTruncatedField
     }
   })
   return {
