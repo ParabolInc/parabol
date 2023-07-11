@@ -44,8 +44,22 @@ export default {
       if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
         return standardError(new Error('Team not found'), {userId: viewerId})
       }
-
-      const data = await inviteToTeamHelper(inviteesInput, teamId, context, meetingId)
+      const inviteToTeamHelperRes = await inviteToTeamHelper(
+        inviteesInput,
+        teamId,
+        meetingId,
+        context
+      )
+      if (inviteToTeamHelperRes.error) {
+        const error = new Error(inviteToTeamHelperRes.error.message)
+        return standardError(error, {userId: viewerId})
+      }
+      const {removedSuggestedActionId, invitees} = inviteToTeamHelperRes
+      const data = {
+        removedSuggestedActionId,
+        teamId,
+        invitees
+      }
       return data
     }
   )
