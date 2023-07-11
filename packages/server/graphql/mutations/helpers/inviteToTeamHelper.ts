@@ -57,8 +57,8 @@ const getInviteTrustScore = async (
 const inviteToTeamHelper = async (
   invitees: string[],
   teamId: string,
-  context: GQLContext,
-  meetingId?: string | null
+  meetingId: string | null | undefined,
+  context: GQLContext
 ) => {
   const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
@@ -223,7 +223,7 @@ const inviteToTeamHelper = async (
   return {
     removedSuggestedActionId,
     invitees: successfulInvitees,
-    notificationsToInsert
+    teamId
   }
 }
 

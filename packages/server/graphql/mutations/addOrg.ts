@@ -31,7 +31,7 @@ export default {
       description: 'The name of the new team'
     },
     invitees: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLEmailType))),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLEmailType)),
       description: 'The emails of the users to invite to the new org'
     }
   },
@@ -93,8 +93,8 @@ export default {
     }
     publish(SubscriptionChannel.ORGANIZATION, viewerId, 'AddOrgPayload', data, subOptions)
 
-    if (invitees.length) {
-      await inviteToTeamHelper(invitees, teamId, context)
+    if (invitees?.length) {
+      await inviteToTeamHelper(invitees, teamId, undefined, context)
     }
 
     return {
