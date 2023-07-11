@@ -4,6 +4,7 @@ import React, {ChangeEvent, FormEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
+import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Radio from '../../../../components/Radio/Radio'
@@ -18,6 +19,7 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Threshold} from '../../../../types/constEnums'
 import linkify from '../../../../utils/linkify'
+import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 import {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
@@ -114,6 +116,9 @@ const NewTeamForm = (props: Props) => {
   )
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
+  const [rawInvitees, setRawInvitees] = useState('')
+  const [invitees, setInvitees] = useState([] as string[])
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const lockedSelectedOrg = organizations.find((org) => org.id === orgId && org.lockedAt)
   const disableFields = !!lockedSelectedOrg && !isNewOrg
 
@@ -172,7 +177,7 @@ const NewTeamForm = (props: Props) => {
       const newTeam = {
         name: teamName
       }
-      const variables = {newTeam, orgName}
+      const variables = {newTeam, orgName, invitees}
       submitMutation()
       AddOrgMutation(atmosphere, variables, {history, onError, onCompleted})
     } else {
@@ -181,7 +186,7 @@ const NewTeamForm = (props: Props) => {
         orgId
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam}, {onError, onCompleted, history})
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, history})
     }
   }
 
@@ -192,6 +197,27 @@ const NewTeamForm = (props: Props) => {
       upgradeTier: 'team'
     })
     history.push(`/me/organizations/${orgId}`)
+  }
+
+  const onInvitesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (isSubmitted) setIsSubmitted(false)
+    const nextValue = e.target.value
+    if (rawInvitees === nextValue) return
+    const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
+    const allInvitees = parsedInvitees
+      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+      : []
+    const uniqueInvitees = Array.from(new Set(allInvitees))
+    if (invalidEmailExists) {
+      const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
+      lastValidEmail
+        ? onError(new Error(`Invalid email(s) after ${lastValidEmail}`))
+        : onError(new Error(`Invalid email(s)`))
+    } else {
+      onCompleted()
+    }
+    setRawInvitees(nextValue)
+    setInvitees(uniqueInvitees)
   }
 
   return (
@@ -230,6 +256,7 @@ const NewTeamForm = (props: Props) => {
             placeholder='My new organization'
           />
           <NewTeamFormTeamName
+            autoFocus
             error={fields.teamName.error}
             disabled={disableFields}
             onChange={onChange}
@@ -244,6 +271,15 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </WarningMsg>
           )}
+          <p className='mt-8 mb-3 text-xs leading-4'>
+            {'Invite others to your new team. Invites expire in 30 days.'}
+          </p>
+          <BasicTextArea
+            name='rawInvitees'
+            onChange={onInvitesChange}
+            placeholder='email@example.co, another@example.co'
+            value={rawInvitees}
+          />
           <StyledButton disabled={disableFields} size='large' waiting={submitting}>
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
           </StyledButton>
