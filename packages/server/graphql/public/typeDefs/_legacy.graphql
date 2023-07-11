@@ -6203,7 +6203,7 @@ type Mutation {
     The name of the new team
     """
     orgName: String!
-    invitees: [String]
+    invitees: [String!]
   ): AddOrgPayload!
 
   """
@@ -6214,7 +6214,7 @@ type Mutation {
     The new team object
     """
     newTeam: NewTeamInput!
-    invitees: [String]
+    invitees: [String!]
   ): AddTeamPayload!
   archiveOrganization(
     """
