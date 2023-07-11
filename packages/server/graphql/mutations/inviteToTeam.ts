@@ -54,13 +54,7 @@ export default {
         const error = new Error(inviteToTeamHelperRes.error.message)
         return standardError(error, {userId: viewerId})
       }
-      const {removedSuggestedActionId, invitees} = inviteToTeamHelperRes
-      const data = {
-        removedSuggestedActionId,
-        teamId,
-        invitees
-      }
-      return data
+      return inviteToTeamHelperRes
     }
   )
 }

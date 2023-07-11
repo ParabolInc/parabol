@@ -218,7 +218,7 @@ const inviteToTeamHelper = async (
   return {
     removedSuggestedActionId,
     invitees: successfulInvitees,
-    notificationsToInsert
+    teamId
   }
 }
 
