@@ -28,7 +28,7 @@ export default {
       description: 'The new team object'
     },
     invitees: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLEmailType))),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLEmailType)),
       description: 'The emails of the users to invite to the team'
     }
   },
@@ -119,7 +119,7 @@ export default {
       }
       publish(SubscriptionChannel.TEAM, viewerId, 'AddTeamPayload', data, subOptions)
 
-      if (invitees.length) {
+      if (invitees?.length) {
         await inviteToTeamHelper(invitees, teamId, context)
       }
 
