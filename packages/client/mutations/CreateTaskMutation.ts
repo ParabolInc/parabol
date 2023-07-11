@@ -180,7 +180,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecord(userId ? store.get(userId)! : null, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
         .setLinkedRecords([], 'replies')
-        .setLinkedRecord(null, 'integration')
       if (integration) {
         const {service, serviceProjectHash} = integration
         if (service === 'jira') {
@@ -240,7 +239,8 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       }
       const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
       handleEditTask(editorPayload, store)
-      handleUpsertTasks(task as any, store)
+      //TODO #7943 Optimistic updates on arrays has a bug in Relay. As a workaround until it's fixed properly, let's just not do optimistic updates
+      //handleUpsertTasks(task as any, store)
       handleJiraCreateIssue(task, store)
       handleGitHubCreateIssue(task as any, store)
       handleGitLabCreateIssue(task as any, store)

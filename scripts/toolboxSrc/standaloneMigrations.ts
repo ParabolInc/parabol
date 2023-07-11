@@ -2,14 +2,15 @@
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
 import path from 'path'
+import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import cliPgmConfig from '../../packages/server/postgres/pgmConfig'
 import '../webpack/utils/dotenv'
 import pgMigrate from './pgMigrateRunner'
 import * as rethinkMigrate from './rethinkMigrateRunner'
-import {r} from 'rethinkdb-ts'
 
 const migrateRethinkDB = async () => {
+  console.log('👴 RethinkDB Migraiton Started')
   const {hostname, port, path: urlPath} = parse(process.env.RETHINKDB_URL!)
   process.env.host = hostname!
   process.env.port = port!
@@ -30,9 +31,11 @@ const migrateRethinkDB = async () => {
   } catch (e) {
     console.error('Migration error', e)
   }
+  console.log('👴 RethinkDB Migraiton Complete')
 }
 
 const migratePG = async () => {
+  console.log('🐘 Postgres Migraiton Started')
   // pgm uses a dynamic require statement, which doesn't work with webpack
   // if we ignore that dynamic require, we'd still have to include the migrations directory AND any dependencies it might have
   // by processing through webpack's require.context, we let webpack handle everything
@@ -54,7 +57,8 @@ const migratePG = async () => {
     migrationsTable: cliPgmConfig['migrations-table'],
     migrations: collector
   }
-  return pgMigrate(programmaticPgmConfig as any)
+  await pgMigrate(programmaticPgmConfig as any)
+  console.log('🐘 Postgres Migraiton Complete')
 }
 
 const migrateDBs = async () => {
@@ -65,4 +69,7 @@ const migrateDBs = async () => {
   await r.getPoolMaster()?.drain()
 }
 
-migrateDBs()
+// If called via CLI
+if (require.main === module) migrateDBs()
+
+export default migrateDBs

@@ -3,9 +3,9 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React, {Suspense} from 'react'
 import AnchorIfEmail from './AnchorIfEmail'
 import makeAppURL from '../../../../../utils/makeAppURL'
-import useModal from '../../../../../hooks/useModal'
 import {renderLoader} from '../../../../../utils/relay/renderLoader'
 import ShareTopicModal from '../../../../../components/ShareTopicModal'
+import {useDialogState} from '../../../../../ui/Dialog/useDialogState'
 
 interface Props {
   isEmail: boolean
@@ -44,14 +44,13 @@ const ShareTopic = (props: Props) => {
     )
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const {isOpen, open, close} = useDialogState()
+
   const onClick = () => {
     if (isDemo) return
-    openPortal()
+    open()
   }
-
-  const {openPortal, closePortal, modalPortal} = useModal({
-    id: 'shareTopicModal'
-  })
 
   return (
     <>
@@ -59,7 +58,7 @@ const ShareTopic = (props: Props) => {
         {label}
       </span>
       <Suspense fallback={renderLoader()}>
-        {modalPortal(<ShareTopicModal closePortal={closePortal} stageId={stageId} />)}
+        <ShareTopicModal stageId={stageId} isOpen={isOpen} onClose={close} />
       </Suspense>
     </>
   )

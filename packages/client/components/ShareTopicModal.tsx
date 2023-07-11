@@ -1,41 +1,41 @@
 import React from 'react'
-import DialogContainer from './DialogContainer'
-import DialogContent from './DialogContent'
-import DialogTitle from './DialogTitle'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
+import {DialogDescription} from '../ui/Dialog/DialogDescription'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 
 interface Props {
-  closePortal: () => void
+  isOpen: boolean
+  onClose: () => void
   stageId: string
 }
 
-// TODO: Create generic dialog components using tailwind https://github.com/ParabolInc/parabol/issues/8107
 const ShareTopicModal = (props: Props) => {
-  const {closePortal} = props
+  const {isOpen, onClose} = props
 
   const onShare = () => {
     /* TODO */
   }
 
   return (
-    <DialogContainer>
-      <DialogTitle>{'Share topic'}</DialogTitle>
+    <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
-        <div className={'mb-4 text-base'}>Where would you like to share the topic to?</div>
+        <DialogTitle>Share topic</DialogTitle>
+        <DialogDescription>Where would you like to share the topic to?</DialogDescription>
 
-        <div className={'mt-6 flex w-full justify-end'}>
-          <div className={'mr-2'}>
-            <SecondaryButton onClick={closePortal} size='small'>
-              Cancel
-            </SecondaryButton>
-          </div>
+        <DialogActions>
+          <SecondaryButton onClick={onClose} size='small'>
+            Cancel
+          </SecondaryButton>
           <PrimaryButton size='small' onClick={onShare}>
             Share
           </PrimaryButton>
-        </div>
+        </DialogActions>
       </DialogContent>
-    </DialogContainer>
+    </Dialog>
   )
 }
 
