@@ -1,10 +1,10 @@
-const {readFileSync} = require('fs')
-const path = require('path')
+import {readFileSync} from 'fs'
+import path from 'path'
 
-const getRedisSSL = () => {
+export const getRedisSSL = () => {
   try {
     // optional env var, likely outside the app dir
-    const REDIS_SSL_DIR = process.env.REDIS_SSL_DIR
+    const REDIS_SSL_DIR = process.env.REDIS_SSL_DIR!
     const ca = readFileSync(path.join(REDIS_SSL_DIR, 'root.crt'), 'ascii')
     const key = readFileSync(path.join(REDIS_SSL_DIR, 'redis.key'), 'ascii')
     const cert = readFileSync(path.join(REDIS_SSL_DIR, 'redis.crt'), 'ascii')
@@ -18,5 +18,3 @@ const getRedisSSL = () => {
     return undefined
   }
 }
-
-module.exports = getRedisSSL

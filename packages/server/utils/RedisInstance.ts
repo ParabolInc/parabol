@@ -1,5 +1,5 @@
 import Redis from 'ioredis'
-import getRedisSSL from './getRedisSSL'
+import {getRedisSSL} from './getRedisSSL'
 export default class RedisInstance extends Redis {
   constructor(connectionName: string) {
     const {REDIS_URL, REDIS_PASSWORD} = process.env
