@@ -2,7 +2,7 @@ import generateUID from '../../../../generateUID'
 
 // Slack has the limit of 3000 chars per block
 const SLACK_MAX_BLOCK_CHAR_COUNT = 3000
-const truncationString = `[...]`
+const truncationString = `[…]`
 
 const maybeTruncate = (text: string) => {
   if (text.length > SLACK_MAX_BLOCK_CHAR_COUNT) {
