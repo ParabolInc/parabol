@@ -42,6 +42,7 @@ const ShareTopicModalViewerFragment = graphql`
               isActive
               botAccessToken
               slackUserId
+              slackTeamId
               defaultTeamChannelId
             }
           }
@@ -92,6 +93,7 @@ const ShareTopicModal = (props: Props) => {
   const topicTitle = stage?.reflectionGroup?.title ?? ''
 
   const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
+  console.log('slack', slack)
   const isSlackConnected = slack?.isActive
   const slackDefaultTeamChannelId = slack?.defaultTeamChannelId
   const slackChannels = useSlackChannels(slack)
@@ -147,7 +149,16 @@ const ShareTopicModal = (props: Props) => {
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: `topicShared`,
             autoDismiss: 5,
-            message: `"${topicTitle}" has been shared to ${channel?.name}`
+            message: `"${topicTitle}" has been shared to ${channel?.name}`,
+            action: {
+              label: `View message`,
+              callback: () => {
+                const url = `https://app.slack.com/client/${
+                  slack?.slackTeamId ?? ''
+                }/${selectedChannel}`
+                window.open(url, '_blank', 'noopener')?.focus()
+              }
+            }
           })
           onClose()
         }
