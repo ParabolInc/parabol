@@ -39,11 +39,6 @@ const useShareTopicMutation = () => {
       onCompleted: (res) => {
         const error = res.shareTopic.error
         if (!error) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: `topicShared`,
-            autoDismiss: 5,
-            message: `Topic is shared successfully`
-          })
           handlers?.onSuccess && handlers.onSuccess()
         } else {
           atmosphere.eventEmitter.emit('addSnackbar', {

@@ -21,6 +21,7 @@ import SlackClientManager from '../utils/SlackClientManager'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useSlackChannels from '../hooks/useSlackChannels'
+import findStageById from '../utils/meetings/findStageById'
 
 interface Props {
   isOpen: boolean
@@ -42,6 +43,17 @@ const ShareTopicModalViewerFragment = graphql`
               botAccessToken
               slackUserId
               defaultTeamChannelId
+            }
+          }
+        }
+      }
+      phases {
+        phaseType
+        stages {
+          id
+          ... on RetroDiscussStage {
+            reflectionGroup {
+              title
             }
           }
         }
@@ -75,6 +87,9 @@ const ShareTopicModal = (props: Props) => {
   const data = usePreloadedQuery<ShareTopicModalQuery>(query, queryRef)
   const viewer = useFragment<ShareTopicModal_viewer$key>(ShareTopicModalViewerFragment, data.viewer)
   const {meeting} = viewer
+
+  const stage = findStageById(meeting?.phases, stageId)?.stage
+  const topicTitle = stage?.reflectionGroup?.title ?? ''
 
   const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
   const isSlackConnected = slack?.isActive
@@ -127,7 +142,15 @@ const ShareTopicModal = (props: Props) => {
         }
       },
       {
-        onSuccess: onClose
+        onSuccess: () => {
+          const channel = slackChannels.find((channel) => channel.id === selectedChannel)
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: `topicShared`,
+            autoDismiss: 5,
+            message: `"${topicTitle}" has been shared to ${channel?.name}`
+          })
+          onClose()
+        }
       }
     )
   }
@@ -151,7 +174,9 @@ const ShareTopicModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
         <DialogTitle>Share topic</DialogTitle>
-        <DialogDescription>Where would you like to share the topic?</DialogDescription>
+        <DialogDescription>
+          Where would you like to share the topic "{topicTitle}"?
+        </DialogDescription>
 
         <fieldset className={fieldsetStyles}>
           <label className={labelStyles}>Integration</label>

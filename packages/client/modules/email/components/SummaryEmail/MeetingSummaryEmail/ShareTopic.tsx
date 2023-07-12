@@ -55,7 +55,7 @@ const ShareTopic = (props: Props) => {
   const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
     shareTopicModalQuery,
     {meetingId},
-    'network-only'
+    'store-or-network'
   )
 
   const onClick = () => {
