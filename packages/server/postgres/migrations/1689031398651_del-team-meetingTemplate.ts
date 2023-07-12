@@ -23,6 +23,7 @@ export async function up() {
   } catch {
     // noop
   }
+  await r.getPoolMaster()?.drain()
 }
 
 export async function down() {
