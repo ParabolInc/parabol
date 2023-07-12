@@ -2,7 +2,7 @@ require('./webpack/utils/dotenv')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
 const path = require('path')
-const RedisInstance = require('../packages/server/utils/RedisInstance')
+const Redis = require('ioredis')
 
 const migrateRethinkDB = async () => {
   return require('./migrate')()
@@ -19,7 +19,8 @@ const migratePG = async () => {
 }
 
 const clearRedis = async () => {
-  const redis = new RedisInstance('devRedis')
+  // note: does not use RedisInstance, which is a .ts, so no support for TLS in dev
+  const redis = new Redis(process.env.REDIS_URL, {connectionName: 'devRedis'})
   await redis.flushall()
   redis.disconnect()
 }
