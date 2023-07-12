@@ -32,7 +32,7 @@ const TeamHealthStage: TeamHealthStageResolvers = {
   viewerVote: async ({labels, votes}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)
     const vote = votes.find(({userId}) => userId === viewerId)?.vote
-    return (vote && labels[vote]) || null
+    return (vote !== undefined && labels[vote]) || null
   },
   votes: ({labels, votes, isRevealed}) => {
     if (!isRevealed) return null
