@@ -106,9 +106,9 @@ const TimelineFeedList = (props: Props) => {
       <div className='text-base'>
         Looks like you have no events of this type.
         <Link to={'/me'} className='font-sans font-semibold text-sky-500 no-underline'>
-          {' Click here'}
+          {' '}
+          Show all events.
         </Link>
-        {'  to see all of the events.'}
       </div>
     )
   }
