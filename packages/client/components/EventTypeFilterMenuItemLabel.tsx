@@ -3,9 +3,10 @@ import {timelineEventTypeMenuIcons, timelineEventTypeMenuLabels} from '../utils/
 import TimelineEventTypeIcon from './TimelineEventTypeIcon'
 import MenuItemLabel from './MenuItemLabel'
 import {FilterLabels} from '../types/constEnums'
+import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 
 interface Props {
-  eventType?: string
+  eventType?: TimelineEventEnum
 }
 
 const EventTypeFilterMenuItemLabel = (props: Props) => {

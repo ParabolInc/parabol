@@ -8,6 +8,7 @@
 import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
 import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
+import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
@@ -194,7 +195,7 @@ export const reasonsToDowngradeLookup: Record<
   'Moving to another tool (please specify)': 'anotherTool'
 }
 
-export const timelineEventTypeMenuLabels: Record<string, string> = {
+export const timelineEventTypeMenuLabels: Record<TimelineEventEnum, string> = {
   retroComplete: 'Retrospective',
   actionComplete: 'Team Check-in',
   joinedParabol: 'Joined Parabol',
@@ -203,7 +204,7 @@ export const timelineEventTypeMenuLabels: Record<string, string> = {
   TEAM_PROMPT_COMPLETE: 'Standup'
 }
 
-export const timelineEventTypeMenuIcons: Record<string, string> = {
+export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string> = {
   retroComplete: 'history',
   actionComplete: 'change_history',
   joinedParabol: 'account_circle',
