@@ -232,19 +232,6 @@ export interface PollOption {
   title: string | null
 }
 
-export interface RetroReflectionGroup {
-  id: string
-  createdAt: Generated<Timestamp>
-  updatedAt: Generated<Timestamp>
-  isActive: Generated<boolean>
-  meetingId: string
-  promptId: string
-  sortOrder: Generated<number>
-  voterIds: Generated<string[]>
-  smartTitle: string | null
-  title: string | null
-}
-
 export interface TaskEstimate {
   id: Generated<number>
   createdAt: Generated<Timestamp>
@@ -363,7 +350,6 @@ export interface DB {
   OrganizationUserAudit: OrganizationUserAudit
   Poll: Poll
   PollOption: PollOption
-  RetroReflectionGroup: RetroReflectionGroup
   TaskEstimate: TaskEstimate
   Team: Team
   TeamMemberIntegrationAuth: TeamMemberIntegrationAuth
