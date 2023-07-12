@@ -167,7 +167,7 @@ jobs:
     docker:
       - image: cimg/node:18.16.0
       - image: rethinkdb:2.4.0
-      - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
+      - image: cimg/postgres:12.15
         environment:
           # These env values need to be synced up with the `test` environment file
           POSTGRES_PASSWORD: "p9_p455w02d_f02_73575"
