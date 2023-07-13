@@ -20,7 +20,7 @@ const PreResults = () => (
     </HelpMenuCopy>
     <HelpMenuCopy>
       "Hi everyone! Let’s take a moment to share feedback about how we’re all feeling. The results
-      will be anonymized when we reveal them”.
+      will be anonymized when we reveal them.”
     </HelpMenuCopy>
   </>
 )
@@ -48,7 +48,7 @@ const MostlyNeutral = () => (
     <HelpMenuCopy>
       "Thank you for sharing your feedback. It seems like we have a mix of neutral responses, and
       that's okay. Let's use this opportunity to dive deeper and explore the reasons for that during
-      our meeting”
+      our meeting.”
     </HelpMenuCopy>
   </>
 )
@@ -61,7 +61,7 @@ const MostlyNegative = () => (
     </HelpMenuCopy>
     <HelpMenuCopy>
       "I appreciate everyone's honesty, even when it's not all positive. Let’s discuss these
-      feelings during our meeting”
+      feelings during our meeting.”
     </HelpMenuCopy>
   </>
 )
