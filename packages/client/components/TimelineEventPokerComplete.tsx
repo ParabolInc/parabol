@@ -10,6 +10,7 @@ import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
+import CardsSVG from './CardsSVG'
 
 interface Props {
   timelineEvent: TimelineEventPokerComplete_timelineEvent$key
@@ -77,7 +78,8 @@ const TimelineEventPokerComplete = (props: Props) => {
 
   return (
     <TimelineEventCard
-      iconName={locked && canUpgrade ? 'lock' : 'style'}
+      IconSVG={locked && canUpgrade ? undefined : <CardsSVG />}
+      iconName={locked && canUpgrade ? 'lock' : undefined}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >

@@ -12,6 +12,7 @@ interface Props {
   children: ReactNode
   //FIXME 6062: change to React.ComponentType
   iconName?: string
+  IconSVG?: ReactNode
   title: ReactNode
   timelineEvent: TimelineEventCard_timelineEvent$key
 }
@@ -50,7 +51,7 @@ const HeaderText = styled('div')({
 })
 
 const TimelineEventCard = (props: Props) => {
-  const {children, iconName, title, timelineEvent: timelineEventRef} = props
+  const {children, iconName, IconSVG, title, timelineEvent: timelineEventRef} = props
   const timelineEvent = useFragment(
     graphql`
       fragment TimelineEventCard_timelineEvent on TimelineEvent {
@@ -67,6 +68,7 @@ const TimelineEventCard = (props: Props) => {
       <CardHeader>
         <CardTitleBlock>
           <TimelineEventTypeIcon iconName={iconName} />
+          {IconSVG}
           <HeaderText>
             {title}
             <TimelineEventDate createdAt={createdAt} />

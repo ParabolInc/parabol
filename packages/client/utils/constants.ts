@@ -204,12 +204,12 @@ export const timelineEventTypeMenuLabels: Record<TimelineEventEnum, string> = {
   TEAM_PROMPT_COMPLETE: 'Standup'
 }
 
-export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string> = {
+export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string | undefined> = {
   retroComplete: 'history',
   actionComplete: 'change_history',
   joinedParabol: 'account_circle',
   createdTeam: 'group_add',
-  POKER_COMPLETE: 'style',
+  POKER_COMPLETE: undefined,
   TEAM_PROMPT_COMPLETE: 'group_work'
 }
 

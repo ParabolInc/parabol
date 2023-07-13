@@ -4,6 +4,7 @@ import TimelineEventTypeIcon from './TimelineEventTypeIcon'
 import MenuItemLabel from './MenuItemLabel'
 import {FilterLabels} from '../types/constEnums'
 import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
+import CardsSVG from './CardsSVG'
 
 interface Props {
   eventType?: TimelineEventEnum
@@ -19,6 +20,7 @@ const EventTypeFilterMenuItemLabel = (props: Props) => {
     <>
       <span className='py-1 pl-4'>
         <TimelineEventTypeIcon iconName={eventTypeIconName} />
+        {!eventTypeIconName && <CardsSVG />}
       </span>
       <MenuItemLabel>{eventTypeLabel}</MenuItemLabel>
     </>
