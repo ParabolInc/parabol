@@ -22,7 +22,6 @@ import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useSlackChannels from '../hooks/useSlackChannels'
 import findStageById from '../utils/meetings/findStageById'
-import {renderLoader} from '../utils/relay/renderLoader'
 
 interface Props {
   isOpen: boolean
@@ -236,8 +235,7 @@ const ShareTopicModal = (props: Props) => {
             value={selectedChannel}
             disabled={isLoading || channelsLoading || selectedIntegration === ''}
           >
-            <SelectTrigger>
-              {channelsLoading && renderLoader()}
+            <SelectTrigger isLoading={channelsLoading}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent position='item-aligned'>
