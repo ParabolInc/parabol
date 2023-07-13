@@ -93,7 +93,6 @@ const ShareTopicModal = (props: Props) => {
   const topicTitle = stage?.reflectionGroup?.title ?? ''
 
   const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
-  console.log('slack', slack)
   const isSlackConnected = slack?.isActive
   const slackDefaultTeamChannelId = slack?.defaultTeamChannelId
   const slackChannels = useSlackChannels(slack)
