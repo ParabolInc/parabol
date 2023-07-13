@@ -35,6 +35,7 @@ const OrgPage = (props: Props) => {
         ...OrgNav_organization
         ...OrgPlansAndBillingRoot_organization
         ...OrgDetails_organization
+        ...OrgTeams_organization
       }
     `,
     organizationRef
@@ -56,7 +57,11 @@ const OrgPage = (props: Props) => {
           path={`${match.url}/${BILLING_PAGE}`}
           render={() => <OrgPlansAndBillingRoot organizationRef={organization} />}
         />
-        <Route exact path={`${match.url}/${TEAMS_PAGE}`} render={() => <OrgTeams />} />
+        <Route
+          exact
+          path={`${match.url}/${TEAMS_PAGE}`}
+          render={() => <OrgTeams organizationRef={organization} />}
+        />
         <Route
           exact
           path={`${match.url}/${MEMBERS_PAGE}`}

@@ -30,9 +30,6 @@ module.exports = {
       borderRadius: {
         card: '4px'
       },
-      borderWidth: {
-        0.5: '0.5px'
-      },
       screens: {
         // => @media (min-width: 512px) { ... }
         invoice: '512px',
