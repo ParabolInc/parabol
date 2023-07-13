@@ -22,6 +22,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useSlackChannels from '../hooks/useSlackChannels'
 import findStageById from '../utils/meetings/findStageById'
+import {renderLoader} from '../utils/relay/renderLoader'
 
 interface Props {
   isOpen: boolean
@@ -83,8 +84,6 @@ const ShareTopicModal = (props: Props) => {
     onError,
     onCompleted
   } = useMutationProps()
-  const submitting = slackOAuthSubmitting || shareTopicSubmitting
-
   const data = usePreloadedQuery<ShareTopicModalQuery>(query, queryRef)
   const viewer = useFragment<ShareTopicModal_viewer$key>(ShareTopicModalViewerFragment, data.viewer)
   const {meeting} = viewer
@@ -96,6 +95,8 @@ const ShareTopicModal = (props: Props) => {
   const isSlackConnected = slack?.isActive
   const slackDefaultTeamChannelId = slack?.defaultTeamChannelId
   const slackChannels = useSlackChannels(slack)
+  const channelsLoading = slackChannels.length === 0 && isSlackConnected
+  const isLoading = slackOAuthSubmitting || shareTopicSubmitting
 
   const defaultSelectedIntegration = isSlackConnected ? 'slack' : ''
   const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>(
@@ -193,7 +194,7 @@ const ShareTopicModal = (props: Props) => {
           <Select
             onValueChange={onIntegrationChange}
             value={selectedIntegration}
-            disabled={submitting}
+            disabled={isLoading}
           >
             <SelectTrigger>
               {selectedIntegration !== '' ? (
@@ -233,9 +234,10 @@ const ShareTopicModal = (props: Props) => {
           <Select
             onValueChange={onChannelChange}
             value={selectedChannel}
-            disabled={submitting || selectedIntegration === ''}
+            disabled={isLoading || channelsLoading || selectedIntegration === ''}
           >
             <SelectTrigger>
+              {channelsLoading && renderLoader()}
               <SelectValue />
             </SelectTrigger>
             <SelectContent position='item-aligned'>
@@ -254,7 +256,7 @@ const ShareTopicModal = (props: Props) => {
           <SecondaryButton onClick={onClose} size='small'>
             Cancel
           </SecondaryButton>
-          <PrimaryButton size='small' onClick={onShare} disabled={submitting}>
+          <PrimaryButton size='small' onClick={onShare} disabled={isLoading || channelsLoading}>
             Share
           </PrimaryButton>
         </DialogActions>
