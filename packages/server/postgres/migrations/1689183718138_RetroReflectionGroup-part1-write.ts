@@ -15,7 +15,8 @@ export async function up() {
     "sortOrder" INT NOT NULL DEFAULT 0,
     "voterIds" VARCHAR(100)[] NOT NULL DEFAULT '{}',
     "smartTitle" VARCHAR(255),
-    "title" VARCHAR(255)
+    "title" VARCHAR(255),
+    "summary" VARCHAR(2000)
   );
   CREATE INDEX IF NOT EXISTS "idx_RetroReflectionGroup_meetingId" ON "RetroReflectionGroup"("meetingId");
   CREATE INDEX IF NOT EXISTS "idx_RetroReflectionGroup_promptId" ON "RetroReflectionGroup"("promptId");
