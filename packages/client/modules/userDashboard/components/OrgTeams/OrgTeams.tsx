@@ -6,13 +6,14 @@ import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
 import {useFragment} from 'react-relay'
 import OrgTeamsRow from './OrgTeamsRow'
+import {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_organization.graphql'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
 })
 
 type Props = {
-  organizationRef: any // OrgPage_organization$key
+  organizationRef: OrgTeams_organization$key
 }
 
 const OrgTeams = (props: Props) => {
@@ -22,6 +23,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         teams {
+          id
           ...OrgTeamsRow_team
         }
       }

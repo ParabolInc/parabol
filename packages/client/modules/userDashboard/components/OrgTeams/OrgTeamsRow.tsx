@@ -4,9 +4,10 @@ import graphql from 'babel-plugin-relay/macro'
 import Row from '../../../../components/Row/Row'
 import {useFragment} from 'react-relay'
 import plural from '../../../../utils/plural'
+import {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
 
 type Props = {
-  teamRef: any // OrgPage_team$key
+  teamRef: OrgTeamsRow_team$key
 }
 
 const OrgTeamsRow = (props: Props) => {
@@ -28,7 +29,7 @@ const OrgTeamsRow = (props: Props) => {
   )
   const {id: teamId, teamMembers, name} = team
   const teamMembersCount = teamMembers.length
-  const teamLeadEmail = teamMembers.find((member) => member.isLead).email
+  const teamLeadEmail = teamMembers.find((member) => member.isLead)?.email ?? ''
   const isViewerTeamLead = teamMembers.some((member) => member.isSelf && member.isLead)
   return (
     <Row>
