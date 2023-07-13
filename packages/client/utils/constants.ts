@@ -204,12 +204,14 @@ export const timelineEventTypeMenuLabels: Record<TimelineEventEnum, string> = {
   TEAM_PROMPT_COMPLETE: 'Standup'
 }
 
+export const CUSTOMIZED_SVG = 'Customized SVG'
+
 export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string | undefined> = {
   retroComplete: 'history',
   actionComplete: 'change_history',
   joinedParabol: 'account_circle',
   createdTeam: 'group_add',
-  POKER_COMPLETE: undefined,
+  POKER_COMPLETE: CUSTOMIZED_SVG,
   TEAM_PROMPT_COMPLETE: 'group_work'
 }
 

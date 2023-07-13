@@ -1,5 +1,9 @@
 import React from 'react'
-import {timelineEventTypeMenuIcons, timelineEventTypeMenuLabels} from '../utils/constants'
+import {
+  CUSTOMIZED_SVG,
+  timelineEventTypeMenuIcons,
+  timelineEventTypeMenuLabels
+} from '../utils/constants'
 import TimelineEventTypeIcon from './TimelineEventTypeIcon'
 import MenuItemLabel from './MenuItemLabel'
 import {FilterLabels} from '../types/constEnums'
@@ -19,8 +23,12 @@ const EventTypeFilterMenuItemLabel = (props: Props) => {
   return (
     <>
       <span className='py-1 pl-4'>
-        <TimelineEventTypeIcon iconName={eventTypeIconName} />
-        {!eventTypeIconName && <CardsSVG />}
+        {/* Update here if there are more customized SVGs than CardsSVG to display */}
+        {eventTypeIconName === CUSTOMIZED_SVG ? (
+          <CardsSVG />
+        ) : (
+          <TimelineEventTypeIcon iconName={eventTypeIconName} />
+        )}
       </span>
       <MenuItemLabel>{eventTypeLabel}</MenuItemLabel>
     </>
