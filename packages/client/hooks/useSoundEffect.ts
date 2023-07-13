@@ -2,6 +2,12 @@ import {useEffect, useRef} from 'react'
 
 type Props = {startTime: Date | string} | {endTime: Date | string}
 
+const safeDuration = (audio: HTMLAudioElement | null) => {
+  const duration = audio?.duration
+  if (duration && isFinite(duration)) return duration
+  return 0
+}
+
 const useSoundEffect = (props: Props) => {
   // avoid playing when navigating to a page when the timer is already up.
   const hasPlayed = useRef(false)
@@ -10,7 +16,7 @@ const useSoundEffect = (props: Props) => {
   const end =
     'startTime' in props
       ? new Date(props.startTime).valueOf()
-      : new Date(props.endTime).valueOf() - (soundRef.current?.duration ?? 0) * 1000
+      : new Date(props.endTime).valueOf() - safeDuration(soundRef.current) * 1000
   const now = new Date().valueOf()
   const isTimeUp = end <= now
 
