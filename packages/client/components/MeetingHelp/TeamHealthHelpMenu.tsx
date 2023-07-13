@@ -12,7 +12,7 @@ interface Props {
   stageRef: TeamHealthHelpMenu_stage$key
 }
 
-const PreResults = () => (
+const Intro = () => (
   <>
     <HelpMenuCopy>
       Start by encouraging your team members to vote if they haven't already. Not sure what to say?
@@ -31,7 +31,7 @@ const AllGood = () => (
       Begin by expressing your gratitude for the positive feedback. You can say something like:
     </HelpMenuCopy>
     <HelpMenuCopy>
-      "Great job, everyone! It's wonderful to see such a positive response from all of you."
+      "Splendid! It's wonderful to see such a positive response from all of you."
     </HelpMenuCopy>
     <HelpMenuCopy>
       Continue the conversation by asking what everyone’s recent highlight was or why they voted
@@ -98,7 +98,7 @@ const TeamHealthHelpMenu = forwardRef((props: Props, ref: any) => {
   const {isRevealed, votes} = stage
 
   const Tip = (() => {
-    if (!isRevealed || !votes) return PreResults
+    if (!isRevealed || !votes) return Intro
 
     // for now we consider only 3 answers: good, neutral, bad
     if (votes.length !== 3) return null
