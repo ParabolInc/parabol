@@ -1,7 +1,7 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
-import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
+import {parseQueryParams} from '~/utils/useQueryParameterParser'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
@@ -38,7 +38,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   }
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
-  const {userIds, teamIds} = parseUserTaskFilterQueryParams(viewerId, window.location)
+  const {userIds, teamIds} = parseQueryParams(viewerId, window.location)
   const archiveConns = [
     /* archived task conn in user dash*/ getArchivedTasksConn(viewer, userIds, teamIds),
     /* archived task conn in team dash*/ getArchivedTasksConn(viewer, null, [teamId])

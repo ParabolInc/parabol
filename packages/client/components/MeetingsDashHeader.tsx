@@ -3,13 +3,13 @@ import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {UserTaskViewFilterLabels} from '../types/constEnums'
+import {FilterLabels} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
 import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
-import {useUserTaskFilters} from '../utils/useUserTaskFilters'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 const TeamFilterMenu = lazyPreload(
@@ -51,13 +51,13 @@ const MeetingsDashHeader = (props: Props) => {
     isDropdown: true
   })
   const teams = viewer?.teams ?? []
-  const {teamIds} = useUserTaskFilters(viewerId)
+  const {teamIds} = useQueryParameterParser(viewerId)
   const teamFilter = useMemo(
     () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),
     [teamIds, teams]
   )
 
-  const teamFilterName = (teamFilter && teamFilter.name) || UserTaskViewFilterLabels.ALL_TEAMS
+  const teamFilterName = (teamFilter && teamFilter.name) || FilterLabels.ALL_TEAMS
 
   return (
     <DashSectionHeader>

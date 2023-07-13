@@ -140,7 +140,7 @@ const DashSidebar = (props: Props) => {
         <Contents>
           <NavItemsWrap>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            <NavItem icon={'history'} href={'/me'} label={'History'} />
+            <NavItem icon={'timeline'} href={'/me'} label={'History'} />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </NavItemsWrap>
           <DashHR />
