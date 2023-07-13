@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useRef} from 'react'
-import sound from '../../../static/sounds/tic-tac.mp3'
+import React from 'react'
+import endTimerSound from '../../../static/sounds/tic-tac.mp3'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRefreshInterval from '../hooks/useRefreshInterval'
+import useSoundEffect from '../hooks/useSoundEffect'
 import {DECELERATE, fadeIn} from '../styles/animation'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
@@ -31,38 +32,24 @@ const Gauge = styled('div')<{isTimeUp: boolean; isDesktop: boolean}>(({isTimeUp,
   userSelect: 'none'
 }))
 
-const useSoundEffect = (isTimeUp: boolean) => {
-  // avoids playing when navigating to
-  // a page when the timer is already up.
-  const hasPlayed = useRef(false)
-
-  useEffect(() => {
-    hasPlayed.current = isTimeUp
-  }, [])
-
-  useEffect(() => {
-    if (isTimeUp && !hasPlayed.current) {
-      new Audio(sound).play()
-      hasPlayed.current = true
-    }
-    if (!isTimeUp) {
-      hasPlayed.current = false
-    }
-  }, [isTimeUp])
-}
-
 const StageTimerDisplayGauge = (props: Props) => {
   const {endTime} = props
   useRefreshInterval(1000)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const timeLeft = endTime && countdown(endTime)
-  useSoundEffect(!timeLeft)
+
+  const soundRef = useSoundEffect({endTime})
 
   const fromNow = timeLeft || 'Time’s Up!'
   return (
-    <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
-      {fromNow}
-    </Gauge>
+    <>
+      <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
+        {fromNow}
+      </Gauge>
+      <audio ref={soundRef} aria-hidden className='hidden' autoPlay={false}>
+        <source src={endTimerSound} type='audio/mp3' />
+      </audio>
+    </>
   )
 }
 
