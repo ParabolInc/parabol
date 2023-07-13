@@ -2,9 +2,15 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
 import {useFragment} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
-import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE} from '../../../../utils/constants'
+import {
+  BILLING_PAGE,
+  MEMBERS_PAGE,
+  ORG_SETTINGS_PAGE,
+  TEAMS_PAGE
+} from '../../../../utils/constants'
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
+import OrgTeams from '../OrgTeams/OrgTeams'
 
 const OrgPlansAndBillingRoot = lazy(
   () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBillingRoot')
@@ -50,6 +56,7 @@ const OrgPage = (props: Props) => {
           path={`${match.url}/${BILLING_PAGE}`}
           render={() => <OrgPlansAndBillingRoot organizationRef={organization} />}
         />
+        <Route exact path={`${match.url}/${TEAMS_PAGE}`} render={() => <OrgTeams />} />
         <Route
           exact
           path={`${match.url}/${MEMBERS_PAGE}`}
