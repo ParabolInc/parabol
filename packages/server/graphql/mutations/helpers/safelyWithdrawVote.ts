@@ -18,7 +18,7 @@ const safelyWithdrawVote = async (
   const pg = getKysely()
   const now = new Date()
   const viewerId = getUserId(authToken)
-  const [isVoteRemovedFromGroup, isVoteRemovedFromGroupPG] = await Promise.all([
+  const [isVoteRemovedFromGroup, voteRemovedResult] = await Promise.all([
     r
       .table('RetroReflectionGroup')
       .get(reflectionGroupId)
@@ -37,16 +37,18 @@ const safelyWithdrawVote = async (
     pg
       .updateTable('RetroReflectionGroup')
       .set({
-        voterIds: sql`ARRAY_CAT("voterIds"[1:ARRAY_POS("voterIds",${userId})-1)],"voterIds"[ARRAY_POS("voterIds",${userId})+1:]`
+        voterIds: sql`array_cat(
+          "voterIds"[1:array_position("voterIds",'google-oauth2|ohlApAJnXy')-1],
+          "voterIds"[array_position("voterIds",'google-oauth2|ohlApAJnXy')+1:]
+        )`
       })
       .where('id', '=', reflectionGroupId)
-      .where(sql`ANY("voterIds"`, '=', userId)
+      .where(sql`${userId}`, '=', sql`ANY("voterIds")`)
       .executeTakeFirst()
   ])
-  console.log({
-    isVoteRemovedFromGroup,
-    isVoteRemovedFromGroupPG: isVoteRemovedFromGroupPG.numUpdatedRows
-  })
+  const isVoteRemovedFromGroupPG = voteRemovedResult.numUpdatedRows === BigInt(1)
+  if (isVoteRemovedFromGroup !== isVoteRemovedFromGroupPG)
+    console.log('MISMATCH VOTE REMOVED LOGIC')
   if (!isVoteRemovedFromGroup) {
     return standardError(new Error('Already removed vote'), {userId: viewerId})
   }

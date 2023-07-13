@@ -38,7 +38,8 @@ const safelyCastVote = async (
   if (!isVoteRemovedFromUser) {
     return standardError(new Error('No votes remaining'), {userId: viewerId})
   }
-  const [isVoteAddedToGroup, isVoteAddedToGroupPG] = await Promise.all([
+
+  const [isVoteAddedToGroup, voteAddedResult] = await Promise.all([
     r
       .table('RetroReflectionGroup')
       .get(reflectionGroupId)
@@ -58,11 +59,15 @@ const safelyCastVote = async (
       .updateTable('RetroReflectionGroup')
       .set({voterIds: sql`ARRAY_APPEND("voterIds",${userId})`})
       .where('id', '=', reflectionGroupId)
-      .where(sql`array_length(array_positions('voterIds', ${userId}),1)`, '<', maxVotesPerGroup)
+      .where(
+        sql`COALESCE(array_length(array_positions("voterIds", ${userId}),1),0)`,
+        '<',
+        maxVotesPerGroup
+      )
       .executeTakeFirst()
   ])
-  console.log({isVoteAddedToGroup, isVoteAddedToGroupPG: isVoteAddedToGroupPG.numUpdatedRows})
-
+  const isVoteAddedToGroupPG = voteAddedResult.numUpdatedRows === BigInt(1)
+  if (isVoteAddedToGroupPG !== isVoteAddedToGroup) console.log('MISMATCH VOTE ADDED LOGIC')
   if (!isVoteAddedToGroup) {
     await r
       .table('MeetingMember')
