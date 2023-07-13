@@ -22,11 +22,16 @@ module.exports = {
         'icon-md-48': '48px'
       },
       boxShadow: {
-        'card-1': '0px 6px 10px rgba(68, 66, 88, 0.14), 0px 1px 18px rgba(68, 66, 88, 0.12), 0px 3px 5px rgba(68, 66, 88, 0.2)',
-        'dialog': '0px 11px 15px -7px rgba(0,0,0,.2), 0px 24px 38px 3px rgba(0,0,0,.14), 0px 9px 46px 8px rgba(0,0,0,.12)'
+        'card-1':
+          '0px 6px 10px rgba(68, 66, 88, 0.14), 0px 1px 18px rgba(68, 66, 88, 0.12), 0px 3px 5px rgba(68, 66, 88, 0.2)',
+        dialog:
+          '0px 11px 15px -7px rgba(0,0,0,.2), 0px 24px 38px 3px rgba(0,0,0,.14), 0px 9px 46px 8px rgba(0,0,0,.12)'
       },
       borderRadius: {
         card: '4px'
+      },
+      borderWidth: {
+        0.5: '0.5px'
       },
       screens: {
         // => @media (min-width: 512px) { ... }
