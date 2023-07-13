@@ -40,7 +40,7 @@ const safelyWithdrawVote = async (
         voterIds: sql`ARRAY_CAT("voterIds"[1:ARRAY_POS("voterIds",${userId})-1)],"voterIds"[ARRAY_POS("voterIds",${userId})+1:]`
       })
       .where('id', '=', reflectionGroupId)
-      .where()
+      .where(sql`ANY("voterIds"`, '=', userId)
       .executeTakeFirst()
   ])
   console.log({

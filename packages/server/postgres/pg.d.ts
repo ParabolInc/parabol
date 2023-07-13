@@ -243,6 +243,7 @@ export interface RetroReflectionGroup {
   voterIds: Generated<string[]>
   smartTitle: string | null
   title: string | null
+  summary: string | null
 }
 
 export interface TaskEstimate {

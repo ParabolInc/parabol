@@ -3,6 +3,7 @@ import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTit
 import getRethink from '../../../../database/rethinkDriver'
 import Reflection from '../../../../database/types/Reflection'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
+import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
@@ -13,6 +14,7 @@ const addReflectionToGroup = async (
   smartTitle?: string
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
@@ -77,15 +79,22 @@ const addReflectionToGroup = async (
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
     if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
       // Edge case of dragging a single card with a custom group name on a group with smart name
-      await r
-        .table('RetroReflectionGroup')
-        .get(reflectionGroupId)
-        .update({
-          title: oldReflectionGroup.title,
-          smartTitle: nextTitle,
-          updatedAt: now
-        })
-        .run()
+      await Promise.all([
+        pg
+          .updateTable('RetroReflectionGroup')
+          .set({title: oldReflectionGroup.title, smartTitle: nextTitle})
+          .where('id', '=', reflectionGroupId)
+          .execute(),
+        r
+          .table('RetroReflectionGroup')
+          .get(reflectionGroupId)
+          .update({
+            title: oldReflectionGroup.title,
+            smartTitle: nextTitle,
+            updatedAt: now
+          })
+          .run()
+      ])
     } else {
       await updateSmartGroupTitle(reflectionGroupId, nextTitle)
     }
@@ -94,14 +103,21 @@ const addReflectionToGroup = async (
       const oldTitle = getGroupSmartTitle(oldReflections)
       await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
     } else {
-      await r
-        .table('RetroReflectionGroup')
-        .get(oldReflectionGroupId)
-        .update({
-          isActive: false,
-          updatedAt: now
-        })
-        .run()
+      await Promise.all([
+        pg
+          .updateTable('RetroReflectionGroup')
+          .set({isActive: false})
+          .where('id', '=', oldReflectionGroupId)
+          .execute(),
+        r
+          .table('RetroReflectionGroup')
+          .get(oldReflectionGroupId)
+          .update({
+            isActive: false,
+            updatedAt: now
+          })
+          .run()
+      ])
     }
   }
   return reflectionGroupId

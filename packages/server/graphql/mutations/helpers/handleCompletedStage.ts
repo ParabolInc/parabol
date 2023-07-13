@@ -59,14 +59,20 @@ const handleCompletedRetrospectiveStage = async (
         sortedReflectionGroups.map((group, index) => {
           group.sortOrder = index
           return Promise.all([
-            pg.updateTable('RetroReflectionGroup').set({sortOrder: index}).where('id', '=', group.id).execute(),
-            r.table('RetroReflectionGroup')
-            .get(group.id)
-            .update({
-              sortOrder: index,
-              updatedAt: now
-            } as any)
-            .run()
+            pg
+              .updateTable('RetroReflectionGroup')
+              .set({sortOrder: index})
+              .where('id', '=', group.id)
+              .execute(),
+            r
+              .table('RetroReflectionGroup')
+              .get(group.id)
+              .update({
+                sortOrder: index,
+                updatedAt: now
+              } as any)
+              .run()
+          ])
         })
       )
 
