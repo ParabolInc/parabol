@@ -6203,6 +6203,7 @@ type Mutation {
     The name of the new team
     """
     orgName: String!
+    invitees: [String!]
   ): AddOrgPayload!
 
   """
@@ -6213,6 +6214,7 @@ type Mutation {
     The new team object
     """
     newTeam: NewTeamInput!
+    invitees: [String!]
   ): AddTeamPayload!
   archiveOrganization(
     """
@@ -6236,18 +6238,6 @@ type Mutation {
     """
     timelineEventId: ID!
   ): ArchiveTimelineEventPayload!
-
-  """
-  Automatically group reflections
-  """
-  autoGroupReflections(
-    meetingId: ID!
-
-    """
-    A number from 0 to 1 to determine how tightly to pack the groups. Higher means fewer groups
-    """
-    groupingThreshold: Float!
-  ): AutoGroupReflectionsPayload
 
   """
   Change the team a task is associated with. Also copy the viewers integration if necessary.
@@ -7739,14 +7729,6 @@ type ArchiveTimelineEventSuccess {
   the archived timelineEvent
   """
   timelineEvent: TimelineEvent!
-}
-
-type AutoGroupReflectionsPayload {
-  error: StandardMutationError
-  meeting: RetrospectiveMeeting
-  reflections: [RetroReflection]
-  reflectionGroups: [RetroReflectionGroup]
-  removedReflectionGroups: [RetroReflectionGroup]
 }
 
 type ChangeTaskTeamPayload {

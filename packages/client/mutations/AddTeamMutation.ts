@@ -19,6 +19,7 @@ graphql`
     team {
       id
       name
+      ...NewTeamForm_teams
       ...MeetingsDashActiveMeetings
       ...Team_team
     }
@@ -32,8 +33,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AddTeamMutation($newTeam: NewTeamInput!) {
-    addTeam(newTeam: $newTeam) {
+  mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Email!]) {
+    addTeam(newTeam: $newTeam, invitees: $invitees) {
       error {
         message
       }

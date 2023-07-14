@@ -6,7 +6,7 @@ import {SearchMenuItem} from '~/components/SearchMenuItem'
 import useEventCallback from '~/hooks/useEventCallback'
 import useModal from '~/hooks/useModal'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
 import Menu from '../../../../components/Menu'
@@ -67,7 +67,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {viewer} = data
 
   const {closePortal: closeTeamAssigneeMenu} = menuProps
-  const {userIds, teamIds} = useUserTaskFilters(viewer.id)
+  const {userIds, teamIds} = useQueryParameterParser(viewer.id)
 
   const task = useFragment(
     graphql`
