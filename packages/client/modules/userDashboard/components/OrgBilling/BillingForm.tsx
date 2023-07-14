@@ -16,6 +16,7 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
+import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -226,7 +227,13 @@ const BillingForm = (props: Props) => {
           isDisabled={isUpgradeDisabled}
           type={'submit'}
         >
-          {'Upgrade'}
+          {isLoading ? (
+            <>
+              Upgrading <Ellipsis />
+            </>
+          ) : (
+            'Upgrade'
+          )}
         </UpgradeButton>
       </ButtonBlock>
     </form>
