@@ -33,7 +33,7 @@ const OrgTeamsRow = (props: Props) => {
   const isViewerTeamLead = teamMembers.some((member) => member.isSelf && member.isLead)
   return (
     <Row>
-      <div className='flex w-full flex-col px-6 py-1'>
+      <div className='flex w-full flex-col px-4 py-1'>
         <div className='text-gray-700 text-lg font-bold'>{name}</div>
         <div className='flex items-center justify-between'>
           <div className='text-gray-600'>

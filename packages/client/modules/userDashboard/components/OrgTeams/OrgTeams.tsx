@@ -38,7 +38,7 @@ const OrgTeams = (props: Props) => {
       <h1>{'Teams'}</h1>
       <StyledPanel>
         <Row>
-          <div className='flex w-full justify-between px-6'>
+          <div className='flex w-full justify-between px-4'>
             <div className='flex items-center font-bold'>Team Name</div>
             <div className='flex items-center font-bold'>Lead</div>
           </div>
