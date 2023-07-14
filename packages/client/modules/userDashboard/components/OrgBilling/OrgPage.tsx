@@ -36,11 +36,12 @@ const OrgPage = (props: Props) => {
         ...OrgPlansAndBillingRoot_organization
         ...OrgDetails_organization
         ...OrgTeams_organization
+        isBillingLeader
       }
     `,
     organizationRef
   )
-  const {id: orgId} = organization
+  const {id: orgId, isBillingLeader} = organization
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
 
   return (
@@ -57,11 +58,13 @@ const OrgPage = (props: Props) => {
           path={`${match.url}/${BILLING_PAGE}`}
           render={() => <OrgPlansAndBillingRoot organizationRef={organization} />}
         />
-        <Route
-          exact
-          path={`${match.url}/${TEAMS_PAGE}`}
-          render={() => <OrgTeams organizationRef={organization} />}
-        />
+        {isBillingLeader && (
+          <Route
+            exact
+            path={`${match.url}/${TEAMS_PAGE}`}
+            render={() => <OrgTeams organizationRef={organization} />}
+          />
+        )}
         <Route
           exact
           path={`${match.url}/${MEMBERS_PAGE}`}
