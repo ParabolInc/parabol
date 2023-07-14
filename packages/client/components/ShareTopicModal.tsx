@@ -7,6 +7,7 @@ import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {DialogDescription} from '../ui/Dialog/DialogDescription'
 import {DialogActions} from '../ui/Dialog/DialogActions'
+import useShareTopicMutation from '../mutations/useShareTopicMutation'
 import {Select} from '../ui/Select/Select'
 import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
@@ -20,11 +21,13 @@ import SlackClientManager from '../utils/SlackClientManager'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useSlackChannels from '../hooks/useSlackChannels'
+import findStageById from '../utils/meetings/findStageById'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
   stageId: string
+  meetingId: string
   queryRef: PreloadedQuery<ShareTopicModalQuery>
 }
 
@@ -39,7 +42,19 @@ const ShareTopicModalViewerFragment = graphql`
               isActive
               botAccessToken
               slackUserId
+              slackTeamId
               defaultTeamChannelId
+            }
+          }
+        }
+      }
+      phases {
+        phaseType
+        stages {
+          id
+          ... on RetroDiscussStage {
+            reflectionGroup {
+              title
             }
           }
         }
@@ -59,22 +74,28 @@ const query = graphql`
 type Integration = 'slack'
 
 const ShareTopicModal = (props: Props) => {
-  const {isOpen, onClose, queryRef} = props
-
-  const onShare = () => {
-    /* TODO */
-  }
-
+  const {isOpen, onClose, queryRef, meetingId, stageId} = props
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const [commit, shareTopicSubmitting] = useShareTopicMutation()
+  const {
+    submitting: slackOAuthSubmitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } = useMutationProps()
   const data = usePreloadedQuery<ShareTopicModalQuery>(query, queryRef)
   const viewer = useFragment<ShareTopicModal_viewer$key>(ShareTopicModalViewerFragment, data.viewer)
   const {meeting} = viewer
+
+  const stage = findStageById(meeting?.phases, stageId)?.stage
+  const topicTitle = stage?.reflectionGroup?.title ?? ''
 
   const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
   const isSlackConnected = slack?.isActive
   const slackDefaultTeamChannelId = slack?.defaultTeamChannelId
   const slackChannels = useSlackChannels(slack)
+  const channelsLoading = slackChannels.length === 0 && isSlackConnected
+  const isLoading = slackOAuthSubmitting || shareTopicSubmitting
 
   const defaultSelectedIntegration = isSlackConnected ? 'slack' : ''
   const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>(
@@ -96,7 +117,7 @@ const ShareTopicModal = (props: Props) => {
         setSelectedIntegration('slack')
       } else {
         SlackClientManager.openOAuth(atmosphere, teamId, {
-          submitting,
+          submitting: slackOAuthSubmitting,
           submitMutation,
           onError,
           onCompleted: () => {
@@ -110,6 +131,38 @@ const ShareTopicModal = (props: Props) => {
 
   const onChannelChange = (channel: string) => {
     setSelectedChannel(channel)
+  }
+
+  const onShare = () => {
+    commit(
+      {
+        variables: {
+          stageId,
+          meetingId,
+          channelId: selectedChannel
+        }
+      },
+      {
+        onSuccess: () => {
+          const channel = slackChannels.find((channel) => channel.id === selectedChannel)
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: `topicShared`,
+            autoDismiss: 5,
+            message: `"${topicTitle}" has been shared to ${channel?.name}`,
+            action: {
+              label: `View message`,
+              callback: () => {
+                const url = `https://app.slack.com/client/${
+                  slack?.slackTeamId ?? ''
+                }/${selectedChannel}`
+                window.open(url, '_blank', 'noopener')?.focus()
+              }
+            }
+          })
+          onClose()
+        }
+      }
+    )
   }
 
   const comingSoonBadge = (
@@ -131,14 +184,16 @@ const ShareTopicModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
         <DialogTitle>Share topic</DialogTitle>
-        <DialogDescription>Where would you like to share the topic?</DialogDescription>
+        <DialogDescription>
+          Where would you like to share the topic "{topicTitle}"?
+        </DialogDescription>
 
         <fieldset className={fieldsetStyles}>
           <label className={labelStyles}>Integration</label>
           <Select
             onValueChange={onIntegrationChange}
             value={selectedIntegration}
-            disabled={submitting}
+            disabled={isLoading}
           >
             <SelectTrigger>
               {selectedIntegration !== '' ? (
@@ -178,9 +233,9 @@ const ShareTopicModal = (props: Props) => {
           <Select
             onValueChange={onChannelChange}
             value={selectedChannel}
-            disabled={submitting || selectedIntegration === ''}
+            disabled={isLoading || channelsLoading || selectedIntegration === ''}
           >
-            <SelectTrigger>
+            <SelectTrigger isLoading={channelsLoading}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent position='item-aligned'>
@@ -199,7 +254,7 @@ const ShareTopicModal = (props: Props) => {
           <SecondaryButton onClick={onClose} size='small'>
             Cancel
           </SecondaryButton>
-          <PrimaryButton size='small' onClick={onShare}>
+          <PrimaryButton size='small' onClick={onShare} disabled={isLoading || channelsLoading}>
             Share
           </PrimaryButton>
         </DialogActions>

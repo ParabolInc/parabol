@@ -88,6 +88,7 @@
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
           "SetOrgUserRoleSuccess": "./types/SetOrgUserRoleSuccess#SetOrgUserRoleSuccessSource",
+          "ShareTopicSuccess": "./types/ShareTopicSuccess#ShareTopicSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
           "Task": "../../database/types/Task#default",

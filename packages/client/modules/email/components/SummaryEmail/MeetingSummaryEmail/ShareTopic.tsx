@@ -1,15 +1,10 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React, {Suspense} from 'react'
+import React from 'react'
 import AnchorIfEmail from './AnchorIfEmail'
 import makeAppURL from '../../../../../utils/makeAppURL'
-import {renderLoader} from '../../../../../utils/relay/renderLoader'
-import ShareTopicModal from '../../../../../components/ShareTopicModal'
 import {useDialogState} from '../../../../../ui/Dialog/useDialogState'
-import useQueryLoaderNow from '../../../../../hooks/useQueryLoaderNow'
-import shareTopicModalQuery, {
-  ShareTopicModalQuery
-} from '../../../../../__generated__/ShareTopicModalQuery.graphql'
+import ShareTopicRoot from '../../../../../components/ShareTopicRoot'
 
 interface Props {
   isEmail: boolean
@@ -51,13 +46,6 @@ const ShareTopic = (props: Props) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const {isOpen, open, close} = useDialogState()
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
-    shareTopicModalQuery,
-    {meetingId},
-    'network-only'
-  )
-
   const onClick = () => {
     if (isDemo) return
     open()
@@ -68,11 +56,8 @@ const ShareTopic = (props: Props) => {
       <span style={style} onClick={onClick}>
         {label}
       </span>
-      <Suspense fallback={renderLoader()}>
-        {queryRef && (
-          <ShareTopicModal stageId={stageId} isOpen={isOpen} onClose={close} queryRef={queryRef} />
-        )}
-      </Suspense>
+
+      {isOpen && <ShareTopicRoot onClose={close} stageId={stageId} meetingId={meetingId} />}
     </>
   )
 }
