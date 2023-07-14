@@ -62,7 +62,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
         meetingSettings.disableAnonymity = disableAnonymity
       }
 
-      if (hasTranscriptFlag && isNotNull(videoMeetingURL)) {
+      if (hasTranscriptFlag) {
         updatedSettings.videoMeetingURL = videoMeetingURL
         meetingSettings.videoMeetingURL = videoMeetingURL
       }
