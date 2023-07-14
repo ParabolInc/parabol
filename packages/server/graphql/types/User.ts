@@ -46,6 +46,9 @@ import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
+import TimelineEventTypeEnum from './TimelineEventTypeEnum'
+import TimelineEvent from '../../database/types/TimelineEvent'
+import {RDatum} from '../../database/stricterR'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -201,9 +204,12 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         first: {
           type: new GraphQLNonNull(GraphQLInt),
           description: 'the number of timeline events to return'
+        },
+        eventTypes: {
+          type: new GraphQLList(new GraphQLNonNull(TimelineEventTypeEnum))
         }
       },
-      resolve: async ({id}: {id: string}, {after, first}, {authToken}: GQLContext) => {
+      resolve: async ({id}: {id: string}, {after, first, eventTypes}, {authToken}: GQLContext) => {
         const r = await getRethink()
         const viewerId = getUserId(authToken)
         if (viewerId !== id && !isSuperUser(authToken)) return null
@@ -214,6 +220,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             index: 'userIdCreatedAt'
           })
           .filter({isActive: true})
+          .filter((t: RDatum<TimelineEvent>) =>
+            eventTypes ? r.expr(eventTypes).contains(t('type')) : true
+          )
           .orderBy(r.desc('createdAt'))
           .limit(first + 1)
           .coerceTo('array')

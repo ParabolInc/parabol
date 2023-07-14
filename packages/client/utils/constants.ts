@@ -8,6 +8,7 @@
 import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
 import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
+import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
@@ -194,3 +195,27 @@ export const reasonsToDowngradeLookup: Record<
   "Not using Parabol's paid features": 'notUsingPaidFeatures',
   'Moving to another tool (please specify)': 'anotherTool'
 }
+
+export const timelineEventTypeMenuLabels: Record<TimelineEventEnum, string> = {
+  retroComplete: 'Retrospective',
+  actionComplete: 'Team Check-in',
+  joinedParabol: 'Joined Parabol',
+  createdTeam: 'New Team Created',
+  POKER_COMPLETE: 'Sprint Poker',
+  TEAM_PROMPT_COMPLETE: 'Standup'
+}
+
+export const CUSTOMIZED_SVG = 'Customized SVG'
+
+export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string | undefined> = {
+  retroComplete: 'history',
+  actionComplete: 'change_history',
+  joinedParabol: 'account_circle',
+  createdTeam: 'group_add',
+  POKER_COMPLETE: CUSTOMIZED_SVG,
+  TEAM_PROMPT_COMPLETE: 'group_work'
+}
+
+/* OpenAI */
+export const MAX_GPT_3_5_TOKENS = 4096 // https://platform.openai.com/docs/models/gpt-3-5
+export const AVG_CHARS_PER_TOKEN = 4 // 1 token ~= 4 chars https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them

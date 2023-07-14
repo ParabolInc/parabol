@@ -85,6 +85,7 @@ const DashSidebar = (props: Props) => {
         organizations {
           id
           name
+          isBillingLeader
         }
       }
     `,
@@ -100,7 +101,7 @@ const DashSidebar = (props: Props) => {
   if (showOrgSidebar) {
     const {orgId: orgIdFromParams} = match.params
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
-    const {id: orgId, name} = currentOrg ?? {}
+    const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
     return (
       <Wrapper>
         <SideBarStartMeetingButton isOpen={isOpen} hasRid={featureFlags.retrosInDisguise} />
@@ -114,11 +115,13 @@ const DashSidebar = (props: Props) => {
                 href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
                 label={'Plans & Billing'}
               />
-              <NavItem
-                icon={'groups'}
-                href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
-                label={'Teams'}
-              />
+              {isBillingLeader && (
+                <NavItem
+                  icon={'groups'}
+                  href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
+                  label={'Teams'}
+                />
+              )}
               <NavItem
                 icon={'group'}
                 href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
@@ -145,7 +148,7 @@ const DashSidebar = (props: Props) => {
         <Contents>
           <NavItemsWrap>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            <NavItem icon={'history'} href={'/me'} label={'History'} />
+            <NavItem icon={'timeline'} href={'/me'} label={'History'} />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </NavItemsWrap>
           <DashHR />

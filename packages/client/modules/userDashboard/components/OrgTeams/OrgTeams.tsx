@@ -22,6 +22,7 @@ const OrgTeams = (props: Props) => {
     graphql`
       fragment OrgTeams_organization on Organization {
         id
+        isBillingLeader
         teams {
           id
           ...OrgTeamsRow_team
@@ -30,7 +31,8 @@ const OrgTeams = (props: Props) => {
     `,
     organizationRef
   )
-  const {teams} = organization
+  const {teams, isBillingLeader} = organization
+  if (!isBillingLeader) return null
   return (
     <>
       <h1>{'Teams'}</h1>
