@@ -13,7 +13,6 @@ type MeetingSubscriptionPayload {
   CreatePollSuccess: CreatePollSuccess
   AddReactjiToReflectionSuccess: AddReactjiToReflectionSuccess
   AddReactjiToReactableSuccess: AddReactjiToReactableSuccess
-  AutoGroupReflectionsPayload: AutoGroupReflectionsPayload
   CreateReflectionPayload: CreateReflectionPayload
   DeleteCommentSuccess: DeleteCommentSuccess
   DragDiscussionTopicPayload: DragDiscussionTopicPayload

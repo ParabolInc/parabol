@@ -7,6 +7,7 @@ import {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedList
 import {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
 import TimelineEvent from './TimelineEvent'
 import TimelineHistoryLockedCard from './TimelineHistoryLockedCard'
+import {Link} from 'react-router-dom'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -28,7 +29,8 @@ const TimelineFeedList = (props: Props) => {
       fragment TimelineFeedList_query on Query
       @refetchable(queryName: "TimelineFeedListPaginationQuery") {
         viewer {
-          timeline(first: $first, after: $after) @connection(key: "TimelineFeedList_timeline") {
+          timeline(first: $first, after: $after, eventTypes: $eventTypes)
+            @connection(key: "TimelineFeedList_timeline") {
             edges {
               cursor
               node {
@@ -98,6 +100,18 @@ const TimelineFeedList = (props: Props) => {
       lockedHistory: timeline.edges.slice(firstLocked)
     }
   }, [timeline.edges])
+
+  if (freeHistory === undefined || freeHistory.length === 0) {
+    return (
+      <div className='text-base'>
+        Looks like you have no events of this type.
+        <Link to={'/me'} className='font-sans font-semibold text-sky-500 no-underline'>
+          {' '}
+          Show all events.
+        </Link>
+      </div>
+    )
+  }
 
   return (
     <ResultScroller>
