@@ -125,4 +125,5 @@ extend type Discussion {
 
 extend type Organization {
   showDrawer: Boolean!
+  showConfetti: Boolean!
 }

@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.112.0 2023-Jul-12
+
+### Changed
+
+- chore: drop unused RethinkDB tables (#8501)
+- chore: bump pg to v12.15 (#8487)
+
+### Fixed
+
+- fix: show correct drawer info after upgrade (#8485)
+- fix: use unique server name for fresh namespace (#8416)
+- chore: replace xml-lint due to mem leak (#8499)
+- fix: Fix create Parabol task in Sprint Poker (#8496)
+- fix: Limit number of teams that can be moved in one moveTeamToOrg call (#8486)
+- fix: can create tasks (#8472)
+
+### Added
+
+- feat: add invite all checkbox (#8482)
+- chore: add metrics to invite on team creation (#8479)
+- feat: invite users on team creation (#8476)
+- chore(suggest-groups): add suggest groups metrics (#8459)
+- feat(suggest-groups): add loading feedback while waiting for OpenAI response (#8440)
+- chore: chronos in monorepo (#8429)
+- chore: refactor postDeploy to preDeploy (#8446)
+- chore: add radix Dialog component (#8450)
+- fix: upgrade graphiql (#8461)
+-
+
 ## 6.111.0 2023-Jul-05
 
 ### Added

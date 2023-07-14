@@ -71,13 +71,6 @@
   resolved "https://registry.yarnpkg.com/@assemblyscript/loader/-/loader-0.10.1.tgz#70e45678f06c72fa2e350e8553ec4a4d72b92e06"
   integrity sha512-H71nDOOL8Y7kWRLqf6Sums+01Q5msqBW2KhDUTemh1tvY04eSkSXrK0uj/4mmY0Xr16/3zyZmsrxN7CKuRbNRg==
 
-"@authenio/samlify-node-xmllint@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@authenio/samlify-node-xmllint/-/samlify-node-xmllint-2.0.0.tgz#74bf7dc540506a25e842ae72d492afec627b3a6d"
-  integrity sha512-V9cQ0CHqu3JwOmbSecGPUnzIES5kHxD00FEZKnWh90ksQUJG5/TscV2r9XLbKp7MlRMOSUfWxecM35xPSLFdSg==
-  dependencies:
-    node-xmllint "^1.0.0"
-
 "@authenio/xml-encryption@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@authenio/xml-encryption/-/xml-encryption-1.3.0.tgz#9079f227d5f54daf8bec25245a7a98a46186445d"
@@ -12218,6 +12211,13 @@ fast-xml-parser@4.1.2:
   dependencies:
     strnum "^1.0.5"
 
+fast-xml-parser@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.2.5.tgz#a6747a09296a6cb34f2ae634019bf1738f3b421f"
+  integrity sha512-B9/wizE4WngqQftFPmdaMYlXoJlJOYxGQOanC77fq9k8+Z0v5dDSVh+3glErdIROP//s/jgb7ZuxKfB8nVyo0g==
+  dependencies:
+    strnum "^1.0.5"
+
 fastest-levenshtein@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/fastest-levenshtein/-/fastest-levenshtein-1.0.12.tgz#9990f7d3a88cc5a9ffd1f1745745251700d497e2"
@@ -16419,11 +16419,6 @@ node-rsa@^1.1.1:
   integrity sha512-Jd4cvbJMryN21r5HgxQOpMEqv+ooke/korixNNK3mGqfGJmy0M77WDDzo/05969+OkMy3XW1UuZsSmW9KQm7Fw==
   dependencies:
     asn1 "^0.2.4"
-
-node-xmllint@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/node-xmllint/-/node-xmllint-1.0.0.tgz#f680457eb0166a3d06996f1242d34d47000fe55b"
-  integrity sha1-9oBFfrAWaj0GmW8SQtNNRwAP5Vs=
 
 nodemailer-fetch@1.6.0:
   version "1.6.0"

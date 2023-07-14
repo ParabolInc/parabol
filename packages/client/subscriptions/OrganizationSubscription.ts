@@ -22,6 +22,7 @@ import {
 import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
+import upgradeToTeamTierSuccessUpdater from '../mutations/handlers/upgradeToTeamTierSuccessUpdater'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
@@ -73,7 +74,8 @@ const updateHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
-  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
+  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater,
+  UpgradeToTeamTierSuccess: upgradeToTeamTierSuccessUpdater
 } as const
 
 const OrganizationSubscription = (
