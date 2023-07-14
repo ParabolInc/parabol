@@ -77,14 +77,21 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
     const oldTitle = getGroupSmartTitle(oldReflections)
     await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
   } else {
-    await r
-      .table('RetroReflectionGroup')
-      .get(oldReflectionGroupId)
-      .update({
-        isActive: false,
-        updatedAt: now
-      })
-      .run()
+    await Promise.all([
+      pg
+        .updateTable('RetroReflectionGroup')
+        .set({isActive: false})
+        .where('id', '=', oldReflectionGroupId)
+        .execute(),
+      r
+        .table('RetroReflectionGroup')
+        .get(oldReflectionGroupId)
+        .update({
+          isActive: false,
+          updatedAt: now
+        })
+        .run()
+    ])
   }
   return reflectionGroupId
 }

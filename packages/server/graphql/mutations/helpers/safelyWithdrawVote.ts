@@ -5,6 +5,7 @@ import {RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 
 const safelyWithdrawVote = async (
@@ -38,8 +39,8 @@ const safelyWithdrawVote = async (
       .updateTable('RetroReflectionGroup')
       .set({
         voterIds: sql`array_cat(
-          "voterIds"[1:array_position("voterIds",'google-oauth2|ohlApAJnXy')-1],
-          "voterIds"[array_position("voterIds",'google-oauth2|ohlApAJnXy')+1:]
+          "voterIds"[1:array_position("voterIds",${userId})-1],
+          "voterIds"[array_position("voterIds",${userId})+1:]
         )`
       })
       .where('id', '=', reflectionGroupId)
@@ -48,7 +49,7 @@ const safelyWithdrawVote = async (
   ])
   const isVoteRemovedFromGroupPG = voteRemovedResult.numUpdatedRows === BigInt(1)
   if (isVoteRemovedFromGroup !== isVoteRemovedFromGroupPG)
-    console.log('MISMATCH VOTE REMOVED LOGIC')
+    sendToSentry(new Error('MISMATCH VOTE REMOVED LOGIC'))
   if (!isVoteRemovedFromGroup) {
     return standardError(new Error('Already removed vote'), {userId: viewerId})
   }

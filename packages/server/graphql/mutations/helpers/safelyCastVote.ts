@@ -5,6 +5,7 @@ import {RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 
 const safelyCastVote = async (
@@ -67,7 +68,8 @@ const safelyCastVote = async (
       .executeTakeFirst()
   ])
   const isVoteAddedToGroupPG = voteAddedResult.numUpdatedRows === BigInt(1)
-  if (isVoteAddedToGroupPG !== isVoteAddedToGroup) console.log('MISMATCH VOTE ADDED LOGIC')
+  if (isVoteAddedToGroupPG !== isVoteAddedToGroup)
+    sendToSentry(new Error('MISMATCH VOTE CAST LOGIC'))
   if (!isVoteAddedToGroup) {
     await r
       .table('MeetingMember')
