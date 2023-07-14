@@ -6,6 +6,10 @@ import makeAppURL from '../../../../../utils/makeAppURL'
 import {renderLoader} from '../../../../../utils/relay/renderLoader'
 import ShareTopicModal from '../../../../../components/ShareTopicModal'
 import {useDialogState} from '../../../../../ui/Dialog/useDialogState'
+import useQueryLoaderNow from '../../../../../hooks/useQueryLoaderNow'
+import shareTopicModalQuery, {
+  ShareTopicModalQuery
+} from '../../../../../__generated__/ShareTopicModalQuery.graphql'
 
 interface Props {
   isEmail: boolean
@@ -47,6 +51,13 @@ const ShareTopic = (props: Props) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const {isOpen, open, close} = useDialogState()
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
+    shareTopicModalQuery,
+    {meetingId},
+    'network-only'
+  )
+
   const onClick = () => {
     if (isDemo) return
     open()
@@ -58,7 +69,9 @@ const ShareTopic = (props: Props) => {
         {label}
       </span>
       <Suspense fallback={renderLoader()}>
-        <ShareTopicModal stageId={stageId} isOpen={isOpen} onClose={close} />
+        {queryRef && (
+          <ShareTopicModal stageId={stageId} isOpen={isOpen} onClose={close} queryRef={queryRef} />
+        )}
       </Suspense>
     </>
   )
