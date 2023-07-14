@@ -38,6 +38,7 @@ extend type RetrospectiveMeeting {
   spotlightGroup: RetroReflectionGroup
   spotlightReflectionId: String
   spotlightSearchQuery: String
+  showTranscription: Boolean!
 }
 
 extend type TeamPromptMeeting {
@@ -68,6 +69,8 @@ extend type User {
   clientClockOffset: Int
   dashSearch: String
   pageName: String
+  # The team we should default to in team pickers, etc.
+  preferredTeamId: ID
 }
 
 extend type Task {
@@ -122,4 +125,5 @@ extend type Discussion {
 
 extend type Organization {
   showDrawer: Boolean!
+  showConfetti: Boolean!
 }

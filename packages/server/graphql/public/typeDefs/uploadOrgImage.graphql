@@ -1,0 +1,16 @@
+extend type Mutation {
+  """
+  Upload an image for an org avatar
+  """
+  uploadOrgImage(
+    """
+    the org avatar image file
+    """
+    file: File!
+
+    """
+    The org id to upload an avatar for
+    """
+    orgId: ID!
+  ): UpdateOrgPayload!
+}

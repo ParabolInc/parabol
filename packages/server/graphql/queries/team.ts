@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
-import {getUserId, isPrivateSchema, isSuperUser, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import Team from '../types/Team'
@@ -18,13 +18,13 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {teamId},
+    {teamId}: {teamId: string},
     {authToken, dataLoader}: GQLContext,
     {operation}: GraphQLResolveInfo
   ) {
     if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
       const viewerId = getUserId(authToken)
-      if (!HANDLED_OPS.includes(operation.name.value)) {
+      if (!HANDLED_OPS.includes(operation?.name?.value ?? '')) {
         standardError(new Error('Team not found'), {userId: viewerId})
       }
       return null

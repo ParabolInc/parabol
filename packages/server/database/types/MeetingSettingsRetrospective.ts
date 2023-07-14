@@ -9,12 +9,11 @@ interface Input {
   totalVotes?: number
   selectedTemplateId?: string
   disableAnonymity?: boolean
-  addTeamHealth?: boolean
+  videoMeetingURL?: string
+  recallBotId?: string
 }
 
-const phaseTypes = ['checkin', 'reflect', 'group', 'vote', 'discuss'] as NewMeetingPhaseTypeEnum[]
-
-const teamHealthPhaseTypes = [
+const phaseTypes = [
   'checkin',
   'TEAM_HEALTH',
   'reflect',
@@ -28,6 +27,9 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
   totalVotes: number
   selectedTemplateId: string
   disableAnonymity: boolean
+  videoMeetingURL?: string | null
+  recallBotId?: string | null
+
   constructor(input: Input) {
     const {
       teamId,
@@ -36,14 +38,16 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
       selectedTemplateId,
       totalVotes,
       disableAnonymity,
-      addTeamHealth
+      videoMeetingURL,
+      recallBotId
     } = input
-    const featurePhaseTypes = addTeamHealth ? teamHealthPhaseTypes : phaseTypes
-    super({teamId, id, meetingType: 'retrospective', phaseTypes: featurePhaseTypes})
+    super({teamId, id, meetingType: 'retrospective', phaseTypes})
     this.maxVotesPerGroup =
       maxVotesPerGroup ?? MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
     this.totalVotes = totalVotes ?? MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT
     this.selectedTemplateId = selectedTemplateId || 'workingStuckTemplate'
     this.disableAnonymity = disableAnonymity ?? false
+    this.videoMeetingURL = videoMeetingURL
+    this.recallBotId = recallBotId
   }
 }

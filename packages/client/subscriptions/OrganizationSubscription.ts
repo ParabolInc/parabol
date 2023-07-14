@@ -22,6 +22,7 @@ import {
 import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
+import upgradeToTeamTierSuccessUpdater from '../mutations/handlers/upgradeToTeamTierSuccessUpdater'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
@@ -36,23 +37,24 @@ const subscription = graphql`
       PayLaterPayload {
         ...PayLaterMutation_organization @relay(mask: false)
       }
-      SetOrgUserRoleAddedPayload {
-        ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
+      OldUpdateCreditCardPayload {
+        ...OldUpdateCreditCardMutation_organization @relay(mask: false)
       }
-      SetOrgUserRoleRemovedPayload {
-        ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
-      }
-      UpdateCreditCardPayload {
-        ...UpdateCreditCardMutation_organization @relay(mask: false)
-      }
+
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
       }
-      UpgradeToTeamTierPayload {
-        ...UpgradeToTeamTierMutation_organization @relay(mask: false)
+      OldUpgradeToTeamTierPayload {
+        ...OldUpgradeToTeamTierMutation_organization @relay(mask: false)
+      }
+      UpgradeToTeamTierSuccess {
+        ...UpgradeToTeamTierFrag_organization @relay(mask: false)
       }
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_organization @relay(mask: false)
+      }
+      SetOrgUserRoleSuccess {
+        ...SetOrgUserRoleMutation_organization @relay(mask: false)
       }
       UpdateTemplateScopeSuccess {
         ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
@@ -64,15 +66,16 @@ const subscription = graphql`
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
   RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
-  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
+  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationOnNext
 } as const
 
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
-  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
+  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
-  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
+  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater,
+  UpgradeToTeamTierSuccess: upgradeToTeamTierSuccessUpdater
 } as const
 
 const OrganizationSubscription = (

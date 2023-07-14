@@ -11,7 +11,6 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
 import {PokerTemplateScalePicker_dimension$key} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
-import {PortalId} from '../../../hooks/usePortal'
 
 const SelectScaleDropdown = lazyPreload(
   () =>
@@ -32,7 +31,7 @@ const DropdownIcon = styled(ExpandMore)({
 
 const DropdownBlock = styled('div')<{disabled: boolean; readOnly: boolean}>(
   ({disabled, readOnly}) => ({
-    background: disabled ? PALETTE.SLATE_200 : '#fff',
+    background: disabled && !readOnly ? PALETTE.SLATE_200 : '#fff',
     border: readOnly ? undefined : `1px solid ${PALETTE.SLATE_400}`,
     borderRadius: '30px',
     cursor: readOnly ? undefined : disabled ? 'not-allowed' : 'pointer',
@@ -65,12 +64,11 @@ const MenuToggleLabel = styled('div')({
 interface Props {
   dimension: PokerTemplateScalePicker_dimension$key
   isOwner: boolean
-  parentId?: PortalId
   readOnly?: boolean
 }
 
 const PokerTemplateScalePicker = (props: Props) => {
-  const {dimension: dimensionRef, isOwner, parentId, readOnly} = props
+  const {dimension: dimensionRef, isOwner, readOnly} = props
   const dimension = useFragment(
     graphql`
       fragment PokerTemplateScalePicker_dimension on TemplateDimension {
@@ -89,7 +87,6 @@ const PokerTemplateScalePicker = (props: Props) => {
     {
       isDropdown: true,
       id: 'scaleDropdown',
-      parentId,
       loadingWidth: 300
     }
   )
@@ -99,7 +96,7 @@ const PokerTemplateScalePicker = (props: Props) => {
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER, {
-    disabled: isOwner
+    disabled: isOwner || readOnly
   })
   return (
     <>
@@ -115,7 +112,7 @@ const PokerTemplateScalePicker = (props: Props) => {
         <MenuToggleInner>
           <MenuToggleLabel>{selectedScale.name}</MenuToggleLabel>
         </MenuToggleInner>
-        {(!readOnly || !isOwner) && <DropdownIcon />}
+        {!readOnly && <DropdownIcon />}
       </DropdownBlock>
       {menuPortal(<SelectScaleDropdown menuProps={menuProps} dimension={dimension} />)}
       {tooltipPortal(<div>Must be the template owner to change</div>)}

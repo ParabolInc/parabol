@@ -30,6 +30,7 @@ export type OrgTierChangeEventProperties = {
   newTier: string
   reasonsForLeaving?: ReasonToDowngradeEnum[]
   otherTool?: string
+  billingLeaderEmail?: string
 }
 
 export type TaskProperties = {
@@ -51,7 +52,10 @@ export type TaskEstimateProperties = {
 
 export type MeetingSettings = {
   hasIcebreaker?: boolean
+  hasTeamHealth?: boolean
   disableAnonymity?: boolean
+  videoMeetingURL?: string | null
+  recallBotId?: string | null
 }
 
 export type WebSocketProperties = {
@@ -105,6 +109,10 @@ export type AnalyticsEvent =
   | 'Snackbar Viewed'
   // Join request
   | 'Join Request Reviewed'
+  // Suggest Groups
+  | 'Suggested Groups Generated'
+  | 'Suggest Groups Clicked'
+  | 'Reset Groups Clicked'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -302,14 +310,16 @@ class Analytics {
     inviteeEmail: string,
     isInviteeParabolUser: boolean,
     inviteTo: 'meeting' | 'team',
-    success: boolean
+    success: boolean,
+    isInvitedOnCreation: boolean
   ) => {
     this.track(userId, 'Invite Email Sent', {
       teamId,
       inviteeEmail,
       isInviteeParabolUser,
       inviteTo,
-      success
+      success,
+      isInvitedOnCreation
     })
   }
 
@@ -421,6 +431,18 @@ class Analytics {
 
   notificationEmailSent = (userId: string, orgId: string, type: TeamLimitsEmailType) => {
     this.track(userId, 'Notification Email Sent', {type, orgId})
+  }
+
+  suggestedGroupsGenerated = (userId: string, meetingId: string, teamId: string) => {
+    this.track(userId, 'Suggested Groups Generated', {meetingId, teamId})
+  }
+
+  suggestGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
+    this.track(userId, 'Suggest Groups Clicked', {meetingId, teamId})
+  }
+
+  resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
+    this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>

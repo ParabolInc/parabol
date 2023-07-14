@@ -12,7 +12,6 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {TemplateDimensionItem_dimension$key} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import EditableTemplateDimension from './EditableTemplateDimension'
 import PokerTemplateScalePicker from './PokerTemplateScalePicker'
-import {PortalId} from '../../../hooks/usePortal'
 
 interface Props {
   isOwner: boolean
@@ -20,7 +19,6 @@ interface Props {
   dimension: TemplateDimensionItem_dimension$key
   dimensions: TemplateDimensionItem_dimensions$key
   dragProvided: DraggableProvided
-  parentId?: PortalId
   readOnly?: boolean
 }
 
@@ -74,7 +72,6 @@ const TemplateDimensionItem = (props: Props) => {
     isOwner,
     dimension: dimensionRef,
     dimensions: dimensionsRef,
-    parentId,
     readOnly
   } = props
   const dimensions = useFragment(
@@ -142,12 +139,7 @@ const TemplateDimensionItem = (props: Props) => {
           dimensions={dimensions}
         />
       </DimensionAndDescription>
-      <PokerTemplateScalePicker
-        dimension={dimension}
-        isOwner={isOwner}
-        readOnly={readOnly}
-        parentId={parentId}
-      />
+      <PokerTemplateScalePicker dimension={dimension} isOwner={isOwner} readOnly={readOnly} />
     </DimensionItem>
   )
 }

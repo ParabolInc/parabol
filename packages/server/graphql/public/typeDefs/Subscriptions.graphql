@@ -8,11 +8,11 @@ type Subscription {
 
 type MeetingSubscriptionPayload {
   fieldName: String!
+  AutogroupSuccess: AutogroupSuccess
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess
   AddReactjiToReflectionSuccess: AddReactjiToReflectionSuccess
   AddReactjiToReactableSuccess: AddReactjiToReactableSuccess
-  AutoGroupReflectionsPayload: AutoGroupReflectionsPayload
   CreateReflectionPayload: CreateReflectionPayload
   DeleteCommentSuccess: DeleteCommentSuccess
   DragDiscussionTopicPayload: DragDiscussionTopicPayload
@@ -22,14 +22,18 @@ type MeetingSubscriptionPayload {
   EndDraggingReflectionPayload: EndDraggingReflectionPayload
   EndRetrospectiveSuccess: EndRetrospectiveSuccess
   FlagReadyToAdvanceSuccess: FlagReadyToAdvanceSuccess
+  GenerateGroupsSuccess: GenerateGroupsSuccess
   NewMeetingCheckInPayload: NewMeetingCheckInPayload
   PromoteNewMeetingFacilitatorPayload: PromoteNewMeetingFacilitatorPayload
   RemoveReflectionPayload: RemoveReflectionPayload
+  ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccess
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
+  RevealTeamHealthVotesSuccess: RevealTeamHealthVotesSuccess
   SetPhaseFocusPayload: SetPhaseFocusPayload
   SetStageTimerPayload: SetStageTimerPayload
-  StartDraggingReflectionPayload: StartDraggingReflectionPayload
   SetTaskHighlightSuccess: SetTaskHighlightSuccess
+  SetTeamHealthVoteSuccess: SetTeamHealthVoteSuccess
+  StartDraggingReflectionPayload: StartDraggingReflectionPayload
   UpdateCommentContentSuccess: UpdateCommentContentSuccess
   UpdateDragLocationPayload: UpdateDragLocationPayload
   UpdateMeetingPromptSuccess: UpdateMeetingPromptSuccess
@@ -88,11 +92,12 @@ type OrganizationSubscriptionPayload {
   DowngradeToStarterPayload: DowngradeToStarterPayload
   PayLaterPayload: PayLaterPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
-  SetOrgUserRoleAddedPayload: SetOrgUserRoleAddedPayload
-  SetOrgUserRoleRemovedPayload: SetOrgUserRoleRemovedPayload
+  SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateOrgPayload: UpdateOrgPayload
-  UpgradeToTeamTierPayload: UpgradeToTeamTierPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
+  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
 }
 
@@ -138,9 +143,11 @@ type TeamSubscriptionPayload {
   StartSprintPokerSuccess: StartSprintPokerSuccess
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
-  UpgradeToTeamTierPayload: UpgradeToTeamTierPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
+  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplatePayload: AddReflectTemplatePayload
   AddPokerTemplatePayload: AddPokerTemplatePayload
   AddReflectTemplatePromptPayload: AddReflectTemplatePromptPayload

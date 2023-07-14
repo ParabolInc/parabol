@@ -9,7 +9,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   issues: async ({teamId, userId, accessToken, cloudIds}, args, {authToken}) => {
     const {first, queryString, isJQL, projectKeyFilters} = args
     const viewerId = getUserId(authToken)
-    if (viewerId !== userId) {
+    if (viewerId !== userId || !accessToken) {
       const err = new Error('Cannot access another team members issues')
       standardError(err, {tags: {teamId, userId}, userId: viewerId})
       return connectionFromTasks([], 0, err)
@@ -28,7 +28,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
         projectKeyFiltersByCloudId[cloudId] = []
       })
     }
-    const issueRes = await manager.getIssues(queryString, isJQL, projectKeyFiltersByCloudId)
+    const issueRes = await manager.getIssues(queryString ?? null, isJQL, projectKeyFiltersByCloudId)
     const {error, issues} = issueRes
     const mappedIssues = issues.map((issue) => {
       const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(

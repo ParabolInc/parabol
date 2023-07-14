@@ -10,7 +10,6 @@ import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMut
 import {Threshold} from '../../../types/constEnums'
 import {AddNewReflectTemplate_reflectTemplates$key} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 import {AddNewReflectTemplate_team$key} from '../../../__generated__/AddNewReflectTemplate_team.graphql'
-import {AddNewReflectTemplate_viewer$key} from '../../../__generated__/AddNewReflectTemplate_viewer.graphql'
 
 const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'
@@ -31,13 +30,12 @@ const AddRetroTemplateLink = styled(LinkButton)({
 interface Props {
   gotoTeamTemplates: () => void
   reflectTemplatesRef: AddNewReflectTemplate_reflectTemplates$key
-  viewerRef: AddNewReflectTemplate_viewer$key
   displayUpgradeDetails: () => void
   teamRef: AddNewReflectTemplate_team$key
 }
 
 const AddNewReflectTemplate = (props: Props) => {
-  const {gotoTeamTemplates, reflectTemplatesRef, teamRef, viewerRef, displayUpgradeDetails} = props
+  const {gotoTeamTemplates, reflectTemplatesRef, teamRef, displayUpgradeDetails} = props
   const atmosphere = useAtmosphere()
   const reflectTemplates = useFragment(
     graphql`
@@ -46,16 +44,6 @@ const AddNewReflectTemplate = (props: Props) => {
       }
     `,
     reflectTemplatesRef
-  )
-  const {featureFlags} = useFragment(
-    graphql`
-      fragment AddNewReflectTemplate_viewer on User {
-        featureFlags {
-          templateLimit
-        }
-      }
-    `,
-    viewerRef
   )
   const team = useFragment(
     graphql`
@@ -76,7 +64,7 @@ const AddNewReflectTemplate = (props: Props) => {
   }, [])
   const addNewTemplate = () => {
     if (submitting) return
-    if (featureFlags.templateLimit && tier === 'starter') {
+    if (tier === 'starter') {
       displayUpgradeDetails()
       return
     }
@@ -107,7 +95,7 @@ const AddNewReflectTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddRetroTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {featureFlags.templateLimit && tier === 'starter' && '🔒'}
+        Create New Template {tier === 'starter' && '🔒'}
       </AddRetroTemplateLink>
     </div>
   )

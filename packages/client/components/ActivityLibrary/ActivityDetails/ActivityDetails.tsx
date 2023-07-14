@@ -1,18 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React, {useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
-import {CATEGORY_THEMES, QUICK_START_CATEGORY_ID} from '../Categories'
-import clsx from 'clsx'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
-import IconLabel from '../../IconLabel'
-import {ActivityCard} from '../ActivityCard'
-import {useActivityDetails} from './hooks/useActivityDetails'
+import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
+import IconLabel from '../../IconLabel'
+import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
+import {CategoryID, CATEGORY_THEMES, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
-import {MeetingDetails} from './MeetingDetails'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -22,32 +20,26 @@ graphql`
     category
     orgId
     teamId
+    illustrationUrl
     isFree
     scope
-    team {
-      editingScaleId
-      ...PokerTemplateScaleDetails_team
-    }
+    viewerLowestScope
+    ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
-    ...EditableTemplateName_teamTemplates
     ...ReflectTemplateDetailsTemplate @relay(mask: false)
     ...PokerTemplateDetailsTemplate @relay(mask: false)
-    ...TemplateDetails_templates
     ...useTemplateDescription_template
   }
 `
 
 export const query = graphql`
-  query ActivityDetailsQuery {
+  query ActivityDetailsQuery($activityId: ID!) {
     viewer {
+      preferredTeamId
       tier
-      availableTemplates(first: 200) @connection(key: "ActivityDetails_availableTemplates") {
-        edges {
-          node {
-            ...ActivityDetails_template @relay(mask: false)
-          }
-        }
+      activity(activityId: $activityId) {
+        ...ActivityDetails_template @relay(mask: false)
       }
       teams {
         id
@@ -65,35 +57,26 @@ export const query = graphql`
 
 interface Props {
   queryRef: PreloadedQuery<ActivityDetailsQuery>
-  activityId: string
 }
 
 const ActivityDetails = (props: Props) => {
-  const {queryRef, activityId: activityIdParam} = props
+  const {queryRef} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
-  const {availableTemplates, teams} = viewer
-
+  const {activity, preferredTeamId, teams} = viewer
   const history = useHistory<{prevCategory?: string}>()
   const [isEditing, setIsEditing] = useState(false)
-  const {activity} = useActivityDetails(activityIdParam, data)
 
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
-
+  const {category, illustrationUrl, viewerLowestScope} = activity
   const prevCategory = history.location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
-    prevCategory ?? activity.category ?? QUICK_START_CATEGORY_ID
+    prevCategory ?? category ?? QUICK_START_CATEGORY_ID
   }`
 
-  const teamTemplates = activity.isTemplate
-    ? availableTemplates.edges
-        .map((edge) => edge.node)
-        .filter((edge) => edge.teamId === activity.template.teamId)
-    : []
-  const teamIds = teams.map((team) => team.id)
-  const isOwner = activity.isTemplate ? teamIds.includes(activity.template.teamId) : false
+  const isOwner = viewerLowestScope === 'TEAM'
 
   return (
     <div className='flex h-full flex-col bg-white'>
@@ -116,48 +99,38 @@ const ActivityDetails = (props: Props) => {
             >
               <ActivityCard
                 className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
-                theme={CATEGORY_THEMES[activity.category]}
-                imageSrc={activity.illustration}
+                theme={CATEGORY_THEMES[category as CategoryID]}
                 badge={null}
-              />
+              >
+                <ActivityCardImage src={illustrationUrl} />
+              </ActivityCard>
               <div className='pb-20'>
                 <div className='mb-10 space-y-2 pl-14'>
                   <div className='flex min-h-[40px] items-center'>
-                    {activity.isTemplate ? (
-                      <EditableTemplateName
-                        className='text-[32px] leading-9'
-                        name={activity.name}
-                        templateId={activity.id}
-                        teamTemplates={teamTemplates}
-                        isOwner={isOwner && isEditing}
-                      />
-                    ) : (
-                      <div className='text-[32px] font-semibold leading-tight text-slate-700'>
-                        {activity.name}
-                      </div>
-                    )}
-                  </div>
-                  {activity.isTemplate ? (
-                    <TemplateDetails
-                      activity={activity}
-                      viewerRef={viewer}
-                      templatesRef={availableTemplates.edges.map((edge) => edge.node)}
-                      isEditing={isEditing}
-                      setIsEditing={setIsEditing}
+                    <EditableTemplateName
+                      className='text-[32px] leading-9'
+                      name={activity.name}
+                      templateId={activity.id}
+                      isOwner={isOwner && isEditing}
                     />
-                  ) : (
-                    <MeetingDetails activity={activity} />
-                  )}
+                  </div>
+                  <TemplateDetails
+                    activityRef={activity}
+                    viewerRef={viewer}
+                    isEditing={isEditing}
+                    setIsEditing={setIsEditing}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
         <ActivityDetailsSidebar
-          selectedTemplateRef={activity.isTemplate ? activity.template : null}
+          selectedTemplateRef={activity}
           teamsRef={teams}
           isOpen={!isEditing}
           type={activity.type}
+          preferredTeamId={preferredTeamId}
         />
       </div>
     </div>

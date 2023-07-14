@@ -41,6 +41,10 @@ graphql`
           }
         }
       }
+      settings {
+        recallBotId
+        videoMeetingURL
+      }
     }
     team {
       id
@@ -114,11 +118,18 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       const hasTopicSummary = reflectionGroups.some((group) => group.summary)
       const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
       const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+      const hasTeamHealth = phases.some((phase) => phase.phaseType === 'TEAM_HEALTH')
       const pathname = `/new-summary/${meetingId}`
-      const search = hasOpenAISummary ? '?ai=true' : ''
+      const search = new URLSearchParams()
+      if (hasOpenAISummary) {
+        search.append('ai', 'true')
+      }
+      if (hasTeamHealth) {
+        search.append('team-health', 'true')
+      }
       history.push({
         pathname,
-        search
+        search: search.toString()
       })
     }
   }

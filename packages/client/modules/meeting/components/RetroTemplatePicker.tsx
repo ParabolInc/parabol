@@ -7,11 +7,9 @@ import useModal from '../../../hooks/useModal'
 import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import lazyPreload from '../../../utils/lazyPreload'
 import {RetroTemplatePicker_settings$key} from '../../../__generated__/RetroTemplatePicker_settings.graphql'
-import {RetroTemplatePicker_viewer$key} from '../../../__generated__/RetroTemplatePicker_viewer.graphql'
 
 interface Props {
   settingsRef: RetroTemplatePicker_settings$key
-  viewerRef: RetroTemplatePicker_viewer$key
 }
 
 const ReflectTemplateModal = lazyPreload(
@@ -23,7 +21,7 @@ const ReflectTemplateModal = lazyPreload(
 )
 
 const RetroTemplatePicker = (props: Props) => {
-  const {settingsRef, viewerRef} = props
+  const {settingsRef} = props
   const settings = useFragment(
     graphql`
       fragment RetroTemplatePicker_settings on RetrospectiveMeetingSettings {
@@ -38,20 +36,11 @@ const RetroTemplatePicker = (props: Props) => {
     `,
     settingsRef
   )
-  const viewer = useFragment(
-    graphql`
-      fragment RetroTemplatePicker_viewer on User {
-        ...ReflectTemplateModal_viewer
-      }
-    `,
-    viewerRef
-  )
 
   const {selectedTemplate} = settings
   const {name: templateName, scope} = selectedTemplate
   const {togglePortal, modalPortal, closePortal} = useModal({
-    id: 'templateModal',
-    parentId: 'newMeetingRoot'
+    id: 'templateModal'
   })
   const atmosphere = useAtmosphere()
 
@@ -73,11 +62,7 @@ const RetroTemplatePicker = (props: Props) => {
         title={'Template'}
       />
       {modalPortal(
-        <ReflectTemplateModal
-          closePortal={closePortal}
-          retroMeetingSettingsRef={settings}
-          viewerRef={viewer}
-        />
+        <ReflectTemplateModal closePortal={closePortal} retroMeetingSettingsRef={settings} />
       )}
     </>
   )

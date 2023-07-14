@@ -3,7 +3,6 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import {NewMeetingSettings_selectedTeam$key} from '~/__generated__/NewMeetingSettings_selectedTeam.graphql'
-import {NewMeetingSettings_viewer$key} from '~/__generated__/NewMeetingSettings_viewer.graphql'
 import NewMeetingSettingsAction from './NewMeetingSettingsAction'
 import NewMeetingSettingsPoker from './NewMeetingSettingsPoker'
 import NewMeetingSettingsRetrospective from './NewMeetingSettingsRetrospective'
@@ -12,7 +11,6 @@ import NewMeetingSettingsTeamPrompt from './NewMeetingSettingsTeamPrompt'
 interface Props {
   meetingType: MeetingTypeEnum
   selectedTeamRef: NewMeetingSettings_selectedTeam$key
-  viewerRef: NewMeetingSettings_viewer$key
 }
 
 const settingsLookup = {
@@ -23,16 +21,7 @@ const settingsLookup = {
 }
 
 const NewMeetingSettings = (props: Props) => {
-  const {meetingType, selectedTeamRef, viewerRef} = props
-  const viewer = useFragment(
-    graphql`
-      fragment NewMeetingSettings_viewer on User {
-        ...NewMeetingSettingsRetrospective_viewer
-        ...NewMeetingSettingsPoker_viewer
-      }
-    `,
-    viewerRef
-  )
+  const {meetingType, selectedTeamRef} = props
   const selectedTeam = useFragment(
     graphql`
       fragment NewMeetingSettings_selectedTeam on Team {
@@ -47,7 +36,7 @@ const NewMeetingSettings = (props: Props) => {
   )
 
   const Settings = settingsLookup[meetingType]
-  return <Settings teamRef={selectedTeam} viewerRef={viewer} />
+  return <Settings teamRef={selectedTeam} />
 }
 
 export default NewMeetingSettings

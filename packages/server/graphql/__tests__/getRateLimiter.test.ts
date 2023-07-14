@@ -6,7 +6,7 @@ const originalRateLimiterEnvVariable = process.env.CI
 describe('getRateLimiter', () => {
   beforeEach(() => {
     delete process.env.CI
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
   })
 
   afterEach(() => {

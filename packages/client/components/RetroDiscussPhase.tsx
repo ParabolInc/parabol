@@ -12,7 +12,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
-import {DiscussionThreadables, Header as DiscussionThreadHeader} from './DiscussionThreadList'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
@@ -27,6 +27,8 @@ import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
+import RetroDiscussionThreadHeader from './RetroDiscussionThreadHeader'
+
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting$key
 }
@@ -144,9 +146,13 @@ const RetroDiscussPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
+        id
         endedAt
+        showTranscription
+        transcription
         organization {
           ...DiscussPhaseSqueeze_organization
+          ...RetroDiscussionThreadHeader_organization
         }
         showSidebar
         phases {
@@ -157,12 +163,24 @@ const RetroDiscussPhase = (props: Props) => {
         localStage {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
+        settings {
+          ...DiscussionThreadListEmptyState_settings
+        }
       }
     `,
     meetingRef
   )
   const [callbackRef, phaseRef] = useCallbackRef()
-  const {endedAt, localStage, showSidebar, organization} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    localStage,
+    showSidebar,
+    organization,
+    showTranscription,
+    transcription,
+    settings
+  } = meeting
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
@@ -237,13 +255,21 @@ const RetroDiscussPhase = (props: Props) => {
                   allowedThreadables={allowedThreadables}
                   meetingContentRef={phaseRef}
                   discussionId={discussionId!}
+                  showTranscription={showTranscription}
+                  transcription={transcription}
                   header={
-                    <DiscussionThreadHeader>{'Discussion & Takeaway Tasks'}</DiscussionThreadHeader>
+                    <RetroDiscussionThreadHeader
+                      meetingId={meetingId}
+                      showTranscription={showTranscription}
+                      organizationRef={organization}
+                    />
                   }
                   emptyState={
                     <DiscussionThreadListEmptyState
                       allowTasks={true}
                       isReadOnly={allowedThreadables.length === 0}
+                      settingsRef={settings}
+                      showTranscription={showTranscription}
                     />
                   }
                 />

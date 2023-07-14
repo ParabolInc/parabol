@@ -11,6 +11,7 @@ import './initSentry'
 import githubWebhookHandler from './integrations/githubWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
+import './monkeyPatchFetch'
 import PROD from './PROD'
 import PWAHandler from './PWAHandler'
 import selfHostedHandler from './selfHostedHandler'
@@ -22,28 +23,17 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
-import ServerHealthChecker from './utils/ServerHealthChecker'
 
 tracer.init({
   service: `Web ${process.env.SERVER_ID}`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false
 })
-tracer.use('ioredis').use('http').use('pg').use('fs')
+tracer.use('ioredis').use('http').use('pg')
 
-const onKill = async () => {
-  r.getPoolMaster()?.drain()
-  const healthChecker = new ServerHealthChecker()
-  await healthChecker.reportDeadServers([process.env.SERVER_ID!])
-  process.exit()
-}
-
-// If the process is getting killed, remove all the user presence from redis
-process.on('SIGTERM', onKill)
 if (!PROD) {
   process.on('SIGINT', async () => {
     r.getPoolMaster()?.drain()
-    onKill()
   })
 }
 

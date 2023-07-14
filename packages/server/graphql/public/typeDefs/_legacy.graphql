@@ -6203,6 +6203,7 @@ type Mutation {
     The name of the new team
     """
     orgName: String!
+    invitees: [String!]
   ): AddOrgPayload!
 
   """
@@ -6213,6 +6214,7 @@ type Mutation {
     The new team object
     """
     newTeam: NewTeamInput!
+    invitees: [String!]
   ): AddTeamPayload!
   archiveOrganization(
     """
@@ -6236,18 +6238,6 @@ type Mutation {
     """
     timelineEventId: ID!
   ): ArchiveTimelineEventPayload!
-
-  """
-  Automatically group reflections
-  """
-  autoGroupReflections(
-    meetingId: ID!
-
-    """
-    A number from 0 to 1 to determine how tightly to pack the groups. Higher means fewer groups
-    """
-    groupingThreshold: Float!
-  ): AutoGroupReflectionsPayload
 
   """
   Change the team a task is associated with. Also copy the viewers integration if necessary.
@@ -6913,26 +6903,6 @@ type Mutation {
   setDefaultSlackChannel(slackChannelId: ID!, teamId: ID!): SetDefaultSlackChannelPayload!
 
   """
-  Set the role of a user
-  """
-  setOrgUserRole(
-    """
-    The org to affect
-    """
-    orgId: ID!
-
-    """
-    the user who is receiving a role change
-    """
-    userId: ID!
-
-    """
-    the user’s new role
-    """
-    role: String
-  ): SetOrgUserRolePayload
-
-  """
   Focus (or unfocus) a phase item
   """
   setPhaseFocus(
@@ -7039,7 +7009,7 @@ type Mutation {
   """
   Update an existing credit card on file
   """
-  updateCreditCard(
+  oldUpdateCreditCard(
     """
     the org requesting the changed billing
     """
@@ -7049,17 +7019,7 @@ type Mutation {
     The token that came back from stripe
     """
     stripeToken: ID!
-  ): UpdateCreditCardPayload
-
-  """
-  Update an with a change in name, avatar
-  """
-  updateOrg(
-    """
-    the updated org including the id, and at least one other field
-    """
-    updatedOrg: UpdateOrgInput!
-  ): UpdateOrgPayload!
+  ): OldUpdateCreditCardPayload
 
   """
   Update the scale used for a dimension in a template
@@ -7207,17 +7167,11 @@ type Mutation {
     """
     scope: SharingScopeEnum!
   ): UpdateTemplateScopePayload!
-  updateUserProfile(
-    """
-    The input object containing the user profile fields that can be changed
-    """
-    updatedUser: UpdateUserProfileInput!
-  ): UpdateUserProfilePayload
 
   """
   Upgrade an account to the paid service
   """
-  upgradeToTeamTier(
+  oldUpgradeToTeamTier(
     """
     the org requesting the upgrade
     """
@@ -7227,32 +7181,7 @@ type Mutation {
     The token that came back from stripe
     """
     stripeToken: ID!
-  ): UpgradeToTeamTierPayload
-
-  """
-  Upload an image for an org avatar
-  """
-  uploadOrgImage(
-    """
-    the org avatar image file
-    """
-    file: File!
-
-    """
-    The org id to upload an avatar for
-    """
-    orgId: ID!
-  ): UpdateOrgPayload!
-
-  """
-  Upload an image for a user avatar
-  """
-  uploadUserImage(
-    """
-    the user avatar image file
-    """
-    file: File!
-  ): UpdateUserProfilePayload
+  ): OldUpgradeToTeamTierPayload
 
   """
   Cast your vote for a reflection group
@@ -7800,14 +7729,6 @@ type ArchiveTimelineEventSuccess {
   the archived timelineEvent
   """
   timelineEvent: TimelineEvent!
-}
-
-type AutoGroupReflectionsPayload {
-  error: StandardMutationError
-  meeting: RetrospectiveMeeting
-  reflections: [RetroReflection]
-  reflectionGroups: [RetroReflectionGroup]
-  removedReflectionGroups: [RetroReflectionGroup]
 }
 
 type ChangeTaskTeamPayload {
@@ -8904,12 +8825,6 @@ type SetDefaultSlackChannelSuccess {
   teamMember: TeamMember!
 }
 
-interface SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
-}
-
 type SetPhaseFocusPayload {
   error: StandardMutationError
   meeting: RetrospectiveMeeting!
@@ -9055,7 +8970,7 @@ type UpdateCommentContentSuccess {
   comment: Comment!
 }
 
-type UpdateCreditCardPayload {
+type OldUpdateCreditCardPayload {
   error: StandardMutationError
 
   """
@@ -9067,32 +8982,6 @@ type UpdateCreditCardPayload {
   The teams that are now paid up
   """
   teamsUpdated: [Team]
-}
-
-type UpdateOrgPayload {
-  error: StandardMutationError
-
-  """
-  The updated org
-  """
-  organization: Organization
-}
-
-input UpdateOrgInput {
-  """
-  The unique action ID
-  """
-  id: ID!
-
-  """
-  The name of the org
-  """
-  name: String
-
-  """
-  The org avatar
-  """
-  picture: URL
 }
 
 type UpdatePokerTemplateDimensionScalePayload {
@@ -9305,29 +9194,7 @@ type UpdateTemplateScopeSuccess {
   settings: TeamMeetingSettings!
 }
 
-type UpdateUserProfilePayload {
-  error: StandardMutationError
-  user: User
-
-  """
-  The updated team member
-  """
-  teamMembers: [TeamMember!]
-}
-
-input UpdateUserProfileInput {
-  """
-  A link to the user’s profile image.
-  """
-  picture: URL
-
-  """
-  The name, as confirmed by the user
-  """
-  preferredName: String
-}
-
-type UpgradeToTeamTierPayload {
+type OldUpgradeToTeamTierPayload {
   error: StandardMutationError
 
   """
@@ -10053,23 +9920,6 @@ type AuthTokenPayload {
   The encoded JWT
   """
   id: ID!
-}
-
-type SetOrgUserRoleAddedPayload implements SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
-
-  """
-  If promoted, notify them and give them all other admin notifications
-  """
-  notificationsAdded: [Notification]
-}
-
-type SetOrgUserRoleRemovedPayload implements SetOrgUserRolePayload {
-  error: StandardMutationError
-  organization: Organization
-  updatedOrgMember: OrganizationUser
 }
 
 type RenamePokerTemplatePayload {

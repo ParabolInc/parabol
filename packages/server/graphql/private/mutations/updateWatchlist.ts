@@ -6,8 +6,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
   _source,
-  {includeInWatchlist, emails, domain},
-  {authToken}
+  {includeInWatchlist, emails, domain}
 ) => {
   // RESOLUTION
   const users = [] as User[]

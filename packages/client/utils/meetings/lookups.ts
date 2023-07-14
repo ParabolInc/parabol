@@ -51,6 +51,7 @@ export const meetingTypeToIcon = {
 
 export const phaseTypeToSlug = {
   checkin: 'checkin',
+  TEAM_HEALTH: 'teamhealth',
   reflect: 'reflect',
   group: 'group',
   vote: 'vote',

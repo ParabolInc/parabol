@@ -72,7 +72,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('meetingType').eq('retro'))
+        .filter((row: RValue) => row('meetingType').eq('retro'))
         .eqJoin('id', r.table('RetroReflection'), {index: 'meetingId'})
         .zip() as any
     )
@@ -84,12 +84,12 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) => row('facilitatorUserId').eq(userIdToDelete))
+      .filter((row: RValue) => row('facilitatorUserId').eq(userIdToDelete))
       .merge((meeting: RValue) => ({
         otherTeamMember: r
           .table('TeamMember')
           .getAll(meeting('teamId'), {index: 'teamId'})
-          .filter((row) => row('userId').ne(userIdToDelete))
+          .filter((row: RValue) => row('userId').ne(userIdToDelete))
           .nth(0)
           .getField('userId')
           .default(null)
@@ -100,12 +100,12 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) => row('createdBy').eq(userIdToDelete))
+      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
       .merge((meeting: RValue) => ({
         otherTeamMember: r
           .table('TeamMember')
           .getAll(meeting('teamId'), {index: 'teamId'})
-          .filter((row) => row('userId').ne(userIdToDelete))
+          .filter((row: RValue) => row('userId').ne(userIdToDelete))
           .nth(0)
           .getField('userId')
           .default(null)
@@ -133,7 +133,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     createdTasks: r
       .table('Task')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) => row('createdBy').eq(userIdToDelete))
+      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
       .delete(),
     timelineEvent: r
       .table('TimelineEvent')
@@ -144,7 +144,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     agendaItem: r
       .table('AgendaItem')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) => r(teamMemberIds).contains(row('teamMemberId')))
+      .filter((row: RValue) => r(teamMemberIds).contains(row('teamMemberId')))
       .delete(),
     pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
     retroReflection: r
@@ -158,17 +158,17 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     invitedByTeamInvitation: r
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) => row('invitedBy').eq(userIdToDelete))
+      .filter((row: RValue) => row('invitedBy').eq(userIdToDelete))
       .delete(),
     createdByTeamInvitations: r
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) => row('acceptedBy').eq(userIdToDelete))
+      .filter((row: RValue) => row('acceptedBy').eq(userIdToDelete))
       .update({acceptedBy: ''}),
     comment: r
       .table('Comment')
       .getAll(r.args(teamDiscussionIds), {index: 'discussionId'})
-      .filter((row) => row('createdBy').eq(userIdToDelete))
+      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
       .update({
         createdBy: tombstoneId,
         isAnonymous: true
@@ -210,7 +210,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   ])
 
   // Send metrics to HubSpot before the user is really deleted in DB
-  await sendAccountRemovedToSegment(userIdToDelete, user.email, reasonText)
+  await sendAccountRemovedToSegment(userIdToDelete, user.email, reasonText ?? '')
 
   // User needs to be deleted after children
   await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])

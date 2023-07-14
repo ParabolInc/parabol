@@ -49,6 +49,10 @@ const ReviewRequestToJoinOrgRoot = lazy(
   () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
 )
 
+const ShareTopicRoot = lazy(
+  () => import(/* webpackChunkName: 'ShareTopicRoot' */ './ShareTopicRoot')
+)
+
 const NewMeetingRoot = lazy(
   () => import(/* webpackChunkName: 'NewMeetingRoot' */ './NewMeetingRoot')
 )
@@ -63,7 +67,7 @@ const PrivateRoutes = () => {
       <Switch location={state?.backgroundLocation || location}>
         <Route path='/activity-library' component={ActivityLibraryRoutes} />
         <Route
-          path='(/meetings|/me|/newteam|/team|/usage|/new-meeting)'
+          path='(/meetings|/me|/newteam|/team|/usage|/new-meeting|/organization-join-request)'
           component={DashboardRoot}
         />
         <Route path='/meet/:meetingId' component={MeetingRoot} />
@@ -81,6 +85,7 @@ const PrivateRoutes = () => {
           path='/organization-join-request/:requestId'
           component={ReviewRequestToJoinOrgRoot}
         />
+        <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRoot} />
         <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
       </Switch>
     </>
