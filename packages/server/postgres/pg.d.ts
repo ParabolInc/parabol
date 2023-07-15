@@ -209,12 +209,6 @@ export interface OrganizationUserAudit {
   eventType: 'activated' | 'added' | 'inactivated' | 'removed'
 }
 
-export interface PgPostDeployMigrations {
-  id: Generated<number>
-  name: string
-  run_on: Timestamp
-}
-
 export interface Poll {
   id: Generated<number>
   createdAt: Generated<Timestamp>
@@ -354,7 +348,6 @@ export interface DB {
   MeetingTemplateUserFavorite: MeetingTemplateUserFavorite
   OrganizationApprovedDomain: OrganizationApprovedDomain
   OrganizationUserAudit: OrganizationUserAudit
-  PgPostDeployMigrations: PgPostDeployMigrations
   Poll: Poll
   PollOption: PollOption
   TaskEstimate: TaskEstimate
