@@ -38,7 +38,7 @@ const addSummariesToThreads = async (
 
     const discussionPromptQuestionHtml =
       idx === 0
-        ? `<html><body><i>${AIExplainer.PREMIUM_DISCUSSION_PROMPT_QUESTION}</i><br><p><b>🤖 Discussion Question</b></p><p>${group.discussionPromptQuestion}</p></body></html>`
+        ? `<html><body><p><b>🤖 Discussion Question</b></p><p>${group.discussionPromptQuestion}</p></body></html>`
         : `<html><body><p><b>🤖 Discussion Question</b></p><p>${group.discussionPromptQuestion}</p></body></html>`
     const discussionPromptQuestionBlock = convertHtmlToTaskContent(discussionPromptQuestionHtml)
     const discussionPromptQuestionCommentInput = {

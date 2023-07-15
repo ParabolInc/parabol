@@ -44,13 +44,11 @@ const generateGroupSummaries = async (
         : undefined
       if (!summary && !discussionPromptQuestion) return
 
-      return r({
-        summary: r.table('RetroReflectionGroup').get(group.id).update({summary}),
-        discussionPromptQuestion: r
-          .table('RetroReflectionGroup')
-          .get(group.id)
-          .update({discussionPromptQuestion})
-      }).run()
+      return r
+        .table('RetroReflectionGroup')
+        .get(group.id)
+        .update({summary, discussionPromptQuestion})
+        .run()
     })
   )
 }

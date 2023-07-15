@@ -62,7 +62,7 @@ class OpenAIServerManager {
 
     Step 2: Once you have categorized the topic, formulate a question that aligns with the example question provided for that group. If the topic does not belong to any of the groups, come up with a good question yourself for a productive discussion.
 
-    Step 3: Finally, provide me with the question you have formulated without disclosing any information about the group it belongs to.
+    Step 3: Finally, provide me with the question you have formulated without disclosing any information about the group it belongs to. When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
 
     Topic: ${topic}
     Comments:
@@ -78,18 +78,15 @@ class OpenAIServerManager {
             content: prompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 80,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        temperature: 0.3,
+        max_tokens: 80
       })
-      return (
+      const question =
         (response.data.choices[0]?.message?.content?.trim() as string).replace(
           /^[Qq]uestion:*\s*/gi,
           ''
         ) ?? null
-      )
+      return question ? question.replace(/['"]+/g, '') : null
     } catch (e) {
       const error =
         e instanceof Error
