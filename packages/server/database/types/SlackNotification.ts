@@ -4,7 +4,8 @@ export const slackNotificationEventTypeLookup = {
   meetingStart: 'team',
   meetingEnd: 'team',
   MEETING_STAGE_TIME_LIMIT_END: 'member',
-  MEETING_STAGE_TIME_LIMIT_START: 'team'
+  MEETING_STAGE_TIME_LIMIT_START: 'team',
+  TOPIC_SHARED: 'member'
 } as const
 
 export type SlackNotificationEvent = keyof typeof slackNotificationEventTypeLookup
@@ -13,6 +14,7 @@ export type SlackNotificationEventEnum =
   | 'MEETING_STAGE_TIME_LIMIT_START'
   | 'meetingEnd'
   | 'meetingStart'
+  | 'TOPIC_SHARED'
 
 interface Input {
   event: SlackNotificationEvent

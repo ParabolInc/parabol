@@ -13,7 +13,7 @@ services:
     networks:
       - parabol-network
   postgres:
-    image: postgres:12.10
+    image: postgres:12.15
     restart: always
     env_file: .env
     ports:

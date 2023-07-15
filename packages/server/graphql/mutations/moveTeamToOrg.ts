@@ -14,6 +14,8 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
 import getKysely from '../../postgres/getKysely'
 
+const MAX_NUM_TEAMS = 40
+
 const moveToOrg = async (
   teamId: string,
   orgId: string,
@@ -149,6 +151,11 @@ export default {
     {teamIds, orgId}: {teamIds: string[]; orgId: string},
     {authToken, dataLoader}: GQLContext
   ) {
+    if (teamIds.length > MAX_NUM_TEAMS) {
+      // Running this mutation with more than ~50 team IDs usually times out on prod. Splitting into
+      // batches is the workaround, so fail quickly with a descriptive error when this is the case.
+      return `Error: Can only move ${MAX_NUM_TEAMS} teams at once. Please split team IDs into batches.`
+    }
     const results = [] as (string | any)[]
     for (let i = 0; i < teamIds.length; i++) {
       const teamId = teamIds[i]!

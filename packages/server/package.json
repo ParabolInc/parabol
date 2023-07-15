@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.111.0",
+  "version": "6.112.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -80,7 +80,6 @@
     "webpack-s3-plugin": "^1.2.0-rc.0"
   },
   "dependencies": {
-    "@authenio/samlify-node-xmllint": "^2.0.0",
     "@aws-sdk/client-s3": "^3.315.0",
     "@graphql-tools/schema": "^9.0.16",
     "@mattkrick/sanitize-svg": "0.4.0",
@@ -102,6 +101,7 @@
     "draft-js-export-markdown": "^1.3.3",
     "emoji-mart": "^3.0.1",
     "fast-json-stable-stringify": "^2.1.0",
+    "fast-xml-parser": "^4.2.5",
     "graphql": "15.7.2",
     "graphql-jit": "^0.7.4",
     "graphql-middleware": "^6.1.18",
@@ -123,7 +123,7 @@
     "oauth-1.0a": "^2.2.6",
     "openai": "^3.3.0",
     "oy-vey": "^0.11.0",
-    "parabol-client": "^6.111.0",
+    "parabol-client": "^6.112.0",
     "pg": "^8.5.1",
     "pm2": "^5.2.0",
     "react": "^17.0.2",
