@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {ArrowForward, Check} from '@mui/icons-material'
+import {ArrowForward, CheckCircleOutline} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -131,7 +131,12 @@ const BottomControlBarReady = (props: Props) => {
         gotoNext()
       })
     : undefined
-  const label = isNext ? 'Next' : 'Ready'
+  let label = ''
+  if (isNext) {
+    label = progress === 1.0 ? 'Next' : `${readyCount} / ${Math.max(1, activeCount - 1)} Ready`
+  } else {
+    label = isViewerReady ? 'Undo ready status' : 'Tap when ready'
+  }
   const getDisabled = () => {
     if (!isNext) return false
     if (phaseType === 'reflect') {
@@ -154,10 +159,10 @@ const BottomControlBarReady = (props: Props) => {
         ref={ref}
       >
         <BottomControlBarReadyButton meetingRef={meeting} progress={progress}>
-          <BottomControlBarProgress isNext={isNext} progress={progress} />
+          {isNext && <BottomControlBarProgress isNext={isNext} progress={progress} />}
           <BottomNavIconLabel label={label} ref={originRef}>
             <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-              {isNext ? <ArrowForward /> : <Check />}
+              {isNext ? <ArrowForward /> : <CheckCircleOutline />}
             </StyledIcon>
           </BottomNavIconLabel>
         </BottomControlBarReadyButton>
