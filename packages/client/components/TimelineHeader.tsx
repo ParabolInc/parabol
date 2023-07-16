@@ -16,7 +16,7 @@ import {TimelineHeader_viewer$key} from '../__generated__/TimelineHeader_viewer.
 const TeamFilterMenu = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'TimelineEventTypeMenu' */
+      /* webpackChunkName: 'TeamFilterMenu' */
       './TeamFilterMenu'
     )
 )
