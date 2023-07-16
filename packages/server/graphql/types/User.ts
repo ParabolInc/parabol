@@ -49,16 +49,7 @@ import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import TimelineEvent from '../../database/types/TimelineEvent'
 import {RDatum} from '../../database/stricterR'
-import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-
-const getValidTeamIds = (teamIds: null | string[], tms: string[]) => {
-  // the following comments can be removed pending #4070
-  // const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
-  // const viewerTeamIds = viewerTeamMembers.map(({teamId}) => teamId)
-  if (teamIds?.length) return teamIds!.filter((teamId) => tms.includes(teamId))
-  // filter the teamIds array to only teams the user has a team member for
-  return tms
-}
+import {getValidTeamIds} from '../getValidTeamIds'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -234,12 +225,20 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
 
         // VALIDATE
         if (teamIds?.length > 100) {
-          const err = new Error('Timeline filter is too broad')
-          standardError(err, {
+          const error = new Error('Timeline filter is too broad')
+          standardError(error, {
             userId: viewerId,
             tags: {teamIds: JSON.stringify(teamIds)}
           })
-          return connectionFromTasks([], 0, err)
+          return {
+            error,
+            pageInfo: {
+              startCursor: after,
+              endCursor: after,
+              hasNextPage: false
+            },
+            edges: []
+          }
         }
         const validTeamIds = getValidTeamIds(teamIds, authToken.tms)
 
