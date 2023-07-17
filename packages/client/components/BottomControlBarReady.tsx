@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {ArrowForward, CheckCircleOutline} from '@mui/icons-material'
+import {ArrowForward, CheckCircleOutline, CheckCircle} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -15,7 +15,6 @@ import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import BottomControlBarProgress from './BottomControlBarProgress'
-import BottomControlBarReadyButton from './BottomControlBarReadyButton'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 
@@ -35,16 +34,15 @@ const StyledIcon = styled('div')<{progress: number; isNext: boolean; isViewerRea
   ({isViewerReady, progress, isNext}) => ({
     height: 24,
     width: 24,
-    opacity: isNext ? 1 : isViewerReady ? 1 : 0.5,
     transformOrigin: '0 0',
     // 20px to 16 = 0.75
-    transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
+    transform: isNext ? (progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined) : 'none',
     transition: `transform 100ms ${BezierCurve.DECELERATE}`,
     svg: {
       // without fill property the stroke property will be ignored
       fill: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
       stroke: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
-      strokeWidth: 1
+      strokeWidth: isNext ? 1 : 0
     }
   })
 )
@@ -65,7 +63,6 @@ const BottomControlBarReady = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarReady_meeting on NewMeeting {
-        ...BottomControlBarReadyButton_meeting
         ... on RetrospectiveMeeting {
           reflectionGroups {
             id
@@ -92,7 +89,7 @@ const BottomControlBarReady = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, localPhase, localStage, meetingMembers, reflectionGroups} = meeting
+  const {id: meetingId, localPhase, localStage, meetingMembers} = meeting
   const stages = localPhase.stages || []
   const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
@@ -100,7 +97,6 @@ const BottomControlBarReady = (props: Props) => {
   const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER,
     {
-      disabled: !isConfirming,
       delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
     }
   )
@@ -137,20 +133,11 @@ const BottomControlBarReady = (props: Props) => {
   } else {
     label = isViewerReady ? 'Undo ready status' : 'Tap when ready'
   }
-  const getDisabled = () => {
-    if (!isNext) return false
-    if (phaseType === 'reflect') {
-      return reflectionGroups?.length === 0 ?? true
-    }
-    return false
-  }
 
-  const disabled = getDisabled()
   return (
     <>
       <BottomNavControl
         dataCy={`next-phase`}
-        disabled={disabled}
         confirming={!!cancelConfirm}
         onClick={cancelConfirm || onClick}
         status={status}
@@ -158,14 +145,12 @@ const BottomControlBarReady = (props: Props) => {
         onKeyDown={onKeyDown}
         ref={ref}
       >
-        <BottomControlBarReadyButton meetingRef={meeting} progress={progress}>
-          {isNext && <BottomControlBarProgress isNext={isNext} progress={progress} />}
-          <BottomNavIconLabel label={label} ref={originRef}>
-            <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-              {isNext ? <ArrowForward /> : <CheckCircleOutline />}
-            </StyledIcon>
-          </BottomNavIconLabel>
-        </BottomControlBarReadyButton>
+        {isNext && <BottomControlBarProgress isNext={isNext} progress={progress} />}
+        <BottomNavIconLabel className='px-2' label={label} ref={originRef}>
+          <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
+            {isNext ? <ArrowForward /> : isViewerReady ? <CheckCircle /> : <CheckCircleOutline />}
+          </StyledIcon>
+        </BottomNavIconLabel>
       </BottomNavControl>
       {tooltipPortal(`Tap 'Next' again if everyone is ready`)}
     </>
