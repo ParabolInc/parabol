@@ -19,7 +19,6 @@ import addTeamMemberIntegrationAuth from './mutations/addTeamMemberIntegrationAu
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
-import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
@@ -55,6 +54,8 @@ import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
+import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
+import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
 import payLater from './mutations/payLater'
 import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
@@ -108,7 +109,6 @@ import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateCommentContent from './mutations/updateCommentContent'
-import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateIntegrationProvider from './mutations/updateIntegrationProvider'
@@ -123,7 +123,6 @@ import updateTask from './mutations/updateTask'
 import updateTaskDueDate from './mutations/updateTaskDueDate'
 import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
-import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
@@ -148,7 +147,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       archiveOrganization,
       archiveTeam,
       archiveTimelineEvent,
-      autoGroupReflections,
       changeTaskTeam,
       setNotificationStatus,
       createTaskIntegration,
