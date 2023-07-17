@@ -36,7 +36,8 @@ const notifySlack = async (
   event: SlackNotificationEvent,
   teamId: string,
   slackMessage: string | Array<{type: string}>,
-  notificationText?: string
+  notificationText?: string,
+  segmentProperties?: object
 ): Promise<NotifyResponse> => {
   const {channelId, auth} = notificationChannel
   const {botAccessToken, userId} = auth
@@ -47,7 +48,8 @@ const notifySlack = async (
     event: 'Slack notification sent',
     properties: {
       teamId,
-      notificationEvent: event
+      notificationEvent: event,
+      ...segmentProperties
     }
   })
 
@@ -396,6 +398,8 @@ export const SlackNotifier: Notifier = {
       auth: slackAuth
     }
 
-    return notifySlack(notificationChannel, 'TOPIC_SHARED', team.id, slackBlocks)
+    return notifySlack(notificationChannel, 'TOPIC_SHARED', team.id, slackBlocks, undefined, {
+      reflectionGroupId
+    })
   }
 }
