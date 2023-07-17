@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -32,6 +33,7 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -75,13 +77,20 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('RetroReflectionGroup')
-      .get(reflectionGroupId)
-      .update({
-        title: normalizedTitle
-      })
-      .run()
+    await Promise.all([
+      r
+        .table('RetroReflectionGroup')
+        .get(reflectionGroupId)
+        .update({
+          title: normalizedTitle
+        })
+        .run(),
+      pg
+        .updateTable('RetroReflectionGroup')
+        .set({title: normalizedTitle})
+        .where('id', '=', reflectionGroupId)
+        .execute()
+    ])
 
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!

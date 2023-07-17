@@ -1,7 +1,9 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import endTimerSound from '../../../static/sounds/tic-tac.mp3'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRefreshInterval from '../hooks/useRefreshInterval'
+import useSoundEffect from '../hooks/useSoundEffect'
 import {DECELERATE, fadeIn} from '../styles/animation'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
@@ -35,11 +37,19 @@ const StageTimerDisplayGauge = (props: Props) => {
   useRefreshInterval(1000)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const timeLeft = endTime && countdown(endTime)
+
+  const soundRef = useSoundEffect({endTime})
+
   const fromNow = timeLeft || 'Time’s Up!'
   return (
-    <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
-      {fromNow}
-    </Gauge>
+    <>
+      <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
+        {fromNow}
+      </Gauge>
+      <audio ref={soundRef} aria-hidden className='hidden' autoPlay={false}>
+        <source src={endTimerSound} type='audio/mp3' />
+      </audio>
+    </>
   )
 }
 

@@ -7,7 +7,8 @@ const SlackNotificationEventEnum = new GraphQLEnumType({
     meetingStart: {},
     meetingEnd: {},
     MEETING_STAGE_TIME_LIMIT_END: {}, // user event
-    MEETING_STAGE_TIME_LIMIT_START: {}
+    MEETING_STAGE_TIME_LIMIT_START: {},
+    TOPIC_SHARED: {}
   }
 })
 
