@@ -16,6 +16,7 @@ import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroups from './generateGroups'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
+import addRecallBot from './addRecallBot'
 
 /*
  * handle side effects when a stage is completed
@@ -100,6 +101,7 @@ const handleCompletedRetrospectiveStage = async (
     // create new threads
     const {discussPhaseStages} = data
     const {id: meetingId, teamId} = meeting
+    addRecallBot(teamId, dataLoader)
     const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
       meetingId,

@@ -5,16 +5,8 @@ import {RValue} from '../../../database/stricterR'
 import {analytics, MeetingSettings} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
-
-const getBotId = async (videoMeetingURL?: string | null) => {
-  if (!videoMeetingURL) return null
-  const manager = new RecallAIServerManager()
-  const botId = await manager.createBot(videoMeetingURL)
-  return botId
-}
 
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,
@@ -38,7 +30,6 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   const organization = await dataLoader.get('organizations').load(team.orgId)
   const {featureFlags} = organization
   const hasTranscriptFlag = featureFlags?.includes('zoomTranscription')
-  const recallBotId = hasTranscriptFlag ? await getBotId(videoMeetingURL) : null
 
   const meetingSettings = {} as MeetingSettings
   await r
@@ -71,11 +62,9 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
         meetingSettings.disableAnonymity = disableAnonymity
       }
 
-      if (isNotNull(videoMeetingURL) && isNotNull(recallBotId)) {
+      if (hasTranscriptFlag) {
         updatedSettings.videoMeetingURL = videoMeetingURL
-        updatedSettings.recallBotId = recallBotId
         meetingSettings.videoMeetingURL = videoMeetingURL
-        meetingSettings.recallBotId = recallBotId
       }
 
       return updatedSettings
