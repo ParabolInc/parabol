@@ -359,8 +359,19 @@ export const SlackNotifier: Notifier = {
     }
 
     const topic = reflectionGroup.title
-    const discussionUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/${stageIndex + 1}`)
-    const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
+    const options = {
+      searchParams: {
+        utm_source: 'slack share',
+        utm_medium: 'product',
+        utm_campaign: 'sharing'
+      }
+    }
+    const discussionUrl = makeAppURL(
+      appOrigin,
+      `meet/${meetingId}/discuss/${stageIndex + 1}`,
+      options
+    )
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
 
     const reflectionsText = reflections
       .map((reflection) => `• ${reflection.plaintextContent}`)
