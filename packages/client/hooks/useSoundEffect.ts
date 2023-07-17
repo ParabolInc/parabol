@@ -1,6 +1,14 @@
 import {useEffect, useRef} from 'react'
 
-type Props = {startTime: Date | string} | {endTime: Date | string}
+type Props =
+  | {
+      startTime: Date | string
+      endTime?: never
+    }
+  | {
+      endTime: Date | string
+      startTime?: never
+    }
 
 const safeDuration = (audio: HTMLAudioElement | null) => {
   const duration = audio?.duration
@@ -14,7 +22,7 @@ const useSoundEffect = (props: Props) => {
   const soundRef = useRef<HTMLAudioElement>(null)
 
   const end =
-    'startTime' in props
+    props.startTime !== undefined
       ? new Date(props.startTime).valueOf()
       : new Date(props.endTime).valueOf() - safeDuration(soundRef.current) * 1000
   const now = new Date().valueOf()
