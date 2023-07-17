@@ -49,8 +49,8 @@ const ReviewRequestToJoinOrgRoot = lazy(
   () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
 )
 
-const ShareTopicRoot = lazy(
-  () => import(/* webpackChunkName: 'ShareTopicRoot' */ './ShareTopicRoot')
+const ShareTopicRouterRoot = lazy(
+  () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
 )
 
 const NewMeetingRoot = lazy(
@@ -85,7 +85,7 @@ const PrivateRoutes = () => {
           path='/organization-join-request/:requestId'
           component={ReviewRequestToJoinOrgRoot}
         />
-        <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRoot} />
+        <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRouterRoot} />
         <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
       </Switch>
     </>

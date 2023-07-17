@@ -1,7 +1,7 @@
 import React, {lazy} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 
 const MyDashboardTasksRoot = lazy(
   () => import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../components/MyDashboardTasksRoot')
@@ -13,7 +13,7 @@ const ArchiveTaskUserRoot = lazy(
 
 const UserTaskViewRoot = () => {
   const atmosphere = useAtmosphere()
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
+  const {userIds, teamIds, showArchived} = useQueryParameterParser(atmosphere.viewerId)
 
   useDocumentTitle('Tasks | Parabol', 'Tasks')
 
