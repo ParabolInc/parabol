@@ -71,6 +71,7 @@ const PayURL = styled('a')({
 interface Props {
   invoice: InvoiceRow_invoice$key
 }
+
 const InvoiceRow = (props: Props) => {
   const {invoice: invoiceRef} = props
   const invoice = useFragment(
