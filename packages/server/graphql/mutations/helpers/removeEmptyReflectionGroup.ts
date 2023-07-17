@@ -1,29 +1,34 @@
 import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
+import getKysely from '../../../postgres/getKysely'
 
 const removeEmptyReflectionGroup = async (
   reflectionGroupId: string,
   oldReflectionGroupId: string
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   if (!reflectionGroupId) return false
-  return r
+  const reflectionCount = await r
     .table('RetroReflection')
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
     .filter({isActive: true})
     .count()
-    .do((len: RValue) => {
-      return r.branch(
-        len.eq(0),
-        r.table('RetroReflectionGroup').get(oldReflectionGroupId).update({
-          isActive: false,
-          updatedAt: now
-        }),
-        null
-      )
-    })
     .run()
+  if (reflectionCount > 0) return
+
+  return Promise.all([
+    pg
+      .updateTable('RetroReflectionGroup')
+      .set({isActive: false})
+      .where('id', '=', oldReflectionGroupId)
+      .execute(),
+    r
+      .table('RetroReflectionGroup')
+      .get(oldReflectionGroupId)
+      .update({isActive: false, updatedAt: now})
+      .run()
+  ])
 }
 
 export default removeEmptyReflectionGroup

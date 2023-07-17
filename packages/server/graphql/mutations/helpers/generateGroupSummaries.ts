@@ -1,4 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../graphql'
@@ -21,6 +22,7 @@ const generateGroupSummaries = async (
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   ])
   const r = await getRethink()
+  const pg = getKysely()
   const manager = new OpenAIServerManager()
   if (!reflectionGroups.length) {
     const error = new Error('No reflection groups in generateGroupSummaries')
@@ -36,9 +38,13 @@ const generateGroupSummaries = async (
       const reflectionTextByGroupId = reflectionsByGroupId.map(
         ({plaintextContent}) => plaintextContent
       )
-      const summary = await manager.getSummary(reflectionTextByGroupId)
-      if (!summary) return
-      return r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
+      const fullSummary = await manager.getSummary(reflectionTextByGroupId)
+      if (!fullSummary) return
+      const summary = fullSummary.slice(0, 2000)
+      return Promise.all([
+        pg.updateTable('RetroReflectionGroup').set({summary}).where('id', '=', group.id).execute(),
+        r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
+      ])
     })
   )
 }
