@@ -6,8 +6,8 @@ export async function startDemo(page: Page) {
   await page.click('text=Start Demo')
 }
 
-export async function goToNextPhase(page: Page) {
-  const nextButton = page.locator('button :text("Next")')
+export async function goToNextPhaseImmediately(page: Page) {
+  const nextButton = page.locator('button :text("0 / 2 Ready")')
   await expect(nextButton).toBeVisible()
 
   // You "confirm" going to the next phase by clicking the next button twice
@@ -15,21 +15,28 @@ export async function goToNextPhase(page: Page) {
   await nextButton.click()
 }
 
+export async function goToNextPhase(page: Page) {
+  const nextButton = page.locator('button :text("Next")')
+  await expect(nextButton).toBeVisible()
+
+  await nextButton.click()
+}
+
 export async function skipToGroupPhase(page: Page) {
   await startDemo(page)
-  await goToNextPhase(page)
+  await goToNextPhaseImmediately(page)
   expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
 }
 
 export async function skipToVotePhase(page: Page) {
   await skipToGroupPhase(page)
-  await goToNextPhase(page)
+  await goToNextPhaseImmediately(page)
   expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/vote`)
 }
 
 export async function skipToDiscussPhase(page: Page) {
   await skipToVotePhase(page)
-  await goToNextPhase(page)
+  await goToNextPhaseImmediately(page)
   expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/discuss/1`)
 }
 

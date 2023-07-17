@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test'
 import config from '../config'
-import {goToNextPhase, startDemo} from './retrospective-demo-helpers'
+import {goToNextPhase, goToNextPhaseImmediately, startDemo} from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / reflect page', () => {
   test('it shows an explanation popup', async ({page}) => {
@@ -208,7 +208,45 @@ test.describe('retrospective-demo / reflect page', () => {
   })
 
   test('transitions to the group phase after clicking "next" twice', async ({page}) => {
+    test.setTimeout(80_000)
+
     await startDemo(page)
+    await expect(
+      page.locator(
+        '[data-cy=reflection-column-Continue] :text("1 team member writing reflections...")'
+      )
+    ).toBeVisible({
+      timeout: 40_000 // first, the simulated users are only typing in the "Start"/"Stop" columns, so this takes > 5 seconds
+    })
+
+    await expect(
+      page.locator(
+        '[data-cy=reflection-column-Continue] :text("2 team members writing reflections...")'
+      )
+    ).toBeVisible({
+      timeout: 20_000 // this seems to be delayed from the server
+    })
+
+    await expect(
+      page.locator(
+        '[data-cy=reflection-column-Continue] :text("1 team member reflection + 2 in progress")'
+      )
+    ).toBeVisible()
+
+    await expect(
+      page.locator('button :text("1 / 2 Ready")')
+    ).toBeVisible()
+
+    await expect(
+      page.locator(
+        '[data-cy=reflection-column-Continue] :text("1 team member reflection + 1 in progress")'
+      )
+    ).toBeVisible()
+
+    await expect(
+      page.locator('[data-cy=reflection-column-Continue] :text("1 team member reflection")')
+    ).toBeVisible()
+
     await goToNextPhase(page)
 
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
@@ -219,7 +257,7 @@ test.describe('retrospective-demo / reflect page', () => {
     isMobile
   }) => {
     await startDemo(page)
-    await goToNextPhase(page)
+    await goToNextPhaseImmediately(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
 
     if (isMobile) {
