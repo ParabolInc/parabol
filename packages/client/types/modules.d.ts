@@ -7,6 +7,7 @@ declare module '*.png' {
   export = value
 }
 declare module '*.svg'
+declare module '*.mp3'
 declare module '*.woff2'
 declare module 'json2csv/lib/JSON2CSVParser'
 declare module 'string-score'
