@@ -91,7 +91,6 @@ const TimelineHeader = (props: Props) => {
           ref={teamFilterOriginRef}
           value={teamFilterName}
           iconText='group'
-          dataCy='team-filter'
         />
         {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
         <DashFilterToggle

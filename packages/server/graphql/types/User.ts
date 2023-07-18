@@ -218,7 +218,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async (
         {id}: {id: string},
         {after, first, teamIds, eventTypes},
-        {authToken}: GQLContext
+        {authToken, dataLoader}: GQLContext
       ) => {
         const r = await getRethink()
         const viewerId = getUserId(authToken)
@@ -240,7 +240,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             edges: []
           }
         }
-        const validTeamIds = getValidTeamIds(teamIds, authToken.tms)
+        const validTeamIds = await getValidTeamIds(viewerId, teamIds, dataLoader)
 
         if (viewerId !== id && !isSuperUser(authToken)) return null
         const dbAfter = after ? new Date(after) : r.maxval
