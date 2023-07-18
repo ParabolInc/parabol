@@ -8,6 +8,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import {AddTeamMemberModal_teamMembers$key} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
+import {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import {CompletedHandler} from '../types/relayMutations'
@@ -185,17 +186,21 @@ const AddTeamMemberModal = (props: Props) => {
   const sendInvitations = () => {
     if (invitees.length === 0) return
     submitMutation()
-    const handleCompleted: CompletedHandler = (res) => {
+    const handleCompleted: CompletedHandler<TInviteToTeamMutation['response']> = (res) => {
       setIsSubmitted(true)
       onCompleted()
       if (res) {
         const {inviteToTeam} = res
-        if (inviteToTeam.invitees.length === invitees.length) {
+        if (inviteToTeam.invitees?.length === invitees.length) {
           setSuccessfulInvitations(pendingSuccessfulInvitations.concat(inviteToTeam.invitees))
         } else {
           // there was a problem with at least 1 email
-          const goodInvitees = invitees.filter((invitee) => inviteToTeam.invitees.includes(invitee))
-          const badInvitees = invitees.filter((invitee) => !inviteToTeam.invitees.includes(invitee))
+          const goodInvitees = invitees.filter((invitee) =>
+            inviteToTeam.invitees?.includes(invitee)
+          )
+          const badInvitees = invitees.filter(
+            (invitee) => !inviteToTeam.invitees?.includes(invitee)
+          )
 
           onError(
             new Error(
