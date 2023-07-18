@@ -11,7 +11,7 @@ import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
-import addAIGeneratedContentsToThreads from './addAIGeneratedContentsToThreads'
+import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroups from './generateGroups'
 import generateGroupSummaries from './generateGroupSummaries'
@@ -111,7 +111,7 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentsToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
     ])
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {

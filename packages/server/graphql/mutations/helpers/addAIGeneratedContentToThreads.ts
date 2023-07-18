@@ -6,7 +6,7 @@ import DiscussStage from '../../../database/types/DiscussStage'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
 
-const addAIGeneratedContentsToThreads = async (
+const addAIGeneratedContentToThreads = async (
   stages: DiscussStage[],
   meetingId: string,
   teamId: string,
@@ -57,4 +57,4 @@ const addAIGeneratedContentsToThreads = async (
   await Promise.all(commentPromises)
 }
 
-export default addAIGeneratedContentsToThreads
+export default addAIGeneratedContentToThreads
