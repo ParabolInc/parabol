@@ -77,7 +77,7 @@ const RetroTopics = (props: Props) => {
         searchParams: {
           utm_source: 'summary email',
           utm_medium: 'email',
-          utm_campaign: 'after-meeting'
+          utm_campaign: 'sharing'
         }
       })
     : meetingPath
@@ -97,7 +97,7 @@ const RetroTopics = (props: Props) => {
                   searchParams: {
                     utm_source: 'summary email',
                     utm_medium: 'email',
-                    utm_campaign: 'after-meeting'
+                    utm_campaign: 'sharing'
                   }
                 })
               : topicUrlPath
