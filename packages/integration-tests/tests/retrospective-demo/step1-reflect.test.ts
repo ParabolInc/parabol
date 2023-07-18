@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test'
 import config from '../config'
-import {goToNextPhase, goToNextPhaseImmediately, startDemo} from './retrospective-demo-helpers'
+import {goToNextPhase, goToNextPhaseWhenReady, startDemo} from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / reflect page', () => {
   test('it shows an explanation popup', async ({page}) => {
@@ -247,7 +247,7 @@ test.describe('retrospective-demo / reflect page', () => {
       page.locator('[data-cy=reflection-column-Continue] :text("1 team member reflection")')
     ).toBeVisible()
 
-    await goToNextPhase(page)
+    await goToNextPhaseWhenReady(page)
 
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
   })
@@ -257,7 +257,7 @@ test.describe('retrospective-demo / reflect page', () => {
     isMobile
   }) => {
     await startDemo(page)
-    await goToNextPhaseImmediately(page)
+    await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
 
     if (isMobile) {

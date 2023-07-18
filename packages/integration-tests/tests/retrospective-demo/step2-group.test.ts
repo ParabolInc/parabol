@@ -26,10 +26,7 @@ test.describe('retrospective-demo / group page', () => {
     await page.type(continueTextbox, 'Continue doing this')
     await page.press(continueTextbox, 'Enter')
 
-    const nextButton = page.locator('button :text("Next")')
-    await expect(nextButton).toBeVisible()
-    await nextButton.click()
-    await nextButton.click()
+    await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
 
     await expect(
@@ -50,10 +47,16 @@ test.describe('retrospective-demo / group page', () => {
     await page.click(startTextbox)
     await page.type(startTextbox, 'Documenting things in Notion')
     await page.press(startTextbox, 'Enter')
+    await expect(
+      page.locator('[data-cy="reflection-column-Start"] :text("Documenting things in Notion")')
+    ).toBeVisible()
 
     await page.click(startTextbox)
     await page.type(startTextbox, 'Writing things down')
     await page.press(startTextbox, 'Enter')
+    await expect(
+      page.locator('[data-cy="reflection-column-Start"] :text("Writing things down")')
+    ).toBeVisible()
 
     await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
@@ -65,7 +68,7 @@ test.describe('retrospective-demo / group page', () => {
     // Then it auto-generates a header
     await expect(
       page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Documenting things in"]`
+        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things"]`
       )
     ).toBeVisible()
 
@@ -94,11 +97,17 @@ test.describe('retrospective-demo / group page', () => {
     await page.click(startTextbox)
     await page.type(startTextbox, 'Documenting things in Notion')
     await page.press(startTextbox, 'Enter')
+    await expect(
+      page.locator('[data-cy="reflection-column-Start"] :text("Documenting things in Notion")')
+    ).toBeVisible()
 
     const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
     await page.click(stopTextbox)
     await page.type(stopTextbox, 'Making decisions in one-on-one meetings')
     await page.press(stopTextbox, 'Enter')
+    await expect(
+      page.locator('[data-cy="reflection-column-Stop"] :text("Making decisions in one-on-one meetings")')
+    ).toBeVisible()
 
     await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
