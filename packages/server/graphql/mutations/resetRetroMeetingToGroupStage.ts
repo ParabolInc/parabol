@@ -5,6 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -27,6 +28,7 @@ const resetRetroMeetingToGroupStage = {
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) => {
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -108,6 +110,11 @@ const resetRetroMeetingToGroupStage = {
         .delete()
         .run(),
       r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
+      pg
+        .updateTable('RetroReflectionGroup')
+        .set({voterIds: []})
+        .where('id', 'in', reflectionGroupIds)
+        .execute(),
       r
         .table('RetroReflectionGroup')
         .getAll(r.args(reflectionGroupIds))

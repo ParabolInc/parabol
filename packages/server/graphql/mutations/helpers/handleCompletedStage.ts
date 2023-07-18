@@ -6,15 +6,17 @@ import getRethink from '../../../database/rethinkDriver'
 import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import getKysely from '../../../postgres/getKysely'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
 import addAIGeneratedContentsToThreads from './addAIGeneratedContentsToThreads'
 import generateDiscussionSummary from './generateDiscussionSummary'
+import generateGroups from './generateGroups'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
-import generateGroups from './generateGroups'
+import addRecallBot from './addRecallBot'
 
 /*
  * handle side effects when a stage is completed
@@ -31,6 +33,7 @@ const handleCompletedRetrospectiveStage = async (
 
     if (stage.phaseType === REFLECT) {
       const r = await getRethink()
+      const pg = getKysely()
       const now = new Date()
 
       const [reflectionGroups, reflections] = await Promise.all([
@@ -56,13 +59,21 @@ const handleCompletedRetrospectiveStage = async (
       await Promise.all(
         sortedReflectionGroups.map((group, index) => {
           group.sortOrder = index
-          r.table('RetroReflectionGroup')
-            .get(group.id)
-            .update({
-              sortOrder: index,
-              updatedAt: now
-            } as any)
-            .run()
+          return Promise.all([
+            pg
+              .updateTable('RetroReflectionGroup')
+              .set({sortOrder: index})
+              .where('id', '=', group.id)
+              .execute(),
+            r
+              .table('RetroReflectionGroup')
+              .get(group.id)
+              .update({
+                sortOrder: index,
+                updatedAt: now
+              } as any)
+              .run()
+          ])
         })
       )
 
@@ -90,6 +101,7 @@ const handleCompletedRetrospectiveStage = async (
     // create new threads
     const {discussPhaseStages} = data
     const {id: meetingId, teamId} = meeting
+    addRecallBot(teamId, dataLoader)
     const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
       meetingId,

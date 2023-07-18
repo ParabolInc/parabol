@@ -9,6 +9,7 @@ import {RDatum} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
+import getKysely from '../../postgres/getKysely'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -133,6 +134,7 @@ export default {
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
@@ -190,6 +192,11 @@ export default {
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').loadNonNull(templateId),
+      pg
+        .deleteFrom('RetroReflectionGroup')
+        .where('meetingId', '=', meetingId)
+        .where('isActive', '=', false)
+        .execute(),
       r
         .table('RetroReflectionGroup')
         .getAll(meetingId, {index: 'meetingId'})
