@@ -16,7 +16,7 @@ export async function down() {
   await client.connect()
   await client.query(`
   ALTER TABLE "RetroReflectionGroup"
-  DROP COLUMN "discussionPromptQuestion";
+  DROP COLUMN IF EXISTS "discussionPromptQuestion";
 `)
   await client.end()
 }
