@@ -17,7 +17,7 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
 import TaskStatusEnum, {TaskStatusEnumType} from '../types/TaskStatusEnum'
 import connectionFromTasks from './helpers/connectionFromTasks'
-import {getValidTeamIds} from './../getValidTeamIds'
+import {getAccessibleTeamIdsForUser} from './../getValidTeamIds'
 
 const getValidUserIds = async (
   userIds: null | string[],
@@ -124,7 +124,7 @@ export default {
 
     // if archived is true & no userId filter is provided, it should include tasks for ex-team members
     // under no condition should it show tasks for archived teams
-    const validTeamIds = await getValidTeamIds(viewerId, teamIds, dataLoader)
+    const validTeamIds = await getAccessibleTeamIdsForUser(viewerId, teamIds, dataLoader)
     const validUserIds = (await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)) ?? []
     // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({

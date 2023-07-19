@@ -49,7 +49,7 @@ import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import TimelineEvent from '../../database/types/TimelineEvent'
 import {RDatum} from '../../database/stricterR'
-import {getValidTeamIds} from '../getValidTeamIds'
+import {getAccessibleTeamIdsForUser} from '../getValidTeamIds'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -240,7 +240,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             edges: []
           }
         }
-        const validTeamIds = await getValidTeamIds(viewerId, teamIds, dataLoader)
+        const validTeamIds = await getAccessibleTeamIdsForUser(viewerId, teamIds, dataLoader)
 
         if (viewerId !== id && !isSuperUser(authToken)) return null
         const dbAfter = after ? new Date(after) : r.maxval

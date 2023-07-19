@@ -1,13 +1,20 @@
 import {DataLoaderWorker} from './graphql'
 
-export const getValidTeamIds = async (
-  viewerId: string,
+/**
+ * Gets a list of team IDs that the given user has access to.
+ *
+ * @param userId - The ID of the user to check team access for
+ * @param teamIds - An optional array of team IDs to filter the results by
+ * @param dataLoader - The dataloader
+ *
+ * @returns A list of team IDs that the user has access to
+ */
+export const getAccessibleTeamIdsForUser = async (
+  userId: string,
   teamIds: null | string[],
   dataLoader: DataLoaderWorker
 ) => {
-  const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
-  const viewerTeamIds = viewerTeamMembers.map(({teamId}) => teamId)
-  if (teamIds?.length) return teamIds.filter((teamId) => viewerTeamIds.includes(teamId))
-  // filter the teamIds array to only teams the user has a team member for
-  return viewerTeamIds
+  const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+  const userTeamIds = userTeamMembers.map(({teamId}) => teamId)
+  return teamIds?.length ? teamIds.filter((teamId) => userTeamIds.includes(teamId)) : userTeamIds
 }
