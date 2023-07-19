@@ -6,6 +6,20 @@ import DiscussStage from '../../../database/types/DiscussStage'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
 
+const buildCommentContentBlock = (title: string, content: string, explainerText?: string) => {
+  const explainerBlock = explainerText ? `<i>${explainerText}</i><br>` : ''
+  const html = `<html><body>${explainerBlock}<p><b>${title}</b></p><p>${content}</p></body></html>`
+  return convertHtmlToTaskContent(html)
+}
+
+const createAIComment = (discussionId: string, content: string, order: number) =>
+  new Comment({
+    discussionId,
+    content,
+    threadSortOrder: order,
+    createdBy: PARABOL_AI_USER_ID
+  })
+
 const addAIGeneratedContentToThreads = async (
   stages: DiscussStage[],
   meetingId: string,
@@ -18,41 +32,31 @@ const addAIGeneratedContentToThreads = async (
     dataLoader.get('teams').loadNonNull(teamId)
   ])
   const {tier} = team
-  const commentPromises = stages.map(async (stage, idx) => {
-    const group = groups.find((group) => group.id === stage.reflectionGroupId)
+  const commentPromises = stages.map(async ({discussionId, reflectionGroupId}, idx) => {
+    const group = groups.find((group) => group.id === reflectionGroupId)
     if (!group?.summary && !group?.discussionPromptQuestion) return
-    const topicSummaryExplainerText =
-      tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
-    const topicSummaryHtml =
-      idx === 0
-        ? `<html><body><i>${topicSummaryExplainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
-        : `<html><body><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
-    const summaryBlock = convertHtmlToTaskContent(topicSummaryHtml)
-    const topicSummaryCommentInput = {
-      discussionId: stage.discussionId,
-      content: summaryBlock,
-      threadSortOrder: 0,
-      createdBy: PARABOL_AI_USER_ID
-    }
-    const topicSummaryComment = new Comment(topicSummaryCommentInput)
+    const comments: Comment[] = []
 
-    const discussionPromptQuestionHtml =
-      idx === 0
-        ? `<html><body><p><b>🤖 Discussion Question</b></p><p>${group.discussionPromptQuestion}</p></body></html>`
-        : `<html><body><p><b>🤖 Discussion Question</b></p><p>${group.discussionPromptQuestion}</p></body></html>`
-    const discussionPromptQuestionBlock = convertHtmlToTaskContent(discussionPromptQuestionHtml)
-    const discussionPromptQuestionCommentInput = {
-      discussionId: stage.discussionId,
-      content: discussionPromptQuestionBlock,
-      threadSortOrder: 1, // make sure it's after the topic summary
-      createdBy: PARABOL_AI_USER_ID
+    if (group.summary) {
+      const topicSummaryExplainerText =
+        tier === 'starter' && idx === 0 ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
+      const topicSummaryComment = createAIComment(
+        discussionId,
+        buildCommentContentBlock('🤖 Topic Summary', group.summary, topicSummaryExplainerText),
+        0
+      )
+      comments.push(topicSummaryComment)
     }
-    const discussionPromptQuestionComment = new Comment(discussionPromptQuestionCommentInput)
+    if (group.discussionPromptQuestion) {
+      const topicSummaryComment = createAIComment(
+        discussionId,
+        buildCommentContentBlock('🤖 Discussion Question', group.discussionPromptQuestion),
+        1
+      )
+      comments.push(topicSummaryComment)
+    }
 
-    return r({
-      topicSummary: r.table('Comment').insert(topicSummaryComment),
-      discussionPromptQuestion: r.table('Comment').insert(discussionPromptQuestionComment)
-    }).run()
+    return r.table('Comment').insert(comments).run()
   })
   await Promise.all(commentPromises)
 }
