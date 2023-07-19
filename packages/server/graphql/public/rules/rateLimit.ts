@@ -13,7 +13,7 @@ const rateLimit = ({perMinute, perHour}: RateLimitOptions) =>
     const {fieldName} = info
     const userId = getUserId(authToken) || ip
     const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
-    if (__PRODUCTION__ && (lastMinute > perMinute || (lastHour && lastHour > perHour))) {
+    if (lastMinute > perMinute || (lastHour && lastHour > perHour)) {
       return new Error('429 Too Many Requests')
     }
     return true
