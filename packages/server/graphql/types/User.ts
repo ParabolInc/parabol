@@ -49,7 +49,7 @@ import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import TimelineEvent from '../../database/types/TimelineEvent'
 import {RDatum} from '../../database/stricterR'
-import {getAccessibleTeamIdsForUser} from '../getValidTeamIds'
+import {getAccessibleTeamIdsForUser} from '../getAccessibleTeamIdsForUser'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',

@@ -17,7 +17,7 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
 import TaskStatusEnum, {TaskStatusEnumType} from '../types/TaskStatusEnum'
 import connectionFromTasks from './helpers/connectionFromTasks'
-import {getAccessibleTeamIdsForUser} from './../getValidTeamIds'
+import {getAccessibleTeamIdsForUser} from '../getAccessibleTeamIdsForUser'
 
 const getValidUserIds = async (
   userIds: null | string[],
