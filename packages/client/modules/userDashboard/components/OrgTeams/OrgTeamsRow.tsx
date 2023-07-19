@@ -53,8 +53,10 @@ const OrgTeamsRow = (props: Props) => {
 
           <a
             href={`mailto:${teamLeadEmail}`}
+            target='_blank'
             title='Email'
             className='text-gray-600 hover:underline'
+            rel='noreferrer'
           >
             {`${teamLeadEmail} ${isViewerTeamLead ? '(You)' : ''}`}
           </a>
