@@ -42,7 +42,7 @@ const TeamDashActivityTab = (props: Props) => {
           <p className='my-2'>No meetings yet? You've come to the right place!</p>
         )}
       </div>
-      <div className='flex w-full flex-wrap'>
+      <div className='flex w-full flex-wrap pr-4'>
         {transitioningMeetings.length > 0 ? (
           transitioningMeetings.map((meeting) => {
             const {child} = meeting
