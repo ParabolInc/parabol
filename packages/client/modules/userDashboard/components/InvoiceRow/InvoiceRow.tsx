@@ -3,7 +3,7 @@ import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {Link} from 'react-router-dom'
 import {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -43,17 +43,16 @@ const InfoRowRight = styled('div')({
   textAlign: 'right'
 })
 
-const RowLink = styled('div')({
+const LinkStyles = styled('div')({
   color: PALETTE.SLATE_700,
   alignItems: 'flex-start',
   display: 'flex',
   justifyContent: 'space-between',
   textDecoration: 'none',
-  width: '100%',
-  '&:hover': {
-    cursor: 'pointer'
-  }
+  width: '100%'
 })
+
+const RowLink = LinkStyles.withComponent(Link)
 
 const StyledDate = styled('span')<{styledToPay?: boolean; styledPaid?: boolean}>(
   ({styledToPay, styledPaid}) => ({
@@ -92,19 +91,10 @@ const InvoiceRow = (props: Props) => {
   )
   const {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status} = invoice
   const isEstimate = status === 'UPCOMING'
-  const history = useHistory()
-
-  const goToInvoice = () => {
-    if (payUrl) {
-      window.open(payUrl, '_blank', 'noreferrer')
-    } else {
-      history.push(`/invoice/${invoiceId}`)
-    }
-  }
 
   return (
     <Row>
-      <RowLink onClick={goToInvoice}>
+      <RowLink rel='noopener noreferrer' target='_blank' to={payUrl || `/invoice/${invoiceId}`}>
         <FileIcon isEstimate={isEstimate} />
         <InvoiceInfo>
           <InfoRow>
