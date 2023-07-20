@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import useMenu from '../../../../hooks/useMenu'
 import styled from '@emotion/styled'
@@ -64,9 +64,12 @@ const OrgTeams = (props: Props) => {
   const ALL_TEAMS_IN_DOMAIN = `All Teams In ${activeDomain}`
   const [label, setLabel] = useState(ALL_TEAMS_IN_DOMAIN)
 
-  const teamsByDomain = domains.flatMap((domain) =>
-    domain.organizations.flatMap((organization) => organization.teams)
-  )
+  const teamsByDomain = useMemo(() => {
+    return domains.flatMap((domain) =>
+      domain.organizations.flatMap((organization) => organization.teams)
+    )
+  }, [domains])
+
   const {canViewTeamsInDomain} = featureFlags
 
   const handleMenuItemClick = (newLabel: string) => {
@@ -81,17 +84,12 @@ const OrgTeams = (props: Props) => {
       <h1>{'Teams'}</h1>
       {canViewTeamsInDomain && (
         <>
-          <DashFilterToggle
-            onClick={togglePortal}
-            // onMouseEnter={TeamDashTeamMemberMenu.preload}
-            ref={originRef}
-            value={label}
-          />
+          <DashFilterToggle onClick={togglePortal} label={label} ref={originRef} value={label} />
           {menuPortal(
             <Menu
               keepParentFocus
               defaultActiveIdx={label === ALL_TEAMS_IN_DOMAIN ? 0 : 1}
-              ariaLabel={'Select the team to filter by'}
+              ariaLabel={'Select whether to filter by org or domain'}
               {...menuProps}
             >
               <MenuItem

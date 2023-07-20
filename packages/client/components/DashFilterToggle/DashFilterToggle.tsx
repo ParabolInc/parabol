@@ -12,7 +12,7 @@ interface Props {
   iconText?: string
   dataCy?: string
   onClick: () => void
-  onMouseEnter: () => void
+  onMouseEnter?: () => void
 }
 
 const StyledIcon = styled('div')({
