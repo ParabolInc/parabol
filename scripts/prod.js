@@ -20,16 +20,15 @@ const compile = (config, isSilent) => {
   })
 }
 
-const prod = async (isDeploy, noDeps) => {
+const prod = async (noDeps) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   await generateGraphQLArtifacts()
-  const serversConfig = makeServersConfig({isDeploy, noDeps})
-  const clientConfig = makeClientConfig({isDeploy, noDeps})
+  const serversConfig = makeServersConfig({noDeps})
+  const clientConfig = makeClientConfig({isDeploy: noDeps})
   await Promise.all([compile(serversConfig), compile(clientConfig)])
 }
 
 if (require.main === module) {
-  const isDeploy = process.argv[2] === '--deploy'
   const noDeps = process.argv[2] === '--no-deps'
-  prod(isDeploy, noDeps)
+  prod(noDeps)
 }

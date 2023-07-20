@@ -76,8 +76,7 @@
     "webpack-cli": "4.9.1",
     "webpack-dev-middleware": "4.0.2",
     "webpack-hot-middleware": "^2.22.2",
-    "webpack-node-externals": "2.5.2",
-    "webpack-s3-plugin": "^1.2.0-rc.0"
+    "webpack-node-externals": "2.5.2"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.315.0",

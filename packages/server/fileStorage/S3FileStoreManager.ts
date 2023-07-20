@@ -38,8 +38,12 @@ export default class S3Manager extends FileStoreManager {
   private getPublicFileLocation(fullPath: string) {
     return encodeURI(`https://${this.bucket}/${fullPath}`)
   }
-  protected async putFile(file: Buffer, partialPath: string) {
+
+  protected async putUserFile(file: Buffer, partialPath: string) {
     const fullPath = this.prependPath(partialPath)
+    return this.putFile(file, fullPath)
+  }
+  protected async putFile(file: Buffer, fullPath: string) {
     const s3Params = {
       Body: file,
       Bucket: this.bucket,
@@ -48,6 +52,12 @@ export default class S3Manager extends FileStoreManager {
     }
     await this.s3.send(new PutObjectCommand(s3Params))
     return this.getPublicFileLocation(fullPath)
+  }
+
+  putBuildFile(file: Buffer, partialPath: string): Promise<string> {
+    const buildDir = `/build/v${__APP_VERSION__}`
+    const fullPath = path.join(this.envSubDir, buildDir, partialPath)
+    return this.putFile(file, fullPath)
   }
   async checkExists(key: string) {
     const Key = this.prependPath(key)
