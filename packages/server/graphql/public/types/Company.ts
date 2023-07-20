@@ -23,6 +23,8 @@ const getSuggestedTierOrganizations = async (
   const viewerId = getUserId(authToken)
   const viewer = await getUserById(viewerId)
   if (!viewer) return []
+  const {featureFlags} = viewer
+  const canViewTeamsInDomain = featureFlags.includes('canViewTeamsInDomain')
   const allOrganizationUsers = (
     await Promise.all(
       orgIds.map((orgId) => {
@@ -32,9 +34,11 @@ const getSuggestedTierOrganizations = async (
   ).filter(isValid)
   // If suggestedTier === enterprise, that means the user is allowed to see across
   // all organizations, even the ones they are not a member of!
-  const isViewerAllowedToSeeAll = allOrganizationUsers.some(
-    ({suggestedTier, tier}) => suggestedTier === 'enterprise' || tier === 'enterprise'
-  )
+  const isViewerAllowedToSeeAll =
+    canViewTeamsInDomain ||
+    allOrganizationUsers.some(
+      ({suggestedTier, tier}) => suggestedTier === 'enterprise' || tier === 'enterprise'
+    )
   if (isViewerAllowedToSeeAll) return organizations
   // Pro-qualified or unqualified users can only see orgs that they are apart of
   const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)

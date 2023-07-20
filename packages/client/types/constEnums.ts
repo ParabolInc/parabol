@@ -252,7 +252,9 @@ export const enum PokerCards {
 export const enum FilterLabels {
   ALL_TEAMS = 'All Teams',
   ALL_TEAM_MEMBERS = 'All Team Members',
-  ALL_EVENTS = 'All Events'
+  ALL_EVENTS = 'All Events',
+  ALL_TEAMS_IN_ORG = 'All Teams in Org',
+  ALL_TEAMS_IN_DOMAIN = 'All Teams in Domain'
 }
 
 export const enum MeetingSettingsThreshold {

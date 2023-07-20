@@ -4,7 +4,7 @@ import useMenu, {MenuProps} from '../../../../hooks/useMenu'
 import styled from '@emotion/styled'
 import Row from '../../../../components/Row/Row'
 import Panel from '../../../../components/Panel/Panel'
-import {ElementWidth} from '../../../../types/constEnums'
+import {ElementWidth, FilterLabels} from '../../../../types/constEnums'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import OrgTeamsRow from './OrgTeamsRow'
 import SwitchLabels from '../../../../components/Switch/Switch'
@@ -26,22 +26,27 @@ type Props = {
 
 const OrgTeams = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<any>(
+  const data = usePreloadedQuery<OrgTeamsQuery>(
     graphql`
       query OrgTeamsQuery($orgId: ID!) {
         viewer {
+          featureFlags {
+            canViewTeamsInDomain
+          }
           organization(orgId: $orgId) {
-            id
-            isBillingLeader
             teams {
               id
               ...OrgTeamsRow_team
             }
           }
           domains {
-            userCount
             organizations {
-              name
+              id
+              isBillingLeader
+              teams {
+                id
+                ...OrgTeamsRow_team
+              }
             }
           }
         }
@@ -49,53 +54,55 @@ const OrgTeams = (props: Props) => {
     `,
     queryRef
   )
-  console.log('🚀 ~ data:', data)
-  const {organization} = data.viewer
-  // const organization = useFragment(
-  //   graphql`
-  //     fragment OrgTeams_organization on Organization {
-  //       id
-  //       isBillingLeader
-  //       teams {
-  //         id
-  //         ...OrgTeamsRow_team
-  //       }
-  //     }
-  //   `,
-  //   organizationRef
-  // )
 
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const [selectedItem, setSelectedItem] = useState('All Teams In Org')
+  const [label, setLabel] = useState(FilterLabels.ALL_TEAMS_IN_ORG)
+  const {viewer} = data
+  const {featureFlags, domains, organization} = viewer
+  const teamsByDomain = domains.flatMap((domain) =>
+    domain.organizations.flatMap((organization) => organization.teams)
+  )
+  const {canViewTeamsInDomain} = featureFlags
 
-  const handleMenuItemClick = (label: string) => {
-    setSelectedItem(label)
+  const handleMenuItemClick = (
+    newLabel: FilterLabels.ALL_TEAMS_IN_ORG | FilterLabels.ALL_TEAMS_IN_DOMAIN
+  ) => {
+    setLabel(newLabel)
     togglePortal()
   }
 
   const {teams, isBillingLeader} = organization
+  const selectedTeams = label === FilterLabels.ALL_TEAMS_IN_ORG ? teams : teamsByDomain
   if (!isBillingLeader) return null
   return (
     <>
       <h1>{'Teams'}</h1>
-      <DashFilterToggle
-        label='Team Member'
-        onClick={togglePortal}
-        // onMouseEnter={TeamDashTeamMemberMenu.preload}
-        ref={originRef}
-        value={selectedItem} // Use state variable here
-      />
-      {menuPortal(
-        <Menu keepParentFocus ariaLabel={'Select the team to filter by'} {...menuProps}>
-          <MenuItem
-            label={'All Teams In Org'}
-            onClick={() => handleMenuItemClick('All Teams In Org')}
+      {canViewTeamsInDomain && (
+        <>
+          <DashFilterToggle
+            onClick={togglePortal}
+            // onMouseEnter={TeamDashTeamMemberMenu.preload}
+            ref={originRef}
+            value={label}
           />
-          <MenuItem
-            label={'All Teams In Domain'}
-            onClick={() => handleMenuItemClick('All Teams In Domain')}
-          />
-        </Menu>
+          {menuPortal(
+            <Menu
+              keepParentFocus
+              defaultActiveIdx={label === FilterLabels.ALL_TEAMS_IN_ORG ? 0 : 1}
+              ariaLabel={'Select the team to filter by'}
+              {...menuProps}
+            >
+              <MenuItem
+                label={'All Teams In Org'}
+                onClick={() => handleMenuItemClick(FilterLabels.ALL_TEAMS_IN_ORG)}
+              />
+              <MenuItem
+                label={'All Teams In Domain'}
+                onClick={() => handleMenuItemClick(FilterLabels.ALL_TEAMS_IN_DOMAIN)}
+              />
+            </Menu>
+          )}
+        </>
       )}
       <StyledPanel>
         <Row>
@@ -104,7 +111,7 @@ const OrgTeams = (props: Props) => {
             <div className='flex items-center font-bold'>Lead</div>
           </div>
         </Row>
-        {teams.map((team) => (
+        {selectedTeams.map((team) => (
           <OrgTeamsRow key={team.id} teamRef={team} />
         ))}
       </StyledPanel>
