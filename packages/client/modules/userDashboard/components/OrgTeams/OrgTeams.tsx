@@ -77,7 +77,8 @@ const OrgTeams = (props: Props) => {
     togglePortal()
   }
 
-  const selectedTeams = (label === ALL_TEAMS_IN_ORG ? teams : teamsByDomain) ?? []
+  const selectedTeams =
+    (label === ALL_TEAMS_IN_DOMAIN && teamsByDomain.length ? teamsByDomain : teams) ?? []
   if (!isBillingLeader) return null
   return (
     <>
