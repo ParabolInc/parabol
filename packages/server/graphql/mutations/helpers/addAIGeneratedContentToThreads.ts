@@ -39,7 +39,11 @@ const addAIGeneratedContentToThreads = async (
 
     if (group.summary) {
       const topicSummaryExplainerText =
-        tier === 'starter' && idx === 0 ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
+        idx === 0
+          ? tier === 'starter'
+            ? AIExplainer.STARTER
+            : AIExplainer.PREMIUM_REFLECTIONS
+          : undefined
       const topicSummaryComment = createAIComment(
         discussionId,
         buildCommentContentBlock('🤖 Topic Summary', group.summary, topicSummaryExplainerText),
