@@ -32,7 +32,7 @@ class OpenAIServerManager {
         messages: [
           {
             role: 'user',
-            content: `Below is a comma-separated list of text from a ${location}.
+            content: `Below is a newline delimited text from a ${location}.
             Summarize the text for a second-grade student in one or two sentences.
             When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
             If you can't provide a summary, simply write the word "${OpenAIMagicWords.NO_SUMMARY_PROMPT_INSTRUCTION_WORDS}".
