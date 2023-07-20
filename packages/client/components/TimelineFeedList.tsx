@@ -29,7 +29,7 @@ const TimelineFeedList = (props: Props) => {
       fragment TimelineFeedList_query on Query
       @refetchable(queryName: "TimelineFeedListPaginationQuery") {
         viewer {
-          timeline(first: $first, after: $after, eventTypes: $eventTypes)
+          timeline(first: $first, after: $after, teamIds: $teamIds, eventTypes: $eventTypes)
             @connection(key: "TimelineFeedList_timeline") {
             edges {
               cursor
@@ -104,7 +104,7 @@ const TimelineFeedList = (props: Props) => {
   if (freeHistory === undefined || freeHistory.length === 0) {
     return (
       <div className='text-base'>
-        Looks like you have no events of this type.
+        Looks like you have no events with these filters.
         <Link to={'/me'} className='font-sans font-semibold text-sky-500 no-underline'>
           {' '}
           Show all events.

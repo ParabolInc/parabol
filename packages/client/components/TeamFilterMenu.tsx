@@ -49,7 +49,7 @@ const TeamFilterMenu = (props: Props) => {
   }
   const teams = oldTeamsRef.current
   const atmosphere = useAtmosphere()
-  const {teamIds, userIds, showArchived} = useQueryParameterParser(atmosphere.viewerId)
+  const {teamIds, userIds, showArchived, eventTypes} = useQueryParameterParser(atmosphere.viewerId)
   const showAllTeams = !!userIds
   const {filteredTeams, defaultActiveIdx} = useMemo(() => {
     const filteredTeams = userIds
@@ -88,7 +88,9 @@ const TeamFilterMenu = (props: Props) => {
         <MenuItem
           key={'teamFilterNULL'}
           label={FilterLabels.ALL_TEAMS}
-          onClick={() => history.push(constructFilterQueryParamURL(null, userIds, showArchived))}
+          onClick={() =>
+            history.push(constructFilterQueryParamURL(null, userIds, showArchived, eventTypes))
+          }
         />
       )}
       {matchedFilteredTeams.map((team) => (
@@ -97,7 +99,7 @@ const TeamFilterMenu = (props: Props) => {
           dataCy={`team-filter-${team.id}`}
           label={team.name}
           onClick={() =>
-            history.push(constructFilterQueryParamURL([team.id], userIds, showArchived))
+            history.push(constructFilterQueryParamURL([team.id], userIds, showArchived, eventTypes))
           }
         />
       ))}
