@@ -78,7 +78,7 @@ const OrgTeams = (props: Props) => {
   }
 
   const selectedTeams =
-    (label === ALL_TEAMS_IN_DOMAIN && teamsByDomain.length ? teamsByDomain : teams) ?? []
+    (label === ALL_TEAMS_IN_DOMAIN && canViewTeamsInDomain ? teamsByDomain : teams) ?? []
   if (!isBillingLeader) return null
   return (
     <>
