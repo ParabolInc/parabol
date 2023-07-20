@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 import Row from '../../../../components/Row/Row'
 import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
-import {useFragment} from 'react-relay'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import OrgTeamsRow from './OrgTeamsRow'
 import SwitchLabels from '../../../../components/Switch/Switch'
 import {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_organization.graphql'
@@ -14,30 +14,57 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import MenuItem from '../../../../components/MenuItem'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
+import {OrgTeamsQuery} from '../../../../__generated__/OrgTeamsQuery.graphql'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
 })
 
 type Props = {
-  organizationRef: OrgTeams_organization$key
+  queryRef: PreloadedQuery<OrgTeamsQuery>
 }
 
 const OrgTeams = (props: Props) => {
-  const {organizationRef} = props
-  const organization = useFragment(
+  const {queryRef} = props
+  const data = usePreloadedQuery<any>(
     graphql`
-      fragment OrgTeams_organization on Organization {
-        id
-        isBillingLeader
-        teams {
-          id
-          ...OrgTeamsRow_team
+      query OrgTeamsQuery($orgId: ID!) {
+        viewer {
+          organization(orgId: $orgId) {
+            id
+            isBillingLeader
+            teams {
+              id
+              ...OrgTeamsRow_team
+            }
+          }
+          domains {
+            userCount
+            organizations {
+              name
+            }
+          }
         }
       }
     `,
-    organizationRef
+    queryRef
   )
+  console.log('🚀 ~ data:', data)
+  const {organization} = data.viewer
+  // const organization = useFragment(
+  //   graphql`
+  //     fragment OrgTeams_organization on Organization {
+  //       id
+  //       isBillingLeader
+  //       teams {
+  //         id
+  //         ...OrgTeamsRow_team
+  //       }
+  //     }
+  //   `,
+  //   organizationRef
+  // )
+
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const [selectedItem, setSelectedItem] = useState('All Teams In Org')
 

@@ -9,6 +9,7 @@ import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
 import {getTeamsByOrgIds} from './helpers/getTeamsByOrgIds'
 import {DataLoaderWorker} from '../../graphql'
 import AuthToken from '../../../database/types/AuthToken'
+import {getUserById} from '../../../postgres/queries/getUsersByIds'
 
 export type CompanySource = {id: string}
 
@@ -20,6 +21,8 @@ const getSuggestedTierOrganizations = async (
   const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
   const orgIds = organizations.map(({id}) => id)
   const viewerId = getUserId(authToken)
+  const viewer = await getUserById(viewerId)
+  if (!viewer) return []
   const allOrganizationUsers = (
     await Promise.all(
       orgIds.map((orgId) => {

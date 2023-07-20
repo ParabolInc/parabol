@@ -10,10 +10,12 @@ import {
 } from '../../../../utils/constants'
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
-import OrgTeams from '../OrgTeams/OrgTeams'
 
 const OrgPlansAndBillingRoot = lazy(
   () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBillingRoot')
+)
+const OrgTeamsRoot = lazy(
+  () => import(/* webpackChunkName: 'OrgTeamsRoot' */ '../OrgTeams/OrgTeamsRoot')
 )
 const OrgMembers = lazy(
   () =>
@@ -35,7 +37,6 @@ const OrgPage = (props: Props) => {
         ...OrgNav_organization
         ...OrgPlansAndBillingRoot_organization
         ...OrgDetails_organization
-        ...OrgTeams_organization
         isBillingLeader
       }
     `,
@@ -62,7 +63,7 @@ const OrgPage = (props: Props) => {
           <Route
             exact
             path={`${match.url}/${TEAMS_PAGE}`}
-            render={() => <OrgTeams organizationRef={organization} />}
+            render={() => <OrgTeamsRoot orgId={orgId} />}
           />
         )}
         <Route
