@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
@@ -24,7 +25,7 @@ export const startNewMeetingSeries = async (
 
   const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
-    title: meetingSeriesName || meetingName.split('-')[0].trim(), // if no name is provided, we use the name of the first meeting without the date
+    title: meetingSeriesName || meetingName.split('-')[0]!.trim(), // if no name is provided, we use the name of the first meeting without the date
     recurrenceRule: recurrenceRule.toString(),
     // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
     duration: 0,
@@ -32,7 +33,11 @@ export const startNewMeetingSeries = async (
     facilitatorId: viewerId
   } as const
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
-  const nextMeetingStartDate = recurrenceRule.after(now)
+  const rruleNow = getRRuleDateFromJSDate(now)
+  const nextMeetingStartRRuleDate = recurrenceRule.after(rruleNow)
+  const nextMeetingStartDate = nextMeetingStartRRuleDate
+    ? getJSDateFromRRuleDate(nextMeetingStartRRuleDate)
+    : null
 
   await r
     .table('NewMeeting')
@@ -54,7 +59,11 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
   const {id: meetingSeriesId} = meetingSeries
 
   const now = new Date()
-  const nextMeetingStartDate = newRecurrenceRule.after(now)
+  const rruleNow = getRRuleDateFromJSDate(now)
+  const nextMeetingStartDateRRule = newRecurrenceRule.after(rruleNow)
+  const nextMeetingStartDate = nextMeetingStartDateRRule
+    ? getJSDateFromRRuleDate(nextMeetingStartDateRRule)
+    : null
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
   // lets close all active meetings at the time when

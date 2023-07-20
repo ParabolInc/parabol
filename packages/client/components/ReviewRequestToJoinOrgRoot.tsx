@@ -14,7 +14,8 @@ const ReviewRequestToJoinOrgRoot = () => {
   const {requestId} = params
   const queryRef = useQueryLoaderNow<ReviewRequestToJoinOrgModalQuery>(
     reviewRequestToJoinOrgModalQuery,
-    {requestId}
+    {requestId},
+    'network-only'
   )
 
   const location = useLocation<{backgroundLocation?: Location}>()

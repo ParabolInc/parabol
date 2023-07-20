@@ -7,11 +7,9 @@ import useModal from '../../../hooks/useModal'
 import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import lazyPreload from '../../../utils/lazyPreload'
 import {PokerTemplatePicker_settings$key} from '../../../__generated__/PokerTemplatePicker_settings.graphql'
-import {PokerTemplatePicker_viewer$key} from '../../../__generated__/PokerTemplatePicker_viewer.graphql'
 
 interface Props {
   settingsRef: PokerTemplatePicker_settings$key
-  viewerRef: PokerTemplatePicker_viewer$key
 }
 
 const PokerTemplateModal = lazyPreload(
@@ -23,7 +21,7 @@ const PokerTemplateModal = lazyPreload(
 )
 
 const PokerTemplatePicker = (props: Props) => {
-  const {settingsRef, viewerRef} = props
+  const {settingsRef} = props
   const settings = useFragment(
     graphql`
       fragment PokerTemplatePicker_settings on PokerMeetingSettings {
@@ -38,19 +36,10 @@ const PokerTemplatePicker = (props: Props) => {
     `,
     settingsRef
   )
-  const viewer = useFragment(
-    graphql`
-      fragment PokerTemplatePicker_viewer on User {
-        ...PokerTemplateModal_viewer
-      }
-    `,
-    viewerRef
-  )
   const {selectedTemplate} = settings
   const {name: templateName, scope} = selectedTemplate
   const {togglePortal, modalPortal, closePortal} = useModal({
-    id: 'templateModal',
-    parentId: 'newMeetingRoot'
+    id: 'templateModal'
   })
   const atmosphere = useAtmosphere()
 
@@ -72,11 +61,7 @@ const PokerTemplatePicker = (props: Props) => {
         title={'Template'}
       />
       {modalPortal(
-        <PokerTemplateModal
-          closePortal={closePortal}
-          pokerMeetingSettingsRef={settings}
-          viewerRef={viewer}
-        />
+        <PokerTemplateModal closePortal={closePortal} pokerMeetingSettingsRef={settings} />
       )}
     </>
   )

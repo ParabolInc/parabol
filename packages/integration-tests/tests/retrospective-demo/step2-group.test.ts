@@ -1,10 +1,10 @@
+import {expect, test} from '@playwright/test'
 import config from '../config'
-import {test, expect} from '@playwright/test'
 import {
-  startDemo,
   dragReflectionCard,
   goToNextPhase,
-  skipToGroupPhase
+  skipToGroupPhase,
+  startDemo
 } from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / group page', () => {

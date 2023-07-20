@@ -20,8 +20,8 @@ module.exports = {
     __dirname: false
   },
   entry: {
+    assignSURole: [DOTENV, path.join(TOOLBOX_SRC, 'assignSURole.ts')],
     pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')],
-    postDeploy: [DOTENV, path.join(TOOLBOX_SRC, 'postDeploy.ts')],
     renameDB: [DOTENV, path.join(TOOLBOX_SRC, 'renameDB.ts')],
     softenDurability: [DOTENV, path.join(TOOLBOX_SRC, 'softenDurability.ts')],
     updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')]
@@ -54,12 +54,12 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       __PRODUCTION__: true,
-      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT)
     })
   ],
   module: {
     rules: [
-      ...transformRules(PROJECT_ROOT),
+      ...transformRules(PROJECT_ROOT, true),
       {
         test: /\.js$/,
         include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],
@@ -67,6 +67,7 @@ module.exports = {
           {
             loader: '@sucrase/webpack-loader',
             options: {
+              production: true,
               transforms: ['jsx']
             }
           }

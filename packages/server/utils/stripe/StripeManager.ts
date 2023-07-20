@@ -4,7 +4,7 @@ import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
   static PARABOL_TEAM_600 = 'parabol-pro-600' // $6/seat/mo
-  static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
+  static PARABOL_ENTERPRISE_2021_LOW = 'plan_2021_ann_low'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {apiVersion: '2020-08-27'})
 
@@ -17,8 +17,73 @@ export default class StripeManager {
     }
   }
 
-  async attachPaymentToCustomer(customerId: string, paymentMethodId: string) {
-    return this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+  async attachPaymentToCustomer(
+    customerId: string,
+    paymentMethodId: string
+  ): Promise<Stripe.Response<Stripe.PaymentMethod> | Error> {
+    try {
+      return await this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
+  async updateSubscription(
+    subscriptionId: string,
+    paymentMethodId: string
+  ): Promise<Stripe.Subscription | Error> {
+    try {
+      const subscription = await this.stripe.subscriptions.update(subscriptionId, {
+        default_payment_method: paymentMethodId,
+        expand: ['latest_invoice']
+      })
+      return subscription
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
+  async retrieveCardDetails(paymentMethodId: string): Promise<Stripe.PaymentMethod.Card | Error> {
+    try {
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(paymentMethodId)
+      if (paymentMethod.type !== 'card') {
+        throw new Error('Payment method is not a card')
+      } else if (!paymentMethod.card) {
+        throw new Error('Payment method does not have a card')
+      }
+      return paymentMethod.card
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
+  }
+
+  async retrieveDefaultCardDetails(customerId: string): Promise<Stripe.PaymentMethod.Card | Error> {
+    try {
+      const customer = await this.stripe.customers.retrieve(customerId)
+      if (customer.deleted) {
+        throw new Error('Customer has been deleted')
+      }
+      const defaultPaymentMethodId = customer.invoice_settings.default_payment_method
+      if (!defaultPaymentMethodId) {
+        throw new Error('No default payment method found for this customer')
+      }
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(
+        defaultPaymentMethodId as string
+      )
+      if (paymentMethod.type !== 'card') {
+        throw new Error('Default payment method is not a card')
+      }
+      if (!paymentMethod.card) {
+        throw new Error('Default payment method does not have a card')
+      }
+      return paymentMethod.card
+    } catch (e) {
+      const error = e as Error
+      return error
+    }
   }
 
   async createCustomer(orgId: string, email: string, source?: string) {
@@ -47,20 +112,39 @@ export default class StripeManager {
       proration_behavior: 'none',
       items: [
         {
-          plan: plan || StripeManager.PARABOL_ENTERPRISE_2019Q3,
+          plan: plan || StripeManager.PARABOL_ENTERPRISE_2021_LOW,
           quantity
         }
       ]
     })
   }
 
-  async createSetupIntent() {
-    return this.stripe.setupIntents.create({
-      payment_method_types: ['card']
+  async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
+    return this.stripe.subscriptions.create({
+      // USE THIS FOR TESTING A FAILING PAYMENT
+      // https://stripe.com/docs/billing/testing
+      // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
+      customer: customerId,
+      proration_behavior: 'none',
+      payment_behavior: 'default_incomplete',
+      expand: ['latest_invoice.payment_intent'], // expand the payment intent so we can get the client_secret
+      // Use this for testing invoice.created hooks
+      // run `yarn ultrahook` and subscribe
+      // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
+      // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
+      metadata: {
+        orgId
+      },
+      items: [
+        {
+          plan: StripeManager.PARABOL_TEAM_600,
+          quantity
+        }
+      ]
     })
   }
 
-  async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
+  async createTeamSubscriptionOld(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
       // https://stripe.com/docs/billing/testing
@@ -103,12 +187,30 @@ export default class StripeManager {
     return allSubscriptionItems.data[0]
   }
 
+  async listSubscriptionOpenInvoices(subscriptionId: string) {
+    return this.stripe.invoices.list({
+      subscription: subscriptionId,
+      status: 'open'
+    })
+  }
+
+  async payInvoice(invoiceId: string) {
+    return this.stripe.invoices.pay(invoiceId)
+  }
+
   async listLineItems(invoiceId: string, options: Stripe.InvoiceLineItemListParams) {
     return this.stripe.invoices.listLineItems(invoiceId, options)
   }
 
   async listSources(customerId: string) {
     return this.stripe.customers.listSources(customerId, {object: 'card', limit: 3})
+  }
+
+  async listActiveSubscriptions(customerId: string) {
+    return this.stripe.subscriptions.list({
+      customer: customerId,
+      status: 'active'
+    })
   }
 
   async retrieveCharge(chargeId: string) {
@@ -120,7 +222,9 @@ export default class StripeManager {
   }
 
   async retrieveInvoice(invoiceId: string) {
-    return this.stripe.invoices.retrieve(invoiceId)
+    return this.stripe.invoices.retrieve(invoiceId, {
+      expand: ['payment_intent']
+    })
   }
 
   async retrieveInvoiceItem(invoiceItemId: string) {
@@ -132,7 +236,9 @@ export default class StripeManager {
   }
 
   async retrieveSubscription(subscriptionId: string) {
-    return this.stripe.subscriptions.retrieve(subscriptionId)
+    return this.stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['latest_invoice.payment_intent'] // expand the payment intent so we can get the client_secret
+    })
   }
 
   async retrieveUpcomingInvoice(stripeId: string) {

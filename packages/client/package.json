@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.103.0",
+  "version": "6.113.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -61,7 +61,7 @@
     "react-refresh": "^0.9.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "4.9.5",
-    "webpack-dev-server": "^4.7.3"
+    "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
     "@datadog/browser-rum": "^3.6.12",
@@ -73,8 +73,11 @@
     "@mattkrick/trebuchet-client": "^3.0.1",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.9.2",
+    "@radix-ui/react-dialog": "^1.0.4",
+    "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@radix-ui/react-radio-group": "^1.1.2",
     "@radix-ui/react-scroll-area": "^1.0.3",
+    "@radix-ui/react-select": "^1.2.2",
     "@sentry/browser": "^5.8.0",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^1.47.0",
@@ -102,7 +105,7 @@
     "eventemitter3": "^4.0.0",
     "fbjs": "^3.0.4",
     "flatted": "^2.0.1",
-    "graphiql": "1.9.12",
+    "graphiql": "^3.0.0",
     "graphql-typed": "^0.6.1",
     "hoist-non-react-statics": "^3.3.0",
     "immutable": "3.8.2",
@@ -134,6 +137,7 @@
     "rrule": "^2.7.2",
     "string-score": "^1.0.1",
     "swiper": "^8.3.1",
+    "tailwind-merge": "^1.13.2",
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
     "tslib": "^2.4.0",

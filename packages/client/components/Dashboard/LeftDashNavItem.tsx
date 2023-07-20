@@ -7,9 +7,11 @@ import {
   ExitToApp,
   Forum,
   Group,
-  History,
+  Groups,
   PlaylistAddCheck,
-  Warning
+  Timeline,
+  Warning,
+  WorkOutline
 } from '@mui/icons-material'
 import React from 'react'
 import {useHistory, useRouteMatch} from 'react-router'
@@ -60,12 +62,14 @@ const iconLookup = {
   arrowBack: <ArrowBack />,
   creditScore: <CreditScore />,
   forum: <Forum />,
-  history: <History />,
   playlist_add_check: <PlaylistAddCheck />,
   add: <Add />,
   exit_to_app: <ExitToApp />,
   group: <Group />,
-  warning: <Warning />
+  groups: <Groups />,
+  warning: <Warning />,
+  work: <WorkOutline />,
+  timeline: <Timeline />
 }
 
 interface Props {

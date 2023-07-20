@@ -11,6 +11,7 @@ import {phaseTypeToSlug} from './lookups'
 
 const phaseIsMultiStage = {
   checkin: true,
+  TEAM_HEALTH: false,
   reflect: false,
   group: false,
   vote: false,

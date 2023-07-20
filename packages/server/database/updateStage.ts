@@ -21,9 +21,9 @@ const updateStage = async (
       phases: mapIf(
         meeting('phases'),
         (phase: any) => phase('phaseType').eq(phaseType),
-        (estimatePhase: any) =>
-          estimatePhase.merge({
-            stages: mapIf(estimatePhase('stages'), (stage: any) => stage('id').eq(stageId), updater)
+        (phase: any) =>
+          phase.merge({
+            stages: mapIf(phase('stages'), (stage: any) => stage('id').eq(stageId), updater)
           })
       )
     }))

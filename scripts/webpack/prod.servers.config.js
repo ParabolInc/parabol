@@ -34,11 +34,12 @@ module.exports = ({isDeploy, noDeps}) => ({
     __dirname: false
   },
   entry: {
+    chronos: [DOTENV, path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
     web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-    postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
-    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
-    pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')]
+    preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
+    pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
+    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')]
   },
   output: {
     filename: '[name].js',
@@ -85,6 +86,7 @@ module.exports = ({isDeploy, noDeps}) => ({
   },
   plugins: [
     new webpack.DefinePlugin({
+      __PRODUCTION__: true,
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
       'process.platform': JSON.stringify(process.platform),
@@ -126,7 +128,7 @@ module.exports = ({isDeploy, noDeps}) => ({
   ].filter(Boolean),
   module: {
     rules: [
-      ...transformRules(PROJECT_ROOT),
+      ...transformRules(PROJECT_ROOT, true),
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         oneOf: [

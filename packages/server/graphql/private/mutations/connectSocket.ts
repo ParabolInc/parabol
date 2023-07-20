@@ -12,12 +12,12 @@ import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
-  socketServerId: string
+  socketInstanceId: string
   socketId: string
 }
 const connectSocket: MutationResolvers['connectSocket'] = async (
   _source,
-  {socketServerId},
+  {socketInstanceId},
   {authToken, dataLoader, socketId}
 ) => {
   const r = await getRethink()
@@ -44,7 +44,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, inactive: true})('orgId')
       .run()
-    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER, dataLoader).catch(console.log)
+    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
     // TODO: re-identify
   }
   const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
@@ -59,7 +59,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   }
   const socketCount = await redis.rpush(
     `presence:${userId}`,
-    JSON.stringify({lastSeenAtURL: null, socketServerId, socketId} as UserPresence)
+    JSON.stringify({lastSeenAtURL: null, socketInstanceId, socketId} as UserPresence)
   )
 
   // If this is the first socket, tell everyone they're online

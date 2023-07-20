@@ -123,6 +123,7 @@ export const enum ElementHeight {
 
 export const enum ExternalLinks {
   EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
+  LOGO = 'https://action-files.parabol.co/static/favicon-with-more-padding.jpeg',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_RETRO_VIDEO = 'https://www.parabol.co/resources/retrospective-meetings/#video',
@@ -248,9 +249,10 @@ export const enum PokerCards {
   AVATAR_WIDTH = 46,
   AVATAR_BORDER = 3
 }
-export const enum UserTaskViewFilterLabels {
+export const enum FilterLabels {
   ALL_TEAMS = 'All Teams',
-  ALL_TEAM_MEMBERS = 'All Team Members'
+  ALL_TEAM_MEMBERS = 'All Team Members',
+  ALL_EVENTS = 'All Events'
 }
 
 export const enum MeetingSettingsThreshold {
@@ -388,6 +390,7 @@ export const enum Threshold {
   MAX_POKER_TEMPLATE_DIMENSIONS = 12,
   MAX_POKER_TEMPLATE_SCALES = 12,
   MAX_POKER_SCALE_VALUES = 30,
+  POKER_SCALE_VALUE_MAX_LENGTH = 3,
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_POKER_DIMENSION_NAME = 50,
@@ -514,7 +517,9 @@ export const enum AIExplainer {
 
 export const enum EmptyMeetingViewMessage {
   NO_ACTIVE_MEETINGS = `Looks like you have no upcoming meetings 😎 Start one now or check out these tips and tricks.`,
-  NO_SEARCH_RESULTS = `Sorry we could not find any meetings matched with your query. Would you like to checkout these tips and tricks?`
+  NO_SEARCH_RESULTS = `Sorry, we could not find any meetings that matched with your query. Would you like to checkout these tips and tricks?`,
+  NO_ACTIVE_MEETINGS_ON_THE_TEAM = `Looks like you have no upcoming meetings on this team.`,
+  NO_SEARCH_RESULTS_ON_THE_TEAM = `Sorry, we could not find any meetings that matched with your query on this team.`
 }
 
 export const enum OpenAIMagicWords {

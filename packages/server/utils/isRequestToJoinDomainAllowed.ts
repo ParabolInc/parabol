@@ -18,9 +18,8 @@ export const getEligibleOrgIdsByDomain = async (
   return r
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})
-    .filter((org) => org('featureFlags').contains('promptToJoinOrg'))
-    .filter((org) => org('tier').ne('enterprise'))
-    .filter((org) =>
+    .filter((org: RDatum) => org('featureFlags').contains('promptToJoinOrg'))
+    .filter((org: RDatum) =>
       r
         .table('OrganizationUser')
         .getAll(org('id'), {index: 'orgId'})
@@ -30,7 +29,7 @@ export const getEligibleOrgIdsByDomain = async (
           orgUsers
             .count()
             .gt(1)
-            .and(orgUsers.filter((ou) => ou('userId').eq(viewerId)).isEmpty())
+            .and(orgUsers.filter((ou: RDatum) => ou('userId').eq(viewerId)).isEmpty())
         )
     )
     .limit(limit ?? BIG_ENOUGH_LIMIT)('id')

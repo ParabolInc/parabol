@@ -4,6 +4,8 @@ import {OnNextHistoryContext} from '../../types/relayMutations'
 import fromStageIdToUrl from '../../utils/meetings/fromStageIdToUrl'
 import {mapDiscussionMentionedToToast_notification$data} from '../../__generated__/mapDiscussionMentionedToToast_notification.graphql'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import getMeetingPathParams from '../../utils/meetings/getMeetingPathParams'
+import findStageById from '../../utils/meetings/findStageById'
 
 graphql`
   fragment mapDiscussionMentionedToToast_notification on NotifyDiscussionMentioned {
@@ -15,6 +17,12 @@ graphql`
     meeting {
       id
       name
+      phases {
+        phaseType
+        stages {
+          id
+        }
+      }
       ...fromStageIdToUrl_meeting
     }
     discussion {
@@ -43,10 +51,19 @@ const mapDiscussionMentionedToToast = (
   const {stage} = discussion
   const {id: stageId, response} = stage ?? {}
 
-  const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
+  const meetingPath = getMeetingPathParams()
+  const notifStageRes = findStageById(meeting.phases, stageId)
+  if (
+    meetingPath.meetingId === meetingId &&
+    (!stageId ||
+      (notifStageRes?.stageIdx === meetingPath.stageIdx &&
+        notifStageRes?.phase.phaseType === meetingPath.phaseType))
+  ) {
+    // We're already in the relevant stage of the meeting, so don't pop toast.
+    return null
+  }
 
-  // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
-  // thread, and do nothing if we are.
+  const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
 
   return {
     key: makeNotificationToastKey(notificationId),

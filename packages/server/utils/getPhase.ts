@@ -6,6 +6,7 @@ import GenericMeetingPhase from '../database/types/GenericMeetingPhase'
 import ReflectPhase from '../database/types/ReflectPhase'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import UpdatesPhase from '../database/types/UpdatesPhase'
+import TeamHealthPhase from '../database/types/TeamHealthPhase'
 
 interface PhaseTypeLookup {
   agendaitems: AgendaItemsPhase
@@ -15,6 +16,7 @@ interface PhaseTypeLookup {
   reflect: ReflectPhase
   updates: UpdatesPhase
   RESPONSES: TeamPromptResponsesPhase
+  TEAM_HEALTH: TeamHealthPhase
 }
 
 const getPhase = <T extends keyof PhaseTypeLookup>(phases: GenericMeetingPhase[], phaseType: T) => {

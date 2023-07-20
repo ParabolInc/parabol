@@ -13,6 +13,7 @@ import {NewGitHubIssueInput_meeting$key} from '~/__generated__/NewGitHubIssueInp
 import {NewGitHubIssueInput_viewer$key} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
+import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
@@ -141,6 +142,12 @@ const NewGitHubIssueInput = (props: Props) => {
   const {id: teamId} = team!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
+  const [createTaskError, setCreateTaskError] = useTimedState()
+  useEffect(() => {
+    if (isEditing) {
+      setCreateTaskError(undefined)
+    }
+  }, [isEditing])
   const nameWithOwner = repos.find((repo) => repo.nameWithOwner)?.nameWithOwner
   const [selectedNameWithOwner, setSelectedNameWithOwner] = useState(nameWithOwner)
   const {fields, onChange, validateField, setDirtyField} = useForm({
@@ -189,7 +196,12 @@ const NewGitHubIssueInput = (props: Props) => {
       }
     }
     const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
-      const integration = res.createTask?.task?.integration ?? null
+      const {error, task} = res.createTask
+      if (error) {
+        setCreateTaskError(error.message)
+      }
+      if (error || !task) return
+      const {integration} = task
       if (!integration) return
       if (integration.__typename !== '_xGitHubIssue') return
       const {number: issueNumber, repository} = integration
@@ -213,6 +225,17 @@ const NewGitHubIssueInput = (props: Props) => {
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
+  if (createTaskError) {
+    return (
+      <Item>
+        <Checkbox active disabled />
+        <Issue>
+          <Error>{createTaskError}</Error>
+          <StyledLink>{selectedNameWithOwner}</StyledLink>
+        </Issue>
+      </Item>
+    )
+  }
   if (!isEditing) return null
   return (
     <>

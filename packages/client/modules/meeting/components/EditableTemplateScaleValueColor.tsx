@@ -67,8 +67,7 @@ const EditableTemplateScaleValueColor = (props: Props) => {
     scaleRef
   )
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
-    MenuPosition.UPPER_LEFT,
-    {parentId: 'templateModal'}
+    MenuPosition.UPPER_LEFT
   )
   return (
     <ScaleValueColor ref={originRef} onClick={togglePortal}>

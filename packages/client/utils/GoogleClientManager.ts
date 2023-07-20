@@ -14,6 +14,7 @@ class GoogleClientManager extends GoogleManager {
     atmosphere: Atmosphere,
     mutationProps: MenuMutationProps,
     history: RouterProps['history'],
+    pageParams: string,
     invitationToken?: string,
     loginHint?: string
   ) {
@@ -57,7 +58,13 @@ class GoogleClientManager extends GoogleManager {
       }
       LoginWithGoogleMutation(
         atmosphere,
-        {code, segmentId, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
+        {
+          code,
+          segmentId,
+          invitationToken: invitationToken || '',
+          isInvitation: !!invitationToken,
+          params: pageParams
+        },
         {onError, onCompleted: handleComplete, history}
       )
       window.removeEventListener('message', handler)

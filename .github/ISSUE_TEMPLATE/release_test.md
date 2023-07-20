@@ -33,6 +33,8 @@ Run through this list at least once at [staging](https://action-staging.parabol.
 - [ ] Upgraded to Team (Credit card number: `4242 4242 4242 4242`, expiration date: any month in the future, CVC: `123`)
 - [ ] Smoke tested the app on a mobile device (e.g. navigate between views, smoke test a Retro meeting, etc.)
 - [ ] Test previously existed meetings to make sure that existing data is not corrupted
+- [ ] Create a task in the discussion thread of a meeting
+- [ ] Create a comment in the discussion thread of a meeting
 
 ## What’s changed
 

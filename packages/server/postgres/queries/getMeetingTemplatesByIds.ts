@@ -1,12 +1,7 @@
-import getPg from '../getPg'
-import {
-  getMeetingTemplatesByIdsQuery,
-  IGetMeetingTemplatesByIdsQueryResult
-} from './generated/getMeetingTemplatesByIdsQuery'
+import getKysely from '../getKysely'
 
-export interface MeetingTemplate extends IGetMeetingTemplatesByIdsQueryResult {}
-
-const getMeetingTemplatesByIds = async (ids: readonly string[]) =>
-  getMeetingTemplatesByIdsQuery.run({ids}, getPg())
+const getMeetingTemplatesByIds = async (ids: readonly string[]) => {
+  return getKysely().selectFrom('MeetingTemplate').selectAll().where('id', 'in', ids).execute()
+}
 
 export default getMeetingTemplatesByIds

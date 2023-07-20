@@ -12,8 +12,11 @@ import getSafeRegex from '../utils/getSafeRegex'
 import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
+import MeetingsDashHeader from './MeetingsDashHeader'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -45,54 +48,74 @@ const MeetingsDash = (props: Props) => {
         id
         dashSearch
         preferredName
+        featureFlags {
+          retrosInDisguise
+        }
         teams {
           ...MeetingsDashActiveMeetings @relay(mask: false)
         }
+        ...MeetingsDashHeader_viewer
       }
     `,
     viewerRef
   )
-  const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
-  const activeMeetings = useMemo(() => {
-    const meetings = teams
-      .flatMap((team) => team.activeMeetings)
-      .filter(Boolean)
-      .sort((a, b) => {
-        const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
-        const bRecurring = !!(b.meetingSeries && !b.meetingSeries.cancelledAt)
-        if (aRecurring && !bRecurring) {
-          return -1
-        }
-        if (bRecurring && !aRecurring) {
-          return 1
-        }
+  const atmosphere = useAtmosphere()
+  const {teamIds: teamFilterIds} = useQueryParameterParser(atmosphere.viewerId)
+  const {
+    teams = [],
+    preferredName = '',
+    dashSearch,
+    featureFlags = {retrosInDisguise: false}
+  } = viewer ?? {}
+  const activeMeetings = useMemo(
+    () =>
+      teams
+        .flatMap((team) => team.activeMeetings)
+        .filter(Boolean)
+        .sort((a, b) => {
+          const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
+          const bRecurring = !!(b.meetingSeries && !b.meetingSeries.cancelledAt)
+          if (aRecurring && !bRecurring) {
+            return -1
+          }
+          if (bRecurring && !aRecurring) {
+            return 1
+          }
 
-        if (aRecurring && bRecurring) {
-          // When ordering recurring meetings, sort based on when the series was created to maintain
-          // consistency when meetings are restarted.
-          return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
-        }
+          if (aRecurring && bRecurring) {
+            // When ordering recurring meetings, sort based on when the series was created to maintain
+            // consistency when meetings are restarted.
+            return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
+          }
 
-        return a.createdAt > b.createdAt ? -1 : 1
-      })
-    const filteredMeetings = dashSearch
-      ? meetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
-      : meetings
+          return a.createdAt > b.createdAt ? -1 : 1
+        }),
+    [teams]
+  )
+  const filteredMeetings = useMemo(() => {
+    const searchedMeetings = dashSearch
+      ? activeMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
+      : activeMeetings
+    const filteredMeetings = teamFilterIds
+      ? searchedMeetings.filter((node) => teamFilterIds.includes(node.teamId))
+      : searchedMeetings
     return filteredMeetings.map((meeting, displayIdx) => ({
       ...meeting,
       key: meeting.id,
       displayIdx
     }))
-  }, [teams, dashSearch])
-  const transitioningMeetings = useTransition(activeMeetings)
+  }, [activeMeetings, dashSearch, teamFilterIds])
+  const transitioningMeetings = useTransition(filteredMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const hasMeetings = activeMeetings.length > 0
+  const hasFilteredMeetings = filteredMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
+
   return (
     <>
-      {hasMeetings ? (
+      <MeetingsDashHeader viewerRef={viewer} />
+      {hasFilteredMeetings ? (
         <Wrapper maybeTabletPlus={maybeTabletPlus}>
           {transitioningMeetings.map((meeting) => {
             const {child} = meeting
@@ -114,17 +137,20 @@ const MeetingsDash = (props: Props) => {
             name={preferredName}
             message={
               dashSearch
-                ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS
-                : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS
+                ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS_ON_THE_TEAM
+                : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS_ON_THE_TEAM
             }
+            isTeamFilterSelected={!!teamFilterIds}
           />
-          <Wrapper maybeTabletPlus={maybeTabletPlus}>
-            <DemoMeetingCard />
-            <TutorialMeetingCard />
-          </Wrapper>
+          {!teamFilterIds ? (
+            <Wrapper maybeTabletPlus={maybeTabletPlus}>
+              <DemoMeetingCard />
+              <TutorialMeetingCard />
+            </Wrapper>
+          ) : null}
         </EmptyContainer>
       )}
-      <StartMeetingFAB />
+      <StartMeetingFAB hasRid={featureFlags.retrosInDisguise} />
     </>
   )
 }
@@ -135,6 +161,7 @@ graphql`
       ...MeetingCard_meeting
       ...useSnacksForNewMeetings_meetings
       id
+      teamId
       name
       createdAt
       meetingMembers {

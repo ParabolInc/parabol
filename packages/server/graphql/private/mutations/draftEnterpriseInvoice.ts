@@ -11,6 +11,7 @@ import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
+import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 
 const getBillingLeaderUser = async (
   email: string | null | undefined,
@@ -102,7 +103,12 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     customerId = stripeId
   }
 
-  const subscription = await manager.createEnterpriseSubscription(customerId, orgId, quantity, plan)
+  const subscription = await manager.createEnterpriseSubscription(
+    customerId,
+    orgId,
+    quantity,
+    plan ?? undefined
+  )
 
   await Promise.all([
     r({
@@ -114,17 +120,20 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
           periodStart: fromEpochSeconds(subscription.current_period_start),
           stripeSubscriptionId: subscription.id,
           tier: 'enterprise',
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
           updatedAt: now
         })
     }).run(),
     updateTeamByOrgId(
       {
         isPaid: true,
-        tier: 'enterprise',
-        updatedAt: now
+        tier: 'enterprise'
       },
       orgId
-    )
+    ),
+    removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
   await Promise.all([

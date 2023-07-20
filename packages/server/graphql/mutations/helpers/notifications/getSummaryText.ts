@@ -6,8 +6,9 @@ import {isMeetingPoker} from '../../../../database/types/MeetingPoker'
 import {isMeetingRetrospective} from '../../../../database/types/MeetingRetrospective'
 import {isMeetingTeamPrompt} from '../../../../database/types/MeetingTeamPrompt'
 import sendToSentry from '../../../../utils/sendToSentry'
+import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 
-const getSummaryText = (meeting: Meeting) => {
+const getSummaryText = async (meeting: Meeting) => {
   if (isMeetingRetrospective(meeting)) {
     const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
     const hasNonZeroStat = commentCount || reflectionCount || topicCount || taskCount
@@ -39,7 +40,11 @@ const getSummaryText = (meeting: Meeting) => {
       'comment'
     )}.`
   } else if (isMeetingTeamPrompt(meeting)) {
-    return 'TODO: Implement teamPrompt summary text'
+    const responseCount = (await getTeamPromptResponsesByMeetingId(meeting.id)).filter(
+      (response) => !!response.plaintextContent
+    ).length
+    // :TODO: (jmtaber129): Add additional stats here.
+    return `Your team shared ${responseCount} ${plural(responseCount, 'response', 'responses')}.`
   } else if (isMeetingPoker(meeting)) {
     const {storyCount = 0, commentCount = 0} = meeting
     return `You voted on ${storyCount} ${plural(

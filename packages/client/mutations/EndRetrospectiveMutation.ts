@@ -28,8 +28,14 @@ graphql`
       reflectionCount
       taskCount
       topicCount
+      autogroupReflectionGroups {
+        groupTitle
+      }
       reflectionGroups(sortBy: voteCount) {
         summary
+        reflections {
+          id
+        }
       }
       phases {
         phaseType
@@ -40,6 +46,10 @@ graphql`
             }
           }
         }
+      }
+      settings {
+        recallBotId
+        videoMeetingURL
       }
     }
     team {
@@ -69,6 +79,7 @@ graphql`
   fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
     meeting {
       ...WholeMeetingSummary_meeting
+      taskCount
     }
   }
 `
@@ -95,7 +106,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId, teamId, reflectionGroups, phases} = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases, autogroupReflectionGroups} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -111,13 +122,26 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
       const {stages} = discussPhase ?? {}
       const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+      const reflections = reflectionGroups.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
       const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
       const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+      const hasTeamHealth = phases.some((phase) => phase.phaseType === 'TEAM_HEALTH')
       const pathname = `/new-summary/${meetingId}`
-      const search = hasOpenAISummary ? '?ai=true' : ''
+      const search = new URLSearchParams()
+      const hasSuggestGroups = !!autogroupReflectionGroups?.length
+      if (hasSuggestGroups) {
+        const suggestGroupsStr = reflections.length > 40 ? 'sg-xl' : 'sg'
+        search.append(suggestGroupsStr, 'true')
+      }
+      if (hasOpenAISummary) {
+        search.append('ai', 'true')
+      }
+      if (hasTeamHealth) {
+        search.append('team-health', 'true')
+      }
       history.push({
         pathname,
-        search
+        search: search.toString()
       })
     }
   }

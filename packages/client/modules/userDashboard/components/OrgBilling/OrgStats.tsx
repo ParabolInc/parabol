@@ -27,23 +27,28 @@ const StatBlock = styled('div')({
   padding: '14px 0px'
 })
 
-const StatBlockNumber = styled('div')({
+const StatBlockNumber = styled('h5')({
   color: PALETTE.SLATE_600,
   fontSize: 48,
-  lineHeight: '72px'
+  fontWeight: 500,
+  lineHeight: '72px',
+  margin: 0
 })
 
-const StatBlockLabel = styled('div')({
+const StatBlockLabel = styled('label')({
   color: PALETTE.SLATE_800,
   fontSize: 14,
   fontWeight: 600,
   lineHeight: '16px',
   textTransform: 'capitalize',
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  textAlign: 'center'
 })
 
-const StyledIcon = styled('div')({
+const StyledIcon = styled('span')({
   width: 18,
   height: 18,
   color: PALETTE.SLATE_600,

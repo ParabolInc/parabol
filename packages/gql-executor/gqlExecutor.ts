@@ -5,6 +5,7 @@ import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
 import SocketServerChannelId from '../client/shared/gqlIds/SocketServerChannelId'
 import executeGraphQL, {GQLRequest} from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
+import '../server/monkeyPatchFetch'
 import RedisStream from './RedisStream'
 
 tracer.init({
@@ -12,7 +13,7 @@ tracer.init({
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false
 })
-tracer.use('ioredis').use('http').use('pg').use('fs')
+tracer.use('ioredis').use('http').use('pg')
 
 const {REDIS_URL, SERVER_ID} = process.env
 interface PubSubPromiseMessage {

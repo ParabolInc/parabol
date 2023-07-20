@@ -1,3 +1,4 @@
+import {RValue} from '../../../database/stricterR'
 import getRethink from '../../../database/rethinkDriver'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -80,7 +81,7 @@ const dailyPulse: QueryResolvers['dailyPulse'] = async (_source, {after, email, 
   const slackAuth = await r
     .table('SlackAuth')
     .getAll(userId, {index: 'userId'})
-    .filter((row) => row('botAccessToken').default(null).ne(null))
+    .filter((row: RValue) => row('botAccessToken').default(null).ne(null))
     .nth(0)
     .default(null)
     .run()

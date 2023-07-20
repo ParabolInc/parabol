@@ -34,13 +34,15 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
 }
 
 const primeIntegrations = async () => {
+  console.log('⛓️ Prime Integrationgs Started')
   try {
     const pg = getPg()
     await upsertGlobalIntegrationProvidersFromEnv()
     await pg.end()
   } catch (e) {
-    console.log('Prime Integrations error', e)
+    console.log('⛓️ Prime Integrations error', e)
   }
+  console.log('⛓️ Prime Integrations Complete')
 }
 
 export default primeIntegrations
