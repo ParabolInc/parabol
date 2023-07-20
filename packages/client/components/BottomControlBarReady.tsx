@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {ArrowForward, CheckCircleOutline, CheckCircle} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGotoNext from '~/hooks/useGotoNext'
@@ -79,6 +79,11 @@ const BottomControlBarReady = (props: Props) => {
         }
         meetingMembers {
           id
+          user {
+            isConnected
+            lastSeenAt
+            lastSeenAtURLs
+          }
         }
         phases {
           stages {
@@ -93,7 +98,16 @@ const BottomControlBarReady = (props: Props) => {
   const stages = localPhase.stages || []
   const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
-  const activeCount = meetingMembers.length
+
+  const connectedMeetingMembers = useMemo(() => {
+    return meetingMembers.filter(
+      (meetingMember) =>
+        meetingMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
+        meetingMember.user.isConnected
+    )
+  }, [meetingMembers])
+  const activeCount = connectedMeetingMembers.length
+
   const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER,
     {
@@ -102,7 +116,7 @@ const BottomControlBarReady = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const readyCount = localStage.readyCount || 0
-  const progress = readyCount / Math.max(1, activeCount - 1)
+  const progress = activeCount > 1 ? readyCount / activeCount : 1.0
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
   const isConfirmRequired =
     isLastStageInPhase &&
@@ -129,7 +143,7 @@ const BottomControlBarReady = (props: Props) => {
     : undefined
   let label = ''
   if (isNext) {
-    label = progress === 1.0 ? 'Next' : `${readyCount} / ${Math.max(1, activeCount - 1)} Ready`
+    label = progress === 1.0 ? 'Next' : `${readyCount} / ${activeCount} Ready`
   } else {
     label = isViewerReady ? 'Undo ready status' : 'Tap when ready'
   }
