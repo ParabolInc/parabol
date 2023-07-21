@@ -3,16 +3,16 @@ import dotenvExpand from 'dotenv-expand'
 import fs from 'fs'
 import path from 'path'
 import getRethink from '../../packages/server/database/rethinkDriver'
-import getProjectRoot from '../webpack/utils/getProjectRoot'
+import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
 import primeIntegrations from './primeIntegrations'
 import pushToCDN from './pushToCDN'
 import standaloneMigrations from './standaloneMigrations'
 
-const PROJECT_ROOT = getProjectRoot()!
-
 const storePersistedQueries = async () => {
   console.log('🔗 QueryMap Persistence Started')
-  const queryMap = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'queryMap.json')).toString())
+  const queryMap = JSON.parse(
+    fs.readFileSync(path.join(__PROJECT_ROOT__, 'queryMap.json')).toString()
+  )
   const hashes = Object.keys(queryMap)
   const now = new Date()
   const records = hashes.map((hash) => ({
@@ -23,19 +23,20 @@ const storePersistedQueries = async () => {
 
   const r = await getRethink()
   const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
+  await new Promise((resolve) => setTimeout(resolve, 50))
   await r.getPoolMaster()?.drain()
 
   console.log(`🔗 QueryMap Persistence Complete: ${res.inserted} records added`)
 }
 
 const preDeploy = async () => {
-  const envPath = path.join(PROJECT_ROOT, '.env')
+  const envPath = path.join(__PROJECT_ROOT__, '.env')
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
 
   try {
-    // first we migrate DBs
-    await standaloneMigrations()
+    // first we migrate DBs & add env vars to client assets
+    await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
 
     // The we can prime the DB & CDN
     await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])

@@ -6,6 +6,7 @@ const getProjectRoot = require('./utils/getProjectRoot')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -72,6 +73,8 @@ module.exports = ({noDeps}) => ({
     ]
   },
   plugins: [
+    // Pro tip: comment this out along with stable entry files for quick debugging
+    new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       __PRODUCTION__: true,
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
@@ -113,6 +116,19 @@ module.exports = ({noDeps}) => ({
                 options: {
                   name: 'templates/[name].[ext]',
                   publicPath: distPath
+                }
+              }
+            ]
+          },
+          {
+            // manifest.json icons just need the file name, we'll prefix them with the CDN in preDeploy
+            test: /mark-cropped-\d+.png$/,
+            include: [path.resolve(PROJECT_ROOT, 'static/images/brand')],
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '[name].[ext]'
                 }
               }
             ]

@@ -4,36 +4,35 @@ import path from 'path'
 import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
 
-declare const __PROJECT_ROOT__: string
-declare const __APP_VERSION__: string
+const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
+const serverAssetsDir = path.join(__PROJECT_ROOT__, 'dist')
 
 const getCDNURL = () => {
   const {CDN_BASE_URL} = process.env
-  return CDN_BASE_URL ? path.join(CDN_BASE_URL, `/build/v${__APP_VERSION__}`) : '/static'
+  return CDN_BASE_URL ? `${CDN_BASE_URL}/build/v${__APP_VERSION__}` : '/static'
 }
 
 const rewriteServiceWorker = async () => {
-  const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
   const swPath = path.join(localClientAssetsDir, 'sw.js')
   const serviceWorkerStr = await fs.promises.readFile(swPath, 'utf-8')
-
   const deploySpecificServiceWorker = serviceWorkerStr.replaceAll('__PUBLIC_PATH__', getCDNURL())
   await fs.promises.writeFile(swPath, deploySpecificServiceWorker)
 }
 
 const writeManifest = async () => {
   // If src is relative, then it will be relative to the manifest location, so manifest.json must be at root /
+  const cdn = getCDNURL()
   const manifest = {
     short_name: 'Parabol',
     name: 'Parabol',
     icons: [
       {
-        src: logo192,
+        src: `${cdn}/${logo192}`,
         type: 'image/png',
         sizes: '192x192'
       },
       {
-        src: logo512,
+        src: `${cdn}/${logo512}`,
         type: 'image/png',
         sizes: '512x512'
       }
@@ -44,9 +43,18 @@ const writeManifest = async () => {
     scope: '/',
     theme_color: '#493272'
   }
-  const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
   const manifestPath = path.join(localClientAssetsDir, 'manifest.json')
-  await fs.promises.writeFile(manifestPath, JSON.stringify(manifest))
+
+  await Promise.all([
+    fs.promises.writeFile(manifestPath, JSON.stringify(manifest)),
+    // move the references icons into the client build
+    [logo192, logo512].map((name) => {
+      return fs.promises.copyFile(
+        path.join(serverAssetsDir, name),
+        path.join(localClientAssetsDir, name)
+      )
+    })
+  ])
 }
 
 const rewriteIndexHTML = async () => {
@@ -68,7 +76,6 @@ const rewriteIndexHTML = async () => {
     AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
     AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
   }
-  const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
   const indexPath = path.join(localClientAssetsDir, 'index.html')
   const html = await fs.promises.readFile(indexPath, 'utf8')
 
@@ -80,6 +87,7 @@ const rewriteIndexHTML = async () => {
     .replace('<head>', `<head>${noindex}${keys}`)
     .replaceAll('__PUBLIC_PATH__', getCDNURL())
 
+  console.log({rawHTML})
   const minifiedHTML = minify(rawHTML, {
     collapseBooleanAttributes: true,
     collapseWhitespace: true,
@@ -91,5 +99,5 @@ const rewriteIndexHTML = async () => {
 }
 
 export const applyEnvVarsToClientAssets = async () => {
-  return Promise.all([rewriteServiceWorker(), rewriteIndexHTML()])
+  return Promise.all([rewriteServiceWorker(), rewriteIndexHTML(), writeManifest()])
 }

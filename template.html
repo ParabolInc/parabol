@@ -32,9 +32,12 @@
     />
     <link href="manifest.json" rel="manifest" />
     <link href="__PUBLIC_PATH__/favicon.ico" rel="shortcut icon" crossorigin="" />
+    <%= htmlWebpackPlugin.tags.headTags.map((tag) => { tag.attributes.crossorigin=''; return tag
+    }).join('') %>
   </head>
 
   <body>
     <div id="root"></div>
+    <%= htmlWebpackPlugin.tags.bodyTags %>
   </body>
 </html>

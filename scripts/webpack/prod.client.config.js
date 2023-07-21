@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const {InjectManifest} = require('workbox-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
@@ -99,18 +98,12 @@ module.exports = ({isDeploy, isStats}) => ({
       ]
     }),
     new HtmlWebpackPlugin({
+      inject: false,
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'template.html'),
       title: 'Free Online Retrospectives | Parabol',
       // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
       publicPath: '__PUBLIC_PATH__'
-    }),
-    new ScriptExtHtmlWebpackPlugin({
-      custom: {
-        test: /\.js$/,
-        attribute: 'crossorigin',
-        value: ''
-      }
     }),
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
