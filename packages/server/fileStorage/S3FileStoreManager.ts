@@ -1,7 +1,6 @@
 import {HeadObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
 import mime from 'mime-types'
 import path from 'path'
-import url from 'url'
 import FileStoreManager from './FileStoreManager'
 
 export default class S3Manager extends FileStoreManager {
@@ -12,20 +11,13 @@ export default class S3Manager extends FileStoreManager {
   private s3: S3Client
   constructor() {
     super()
-    const {CDN_BASE_URL, AWS_S3_BUCKET, AWS_REGION} = process.env
-    if (!CDN_BASE_URL || CDN_BASE_URL === 'key_CDN_BASE_URL') {
-      throw new Error('CDN_BASE_URL ENV VAR NOT SET')
-    }
+    const {AWS_S3_BUCKET, AWS_REGION, ENVIRONMENT} = process.env
     if (!AWS_S3_BUCKET) {
       throw new Error('AWS_S3_BUCKET ENV VAR NOT SET')
     }
-    const baseUrl = url.parse(CDN_BASE_URL.replace(/^\/+/, 'https://'))
-    const {hostname, pathname} = baseUrl
-    if (!hostname || !pathname) {
-      throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
-    }
+    if (!ENVIRONMENT) throw new Error('ENVIRONMENT ENV VAR NOT SET')
 
-    this.envSubDir = pathname.replace(/^\//, '')
+    this.envSubDir = ENVIRONMENT
     this.bucket = AWS_S3_BUCKET
     this.s3 = new S3Client({
       region: AWS_REGION

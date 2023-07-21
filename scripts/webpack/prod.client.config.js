@@ -8,7 +8,6 @@ const TerserPlugin = require('terser-webpack-plugin')
 const {InjectManifest} = require('workbox-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-
 const getProjectRoot = require('./utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -45,10 +44,9 @@ module.exports = ({isDeploy, isStats}) => ({
   },
   output: {
     path: buildPath,
-    publicPath: 'auto',
-    filename: '[name]_[fullhash].js',
-    chunkFilename: '[name]_[fullhash].js',
-    crossOriginLoading: 'anonymous'
+    publicPath: '/static/build/',
+    filename: '[name]_[contenthash].js',
+    chunkFilename: '[name]_[contenthash].js'
   },
   resolve: {
     alias: {
@@ -92,18 +90,23 @@ module.exports = ({isDeploy, isStats}) => ({
     new CopyPlugin({
       patterns: [
         {
-          from: path.join(PROJECT_ROOT, 'static', 'favicon.ico'),
-          to: buildPath
+          from: path.join(PROJECT_ROOT, 'static/images/brand/mark-cropped-192.png')
+        },
+        {
+          from: path.join(PROJECT_ROOT, 'static/images/brand/mark-cropped-512.png')
+        },
+        {
+          from: path.join(PROJECT_ROOT, 'static/manifest.json')
+        },
+        {
+          from: path.join(PROJECT_ROOT, 'static/favicon.ico')
         }
       ]
     }),
     new HtmlWebpackPlugin({
-      inject: false,
-      filename: 'index.html',
+      filename: 'skeleton.html',
       template: path.join(PROJECT_ROOT, 'template.html'),
-      title: 'Free Online Retrospectives | Parabol',
-      // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
-      publicPath: '__PUBLIC_PATH__'
+      title: 'Free Online Retrospectives | Parabol'
     }),
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
@@ -117,11 +120,7 @@ module.exports = ({isDeploy, isStats}) => ({
     new InjectManifest({
       swSrc: path.join(PROJECT_ROOT, 'packages/client/serviceWorker/sw.ts'),
       swDest: 'sw.js',
-      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/],
-      modifyURLPrefix: {
-        // we'll overwrite this in preDeploy since it depends on process.env.CDN_BASE_URL
-        '': '__PUBLIC_PATH__/'
-      }
+      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
