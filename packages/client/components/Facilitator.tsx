@@ -160,7 +160,7 @@ const Facilitator = (props: Props) => {
         </AvatarBlock>
         <div>
           <Label>Facilitator</Label>
-          <Subtext>{preferredName}</Subtext>
+          <Subtext>{viewerId === facilitatorUserId ? 'You' : preferredName}</Subtext>
         </div>
         {!isReadOnly && (
           <StyledIcon>
