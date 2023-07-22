@@ -244,6 +244,7 @@ export interface RetroReflectionGroup {
   smartTitle: string | null
   title: string | null
   summary: string | null
+  discussionPromptQuestion: string | null
 }
 
 export interface TaskEstimate {
