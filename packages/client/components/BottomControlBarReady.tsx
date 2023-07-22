@@ -20,6 +20,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 
 interface Props {
   isNext: boolean
+  isPoker: boolean
   cancelConfirm: undefined | (() => void)
   isConfirming: boolean
   setConfirmingButton: (button: string) => void
@@ -53,6 +54,7 @@ const BottomControlBarReady = (props: Props) => {
   const {
     cancelConfirm,
     isConfirming,
+    isPoker,
     isNext,
     setConfirmingButton,
     handleGotoNext,
@@ -60,6 +62,8 @@ const BottomControlBarReady = (props: Props) => {
     onTransitionEnd,
     status
   } = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarReady_meeting on NewMeeting {
@@ -79,6 +83,7 @@ const BottomControlBarReady = (props: Props) => {
         }
         meetingMembers {
           id
+          userId
           user {
             isConnected
             lastSeenAt
@@ -102,8 +107,9 @@ const BottomControlBarReady = (props: Props) => {
   const connectedMeetingMembers = useMemo(() => {
     return meetingMembers.filter(
       (meetingMember) =>
-        meetingMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
-        meetingMember.user.isConnected
+        meetingMember.userId === viewerId ||
+        (meetingMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
+          meetingMember.user.isConnected)
     )
   }, [meetingMembers])
   const activeCount = connectedMeetingMembers.length
@@ -114,9 +120,9 @@ const BottomControlBarReady = (props: Props) => {
       delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
     }
   )
-  const atmosphere = useAtmosphere()
   const readyCount = localStage.readyCount || 0
-  const progress = activeCount > 1 ? readyCount / activeCount : 1.0
+  const isOnlyViewer = activeCount === 1 && connectedMeetingMembers[0]!.userId === viewerId
+  const progress = isOnlyViewer || isPoker ? 1.0 : readyCount / (activeCount - 1)
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
   const isConfirmRequired =
     isLastStageInPhase &&
@@ -143,7 +149,7 @@ const BottomControlBarReady = (props: Props) => {
     : undefined
   let label = ''
   if (isNext) {
-    label = progress === 1.0 ? 'Next' : `${readyCount} / ${activeCount} Ready`
+    label = progress === 1.0 ? 'Next' : `${readyCount} / ${activeCount - 1} Ready`
   } else {
     label = isViewerReady ? 'Undo ready status' : 'Tap when ready'
   }
