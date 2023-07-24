@@ -59,10 +59,10 @@ const OrgTeams = (props: Props) => {
   const {viewer} = data
   const {featureFlags, domains, organization} = viewer
   const {activeDomain, teams, isBillingLeader, name} = organization ?? {}
-
+  const {canViewTeamsInDomain} = featureFlags
   const ALL_TEAMS_IN_ORG = `All Teams In ${name}`
   const ALL_TEAMS_IN_DOMAIN = `All Teams In ${activeDomain}`
-  const [label, setLabel] = useState(ALL_TEAMS_IN_DOMAIN)
+  const [isDomainSelected, setIsDomainSelected] = useState(canViewTeamsInDomain)
 
   const teamsByDomain = useMemo(() => {
     return domains.flatMap((domain) =>
@@ -70,15 +70,14 @@ const OrgTeams = (props: Props) => {
     )
   }, [domains])
 
-  const {canViewTeamsInDomain} = featureFlags
-
-  const handleMenuItemClick = (newLabel: string) => {
-    setLabel(newLabel)
+  const handleMenuItemClick = (isDomain: boolean) => {
+    setIsDomainSelected(isDomain)
     togglePortal()
   }
 
-  const selectedTeams =
-    (label === ALL_TEAMS_IN_DOMAIN && canViewTeamsInDomain ? teamsByDomain : teams) ?? []
+  const selectedTeams = (isDomainSelected && canViewTeamsInDomain ? teamsByDomain : teams) ?? []
+  const label = isDomainSelected ? ALL_TEAMS_IN_DOMAIN : ALL_TEAMS_IN_ORG
+
   if (!isBillingLeader) return null
   return (
     <>
@@ -89,18 +88,12 @@ const OrgTeams = (props: Props) => {
           {menuPortal(
             <Menu
               keepParentFocus
-              defaultActiveIdx={label === ALL_TEAMS_IN_DOMAIN ? 0 : 1}
+              defaultActiveIdx={isDomainSelected ? 0 : 1}
               ariaLabel={'Select whether to filter by org or domain'}
               {...menuProps}
             >
-              <MenuItem
-                label={ALL_TEAMS_IN_DOMAIN}
-                onClick={() => handleMenuItemClick(ALL_TEAMS_IN_DOMAIN)}
-              />
-              <MenuItem
-                label={ALL_TEAMS_IN_ORG}
-                onClick={() => handleMenuItemClick(ALL_TEAMS_IN_ORG)}
-              />
+              <MenuItem label={ALL_TEAMS_IN_DOMAIN} onClick={() => handleMenuItemClick(true)} />
+              <MenuItem label={ALL_TEAMS_IN_ORG} onClick={() => handleMenuItemClick(false)} />
             </Menu>
           )}
         </>
