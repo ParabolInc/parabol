@@ -55,9 +55,7 @@ const User: UserResolvers = {
   },
   domains: async ({id: userId}, _args, {dataLoader}) => {
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const orgIds = organizationUsers
-      .filter(({suggestedTier}) => suggestedTier)
-      .map(({orgId}) => orgId)
+    const orgIds = organizationUsers.map(({orgId}) => orgId)
 
     const organizations = await Promise.all(
       orgIds.map((orgId) => dataLoader.get('organizations').load(orgId))
