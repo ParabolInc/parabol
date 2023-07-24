@@ -53,12 +53,12 @@ const TeamDashMain = (props: Props) => {
           <TeamTasksHeaderContainer team={team} />
         </div>
         <Switch>
-          <Route path='/team/:teamId/activity'>
-            <TeamDashActivityTab teamRef={team} />
-          </Route>
-          {/*Fall back to tasks view if nothing is specified*/}
-          <Route path='/team/:teamId'>
+          <Route path='/team/:teamId/tasks'>
             <TeamDashTasksTab viewerRef={viewer} />
+          </Route>
+          {/*Fall back to activity view if nothing is specified*/}
+          <Route path='/team/:teamId'>
+            <TeamDashActivityTab teamRef={team} />
           </Route>
         </Switch>
         <AbsoluteFab hasRid={viewer.featureFlags.retrosInDisguise} />
