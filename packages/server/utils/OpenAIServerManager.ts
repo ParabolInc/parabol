@@ -6,6 +6,7 @@ const NO_SUMMARY_REGEX = new RegExp(
   `^${OpenAIMagicWords.NO_SUMMARY_PROMPT_INSTRUCTION_WORDS}\.*$`,
   'i'
 )
+import Reflection from '../database/types/Reflection'
 
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
@@ -49,9 +50,65 @@ class OpenAIServerManager {
         presence_penalty: 0
       })
       const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      console.log(answer)
       return NO_SUMMARY_REGEX.test(answer) ? OpenAIMagicWords.NO_SUMMARY_RESPONSE : answer
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
+
+  async getDiscussionPromptQuestion(topic: string, reflections: Reflection[]) {
+    if (!this.openAIApi) return null
+    const prompt = `As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:
+
+    Step 1: Categorize the discussion into one of the following four groups:
+
+    Group 1: Requirement/Seeking help/Requesting permission
+    Example Question: "What specific assistance do you need to move forward?"
+
+    Group 2: Retrospection/Post-mortem/Looking back/Incident analysis/Root cause analysis
+    Example Question: "What were the underlying factors contributing to the situation?"
+
+    Group 3: Improvement/Measurement/Experiment
+    Example Question: "What factors are you aiming to optimize or minimize?"
+
+    Group 4: New plan/New feature/New launch/Exploring new approaches
+    Example Question: "How can we expedite the learning process or streamline our approach?"
+
+    Step 2: Once you have categorized the topic, formulate a question that aligns with the example question provided for that group. If the topic does not belong to any of the groups, come up with a good question yourself for a productive discussion.
+
+    Step 3: Finally, provide me with the question you have formulated without disclosing any information about the group it belongs to. When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
+
+    Topic: ${topic}
+    Comments:
+    ${reflections
+      .map(({plaintextContent}) => plaintextContent.trim().replace(/\n/g, '\t'))
+      .join('\n')}`
+    try {
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 80
+      })
+      const question =
+        (response.data.choices[0]?.message?.content?.trim() as string).replace(
+          /^[Qq]uestion:*\s*/gi,
+          ''
+        ) ?? null
+      return question ? question.replace(/['"]+/g, '') : null
+    } catch (e) {
+      const error =
+        e instanceof Error
+          ? e
+          : new Error(`OpenAI failed to generate a question for the topic ${topic}`)
       sendToSentry(error)
       return null
     }
