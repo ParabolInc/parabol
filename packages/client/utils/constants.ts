@@ -93,6 +93,7 @@ export const NOTIFICATIONS = 'notifications'
 /* Org Settings */
 export const BILLING_PAGE = 'billing'
 export const MEMBERS_PAGE = 'members'
+export const TEAMS_PAGE = 'teams'
 export const ORG_SETTINGS_PAGE = 'settings'
 export const AUTHENTICATION_PAGE = 'authentication'
 

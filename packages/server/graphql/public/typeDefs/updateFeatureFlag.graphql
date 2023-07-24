@@ -8,6 +8,7 @@ enum UserFlagEnum {
   insights
   recurrence
   noAISummary
+  AIGeneratedDiscussionPrompt
   noMeetingHistoryLimit
   checkoutFlow
   retrosInDisguise
@@ -23,6 +24,7 @@ type UserFeatureFlags {
   insights: Boolean!
   recurrence: Boolean!
   noAISummary: Boolean!
+  AIGeneratedDiscussionPrompt: Boolean!
   noMeetingHistoryLimit: Boolean!
   checkoutFlow: Boolean!
   retrosInDisguise: Boolean!

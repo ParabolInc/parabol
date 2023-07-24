@@ -36,7 +36,8 @@ const notifySlack = async (
   event: SlackNotificationEvent,
   teamId: string,
   slackMessage: string | Array<{type: string}>,
-  notificationText?: string
+  notificationText?: string,
+  segmentProperties?: object
 ): Promise<NotifyResponse> => {
   const {channelId, auth} = notificationChannel
   const {botAccessToken, userId} = auth
@@ -47,7 +48,8 @@ const notifySlack = async (
     event: 'Slack notification sent',
     properties: {
       teamId,
-      notificationEvent: event
+      notificationEvent: event,
+      ...segmentProperties
     }
   })
 
@@ -359,8 +361,19 @@ export const SlackNotifier: Notifier = {
     }
 
     const topic = reflectionGroup.title
-    const discussionUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/${stageIndex + 1}`)
-    const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
+    const options = {
+      searchParams: {
+        utm_source: 'slack share',
+        utm_medium: 'product',
+        utm_campaign: 'sharing'
+      }
+    }
+    const discussionUrl = makeAppURL(
+      appOrigin,
+      `meet/${meetingId}/discuss/${stageIndex + 1}`,
+      options
+    )
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
 
     const reflectionsText = reflections
       .map((reflection) => `• ${reflection.plaintextContent}`)
@@ -385,6 +398,8 @@ export const SlackNotifier: Notifier = {
       auth: slackAuth
     }
 
-    return notifySlack(notificationChannel, 'TOPIC_SHARED', team.id, slackBlocks)
+    return notifySlack(notificationChannel, 'TOPIC_SHARED', team.id, slackBlocks, undefined, {
+      reflectionGroupId
+    })
   }
 }
