@@ -20,6 +20,7 @@ import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
+import collectTeamInsights from './helpers/collectTeamInsights'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import generateWholeMeetingSentimentScore from './helpers/generateWholeMeetingSentimentScore'
 import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
@@ -73,6 +74,14 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
     getTranscription(recallBotId)
   ])
 
+  const usedReactjis: Record<string, number> = {}
+  reflections.forEach((reflection) => {
+    const {reactjis} = reflection
+    reactjis.forEach(({id}) => {
+      usedReactjis[id] = (usedReactjis[id] ?? 0) + 1
+    })
+  })
+
   await Promise.all([
     r
       .table('NewMeeting')
@@ -96,7 +105,8 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
           reflectionCount: reflections.length,
           sentimentScore,
           summary,
-          transcription
+          transcription,
+          usedReactjis
         },
         {nonAtomic: true}
       )
@@ -114,6 +124,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
+  collectTeamInsights(teamId)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}
