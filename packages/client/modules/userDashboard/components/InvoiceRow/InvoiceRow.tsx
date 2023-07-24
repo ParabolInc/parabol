@@ -3,7 +3,6 @@ import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
 import {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -42,17 +41,6 @@ const InfoRowRight = styled('div')({
   justifyContent: 'flex-end',
   textAlign: 'right'
 })
-
-const LinkStyles = styled('div')({
-  color: PALETTE.SLATE_700,
-  alignItems: 'flex-start',
-  display: 'flex',
-  justifyContent: 'space-between',
-  textDecoration: 'none',
-  width: '100%'
-})
-
-const RowLink = LinkStyles.withComponent(Link)
 
 const StyledDate = styled('span')<{styledToPay?: boolean; styledPaid?: boolean}>(
   ({styledToPay, styledPaid}) => ({
@@ -94,7 +82,12 @@ const InvoiceRow = (props: Props) => {
 
   return (
     <Row>
-      <RowLink rel='noopener noreferrer' target='_blank' to={payUrl || `/invoice/${invoiceId}`}>
+      <a
+        href={payUrl || `/invoice/${invoiceId}`}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='flex w-full flex-row items-center justify-between text-slate-700 no-underline'
+      >
         <FileIcon isEstimate={isEstimate} />
         <InvoiceInfo>
           <InfoRow>
@@ -134,7 +127,7 @@ const InvoiceRow = (props: Props) => {
             )}
           </InfoRow>
         </InvoiceInfo>
-      </RowLink>
+      </a>
     </Row>
   )
 }
