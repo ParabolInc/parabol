@@ -117,7 +117,7 @@ const ProviderList = (props: Props) => {
   const {
     featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams, gcal: allowGcal}
   } = viewer
-  console.log('🚀 ~ allowGcal:', {allowGcal, featureFlag: viewer.featureFlags})
+  console.log('🚀 ~ allowGcal:', allowGcal)
 
   const integrations = viewer.teamMember?.integrations
 
@@ -167,8 +167,7 @@ const ProviderList = (props: Props) => {
     },
     {
       name: 'Gcal Integration',
-      // connected: !!integrations?.gcal?.accessToken,
-      connected: true,
+      connected: false, // TODO: implement oauth
       component: <GcalProviderRow />,
       hidden: !allowGcal
     }
