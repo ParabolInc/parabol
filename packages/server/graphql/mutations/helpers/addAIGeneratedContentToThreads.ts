@@ -1,4 +1,4 @@
-import {AIExplainer} from '../../../../client/types/constEnums'
+import {AIExplainer, OpenAIMagicWords} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import Comment from '../../../database/types/Comment'
@@ -34,7 +34,11 @@ const addAIGeneratedContentToThreads = async (
   const {tier} = team
   const commentPromises = stages.map(async ({discussionId, reflectionGroupId}, idx) => {
     const group = groups.find((group) => group.id === reflectionGroupId)
-    if (!group?.summary && !group?.discussionPromptQuestion) return
+    if (
+      (!group?.summary || group?.summary === OpenAIMagicWords.NO_SUMMARY_RESPONSE) &&
+      !group?.discussionPromptQuestion
+    )
+      return
     const comments: Comment[] = []
 
     if (group.summary) {
