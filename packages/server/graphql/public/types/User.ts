@@ -48,14 +48,19 @@ const User: UserResolvers = {
         return false
     }
   },
-  company: async ({email}, _args, {authToken}) => {
+  company: async ({email}, _args, {authToken, dataLoader}) => {
     const domain = getDomainFromEmail(email)
-    if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
+    const viewerId = getUserId(authToken)
+    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+    const hasFlag = viewer.featureFlags.includes('canViewTeamsInDomain')
+    if (!domain || !isCompanyDomain(domain) || (!isSuperUser(authToken) && !hasFlag)) return null
     return {id: domain}
   },
   domains: async ({id: userId}, _args, {dataLoader}) => {
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const orgIds = organizationUsers.map(({orgId}) => orgId)
+    const orgIds = organizationUsers
+      .filter(({suggestedTier}) => suggestedTier)
+      .map(({orgId}) => orgId)
 
     const organizations = await Promise.all(
       orgIds.map((orgId) => dataLoader.get('organizations').load(orgId))

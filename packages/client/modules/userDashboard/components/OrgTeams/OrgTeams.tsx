@@ -40,7 +40,7 @@ const OrgTeams = (props: Props) => {
               ...OrgTeamsRow_team
             }
           }
-          domains {
+          company {
             id
             organizations {
               teams {
@@ -57,7 +57,7 @@ const OrgTeams = (props: Props) => {
 
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {viewer} = data
-  const {featureFlags, domains, organization} = viewer
+  const {featureFlags, company, organization} = viewer
   const {activeDomain, teams, isBillingLeader, name} = organization ?? {}
   const {canViewTeamsInDomain} = featureFlags
   const ALL_TEAMS_IN_ORG = `All Teams In ${name}`
@@ -65,10 +65,8 @@ const OrgTeams = (props: Props) => {
   const [isDomainSelected, setIsDomainSelected] = useState(canViewTeamsInDomain)
 
   const teamsByDomain = useMemo(() => {
-    return domains.flatMap((domain) =>
-      domain.organizations.flatMap((organization) => organization.teams)
-    )
-  }, [domains])
+    return company?.organizations.flatMap((organization) => organization.teams)
+  }, [company])
 
   const handleMenuItemClick = (isDomain: boolean) => {
     setIsDomainSelected(isDomain)
