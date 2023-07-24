@@ -1,5 +1,6 @@
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
 import {RRule} from 'rrule'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt, {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
@@ -30,14 +31,14 @@ const startRecurringTeamPrompt = async (
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
-  const nextMeetingStartDate = rrule.after(startTime)
+  const nextMeetingStartDate = rrule.after(getRRuleDateFromJSDate(startTime))
   const meetingName = createTeamPromptTitle(
     meetingSeries.title,
     startTime,
     rrule.options.tzid ?? 'UTC'
   )
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, r, dataLoader, {
-    scheduledEndTime: nextMeetingStartDate,
+    scheduledEndTime: nextMeetingStartDate ? getJSDateFromRRuleDate(nextMeetingStartDate) : null,
     meetingSeriesId: meetingSeries.id,
     meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : DEFAULT_PROMPT
   })
@@ -48,6 +49,7 @@ const startRecurringTeamPrompt = async (
   analytics.meetingStarted(facilitatorId, meeting)
   const data = {teamId, meetingId: meeting.id}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+  return undefined
 }
 
 const processRecurrence: MutationResolvers['processRecurrence'] = async (_source, {}, context) => {
@@ -114,12 +116,15 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
       const fromDate = lastMeeting
         ? new Date(Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h')))
         : new Date(0)
-      const newMeetingsStartTimes = rrule.between(fromDate, now)
+      const newMeetingsStartTimes = rrule.between(
+        getRRuleDateFromJSDate(fromDate),
+        getRRuleDateFromJSDate(now)
+      )
       for (const startTime of newMeetingsStartTimes) {
         const err = await startRecurringTeamPrompt(
           meetingSeries,
           lastMeeting,
-          startTime,
+          getJSDateFromRRuleDate(startTime),
           dataLoader,
           r,
           subOptions

@@ -2,6 +2,9 @@ import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {TeamPromptMeetingResolvers} from '../resolverTypes'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import {getUserId} from '../../../utils/authorization'
+import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
+import {RValue} from '../../../database/stricterR'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   meetingSeriesId: ({meetingSeriesId}, _args, _context) => {
@@ -34,7 +37,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .table('NewMeeting')
       .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
       .filter({meetingType: 'teamPrompt'})
-      .filter((row) => row('createdAt').lt(createdAt))
+      .filter((row: RValue) => row('createdAt').lt(createdAt))
       .orderBy(r.desc('createdAt'))
       .limit(1)
       .run()
@@ -54,12 +57,19 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .table('NewMeeting')
       .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
       .filter({meetingType: 'teamPrompt'})
-      .filter((doc) => doc('createdAt').gt(createdAt))
+      .filter((doc: RValue) => doc('createdAt').gt(createdAt))
       .orderBy(r.asc('createdAt'))
       .limit(1)
       .run()
 
     return meetings[0] as MeetingTeamPrompt
+  },
+  tasks: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const {teamId} = meeting
+    const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+    return filterTasksByMeeting(teamTasks, meetingId, viewerId)
   }
 }
 

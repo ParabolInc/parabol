@@ -1,4 +1,3 @@
-import fetch, {RequestInit} from 'node-fetch'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'

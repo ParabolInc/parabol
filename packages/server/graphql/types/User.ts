@@ -46,6 +46,10 @@ import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
+import TimelineEventTypeEnum from './TimelineEventTypeEnum'
+import TimelineEvent from '../../database/types/TimelineEvent'
+import {RDatum} from '../../database/stricterR'
+import {getAccessibleTeamIdsForUser} from '../getAccessibleTeamIdsForUser'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -201,11 +205,43 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         first: {
           type: new GraphQLNonNull(GraphQLInt),
           description: 'the number of timeline events to return'
+        },
+        teamIds: {
+          type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+          description:
+            'a list of team Ids that you want timeline events for. if null, will return timeline events for all possible active teams'
+        },
+        eventTypes: {
+          type: new GraphQLList(new GraphQLNonNull(TimelineEventTypeEnum))
         }
       },
-      resolve: async ({id}: {id: string}, {after, first}, {authToken}: GQLContext) => {
+      resolve: async (
+        {id}: {id: string},
+        {after, first, teamIds, eventTypes},
+        {authToken, dataLoader}: GQLContext
+      ) => {
         const r = await getRethink()
         const viewerId = getUserId(authToken)
+
+        // VALIDATE
+        if (teamIds?.length > 100) {
+          const error = new Error('Timeline filter is too broad')
+          standardError(error, {
+            userId: viewerId,
+            tags: {teamIds: JSON.stringify(teamIds)}
+          })
+          return {
+            error,
+            pageInfo: {
+              startCursor: after,
+              endCursor: after,
+              hasNextPage: false
+            },
+            edges: []
+          }
+        }
+        const validTeamIds = await getAccessibleTeamIdsForUser(viewerId, teamIds, dataLoader)
+
         if (viewerId !== id && !isSuperUser(authToken)) return null
         const dbAfter = after ? new Date(after) : r.maxval
         const events = await r
@@ -214,6 +250,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             index: 'userIdCreatedAt'
           })
           .filter({isActive: true})
+          .filter((t: RDatum<TimelineEvent>) =>
+            eventTypes ? r.expr(eventTypes).contains(t('type')) : true
+          )
+          .filter((t: RDatum) => r.expr(validTeamIds).contains(t('teamId')))
           .orderBy(r.desc('createdAt'))
           .limit(first + 1)
           .coerceTo('array')

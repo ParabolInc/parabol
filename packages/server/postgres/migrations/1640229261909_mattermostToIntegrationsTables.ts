@@ -1,6 +1,7 @@
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
 import getPgConfig from '../getPgConfig'
+import connectRethinkDB from '../../database/connectRethinkDB'
 
 interface MattermostAuth {
   createdAt: Date
@@ -9,15 +10,6 @@ interface MattermostAuth {
   webhookUrl: string
   userId: string
   teamId: string
-}
-
-const connectRethinkDB = async () => {
-  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
-  await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: pathname.split('/')[1]
-  })
 }
 
 export async function up() {

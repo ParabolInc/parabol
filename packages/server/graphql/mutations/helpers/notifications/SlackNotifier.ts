@@ -19,18 +19,25 @@ import getSummaryText from './getSummaryText'
 import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper, NotifyResponse} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
+import SlackAuth from '../../../../database/types/SlackAuth'
 
 type SlackNotification = {
   title: string
   blocks: string | Array<{type: string}>
 }
 
+type NotificationChannel = {
+  auth: SlackAuth
+  channelId: string | null
+}
+
 const notifySlack = async (
-  notificationChannel: SlackNotificationAuth,
+  notificationChannel: NotificationChannel,
   event: SlackNotificationEvent,
   teamId: string,
   slackMessage: string | Array<{type: string}>,
-  notificationText?: string
+  notificationText?: string,
+  segmentProperties?: object
 ): Promise<NotifyResponse> => {
   const {channelId, auth} = notificationChannel
   const {botAccessToken, userId} = auth
@@ -41,9 +48,11 @@ const notifySlack = async (
     event: 'Slack notification sent',
     properties: {
       teamId,
-      notificationEvent: event
+      notificationEvent: event,
+      ...segmentProperties
     }
   })
+
   if ('error' in res) {
     const {error} = res
     if (error === 'channel_not_found') {
@@ -63,6 +72,11 @@ const notifySlack = async (
       sendToSentry(
         new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`)
       )
+      return {
+        error: new Error(error)
+      }
+    } else {
+      sendToSentry(new Error(error))
       return {
         error: new Error(error)
       }
@@ -102,6 +116,13 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
         url: pokerUrl
       }
       return makeButtons([estimateButton, summaryButton])
+    case 'teamPrompt':
+      const teamPromptUrl = makeAppURL(appOrigin, `meet/${meetingId}/responses`)
+      const responsesButton = {
+        text: 'See responses',
+        url: teamPromptUrl
+      }
+      return makeButtons([responsesButton, summaryButton])
     default:
       throw new Error('Invalid meeting type')
   }
@@ -172,7 +193,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   },
 
   async endMeeting(meeting, team) {
-    const summaryText = getSummaryText(meeting)
+    const summaryText = await getSummaryText(meeting)
     const title = 'Meeting completed :tada:'
     const blocks: Array<{type: string}> = [
       makeSection(title),
@@ -290,5 +311,95 @@ export const SlackNotifier: Notifier = {
 
   async integrationUpdated() {
     // Slack sends a system message on its own
+  },
+
+  async shareTopic(
+    dataLoader: DataLoaderWorker,
+    userId: string,
+    teamId: string,
+    meetingId: string,
+    reflectionGroupId: string,
+    stageIndex: number,
+    channelId: string
+  ) {
+    const r = await getRethink()
+    const [team, meeting, reflectionGroup, reflections, slackAuth] = await Promise.all([
+      dataLoader.get('teams').loadNonNull(teamId),
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
+      r.table('RetroReflection').getAll(reflectionGroupId, {index: 'reflectionGroupId'}).run(),
+      r
+        .table('SlackAuth')
+        .getAll(userId, {index: 'userId'})
+        .filter({teamId})
+        .nth(0)
+        .default(null)
+        .run()
+    ])
+
+    if (!slackAuth) {
+      throw new Error('Slack auth not found')
+    }
+
+    const {botAccessToken} = slackAuth
+    const manager = new SlackServerManager(botAccessToken!)
+
+    const channelInfo = await manager.getConversationInfo(channelId)
+    if (!channelInfo.ok) {
+      throw new Error(channelInfo.error)
+    }
+    const {channel} = channelInfo
+    const {is_member: isMember, is_archived: isArchived} = channel
+    if (isArchived) {
+      throw new Error('Slack channel archived')
+    }
+    if (!isMember) {
+      const joinConvoRes = await manager.joinConversation(channelId)
+      if (!joinConvoRes.ok) {
+        throw new Error('Unable to join slack channel')
+      }
+    }
+
+    const topic = reflectionGroup.title
+    const options = {
+      searchParams: {
+        utm_source: 'slack share',
+        utm_medium: 'product',
+        utm_campaign: 'sharing'
+      }
+    }
+    const discussionUrl = makeAppURL(
+      appOrigin,
+      `meet/${meetingId}/discuss/${stageIndex + 1}`,
+      options
+    )
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
+
+    const reflectionsText = reflections
+      .map((reflection) => `• ${reflection.plaintextContent}`)
+      .join('\n')
+
+    const slackBlocks = [
+      makeSection(
+        `<@${slackAuth.slackUserId}> has shared reflections about *"${topic}"* from their retrospective`
+      ),
+      makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n<${meetingUrl}|${meeting.name}>`]),
+      makeSection(`*Topic:*\n<${discussionUrl}|${topic}>`)
+    ]
+
+    if (reflectionGroup.summary) {
+      slackBlocks.push(makeSection(`*Summary:*\n${reflectionGroup.summary}`))
+    }
+
+    slackBlocks.push(makeSection(`*Reflections:* \n${reflectionsText}`))
+
+    const notificationChannel = {
+      channelId,
+      auth: slackAuth
+    }
+
+    return notifySlack(notificationChannel, 'TOPIC_SHARED', team.id, slackBlocks, undefined, {
+      reflectionGroupId
+    })
   }
 }

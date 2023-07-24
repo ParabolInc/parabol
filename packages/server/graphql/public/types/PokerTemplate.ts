@@ -1,13 +1,10 @@
 import {PokerTemplateResolvers} from '../resolverTypes'
 
-const RECOMMENDED_TEMPLATES = ['estimatedEffortTemplate']
-
 const PokerTemplate: PokerTemplateResolvers = {
-  category: (_source, _args, _context) => {
-    return 'estimation'
-  },
-  isRecommended: ({id}, _args, _context) => {
-    return RECOMMENDED_TEMPLATES.includes(id)
+  __isTypeOf: ({type}) => type === 'poker',
+  dimensions: async ({id: templateId}, _args, {dataLoader}) => {
+    const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+    return dimensions.filter(({removedAt}) => !removedAt)
   }
 }
 

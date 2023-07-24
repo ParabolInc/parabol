@@ -3,7 +3,18 @@ import {GQLContext} from '../graphql'
 import StandardMutationError from './StandardMutationError'
 import TeamMeetingSettings from './TeamMeetingSettings'
 
-const SetMeetingSettingsPayload = new GraphQLObjectType<any, GQLContext>({
+export type SetMeetingSettingsPayloadSource = {
+  error?: {
+    title?: string
+    message: string
+  }
+  settingsId?: string
+}
+
+const SetMeetingSettingsPayload = new GraphQLObjectType<
+  SetMeetingSettingsPayloadSource,
+  GQLContext
+>({
   name: 'SetMeetingSettingsPayload',
   fields: () => ({
     error: {

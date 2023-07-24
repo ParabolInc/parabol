@@ -9,6 +9,7 @@ import getRethink from '../../database/rethinkDriver'
 import Reflection from '../../database/types/Reflection'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -33,6 +34,7 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
@@ -89,10 +91,12 @@ export default {
       sortOrder
     })
 
-    await r({
-      group: r.table('RetroReflectionGroup').insert(reflectionGroup),
-      reflection: r.table('RetroReflection').insert(reflection)
-    }).run()
+    await Promise.all([
+      pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
+      r.table('RetroReflectionGroup').insert(reflectionGroup).run(),
+      r.table('RetroReflection').insert(reflection).run()
+    ])
+
     const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
     const {stages} = groupPhase
     const [groupStage] = stages

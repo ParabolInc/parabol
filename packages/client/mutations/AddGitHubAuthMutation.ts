@@ -9,7 +9,7 @@ graphql`
       ...ScopePhaseAreaGitHub_teamMember
       integrations {
         github {
-          ...TaskFooterIntegrateMenuViewerGitHubIntegration
+          ...useIsIntegratedGitHubIntegration
           ...GitHubProviderRowGitHubIntegration
           ...GitHubScopingSearchBarGitHubIntegration
         }

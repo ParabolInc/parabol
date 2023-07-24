@@ -7,8 +7,8 @@ interface Input {
   orgId: string
   parentTemplateId?: string
   lastUsedAt?: Date | null
-  illustrationUrl: string | null
-  mainCategory: string | null
+  illustrationUrl: string
+  mainCategory: string
 }
 
 export default class ReflectTemplate extends MeetingTemplate {

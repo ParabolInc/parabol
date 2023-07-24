@@ -20,6 +20,7 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
     [LOBBY]: {},
     // Generic
     [CHECKIN]: {},
+    TEAM_HEALTH: {},
     // Check-in
     [UPDATES]: {},
     [FIRST_CALL]: {},

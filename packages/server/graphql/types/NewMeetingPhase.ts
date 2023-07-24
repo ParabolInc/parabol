@@ -1,4 +1,5 @@
 import {
+  defaultTypeResolver,
   GraphQLID,
   GraphQLInterfaceType,
   GraphQLList,
@@ -69,7 +70,13 @@ const resolveTypeLookup = {
 const NewMeetingPhase: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'NewMeetingPhase',
   fields: newMeetingPhaseFields,
-  resolveType: ({phaseType}: {phaseType: INewMeetingPhaseTypeEnum}) => resolveTypeLookup[phaseType]
+  resolveType: (value, context, info) => {
+    const {phaseType}: {phaseType: INewMeetingPhaseTypeEnum} = value
+    // fall back to default type resolver so we can use isTypeOf in new resolvers
+    return (
+      resolveTypeLookup[phaseType] ?? defaultTypeResolver(value, context, info, NewMeetingPhase)
+    )
+  }
 })
 
 export default NewMeetingPhase

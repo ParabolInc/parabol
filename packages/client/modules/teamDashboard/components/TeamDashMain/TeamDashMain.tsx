@@ -57,6 +57,9 @@ const TeamDashMain = (props: Props) => {
             name
             ...TeamTasksHeaderContainer_team
           }
+          featureFlags {
+            retrosInDisguise
+          }
           ...TeamColumnsContainer_viewer
           ...TeamDrawer_viewer
         }
@@ -79,7 +82,7 @@ const TeamDashMain = (props: Props) => {
         <TasksContent>
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
-        <AbsoluteFab />
+        <AbsoluteFab hasRid={viewer.featureFlags.retrosInDisguise} />
       </TasksMain>
       <TeamDrawer viewer={viewer} />
     </RootBlock>

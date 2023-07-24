@@ -1,11 +1,16 @@
 import React, {lazy, Suspense} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {UserDashMainQuery} from '~/__generated__/UserDashMainQuery.graphql'
 import {Route, RouteComponentProps, Switch} from 'react-router'
 import DashContent from '~/components/Dashboard/DashContent'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import {LoaderSize} from '../../../../types/constEnums'
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps {
+  queryRef: PreloadedQuery<UserDashMainQuery>
+}
 
 const UserTaskViewRoot = lazy(
   () =>
@@ -19,7 +24,23 @@ const MyDashboardTimelineRoot = lazy(
 )
 
 const UserDashMain = (props: Props) => {
-  const {match} = props
+  const {match, queryRef} = props
+
+  const data = usePreloadedQuery<UserDashMainQuery>(
+    graphql`
+      query UserDashMainQuery {
+        viewer {
+          featureFlags {
+            retrosInDisguise
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+
+  const {viewer} = data
+
   return (
     <DashContent>
       <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
@@ -28,7 +49,7 @@ const UserDashMain = (props: Props) => {
           <Route path={match.url} component={MyDashboardTimelineRoot} />
         </Switch>
       </Suspense>
-      <StartMeetingFAB />
+      <StartMeetingFAB hasRid={viewer.featureFlags.retrosInDisguise} />
     </DashContent>
   )
 }

@@ -23,6 +23,10 @@ const TallMenu = styled(Menu)({
 const CheckInHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
 )
+const TeamHealthHelpMenu = lazyPreload(
+  async () =>
+    import(/* webpackChunkName: 'TeamHealthHelpMenu' */ './MeetingHelp/TeamHealthHelpMenu')
+)
 
 const ReflectHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'ReflectHelpMenu' */ './MeetingHelp/ReflectHelpMenu')
@@ -80,16 +84,17 @@ const EstimateHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'EstimateHelpMenu' */ './MeetingHelp/EstimateHelpMenu')
 )
 
-const demoHelps = {
+const demoHelps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>> = {
   checkin: DemoReflectHelpMenu,
   reflect: DemoReflectHelpMenu,
   group: DemoGroupHelpMenu,
   vote: DemoVoteHelpMenu,
   discuss: DemoDiscussHelpMenu
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+}
 
-const helps = {
+const helps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>> = {
   checkin: CheckInHelpMenu,
+  TEAM_HEALTH: TeamHealthHelpMenu,
   reflect: ReflectHelpMenu,
   group: GroupHelpMenu,
   vote: VoteHelpMenu,
@@ -100,7 +105,7 @@ const helps = {
   lastcall: ActionMeetingLastCallHelpMenu,
   SCOPE: ScopeHelpMenu,
   ESTIMATE: EstimateHelpMenu
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+}
 
 interface Props {
   cancelConfirm: (() => void) | undefined
@@ -108,6 +113,7 @@ interface Props {
   status: TransitionStatus
   onTransitionEnd: () => void
 }
+
 const BottomControlBarTips = (props: Props) => {
   const {cancelConfirm, meeting: meetingRef, status, onTransitionEnd} = props
   const meeting = useFragment(
@@ -118,6 +124,9 @@ const BottomControlBarTips = (props: Props) => {
         localPhase {
           phaseType
         }
+        localStage {
+          ...TeamHealthHelpMenu_stage
+        }
         phases {
           phaseType
         }
@@ -126,7 +135,7 @@ const BottomControlBarTips = (props: Props) => {
     meetingRef
   )
 
-  const {localPhase, meetingType} = meeting
+  const {localPhase, localStage, meetingType} = meeting
   const {phaseType} = localPhase
   const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
     MenuPosition.LOWER_LEFT
@@ -148,6 +157,11 @@ const BottomControlBarTips = (props: Props) => {
       }
     }
   }, [demoPauseOpen, openPortal])
+
+  if (!MenuContent) {
+    return null
+  }
+
   return (
     <BottomNavControl
       dataCy={`tip-menu-toggle`}
@@ -160,7 +174,7 @@ const BottomControlBarTips = (props: Props) => {
       <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
-          <MenuContent meetingType={meetingType} />
+          <MenuContent meetingType={meetingType} stageRef={localStage} />
         </TallMenu>
       )}
     </BottomNavControl>

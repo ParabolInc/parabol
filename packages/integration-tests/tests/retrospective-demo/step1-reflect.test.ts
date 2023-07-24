@@ -1,5 +1,5 @@
+import {expect, test} from '@playwright/test'
 import config from '../config'
-import {test, expect} from '@playwright/test'
 import {goToNextPhase, startDemo} from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / reflect page', () => {
@@ -78,7 +78,6 @@ test.describe('retrospective-demo / reflect page', () => {
   })
 
   test('displays simulated users writing reflections in the start column', async ({page}) => {
-    test.setTimeout(30_000)
     await startDemo(page)
 
     await expect(

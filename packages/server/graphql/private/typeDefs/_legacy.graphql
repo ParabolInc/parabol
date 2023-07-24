@@ -244,7 +244,7 @@ type Mutation {
     """
     The ID of the server this socket is connected to
     """
-    socketServerId: ID!
+    socketInstanceId: ID!
   ): User!
 
   """
@@ -259,7 +259,7 @@ type Mutation {
     """
     the userId to disconnect
     """
-    userId: ID
+    userId: ID!
   ): DisconnectSocketPayload
 
   """
@@ -344,7 +344,7 @@ type Mutation {
     """
     List of teams to target
     """
-    teamIds: [ID]!
+    teamIds: [ID!]!
 
     """
     true to unlock the teams, false to lock
@@ -1657,6 +1657,7 @@ enum NotificationEnum {
   TEAMS_LIMIT_EXCEEDED
   TEAMS_LIMIT_REMINDER
   PROMPT_TO_JOIN_ORG
+  REQUEST_TO_JOIN_ORG
 }
 
 """

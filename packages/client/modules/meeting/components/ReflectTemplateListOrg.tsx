@@ -48,9 +48,6 @@ const query = graphql`
   query ReflectTemplateListOrgQuery($teamId: ID!) {
     viewer {
       id
-      featureFlags {
-        templateLimit
-      }
       team(teamId: $teamId) {
         id
         orgId
@@ -85,7 +82,6 @@ const ReflectTemplateListOrg = (props: Props) => {
   const history = useHistory()
   const {viewer} = data
   const team = viewer.team!
-  const featureFlags = viewer.featureFlags
   const {id: teamId, meetingSettings, orgId, tier} = team
   const {templateSearchQuery, organizationTemplates, activeTemplate} = meetingSettings
   const searchQuery = templateSearchQuery ?? ''
@@ -95,7 +91,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
-    if (tier === 'starter' && featureFlags.templateLimit) {
+    if (tier === 'starter') {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'orgTemplate',

@@ -1,23 +1,16 @@
-import styled from '@emotion/styled'
 import {Fetcher} from '@graphiql/toolkit'
-import GraphiQL from 'graphiql'
+import GraphiQL from 'graphiql/dist'
 import 'graphiql/graphiql.css'
-import React, {useRef} from 'react'
+import React, {useEffect, useState} from 'react'
+import {Link} from 'react-router-dom'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
 import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
+import logoMarkDark from '../../../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
+
 import {AuthTokenRole} from '../../../../types/constEnums'
 
-const GQL = styled('div')({
-  margin: 0,
-  height: '100vh',
-  minHeight: '100vh',
-  padding: 0,
-  width: '100%'
-})
-
 const GraphqlContainer = () => {
-  const graphiql = useRef<GraphiQL>(null)
   const atmosphere = useAtmosphere()
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
   const fetcher: Fetcher = async ({query, variables}) => {
@@ -33,26 +26,29 @@ const GraphqlContainer = () => {
     return resJSON
   }
 
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  useEffect(() => {
+    // @graphiql/react only supports ESM so we can't import useTheme
+    // This hack works, but it won't update until the component re-renders
+    const setMode = localStorage.getItem('graphiql:theme')
+    const nextTheme =
+      setMode === 'dark'
+        ? true
+        : setMode === 'light'
+        ? false
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+    setIsDarkMode(nextTheme)
+  })
+
+  const logo = isDarkMode ? logoMarkDark : logoMarkPrimary
   return (
-    <GQL>
-      <GraphiQL fetcher={fetcher} ref={graphiql} tabs>
-        <GraphiQL.Logo>
-          <img crossOrigin='' alt='Parabol' src={logoMarkPrimary} />
-        </GraphiQL.Logo>
-        <GraphiQL.Toolbar>
-          <GraphiQL.ToolbarButton
-            onClick={() => graphiql.current!.ref?.props.prettify()}
-            title='Prettify Query (Shift-Ctrl-P)'
-            label='Prettify'
-          />
-          <GraphiQL.ToolbarButton
-            onClick={() => graphiql.current!.ref?.props.historyContext?.toggle()}
-            title='Show History'
-            label='History'
-          />
-        </GraphiQL.Toolbar>
-      </GraphiQL>
-    </GQL>
+    <GraphiQL fetcher={fetcher}>
+      <GraphiQL.Logo>
+        <Link to={'/'}>
+          <img crossOrigin='' alt='Parabol' src={logo} className={'flex'} />
+        </Link>
+      </GraphiQL.Logo>
+    </GraphiQL>
   )
 }
 

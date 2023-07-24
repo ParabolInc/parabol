@@ -7,10 +7,10 @@ import LinkButton from '~/components/LinkButton'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
-import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import {Breakpoint, FilterLabels} from '~/types/constEnums'
+import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {
   UserTasksHeader_viewer$data,
   UserTasksHeader_viewer$key
@@ -25,11 +25,11 @@ import lazyPreload from '../../../../utils/lazyPreload'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
-const UserDashTeamMenu = lazyPreload(
+const TeamFilterMenu = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'UserDashTeamMenu' */
-      '../../../../components/UserDashTeamMenu'
+      /* webpackChunkName: 'TeamFilterMenu' */
+      '../../../../components/TeamFilterMenu'
     )
 )
 
@@ -89,7 +89,7 @@ const UserTasksHeader = (props: Props) => {
     graphql`
       fragment UserTasksHeader_viewer on User {
         id
-        ...UserDashTeamMenu_viewer
+        ...TeamFilterMenu_viewer
         ...UserDashTeamMemberMenu_viewer
         teams {
           id
@@ -128,14 +128,14 @@ const UserTasksHeader = (props: Props) => {
     oldTeamsRef.current = nextTeams
   }
   const teams = oldTeamsRef.current
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
+  const {userIds, teamIds, showArchived} = useQueryParameterParser(viewerId)
 
   const teamFilter = useMemo(
     () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),
     [teamIds, teams]
   )
 
-  const teamFilterName = (teamFilter && teamFilter.name) || UserTaskViewFilterLabels.ALL_TEAMS
+  const teamFilterName = (teamFilter && teamFilter.name) || FilterLabels.ALL_TEAMS
 
   const teamMemberFilterName = useMemo(() => {
     const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
@@ -159,8 +159,8 @@ const UserTasksHeader = (props: Props) => {
     return teamFilter && teamMemberFilter
       ? teamMemberFilter.tms.includes(teamFilter.id)
         ? teamMemberFilter.preferredName
-        : UserTaskViewFilterLabels.ALL_TEAM_MEMBERS
-      : teamMemberFilter?.preferredName ?? UserTaskViewFilterLabels.ALL_TEAM_MEMBERS
+        : FilterLabels.ALL_TEAM_MEMBERS
+      : teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS
   }, [teamIds, userIds, teams])
 
   return (
@@ -169,13 +169,13 @@ const UserTasksHeader = (props: Props) => {
         <StyledDashFilterToggle
           label='Team'
           onClick={teamFilterTogglePortal}
-          onMouseEnter={UserDashTeamMenu.preload}
+          onMouseEnter={TeamFilterMenu.preload}
           ref={teamFilterOriginRef}
           value={teamFilterName}
           iconText='group'
           dataCy='team-filter'
         />
-        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+        {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
 
         {/* Filter by Owner */}
         <StyledDashFilterToggle
@@ -193,7 +193,7 @@ const UserTasksHeader = (props: Props) => {
 
         <StyledLinkButton
           onClick={() =>
-            history.push(constructUserTaskFilterQueryParamURL(teamIds, userIds, !showArchived))
+            history.push(constructFilterQueryParamURL(teamIds, userIds, !showArchived))
           }
           dataCy='archived-checkbox'
         >

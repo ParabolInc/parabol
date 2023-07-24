@@ -59,7 +59,7 @@ const SettingsRow = styled('div')({
 })
 
 const NewMeetingDialog = styled(DialogContainer)({
-  width: '860px',
+  width: '865px',
   borderRadius: Radius.FIELD,
 
   [MEDIA_QUERY_FUZZY_TABLET]: {
@@ -102,7 +102,6 @@ const NewMeetingInner = styled('div')({
 const query = graphql`
   query NewMeetingQuery {
     viewer {
-      ...NewMeetingSettings_viewer
       featureFlags {
         insights
       }
@@ -208,15 +207,10 @@ const NewMeeting = (props: Props) => {
               onSelectTeam={(teamId) => history.replace(`/new-meeting/${teamId}`)}
               selectedTeamRef={selectedTeam}
               teamsRef={teams}
-              parentId='newMeetingRoot'
             />
           </SettingsFirstRow>
           <SettingsRow>
-            <NewMeetingSettings
-              selectedTeamRef={selectedTeam}
-              meetingType={meetingType}
-              viewerRef={viewer}
-            />
+            <NewMeetingSettings selectedTeamRef={selectedTeam} meetingType={meetingType} />
             {meetingType === 'teamPrompt' && (
               <NewMeetingRecurrenceSettings
                 onRecurrenceSettingsUpdated={setRecurrenceSettings}

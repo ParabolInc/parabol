@@ -1,7 +1,6 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
 import faker from 'faker'
-import fetch from 'node-fetch'
 import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'
@@ -93,8 +92,9 @@ const SIGNUP_WITH_PASSWORD_MUTATION = `
     $password: String!
     $invitationToken: ID!
     $segmentId: ID
+    $params: String!
   ) {
-    signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, segmentId: $segmentId) {
+    signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, segmentId: $segmentId, params: $params) {
       error {
         message
       }
@@ -136,7 +136,8 @@ export const signUpWithEmail = async (emailInput: string) => {
       email,
       password,
       segmentId: null,
-      invitationToken: ''
+      invitationToken: '',
+      params: ''
     }
   })
 
