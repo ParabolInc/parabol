@@ -34,7 +34,6 @@ export async function down() {
         DROP COLUMN "meetingEngagement";
     END
     $$;
- 
   `)
   await client.end()
 }
