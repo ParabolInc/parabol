@@ -247,21 +247,6 @@ export interface RetroReflectionGroup {
   discussionPromptQuestion: string | null
 }
 
-export interface RetroReflectionGroup {
-  id: string
-  createdAt: Generated<Timestamp>
-  updatedAt: Generated<Timestamp>
-  isActive: Generated<boolean>
-  meetingId: string
-  promptId: string
-  sortOrder: Generated<number>
-  voterIds: Generated<string[]>
-  smartTitle: string | null
-  title: string | null
-  summary: string | null
-  discussionPromptQuestion: string | null
-}
-
 export interface TaskEstimate {
   id: Generated<number>
   createdAt: Generated<Timestamp>

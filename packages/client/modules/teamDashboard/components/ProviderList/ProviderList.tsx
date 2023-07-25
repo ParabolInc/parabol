@@ -117,7 +117,6 @@ const ProviderList = (props: Props) => {
   const {
     featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams, gcal: allowGcal}
   } = viewer
-  console.log('🚀 ~ allowGcal:', allowGcal)
 
   const integrations = viewer.teamMember?.integrations
 
