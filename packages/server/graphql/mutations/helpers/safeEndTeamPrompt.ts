@@ -8,8 +8,10 @@ import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
+import collectReactjis from './collectReactjis'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import updateTeamInsights from './updateTeamInsights'
 
 const safeEndTeamPrompt = async ({
   meeting,
@@ -32,13 +34,16 @@ const safeEndTeamPrompt = async ({
 
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
+  const usedReactjis = await collectReactjis(meeting, dataLoader)
+
   // RESOLUTION
   const completedTeamPrompt = (await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
       {
-        endedAt: now
+        endedAt: now,
+        usedReactjis
       },
       {returnChanges: true}
     )('changes')(0)('new_val')
@@ -72,6 +77,7 @@ const safeEndTeamPrompt = async ({
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
   checkTeamsLimit(team.orgId, dataLoader)
+  updateTeamInsights(teamId)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
   dataLoader.get('newMeetings').clear(meetingId)
 

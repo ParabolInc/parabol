@@ -28,7 +28,7 @@ const collectTeamInsights = async (teamId: string) => {
 
   const mostUsedEmojis = Object.entries(allUsedEmojis)
     .map(([id, count]) => ({id, count}))
-    .filter(({count}) => count > 5)
+    .filter(({count}) => count >= 5)
     .sort((a, b) => b.count - a.count)
     .slice(0, 3)
 
