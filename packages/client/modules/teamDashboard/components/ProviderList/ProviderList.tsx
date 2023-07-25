@@ -167,8 +167,7 @@ const ProviderList = (props: Props) => {
     },
     {
       name: 'Gcal Integration',
-      // connected: !!integrations?.gcal?.accessToken,
-      connected: true,
+      connected: false, // TODO: implement oauth
       component: <GcalProviderRow />,
       hidden: !allowGcal
     }

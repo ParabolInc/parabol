@@ -11,8 +11,10 @@ const GcalProviderRow = () => {
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const gcalAuth = false
+
+  // TODO: implement oauth
   const openOAuth = () => {
-    // TODO: implement
+    // GCalClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 

@@ -389,6 +389,7 @@ export default async function generateInvoice(
     orgId,
     orgName: organization.name,
     paidAt,
+    payUrl: invoice.hosted_invoice_url,
     picture: organization.picture,
     startAt: fromEpochSeconds(invoice.period_start),
     startingBalance: invoice.starting_balance,
