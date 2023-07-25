@@ -8,8 +8,10 @@ import {useFragment} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 import {APP_CORS_OPTIONS, EMAIL_CORS_OPTIONS} from '../../../../../types/cors'
 import {RetroTopic_stage$key} from '../../../../../__generated__/RetroTopic_stage.graphql'
+import {RetroTopic_meeting$key} from '../../../../../__generated__/RetroTopic_meeting.graphql'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
+import ShareTopic from './ShareTopic'
 
 const stageThemeHeading = {
   color: PALETTE.SLATE_700,
@@ -71,14 +73,17 @@ interface Props {
   isDemo: boolean
   isEmail: boolean
   stageRef: RetroTopic_stage$key
+  meetingRef: RetroTopic_meeting$key
   to: string
+  appOrigin: string
 }
 
 const RetroTopic = (props: Props) => {
-  const {isDemo, isEmail, to, stageRef} = props
+  const {isDemo, isEmail, to, stageRef, meetingRef, appOrigin} = props
   const stage = useFragment(
     graphql`
       fragment RetroTopic_stage on RetroDiscussStage {
+        id
         reflectionGroup {
           title
           voteCount
@@ -95,7 +100,26 @@ const RetroTopic = (props: Props) => {
     `,
     stageRef
   )
-  const {reflectionGroup, discussion} = stage
+
+  const meeting = useFragment(
+    graphql`
+      fragment RetroTopic_meeting on RetrospectiveMeeting {
+        id
+        organization {
+          featureFlags {
+            shareSummary
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+
+  const {id: meetingId} = meeting
+
+  const hasShareSummaryFeatureFlag = meeting.organization.featureFlags.shareSummary
+
+  const {reflectionGroup, discussion, id: stageId} = stage
   const {commentCount, discussionSummary} = discussion
   const {reflections, title, voteCount, topicSummary} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
@@ -158,9 +182,26 @@ const RetroTopic = (props: Props) => {
       {!isDemo && (
         <tr>
           <td align='center'>
-            <AnchorIfEmail href={to} isEmail={isEmail} style={commentLinkStyle}>
-              {commentLinkLabel}
-            </AnchorIfEmail>
+            <table>
+              <tr>
+                <td>
+                  <AnchorIfEmail href={to} isEmail={isEmail} style={commentLinkStyle}>
+                    {commentLinkLabel}
+                  </AnchorIfEmail>
+                </td>
+                {hasShareSummaryFeatureFlag && (
+                  <td style={{padding: '10px'}}>
+                    <ShareTopic
+                      isEmail={isEmail}
+                      isDemo={isDemo}
+                      meetingId={meetingId}
+                      stageId={stageId}
+                      appOrigin={appOrigin}
+                    />
+                  </td>
+                )}
+              </tr>
+            </table>
           </td>
         </tr>
       )}

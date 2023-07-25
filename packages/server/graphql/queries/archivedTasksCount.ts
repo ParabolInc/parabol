@@ -1,7 +1,9 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 
 export default {
   type: GraphQLInt,
@@ -11,7 +13,7 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(_source: unknown, {teamId}, {authToken}) {
+  async resolve(_source: unknown, {teamId}: {teamId: string}, {authToken}: GQLContext) {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
 
@@ -29,7 +31,7 @@ export default {
       .between([teamId, r.minval], [teamId, r.maxval], {
         index: 'teamIdUpdatedAt'
       })
-      .filter((task) =>
+      .filter((task: RValue) =>
         task('tags')
           .contains('archived')
           .and(

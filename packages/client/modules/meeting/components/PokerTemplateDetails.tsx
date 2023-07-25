@@ -2,8 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
-import {pokerIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
@@ -12,7 +10,6 @@ import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {PokerTemplateDetails_settings$key} from '../../../__generated__/PokerTemplateDetails_settings.graphql'
-import {PokerTemplateDetails_viewer$key} from '../../../__generated__/PokerTemplateDetails_viewer.graphql'
 import AddPokerTemplateDimension from './AddPokerTemplateDimension'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -75,30 +72,24 @@ interface Props {
   gotoPublicTemplates: () => void
   closePortal: () => void
   settings: PokerTemplateDetails_settings$key
-  viewer: PokerTemplateDetails_viewer$key
 }
 
 const PokerTemplateDetails = (props: Props) => {
-  const {
-    gotoTeamTemplates,
-    gotoPublicTemplates,
-    closePortal,
-    settings: settingsRef,
-    viewer: viewerRef
-  } = props
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings: settingsRef} = props
   const settings = useFragment(
     graphql`
       fragment PokerTemplateDetails_settings on PokerMeetingSettings {
         activeTemplate {
+          illustrationUrl
           ...PokerTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
         }
         selectedTemplate {
+          illustrationUrl
           ...PokerTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
         }
         teamTemplates {
-          ...EditableTemplateName_teamTemplates
           ...RemoveTemplate_teamTemplates
         }
         team {
@@ -110,26 +101,13 @@ const PokerTemplateDetails = (props: Props) => {
     `,
     settingsRef
   )
-  const viewer = useFragment(
-    graphql`
-      fragment PokerTemplateDetails_viewer on User {
-        featureFlags {
-          templateLimit
-        }
-        ...useTemplateDescription_viewer
-      }
-    `,
-    viewerRef
-  )
-  const {featureFlags} = viewer
-  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
-  const {id: templateId, name: templateName, dimensions} = activeTemplate
+  const {id: templateId, name: templateName, dimensions, illustrationUrl} = activeTemplate
   const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = useTemplateDescription(lowestScope, activeTemplate, viewer)
+  const description = useTemplateDescription(lowestScope, activeTemplate, tier)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -144,21 +122,18 @@ const PokerTemplateDetails = (props: Props) => {
     )
     gotoTeamTemplates()
   }
-  const headerImg =
-    pokerIllustrations[templateId as keyof typeof pokerIllustrations] ?? customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
-  const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
+  const showClone = !isOwner && tier !== 'starter'
   return (
     <DimensionEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
-        <TemplateImg src={headerImg} />
+        <TemplateImg src={illustrationUrl} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName
               key={templateId}
               name={templateName}
               templateId={templateId}
-              teamTemplates={teamTemplates}
               isOwner={isOwner}
             />
             {isOwner && (
@@ -174,12 +149,7 @@ const PokerTemplateDetails = (props: Props) => {
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
-        <TemplateDimensionList
-          isOwner={isOwner}
-          dimensions={dimensions}
-          templateId={templateId}
-          parentId='templateModal'
-        />
+        <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
         <TemplateSharing isOwner={isOwner} template={activeTemplate} />
       </Scrollable>

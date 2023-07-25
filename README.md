@@ -1,6 +1,5 @@
 # Parabol - We're [hiring](https://www.parabol.co/join)!
 
-[![Slack Status](https://slackin.parabol.co/badge.svg)](https://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/parabol.svg?style=svg)](https://circleci.com/gh/ParabolInc/parabol)
 
 ## Overview
@@ -29,7 +28,8 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 | Real-time Connectivity | [trebuchet](https://github.com/mattkrick/trebuchet-client)      |
 | Client Cache           | [Relay](https://facebook.github.io/relay/)                      |
 | UI Framework           | [React](https://facebook.github.io/react/)                      |
-| Styling                | [Emotion](https://emotion.sh/)                                  |
+| Styling (Legacy)       | [Emotion](https://emotion.sh/)                                  |
+| Styling                | [Tailwind CSS](https://tailwindcss.com/)                        |
 
 ## Setup
 
@@ -70,11 +70,12 @@ $ yarn dev
 - [RethinkDB](./packages/server/database/README.md)
 - [Shared Scripts](./packages/client/shared/README.md)
 - [VS Code Tips](.vscode/tips.md)
+- [Tailwind CSS migration guide](./packages/client/README.md)
 
 ### Deploy
 
 ```bash
-$ yarn && yarn build && yarn start
+$ yarn && yarn build && yarn predeploy && yarn start
 ```
 
 - [How to Ship](./docs/deployment.md)

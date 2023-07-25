@@ -57,6 +57,7 @@ const RetroReflectPhase = (props: Props) => {
   const reflectPrompts = localPhase!.reflectPrompts
   const focusedPromptId = localPhase!.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
+
   return (
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>

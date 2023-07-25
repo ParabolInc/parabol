@@ -23,7 +23,7 @@ const CogIcon = styled('div')({
   svg: {
     fontSize: 18
   },
-  margin: '3px 3px 3px 11px',
+  margin: 3,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -32,7 +32,9 @@ const CogIcon = styled('div')({
 
 const QuestionBlock = styled('div')({
   alignContent: 'center',
+  alignItems: 'center',
   display: 'flex',
+  flexDirection: 'column',
   fontSize: 24,
   lineHeight: 1.25,
   padding: '16px 0',
@@ -45,6 +47,9 @@ const QuestionBlock = styled('div')({
     },
     '&:focus-within': {
       backgroundColor: 'rgba(255,255,255,0.6)'
+    },
+    '.public-DraftStyleDefault-block': {
+      textAlign: 'center'
     }
   }
 })
@@ -110,7 +115,7 @@ const NewCheckInQuestion = (props: Props) => {
   }
 
   const focusQuestion = () => {
-    closeTooltip()
+    closeEditIcebreakerTooltip()
     editorRef.current && editorRef.current.focus()
     const selection = editorState.getSelection()
     const contentState = editorState.getCurrentContent()
@@ -123,15 +128,24 @@ const NewCheckInQuestion = (props: Props) => {
   }
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
-  const tip = 'Tap to customize the Icebreaker'
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
-    MenuPosition.UPPER_CENTER,
-    {
-      delay: 300,
-      disabled: isEditing || !isFacilitating
-    }
-  )
+  const {
+    tooltipPortal: editIcebreakerTooltipPortal,
+    openTooltip: openEditIcebreakerTooltip,
+    closeTooltip: closeEditIcebreakerTooltip,
+    originRef: editIcebreakerOriginRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER, {
+    disabled: isEditing || !isFacilitating
+  })
+  const {
+    tooltipPortal: refreshIcebreakerTooltipPortal,
+    openTooltip: openRefreshIcebreakerTooltip,
+    closeTooltip: closeRefreshIcebreakerTooltip,
+    originRef: refreshIcebreakerOriginRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER, {
+    disabled: !isFacilitating
+  })
+
   const refresh = () => {
     UpdateNewCheckInQuestionMutation(atmosphere, {
       meetingId,
@@ -151,26 +165,33 @@ const NewCheckInQuestion = (props: Props) => {
         setEditorStateFallback={updateQuestionAndroidFallback}
       />
       {isFacilitating && (
-        <>
+        <div className='flex gap-x-2'>
           <PlainButton
-            aria-label={tip}
+            aria-label={'Edit icebreaker'}
             onClick={focusQuestion}
-            onMouseEnter={openTooltip}
-            onMouseLeave={closeTooltip}
-            ref={originRef}
+            onMouseEnter={openEditIcebreakerTooltip}
+            onMouseLeave={closeEditIcebreakerTooltip}
+            ref={editIcebreakerOriginRef}
           >
             <CogIcon>
               <CreateIcon />
             </CogIcon>
           </PlainButton>
-          <PlainButton aria-label={'Refresh'} onClick={refresh}>
+          <PlainButton
+            aria-label={'Refresh icebreaker'}
+            onClick={refresh}
+            onMouseEnter={openRefreshIcebreakerTooltip}
+            onMouseLeave={closeRefreshIcebreakerTooltip}
+            ref={refreshIcebreakerOriginRef}
+          >
             <CogIcon>
               <RefreshIcon />
             </CogIcon>
           </PlainButton>
-        </>
+        </div>
       )}
-      {tooltipPortal(<div>{tip}</div>)}
+      {editIcebreakerTooltipPortal(<>Edit icebreaker</>)}
+      {refreshIcebreakerTooltipPortal(<>Refresh icebreaker</>)}
     </QuestionBlock>
   )
 }

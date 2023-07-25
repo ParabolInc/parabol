@@ -19,12 +19,15 @@ import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import ReflectPhase from '../../../database/types/ReflectPhase'
+import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
+import TeamHealthStage from '../../../database/types/TeamHealthStage'
 import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
+import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -74,16 +77,18 @@ const createNewMeetingPhases = async (
   meetingType: MeetingTypeEnum,
   dataLoader: DataLoaderWorker
 ) => {
-  const [meetingSettings, stageDurations] = await Promise.all([
+  const [meetingSettings, stageDurations, team] = await Promise.all([
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
-    getPastStageDurations(teamId)
+    getPastStageDurations(teamId),
+    dataLoader.get('teams').load(teamId)
   ])
   const {phaseTypes} = meetingSettings
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const asyncSideEffects = [] as Promise<any>[]
 
+  const {tier = 'starter'} = team ?? {}
   const phases = (await Promise.all(
-    phaseTypes.map(async (phaseType) => {
+    phaseTypes.filter(isPhaseAvailable(tier)).map(async (phaseType) => {
       const durations = stageDurations[phaseType]
       switch (phaseType) {
         case CHECKIN:
@@ -91,6 +96,12 @@ const createNewMeetingPhases = async (
             teamId,
             meetingCount,
             stages: [new CheckInStage(facilitatorTeamMemberId)]
+          })
+        case 'TEAM_HEALTH':
+          return new TeamHealthPhase({
+            stages: [
+              new TeamHealthStage('How are you feeling about work today?', ['😀', '😐', '😢'])
+            ]
           })
         case REFLECT:
           return new ReflectPhase(teamId, durations)

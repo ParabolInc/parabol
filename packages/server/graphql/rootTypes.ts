@@ -14,14 +14,13 @@ import IntegrationProviderOAuth1 from './types/IntegrationProviderOAuth1'
 import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
 import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import JiraDimensionField from './types/JiraDimensionField'
-import MeetingTemplate from './types/MeetingTemplate'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
-import PokerTemplate from './types/PokerTemplate'
 import ReflectPhase from './types/ReflectPhase'
 import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
+import SetMeetingSettingsPayload from './types/SetMeetingSettingsPayload'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
@@ -47,8 +46,6 @@ const rootTypes = [
   AuthIdentityLocal,
   CheckInPhase,
   ReflectPhase,
-  PokerTemplate,
-  MeetingTemplate,
   DiscussPhase,
   UpdatesPhase,
   EstimatePhase,
@@ -62,6 +59,7 @@ const rootTypes = [
   RetrospectiveMeeting,
   RetrospectiveMeetingMember,
   RetrospectiveMeetingSettings,
+  SetMeetingSettingsPayload,
   SuggestedActionInviteYourTeam,
   SuggestedActionTryRetroMeeting,
   SuggestedActionTryActionMeeting,

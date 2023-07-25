@@ -10,6 +10,7 @@ import TimelineFeedList from './TimelineFeedList'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
 import TimelineRightDrawer from './TimelineRightDrawer'
 import TimelineSuggestedAction from './TimelineSuggestedAction'
+import TimelineHeader from './TimelineHeader'
 
 interface Props {
   queryRef: PreloadedQuery<MyDashboardTimelineQuery>
@@ -40,10 +41,17 @@ const MyDashboardTimeline = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<MyDashboardTimelineQuery>(
     graphql`
-      query MyDashboardTimelineQuery($first: Int!, $after: DateTime, $userIds: [ID!]) {
+      query MyDashboardTimelineQuery(
+        $first: Int!
+        $after: DateTime
+        $userIds: [ID!]
+        $eventTypes: [TimelineEventEnum!]
+        $teamIds: [ID!]
+      ) {
         viewer {
           ...TimelineSuggestedAction_viewer
           ...TimelineRightDrawer_viewer
+          ...TimelineHeader_viewer
         }
         ...TimelineFeedList_query
       }
@@ -56,6 +64,7 @@ const MyDashboardTimeline = (props: Props) => {
     <FeedAndDrawer>
       <TimelineFeed>
         <TimelineFeedItems>
+          <TimelineHeader viewerRef={viewer} />
           <ErrorBoundary>
             <Suspense fallback={<TimelineLoadingEvents />}>
               <TimelineSuggestedAction viewer={viewer} />

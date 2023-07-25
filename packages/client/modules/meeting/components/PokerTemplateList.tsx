@@ -15,7 +15,6 @@ import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Breakpoint} from '../../../types/constEnums'
 import {PokerTemplateList_settings$key} from '../../../__generated__/PokerTemplateList_settings.graphql'
-import {PokerTemplateList_viewer$key} from '../../../__generated__/PokerTemplateList_viewer.graphql'
 import AddNewPokerTemplate from './AddNewPokerTemplate'
 import PokerTemplateListOrgRoot from './PokerTemplateListOrgRoot'
 import PokerTemplateListPublicRoot from './PokerTemplateListPublicRoot'
@@ -78,12 +77,11 @@ interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
   settingsRef: PokerTemplateList_settings$key
-  viewerRef: PokerTemplateList_viewer$key
   displayUpgradeDetails: () => void
 }
 
 const PokerTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settingsRef, viewerRef, displayUpgradeDetails} = props
+  const {activeIdx, setActiveIdx, settingsRef, displayUpgradeDetails} = props
   const settings = useFragment(
     graphql`
       fragment PokerTemplateList_settings on PokerMeetingSettings {
@@ -105,15 +103,6 @@ const PokerTemplateList = (props: Props) => {
       }
     `,
     settingsRef
-  )
-  const viewer = useFragment(
-    graphql`
-      fragment PokerTemplateList_viewer on User {
-        ...PokerTemplateListTeam_viewer
-        ...AddNewPokerTemplate_viewer
-      }
-    `,
-    viewerRef
   )
   const {team, teamTemplates} = settings
   const {id: teamId} = team
@@ -174,7 +163,6 @@ const PokerTemplateList = (props: Props) => {
       <AddNewPokerTemplate
         teamRef={team}
         pokerTemplatesRef={teamTemplates}
-        viewerRef={viewer}
         gotoTeamTemplates={gotoTeamTemplates}
         displayUpgradeDetails={displayUpgradeDetails}
       />
@@ -192,7 +180,6 @@ const PokerTemplateList = (props: Props) => {
             teamTemplatesRef={teamTemplates}
             teamRef={team}
             isActive={activeIdx === 0}
-            viewerRef={viewer}
           />
         </TabContents>
         <TabContents>{activeIdx === 1 && <PokerTemplateListOrgRoot teamId={teamId} />}</TabContents>

@@ -1,5 +1,4 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
@@ -13,7 +12,6 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
   {dimensionName, issueType, fieldName, projectId, meetingId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const viewerId = getUserId(authToken)
   const subOptions = {mutatorId, operationId}

@@ -30,6 +30,15 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       fieldName
+      AutogroupSuccess {
+        ...AutogroupMutation_meeting @relay(mask: false)
+      }
+      ResetReflectionGroupsSuccess {
+        ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
+      }
+      GenerateGroupsSuccess {
+        ...GenerateGroupsFrag_meeting @relay(mask: false)
+      }
       UpdateMeetingPromptSuccess {
         ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
       }
@@ -96,11 +105,17 @@ const subscription = graphql`
       ResetRetroMeetingToGroupStagePayload {
         ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
       }
+      RevealTeamHealthVotesSuccess {
+        ...RevealTeamHealthVotesMutation_meeting @relay(mask: false)
+      }
       SetPhaseFocusPayload {
         ...SetPhaseFocusMutation_meeting @relay(mask: false)
       }
       SetStageTimerPayload {
         ...SetStageTimerMutation_meeting @relay(mask: false)
+      }
+      SetTeamHealthVoteSuccess {
+        ...SetTeamHealthVoteMutation_meeting @relay(mask: false)
       }
       StartDraggingReflectionPayload {
         ...StartDraggingReflectionMutation_meeting @relay(mask: false)

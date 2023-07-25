@@ -258,56 +258,60 @@ const PromptResponseEditor = (props: Props) => {
   return (
     <>
       <StyledEditor>
-        {editor && (
-          <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
-            <BubbleMenuWrapper>
-              <BubbleMenuButton
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                isActive={editor.isActive('bold')}
-              >
-                <b>B</b>
-              </BubbleMenuButton>
-              <BubbleMenuButton
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                isActive={editor.isActive('italic')}
-              >
-                <i>I</i>
-              </BubbleMenuButton>
-              <BubbleMenuButton
-                onClick={() => editor.chain().focus().toggleStrike().run()}
-                isActive={editor.isActive('strike')}
-              >
-                <s>S</s>
-              </BubbleMenuButton>
-              <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
-                <LinkIcon />
-              </BubbleMenuButton>
-            </BubbleMenuWrapper>
-          </BubbleMenu>
-        )}
-        {editor && <EmojiMenuTipTap tiptapEditor={editor} />}
-        {editor && teamId && <MentionsTipTap tiptapEditor={editor} teamId={teamId} />}
-        {editor && linkOverlayProps?.linkMenuProps && (
-          <EditorLinkChangerTipTap
-            text={linkOverlayProps.linkMenuProps.text}
-            link={linkOverlayProps.linkMenuProps.href}
-            tiptapEditor={editor}
-            originCoords={linkOverlayProps.linkMenuProps.originCoords}
-            removeModal={() => {
-              setLinkOverlayProps(undefined)
-            }}
-          />
-        )}
-        {editor && linkOverlayProps?.linkPreviewProps && (
-          <EditorLinkViewerTipTap
-            href={linkOverlayProps.linkPreviewProps.href}
-            tiptapEditor={editor}
-            addHyperlink={onAddHyperlink}
-            originCoords={linkOverlayProps.linkPreviewProps.originCoords}
-            removeModal={() => {
-              setLinkOverlayProps(undefined)
-            }}
-          />
+        {editor && !readOnly && (
+          <>
+            <div>
+              <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
+                <BubbleMenuWrapper>
+                  <BubbleMenuButton
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    isActive={editor.isActive('bold')}
+                  >
+                    <b>B</b>
+                  </BubbleMenuButton>
+                  <BubbleMenuButton
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    isActive={editor.isActive('italic')}
+                  >
+                    <i>I</i>
+                  </BubbleMenuButton>
+                  <BubbleMenuButton
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    isActive={editor.isActive('strike')}
+                  >
+                    <s>S</s>
+                  </BubbleMenuButton>
+                  <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
+                    <LinkIcon />
+                  </BubbleMenuButton>
+                </BubbleMenuWrapper>
+              </BubbleMenu>
+            </div>
+            <EmojiMenuTipTap tiptapEditor={editor} />
+            {teamId && <MentionsTipTap tiptapEditor={editor} teamId={teamId} />}
+            {linkOverlayProps?.linkMenuProps && (
+              <EditorLinkChangerTipTap
+                text={linkOverlayProps.linkMenuProps.text}
+                link={linkOverlayProps.linkMenuProps.href}
+                tiptapEditor={editor}
+                originCoords={linkOverlayProps.linkMenuProps.originCoords}
+                removeModal={() => {
+                  setLinkOverlayProps(undefined)
+                }}
+              />
+            )}
+            {linkOverlayProps?.linkPreviewProps && (
+              <EditorLinkViewerTipTap
+                href={linkOverlayProps.linkPreviewProps.href}
+                tiptapEditor={editor}
+                addHyperlink={onAddHyperlink}
+                originCoords={linkOverlayProps.linkPreviewProps.originCoords}
+                removeModal={() => {
+                  setLinkOverlayProps(undefined)
+                }}
+              />
+            )}
+          </>
         )}
         <EditorContent ref={editorRef} editor={editor} />
       </StyledEditor>

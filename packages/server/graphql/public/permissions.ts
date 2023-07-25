@@ -1,13 +1,16 @@
 import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import {Resolvers} from './resolverTypes'
+import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import isOrgTier from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import isUserViewer from './rules/isUserViewer'
 import isViewerBillingLeader from './rules/isViewerBillingLeader'
+import isViewerOnTeam from './rules/isViewerOnTeam'
 import rateLimit from './rules/rateLimit'
+
 type Wildcard = {
   '*': ShieldRule
 }
@@ -25,9 +28,7 @@ export type PermissionMap<T> = {
 const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
     '*': isAuthenticated,
-    // Bug in graphql-jit means it will always get called
-    // https://github.com/zalando-incubator/graphql-jit/issues/171
-    acceptTeamInvitation: and(/* isAuthenticated, */ rateLimit({perMinute: 50, perHour: 100})),
+    acceptTeamInvitation: and(isAuthenticated, rateLimit({perMinute: 50, perHour: 100})),
     createImposterToken: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
@@ -48,6 +49,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader),
     updateSAML: and(isViewerBillingLeader, isOrgTier('enterprise')),
+    updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId)
   },
   Query: {
     '*': isAuthenticated,

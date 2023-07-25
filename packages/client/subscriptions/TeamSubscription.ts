@@ -9,6 +9,10 @@ import {
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import Atmosphere from '../Atmosphere'
 import {
+  TeamSubscription as TTeamSubscription,
+  TeamSubscription$variables
+} from '../__generated__/TeamSubscription.graphql'
+import {
   acceptTeamInvitationTeamOnNext,
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
@@ -33,10 +37,6 @@ import {
   removeTeamMemberTeamUpdater
 } from '../mutations/RemoveTeamMemberMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
-import {
-  TeamSubscription as TTeamSubscription,
-  TeamSubscription$variables
-} from '../__generated__/TeamSubscription.graphql'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -155,17 +155,26 @@ const subscription = graphql`
       UpdateAgendaItemPayload {
         ...UpdateAgendaItemMutation_team @relay(mask: false)
       }
+      OldUpdateCreditCardPayload {
+        ...OldUpdateCreditCardMutation_team @relay(mask: false)
+      }
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_team @relay(mask: false)
       }
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)
       }
+      UpdateTemplateCategorySuccess {
+        ...UpdateTemplateCategoryMutation_team @relay(mask: false)
+      }
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
       }
-      UpgradeToTeamTierPayload {
-        ...UpgradeToTeamTierMutation_team @relay(mask: false)
+      OldUpgradeToTeamTierPayload {
+        ...OldUpgradeToTeamTierMutation_team @relay(mask: false)
+      }
+      UpgradeToTeamTierSuccess {
+        ...UpgradeToTeamTierFrag_team @relay(mask: false)
       }
       UpdateIntegrationProviderSuccess {
         ...UpdateIntegrationProviderMutation_team @relay(mask: false)

@@ -13,12 +13,14 @@ const mutation = graphql`
     $invitationToken: ID!
     $segmentId: ID
     $isInvitation: Boolean!
+    $params: String!
   ) {
     signUpWithPassword(
       email: $email
       password: $password
       invitationToken: $invitationToken
       segmentId: $segmentId
+      params: $params
     ) {
       error {
         message

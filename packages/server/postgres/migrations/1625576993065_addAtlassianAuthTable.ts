@@ -6,15 +6,7 @@ import {RDatum} from '../../database/stricterR'
 import {insertAtlassianAuthsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
-
-const connectRethinkDB = async () => {
-  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
-  await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: pathname.split('/')[1]
-  })
-}
+import connectRethinkDB from '../../database/connectRethinkDB'
 
 export async function up(): Promise<void> {
   await connectRethinkDB()

@@ -34,7 +34,7 @@ const stop = () => {
   })
 }
 
-const profileCPU: MutationResolvers['profileCPU'] = async (_source, _args, {authToken}) => {
+const profileCPU: MutationResolvers['profileCPU'] = async () => {
   if (!session) {
     session = new inspector.Session()
     session.connect()

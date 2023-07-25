@@ -13,7 +13,7 @@ services:
     networks:
       - parabol-network
   postgres:
-    image: postgres:12.10
+    image: postgres:12.15
     restart: always
     env_file: .env
     ports:
@@ -37,7 +37,7 @@ services:
     image: #image:tag
     restart: always
     env_file: .env
-    command: bash -c "yarn db:migrate && yarn pg:migrate up && NODE_ENV=production && yarn start"
+    command: bash -c "yarn predeploy && NODE_ENV=production && yarn start"
     ports:
       - '3000:3000'
     volumes:

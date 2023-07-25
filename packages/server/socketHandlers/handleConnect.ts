@@ -29,13 +29,13 @@ const setFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: stri
 }
 
 const query = `
-mutation ConnectSocket($socketServerId: ID!) {
-  connectSocket(socketServerId: $socketServerId) {
+mutation ConnectSocket($socketInstanceId: ID!) {
+  connectSocket(socketInstanceId: $socketInstanceId) {
     tms
   }
 }`
 
-const SERVER_ID = process.env.SERVER_ID
+const INSTANCE_ID = `${process.env.SERVER_ID}:${process.pid}`
 const handleConnect = async (connectionContext: ConnectionContext) => {
   const {authToken, ip, id: socketId} = connectionContext
   const {rol} = authToken
@@ -47,7 +47,7 @@ const handleConnect = async (connectionContext: ConnectionContext) => {
     authToken,
     ip,
     query,
-    variables: {socketServerId: SERVER_ID},
+    variables: {socketInstanceId: INSTANCE_ID},
     socketId
   })
   if (!result) return null

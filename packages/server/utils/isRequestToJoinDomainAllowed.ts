@@ -1,38 +1,44 @@
 import isCompanyDomain from './isCompanyDomain'
 import getRethink from '../database/rethinkDriver'
+import {RDatum} from '../database/stricterR'
 
-const hasEligibleOrg = async (activeDomain: string) => {
+export const getEligibleOrgIdsByDomain = async (
+  activeDomain: string,
+  viewerId: string,
+  limit?: number
+) => {
+  const BIG_ENOUGH_LIMIT = 9999
+
+  if (!isCompanyDomain(activeDomain)) {
+    return []
+  }
+
   const r = await getRethink()
 
   return r
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})
-    .filter((org) => org('featureFlags').contains('promptToJoinOrg'))
-    .filter((org) => org('tier').ne('enterprise'))
-    .filter((org) =>
+    .filter((org: RDatum) => org('featureFlags').contains('promptToJoinOrg'))
+    .filter((org: RDatum) =>
       r
         .table('OrganizationUser')
         .getAll(org('id'), {index: 'orgId'})
         .filter({inactive: false, removedAt: null})
-        .count()
-        .gt(1)
+        .coerceTo('array')
+        .do((orgUsers: RDatum) =>
+          orgUsers
+            .count()
+            .gt(1)
+            .and(orgUsers.filter((ou: RDatum) => ou('userId').eq(viewerId)).isEmpty())
+        )
     )
-    .limit(1)
-    .count()
-    .gt(0)
+    .limit(limit ?? BIG_ENOUGH_LIMIT)('id')
     .run()
 }
 
-const isRequestToJoinDomainAllowed = async (domain: string) => {
-  if (!isCompanyDomain(domain)) {
-    return false
-  }
-
-  if (!(await hasEligibleOrg(domain))) {
-    return false
-  }
-
-  return true
+const isRequestToJoinDomainAllowed = async (domain: string, viewerId: string) => {
+  const orgIds = await getEligibleOrgIdsByDomain(domain, viewerId, 1)
+  return orgIds.length > 0
 }
 
 export default isRequestToJoinDomainAllowed

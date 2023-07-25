@@ -9,6 +9,7 @@ import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
+import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 
 const safeEndTeamPrompt = async ({
   meeting,
@@ -68,6 +69,7 @@ const safeEndTeamPrompt = async ({
   )
   const timelineEventId = events[0]!.id
   await r.table('TimelineEvent').insert(events).run()
+  IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
   checkTeamsLimit(team.orgId, dataLoader)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)

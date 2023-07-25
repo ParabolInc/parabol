@@ -93,7 +93,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})
     dataLoader.get('users').clear(userId)
     try {
-      await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+      await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
     } catch (e) {
       console.log(e)
     }

@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
@@ -11,7 +10,6 @@ import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {ReflectTemplateDetails_settings$key} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
-import {ReflectTemplateDetails_viewer$key} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -19,7 +17,6 @@ import RemoveTemplate from './RemoveTemplate'
 import SelectTemplate from './SelectTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
-import {retroIllustrations} from '../../../components/ActivityLibrary/ActivityIllustrations'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -75,30 +72,23 @@ interface Props {
   gotoPublicTemplates: () => void
   closePortal: () => void
   settings: ReflectTemplateDetails_settings$key
-  viewer: ReflectTemplateDetails_viewer$key
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {
-    gotoTeamTemplates,
-    gotoPublicTemplates,
-    closePortal,
-    settings: settingsRef,
-    viewer: viewerRef
-  } = props
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings: settingsRef} = props
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
         activeTemplate {
           ...ReflectTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
+          illustrationUrl
         }
         selectedTemplate {
           ...ReflectTemplateDetailsTemplate @relay(mask: false)
           ...SelectTemplate_template
         }
         teamTemplates {
-          ...EditableTemplateName_teamTemplates
           ...RemoveTemplate_teamTemplates
         }
         team {
@@ -110,26 +100,13 @@ const ReflectTemplateDetails = (props: Props) => {
     `,
     settingsRef
   )
-  const viewer = useFragment(
-    graphql`
-      fragment ReflectTemplateDetails_viewer on User {
-        featureFlags {
-          templateLimit
-        }
-        ...useTemplateDescription_viewer
-      }
-    `,
-    viewerRef
-  )
-  const {featureFlags} = viewer
-  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
-  const {id: templateId, name: templateName, prompts} = activeTemplate
+  const {id: templateId, name: templateName, prompts, illustrationUrl} = activeTemplate
   const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = useTemplateDescription(lowestScope, activeTemplate, viewer, tier)
+  const description = useTemplateDescription(lowestScope, activeTemplate, tier)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -144,21 +121,18 @@ const ReflectTemplateDetails = (props: Props) => {
     )
     gotoTeamTemplates()
   }
-  const headerImg =
-    retroIllustrations[templateId as keyof typeof retroIllustrations] ?? customTemplate
   const isActiveTemplate = templateId === settings.selectedTemplate.id
-  const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
+  const showClone = !isOwner && tier !== 'starter'
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
-        <TemplateImage src={headerImg} />
+        <TemplateImage src={illustrationUrl} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName
               key={templateId}
               name={templateName}
               templateId={templateId}
-              teamTemplates={teamTemplates}
               isOwner={isOwner}
             />
             {isOwner && (
@@ -183,7 +157,6 @@ const ReflectTemplateDetails = (props: Props) => {
           closePortal={closePortal}
           template={activeTemplate}
           teamId={teamId}
-          hasFeatureFlag={templateLimitFlag}
           tier={tier}
           orgId={orgId}
         />

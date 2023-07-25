@@ -1,10 +1,10 @@
 **/__generated__/
 *.env
 *.log
+*.heapprofile
+*.heapsnapshot
 .DS_Store
 .awcache/
-.heapprofile
-.heapsnapshot
 .history/
 .idea/
 pgBackup/

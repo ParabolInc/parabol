@@ -2,9 +2,12 @@ import {OrganizationFeatureFlagsResolvers} from '../resolverTypes'
 
 const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   SAMLUI: ({SAMLUI}) => !!SAMLUI,
-  teamsLimit: ({teamsLimit}) => !!teamsLimit,
+  noAISummary: ({noAISummary}) => !!noAISummary,
+  promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg,
+  zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,
+  shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
-  promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg
+  teamsLimit: ({teamsLimit}) => !!teamsLimit
 }
 
 export default OrganizationFeatureFlags

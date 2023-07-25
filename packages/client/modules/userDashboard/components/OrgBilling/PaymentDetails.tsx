@@ -5,16 +5,11 @@ import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import CreateSetupIntentMutation from '../../../../mutations/CreateSetupIntentMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
-import {CompletedHandler} from '../../../../types/relayMutations'
-import {CreateSetupIntentMutation as TCreateSetupIntentMutation} from '../../../../__generated__/CreateSetupIntentMutation.graphql'
 import BillingForm from './BillingForm'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 
@@ -38,17 +33,17 @@ const Plan = styled('div')({
   display: 'flex',
   padding: '0px 16px 16px 16px',
   flexWrap: 'wrap',
-  width: '50%',
   overflow: 'hidden'
 })
 
-const Title = styled('div')({
+const Title = styled('h6')({
   color: PALETTE.SLATE_800,
   fontSize: 22,
   fontWeight: 600,
   lineHeight: '30px',
   textTransform: 'capitalize',
   display: 'flex',
+  margin: 0,
   width: '100%',
   padding: '8px 0px 16px 0px'
 })
@@ -97,36 +92,6 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
-const stripeElementOptions = {
-  appearance: {
-    theme: 'stripe',
-    rules: {
-      '.Input': {
-        border: 'none',
-        borderBottom: `1px solid ${PALETTE.SLATE_400}`
-      }
-    },
-    variables: {
-      colorBackground: PALETTE.SLATE_200,
-      border: 'none',
-      borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-      color: PALETTE.SLATE_800,
-      fontSize: 16,
-      marginBottom: 16,
-      padding: '12px 16px',
-      outline: 0
-    }
-  } as const,
-  loader: 'never' as const,
-  fonts: [
-    {
-      family: 'IBM Plex Sans',
-      src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
-      weight: '400'
-    }
-  ]
-}
-
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
@@ -135,15 +100,11 @@ type Props = {
 
 const PaymentDetails = (props: Props) => {
   const {organizationRef} = props
-  const [clientSecret, setClientSecret] = useState('')
-  const atmosphere = useAtmosphere()
-  const {onError} = useMutationProps()
 
   const organization = useFragment(
     graphql`
       fragment PaymentDetails_organization on Organization {
         id
-        tier
         orgUserCount {
           activeUserCount
         }
@@ -151,41 +112,22 @@ const PaymentDetails = (props: Props) => {
     `,
     organizationRef
   )
-  const {id: orgId, orgUserCount, tier} = organization
+  const {id: orgId, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
 
-  useEffect(() => {
-    if (tier !== 'starter') return
-    const handleCompleted: CompletedHandler<TCreateSetupIntentMutation['response']> = (res) => {
-      const {createSetupIntent} = res
-      const {clientSecret} = createSetupIntent
-      if (clientSecret) {
-        setClientSecret(clientSecret)
-      }
-    }
-    CreateSetupIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
-  }, [])
-
-  if (!clientSecret.length) return null
   return (
     <StyledPanel label='Credit Card'>
-      <StyledRow>
-        <Plan>
+      <StyledRow className={'flex-col-reverse md:flex-row'}>
+        <Plan className={'w-full md:w-1/2'}>
           <Title>{'Credit Card Details'}</Title>
           <Content>
-            <Elements
-              options={{
-                clientSecret,
-                ...stripeElementOptions
-              }}
-              stripe={stripePromise}
-            >
+            <Elements stripe={stripePromise}>
               <BillingForm orgId={orgId} />
             </Elements>
           </Content>
         </Plan>
-        <Plan>
+        <Plan className={'w-full md:w-1/2'}>
           <Title>{'Team Plan Pricing'}</Title>
           <Content>
             <InputLabel>{'Billing Cycle'}</InputLabel>

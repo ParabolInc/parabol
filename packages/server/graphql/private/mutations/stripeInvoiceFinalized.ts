@@ -21,10 +21,14 @@ const stripeInvoiceFinalized: MutationResolvers['stripeInvoiceFinalized'] = asyn
   const invoice = await manager.retrieveInvoice(invoiceId)
   const customerId = invoice.customer as string
 
+  const customer = await manager.retrieveCustomer(customerId)
+  if (customer.deleted) {
+    return false
+  }
   const {
     livemode,
     metadata: {orgId}
-  } = await manager.retrieveCustomer(customerId)
+  } = customer
   const org = await r.table('Organization').get(orgId).run()
   if (!org) {
     if (livemode) {

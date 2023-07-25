@@ -1,4 +1,3 @@
-import * as validator from '@authenio/samlify-node-xmllint'
 import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
@@ -10,12 +9,13 @@ import generateUID from '../../../generateUID'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
 
 const serviceProvider = samlify.ServiceProvider({})
-samlify.setSchemaValidator(validator)
+samlify.setSchemaValidator(samlXMLValidator)
 
 const getRelayState = (body: any) => {
   const {RelayState} = body
@@ -28,52 +28,47 @@ const getRelayState = (body: any) => {
   return relayState
 }
 
-const loginSAML: MutationResolvers['loginSAML'] = async (
-  _source,
-  {samlName, queryString},
-  {dataLoader}
-) => {
+const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
   const r = await getRethink()
   const body = querystring.parse(queryString)
   const normalizedName = samlName.trim().toLowerCase()
   const doc = await r.table('SAML').get(normalizedName).run()
 
-  if (!doc) return {error: {message: `${normalizedName} has not been created in Parabol yet`}}
+  if (!doc) throw new Error(`${normalizedName} has not been created in Parabol yet`)
   const {domains, metadata} = doc
-  const idp = samlify.IdentityProvider({metadata})
+  const idp = samlify.IdentityProvider({metadata: metadata ?? undefined})
   let loginResponse
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'parseLoginResponse failed'
-    return {error: {message}}
+    throw e
   }
   if (!loginResponse) {
-    return {error: {message: 'Error with query from identity provider'}}
+    throw new Error('Error with query from identity provider')
   }
   const relayState = getRelayState(body)
   const {isInvited} = relayState
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
-  const caseInsensitiveAtttributes = {} as Record<Lowercase<string>, string | undefined>
+  const caseInsensitiveAttributes = {} as Record<string, string | undefined>
   Object.keys(attributes).forEach((key) => {
     const lowercaseKey = key.toLowerCase()
     const value = attributes[key]
-    caseInsensitiveAtttributes[lowercaseKey] = String(value)
+    caseInsensitiveAttributes[lowercaseKey] = String(value)
   })
-  const {email: inputEmail, emailaddress, displayname} = caseInsensitiveAtttributes
+  const {email: inputEmail, emailaddress, displayname} = caseInsensitiveAttributes
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
-    return {error: {message: 'Email attribute was not included in SAML response'}}
+    throw new Error('Email attribute was not included in SAML response')
   }
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
-    return {error: {message: 'Email is too long'}}
+    throw new Error('Email is too long')
   }
   const ssoDomain = getSSODomainFromEmail(email)
   if (!ssoDomain || !domains.includes(ssoDomain)) {
     // don't blindly trust the IdP
-    return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
+    throw new Error(`${email} does not belong to ${domains.join(', ')}`)
   }
 
   const user = await getUserByEmail(email)

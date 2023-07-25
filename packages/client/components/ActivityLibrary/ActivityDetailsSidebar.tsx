@@ -1,26 +1,23 @@
-import React, {useState} from 'react'
+import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import {ActivityDetailsSidebar_viewer$key} from '~/__generated__/ActivityDetailsSidebar_viewer.graphql'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
-import {MenuPosition} from '../../hooks/useCoords'
-import sortByTier from '../../utils/sortByTier'
-import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
-import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
-import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
-import FlatPrimaryButton from '../FlatPrimaryButton'
-import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
-import {useHistory} from 'react-router'
-import {LockOpen} from '@mui/icons-material'
+import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
+import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import StartCheckInMutation from '../../mutations/StartCheckInMutation'
+import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import clsx from 'clsx'
 import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
 import CreateGcalEventMutation from '../../mutations/CreateGcalEventMutation'
@@ -29,6 +26,19 @@ import useForm from '../../hooks/useForm'
 import dayjs from 'dayjs'
 import Legitity from '../../validation/Legitity'
 import {StartRetrospectiveMutation$data} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import sortByTier from '../../utils/sortByTier'
+import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
+import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
+import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
+import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
+import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
+import StyledError from '../StyledError'
+import FlatPrimaryButton from '../FlatPrimaryButton'
+import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
+import RaisedButton from '../RaisedButton'
+import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
+import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 
 const validateTitle = (title: string) => {
   return new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
@@ -37,12 +47,14 @@ const validateTitle = (title: string) => {
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
+  type: MeetingTypeEnum
   isOpen: boolean
+  preferredTeamId: string | null
   viewerRef: ActivityDetailsSidebar_viewer$key
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, isOpen, viewerRef} = props
+  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId, viewerRef} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -51,6 +63,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         teamId
         orgId
         scope
+        isFree
       }
     `,
     selectedTemplateRef
@@ -81,9 +94,13 @@ const ActivityDetailsSidebar = (props: Props) => {
         }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
+          ...NewMeetingSettingsToggleTeamHealth_settings
           ...NewMeetingSettingsToggleAnonymity_settings
         }
         pokerSettings: meetingSettings(meetingType: poker) {
+          ...NewMeetingSettingsToggleCheckIn_settings
+        }
+        actionSettings: meetingSettings(meetingType: action) {
           ...NewMeetingSettingsToggleCheckIn_settings
         }
         ...NewMeetingTeamPicker_selectedTeam
@@ -103,12 +120,16 @@ const ActivityDetailsSidebar = (props: Props) => {
       ? teams
       : selectedTemplate.scope === 'ORGANIZATION'
       ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-      : templateTeam
-      ? [templateTeam]
-      : []
+      : // it is a team-scoped template, templateTeam  must exist
+        [templateTeam!]
 
-  const [selectedTeam, setSelectedTeam] = useState(templateTeam ?? sortByTier(availableTeams)[0]!)
-  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const [selectedTeam, setSelectedTeam] = useState(
+    () =>
+      availableTeams.find((team) => team.id === preferredTeamId) ??
+      templateTeam ??
+      sortByTier(availableTeams)[0]!
+  )
+  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
   const {togglePortal: toggleModal, modalPortal} = useModal({
     id: 'createGcalEventModal',
@@ -130,67 +151,88 @@ const ActivityDetailsSidebar = (props: Props) => {
     }
   })
 
-  const handleCompletedRetro = (res: StartRetrospectiveMutation$data) => {
-    const meetingId = res.startRetrospective?.meeting?.id
-    if (!meetingId) return
-    const startTimestamp = start.unix()
-    const endTimestamp = end.unix()
-    const title = fields.title.value
-    const description = fields.description.value
-    const variables = {
-      input: {
-        title,
-        teamId: selectedTeam.id,
-        description,
-        startTimestamp,
-        endTimestamp,
-        inviteTeam: true,
-        meetingId
-      }
-    } as const
-    CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
-  }
-
-  const handleStartMeeting = (scheduleGcalEvent: boolean) => {
+  const handleStartActivity = (scheduleGcalEvent?: boolean) => {
     if (submitting) return
     submitMutation()
-
-    SelectTemplateMutation(
-      atmosphere,
-      {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
-      {
-        onCompleted: () => {
-          if (selectedTemplate.type === 'retrospective') {
-            const handleOnComplete = scheduleGcalEvent ? handleCompletedRetro : onCompleted
-            StartRetrospectiveMutation(
-              atmosphere,
-              {teamId: selectedTeam.id},
-              {history, onError, onCompleted: handleOnComplete}
-            )
-          } else if (selectedTemplate.type === 'poker') {
-            StartSprintPokerMutation(
-              atmosphere,
-              {teamId: selectedTeam.id},
-              {history, onError, onCompleted}
-            )
+    if (type === 'teamPrompt') {
+      StartTeamPromptMutation(
+        atmosphere,
+        {
+          teamId: selectedTeam.id,
+          recurrenceSettings: {
+            rrule: recurrenceSettings.rrule?.toString(),
+            name: recurrenceSettings.name
           }
         },
-        onError
+        {history, onError, onCompleted}
+      )
+    } else if (type === 'action') {
+      StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
+    } else {
+      const handleCompletedRetro = (res: StartRetrospectiveMutation$data) => {
+        const meetingId = res.startRetrospective?.meeting?.id
+        if (!meetingId) return
+        const startTimestamp = start.unix()
+        const endTimestamp = end.unix()
+        const title = fields.title.value
+        const description = fields.description.value
+        const variables = {
+          input: {
+            title,
+            teamId: selectedTeam.id,
+            description,
+            startTimestamp,
+            endTimestamp,
+            inviteTeam: true,
+            meetingId
+          }
+        } as const
+        CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
       }
-    )
+
+      SelectTemplateMutation(
+        atmosphere,
+        {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
+        {
+          onCompleted: () => {
+            if (type === 'retrospective') {
+              const handleOnComplete = scheduleGcalEvent ? handleCompletedRetro : onCompleted
+              StartRetrospectiveMutation(
+                atmosphere,
+                {teamId: selectedTeam.id},
+                {history, onError, onCompleted: handleOnComplete}
+              )
+            } else if (type === 'poker') {
+              StartSprintPokerMutation(
+                atmosphere,
+                {teamId: selectedTeam.id},
+                {history, onError, onCompleted}
+              )
+            }
+          },
+          onError
+        }
+      )
+    }
   }
 
+  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
+    name: '',
+    rrule: null
+  })
+
   const handleShareToOrg = () => {
-    UpdateReflectTemplateScopeMutation(
-      atmosphere,
-      {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
-      {onError, onCompleted}
-    )
+    selectedTemplate &&
+      UpdateReflectTemplateScopeMutation(
+        atmosphere,
+        {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
+        {onError, onCompleted}
+      )
   }
 
   const handleCreateGcalEvent = () => {
     toggleModal()
-    handleStartMeeting(true)
+    handleStartActivity(true)
   }
 
   const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
@@ -215,6 +257,14 @@ const ActivityDetailsSidebar = (props: Props) => {
     </div>
   )
 
+  const handleUpgrade = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'publicTemplate',
+      meetingType: type
+    })
+    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
+  }
+
   return (
     <>
       {isOpen && <div className='w-96' />}
@@ -227,36 +277,78 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
-          {availableTeams.length > 0 && (
-            <NewMeetingTeamPicker
-              positionOverride={MenuPosition.UPPER_LEFT}
-              onSelectTeam={(teamId) => {
-                const newTeam = availableTeams.find((team) => team.id === teamId)
-                newTeam && setSelectedTeam(newTeam)
-              }}
-              selectedTeamRef={selectedTeam}
-              teamsRef={availableTeams}
-              customPortal={teamScopePopover}
-            />
-          )}
+          <NewMeetingTeamPicker
+            positionOverride={MenuPosition.UPPER_LEFT}
+            onSelectTeam={(teamId) => {
+              const newTeam = availableTeams.find((team) => team.id === teamId)
+              newTeam && setSelectedTeam(newTeam)
+            }}
+            selectedTeamRef={selectedTeam}
+            teamsRef={availableTeams}
+            customPortal={teamScopePopover}
+          />
 
-          {selectedTemplate.type === 'retrospective' && (
+          {selectedTeam.tier === 'starter' && !selectedTemplate.isFree ? (
+            <div className='flex grow flex-col'>
+              <div className='my-auto text-center'>
+                Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
+                ideal workflow.
+              </div>
+              <RaisedButton
+                palette='pink'
+                className='h-12 w-full text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                onClick={handleUpgrade}
+              >
+                Upgrade to Team Plan
+              </RaisedButton>
+            </div>
+          ) : (
             <>
-              <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-              <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+              {type === 'retrospective' && (
+                <>
+                  <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+                  {isTeamHealthAvailable(selectedTeam.tier) && (
+                    <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
+                  )}
+                  <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+                </>
+              )}
+              {type === 'poker' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+              )}
+              {type === 'action' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
+              )}
+              {type === 'teamPrompt' && (
+                <ActivityDetailsRecurrenceSettings
+                  onRecurrenceSettingsUpdated={setRecurrenceSettings}
+                  recurrenceSettings={recurrenceSettings}
+                />
+              )}
+              <div className='flex grow flex-col justify-end gap-2'>
+                {error && <StyledError>{error.message}</StyledError>}
+                <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                <FlatPrimaryButton
+                  onClick={() => handleStartActivity(false)}
+                  waiting={submitting}
+                  className='h-14'
+                >
+                  <div className='text-lg'>Start Activity</div>
+                </FlatPrimaryButton>
+              </div>
             </>
           )}
           {selectedTemplate.type === 'poker' && (
             <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
           )}
           <div className='flex grow flex-col justify-end gap-2'>
-            <NewMeetingActionsCurrentMeetings noModal={true} team={selectedTeam} />
+            <NewMeetingActionsCurrentMeetings team={selectedTeam} />
             {hasGcalFlag && (
               <SecondaryButton onClick={toggleModal} waiting={submitting} className='h-14'>
                 <div className='text-lg'>Schedule</div>
               </SecondaryButton>
             )}
-            <FlatPrimaryButton onClick={() => handleStartMeeting(false)} className='h-14'>
+            <FlatPrimaryButton onClick={() => handleStartActivity(false)} className='h-14'>
               <div className='text-lg'>Start Activity</div>
             </FlatPrimaryButton>
           </div>
