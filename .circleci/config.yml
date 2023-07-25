@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   production_postgresql_backup:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/node:18.17.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -37,7 +37,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` PostgreSQL backup pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
   staging_postgresql_restore:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/node:18.17.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -73,7 +73,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` PostgreSQL data restoration pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
   production_rethinkdb_backup:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/node:18.17.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -111,7 +111,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` RethinkDB backup done"}' $SLACK_DEVOPS_URL
   staging_rethinkdb_restore:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/node:18.17.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -165,7 +165,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` RethinkDB data restoration done."}' $SLACK_DEVOPS_URL
   build:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/node:18.17.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.15
         environment:
