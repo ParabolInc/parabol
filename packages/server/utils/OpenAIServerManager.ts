@@ -17,6 +17,39 @@ class OpenAIServerManager {
     this.openAIApi = new OpenAIApi(configuration)
   }
 
+  async getStandupSummary(htmlResponses: string[], meetingPrompt: string) {
+    if (!this.openAIApi) return null
+    // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM
+    // can include that in the response, e.g. "James is working on AI Summaries" vs. "Someone is
+    // working on AI Summaries".
+    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the repsonses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
+
+    Desired format:
+    * <theme title>: <theme summary>
+    * <theme title>: <theme summary>
+    * <theme title>: <theme summary>
+
+    Responses: """
+    ${htmlResponses.join('\nNEW_RESPONSE\n')}
+    """`
+    try {
+      const response = await this.openAIApi.createCompletion({
+        model: 'text-davinci-003',
+        prompt: prompt,
+        temperature: 0.7,
+        max_tokens: 1000,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      return (response.data.choices[0]?.text?.trim() as string) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
+
   async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
     const textStr = Array.isArray(text) ? text.join('\n') : text

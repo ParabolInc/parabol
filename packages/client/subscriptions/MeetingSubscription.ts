@@ -93,6 +93,9 @@ const subscription = graphql`
       EndRetrospectiveSuccess {
         ...EndRetrospectiveMutation_meeting @relay(mask: false)
       }
+      EndTeamPromptSuccess {
+        ...EndTeamPromptMutation_meeting @relay(mask: false)
+      }
       FlagReadyToAdvanceSuccess {
         ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       }

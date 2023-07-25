@@ -41,6 +41,14 @@ graphql`
   }
 `
 
+graphql`
+  fragment EndTeamPromptMutation_meeting on EndTeamPromptSuccess {
+    meeting {
+      ...WholeMeetingSummary_meeting
+    }
+  }
+`
+
 const mutation = graphql`
   mutation EndTeamPromptMutation($meetingId: ID!) {
     endTeamPrompt(meetingId: $meetingId) {
@@ -50,6 +58,7 @@ const mutation = graphql`
         }
       }
       ...EndTeamPromptMutation_team @relay(mask: false)
+      ...EndTeamPromptMutation_meeting @relay(mask: false)
     }
   }
 `
