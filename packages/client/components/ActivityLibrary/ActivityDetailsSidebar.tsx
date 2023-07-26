@@ -35,12 +35,13 @@ interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
+  category: string
   isOpen: boolean
   preferredTeamId: string | null
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId} = props
+  const {selectedTemplateRef, teamsRef, type, category, isOpen, preferredTeamId} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -122,6 +123,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         {history, onError, onCompleted}
       )
     } else if (type === 'action') {
+      // TODO: support ad-hoc team as a param, instead of specific single teamId
       StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
     } else {
       SelectTemplateMutation(
@@ -205,16 +207,20 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
-          <NewMeetingTeamPicker
-            positionOverride={MenuPosition.UPPER_LEFT}
-            onSelectTeam={(teamId) => {
-              const newTeam = availableTeams.find((team) => team.id === teamId)
-              newTeam && setSelectedTeam(newTeam)
-            }}
-            selectedTeamRef={selectedTeam}
-            teamsRef={availableTeams}
-            customPortal={teamScopePopover}
-          />
+          {category === 'oneonone' ? (
+            <>TODO: New user picker will be here</>
+          ) : (
+            <NewMeetingTeamPicker
+              positionOverride={MenuPosition.UPPER_LEFT}
+              onSelectTeam={(teamId) => {
+                const newTeam = availableTeams.find((team) => team.id === teamId)
+                newTeam && setSelectedTeam(newTeam)
+              }}
+              selectedTeamRef={selectedTeam}
+              teamsRef={availableTeams}
+              customPortal={teamScopePopover}
+            />
+          )}
 
           {selectedTeam.tier === 'starter' && !selectedTemplate.isFree ? (
             <div className='flex grow flex-col'>

@@ -130,6 +130,7 @@ const ActivityDetails = (props: Props) => {
           teamsRef={teams}
           isOpen={!isEditing}
           type={activity.type}
+          category={category}
           preferredTeamId={preferredTeamId}
         />
       </div>
