@@ -10,6 +10,7 @@ enum OrganizationFeatureFlagsEnum {
   zoomTranscription
   shareSummary
   teamsLimit
+  teamInsights
 }
 
 extend type Mutation {

@@ -1,0 +1,8 @@
+type TeamInsights {
+  id: ID!
+
+  """
+  Most used emojis in the team, null if not enough signal
+  """
+  mostUsedEmojis: [String!]
+}
