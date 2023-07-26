@@ -86,7 +86,6 @@ const BottomControlBarReady = (props: Props) => {
           userId
           user {
             isConnected
-            lastSeenAt
             lastSeenAtURLs
           }
         }

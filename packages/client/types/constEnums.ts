@@ -95,7 +95,7 @@ export const enum Duration {
 }
 
 export const enum ElementWidth {
-  CONTROL_BAR_BUTTON = 90,
+  CONTROL_BAR_BUTTON = 96,
   CONTROL_BAR_PADDING = 8,
   BILLING_AVATAR = 44,
   DASHBOARD_AVATAR = 28,
