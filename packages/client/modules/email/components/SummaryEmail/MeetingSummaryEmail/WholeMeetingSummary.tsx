@@ -18,6 +18,12 @@ const WholeMeetingSummary = (props: Props) => {
         __typename
         id
         summary
+        organization {
+          featureFlags {
+            standupAISummary
+            noAISummary
+          }
+        }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
             summary
@@ -53,7 +59,10 @@ const WholeMeetingSummary = (props: Props) => {
     if (hasOpenAISummary && !wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
-    const {summary: wholeMeetingSummary, responses} = meeting
+    const {summary: wholeMeetingSummary, responses, organization} = meeting
+    if (!organization.featureFlags.standupAISummary || organization.featureFlags.noAISummary) {
+      return null
+    }
     if (!responses || responses.length === 0) return null
     if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />

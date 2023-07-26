@@ -12,7 +12,10 @@ const generateStandupMeetingSummary = async (
     dataLoader.get('users').loadNonNull(meeting.facilitatorUserId),
     dataLoader.get('teams').loadNonNull(meeting.teamId)
   ])
-  const isAISummaryAccessible = await canAccessAISummary(team, facilitator.featureFlags, dataLoader)
+  const organization = await dataLoader.get('organizations').load(team.orgId)
+  const isAISummaryAccessible =
+    (await canAccessAISummary(team, facilitator.featureFlags, dataLoader)) &&
+    organization.featureFlags?.includes('standupAISummary')
 
   if (!isAISummaryAccessible) return
   const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
