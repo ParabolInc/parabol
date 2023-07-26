@@ -3,7 +3,6 @@ import errorFilter from '../../errorFilter'
 import {ReflectTemplateResolvers} from '../resolverTypes'
 import {getUserId} from '../../../utils/authorization'
 import {DataLoaderWorker} from '../../graphql'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 
 const POPULAR_RETROS = [
   'workingStuckTemplate',
@@ -14,16 +13,15 @@ const POPULAR_RETROS = [
   'fourLsTemplate'
 ]
 
-const getAllRetroMeetingsForTeamIds = async (teamIds: string[], dataLoader: DataLoaderWorker) => {
-  const activeMeetings = (await dataLoader.get('activeMeetingsByTeamId').loadMany(teamIds))
+const getLastUsedDateForTeams = async (
+  teams: string[],
+  templateId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  return (await dataLoader.get('retroTemplateLastUsedByTeam').loadMany(teams))
     .filter(errorFilter)
-    .flat()
-    .filter((meeting) => meeting.meetingType === 'retrospective')
-  const completedMeetings = (await dataLoader.get('completedMeetingsByTeamId').loadMany(teamIds))
-    .filter(errorFilter)
-    .flat()
-    .filter((meeting) => meeting.meetingType === 'retrospective')
-  return [...activeMeetings, ...completedMeetings] as MeetingRetrospective[]
+    .map((templateLookup) => templateLookup[templateId] || new Date(0))
+    .reduce((dateA, dateB) => (dateA > dateB ? dateA : dateB))
 }
 
 const ReflectTemplate: ReflectTemplateResolvers = {
@@ -52,13 +50,8 @@ const ReflectTemplate: ReflectTemplateResolvers = {
     }
 
     // Recently Used
-    const allMeetings = await getAllRetroMeetingsForTeamIds(authToken.tms, dataLoader)
-
-    if (
-      allMeetings
-        .filter((meeting) => meeting.createdAt > new Date(Date.now() - ms('30d')))
-        .find((meeting) => meeting.templateId === id)
-    ) {
+    const dateLastUsedForTeam = await getLastUsedDateForTeams(authToken.tms, id, dataLoader)
+    if (dateLastUsedForTeam > new Date(Date.now() - ms('30d'))) {
       subCategories.push('recentlyUsed')
     }
 
@@ -70,18 +63,18 @@ const ReflectTemplate: ReflectTemplateResolvers = {
       .filter(errorFilter)
       .flat()
       .map((team) => team.id)
-    const allOrgMeetings = await getAllRetroMeetingsForTeamIds(orgTeamIds, dataLoader)
-    if (
-      allOrgMeetings
-        .filter((meeting) => meeting.createdAt > new Date(Date.now() - ms('30d')))
-        .filter((meeting) => !allMeetings.find((selfMeeting) => selfMeeting.id === meeting.id))
-        .find((meeting) => meeting.templateId === id)
-    ) {
+
+    const dateLastUsedForOrg = await getLastUsedDateForTeams(
+      orgTeamIds.filter((orgId) => !authToken.tms.includes(orgId)),
+      id,
+      dataLoader
+    )
+    if (dateLastUsedForOrg > new Date(Date.now() - ms('30d'))) {
       subCategories.push('recentlyUsedInOrg')
     }
 
     // Try these activities
-    if (!allMeetings.find((meeting) => meeting.templateId === id)) {
+    if (dateLastUsedForTeam.getTime() === new Date(0).getTime()) {
       subCategories.push('neverTried')
     }
 
