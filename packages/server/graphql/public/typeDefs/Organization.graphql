@@ -177,4 +177,5 @@ type OrganizationFeatureFlags {
   shareSummary: Boolean!
   teamsLimit: Boolean!
   teamInsights: Boolean!
+  oneOnOne: Boolean!
 }

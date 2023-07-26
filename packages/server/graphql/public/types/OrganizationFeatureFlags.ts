@@ -8,7 +8,8 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
   teamsLimit: ({teamsLimit}) => !!teamsLimit,
-  teamInsights: ({teamInsights}) => !!teamInsights
+  teamInsights: ({teamInsights}) => !!teamInsights,
+  oneOnOne: ({oneOnOne}) => !!oneOnOne
 }
 
 export default OrganizationFeatureFlags
