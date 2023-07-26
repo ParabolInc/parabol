@@ -78,22 +78,25 @@ const GcalModal = (props: Props) => {
   const [end, setEnd] = useState(endOfNextHour)
   const [inviteTeam, setInviteTeam] = useState(true)
 
-  const {fields, onChange, validateField} = useForm({
+  const {fields, onChange} = useForm({
     title: {
-      getDefault: () => '',
-      validate: validateTitle
+      getDefault: () => ''
     },
     description: {
       getDefault: () => ''
     }
   })
+  const titleErr = fields.title.error
 
   const handleClick = () => {
-    validateField('title')
-    if (!fields.title.error) return
+    const title = fields.title.value
+    const titleRes = validateTitle(title)
+    if (titleRes.error) {
+      fields.title.setError(titleRes.error)
+      return
+    }
     const startTimestamp = start.unix()
     const endTimestamp = end.unix()
-    const title = fields.title.value
     const description = fields.description.value
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const input = {
@@ -106,8 +109,13 @@ const GcalModal = (props: Props) => {
     }
     handleCreateGcalEvent(input)
   }
-  console.log('🚀 ~ fields:', fields)
-  const titleErr = fields.title.error
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (titleErr) {
+      fields.title.setError('')
+    }
+    onChange(e)
+  }
 
   return (
     <StyledDialogContainer>
@@ -122,16 +130,17 @@ const GcalModal = (props: Props) => {
           'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link'
         }
         <div className='space-y-1 pt-4'>
-          <StyledInput
-            autoFocus
-            maxLength={100}
-            defaultValue={fields.title.value}
-            onChange={onChange}
-            name='title'
-            placeholder='Enter the name of your meeting'
-          />
-          {titleErr && <ErrorMessage>{titleErr}</ErrorMessage>}
-
+          <div>
+            <StyledInput
+              autoFocus
+              maxLength={100}
+              defaultValue={fields.title.value}
+              onChange={handleChange}
+              name='title'
+              placeholder='Enter the name of your meeting'
+            />
+            {titleErr && <ErrorMessage>{titleErr}</ErrorMessage>}
+          </div>
           <StyledInput
             maxLength={100}
             name='description'
