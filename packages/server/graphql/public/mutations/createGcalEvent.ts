@@ -32,7 +32,7 @@ const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
   if (!viewerTeam) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
-  const viewer = await dataLoader.get('users').load(viewerId)
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {email: viewerEmail} = viewer
 
   const hardcodedToken = {
