@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  This mutation creates a gcal event for a meeting
   """
   createGcalEvent(
     """
@@ -30,4 +30,5 @@ input CreateGcalEventInput {
   startTimestamp: Int!
   endTimestamp: Int!
   inviteTeam: Boolean!
+  timeZone: String!
 }

@@ -37,6 +37,10 @@ const CreateGcalEventInput = new GraphQLInputObjectType({
     inviteTeam: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'Whether the users in the team should be invited in gcal'
+    },
+    timeZone: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The timeZone of the meeting'
     }
   })
 })
@@ -49,6 +53,7 @@ export type CreateGcalEventInputType = {
   startTimestamp: number
   endTimestamp: number
   inviteTeam: boolean
+  timeZone: string
 }
 
 export default CreateGcalEventInput

@@ -79,7 +79,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     `,
     viewerRef
   )
-  const hasGcalFlag = viewer.featureFlags?.gcal
+  const hasGcalFlag = viewer.featureFlags.gcal
 
   const teams = useFragment(
     graphql`
@@ -138,7 +138,6 @@ const ActivityDetailsSidebar = (props: Props) => {
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
-  console.log('🚀 ~ start:', start)
   const [end, setEnd] = useState(endOfNextHour)
   const [inviteTeam, setInviteTeam] = useState(true)
   const {fields, onChange} = useForm({
@@ -176,6 +175,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         const endTimestamp = end.unix()
         const title = fields.title.value
         const description = fields.description.value
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
         const variables = {
           input: {
             title,
@@ -184,7 +184,8 @@ const ActivityDetailsSidebar = (props: Props) => {
             startTimestamp,
             endTimestamp,
             inviteTeam: true,
-            meetingId
+            meetingId,
+            timeZone
           }
         } as const
         CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
@@ -328,6 +329,11 @@ const ActivityDetailsSidebar = (props: Props) => {
               <div className='flex grow flex-col justify-end gap-2'>
                 {error && <StyledError>{error.message}</StyledError>}
                 <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                {hasGcalFlag && (
+                  <SecondaryButton onClick={toggleModal} waiting={submitting} className='h-14'>
+                    <div className='text-lg'>Schedule</div>
+                  </SecondaryButton>
+                )}
                 <FlatPrimaryButton
                   onClick={() => handleStartActivity(false)}
                   waiting={submitting}
@@ -341,17 +347,6 @@ const ActivityDetailsSidebar = (props: Props) => {
           {selectedTemplate.type === 'poker' && (
             <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
           )}
-          <div className='flex grow flex-col justify-end gap-2'>
-            <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-            {hasGcalFlag && (
-              <SecondaryButton onClick={toggleModal} waiting={submitting} className='h-14'>
-                <div className='text-lg'>Schedule</div>
-              </SecondaryButton>
-            )}
-            <FlatPrimaryButton onClick={() => handleStartActivity(false)} className='h-14'>
-              <div className='text-lg'>Start Activity</div>
-            </FlatPrimaryButton>
-          </div>
         </div>
       </div>
       {modalPortal(

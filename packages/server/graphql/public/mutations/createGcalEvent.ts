@@ -13,7 +13,18 @@ const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker)
 
 const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
   _source,
-  {input: {teamId, meetingId, startTimestamp, endTimestamp, title, description, inviteTeam}},
+  {
+    input: {
+      teamId,
+      meetingId,
+      startTimestamp,
+      endTimestamp,
+      title,
+      description,
+      inviteTeam,
+      timeZone
+    }
+  },
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
@@ -33,11 +44,10 @@ const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
   }
   const CLIENT_ID = process.env.GCAL_CLIENT_ID
   const CLIENT_SECRET = process.env.GCAL_CLIENT_SECRET
-  const REDIRECT_URI = 'http://localhost:3000/'
+  const REDIRECT_URI = appOrigin
 
   const startDateTime = new Date(startTimestamp * 1000).toISOString()
   const endDateTime = new Date(endTimestamp * 1000).toISOString()
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
   oauth2Client.setCredentials(hardcodedToken)
@@ -47,6 +57,8 @@ const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
   const attendees = inviteTeam ? await getTeamMemberEmails(teamId, dataLoader) : [viewerEmail]
   const attendeesWithEmailObjects = attendees.map((email) => ({email}))
 
+  const oneDayInMins = 24 * 60
+  const tenMins = 10
   const event = {
     summary: title,
     location: meetingUrl,
@@ -63,26 +75,21 @@ const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
     reminders: {
       useDefault: false,
       overrides: [
-        {method: 'email', minutes: 24 * 60},
-        {method: 'popup', minutes: 10}
+        {method: 'email', minutes: oneDayInMins},
+        {method: 'popup', minutes: tenMins}
       ]
     }
   }
 
-  try {
-    const createdEvent = await calendar.events.insert({
-      calendarId: 'primary',
-      requestBody: event
-    })
-    const gcalLink = createdEvent.data.htmlLink
-    if (!gcalLink) {
-      return standardError(new Error('Could not create event'), {userId: viewerId})
-    }
-    return {gcalLink}
-  } catch (error) {
-    console.error('Error creating event:', error)
-    return error
+  const createdEvent = await calendar.events.insert({
+    calendarId: 'primary',
+    requestBody: event
+  })
+  const gcalLink = createdEvent.data.htmlLink
+  if (!gcalLink) {
+    return standardError(new Error('Could not create event'), {userId: viewerId})
   }
+  return {gcalLink}
 }
 
 export default createGcalEvent
