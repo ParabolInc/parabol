@@ -120,7 +120,7 @@ const BottomControlBarReady = (props: Props) => {
     }
   )
   const readyCount = localStage.readyCount || 0
-  const isOnlyViewer = activeCount === 1 && connectedMeetingMembers[0]!.userId === viewerId
+  const isOnlyViewer = activeCount === 1 // viewer is the only active meeting member
   const progress = isOnlyViewer || isPoker ? 1.0 : readyCount / (activeCount - 1)
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
   const isConfirmRequired =
