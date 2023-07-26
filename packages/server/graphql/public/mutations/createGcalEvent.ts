@@ -35,6 +35,7 @@ const createGcalEvent: MutationResolvers['createGcalEvent'] = async (
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {email: viewerEmail} = viewer
 
+  // TODO: remove hardcoded token and use viewer's token
   const hardcodedToken = {
     access_token: process.env.GCAL_ACCESS_TOKEN,
     refresh_token: process.env.GCAL_REFRESH_TOKEN,

@@ -58,13 +58,13 @@ interface Props {
 
 const getMeetingIdFromResponse = (res: StartMeetingResponse) => {
   if ('startRetrospective' in res) {
-    return res.startRetrospective?.meeting?.id
+    return res.startRetrospective.meeting?.id
   } else if ('startSprintPoker' in res) {
-    return res.startSprintPoker?.meeting?.id
+    return res.startSprintPoker.meeting?.id
   } else if ('startTeamPrompt' in res) {
-    return res.startTeamPrompt?.meeting?.id
+    return res.startTeamPrompt.meeting?.id
   } else if ('startCheckIn' in res) {
-    return res.startCheckIn?.meeting?.id
+    return res.startCheckIn.meeting?.id
   }
   return null
 }
