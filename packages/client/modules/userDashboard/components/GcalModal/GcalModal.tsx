@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import dayjs, {Dayjs} from 'dayjs'
+import dayjs from 'dayjs'
 import React, {useState} from 'react'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'

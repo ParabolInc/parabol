@@ -3,9 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
+import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
-import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import {ActivityDetailsSidebar_viewer$key} from '~/__generated__/ActivityDetailsSidebar_viewer.graphql'
@@ -37,6 +37,15 @@ import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 import {CreateGcalEventInput} from '../../__generated__/CreateGcalEventMutation.graphql'
+import {StartSprintPokerMutation$data} from '../../__generated__/StartSprintPokerMutation.graphql'
+import {StartTeamPromptMutation$data} from '../../__generated__/StartTeamPromptMutation.graphql'
+import {StartCheckInMutation$data} from '../../__generated__/StartCheckInMutation.graphql'
+
+type StartMeetingResponse =
+  | StartRetrospectiveMutation$data
+  | StartSprintPokerMutation$data
+  | StartTeamPromptMutation$data
+  | StartCheckInMutation$data
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -45,6 +54,19 @@ interface Props {
   isOpen: boolean
   preferredTeamId: string | null
   viewerRef: ActivityDetailsSidebar_viewer$key
+}
+
+const getMeetingIdFromResponse = (res: StartMeetingResponse) => {
+  if ('startRetrospective' in res) {
+    return res.startRetrospective?.meeting?.id
+  } else if ('startSprintPoker' in res) {
+    return res.startSprintPoker?.meeting?.id
+  } else if ('startTeamPrompt' in res) {
+    return res.startTeamPrompt?.meeting?.id
+  } else if ('startCheckIn' in res) {
+    return res.startCheckIn?.meeting?.id
+  }
+  return null
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
@@ -106,6 +128,10 @@ const ActivityDetailsSidebar = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
+  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
+    name: '',
+    rrule: null
+  })
 
   const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
 
@@ -129,9 +155,23 @@ const ActivityDetailsSidebar = (props: Props) => {
     id: 'createGcalEventModal'
   })
 
-  const handleStartActivity = () => {
+  const handleStartActivity = (gcalInput?: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>) => {
     if (submitting) return
     submitMutation()
+    const handleCreateGcalEvent = (res: StartMeetingResponse) => {
+      const meetingId = getMeetingIdFromResponse(res)
+      if (!meetingId || !gcalInput) return
+      const variables = {
+        input: {
+          ...gcalInput,
+          teamId: selectedTeam.id,
+          meetingId
+        }
+      }
+      CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
+      onCompleted()
+    }
+    const handleCompleted = gcalInput ? handleCreateGcalEvent : onCompleted
     if (type === 'teamPrompt') {
       StartTeamPromptMutation(
         atmosphere,
@@ -142,10 +182,14 @@ const ActivityDetailsSidebar = (props: Props) => {
             name: recurrenceSettings.name
           }
         },
-        {history, onError, onCompleted}
+        {history, onError, onCompleted: handleCompleted}
       )
     } else if (type === 'action') {
-      StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
+      StartCheckInMutation(
+        atmosphere,
+        {teamId: selectedTeam.id},
+        {history, onError, onCompleted: handleCompleted}
+      )
     } else {
       SelectTemplateMutation(
         atmosphere,
@@ -156,13 +200,13 @@ const ActivityDetailsSidebar = (props: Props) => {
               StartRetrospectiveMutation(
                 atmosphere,
                 {teamId: selectedTeam.id},
-                {history, onError, onCompleted}
+                {history, onError, onCompleted: handleCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
                 {teamId: selectedTeam.id},
-                {history, onError, onCompleted}
+                {history, onError, onCompleted: handleCompleted}
               )
             }
           },
@@ -171,11 +215,6 @@ const ActivityDetailsSidebar = (props: Props) => {
       )
     }
   }
-
-  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
-    name: '',
-    rrule: null
-  })
 
   const handleShareToOrg = () => {
     selectedTemplate &&
@@ -186,45 +225,11 @@ const ActivityDetailsSidebar = (props: Props) => {
       )
   }
 
-  const handleCreateGcalEvent = (gcalInput: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>) => {
+  const handleStartActivityWithGcalEvent = (
+    gcalInput: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>
+  ) => {
     toggleModal()
-    const handleCompletedRetro = (res: StartRetrospectiveMutation$data) => {
-      const meetingId = res.startRetrospective?.meeting?.id
-      if (!meetingId) return
-
-      const variables = {
-        input: {
-          ...gcalInput,
-          teamId: selectedTeam.id,
-          meetingId
-        }
-      }
-      CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
-    }
-
-    SelectTemplateMutation(
-      atmosphere,
-      {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
-      {
-        onCompleted: () => {
-          if (type === 'retrospective') {
-            const handleOnComplete = gcalInput ? handleCompletedRetro : onCompleted
-            StartRetrospectiveMutation(
-              atmosphere,
-              {teamId: selectedTeam.id},
-              {history, onError, onCompleted: handleOnComplete}
-            )
-          } else if (type === 'poker') {
-            StartSprintPokerMutation(
-              atmosphere,
-              {teamId: selectedTeam.id},
-              {history, onError, onCompleted}
-            )
-          }
-        },
-        onError
-      }
-    )
+    handleStartActivity(gcalInput)
   }
 
   const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
@@ -326,7 +331,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                   </SecondaryButton>
                 )}
                 <FlatPrimaryButton
-                  onClick={handleStartActivity}
+                  onClick={() => handleStartActivity()}
                   waiting={submitting}
                   className='h-14'
                 >
@@ -341,7 +346,10 @@ const ActivityDetailsSidebar = (props: Props) => {
         </div>
       </div>
       {modalPortal(
-        <GcalModal closeModal={toggleModal} handleCreateGcalEvent={handleCreateGcalEvent} />
+        <GcalModal
+          closeModal={toggleModal}
+          handleCreateGcalEvent={handleStartActivityWithGcalEvent}
+        />
       )}
     </>
   )
