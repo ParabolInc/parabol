@@ -340,9 +340,6 @@ const ActivityDetailsSidebar = (props: Props) => {
               </div>
             </>
           )}
-          {selectedTemplate.type === 'poker' && (
-            <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
-          )}
         </div>
       </div>
       {modalPortal(
