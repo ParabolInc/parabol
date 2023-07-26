@@ -44,7 +44,7 @@ module.exports = ({isDeploy, isStats}) => ({
   },
   output: {
     path: buildPath,
-    publicPath: '/static/build/',
+    publicPath: '/static/',
     filename: '[name]_[contenthash].js',
     chunkFilename: '[name]_[contenthash].js'
   },

@@ -11,7 +11,6 @@ const pushClientAssetsToCDN = async () => {
     console.log('⛅️ Using Local File Store for client assets. Skipping...')
     return
   }
-  // rewrite serviceWorker to use a deploy-specific CDN
 
   const dirEnts = await fs.promises.readdir(localClientAssetsDir, {withFileTypes: true})
   await Promise.all(

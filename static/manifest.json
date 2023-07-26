@@ -3,12 +3,12 @@
   "name": "Parabol",
   "icons": [
     {
-      "src": "/static/build/mark-cropped-192.png",
+      "src": "/static/mark-cropped-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/static/build/mark-cropped-512.png",
+      "src": "/static/mark-cropped-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

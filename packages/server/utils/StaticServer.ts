@@ -2,7 +2,6 @@ import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
 import {brotliCompressSync} from 'zlib'
-import PROD from '../PROD'
 import isCompressible from './isCompressible'
 class StaticFileMeta {
   mtime: string
@@ -20,7 +19,7 @@ class StaticFileMeta {
     this.type = mime.types[ext] ?? 'application/octet-stream'
     if (cacheFile) {
       this.file = fs.readFileSync(pathname)
-      if (PROD && isCompressible(pathname)) {
+      if (__PRODUCTION__ && isCompressible(pathname)) {
         this.brotliFile = brotliCompressSync(this.file)
       }
     }
@@ -76,7 +75,7 @@ export default class StaticServer {
     if (existingMeta) return existingMeta
     const pathname = this.pathnames[filename]
     if (!pathname) return false
-    const cacheFile = !PROD || this.cachedFileSet.has(filename)
+    const cacheFile = true
     return (this.meta[filename] = new StaticFileMeta(pathname, cacheFile))
   }
 }
