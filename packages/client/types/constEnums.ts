@@ -521,8 +521,3 @@ export const enum EmptyMeetingViewMessage {
   NO_ACTIVE_MEETINGS_ON_THE_TEAM = `Looks like you have no upcoming meetings on this team.`,
   NO_SEARCH_RESULTS_ON_THE_TEAM = `Sorry, we could not find any meetings that matched with your query on this team.`
 }
-
-export const enum OpenAIMagicWords {
-  NO_SUMMARY_PROMPT_INSTRUCTION_WORDS = 'No',
-  NO_SUMMARY_RESPONSE = "Sorry we can't provide a summary"
-}

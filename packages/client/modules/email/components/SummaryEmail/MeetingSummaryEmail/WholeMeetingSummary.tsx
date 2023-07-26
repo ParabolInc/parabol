@@ -4,7 +4,6 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import WholeMeetingSummaryLoading from './WholeMeetingSummaryLoading'
 import WholeMeetingSummaryResult from './WholeMeetingSummaryResult'
-import {OpenAIMagicWords} from '../../../../../types/constEnums'
 
 interface Props {
   meetingRef: WholeMeetingSummary_meeting$key
@@ -44,10 +43,7 @@ const WholeMeetingSummary = (props: Props) => {
   const {stages} = discussPhase ?? {}
   const hasTopicSummary = reflectionGroups.some((group) => group.summary)
   const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
-  const hasOpenAISummary =
-    (hasTopicSummary || hasDiscussionSummary) &&
-    wholeMeetingSummary &&
-    wholeMeetingSummary !== OpenAIMagicWords.NO_SUMMARY_RESPONSE
+  const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
   if (!hasOpenAISummary) return null
   if (hasOpenAISummary && !wholeMeetingSummary) return <WholeMeetingSummaryLoading />
   return <WholeMeetingSummaryResult meetingRef={meeting} />

@@ -1,11 +1,5 @@
 import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
-import {OpenAIMagicWords} from '../../client/types/constEnums'
-
-const NO_SUMMARY_REGEX = new RegExp(
-  `^${OpenAIMagicWords.NO_SUMMARY_PROMPT_INSTRUCTION_WORDS}\.*$`,
-  'i'
-)
 import Reflection from '../database/types/Reflection'
 
 class OpenAIServerManager {
@@ -26,21 +20,21 @@ class OpenAIServerManager {
   async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
     const textStr = Array.isArray(text) ? text.join('\n') : text
+    const location = summaryLocation ?? 'retro meeting'
+    const prompt = `Below is a newline delimited text from a ${location}.
+    Summarize the text for a second-grade student in one or two sentences.
+    When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
+
+    Text: """
+    ${textStr}
+    """`
     try {
-      const location = summaryLocation ?? 'retro meeting'
       const response = await this.openAIApi.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'user',
-            content: `Below is a newline delimited text from a ${location}.
-            Summarize the text for a second-grade student in one or two sentences.
-            When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
-            If you can't provide a summary, simply write the word "${OpenAIMagicWords.NO_SUMMARY_PROMPT_INSTRUCTION_WORDS}".
-
-            Text: """
-            ${textStr}
-            """`
+            content: prompt
           }
         ],
         temperature: 0.7,
@@ -49,9 +43,7 @@ class OpenAIServerManager {
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      const answer = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
-      console.log(answer)
-      return NO_SUMMARY_REGEX.test(answer) ? OpenAIMagicWords.NO_SUMMARY_RESPONSE : answer
+      return (response.data.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
