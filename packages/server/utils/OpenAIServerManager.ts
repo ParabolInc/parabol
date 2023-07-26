@@ -22,7 +22,7 @@ class OpenAIServerManager {
     const textStr = Array.isArray(text) ? text.join('\n') : text
     const location = summaryLocation ?? 'retro meeting'
     const prompt = `Below is a newline delimited text from a ${location}.
-    Summarize the text for a second-grade student in one or two sentences.
+    Summarize the text for the meeting facilitator in one or two sentences.
     When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
 
     Text: """
