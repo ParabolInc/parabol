@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Dayjs} from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import React, {useState} from 'react'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -11,6 +11,9 @@ import Checkbox from '../../../../components/Checkbox'
 import StyledError from '../../../../components/StyledError'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import {Close} from '@mui/icons-material'
+import {CreateGcalEventInput} from '../../../../__generated__/CreateGcalEventMutation.graphql'
+import useForm from '../../../../hooks/useForm'
+import Legitity from '../../../../validation/Legitity'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -51,53 +54,60 @@ const StyledCloseButton = styled(PlainButton)({
 })
 
 const ErrorMessage = styled(StyledError)({
-  padding: '0 8px',
-  textAlign: 'right'
+  textAlign: 'left',
+  paddingBottom: 8
 })
 
+const validateTitle = (title: string) => {
+  return new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
+}
+
 interface Props {
-  handleCreateGcalEvent: () => void
-  setStart: (start: Dayjs) => void
-  setEnd: (end: Dayjs) => void
-  start: Dayjs
-  inviteTeam: boolean
-  setInviteTeam: (inviteTeam: boolean) => void
-  end: Dayjs
-  fields: {
-    title: {
-      value: string
-    }
-    description: {
-      value: string
-    }
-  }
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleCreateGcalEvent: (
+    CreateGcalEventInput: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>
+  ) => void
   closeModal: () => void
 }
 
 const GcalModal = (props: Props) => {
-  const {
-    handleCreateGcalEvent,
-    inviteTeam,
-    closeModal,
-    setInviteTeam,
-    onChange,
-    fields,
-    start,
-    end,
-    setStart,
-    setEnd
-  } = props
+  const {handleCreateGcalEvent, closeModal} = props
 
-  const [errorMsg, setErrorMsg] = useState<null | string>(null)
+  const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
+  const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
+  const [start, setStart] = useState(startOfNextHour)
+  const [end, setEnd] = useState(endOfNextHour)
+  const [inviteTeam, setInviteTeam] = useState(true)
+
+  const {fields, onChange, validateField} = useForm({
+    title: {
+      getDefault: () => '',
+      validate: validateTitle
+    },
+    description: {
+      getDefault: () => ''
+    }
+  })
 
   const handleClick = () => {
-    if (!fields.title.value) {
-      setErrorMsg('Please enter the name of your meeting')
-      return
+    validateField('title')
+    if (!fields.title.error) return
+    const startTimestamp = start.unix()
+    const endTimestamp = end.unix()
+    const title = fields.title.value
+    const description = fields.description.value
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const input = {
+      title,
+      description,
+      startTimestamp,
+      endTimestamp,
+      inviteTeam,
+      timeZone
     }
-    handleCreateGcalEvent()
+    handleCreateGcalEvent(input)
   }
+  console.log('🚀 ~ fields:', fields)
+  const titleErr = fields.title.error
 
   return (
     <StyledDialogContainer>
@@ -118,8 +128,10 @@ const GcalModal = (props: Props) => {
             defaultValue={fields.title.value}
             onChange={onChange}
             name='title'
-            placeholder='Please enter the name of your meeting'
+            placeholder='Enter the name of your meeting'
           />
+          {titleErr && <ErrorMessage>{titleErr}</ErrorMessage>}
+
           <StyledInput
             maxLength={100}
             name='description'
@@ -138,7 +150,6 @@ const GcalModal = (props: Props) => {
               Send a Google Calendar invite to my team members
             </label>
           </div>
-          {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
         </div>
         <Wrapper>
           <PrimaryButton size='medium' onClick={handleClick}>

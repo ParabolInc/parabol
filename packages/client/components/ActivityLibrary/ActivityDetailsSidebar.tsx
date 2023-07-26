@@ -22,9 +22,6 @@ import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
 import CreateGcalEventMutation from '../../mutations/CreateGcalEventMutation'
 import useModal from '../../hooks/useModal'
-import useForm from '../../hooks/useForm'
-import dayjs from 'dayjs'
-import Legitity from '../../validation/Legitity'
 import {StartRetrospectiveMutation$data} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
@@ -39,10 +36,7 @@ import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeeting
 import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
-
-const validateTitle = (title: string) => {
-  return new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
-}
+import {CreateGcalEventInput} from '../../__generated__/CreateGcalEventMutation.graphql'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -132,25 +126,10 @@ const ActivityDetailsSidebar = (props: Props) => {
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
   const {togglePortal: toggleModal, modalPortal} = useModal({
-    id: 'createGcalEventModal',
-    noClose: true
-  })
-  const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
-  const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
-  const [start, setStart] = useState(startOfNextHour)
-  const [end, setEnd] = useState(endOfNextHour)
-  const [inviteTeam, setInviteTeam] = useState(true)
-  const {fields, onChange} = useForm({
-    title: {
-      getDefault: () => '',
-      validate: validateTitle
-    },
-    description: {
-      getDefault: () => ''
-    }
+    id: 'createGcalEventModal'
   })
 
-  const handleStartActivity = (scheduleGcalEvent?: boolean) => {
+  const handleStartActivity = () => {
     if (submitting) return
     submitMutation()
     if (type === 'teamPrompt') {
@@ -168,40 +147,16 @@ const ActivityDetailsSidebar = (props: Props) => {
     } else if (type === 'action') {
       StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
     } else {
-      const handleCompletedRetro = (res: StartRetrospectiveMutation$data) => {
-        const meetingId = res.startRetrospective?.meeting?.id
-        if (!meetingId) return
-        const startTimestamp = start.unix()
-        const endTimestamp = end.unix()
-        const title = fields.title.value
-        const description = fields.description.value
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-        const variables = {
-          input: {
-            title,
-            teamId: selectedTeam.id,
-            description,
-            startTimestamp,
-            endTimestamp,
-            inviteTeam: true,
-            meetingId,
-            timeZone
-          }
-        } as const
-        CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
-      }
-
       SelectTemplateMutation(
         atmosphere,
         {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
         {
           onCompleted: () => {
             if (type === 'retrospective') {
-              const handleOnComplete = scheduleGcalEvent ? handleCompletedRetro : onCompleted
               StartRetrospectiveMutation(
                 atmosphere,
                 {teamId: selectedTeam.id},
-                {history, onError, onCompleted: handleOnComplete}
+                {history, onError, onCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
@@ -231,9 +186,45 @@ const ActivityDetailsSidebar = (props: Props) => {
       )
   }
 
-  const handleCreateGcalEvent = () => {
+  const handleCreateGcalEvent = (gcalInput: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>) => {
     toggleModal()
-    handleStartActivity(true)
+    const handleCompletedRetro = (res: StartRetrospectiveMutation$data) => {
+      const meetingId = res.startRetrospective?.meeting?.id
+      if (!meetingId) return
+
+      const variables = {
+        input: {
+          ...gcalInput,
+          teamId: selectedTeam.id,
+          meetingId
+        }
+      }
+      CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
+    }
+
+    SelectTemplateMutation(
+      atmosphere,
+      {selectedTemplateId: selectedTemplate.id, teamId: selectedTeam.id},
+      {
+        onCompleted: () => {
+          if (type === 'retrospective') {
+            const handleOnComplete = gcalInput ? handleCompletedRetro : onCompleted
+            StartRetrospectiveMutation(
+              atmosphere,
+              {teamId: selectedTeam.id},
+              {history, onError, onCompleted: handleOnComplete}
+            )
+          } else if (type === 'poker') {
+            StartSprintPokerMutation(
+              atmosphere,
+              {teamId: selectedTeam.id},
+              {history, onError, onCompleted}
+            )
+          }
+        },
+        onError
+      }
+    )
   }
 
   const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
@@ -335,7 +326,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                   </SecondaryButton>
                 )}
                 <FlatPrimaryButton
-                  onClick={() => handleStartActivity(false)}
+                  onClick={handleStartActivity}
                   waiting={submitting}
                   className='h-14'
                 >
@@ -350,18 +341,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         </div>
       </div>
       {modalPortal(
-        <GcalModal
-          fields={fields}
-          onChange={onChange}
-          setStart={setStart}
-          setEnd={setEnd}
-          start={start}
-          inviteTeam={inviteTeam}
-          setInviteTeam={setInviteTeam}
-          end={end}
-          closeModal={toggleModal}
-          handleCreateGcalEvent={handleCreateGcalEvent}
-        />
+        <GcalModal closeModal={toggleModal} handleCreateGcalEvent={handleCreateGcalEvent} />
       )}
     </>
   )

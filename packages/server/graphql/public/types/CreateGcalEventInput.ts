@@ -23,7 +23,7 @@ const CreateGcalEventInput = new GraphQLInputObjectType({
       description: 'The title of the meeting'
     },
     description: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'The description of the meeting'
     },
     startTimestamp: {

@@ -26,7 +26,7 @@ input CreateGcalEventInput {
   meetingId: ID!
   teamId: ID!
   title: String!
-  description: String!
+  description: String
   startTimestamp: Int!
   endTimestamp: Int!
   inviteTeam: Boolean!
