@@ -19,10 +19,11 @@ const generateStandupMeetingSummary = async (
 
   if (!isAISummaryAccessible) return
   const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
-  const manager = new OpenAIServerManager()
 
   const contentToSummarize = responses.map((response) => response.plaintextContent)
   if (contentToSummarize.length === 0) return
+
+  const manager = new OpenAIServerManager()
   const summary = await manager.getStandupSummary(contentToSummarize, meeting.meetingPrompt)
   if (!summary) return
   return summary

@@ -22,7 +22,7 @@ class OpenAIServerManager {
     // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM
     // can include that in the response, e.g. "James is working on AI Summaries" vs. "Someone is
     // working on AI Summaries".
-    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the repsonses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
+    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the responses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
 
     Desired format:
     * <theme title>: <theme summary>

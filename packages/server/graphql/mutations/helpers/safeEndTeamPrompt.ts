@@ -15,7 +15,7 @@ import updateTeamInsights from './updateTeamInsights'
 import generateStandupMeetingSummary from './generateStandupMeetingSummary'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
-const asyncFinishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
+const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
   const {dataLoader} = context
   const r = await getRethink()
 
@@ -107,7 +107,7 @@ const safeEndTeamPrompt = async ({
   )
   const timelineEventId = events[0]!.id
   await r.table('TimelineEvent').insert(events).run()
-  asyncFinishTeamPrompt(meeting, context)
+  finishTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
   checkTeamsLimit(team.orgId, dataLoader)
   dataLoader.get('newMeetings').clear(meetingId)
