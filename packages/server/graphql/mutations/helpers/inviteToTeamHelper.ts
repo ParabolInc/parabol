@@ -26,16 +26,26 @@ const randomBytes = util.promisify(crypto.randomBytes)
 const getInviteTrustScore = async (
   userId: string,
   teamId: string,
+  inviteeEmails: string[],
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
   // hardcoded list of trouble domains. we can move to a DB table later if needed
-  const untrustedDomains = ['tempmail.cn']
+  const untrustedDomains = ['tempmail.cn', 'qq.com']
+
+  // do not trust inviters from untrusted domains
   const user = await dataLoader.get('users').loadNonNull(userId)
   const {email} = user
   const userDomain = getDomainFromEmail(email).toLowerCase()
   const isUntrustedDomain = untrustedDomains.includes(userDomain)
   if (isUntrustedDomain) return 0.05
+
+  // do not trust invites going to invitees from untrusted domains
+  const inviteeDomains = inviteeEmails.map((inviteeEmail) =>
+    getDomainFromEmail(inviteeEmail).toLowerCase()
+  )
+  if (inviteeDomains.filter((domain: string) => untrustedDomains.includes(domain))) return 0.05
+
   const [total, pending] = await Promise.all([
     r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
     r
@@ -66,7 +76,7 @@ const inviteToTeamHelper = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const trustScore = await getInviteTrustScore(viewerId, teamId, dataLoader)
+  const trustScore = await getInviteTrustScore(viewerId, teamId, invitees, dataLoader)
   if (trustScore < 0.15)
     return {error: {message: 'Cannot invite by email. Try using invite link'}, invitees: []}
   const [users, team, inviter] = await Promise.all([
