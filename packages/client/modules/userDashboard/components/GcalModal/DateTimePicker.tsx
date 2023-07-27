@@ -42,6 +42,7 @@ const DateTimePicker = (props: Props) => {
             disablePast
             minDate={dayjs().add(1, 'hour')}
             onChange={handleChangeStart}
+            format='LLL'
             slotProps={{
               inputAdornment: {
                 style: {
@@ -58,6 +59,7 @@ const DateTimePicker = (props: Props) => {
             disablePast
             minDate={dayjs().add(1, 'hour')}
             onChange={handleChangeEnd}
+            format='LLL'
             slotProps={{
               inputAdornment: {
                 style: {
