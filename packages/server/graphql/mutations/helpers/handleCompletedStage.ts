@@ -101,7 +101,7 @@ const handleCompletedRetrospectiveStage = async (
     // create new threads
     const {discussPhaseStages} = data
     const {id: meetingId, teamId} = meeting
-    addRecallBot(teamId, dataLoader)
+    addRecallBot(teamId, undefined, dataLoader)
     const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
       meetingId,

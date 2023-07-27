@@ -1,7 +1,5 @@
-import getRethink from '../../../database/rethinkDriver'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import {isTeamMember} from '../../../utils/authorization'
-import RecallAIServerManager from '../../../utils/RecallAIServerManager'
+import addRecallBot from '../../mutations/helpers/addRecallBot'
 import {MutationResolvers} from '../resolverTypes'
 
 const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
@@ -12,16 +10,7 @@ const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
   if (!isTeamMember(authToken, teamId)) {
     return {error: {message: 'Not on team'}}
   }
-  const r = await getRethink()
-
-  const manager = new RecallAIServerManager()
-  const recallBotId = await manager.createBot(videoMeetingURL)
-
-  const settings = (await dataLoader
-    .get('meetingSettingsByType')
-    .load({teamId, meetingType: 'retrospective'})) as MeetingSettingsRetrospective
-  await r.table('MeetingSettings').get(settings.id).update({recallBotId, videoMeetingURL}).run()
-
+  await addRecallBot(teamId, videoMeetingURL, dataLoader)
   return true
 }
 
