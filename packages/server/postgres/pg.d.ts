@@ -278,10 +278,6 @@ export interface Team {
   updatedAt: Generated<Timestamp>
   lockMessageHTML: string | null
   qualAIMeetingsCount: Generated<number>
-  insightsUpdatedAt: Timestamp | null
-  mostUsedEmojis: Json | null
-  topRetroTemplates: Json | null
-  meetingEngagement: Json | null
 }
 
 export interface TeamMemberIntegrationAuth {
