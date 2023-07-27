@@ -118,7 +118,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
-  updateTeamInsights(teamId)
+  updateTeamInsights(teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}

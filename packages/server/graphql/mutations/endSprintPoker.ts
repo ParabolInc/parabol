@@ -110,7 +110,7 @@ export default {
       dataLoader.get('meetingTemplates').loadNonNull(templateId)
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
-    updateTeamInsights(teamId)
+    updateTeamInsights(teamId, dataLoader)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     if (!isKill) {

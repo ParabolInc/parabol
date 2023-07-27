@@ -2,10 +2,22 @@ import ms from 'ms'
 import {RValue} from 'rethinkdb-ts'
 import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
+import {DataLoaderWorker} from '../../graphql'
 
 const TEAM_INSIGHTS_PERIOD = ms('90 days')
+const MAX_NUMBER_OF_USED_EMOJIS = 3
+const MIN_NUMBER_OF_USED_EMOJIS = 2
+const MIN_EMOJI_COUNT = 5
 
-const collectTeamInsights = async (teamId: string) => {
+const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) => {
+  // check feature flag
+  // team is loaded anyways by the callers, so no harm in loading it here again for a more concise argument list
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const {orgId} = team
+  const organization = await dataLoader.get('organizations').load(orgId)
+  if (!organization?.featureFlags?.includes('teamInsights')) return
+
+  // actual update
   const r = await getRethink()
   const pg = getKysely()
   const now = new Date()
@@ -28,18 +40,19 @@ const collectTeamInsights = async (teamId: string) => {
 
   const mostUsedEmojis = Object.entries(allUsedEmojis)
     .map(([id, count]) => ({id, count}))
-    .filter(({count}) => count >= 5)
+    .filter(({count}) => count >= MIN_EMOJI_COUNT)
     .sort((a, b) => b.count - a.count)
-    .slice(0, 3)
+    .slice(0, MAX_NUMBER_OF_USED_EMOJIS)
 
   await pg
     .updateTable('Team')
     .set({
       insightsUpdatedAt: now,
-      mostUsedEmojis: mostUsedEmojis.length >= 2 ? JSON.stringify(mostUsedEmojis) : null
+      mostUsedEmojis:
+        mostUsedEmojis.length >= MIN_NUMBER_OF_USED_EMOJIS ? JSON.stringify(mostUsedEmojis) : null
     })
     .where('id', '=', teamId)
     .execute()
 }
 
-export default collectTeamInsights
+export default updateTeamInsights

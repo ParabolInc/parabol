@@ -230,7 +230,7 @@ export default {
     analytics.checkInEnd(completedCheckIn, meetingMembers)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     checkTeamsLimit(team.orgId, dataLoader)
-    updateTeamInsights(teamId)
+    updateTeamInsights(teamId, dataLoader)
 
     const events = teamMembers.map(
       (teamMember) =>

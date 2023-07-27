@@ -77,7 +77,7 @@ const safeEndTeamPrompt = async ({
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
   checkTeamsLimit(team.orgId, dataLoader)
-  updateTeamInsights(teamId)
+  updateTeamInsights(teamId, dataLoader)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
   dataLoader.get('newMeetings').clear(meetingId)
 
