@@ -265,7 +265,14 @@ const OrgPlans = (props: Props) => {
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
-      details: ['Everything in Team', 'SSO'],
+      details: [
+        'Everything in Team',
+        'Single Sign-On (SSO)',
+        'Annual Billing',
+        'Domain Whitelisting',
+        'Uptime Service Level Agreement (SLA)',
+        'On-Premises Hosting Option'
+      ],
       buttonStyle: getButtonStyle(tier, 'enterprise'),
       buttonLabel: getButtonLabel(tier, 'enterprise'),
       outlineColor: getActivePlan(tier, 'enterprise')
