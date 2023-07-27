@@ -14,5 +14,5 @@ type AddTranscriptionBotSuccess {
   """
   Whether the bot was successfully added
   """
-  success: Boolean!
+  meetingSettings: RetrospectiveMeetingSettings!
 }

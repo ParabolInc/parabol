@@ -25,6 +25,7 @@ const addRecallBot = async (
   if (!videoMeetingURL) return
   const recallBotId = await getBotId(videoMeetingURL)
   await r.table('MeetingSettings').get(settingsId).update({recallBotId, videoMeetingURL}).run()
+  return settingsId
 }
 
 export default addRecallBot

@@ -4,8 +4,12 @@ import {StandardMutation} from '../types/relayMutations'
 import {AddTranscriptionBotMutation as TAddTranscriptionBotMutation} from '../__generated__/AddTranscriptionBotMutation.graphql'
 
 graphql`
-  fragment AddTranscriptionBotMutation_team on AddTranscriptionBotSuccess {
-    successField
+  fragment AddTranscriptionBotMutation_settings on AddTranscriptionBotSuccess {
+    meetingSettings {
+      ... on RetrospectiveMeetingSettings {
+        videoMeetingURL
+      }
+    }
   }
 `
 
@@ -17,7 +21,7 @@ const mutation = graphql`
           message
         }
       }
-      ...AddTranscriptionBotMutation_team @relay(mask: false)
+      ...AddTranscriptionBotMutation_settings @relay(mask: false)
     }
   }
 `

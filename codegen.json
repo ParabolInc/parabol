@@ -86,6 +86,7 @@
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
+          "RetrospectiveMeetingSettings": "../../database/types/MeetingSettingsRetrospective#default",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
           "SetOrgUserRoleSuccess": "./types/SetOrgUserRoleSuccess#SetOrgUserRoleSuccessSource",

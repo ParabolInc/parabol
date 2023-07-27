@@ -1,4 +1,5 @@
 import {isTeamMember} from '../../../utils/authorization'
+import standardError from '../../../utils/standardError'
 import addRecallBot from '../../mutations/helpers/addRecallBot'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -8,10 +9,16 @@ const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
   {authToken, dataLoader}
 ) => {
   if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on team'}}
+    const error = new Error('Not on team')
+    return standardError(error)
   }
-  await addRecallBot(teamId, videoMeetingURL, dataLoader)
-  return true
+  const meetingSettingsId = await addRecallBot(teamId, videoMeetingURL, dataLoader)
+  if (!meetingSettingsId) {
+    const error = new Error('Unable to add transcription bot')
+    return standardError(error)
+  }
+
+  return {meetingSettingsId}
 }
 
 export default addTranscriptionBot
