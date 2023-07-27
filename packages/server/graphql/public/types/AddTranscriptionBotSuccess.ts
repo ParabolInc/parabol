@@ -10,7 +10,6 @@ const AddTranscriptionBotSuccess: AddTranscriptionBotSuccessResolvers = {
     const meetingSettings = (await dataLoader
       .get('meetingSettings')
       .load(meetingSettingsId)) as MeetingSettingsRetrospective
-    console.log('🚀 ~ meetingSettings:', meetingSettings)
     return meetingSettings
   }
 }

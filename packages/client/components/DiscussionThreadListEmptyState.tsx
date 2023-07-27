@@ -55,7 +55,10 @@ const StyledButton = styled(FlatButton)({
   fontWeight: 600,
   minWidth: 36,
   marginTop: 24,
-  width: '100%'
+  width: '100%',
+  ':hover': {
+    backgroundColor: PALETTE.SKY_600
+  }
 })
 
 const Wrapper = styled('div')({
