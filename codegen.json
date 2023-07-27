@@ -49,7 +49,6 @@
           "AutogroupSuccess": "./types/AutogroupSuccess#AutogroupSuccessSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
-          "CreateGcalEventSuccess": "./types/CreateGcalEventSuccess#CreateGcalEventSuccessSource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreateStripeSubscriptionSuccess": "./types/CreateStripeSubscriptionSuccess#CreateStripeSubscriptionSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
