@@ -44,7 +44,9 @@ const getInviteTrustScore = async (
   const inviteeDomains = inviteeEmails.map((inviteeEmail) =>
     getDomainFromEmail(inviteeEmail).toLowerCase()
   )
-  if (inviteeDomains.filter((domain: string) => untrustedDomains.includes(domain))) return 0.05
+  const overlapped =
+    inviteeDomains.filter((domain: string) => untrustedDomains.includes(domain)).length > 0
+  if (overlapped) return 0.05
 
   const [total, pending] = await Promise.all([
     r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
