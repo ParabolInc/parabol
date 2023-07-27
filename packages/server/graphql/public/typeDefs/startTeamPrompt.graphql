@@ -34,7 +34,7 @@ type StartTeamPromptSuccess {
   team: Team!
 }
 
-type CreateGcalEventInput {
+input CreateGcalEventInput {
   """
   The title of the event
   """
