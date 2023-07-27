@@ -5,9 +5,9 @@ export const getRedisSSL = () => {
   try {
     // optional env var, likely outside the app dir
     const REDIS_SSL_DIR = process.env.REDIS_SSL_DIR!
-    const ca = readFileSync(path.join(REDIS_SSL_DIR, 'root.crt'), 'ascii')
-    const key = readFileSync(path.join(REDIS_SSL_DIR, 'redis.key'), 'ascii')
-    const cert = readFileSync(path.join(REDIS_SSL_DIR, 'redis.crt'), 'ascii')
+    const ca = readFileSync(path.join(REDIS_SSL_DIR, 'ca.crt'), 'ascii')
+    const key = readFileSync(path.join(REDIS_SSL_DIR, 'tls.key'), 'ascii')
+    const cert = readFileSync(path.join(REDIS_SSL_DIR, 'tls.crt'), 'ascii')
     return {
       ca,
       key,
