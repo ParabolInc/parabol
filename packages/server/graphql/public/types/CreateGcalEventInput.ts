@@ -1,5 +1,4 @@
 import {
-  GraphQLID,
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLString,
@@ -10,14 +9,6 @@ import {
 const CreateGcalEventInput = new GraphQLInputObjectType({
   name: 'CreateGcalEventInput',
   fields: () => ({
-    meetingId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the meeting'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team'
-    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The title of the meeting'
@@ -46,8 +37,6 @@ const CreateGcalEventInput = new GraphQLInputObjectType({
 })
 
 export type CreateGcalEventInputType = {
-  meetingId: string
-  teamId: string
   title: string
   description: string
   startTimestamp: number

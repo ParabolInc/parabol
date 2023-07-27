@@ -155,23 +155,9 @@ const ActivityDetailsSidebar = (props: Props) => {
     id: 'createGcalEventModal'
   })
 
-  const handleStartActivity = (gcalInput?: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>) => {
+  const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
     submitMutation()
-    const handleCreateGcalEvent = (res: StartMeetingResponse) => {
-      const meetingId = getMeetingIdFromResponse(res)
-      if (!meetingId || !gcalInput) return
-      const variables = {
-        input: {
-          ...gcalInput,
-          teamId: selectedTeam.id,
-          meetingId
-        }
-      }
-      CreateGcalEventMutation(atmosphere, variables, {onError, onCompleted})
-      onCompleted()
-    }
-    const handleCompleted = gcalInput ? handleCreateGcalEvent : onCompleted
     if (type === 'teamPrompt') {
       StartTeamPromptMutation(
         atmosphere,
@@ -182,14 +168,10 @@ const ActivityDetailsSidebar = (props: Props) => {
             name: recurrenceSettings.name
           }
         },
-        {history, onError, onCompleted: handleCompleted}
+        {history, onError, onCompleted}
       )
     } else if (type === 'action') {
-      StartCheckInMutation(
-        atmosphere,
-        {teamId: selectedTeam.id},
-        {history, onError, onCompleted: handleCompleted}
-      )
+      StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
     } else {
       SelectTemplateMutation(
         atmosphere,
@@ -199,14 +181,14 @@ const ActivityDetailsSidebar = (props: Props) => {
             if (type === 'retrospective') {
               StartRetrospectiveMutation(
                 atmosphere,
-                {teamId: selectedTeam.id},
-                {history, onError, onCompleted: handleCompleted}
+                {teamId: selectedTeam.id, gcalInput},
+                {history, onError, onCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
                 {teamId: selectedTeam.id},
-                {history, onError, onCompleted: handleCompleted}
+                {history, onError, onCompleted}
               )
             }
           },
@@ -225,9 +207,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       )
   }
 
-  const handleStartActivityWithGcalEvent = (
-    gcalInput: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>
-  ) => {
+  const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
     toggleModal()
     handleStartActivity(gcalInput)
   }

@@ -23,8 +23,6 @@ type CreateGcalEventSuccess {
 }
 
 input CreateGcalEventInput {
-  meetingId: ID!
-  teamId: ID!
   title: String!
   description: String
   startTimestamp: Int!
