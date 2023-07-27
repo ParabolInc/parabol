@@ -20,9 +20,8 @@ import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
-import CreateGcalEventMutation from '../../mutations/CreateGcalEventMutation'
 import useModal from '../../hooks/useModal'
-import {StartRetrospectiveMutation$data} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
 import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
@@ -36,16 +35,6 @@ import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeeting
 import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
-import {CreateGcalEventInput} from '../../__generated__/CreateGcalEventMutation.graphql'
-import {StartSprintPokerMutation$data} from '../../__generated__/StartSprintPokerMutation.graphql'
-import {StartTeamPromptMutation$data} from '../../__generated__/StartTeamPromptMutation.graphql'
-import {StartCheckInMutation$data} from '../../__generated__/StartCheckInMutation.graphql'
-
-type StartMeetingResponse =
-  | StartRetrospectiveMutation$data
-  | StartSprintPokerMutation$data
-  | StartTeamPromptMutation$data
-  | StartCheckInMutation$data
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -54,19 +43,6 @@ interface Props {
   isOpen: boolean
   preferredTeamId: string | null
   viewerRef: ActivityDetailsSidebar_viewer$key
-}
-
-const getMeetingIdFromResponse = (res: StartMeetingResponse) => {
-  if ('startRetrospective' in res) {
-    return res.startRetrospective.meeting?.id
-  } else if ('startSprintPoker' in res) {
-    return res.startSprintPoker.meeting?.id
-  } else if ('startTeamPrompt' in res) {
-    return res.startTeamPrompt.meeting?.id
-  } else if ('startCheckIn' in res) {
-    return res.startCheckIn.meeting?.id
-  }
-  return null
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
@@ -203,6 +179,11 @@ const ActivityDetailsSidebar = (props: Props) => {
     }
   }
 
+  const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
+    toggleModal()
+    handleStartActivity(gcalInput)
+  }
+
   const handleShareToOrg = () => {
     selectedTemplate &&
       UpdateReflectTemplateScopeMutation(
@@ -210,11 +191,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
         {onError, onCompleted}
       )
-  }
-
-  const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
-    toggleModal()
-    handleStartActivity(gcalInput)
   }
 
   const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (

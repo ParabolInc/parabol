@@ -1,11 +1,9 @@
-import {getUserId} from '../../../utils/authorization'
-import {MutationResolvers} from '../resolverTypes'
 import {google} from 'googleapis'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import {DataLoaderWorker} from '../../graphql'
 import standardError from '../../../utils/standardError'
-import {CreateGcalEventInputType} from '../../public/types/CreateGcalEventInput'
+import {CreateGcalEventInput} from '../../public/resolverTypes'
 
 const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -13,7 +11,7 @@ const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker)
 }
 
 type Props = {
-  gcalInput?: CreateGcalEventInputType
+  gcalInput?: CreateGcalEventInput | null
   meetingId: string
   teamId: string
   viewerId: string

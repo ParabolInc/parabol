@@ -11,9 +11,9 @@ import Checkbox from '../../../../components/Checkbox'
 import StyledError from '../../../../components/StyledError'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import {Close} from '@mui/icons-material'
-import {CreateGcalEventInput} from '../../../../__generated__/CreateGcalEventMutation.graphql'
 import useForm from '../../../../hooks/useForm'
 import Legitity from '../../../../validation/Legitity'
+import {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -63,9 +63,7 @@ const validateTitle = (title: string) => {
 }
 
 interface Props {
-  handleCreateGcalEvent: (
-    CreateGcalEventInput: Omit<CreateGcalEventInput, 'teamId' | 'meetingId'>
-  ) => void
+  handleCreateGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
   closeModal: () => void
 }
 
