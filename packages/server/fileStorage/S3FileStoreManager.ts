@@ -11,13 +11,21 @@ export default class S3Manager extends FileStoreManager {
   private s3: S3Client
   constructor() {
     super()
-    const {AWS_S3_BUCKET, AWS_REGION, ENVIRONMENT} = process.env
+    const {CDN_BASE_URL, AWS_S3_BUCKET, AWS_REGION} = process.env
+    if (!CDN_BASE_URL || CDN_BASE_URL === 'key_CDN_BASE_URL') {
+      throw new Error('CDN_BASE_URL ENV VAR NOT SET')
+    }
+
     if (!AWS_S3_BUCKET) {
       throw new Error('AWS_S3_BUCKET ENV VAR NOT SET')
     }
-    if (!ENVIRONMENT) throw new Error('ENVIRONMENT ENV VAR NOT SET')
+    const baseUrl = new URL(CDN_BASE_URL.replace(/^\/+/, 'https://'))
+    const {hostname, pathname} = baseUrl
+    if (!hostname || !pathname) {
+      throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
+    }
 
-    this.envSubDir = ENVIRONMENT
+    this.envSubDir = pathname.replace(/^\//, '')
     this.bucket = AWS_S3_BUCKET
     this.s3 = new S3Client({
       region: AWS_REGION

@@ -121,6 +121,19 @@ module.exports = ({noDeps}) => ({
             ]
           },
           {
+            // manifest.json icons just need the file name, we'll prefix them with the CDN in preDeploy
+            test: /mark-cropped-\d+.png$/,
+            include: [path.resolve(PROJECT_ROOT, 'static/images/brand')],
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '[name].[ext]'
+                }
+              }
+            ]
+          },
+          {
             use: [
               {
                 loader: 'file-loader',

@@ -44,9 +44,10 @@ module.exports = ({isDeploy, isStats}) => ({
   },
   output: {
     path: buildPath,
-    publicPath: '/static/',
+    publicPath: 'auto',
     filename: '[name]_[contenthash].js',
-    chunkFilename: '[name]_[contenthash].js'
+    chunkFilename: '[name]_[contenthash].js',
+    crossOriginLoading: 'anonymous'
   },
   resolve: {
     alias: {
@@ -90,23 +91,17 @@ module.exports = ({isDeploy, isStats}) => ({
     new CopyPlugin({
       patterns: [
         {
-          from: path.join(PROJECT_ROOT, 'static/images/brand/mark-cropped-192.png')
-        },
-        {
-          from: path.join(PROJECT_ROOT, 'static/images/brand/mark-cropped-512.png')
-        },
-        {
-          from: path.join(PROJECT_ROOT, 'static/manifest.json')
-        },
-        {
           from: path.join(PROJECT_ROOT, 'static/favicon.ico')
         }
       ]
     }),
     new HtmlWebpackPlugin({
+      inject: false,
       filename: 'skeleton.html',
       template: path.join(PROJECT_ROOT, 'template.html'),
-      title: 'Free Online Retrospectives | Parabol'
+      title: 'Free Online Retrospectives | Parabol',
+      // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
+      publicPath: '__PUBLIC_PATH__'
     }),
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
