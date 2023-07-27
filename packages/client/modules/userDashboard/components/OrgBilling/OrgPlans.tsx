@@ -15,7 +15,7 @@ import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation
 import OrgStats from './OrgStats'
 import useModal from '../../../../hooks/useModal'
 import DowngradeModal from './DowngradeModal'
-import {TeamBenefits} from '../../../../utils/constants'
+import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import BaseButton from '../../../../components/BaseButton'
@@ -265,14 +265,7 @@ const OrgPlans = (props: Props) => {
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
-      details: [
-        'Everything in Team',
-        'Single Sign-On (SSO)',
-        'Annual Billing',
-        'Domain Whitelisting',
-        'Uptime Service Level Agreement (SLA)',
-        'On-Premises Hosting Option'
-      ],
+      details: ['Everything in Team', ...EnterpriseBenefits],
       buttonStyle: getButtonStyle(tier, 'enterprise'),
       buttonLabel: getButtonLabel(tier, 'enterprise'),
       outlineColor: getActivePlan(tier, 'enterprise')
