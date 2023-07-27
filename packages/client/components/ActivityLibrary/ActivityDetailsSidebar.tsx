@@ -166,12 +166,17 @@ const ActivityDetailsSidebar = (props: Props) => {
           recurrenceSettings: {
             rrule: recurrenceSettings.rrule?.toString(),
             name: recurrenceSettings.name
-          }
+          },
+          gcalInput
         },
         {history, onError, onCompleted}
       )
     } else if (type === 'action') {
-      StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
+      StartCheckInMutation(
+        atmosphere,
+        {teamId: selectedTeam.id, gcalInput},
+        {history, onError, onCompleted}
+      )
     } else {
       SelectTemplateMutation(
         atmosphere,
@@ -187,7 +192,7 @@ const ActivityDetailsSidebar = (props: Props) => {
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
-                {teamId: selectedTeam.id},
+                {teamId: selectedTeam.id, gcalInput},
                 {history, onError, onCompleted}
               )
             }
