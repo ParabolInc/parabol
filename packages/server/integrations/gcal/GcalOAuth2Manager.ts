@@ -11,6 +11,7 @@ export default class GCalOAuth2Manager extends OAuth2Manager {
       accessToken: string
       refreshToken: string
       scopes: string
+      expiresIn: number
     }>({
       grant_type: 'authorization_code',
       code,
@@ -21,8 +22,9 @@ export default class GCalOAuth2Manager extends OAuth2Manager {
   async refresh(refreshToken: string) {
     return this.fetchToken<{
       accessToken: string
+      scopes: string
+      refreshToken: string
       expiresIn: number
-      idToken: string
     }>({
       grant_type: 'refresh_token',
       refresh_token: refreshToken
