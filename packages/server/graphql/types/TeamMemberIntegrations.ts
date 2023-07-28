@@ -4,6 +4,7 @@ import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
 import AzureDevOpsIntegration from './AzureDevOpsIntegration'
+import GcalIntegration from './GcalIntegration'
 import GitHubIntegration from './GitHubIntegration'
 import GitLabIntegration from './GitLabIntegration'
 import JiraServerIntegration from './JiraServerIntegration'
@@ -31,6 +32,11 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
     jiraServer: {
       type: new GraphQLNonNull(JiraServerIntegration),
       description: 'All things associated with a Jira Server integration for a team member',
+      resolve: (source) => source
+    },
+    gcal: {
+      type: new GraphQLNonNull(GcalIntegration),
+      description: 'All things associated with a Gcal integration for a team member',
       resolve: (source) => source
     },
     github: {

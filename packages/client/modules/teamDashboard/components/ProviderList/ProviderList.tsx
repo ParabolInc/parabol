@@ -52,6 +52,7 @@ const query = graphql`
       ...SlackProviderRow_viewer
       ...AzureDevOpsProviderRow_viewer
       ...MSTeamsProviderRow_viewer
+      ...GcalProviderRow_viewer
 
       teamMember(teamId: $teamId) {
         integrations {
@@ -65,6 +66,13 @@ const query = graphql`
             }
             sharedProviders {
               id
+            }
+          }
+          gcal {
+            auth {
+              provider {
+                scope
+              }
             }
           }
           github {
@@ -167,7 +175,7 @@ const ProviderList = (props: Props) => {
     {
       name: 'Gcal Integration',
       connected: false, // TODO: implement oauth
-      component: <GcalProviderRow />,
+      component: <GcalProviderRow viewerRef={viewer} teamId={teamId} />,
       hidden: !allowGcal
     }
   ]
