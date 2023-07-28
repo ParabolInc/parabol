@@ -28,23 +28,22 @@ const createGcalEvent = async (props: Props) => {
   }
   const {startTimestamp, endTimestamp, title, description, inviteTeam, timeZone} = gcalInput
 
-  // TODO: remove hardcoded token and use viewer's token
-  const hardcodedToken = {
-    access_token: process.env.GCAL_ACCESS_TOKEN,
-    refresh_token: process.env.GCAL_REFRESH_TOKEN,
-    scope: 'https://www.googleapis.com/auth/calendar',
-    token_type: 'Bearer',
-    expiry_date: 1234567890
+  const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
+  if (!gcalAuth) {
+    return standardError(new Error('Could not retrieve Google Calendar auth'), {userId: viewerId})
   }
+  const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
+
   const CLIENT_ID = process.env.GCAL_CLIENT_ID
   const CLIENT_SECRET = process.env.GCAL_CLIENT_SECRET
   const REDIRECT_URI = appOrigin
 
   const startDateTime = new Date(startTimestamp * 1000).toISOString()
   const endDateTime = new Date(endTimestamp * 1000).toISOString()
+  const expiry_date = expiresAt ? expiresAt.getTime() : undefined
 
   const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-  oauth2Client.setCredentials(hardcodedToken)
+  oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
