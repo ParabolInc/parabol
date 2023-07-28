@@ -2,6 +2,7 @@ import {decode} from 'jsonwebtoken'
 import GoogleManager from 'parabol-client/utils/GoogleManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {stringify} from 'querystring'
+import {GCAL_OAUTH_ENDPOINT} from '../../client/utils/constants'
 import appOrigin from '../appOrigin'
 
 interface OAuth2Response {
@@ -44,7 +45,7 @@ export default class GoogleServerManager extends GoogleManager {
       redirect_uri: makeAppURL(appOrigin, 'auth/google')
     }
 
-    const uri = `https://oauth2.googleapis.com/token?${stringify(queryParams)}`
+    const uri = `${GCAL_OAUTH_ENDPOINT}?${stringify(queryParams)}`
 
     const tokenRes = await fetch(uri, {
       method: 'POST',

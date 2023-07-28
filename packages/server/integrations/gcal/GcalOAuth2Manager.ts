@@ -1,3 +1,4 @@
+import {GCAL_OAUTH_ENDPOINT} from '../../../client/utils/constants'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   OAuth2AuthorizationParams,
@@ -31,7 +32,7 @@ export default class GCalOAuth2Manager extends OAuth2Manager {
   protected async fetchToken<TSuccess>(
     partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ) {
-    const authUrl = 'https://oauth2.googleapis.com/token'
+    const authUrl = GCAL_OAUTH_ENDPOINT
     const searchParams = {
       client_id: this.clientId,
       client_secret: this.clientSecret,

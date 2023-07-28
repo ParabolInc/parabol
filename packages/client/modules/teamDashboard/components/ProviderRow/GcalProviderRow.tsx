@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import GcalProviderLogo from '../../../../components/GcalProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import ProviderRow from './ProviderRow'
 import GcalConfigMenu from '../../../../components/GcalConfigMenu'
@@ -48,7 +48,6 @@ const GcalProviderRow = (props: Props) => {
     `,
     viewerRef
   )
-  console.log('🚀 ~ viewer:', viewer)
   const {teamMember} = viewer
   const {integrations} = teamMember
   const {gcal} = integrations

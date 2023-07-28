@@ -85,7 +85,6 @@ const addTeamMemberIntegrationAuth = {
 
     // VALIDATION
     const {authStrategy, service, scope} = integrationProvider
-    console.log('🚀 ~ integrationProvider:', integrationProvider)
     if (scope === 'team') {
       if (teamId !== integrationProvider.teamId) {
         return {error: {message: 'teamId mismatch'}}
@@ -100,7 +99,6 @@ const addTeamMemberIntegrationAuth = {
       }
     }
 
-    console.log('🚀 ~ service:', service)
     let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined = undefined
     if (authStrategy === 'oauth2') {
       if (!oauthCodeOrPat || !redirectUri)
@@ -122,7 +120,6 @@ const addTeamMemberIntegrationAuth = {
         }
       }
       if (service === 'azureDevOps') {
-        // tokenMetadata = (await AzureDevOpsServerManager.init(oauthCodeOrPat, oauthVerifier)) as
         if (!oauthVerifier) {
           return {
             error: {message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'}
@@ -169,13 +166,6 @@ const addTeamMemberIntegrationAuth = {
     }
 
     // RESOLUTION
-    console.log('🚀 ~ tokenMetadata____:', {
-      tokenMetadata,
-      providerId: providerDbId,
-      service,
-      teamId,
-      userId: viewerId
-    })
     await upsertTeamMemberIntegrationAuth({
       ...tokenMetadata,
       providerId: providerDbId,

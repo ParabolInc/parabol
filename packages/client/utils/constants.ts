@@ -126,6 +126,7 @@ export const NEWLINE_REGEX = /\r\n?|\n/g
 export const GITHUB = 'GitHubIntegration'
 export const SLACK = 'SlackIntegration'
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
+export const GCAL_OAUTH_ENDPOINT = 'https://oauth2.googleapis.com/token'
 
 /* JavaScript specifics */
 export const MAX_INT = 2147483647
