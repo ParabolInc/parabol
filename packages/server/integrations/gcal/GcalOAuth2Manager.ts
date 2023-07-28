@@ -1,0 +1,42 @@
+import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
+import OAuth2Manager, {
+  OAuth2AuthorizationParams,
+  OAuth2RefreshAuthorizationParams
+} from '../OAuth2Manager'
+
+export default class GCalOAuth2Manager extends OAuth2Manager {
+  async authorize(code: string, redirectUri: string) {
+    return this.fetchToken<{
+      accessToken: string
+      refreshToken: string
+      scopes: string
+    }>({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri
+    })
+  }
+
+  async refresh(refreshToken: string) {
+    return this.fetchToken<{
+      accessToken: string
+      expiresIn: number
+      idToken: string
+    }>({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken
+    })
+  }
+
+  protected async fetchToken<TSuccess>(
+    partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
+  ) {
+    const authUrl = 'https://oauth2.googleapis.com/token'
+    const searchParams = {
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      ...partialAuthParams
+    }
+    return authorizeOAuth2<TSuccess>({authUrl, searchParams})
+  }
+}

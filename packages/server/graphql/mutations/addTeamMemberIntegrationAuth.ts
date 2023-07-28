@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
+import GCalOAuth2Manager from '../../integrations/gcal/GcalOAuth2Manager'
 import JiraServerOAuth1Manager, {
   OAuth1Auth
 } from '../../integrations/jiraServer/JiraServerOAuth1Manager'
@@ -84,6 +85,7 @@ const addTeamMemberIntegrationAuth = {
 
     // VALIDATION
     const {authStrategy, service, scope} = integrationProvider
+    console.log('🚀 ~ integrationProvider:', integrationProvider)
     if (scope === 'team') {
       if (teamId !== integrationProvider.teamId) {
         return {error: {message: 'teamId mismatch'}}
@@ -98,6 +100,7 @@ const addTeamMemberIntegrationAuth = {
       }
     }
 
+    console.log('🚀 ~ service:', service)
     let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined = undefined
     if (authStrategy === 'oauth2') {
       if (!oauthCodeOrPat || !redirectUri)
@@ -131,6 +134,23 @@ const addTeamMemberIntegrationAuth = {
         )
         tokenMetadata = (await manager.init(oauthCodeOrPat, oauthVerifier)) as OAuth2Auth | Error
       }
+      if (service === 'gcal') {
+        const {clientId, clientSecret, serverBaseUrl} = integrationProvider
+        const manager = new GCalOAuth2Manager(clientId, clientSecret, serverBaseUrl) // This is a hypothetical manager. You'd have to implement it, similar to the GitLabOAuth2Manager or AzureDevOpsServerManager
+        const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
+
+        if ('expiresIn' in authRes) {
+          const {expiresIn, ...metadata} = authRes
+          const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
+          const expiresAt = new Date(expiresAtTimestamp)
+          tokenMetadata = {
+            expiresAt,
+            ...metadata
+          }
+        } else {
+          tokenMetadata = authRes
+        }
+      }
     }
     if (authStrategy === 'oauth1') {
       if (!oauthCodeOrPat || !oauthVerifier)
@@ -149,6 +169,13 @@ const addTeamMemberIntegrationAuth = {
     }
 
     // RESOLUTION
+    console.log('🚀 ~ tokenMetadata____:', {
+      tokenMetadata,
+      providerId: providerDbId,
+      service,
+      teamId,
+      userId: viewerId
+    })
     await upsertTeamMemberIntegrationAuth({
       ...tokenMetadata,
       providerId: providerDbId,

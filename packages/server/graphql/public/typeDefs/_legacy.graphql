@@ -104,6 +104,7 @@ enum IntegrationProviderServiceEnum {
   gitlab
   mattermost
   jiraServer
+  gcal
 }
 
 """
