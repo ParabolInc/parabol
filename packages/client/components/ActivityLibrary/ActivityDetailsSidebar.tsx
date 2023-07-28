@@ -20,7 +20,7 @@ import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
-import useModal from '../../hooks/useModal'
+import {useDialogState} from '../../ui/Dialog/useDialogState'
 import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
@@ -127,9 +127,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   )
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
-  const {togglePortal: toggleModal, modalPortal} = useModal({
-    id: 'createGcalEventModal'
-  })
+  const {isOpen: isScheduleModalOpen, open, close} = useDialogState()
 
   const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
@@ -180,7 +178,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   }
 
   const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
-    toggleModal()
+    open()
     handleStartActivity(gcalInput)
   }
 
@@ -287,7 +285,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                 {error && <StyledError>{error.message}</StyledError>}
                 <NewMeetingActionsCurrentMeetings team={selectedTeam} />
                 {hasGcalFlag && (
-                  <SecondaryButton onClick={toggleModal} waiting={submitting} className='h-14'>
+                  <SecondaryButton onClick={open} waiting={submitting} className='h-14'>
                     <div className='text-lg'>Schedule</div>
                   </SecondaryButton>
                 )}
@@ -303,12 +301,11 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
         </div>
       </div>
-      {modalPortal(
-        <GcalModal
-          closeModal={toggleModal}
-          handleCreateGcalEvent={handleStartActivityWithGcalEvent}
-        />
-      )}
+      <GcalModal
+        closeModal={close}
+        isOpen={isScheduleModalOpen}
+        handleCreateGcalEvent={handleStartActivityWithGcalEvent}
+      />
     </>
   )
 }

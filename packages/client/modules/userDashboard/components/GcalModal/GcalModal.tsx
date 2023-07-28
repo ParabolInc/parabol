@@ -1,25 +1,19 @@
 import styled from '@emotion/styled'
 import dayjs from 'dayjs'
 import React, {useState} from 'react'
-import DialogContainer from '../../../../components/DialogContainer'
-import DialogContent from '../../../../components/DialogContent'
-import DialogTitle from '../../../../components/DialogTitle'
+import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogContent} from '../../../../ui/Dialog/DialogContent'
+import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
+import {DialogDescription} from '../../../../ui/Dialog/DialogDescription'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import DateTimePicker from './DateTimePicker'
 import Checkbox from '../../../../components/Checkbox'
 import StyledError from '../../../../components/StyledError'
-import PlainButton from '../../../../components/PlainButton/PlainButton'
-import {Close} from '@mui/icons-material'
 import useForm from '../../../../hooks/useForm'
 import Legitity from '../../../../validation/Legitity'
 import {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
-
-const Wrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  paddingTop: 16
-})
 
 const StyledInput = styled('input')({
   border: `1px solid ${PALETTE.SLATE_400}`,
@@ -36,23 +30,6 @@ const StyledInput = styled('input')({
   }
 })
 
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 'auto'
-})
-
-const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  '&:hover': {
-    opacity: 0.5
-  }
-})
-
-const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  marginLeft: 'auto'
-})
-
 const ErrorMessage = styled(StyledError)({
   textAlign: 'left',
   paddingBottom: 8
@@ -65,10 +42,11 @@ const validateTitle = (title: string) => {
 interface Props {
   handleCreateGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
   closeModal: () => void
+  isOpen: boolean
 }
 
 const GcalModal = (props: Props) => {
-  const {handleCreateGcalEvent, closeModal} = props
+  const {handleCreateGcalEvent, closeModal, isOpen} = props
 
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
@@ -116,18 +94,15 @@ const GcalModal = (props: Props) => {
   }
 
   return (
-    <StyledDialogContainer>
-      <DialogTitle>
-        {'Schedule Your Meeting'}
-        <StyledCloseButton onClick={closeModal}>
-          <CloseIcon />
-        </StyledCloseButton>
-      </DialogTitle>
+    <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent>
-        {
-          'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link'
-        }
-        <div className='space-y-1 pt-4'>
+        <DialogTitle>Schedule Your Meeting</DialogTitle>
+        <DialogDescription>
+          {
+            'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link'
+          }
+        </DialogDescription>
+        <div className='space-y-1'>
           <div>
             <StyledInput
               autoFocus
@@ -158,13 +133,13 @@ const GcalModal = (props: Props) => {
             </label>
           </div>
         </div>
-        <Wrapper>
+        <DialogActions>
           <PrimaryButton size='medium' onClick={handleClick}>
             {`Create Meeting & Gcal Invite`}
           </PrimaryButton>
-        </Wrapper>
+        </DialogActions>
       </DialogContent>
-    </StyledDialogContainer>
+    </Dialog>
   )
 }
 
