@@ -133,7 +133,7 @@ const addTeamMemberIntegrationAuth = {
       }
       if (service === 'gcal') {
         const {clientId, clientSecret, serverBaseUrl} = integrationProvider
-        const manager = new GCalOAuth2Manager(clientId, clientSecret, serverBaseUrl) // This is a hypothetical manager. You'd have to implement it, similar to the GitLabOAuth2Manager or AzureDevOpsServerManager
+        const manager = new GCalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
 
         if ('expiresIn' in authRes) {
