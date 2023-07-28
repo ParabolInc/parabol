@@ -20,7 +20,6 @@ import {resolveForSU} from '../resolvers'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
-import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import Task from './Task'
 import AutogroupReflectionGroup from './AutogroupReflectionGroup'
 
@@ -142,13 +141,6 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
           a.sortOrder < b.sortOrder ? -1 : 1
         )
         return reflectionGroups
-      }
-    },
-    settings: {
-      type: new GraphQLNonNull(RetrospectiveMeetingSettings),
-      description: 'The settings that govern the retrospective meeting',
-      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'})
       }
     },
     taskCount: {

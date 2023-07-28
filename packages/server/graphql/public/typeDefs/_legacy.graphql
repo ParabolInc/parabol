@@ -4383,11 +4383,6 @@ type ActionMeeting implements NewMeeting {
   commentCount: Int!
 
   """
-  The settings that govern the action meeting
-  """
-  settings: ActionMeetingSettings!
-
-  """
   The number of tasks generated in the meeting
   """
   taskCount: Int!
@@ -4633,11 +4628,6 @@ type RetrospectiveMeeting implements NewMeeting {
   The grouped reflections
   """
   reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
-
-  """
-  The settings that govern the retrospective meeting
-  """
-  settings: RetrospectiveMeetingSettings!
 
   """
   The number of tasks generated in the meeting
@@ -5484,11 +5474,6 @@ type PokerMeeting implements NewMeeting {
   The number of stories scored during a meeting
   """
   storyCount: Int!
-
-  """
-  The settings that govern the Poker meeting
-  """
-  settings: PokerMeetingSettings!
 
   """
   A single story created in a Sprint Poker meeting
