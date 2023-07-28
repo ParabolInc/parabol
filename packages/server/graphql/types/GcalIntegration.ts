@@ -1,8 +1,7 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
-import IntegrationProviderWebhook from './IntegrationProviderWebhook'
-import TeamMemberIntegrationAuthWebhook from './TeamMemberIntegrationAuthWebhook'
+import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
 const GcalIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GcalIntegration',
@@ -10,7 +9,7 @@ const GcalIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     auth: {
       description: 'The Webhook Authorization for this team member',
-      type: TeamMemberIntegrationAuthWebhook,
+      type: TeamMemberIntegrationAuthOAuth2,
       resolve: async ({teamId, userId}, _args, {dataLoader}) => {
         return dataLoader.get('teamMemberIntegrationAuths').load({service: 'gcal', teamId, userId})
       }

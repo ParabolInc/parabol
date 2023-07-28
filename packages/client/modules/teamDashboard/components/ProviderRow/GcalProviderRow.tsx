@@ -8,7 +8,6 @@ import {Providers} from '../../../../types/constEnums'
 import ProviderRow from './ProviderRow'
 import GcalConfigMenu from '../../../../components/GcalConfigMenu'
 import {useFragment} from 'react-relay'
-import GcalClientManager from '../../../../utils/GcalClientManager'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import GCalClientManager from '../../../../utils/GcalClientManager'
 
@@ -17,9 +16,24 @@ type Props = {
   teamId: string
 }
 
+graphql`
+  fragment GcalProviderRowTeamMember on TeamMember {
+    integrations {
+      gcal {
+        auth {
+          providerId
+        }
+        cloudProvider {
+          id
+          clientId
+        }
+      }
+    }
+  }
+`
+
 const GcalProviderRow = (props: Props) => {
   const {viewerRef, teamId} = props
-  const gcalAuth = false
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {submitting} = mutationProps
@@ -28,32 +42,21 @@ const GcalProviderRow = (props: Props) => {
     graphql`
       fragment GcalProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
-          integrations {
-            gcal {
-              auth {
-                providerId
-              }
-              cloudProvider {
-                id
-                clientId
-                serverBaseUrl
-              }
-            }
-          }
+          ...GcalProviderRowTeamMember @relay(mask: false)
         }
       }
     `,
     viewerRef
   )
-  // ...GitLabProviderRowTeamMember @relay(mask: false)
   console.log('🚀 ~ viewer:', viewer)
   const {teamMember} = viewer
   const {integrations} = teamMember
   const {gcal} = integrations
   const {auth, cloudProvider} = gcal
-  // TODO: implement oauth
+  const hasAuth = auth && auth.providerId
+
   const openOAuth = () => {
-    const {clientId, id: providerId, serverBaseUrl} = cloudProvider
+    const {clientId, id: providerId} = cloudProvider
     GCalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
@@ -61,7 +64,7 @@ const GcalProviderRow = (props: Props) => {
   return (
     <>
       <ProviderRow
-        connected={gcalAuth}
+        connected={hasAuth}
         onConnectClick={openOAuth}
         submitting={submitting}
         togglePortal={togglePortal}
