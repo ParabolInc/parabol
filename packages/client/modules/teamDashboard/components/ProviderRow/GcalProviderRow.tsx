@@ -73,7 +73,9 @@ const GcalProviderRow = (props: Props) => {
         providerDescription={Providers.GCAL_DESC}
         providerLogo={<GcalProviderLogo />}
       />
-      {menuPortal(<GcalConfigMenu menuProps={menuProps} mutationProps={mutationProps} />)}
+      {menuPortal(
+        <GcalConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
+      )}
     </>
   )
 }
