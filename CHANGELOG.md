@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.113.0 2023-Jul-19
+
+### Added
+
+- feat: add Zoom transcription bot in discuss phase (#8517)
+- feat: retry invoice after failed payment (#8478)
+- feat: show loading feedback while upgrading (#8514)
+- feat: Add timer sound effect (#8508)
+- feat(share-summary): Share summary mutation (#8412)
+- feat: Add eventType filter in timeline view (#8397)
+- feat: Add Team Health tips (#8506)
+
+### Changed
+
+- chore: add RetroReflectionGroup table to PG (Part 1 of 3) (#8504)
+- chore(share-summary): share summary dialog UI (#8463)
+- chore: add radix Select component (#8460)
+- chore: Replace TeamHealth answer emojis with their text representation (#8449)
+- chore: remove old autogroup mutation (#8505)
+
+### Fixed
+
+- fix: can create team within existing org (#8512)
+- fix: avoid pronoun assumptions in ai summary (#8509)
+
 ## 6.112.0 2023-Jul-12
 
 ### Changed
@@ -32,7 +57,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore: refactor postDeploy to preDeploy (#8446)
 - chore: add radix Dialog component (#8450)
 - fix: upgrade graphiql (#8461)
--
 
 ## 6.111.0 2023-Jul-05
 

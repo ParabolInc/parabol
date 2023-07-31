@@ -1,26 +1,37 @@
-import React, {Suspense, useCallback} from 'react'
-import {useHistory, useLocation} from 'react-router'
-import useRouter from '../hooks/useRouter'
+import React, {Suspense} from 'react'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import {renderLoader} from '../utils/relay/renderLoader'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import shareTopicModalQuery, {
+  ShareTopicModalQuery
+} from '../__generated__/ShareTopicModalQuery.graphql'
 
-const ShareTopicRoot = () => {
-  const {match} = useRouter<{stageId: string; meetingId: string}>()
-  const {params} = match
+interface Props {
+  onClose: () => void
+  stageId: string
+  meetingId: string
+}
 
-  const {meetingId, stageId} = params
+const ShareTopicRoot = (props: Props) => {
+  const {stageId, meetingId, onClose} = props
 
-  const location = useLocation<{backgroundLocation?: Location}>()
-  const history = useHistory()
-
-  const onClose = useCallback(() => {
-    const state = location.state
-    history.replace(state?.backgroundLocation ?? `/new-summary/${meetingId}`)
-  }, [location])
+  const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
+    shareTopicModalQuery,
+    {meetingId},
+    'store-or-network'
+  )
 
   return (
     <Suspense fallback={renderLoader()}>
-      <ShareTopicModal stageId={stageId} isOpen={true} onClose={onClose} />
+      {queryRef && (
+        <ShareTopicModal
+          stageId={stageId}
+          meetingId={meetingId}
+          isOpen={true}
+          onClose={onClose}
+          queryRef={queryRef}
+        />
+      )}
     </Suspense>
   )
 }

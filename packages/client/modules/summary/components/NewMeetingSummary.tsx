@@ -55,7 +55,7 @@ const NewMeetingSummary = (props: Props) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
-  const teamDashUrl = `/team/${teamId}`
+  const teamDashUrl = `/team/${teamId}/tasks`
   const emailCSVUrl = isDemoRoute()
     ? `/retrospective-demo-summary/csv`
     : `/new-summary/${meetingId}/csv`

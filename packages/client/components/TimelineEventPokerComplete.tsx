@@ -6,11 +6,11 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import plural from '../utils/plural'
 import {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
-import CardsSVG from './CardsSVG'
 import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
+import CardsSVG from './CardsSVG'
 
 interface Props {
   timelineEvent: TimelineEventPokerComplete_timelineEvent$key

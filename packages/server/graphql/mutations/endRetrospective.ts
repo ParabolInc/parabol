@@ -9,6 +9,7 @@ import {RDatum} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
+import getKysely from '../../postgres/getKysely'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -19,6 +20,8 @@ import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
+import collectReactjis from './helpers/collectReactjis'
+import updateTeamInsights from './helpers/updateTeamInsights'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import generateWholeMeetingSentimentScore from './helpers/generateWholeMeetingSentimentScore'
 import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
@@ -67,9 +70,10 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
     }
   }
   const {id: settingsId, recallBotId} = meetingSettings as MeetingSettingsRetrospective
-  const [summary, transcription] = await Promise.all([
+  const [summary, transcription, usedReactjis] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
-    getTranscription(recallBotId)
+    getTranscription(recallBotId),
+    collectReactjis(meeting, dataLoader)
   ])
 
   await Promise.all([
@@ -95,7 +99,8 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
           reflectionCount: reflections.length,
           sentimentScore,
           summary,
-          transcription
+          transcription,
+          usedReactjis
         },
         {nonAtomic: true}
       )
@@ -113,6 +118,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
+  updateTeamInsights(teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}
@@ -133,6 +139,7 @@ export default {
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
@@ -190,6 +197,11 @@ export default {
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').loadNonNull(templateId),
+      pg
+        .deleteFrom('RetroReflectionGroup')
+        .where('meetingId', '=', meetingId)
+        .where('isActive', '=', false)
+        .execute(),
       r
         .table('RetroReflectionGroup')
         .getAll(meetingId, {index: 'meetingId'})
