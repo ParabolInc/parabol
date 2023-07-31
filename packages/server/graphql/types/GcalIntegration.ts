@@ -8,7 +8,7 @@ const GcalIntegration = new GraphQLObjectType<any, GQLContext>({
   description: 'Integration Auth and shared providers available to the team member',
   fields: () => ({
     auth: {
-      description: 'The Webhook Authorization for this team member',
+      description: 'The OAuth2 Authorization for this team member',
       type: TeamMemberIntegrationAuthOAuth2,
       resolve: async ({teamId, userId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
         return dataLoader.get('freshGcalAuth').load({teamId, userId})

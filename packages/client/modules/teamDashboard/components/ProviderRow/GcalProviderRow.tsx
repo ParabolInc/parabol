@@ -38,6 +38,7 @@ const GcalProviderRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {submitting} = mutationProps
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const viewer = useFragment(
     graphql`
@@ -50,16 +51,18 @@ const GcalProviderRow = (props: Props) => {
     viewerRef
   )
   const {teamMember} = viewer
+
+  if (!teamMember) return null
   const {integrations} = teamMember
   const {gcal} = integrations
+  if (!gcal || !gcal.cloudProvider) return null
   const {auth, cloudProvider} = gcal
-  const hasAuth = auth && auth.providerId
+  const hasAuth = !!(auth && auth.providerId)
 
   const openOAuth = () => {
     const {clientId, id: providerId} = cloudProvider
     GCalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
   }
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   return (
     <>

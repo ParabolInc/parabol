@@ -174,7 +174,7 @@ const ProviderList = (props: Props) => {
     },
     {
       name: 'Gcal Integration',
-      connected: !!integrations?.gcal.auth,
+      connected: !!integrations?.gcal?.auth,
       component: <GcalProviderRow viewerRef={viewer} teamId={teamId} />,
       hidden: !allowGcal
     }
