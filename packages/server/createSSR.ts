@@ -10,7 +10,6 @@ const minifiedHTML = fs.readFileSync(indexPath, 'utf8')
 const brotliHTML = brotliCompressSync(minifiedHTML)
 
 const createSSR = (res: HttpResponse, req: HttpRequest) => {
-  console.log('request catchAll', req.getUrl())
   if (req.getMethod() !== 'get') {
     res.end()
     return

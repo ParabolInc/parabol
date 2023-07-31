@@ -75,6 +75,7 @@ export default class StaticServer {
     if (existingMeta) return existingMeta
     const pathname = this.pathnames[filename]
     if (!pathname) return false
+    // Caching everything, build files included. ~25MB total, not bad vs. repeated fs reads for PPMIs
     const cacheFile = true
     return (this.meta[filename] = new StaticFileMeta(pathname, cacheFile))
   }

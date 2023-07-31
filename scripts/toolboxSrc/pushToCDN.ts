@@ -2,8 +2,6 @@ import fs from 'fs'
 import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
 import path from 'path'
 
-declare const __PROJECT_ROOT__: string
-
 const pushClientAssetsToCDN = async () => {
   const fileStoreManager = getFileStoreManager()
   const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
