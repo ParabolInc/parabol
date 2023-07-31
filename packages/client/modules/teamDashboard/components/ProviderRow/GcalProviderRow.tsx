@@ -9,11 +9,12 @@ import ProviderRow from './ProviderRow'
 import GcalConfigMenu from '../../../../components/GcalConfigMenu'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {GcalProviderRow_viewer$key} from '../../../../__generated__/GcalProviderRow_viewer.graphql'
 import GCalClientManager from '../../../../utils/GcalClientManager'
 
 type Props = {
-  viewerRef: any
   teamId: string
+  viewerRef: GcalProviderRow_viewer$key
 }
 
 graphql`

@@ -36,8 +36,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
     },
     gcal: {
       type: new GraphQLNonNull(GcalIntegration),
-      description: 'All things associated with a Gcal integration for a team member',
-      resolve: (source) => source
+      description: 'All things associated with a Gcal integration for a team member'
     },
     github: {
       type: GitHubIntegration,
