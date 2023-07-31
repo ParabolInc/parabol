@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.114.1 2023-Jul-31
+
+### Fixed
+
+- initialize reduce function in getLastUsedDateForTeams
+
 ## 6.114.0 2023-Jul-26
 
 ### Added
