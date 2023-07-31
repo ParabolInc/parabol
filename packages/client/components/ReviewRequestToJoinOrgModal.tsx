@@ -95,17 +95,15 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   const {createdBy, createdByEmail, id: requestId} = domainJoinRequest
 
   const onAdd = () => {
-    commit(
-      {
-        variables: {
-          requestId,
-          teamIds: selectedTeamsIds
-        }
+    commit({
+      variables: {
+        requestId,
+        teamIds: selectedTeamsIds
       },
-      {
-        onSuccess: closePortal
+      onSuccess: () => {
+        closePortal()
       }
-    )
+    })
   }
 
   return (
