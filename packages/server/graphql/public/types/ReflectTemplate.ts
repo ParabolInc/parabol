@@ -21,7 +21,7 @@ const getLastUsedDateForTeams = async (
   return (await dataLoader.get('retroTemplateLastUsedByTeam').loadMany(teams))
     .filter(errorFilter)
     .map((templateLookup) => templateLookup[templateId] || new Date(0))
-    .reduce((dateA, dateB) => (dateA > dateB ? dateA : dateB))
+    .reduce((dateA, dateB) => (dateA > dateB ? dateA : dateB), new Date(0))
 }
 
 const ReflectTemplate: ReflectTemplateResolvers = {
