@@ -1,11 +1,6 @@
 import {useMutation, UseMutationConfig} from 'react-relay'
-import {
-  getRequest,
-  NormalizationLinkedField,
-  NormalizationScalarField,
-  GraphQLTaggedNode,
-  MutationParameters
-} from 'relay-runtime'
+import {GraphQLTaggedNode, MutationParameters, PayloadError} from 'relay-runtime'
+import getGraphQLError from '../utils/relay/getGraphQLError'
 
 export interface SimpleMutationConfig<TMutation extends MutationParameters>
   extends UseMutationConfig<TMutation> {
@@ -13,27 +8,17 @@ export interface SimpleMutationConfig<TMutation extends MutationParameters>
   onFailure?: (error: Error) => void
 }
 
-interface ResponseWithError {
-  [key: string]: {
-    error?: Error
-  }
-}
-
 export const useSimpleMutation = <TMutation extends MutationParameters>(
   mutation: GraphQLTaggedNode
 ) => {
   const [commit, submitting] = useMutation<TMutation>(mutation)
-  const firstSelection = getRequest(mutation).operation.selections[0] as
-    | NormalizationLinkedField
-    | NormalizationScalarField
-  const dataField = firstSelection.alias || firstSelection.name
 
   const execute = (config: SimpleMutationConfig<TMutation>) => {
     const {variables, onSuccess, onFailure} = config
     return commit({
       variables,
-      onCompleted: (res: TMutation['response']) => {
-        const error = (res as ResponseWithError)[dataField]?.error
+      onCompleted: (res: TMutation['response'], errors: PayloadError[] | null) => {
+        const error = getGraphQLError(res, errors)
 
         if (!error) {
           onSuccess && onSuccess(res)
