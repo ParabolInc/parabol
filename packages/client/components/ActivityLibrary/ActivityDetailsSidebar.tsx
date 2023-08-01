@@ -127,7 +127,11 @@ const ActivityDetailsSidebar = (props: Props) => {
   )
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
-  const {isOpen: isScheduleModalOpen, open, close} = useDialogState()
+  const {
+    isOpen: isScheduleDialogOpen,
+    open: openScheduleDialog,
+    close: closeScheduleDialog
+  } = useDialogState()
 
   const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
@@ -178,7 +182,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   }
 
   const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
-    open()
+    openScheduleDialog()
     handleStartActivity(gcalInput)
   }
 
@@ -285,7 +289,11 @@ const ActivityDetailsSidebar = (props: Props) => {
                 {error && <StyledError>{error.message}</StyledError>}
                 <NewMeetingActionsCurrentMeetings team={selectedTeam} />
                 {hasGcalFlag && (
-                  <SecondaryButton onClick={open} waiting={submitting} className='h-14'>
+                  <SecondaryButton
+                    onClick={openScheduleDialog}
+                    waiting={submitting}
+                    className='h-14'
+                  >
                     <div className='text-lg'>Schedule</div>
                   </SecondaryButton>
                 )}
@@ -302,8 +310,8 @@ const ActivityDetailsSidebar = (props: Props) => {
         </div>
       </div>
       <GcalModal
-        closeModal={close}
-        isOpen={isScheduleModalOpen}
+        closeModal={closeScheduleDialog}
+        isOpen={isScheduleDialogOpen}
         handleCreateGcalEvent={handleStartActivityWithGcalEvent}
       />
     </>

@@ -11,7 +11,7 @@ export const DialogClose = React.forwardRef<
     <button
       ref={ref}
       className={twMerge(
-        'absolute top-4 right-3 inline-flex h-6 w-6 cursor-pointer appearance-none items-center justify-center bg-transparent',
+        'absolute top-4 right-4 inline-flex h-6 w-6 cursor-pointer appearance-none items-center justify-center bg-transparent',
         className
       )}
       aria-label='Close'
