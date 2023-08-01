@@ -1,6 +1,5 @@
 import React from 'react'
 import dayjs, {Dayjs} from 'dayjs'
-import {DemoContainer} from '@mui/x-date-pickers/internals/demo'
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {DateTimePicker as MuiDateTimePicker} from '@mui/x-date-pickers/DateTimePicker'
@@ -33,8 +32,8 @@ const DateTimePicker = (props: Props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='flex justify-between'>
-        <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
+      <div className='flex justify-between space-x-4 pt-3'>
+        <div className={'w-1/2'}>
           <MuiDateTimePicker
             label={`Meeting Start Time (${timeZoneShort})`}
             value={startValue}
@@ -50,9 +49,14 @@ const DateTimePicker = (props: Props) => {
                 }
               }
             }}
+            sx={{
+              '&': {
+                width: '100%'
+              }
+            }}
           />
-        </DemoContainer>
-        <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
+        </div>
+        <div className={'w-1/2'}>
           <MuiDateTimePicker
             label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
@@ -67,8 +71,13 @@ const DateTimePicker = (props: Props) => {
                 }
               }
             }}
+            sx={{
+              '&': {
+                width: '100%'
+              }
+            }}
           />
-        </DemoContainer>
+        </div>
       </div>
     </LocalizationProvider>
   )
