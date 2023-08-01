@@ -4,7 +4,7 @@ import OAuth2Manager, {
   OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
-export default class GCalOAuth2Manager extends OAuth2Manager {
+export default class GcalOAuth2Manager extends OAuth2Manager {
   async authorize(code: string, redirectUri: string) {
     return this.fetchToken<{
       accessToken: string

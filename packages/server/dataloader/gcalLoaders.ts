@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import GCalOAuth2Manager from '../integrations/gcal/GCalOAuth2Manager2'
+import GcalOAuth2Manager from '../integrations/gcal/GcalOAuth2Manager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import sendToSentry from '../utils/sendToSentry'
@@ -30,7 +30,7 @@ export const freshGcalAuth = (parent: RootDataLoader) => {
             }
             const provider = await parent.get('integrationProviders').loadNonNull(providerId)
             const {clientId, clientSecret, serverBaseUrl} = provider
-            const manager = new GCalOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
+            const manager = new GcalOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) return null
             const {accessToken, expiresIn} = oauthRes
