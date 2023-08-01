@@ -40,11 +40,11 @@ const StageTimerDisplayGauge = (props: Props) => {
 
   const soundRef = useSoundEffect({endTime})
 
-  const fromNow = timeLeft || 'Time’s Up!'
+  const countdownTimerLabel = timeLeft || 'Time’s Up!'
   return (
     <>
       <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
-        {fromNow}
+        {countdownTimerLabel}
       </Gauge>
       <audio ref={soundRef} aria-hidden className='hidden' autoPlay={false}>
         <source src={endTimerSound} type='audio/mp3' />

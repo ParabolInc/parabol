@@ -1723,165 +1723,6 @@ type RepoIntegrationQueryPayload {
 }
 
 """
-A team
-"""
-type Team {
-  """
-  A shortid for the team
-  """
-  id: ID!
-
-  """
-  The datetime the team was created
-  """
-  createdAt: DateTime!
-
-  """
-  The userId that created the team. Non-null at v2.22.0+
-  """
-  createdBy: ID
-
-  """
-  true if the team was created when the account was created, else false
-  """
-  isOnboardTeam: Boolean!
-
-  """
-  The type of the last meeting run
-  """
-  lastMeetingType: MeetingTypeEnum!
-
-  """
-  The HTML message to show if isPaid is false
-  """
-  lockMessageHTML: String
-
-  """
-  The hash and expiration for a token that allows anyone with it to join the team
-  """
-  massInvitation(
-    """
-    the meetingId to optionally direct them to
-    """
-    meetingId: ID
-  ): MassInvitation!
-
-  """
-  true if the underlying org has a validUntil date greater than now. if false, subs do not work
-  """
-  isPaid: Boolean
-
-  """
-  The name of the team
-  """
-  name: String!
-
-  """
-  The organization to which the team belongs
-  """
-  orgId: ID!
-
-  """
-  Arbitrary tags that the team uses
-  """
-  tags: [String]
-
-  """
-  The datetime the team was last updated
-  """
-  updatedAt: DateTime
-  customPhaseItems: [ReflectPrompt] @deprecated(reason: "Field no longer needs to exist for now")
-
-  """
-  The outstanding invitations to join the team
-  """
-  teamInvitations: [TeamInvitation!]!
-
-  """
-  true if the viewer is the team lead, else false
-  """
-  isLead: Boolean!
-
-  """
-  The team-specific settings for running all available types of meetings
-  """
-  meetingSettings(
-    """
-    the type of meeting for the settings
-    """
-    meetingType: MeetingTypeEnum!
-  ): TeamMeetingSettings!
-
-  """
-  A query for the scale
-  """
-  scale(
-    """
-    The scale ID for the desired scale
-    """
-    scaleId: ID!
-  ): TemplateScale
-
-  """
-  The list of scales this team can use
-  """
-  scales: [TemplateScale!]!
-
-  """
-  a list of meetings that are currently in progress
-  """
-  activeMeetings: [NewMeeting!]!
-
-  """
-  The new meeting in progress, if any
-  """
-  meeting(
-    """
-    The unique meetingId
-    """
-    meetingId: ID!
-  ): NewMeeting
-
-  """
-  The level of access to features on the parabol site
-  """
-  tier: TierEnum!
-  organization: Organization!
-
-  """
-  The agenda items for the upcoming or current meeting
-  """
-  agendaItems: [AgendaItem!]!
-
-  """
-  All of the tasks for this team
-  """
-  tasks(
-    first: Int
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-  ): TaskConnection!
-
-  """
-  All the team members actively associated with the team
-  """
-  teamMembers(
-    """
-    the field to sort the teamMembers by
-    """
-    sortBy: String
-  ): [TeamMember!]!
-
-  """
-  true if the team has been archived
-  """
-  isArchived: Boolean
-}
-
-"""
 An invitation and expiration
 """
 type MassInvitation {
@@ -6957,6 +6798,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartCheckInPayload!
 
   """
@@ -6967,6 +6812,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartRetrospectivePayload!
 
   """
@@ -6977,6 +6826,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartSprintPokerPayload!
 
   """

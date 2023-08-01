@@ -112,7 +112,7 @@ const TeamDashHeader = (props: Props) => {
   )
   const {organization, id: teamId, name: teamName, teamMembers} = team
   const {name: orgName, id: orgId} = organization
-  const isActivity = useRouteMatch('/team/:teamId/activity')
+  const isTasks = useRouteMatch('/team/:teamId/tasks')
   const {history} = useRouter()
 
   return (
@@ -157,7 +157,7 @@ const TeamDashHeader = (props: Props) => {
         </Avatars>
       </TeamHeaderAndAvatars>
       <Tabs
-        activeIdx={isActivity ? 0 : 1}
+        activeIdx={isTasks ? 1 : 0}
         className='full-w max-w-none border-b border-solid border-slate-300'
       >
         <Tab label='Activity' onClick={() => history.push(`/team/${teamId}/activity`)} />
