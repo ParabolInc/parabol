@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import GCalOAuth2Manager from '../integrations/gcal/GCalOAuth2Manager'
+import GCalOAuth2Manager from '../integrations/gcal/GCalOAuth2Manager2'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import sendToSentry from '../utils/sendToSentry'
