@@ -1,4 +1,3 @@
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -7,20 +6,13 @@ const updateQualAIMeetingsCount = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const [meetingMembers, team, reflections, meeting, responses] = await Promise.all([
+  const [meetingMembers, team, reflections, meeting] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').load(teamId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('newMeetings').load(meetingId),
-    getTeamPromptResponsesByMeetingId(meetingId)
+    dataLoader.get('newMeetings').load(meetingId)
   ])
-  if (
-    meetingMembers.length < 3 ||
-    !team ||
-    !meeting.summary ||
-    !(reflections.length >= 5 || responses.length >= 3)
-  )
-    return
+  if (meetingMembers.length < 3 || !team || !meeting.summary || reflections.length < 5) return
   const {qualAIMeetingsCount} = team
   const updates = {
     qualAIMeetingsCount: qualAIMeetingsCount + 1

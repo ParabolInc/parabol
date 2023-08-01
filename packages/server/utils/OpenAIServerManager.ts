@@ -33,16 +33,21 @@ class OpenAIServerManager {
     ${htmlResponses.join('\nNEW_RESPONSE\n')}
     """`
     try {
-      const response = await this.openAIApi.createCompletion({
-        model: 'text-davinci-003',
-        prompt: prompt,
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
         temperature: 0.7,
         max_tokens: 1000,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      return (response.data.choices[0]?.text?.trim() as string) ?? null
+      return (response.data.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
