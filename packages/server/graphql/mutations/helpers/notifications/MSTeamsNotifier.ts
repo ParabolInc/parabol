@@ -15,6 +15,7 @@ import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
+import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 
 const notifyMSTeams = async (
   event: EventEnum,
@@ -339,6 +340,11 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const adaptiveCard = JSON.stringify(card.toJSON())
     const attachments = MakeACAttachment(adaptiveCard)
     return notifyMSTeams('meetingEnd', webhookUrl, userId, teamId, attachments)
+  },
+
+  async standupResponseSubmitted() {
+    // Not implemented
+    return 'success'
   }
 })
 
@@ -400,6 +406,25 @@ export const MSTeamsNotifier: Notifier = {
 
   async integrationUpdated(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
     ;(await getMSTeams(dataLoader, teamId, userId))?.integrationUpdated()
+  },
+
+  async standupResponseSubmitted(
+    dataLoader: DataLoaderWorker,
+    meetingId: string,
+    teamId: string,
+    userId: string
+  ) {
+    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    const user = await dataLoader.get('users').load(userId)
+    const responses = await getTeamPromptResponsesByMeetingId(meetingId)
+    const response = responses.find(({userId: responseUserId}) => responseUserId === userId)
+    if (!meeting || !team || !response || !user) return
+    ;(await getMSTeams(dataLoader, teamId, userId))?.standupResponseSubmitted(
+      meeting,
+      team,
+      user,
+      response
+    )
   }
 }
 
