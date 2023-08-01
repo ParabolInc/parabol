@@ -10,7 +10,7 @@ const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker)
   return teamMembers.map((teamMember) => teamMember.email)
 }
 
-type Props = {
+type Input = {
   gcalInput?: CreateGcalEventInput | null
   meetingId: string
   teamId: string
@@ -18,8 +18,8 @@ type Props = {
   dataLoader: DataLoaderWorker
 }
 
-const createGcalEvent = async (props: Props) => {
-  const {gcalInput, meetingId, teamId, viewerId, dataLoader} = props
+const createGcalEvent = async (input: Input) => {
+  const {gcalInput, meetingId, teamId, viewerId, dataLoader} = input
   if (!gcalInput) return
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {email: viewerEmail, featureFlags} = viewer
