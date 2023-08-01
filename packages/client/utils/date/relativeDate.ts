@@ -4,6 +4,7 @@
 // set my own defaults
 
 import plural from '../plural'
+import humanizeDuration from 'humanize-duration'
 
 const SECOND = 1000
 const MIN = SECOND * 60
@@ -62,22 +63,10 @@ export const humanReadableCountdown = (date: string | Date) => {
 
 export const countdown = (date: string | Date) => {
   const now = new Date()
-  const abs = new Date(date).getTime() - now.getTime()
-  if (abs < 0) return null
-  const periods = {
-    d: (abs % MONTH) / DAY,
-    h: (abs % DAY) / HOUR,
-    m: (abs % HOUR) / MIN,
-    s: (abs % MIN) / SECOND
-  } as const
-  const keep: string[] = []
-
-  for (const k in periods) {
-    const val = String(Math.floor(periods[k as keyof typeof periods]))
-    if (val === '0' && keep.length === 0 && k !== 'm') continue
-    keep.push(keep.length === 0 ? val : val.padStart(2, '0'))
-  }
-  return keep.join(':')
+  const durationMillisecs = new Date(date).getTime() - now.getTime()
+  if (durationMillisecs < 0) return null
+  const durationWholeMillisecs = Math.round(durationMillisecs / 1000) * 1000
+  return humanizeDuration(durationWholeMillisecs)
 }
 
 const relativeDate = (date: string | Date, opts: Opts = {}) => {
