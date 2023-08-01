@@ -6797,6 +6797,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartCheckInPayload!
 
   """
@@ -6807,6 +6811,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartRetrospectivePayload!
 
   """
@@ -6817,6 +6825,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartSprintPokerPayload!
 
   """

@@ -74,6 +74,7 @@
     "@mattkrick/trebuchet-client": "^3.0.1",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.9.2",
+    "@mui/x-date-pickers": "^6.3.1",
     "@radix-ui/react-dialog": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@radix-ui/react-radio-group": "^1.1.2",

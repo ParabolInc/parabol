@@ -40,6 +40,7 @@ export type PortalId =
   | 'reviewRequestToJoinOrgModal'
   | 'topBarNotificationsMenu'
   | 'pokerTemplateScaleDetailsModal'
+  | 'createGcalEventModal'
   | 'activityDetailsRecurrenceSettings'
   | 'shareTopicModal'
 
