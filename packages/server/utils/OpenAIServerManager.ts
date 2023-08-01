@@ -25,9 +25,9 @@ class OpenAIServerManager {
     const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the responses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
 
     Desired format:
-    * <theme title>: <theme summary>
-    * <theme title>: <theme summary>
-    * <theme title>: <theme summary>
+    - <theme title>: <theme summary>
+    - <theme title>: <theme summary>
+    - <theme title>: <theme summary>
 
     Responses: """
     ${htmlResponses.join('\nNEW_RESPONSE\n')}
