@@ -111,6 +111,20 @@ const StyledEditor = styled('div')`
     margin-block-start: 4px;
     margin-block-end: 4px;
   }
+
+  .ProseMirror iframe {
+    border: 8px solid #000;
+    border-radius: 4px;
+    min-width: 200px;
+    min-height: 200px;
+    display: block;
+    outline: 0px solid transparent;
+  }
+
+  .ProseMirror-selectednode iframe {
+    transition: outline 0.15s;
+    outline: 6px solid #ece111;
+  }
 `
 
 interface Props {
