@@ -17,7 +17,7 @@ class OpenAIServerManager {
     this.openAIApi = new OpenAIApi(configuration)
   }
 
-  async getStandupSummary(htmlResponses: string[], meetingPrompt: string) {
+  async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
     if (!this.openAIApi) return null
     // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM
     // can include that in the response, e.g. "James is working on AI Summaries" vs. "Someone is
@@ -30,7 +30,7 @@ class OpenAIServerManager {
     - <theme title>: <theme summary>
 
     Responses: """
-    ${htmlResponses.join('\nNEW_RESPONSE\n')}
+    ${plaintextResponses.join('\nNEW_RESPONSE\n')}
     """`
     try {
       const response = await this.openAIApi.createChatCompletion({
