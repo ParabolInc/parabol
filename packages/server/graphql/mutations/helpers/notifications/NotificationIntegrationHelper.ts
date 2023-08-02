@@ -13,7 +13,11 @@ export type NotifyResponse =
 
 export type NotificationIntegration = {
   startMeeting(meeting: Meeting, team: Team): Promise<NotifyResponse>
-  endMeeting(meeting: Meeting, team: Team): Promise<NotifyResponse>
+  endMeeting(
+    meeting: Meeting,
+    team: Team,
+    standupResponses?: {user: User; response: TeamPromptResponse}[]
+  ): Promise<NotifyResponse>
   startTimeLimit(scheduledEndTime: Date, meeting: Meeting, team: Team): Promise<NotifyResponse>
   endTimeLimit(meeting: Meeting, team: Team): Promise<NotifyResponse>
   integrationUpdated(): Promise<NotifyResponse>
