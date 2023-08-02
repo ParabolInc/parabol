@@ -36,7 +36,7 @@ interface Props {
 const TeamArchiveHeader = (props: Props) => {
   const {teamId} = props
   const {history} = useRouter()
-  const goToTeamDash = () => history.push(`/team/${teamId}/`)
+  const goToTeamDash = () => history.push(`/team/${teamId}/tasks`)
   return (
     <RootBlock>
       <HeadingBlock>

@@ -93,6 +93,7 @@ export const NOTIFICATIONS = 'notifications'
 /* Org Settings */
 export const BILLING_PAGE = 'billing'
 export const MEMBERS_PAGE = 'members'
+export const TEAMS_PAGE = 'teams'
 export const ORG_SETTINGS_PAGE = 'settings'
 export const AUTHENTICATION_PAGE = 'authentication'
 
@@ -165,14 +166,16 @@ export const TeamBenefits = [
   'Custom templates',
   'Unlimited meeting history',
   'Priority customer support',
-  'AI Summaries'
+  'AI Summaries',
+  'Team Health'
 ]
 
 export const EnterpriseBenefits = [
-  'Enhanced security',
-  'Priority customer support',
-  'SAML Single Sign-On (SSO)',
-  'Uptime SLA',
+  'Single Sign-On (SSO)',
+  'Annual Billing',
+  'Domain Whitelisting',
+  'Uptime Service Level Agreement (SLA)',
+  'On-Premises Hosting Option',
   'Jira Server Integration'
 ]
 

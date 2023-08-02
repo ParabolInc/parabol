@@ -180,6 +180,7 @@ const MeetingControlBar = (props: Props) => {
                 <BottomControlBarReady
                   {...tranProps}
                   isNext={isPoker ? true : isFacilitating}
+                  isPoker={isPoker}
                   cancelConfirm={
                     isPoker ? undefined : confirmingButton === 'next' ? undefined : cancelConfirm
                   }

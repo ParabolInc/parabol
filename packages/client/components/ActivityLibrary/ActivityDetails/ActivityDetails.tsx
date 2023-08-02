@@ -36,6 +36,7 @@ graphql`
 export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
+      ...ActivityDetailsSidebar_viewer
       preferredTeamId
       tier
       activity(activityId: $activityId) {
@@ -131,6 +132,7 @@ const ActivityDetails = (props: Props) => {
           isOpen={!isEditing}
           type={activity.type}
           preferredTeamId={preferredTeamId}
+          viewerRef={viewer}
         />
       </div>
     </div>

@@ -19,8 +19,6 @@ import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 
-const PERCENT_ADDED_TO_RID = 0.05
-
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
   const r = await getRethink()
   const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
@@ -42,9 +40,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
     experimentalFlags.push('retrosInDisguise')
   } else if (usersWithDomain.length === 0) {
-    if (Math.random() < PERCENT_ADDED_TO_RID) {
-      experimentalFlags.push('retrosInDisguise')
-    }
+    experimentalFlags.push('retrosInDisguise')
   }
 
   await Promise.all([

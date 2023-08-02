@@ -3,22 +3,19 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useRouteMatch} from 'react-router'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
-import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
-import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
+import Tab from '../../../../components/Tab/Tab'
+import Tabs from '../../../../components/Tabs/Tabs'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
-import lazyPreload from '../../../../utils/lazyPreload'
-import {TeamTasksHeader_team$key} from '../../../../__generated__/TeamTasksHeader_team.graphql'
+import {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -69,20 +66,8 @@ const secondLink = {
   marginRight: 0,
   marginLeft: 8
 }
-
-const TeamDashTeamMemberMenu = lazyPreload(
-  () =>
-    import(
-      /* webpackChunkName: 'TeamDashTeamMemberMenu' */
-      '../../../../components/TeamDashTeamMemberMenu'
-    )
-)
-
 const TeamHeaderAndAvatars = styled('div')({
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   flexShrink: 0,
-  margin: '0 0 16px',
-  padding: '0 0 16px',
   width: '100%',
   [desktopBreakpoint]: {
     display: 'flex',
@@ -100,23 +85,20 @@ const Avatars = styled('div')({
 })
 
 interface Props {
-  team: TeamTasksHeader_team$key
+  team: TeamDashHeader_team$key
 }
 
-const TeamTasksHeader = (props: Props) => {
+const TeamDashHeader = (props: Props) => {
   const {team: teamRef} = props
   const team = useFragment(
     graphql`
-      fragment TeamTasksHeader_team on Team {
+      fragment TeamDashHeader_team on Team {
         ...DashboardAvatars_team
         id
         name
         organization {
           id
           name
-        }
-        teamMemberFilter {
-          preferredName
         }
         teamMembers(sortBy: "preferredName") {
           ...InviteTeamMemberAvatar_teamMembers
@@ -128,14 +110,11 @@ const TeamTasksHeader = (props: Props) => {
     `,
     teamRef
   )
-  const {history} = useRouter()
-  const {organization, id: teamId, name: teamName, teamMemberFilter, teamMembers} = team
-  const teamMemberFilterName =
-    (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
+  const {organization, id: teamId, name: teamName, teamMembers} = team
   const {name: orgName, id: orgId} = organization
-  const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
+  const isTasks = useRouteMatch('/team/:teamId/tasks')
+  const {history} = useRouter()
+
   return (
     <DashSectionHeader>
       <TeamHeaderAndAvatars>
@@ -177,29 +156,15 @@ const TeamTasksHeader = (props: Props) => {
           <AgendaToggle teamId={teamId} />
         </Avatars>
       </TeamHeaderAndAvatars>
-      <DashSectionControls>
-        {/* Filter by Owner */}
-        <TeamMeta>
-          {teamMembers.length > 1 && (
-            <DashFilterToggle
-              label='Team Member'
-              onClick={togglePortal}
-              onMouseEnter={TeamDashTeamMemberMenu.preload}
-              ref={originRef}
-              value={teamMemberFilterName}
-            />
-          )}
-          {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
-        </TeamMeta>
-        {/* Archive Link */}
-        <DashNavControl
-          icon='archive'
-          label='Archived Tasks'
-          onClick={() => history.push(`/team/${teamId}/archive`)}
-        />
-      </DashSectionControls>
+      <Tabs
+        activeIdx={isTasks ? 1 : 0}
+        className='full-w max-w-none border-b border-solid border-slate-300'
+      >
+        <Tab label='Activity' onClick={() => history.push(`/team/${teamId}/activity`)} />
+        <Tab label='Tasks' onClick={() => history.push(`/team/${teamId}/tasks`)} />
+      </Tabs>
     </DashSectionHeader>
   )
 }
 
-export default TeamTasksHeader
+export default TeamDashHeader

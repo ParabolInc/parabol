@@ -89,7 +89,11 @@ const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLCo
     },
     summary: {
       type: GraphQLString,
-      description: `The GPT-3 generated summary of this reflection group`
+      description: `The AI generated summary of this reflection group`
+    },
+    discussionPromptQuestion: {
+      type: GraphQLString,
+      description: `The AI generated question to prompt and engage the discussion of this reflection group`
     },
     team: {
       type: Team,

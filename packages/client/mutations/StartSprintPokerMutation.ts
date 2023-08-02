@@ -15,8 +15,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartSprintPokerMutation($teamId: ID!) {
-    startSprintPoker(teamId: $teamId) {
+  mutation StartSprintPokerMutation($teamId: ID!, $gcalInput: CreateGcalEventInput) {
+    startSprintPoker(teamId: $teamId, gcalInput: $gcalInput) {
       ... on ErrorPayload {
         error {
           message

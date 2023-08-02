@@ -34,15 +34,11 @@ const preDeploy = async () => {
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
 
-  try {
-    // first we migrate DBs & add env vars to client assets
-    await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
+  // first we migrate DBs & add env vars to client assets
+  await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
 
-    // The we can prime the DB & CDN
-    await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])
-  } catch (e) {
-    console.log('Post deploy error', e)
-  }
+  // The we can prime the DB & CDN
+  await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])
 
   process.exit()
 }

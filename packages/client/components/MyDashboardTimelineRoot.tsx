@@ -10,10 +10,11 @@ import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 const MyDashboardTimelineRoot = () => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {eventTypes} = useQueryParameterParser(viewerId)
+  const {teamIds, eventTypes} = useQueryParameterParser(viewerId)
   const queryRef = useQueryLoaderNow<MyDashboardTimelineQuery>(myDashboardTimelineQuery, {
     first: 10,
     userIds: [viewerId],
+    teamIds,
     eventTypes
   })
   return (

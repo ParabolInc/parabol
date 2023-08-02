@@ -38,12 +38,26 @@ const generateGroupSummaries = async (
       const reflectionTextByGroupId = reflectionsByGroupId.map(
         ({plaintextContent}) => plaintextContent
       )
-      const fullSummary = await manager.getSummary(reflectionTextByGroupId)
-      if (!fullSummary) return
-      const summary = fullSummary.slice(0, 2000)
+      const [fullSummary, fullQuestion] = await Promise.all([
+        manager.getSummary(reflectionTextByGroupId),
+        facilitator.featureFlags.includes('AIGeneratedDiscussionPrompt')
+          ? manager.getDiscussionPromptQuestion(group.title ?? 'Unknown', reflectionsByGroupId)
+          : undefined
+      ])
+      if (!fullSummary && !fullQuestion) return
+      const summary = fullSummary?.slice(0, 2000)
+      const discussionPromptQuestion = fullQuestion?.slice(0, 2000)
       return Promise.all([
-        pg.updateTable('RetroReflectionGroup').set({summary}).where('id', '=', group.id).execute(),
-        r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
+        pg
+          .updateTable('RetroReflectionGroup')
+          .set({summary, discussionPromptQuestion})
+          .where('id', '=', group.id)
+          .execute(),
+        r
+          .table('RetroReflectionGroup')
+          .get(group.id)
+          .update({summary, discussionPromptQuestion})
+          .run()
       ])
     })
   )

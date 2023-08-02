@@ -11,6 +11,7 @@ export interface ReflectionGroupInput {
   title?: string
   smartTitle?: string
   summary?: string
+  discussionPromptQuestion?: string
 }
 
 export default class ReflectionGroup {
@@ -25,6 +26,7 @@ export default class ReflectionGroup {
   smartTitle: string | null
   summary: string | null
   title: string | null
+  discussionPromptQuestion: string | null
   constructor(input: ReflectionGroupInput) {
     const {
       createdAt,
@@ -36,7 +38,8 @@ export default class ReflectionGroup {
       voterIds,
       smartTitle,
       summary,
-      title
+      title,
+      discussionPromptQuestion
     } = input
     const now = new Date()
     this.id = id || generateUID()
@@ -50,5 +53,6 @@ export default class ReflectionGroup {
     this.smartTitle = smartTitle || null
     this.summary = summary || null
     this.title = title || null
+    this.discussionPromptQuestion = discussionPromptQuestion || null
   }
 }

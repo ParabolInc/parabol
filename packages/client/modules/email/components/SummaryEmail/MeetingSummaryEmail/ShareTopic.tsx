@@ -33,7 +33,13 @@ const ShareTopic = (props: Props) => {
   const {isDemo, isEmail, meetingId, stageId, appOrigin} = props
 
   const path = `new-summary/${meetingId}/share/${stageId}`
-  const href = makeAppURL(appOrigin, path)
+  const href = makeAppURL(appOrigin, path, {
+    searchParams: {
+      utm_source: 'summary email',
+      utm_medium: 'email',
+      utm_campaign: 'sharing'
+    }
+  })
 
   if (isEmail) {
     return (

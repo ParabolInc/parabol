@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment, useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {useRouteMatch} from 'react-router'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
@@ -89,6 +90,9 @@ const DashNavList = (props: Props) => {
     return team.isPaid && !team.organization.lockedAt ? 'group' : 'warning'
   }
 
+  const teamRouteMatch = useRouteMatch<{teamSubPage: string}>('/team/:teamId/:teamSubPage')
+  const {teamSubPage = ''} = teamRouteMatch?.params || {}
+
   return (
     <DashNavListStyles>
       {isSingleOrg
@@ -98,7 +102,7 @@ const DashNavList = (props: Props) => {
               onClick={onClick}
               key={team.id}
               icon={showWarningIcon(team)}
-              href={`/team/${team.id}`}
+              href={`/team/${team.id}/${teamSubPage}`}
               label={team.name}
             />
           ))
@@ -114,7 +118,7 @@ const DashNavList = (props: Props) => {
                     onClick={onClick}
                     key={team.id}
                     icon={showWarningIcon(team)}
-                    href={`/team/${team.id}`}
+                    href={`/team/${team.id}/${teamSubPage}`}
                     label={team.name}
                   />
                 ))}

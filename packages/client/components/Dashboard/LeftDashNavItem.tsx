@@ -7,6 +7,7 @@ import {
   ExitToApp,
   Forum,
   Group,
+  Groups,
   PlaylistAddCheck,
   Timeline,
   Warning,
@@ -65,6 +66,7 @@ const iconLookup = {
   add: <Add />,
   exit_to_app: <ExitToApp />,
   group: <Group />,
+  groups: <Groups />,
   warning: <Warning />,
   work: <WorkOutline />,
   timeline: <Timeline />

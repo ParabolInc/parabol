@@ -46,7 +46,7 @@ const TimelineEventTeamCreated = (props: Props) => {
         ) : (
           <>
             {'Visit your '}
-            <Link to={`/team/${teamId}`}>team dashboard</Link>
+            <Link to={`/team/${teamId}/tasks`}>team dashboard</Link>
           </>
         )}
       </TimelineEventBody>
