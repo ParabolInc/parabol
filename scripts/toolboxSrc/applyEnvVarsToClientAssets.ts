@@ -4,8 +4,8 @@ import path from 'path'
 import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
 
-const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
-const serverAssetsDir = path.join(__PROJECT_ROOT__, 'dist')
+const clientDir = path.join(__PROJECT_ROOT__, 'build')
+const serverDir = path.join(__PROJECT_ROOT__, 'dist')
 
 const getCDNURL = () => {
   const {CDN_BASE_URL} = process.env
@@ -13,10 +13,9 @@ const getCDNURL = () => {
 }
 
 const rewriteServiceWorker = async () => {
-  const swPath = path.join(localClientAssetsDir, 'sw.js')
-  const serviceWorkerStr = await fs.promises.readFile(swPath, 'utf-8')
-  const deploySpecificServiceWorker = serviceWorkerStr.replaceAll('__PUBLIC_PATH__', getCDNURL())
-  await fs.promises.writeFile(swPath, deploySpecificServiceWorker)
+  const skeleton = await fs.promises.readFile(path.join(clientDir, 'swSkeleton.js'), 'utf-8')
+  const deploySpecificServiceWorker = skeleton.replaceAll('__PUBLIC_PATH__', getCDNURL())
+  await fs.promises.writeFile(path.join(clientDir, 'sw.js'), deploySpecificServiceWorker)
 }
 
 const writeManifest = async () => {
@@ -43,16 +42,13 @@ const writeManifest = async () => {
     scope: '/',
     theme_color: '#493272'
   }
-  const manifestPath = path.join(localClientAssetsDir, 'manifest.json')
+  const manifestPath = path.join(clientDir, 'manifest.json')
 
   await Promise.all([
     fs.promises.writeFile(manifestPath, JSON.stringify(manifest)),
-    // move the references icons into the client build
+    // move the referenced icons into the client build
     [logo192, logo512].map((name) => {
-      return fs.promises.copyFile(
-        path.join(serverAssetsDir, name),
-        path.join(localClientAssetsDir, name)
-      )
+      return fs.promises.copyFile(path.join(serverDir, name), path.join(clientDir, name))
     })
   ])
 }
@@ -70,7 +66,7 @@ const rewriteIndexHTML = async () => {
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-    publicPath: process.env.CDN_BASE_URL || '/static',
+    publicPath: getCDNURL() + '/',
     oauth2Redirect: process.env.OAUTH2_REDIRECT,
     prblIn: process.env.INVITATION_SHORTLINK,
     AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
@@ -78,10 +74,7 @@ const rewriteIndexHTML = async () => {
     AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
   }
 
-  const skeleton = await fs.promises.readFile(
-    path.join(localClientAssetsDir, 'skeleton.html'),
-    'utf8'
-  )
+  const skeleton = await fs.promises.readFile(path.join(clientDir, 'skeleton.html'), 'utf8')
 
   // Hide staging & PPMIs from search engines
   const noindex =
@@ -97,7 +90,7 @@ const rewriteIndexHTML = async () => {
     removeScriptTypeAttributes: true,
     removeComments: true
   })
-  await fs.promises.writeFile(path.join(localClientAssetsDir, 'index.html'), minifiedHTML)
+  await fs.promises.writeFile(path.join(clientDir, 'index.html'), minifiedHTML)
 }
 
 export const applyEnvVarsToClientAssets = async () => {
