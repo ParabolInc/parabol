@@ -30,9 +30,9 @@ const generateGroupSummaries = async (
     sendToSentry(error, {userId: facilitator.id, tags: {meetingId}})
     return
   }
-  const aiGeneratedDiscussionPromptEnabled =
-    facilitator.featureFlags.includes('AIGeneratedDiscussionPrompt') ||
-    organization.featureFlags?.includes('AIGeneratedDiscussionPrompt')
+  const aiGeneratedDiscussionPromptEnabled = organization.featureFlags?.includes(
+    'AIGeneratedDiscussionPrompt'
+  )
   await Promise.all(
     reflectionGroups.map(async (group) => {
       const reflectionsByGroupId = reflections.filter(
