@@ -13,7 +13,7 @@ export const DialogContent = React.forwardRef<
     <RadixDialog.Content
       ref={ref}
       className={twMerge(
-        'fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-md translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-4 shadow-dialog focus:outline-none data-[state=open]:animate-contentShow',
+        'md:w-2xl fixed top-[50%] left-[50%] max-h-[85vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-dialog focus:outline-none md:max-w-2xl',
         className
       )}
       {...props}

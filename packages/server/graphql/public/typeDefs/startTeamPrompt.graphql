@@ -11,6 +11,10 @@ extend type Mutation {
     The recurrence settings of the meeting
     """
     recurrenceSettings: RecurrenceSettingsInput
+    """
+    The gcal input if creating a gcal event. If not provided, no gcal event will be created
+    """
+    gcalInput: CreateGcalEventInput
   ): StartTeamPromptPayload!
 }
 
@@ -28,4 +32,31 @@ type StartTeamPromptSuccess {
   The team that started the meeting
   """
   team: Team!
+}
+
+input CreateGcalEventInput {
+  """
+  The title of the event
+  """
+  title: String!
+  """
+  The description of the event
+  """
+  description: String!
+  """
+  The start timestamp of the event
+  """
+  startTimestamp: Int!
+  """
+  The end timestamp of the event
+  """
+  endTimestamp: Int!
+  """
+  Whether to invite the team to the event
+  """
+  inviteTeam: Boolean!
+  """
+  The timezone of the event
+  """
+  timeZone: String!
 }
