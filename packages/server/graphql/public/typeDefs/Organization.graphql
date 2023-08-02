@@ -176,4 +176,5 @@ type OrganizationFeatureFlags {
   zoomTranscription: Boolean!
   shareSummary: Boolean!
   teamsLimit: Boolean!
+  teamInsights: Boolean!
 }
