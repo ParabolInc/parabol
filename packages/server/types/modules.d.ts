@@ -38,7 +38,7 @@ interface Window {
     slack: string
     oauth2Redirect: string
     stripe: string
-    prblIn: string
+    prblIn: string | undefined
   }
 }
 

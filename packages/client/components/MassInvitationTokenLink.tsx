@@ -80,8 +80,8 @@ const MassInvitationTokenLink = (props: Props) => {
     })
   }
   const displayToken = isTokenValid ? token : '············'
-  const linkLabel = `${window.__ACTION__.prblIn}/${displayToken}`
   const url = getMassInvitationUrl(displayToken)
+  const linkLabel = url.replace(/https?:\/\//, '')
   return (
     <StyledCopyShortLink
       icon='link'
