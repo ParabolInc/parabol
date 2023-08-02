@@ -150,6 +150,9 @@ const removeTeamMember = async (
   Promise.allSettled(
     newMeetingFacilitators.map(async (newFacilitator) => {
       if (!newFacilitator) {
+        // This user is the only meeting member, so do nothing.
+        // :TODO: (jmtaber129): Consider closing meetings where this user is the only meeting
+        // member.
         return
       }
       await r
