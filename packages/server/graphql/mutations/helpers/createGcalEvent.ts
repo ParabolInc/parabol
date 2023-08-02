@@ -5,12 +5,15 @@ import {DataLoaderWorker} from '../../graphql'
 import standardError from '../../../utils/standardError'
 import {CreateGcalEventInput} from '../../public/resolverTypes'
 
+const emailRemindMinsBeforeMeeting = 24 * 60
+const popupRemindMinsBeforeMeeting = 10
+
 const getTeamMemberEmails = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   return teamMembers.map((teamMember) => teamMember.email)
 }
 
-type Props = {
+type Input = {
   gcalInput?: CreateGcalEventInput | null
   meetingId: string
   teamId: string
@@ -18,8 +21,8 @@ type Props = {
   dataLoader: DataLoaderWorker
 }
 
-const createGcalEvent = async (props: Props) => {
-  const {gcalInput, meetingId, teamId, viewerId, dataLoader} = props
+const createGcalEvent = async (input: Input) => {
+  const {gcalInput, meetingId, teamId, viewerId, dataLoader} = input
   if (!gcalInput) return
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {email: viewerEmail, featureFlags} = viewer
@@ -51,8 +54,6 @@ const createGcalEvent = async (props: Props) => {
   const attendees = inviteTeam ? await getTeamMemberEmails(teamId, dataLoader) : [viewerEmail]
   const attendeesWithEmailObjects = attendees.map((email) => ({email}))
 
-  const oneDayInMins = 24 * 60
-  const tenMins = 10
   const event = {
     summary: title,
     location: meetingUrl,
@@ -69,8 +70,8 @@ const createGcalEvent = async (props: Props) => {
     reminders: {
       useDefault: false,
       overrides: [
-        {method: 'email', minutes: oneDayInMins},
-        {method: 'popup', minutes: tenMins}
+        {method: 'email', minutes: emailRemindMinsBeforeMeeting},
+        {method: 'popup', minutes: popupRemindMinsBeforeMeeting}
       ]
     }
   }
