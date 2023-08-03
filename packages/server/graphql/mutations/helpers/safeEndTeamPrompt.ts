@@ -27,13 +27,10 @@ const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalCon
   await r
     .table('NewMeeting')
     .get(meeting.id)
-    .update(
-      {
-        summary,
-        usedReactjis
-      },
-      {nonAtomic: true}
-    )
+    .update({
+      summary,
+      usedReactjis
+    })
     .run()
 
   dataLoader.get('newMeetings').clear(meeting.id)

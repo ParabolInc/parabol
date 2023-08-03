@@ -1,6 +1,6 @@
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
-import {isAISummaryAllowed} from './canAccessAISummary'
+import canAccessAISummary from './canAccessAISummary'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 
@@ -12,10 +12,12 @@ const generateStandupMeetingSummary = async (
     dataLoader.get('users').loadNonNull(meeting.facilitatorUserId),
     dataLoader.get('teams').loadNonNull(meeting.teamId)
   ])
-  const organization = await dataLoader.get('organizations').load(team.orgId)
-  const isAISummaryAccessible =
-    (await isAISummaryAllowed(team, facilitator.featureFlags, dataLoader)) &&
-    organization.featureFlags?.includes('standupAISummary')
+  const isAISummaryAccessible = await canAccessAISummary(
+    team,
+    facilitator.featureFlags,
+    dataLoader,
+    'standup'
+  )
 
   if (!isAISummaryAccessible) return
   const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
