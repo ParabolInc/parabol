@@ -214,9 +214,9 @@ const addStandupResponsesToThread = async (
     standupResponses.map(async ({user, response}) => {
       const options = {
         searchParams: {
-          utm_source: 'slack share',
+          utm_source: 'slack standup summary',
           utm_medium: 'product',
-          utm_campaign: 'sharing',
+          utm_campaign: 'standups',
           responseId: response.id
         }
       }
