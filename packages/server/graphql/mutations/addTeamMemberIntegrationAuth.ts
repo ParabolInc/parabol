@@ -109,7 +109,8 @@ const addTeamMemberIntegrationAuth = {
         const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
         if ('expiresIn' in authRes) {
           const {expiresIn, ...metadata} = authRes
-          const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
+          const buffer = 30
+          const expiresAtTimestamp = new Date().getTime() + (expiresIn - buffer) * 1000
           const expiresAt = new Date(expiresAtTimestamp)
           tokenMetadata = {
             expiresAt,

@@ -45,7 +45,7 @@ export const freshGcalAuth = (parent: RootDataLoader) => {
               refreshToken: refreshToken,
               expiresAt
             }
-            upsertTeamMemberIntegrationAuth(newGcalAuth)
+            await upsertTeamMemberIntegrationAuth(newGcalAuth)
             return newGcalAuth
           }
           return gcalAuth as IGetTeamMemberIntegrationAuthQueryResult
