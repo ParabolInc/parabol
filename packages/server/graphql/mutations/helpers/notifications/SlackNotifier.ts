@@ -256,9 +256,9 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   async standupResponseSubmitted(meeting, team, user, response) {
     const options = {
       searchParams: {
-        utm_source: 'slack share',
+        utm_source: 'slack standup submission',
         utm_medium: 'product',
-        utm_campaign: 'sharing',
+        utm_campaign: 'standups',
         responseId: response.id
       }
     }
