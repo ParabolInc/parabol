@@ -362,7 +362,8 @@ export const MattermostNotifier: Notifier = {
     if (!meeting || !team) return
     ;(await getMattermost(dataLoader, team.id, meeting.facilitatorUserId))?.endMeeting(
       meeting,
-      team
+      team,
+      null
     )
   },
 

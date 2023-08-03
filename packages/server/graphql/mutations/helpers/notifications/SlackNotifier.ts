@@ -187,6 +187,68 @@ const makeStartMeetingNotificationLookup: Record<
   poker: makeGenericStartMeetingNotification
 }
 
+const addStandupResponsesToThread = async (
+  res: PostMessageResponse,
+  standupResponses: Array<{user: User; response: TeamPromptResponse}> | null,
+  team: Team,
+  meeting: Meeting,
+  notificationChannel: NotificationChannel
+) => {
+  if (!standupResponses || standupResponses.length === 0) {
+    const message = 'No responses were submitted'
+    const threadRes = await notifySlack(
+      notificationChannel,
+      'meetingEnd',
+      team.id,
+      message,
+      message,
+      res.ts
+    )
+    if ('error' in threadRes) {
+      return handleError(threadRes, team.id, notificationChannel)
+    }
+    return 'success'
+  }
+
+  const results = await Promise.all(
+    standupResponses.map(async ({user, response}) => {
+      const options = {
+        searchParams: {
+          utm_source: 'slack share',
+          utm_medium: 'product',
+          utm_campaign: 'sharing',
+          responseId: response.id
+        }
+      }
+      const responseUrl = makeAppURL(appOrigin, `meet/${meeting.id}/responses`, options)
+      const threadBlocks: Array<{type: string}> = [
+        makeSection(`${user.preferredName} responded:`),
+        makeSection(response.plaintextContent),
+        makeButtons([{text: 'See their response', url: responseUrl, type: 'primary'}])
+      ]
+      const threadRes = await notifySlack(
+        notificationChannel,
+        'meetingEnd',
+        team.id,
+        threadBlocks,
+        undefined,
+        res.ts
+      )
+      if ('error' in threadRes) {
+        return handleError(threadRes, team.id, notificationChannel)
+      }
+      return 'success'
+    })
+  )
+
+  // Return the first error if one exists.
+  const error = results.find((res) => res !== 'success')
+  if (error) {
+    return error
+  }
+  return 'success'
+}
+
 export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNotificationAuth> = (
   notificationChannel
 ) => ({
@@ -232,58 +294,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       return 'success'
     }
 
-    if (!standupResponses || standupResponses.length === 0) {
-      const threadBlocks: Array<{type: string}> = [makeSection('No responses were submitted')]
-      const threadRes = await notifySlack(
-        notificationChannel,
-        'meetingEnd',
-        team.id,
-        threadBlocks,
-        title,
-        res.ts
-      )
-      if ('error' in threadRes) {
-        return handleError(threadRes, team.id, notificationChannel)
-      }
-      return 'success'
-    }
-
-    const results = await Promise.all(
-      standupResponses.map(async ({user, response}) => {
-        const options = {
-          searchParams: {
-            utm_source: 'slack share',
-            utm_medium: 'product',
-            utm_campaign: 'sharing',
-            responseId: response.id
-          }
-        }
-        const responseUrl = makeAppURL(appOrigin, `meet/${meeting.id}/responses`, options)
-        const threadBlocks: Array<{type: string}> = [
-          makeSection(`${user.preferredName} responded:`),
-          makeSection(response.plaintextContent),
-          makeButtons([{text: 'See their response', url: responseUrl, type: 'primary'}])
-        ]
-        const threadRes = await notifySlack(
-          notificationChannel,
-          'meetingEnd',
-          team.id,
-          threadBlocks,
-          title,
-          res.ts
-        )
-        if ('error' in threadRes) {
-          return handleError(threadRes, team.id, notificationChannel)
-        }
-        return 'success'
-      })
-    )
-
-    const error = results.find((res) => res !== 'success')
-    if (error) {
-      return error
-    }
-    return 'success'
+    return addStandupResponsesToThread(res, standupResponses, team, meeting, notificationChannel)
   },
 
   async startTimeLimit(scheduledEndTime, meeting, team) {
@@ -407,7 +418,7 @@ export const SlackNotifier: Notifier = {
     const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     const meetingResponses = await getTeamPromptResponsesByMeetingId(meetingId)
     const standupResponses: Array<{user: User; response: TeamPromptResponse}> = []
-    Promise.allSettled(
+    await Promise.allSettled(
       meetingResponses.map(async (response) => {
         const user = await dataLoader.get('users').load(response.userId)
         if (user) {
