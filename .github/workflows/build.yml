@@ -9,6 +9,7 @@ env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 
+
 jobs:
   build:
     runs-on: ubuntu-4core
@@ -90,6 +91,8 @@ jobs:
 
       - name: Build for deploying
         if: env.DOCKERIZE == 'true'
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
         run: yarn build --no-deps
 
       - name: Verify source is clean
