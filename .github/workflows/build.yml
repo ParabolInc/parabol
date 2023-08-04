@@ -90,8 +90,6 @@ jobs:
 
       - name: Build for deploying
         if: env.DOCKERIZE == 'true'
-        env:
-          NODE_OPTIONS: "--max_old_space_size=8192"
         run: yarn build --no-deps
 
       - name: Verify source is clean
