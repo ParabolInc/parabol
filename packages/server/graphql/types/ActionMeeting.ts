@@ -4,7 +4,6 @@ import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
 import ActionMeetingMember from './ActionMeetingMember'
-import ActionMeetingSettings from './ActionMeetingSettings'
 import AgendaItem from './AgendaItem'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
@@ -57,13 +56,6 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       description: 'The team members that were active during the time of the meeting',
       resolve: ({id: meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-      }
-    },
-    settings: {
-      type: new GraphQLNonNull(ActionMeetingSettings),
-      description: 'The settings that govern the action meeting',
-      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
-        return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'action'})
       }
     },
     taskCount: {

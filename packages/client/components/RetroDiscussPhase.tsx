@@ -163,8 +163,10 @@ const RetroDiscussPhase = (props: Props) => {
         localStage {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
-        settings {
-          ...DiscussionThreadListEmptyState_settings
+        team {
+          meetingSettings(meetingType: retrospective) {
+            ...DiscussionThreadListEmptyState_settings
+          }
         }
       }
     `,
@@ -179,8 +181,9 @@ const RetroDiscussPhase = (props: Props) => {
     organization,
     showTranscription,
     transcription,
-    settings
+    team
   } = meeting
+  const {meetingSettings} = team
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
@@ -268,7 +271,7 @@ const RetroDiscussPhase = (props: Props) => {
                     <DiscussionThreadListEmptyState
                       allowTasks={true}
                       isReadOnly={allowedThreadables.length === 0}
-                      settingsRef={settings}
+                      settingsRef={meetingSettings}
                       showTranscription={showTranscription}
                     />
                   }
