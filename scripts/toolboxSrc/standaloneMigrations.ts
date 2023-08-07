@@ -26,16 +26,12 @@ const migrateRethinkDB = async () => {
     const {name} = path.parse(relativePath)
     collector[name] = context(relativePath)
   })
-  try {
-    await rethinkMigrate.up({all: true, migrations: collector})
-  } catch (e) {
-    console.error('Migration error', e)
-  }
+  await rethinkMigrate.up({all: true, migrations: collector})
   console.log('👴 RethinkDB Migraiton Complete')
 }
 
 const migratePG = async () => {
-  console.log('🐘 Postgres Migraiton Started')
+  console.log('🐘 Postgres Migration Started')
   // pgm uses a dynamic require statement, which doesn't work with webpack
   // if we ignore that dynamic require, we'd still have to include the migrations directory AND any dependencies it might have
   // by processing through webpack's require.context, we let webpack handle everything
@@ -58,7 +54,7 @@ const migratePG = async () => {
     migrations: collector
   }
   await pgMigrate(programmaticPgmConfig as any)
-  console.log('🐘 Postgres Migraiton Complete')
+  console.log('🐘 Postgres Migration Complete')
 }
 
 const migrateDBs = async () => {

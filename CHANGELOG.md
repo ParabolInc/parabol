@@ -5,6 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.114.1 2023-Jul-31
+
+### Fixed
+
+- initialize reduce function in getLastUsedDateForTeams
+
+## 6.114.0 2023-Jul-26
+
+### Added
+
+- feat: teams view (#8510)
+- feat: Add team filter in timeline history page (#8521)
+- feat(discussionPromptQuestion): Generate discussion prompt question for discussions (#8462)
+- feat: show stripe invoices (#8534)
+- feat: Add meetings to the team dashboard (#8551)
+- feat: add gcal integration user flag (#8180)
+- feat: add gcal integration UI (#8181)
+- feat: Add team insights feature flag and types (#8556)
+- feat: implement logic for new ready button (#8532)
+
+### Changed
+
+- chore(share-summary): add utm params and reflectionGroupId param (#8522)
+- chore: bump node to 18.17.0 (#8565)
+
+### Fixed
+
+- fix(standups): Error when ending standup (#8540)
+- fix: Correctly show error when email invite fails (#8541)
+- fix: stripe console err (#8545)
+- fix(al): Speedup subcategory resolver (#8564)
+
 ## 6.113.0 2023-Jul-19
 
 ### Added
