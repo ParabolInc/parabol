@@ -110,7 +110,6 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
     const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
     const suggestedThemeCountMax = Math.floor(reflectionsText.length / 3)
-
     // Specify the approximate number of themes as it will often create too many themes otherwise
     const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
       ', '
