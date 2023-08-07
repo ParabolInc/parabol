@@ -10,6 +10,7 @@ export async function up() {
   `)
   await client.end()
 }
+
 export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
