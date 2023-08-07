@@ -23,6 +23,7 @@ const storePersistedQueries = async () => {
 
   const r = await getRethink()
   const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
+  // without this sleep RethinkDB closes the connection before the query completes. It doesn't make sense!
   await new Promise((resolve) => setTimeout(resolve, 50))
   await r.getPoolMaster()?.drain()
 
