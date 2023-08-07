@@ -258,7 +258,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       searchParams: {
         utm_source: 'slack standup submission',
         utm_medium: 'product',
-        utm_campaign: 'standups',
+        utm_campaign: 'notifications',
         responseId: response.id
       }
     }
