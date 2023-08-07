@@ -23,6 +23,9 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - Fix open pgtyped connections after running yarn dev (#8583)
 - Do not trust invites sent to emails from the untrusted domains (#8584)
+- unable to ungroup some reflection groups (#8623)
+- increase size of the runner used for the build action (#8619)
+- fix: make AIGeneratedDiscussionPrompt org level feature flag (#8601)
 
 ## 6.114.1 2023-Jul-31
 
