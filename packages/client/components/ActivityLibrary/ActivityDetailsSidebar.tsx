@@ -40,14 +40,13 @@ interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
-  category: string
   isOpen: boolean
   preferredTeamId: string | null
   viewerRef: ActivityDetailsSidebar_viewer$key
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, category, isOpen, preferredTeamId, viewerRef} = props
+  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId, viewerRef} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -238,8 +237,18 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
-          {category === 'oneonone' ? (
-            <>TODO: New user picker will be here</>
+          {selectedTemplate.id === 'oneOnOneAction' ? (
+            // TODO: replace it with new user picker
+            <NewMeetingTeamPicker
+              positionOverride={MenuPosition.UPPER_LEFT}
+              onSelectTeam={(teamId) => {
+                const newTeam = availableTeams.find((team) => team.id === teamId)
+                newTeam && setSelectedTeam(newTeam)
+              }}
+              selectedTeamRef={selectedTeam}
+              teamsRef={availableTeams}
+              customPortal={teamScopePopover}
+            />
           ) : (
             <NewMeetingTeamPicker
               positionOverride={MenuPosition.UPPER_LEFT}

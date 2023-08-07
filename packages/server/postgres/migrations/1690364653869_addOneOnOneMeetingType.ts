@@ -27,7 +27,7 @@ export async function up() {
     illustrationUrl: getTemplateIllustrationUrl('action.png'),
     isStarter: true,
     lastUsedAt: null,
-    mainCategory: 'oneonone',
+    mainCategory: 'standup',
     orgId: 'aGhostOrg',
     parentTemplateId: null,
     scope: 'PUBLIC',

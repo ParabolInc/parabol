@@ -196,16 +196,14 @@ export const ActivityLibrary = (props: Props) => {
   const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
 
   const templates = useMemo(() => {
-    let templatesMap = availableTemplates.edges.map((edge) => edge.node)
+    const templatesMap = availableTemplates.edges.map((edge) => edge.node)
     if (!hasOneOnOneFeatureFlag) {
-      templatesMap = templatesMap.filter((template) => template.category !== 'oneonone')
+      return templatesMap.filter((template) => template.id !== 'oneOnOneAction')
     }
     return templatesMap
   }, [availableTemplates])
 
-  const availableCategoryIds = hasOneOnOneFeatureFlag
-    ? Object.keys(CATEGORY_ID_TO_NAME)
-    : Object.keys(CATEGORY_ID_TO_NAME).filter((id) => id !== 'oneonone')
+  const availableCategoryIds = Object.keys(CATEGORY_ID_TO_NAME)
 
   const {
     query: searchQuery,
