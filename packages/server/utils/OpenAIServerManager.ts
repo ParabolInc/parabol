@@ -109,11 +109,12 @@ class OpenAIServerManager {
   async generateThemes(reflectionsText: string[]) {
     if (!this.openAIApi) return null
     const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
-    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 4)
+    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 3)
+
     // Specify the approximate number of themes as it will often create too many themes otherwise
     const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
       ', '
-    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} or ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
+    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} to ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
 
     try {
       const response = await this.openAIApi.createChatCompletion({
