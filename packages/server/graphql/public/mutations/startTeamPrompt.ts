@@ -12,12 +12,13 @@ import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 import {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
+import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 
 const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, recurrenceSettings},
+  {teamId, recurrenceSettings, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
@@ -59,21 +60,22 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     )
   ])
 
+  const {id: meetingId} = meeting
   if (recurrenceSettings?.rrule) {
     const meetingSeries = await startNewMeetingSeries(
       viewerId,
       teamId,
-      meeting.id,
+      meetingId,
       meeting.name,
       recurrenceSettings.rrule,
       recurrenceSettings.name
     )
     analytics.recurrenceStarted(viewerId, meetingSeries)
   }
-
-  IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
+  createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+  IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewerId, meeting)
-  const data = {teamId, meetingId: meeting.id}
+  const data = {teamId, meetingId: meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return data
 }

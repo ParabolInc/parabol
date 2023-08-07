@@ -19,7 +19,9 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
+import CreateGcalEventInput, {CreateGcalEventInputType} from '../public/types/CreateGcalEventInput'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
+import createGcalEvent from './helpers/createGcalEvent'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
@@ -71,11 +73,15 @@ export default {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team starting the meeting'
+    },
+    gcalInput: {
+      type: CreateGcalEventInput,
+      description: 'The gcal event to create. If not provided, no event will be created'
     }
   },
   async resolve(
     _source: unknown,
-    {teamId}: {teamId: string},
+    {teamId, gcalInput}: {teamId: string; gcalInput?: CreateGcalEventInputType},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()
@@ -164,6 +170,7 @@ export default {
         .run(),
       updateTeamByTeamId(updates, teamId)
     ])
+    createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting, template)
     const data = {teamId, meetingId: meetingId}
