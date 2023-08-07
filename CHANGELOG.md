@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.115.0 2023-Aug-01
+
+### Added
+
+- Activity Library: roll out Activity Library to all new users (#8574)
+- Add emoji insights (#8563)
+- AI Summary: Replace GPT-3 with GPT-3.5 for aiSummary (#8227)
+- Humanize count down timer (#8596)
+
+### Changed
+
+- Update enterprise advantages (#8577)
+- Remove and ignore pg.d.ts (#8587)
+
+### Fixed
+
+- Fix open pgtyped connections after running yarn dev (#8583)
+- Do not trust invites sent to emails from the untrusted domains (#8584)
+- unable to ungroup some reflection groups (#8623)
+- increase size of the runner used for the build action (#8619)
+- fix: make AIGeneratedDiscussionPrompt org level feature flag (#8601)
+
 ## 6.114.1 2023-Jul-31
 
 ### Fixed
@@ -15,80 +37,80 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-- feat: teams view (#8510)
-- feat: Add team filter in timeline history page (#8521)
-- feat(discussionPromptQuestion): Generate discussion prompt question for discussions (#8462)
-- feat: show stripe invoices (#8534)
-- feat: Add meetings to the team dashboard (#8551)
-- feat: add gcal integration user flag (#8180)
-- feat: add gcal integration UI (#8181)
-- feat: Add team insights feature flag and types (#8556)
-- feat: implement logic for new ready button (#8532)
+- teams view (#8510)
+- Add team filter in timeline history page (#8521)
+- **discussionPromptQuestion**: Generate discussion prompt question for discussions (#8462)
+- show stripe invoices (#8534)
+- Add meetings to the team dashboard (#8551)
+- add gcal integration user flag (#8180)
+- add gcal integration UI (#8181)
+- Add team insights feature flag and types (#8556)
+- implement logic for new ready button (#8532)
 
 ### Changed
 
-- chore(share-summary): add utm params and reflectionGroupId param (#8522)
-- chore: bump node to 18.17.0 (#8565)
+- **share-summary**: add utm params and reflectionGroupId param (#8522)
+- bump node to 18.17.0 (#8565)
 
 ### Fixed
 
-- fix(standups): Error when ending standup (#8540)
-- fix: Correctly show error when email invite fails (#8541)
-- fix: stripe console err (#8545)
-- fix(al): Speedup subcategory resolver (#8564)
+- **standups**: Error when ending standup (#8540)
+- Correctly show error when email invite fails (#8541)
+- stripe console err (#8545)
+- **al**: Speedup subcategory resolver (#8564)
 
 ## 6.113.0 2023-Jul-19
 
 ### Added
 
-- feat: add Zoom transcription bot in discuss phase (#8517)
-- feat: retry invoice after failed payment (#8478)
-- feat: show loading feedback while upgrading (#8514)
-- feat: Add timer sound effect (#8508)
-- feat(share-summary): Share summary mutation (#8412)
-- feat: Add eventType filter in timeline view (#8397)
-- feat: Add Team Health tips (#8506)
+- add Zoom transcription bot in discuss phase (#8517)
+- retry invoice after failed payment (#8478)
+- show loading feedback while upgrading (#8514)
+- Add timer sound effect (#8508)
+- **share-summary**: Share summary mutation (#8412)
+- Add eventType filter in timeline view (#8397)
+- Add Team Health tips (#8506)
 
 ### Changed
 
-- chore: add RetroReflectionGroup table to PG (Part 1 of 3) (#8504)
-- chore(share-summary): share summary dialog UI (#8463)
-- chore: add radix Select component (#8460)
-- chore: Replace TeamHealth answer emojis with their text representation (#8449)
-- chore: remove old autogroup mutation (#8505)
+- add RetroReflectionGroup table to PG (Part 1 of 3) (#8504)
+- **share-summary**: share summary dialog UI (#8463)
+- add radix Select component (#8460)
+- Replace TeamHealth answer emojis with their text representation (#8449)
+- remove old autogroup mutation (#8505)
 
 ### Fixed
 
-- fix: can create team within existing org (#8512)
-- fix: avoid pronoun assumptions in ai summary (#8509)
+- can create team within existing org (#8512)
+- avoid pronoun assumptions in ai summary (#8509)
 
 ## 6.112.0 2023-Jul-12
 
 ### Changed
 
-- chore: drop unused RethinkDB tables (#8501)
-- chore: bump pg to v12.15 (#8487)
+- drop unused RethinkDB tables (#8501)
+- bump pg to v12.15 (#8487)
 
 ### Fixed
 
-- fix: show correct drawer info after upgrade (#8485)
-- fix: use unique server name for fresh namespace (#8416)
-- chore: replace xml-lint due to mem leak (#8499)
-- fix: Fix create Parabol task in Sprint Poker (#8496)
-- fix: Limit number of teams that can be moved in one moveTeamToOrg call (#8486)
-- fix: can create tasks (#8472)
+- show correct drawer info after upgrade (#8485)
+- use unique server name for fresh namespace (#8416)
+- replace xml-lint due to mem leak (#8499)
+- Fix create Parabol task in Sprint Poker (#8496)
+- Limit number of teams that can be moved in one moveTeamToOrg call (#8486)
+- can create tasks (#8472)
 
 ### Added
 
-- feat: add invite all checkbox (#8482)
-- chore: add metrics to invite on team creation (#8479)
-- feat: invite users on team creation (#8476)
-- chore(suggest-groups): add suggest groups metrics (#8459)
-- feat(suggest-groups): add loading feedback while waiting for OpenAI response (#8440)
-- chore: chronos in monorepo (#8429)
-- chore: refactor postDeploy to preDeploy (#8446)
-- chore: add radix Dialog component (#8450)
-- fix: upgrade graphiql (#8461)
+- add invite all checkbox (#8482)
+- add metrics to invite on team creation (#8479)
+- invite users on team creation (#8476)
+- **suggest-groups**: add suggest groups metrics (#8459)
+- **suggest-groups**: add loading feedback while waiting for OpenAI response (#8440)
+- chronos in monorepo (#8429)
+- refactor postDeploy to preDeploy (#8446)
+- add radix Dialog component (#8450)
+- upgrade graphiql (#8461)
 
 ## 6.111.0 2023-Jul-05
 
