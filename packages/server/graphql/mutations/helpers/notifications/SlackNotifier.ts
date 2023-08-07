@@ -216,7 +216,7 @@ const addStandupResponsesToThread = async (
         searchParams: {
           utm_source: 'slack standup summary',
           utm_medium: 'product',
-          utm_campaign: 'standups',
+          utm_campaign: 'after-meeting',
           responseId: response.id
         }
       }
