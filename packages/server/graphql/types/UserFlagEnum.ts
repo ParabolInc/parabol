@@ -9,7 +9,7 @@ const UserFlagEnum = new GraphQLEnumType({
     noAISummary: {},
     noMeetingHistoryLimit: {},
     checkoutFlow: {},
-    canViewTeamsInDomain: {},
+    canViewTeamsInDomain: {}, // careful with this flag. They will see all teams in their domain
     gcal: {}
   }
 })

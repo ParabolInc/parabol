@@ -8,7 +8,7 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   noMeetingHistoryLimit: ({noMeetingHistoryLimit}) => !!noMeetingHistoryLimit,
   checkoutFlow: ({checkoutFlow}) => !!checkoutFlow,
   retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
-  canViewTeamsInDomain: ({canViewTeamsInDomain}) => !!canViewTeamsInDomain,
+  canViewTeamsInDomain: ({canViewTeamsInDomain}) => !!canViewTeamsInDomain, // careful with this flag. They will see all teams in their domain
   gcal: ({gcal}) => !!gcal
 }
 
