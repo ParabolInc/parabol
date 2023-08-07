@@ -8,7 +8,8 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   noMeetingHistoryLimit: ({noMeetingHistoryLimit}) => !!noMeetingHistoryLimit,
   checkoutFlow: ({checkoutFlow}) => !!checkoutFlow,
   retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
-  canViewTeamsInDomain: ({canViewTeamsInDomain}) => !!canViewTeamsInDomain
+  canViewTeamsInDomain: ({canViewTeamsInDomain}) => !!canViewTeamsInDomain,
+  gcal: ({gcal}) => !!gcal
 }
 
 export default UserFeatureFlags

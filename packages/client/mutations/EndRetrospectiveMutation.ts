@@ -47,10 +47,6 @@ graphql`
           }
         }
       }
-      settings {
-        recallBotId
-        videoMeetingURL
-      }
     }
     team {
       id

@@ -43,6 +43,7 @@ export default abstract class Meeting {
   scheduledEndTime?: Date | null
   summary?: string
   sentimentScore?: number
+  usedReactjis?: Record<string, number>
 
   constructor(input: Input) {
     const {

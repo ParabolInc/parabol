@@ -14,6 +14,7 @@ import {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
+import errorFilter from '../../errorFilter'
 
 interface Options {
   evictorUserId?: string
@@ -127,6 +128,44 @@ const removeTeamMember = async (
     .filter({userId})
     .delete()
     .run()
+
+  // Reassign facilitator for meetings this user is facilitating.
+  const facilitatingMeetings = await r
+    .table('NewMeeting')
+    .getAll(r.args(meetingIds), {index: 'id'})
+    .filter({
+      facilitatorUserId: userId
+    })
+    .run()
+
+  const newMeetingFacilitators = (
+    await dataLoader
+      .get('meetingMembersByMeetingId')
+      .loadMany(facilitatingMeetings.map((meeting) => meeting.id))
+  )
+    .filter(errorFilter)
+    .map((members) => members[0])
+    .filter((member) => !!member)
+
+  Promise.allSettled(
+    newMeetingFacilitators.map(async (newFacilitator) => {
+      if (!newFacilitator) {
+        // This user is the only meeting member, so do nothing.
+        // :TODO: (jmtaber129): Consider closing meetings where this user is the only meeting
+        // member.
+        return
+      }
+      await r
+        .table('NewMeeting')
+        .get(newFacilitator.meetingId)
+        .update({
+          facilitatorUserId: newFacilitator.userId,
+          updatedAt: now
+        })
+        .run()
+    })
+  )
+
   return {
     user,
     notificationId,

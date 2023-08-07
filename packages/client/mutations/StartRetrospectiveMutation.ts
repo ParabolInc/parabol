@@ -15,8 +15,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartRetrospectiveMutation($teamId: ID!) {
-    startRetrospective(teamId: $teamId) {
+  mutation StartRetrospectiveMutation($teamId: ID!, $gcalInput: CreateGcalEventInput) {
+    startRetrospective(teamId: $teamId, gcalInput: $gcalInput) {
       ... on ErrorPayload {
         error {
           message

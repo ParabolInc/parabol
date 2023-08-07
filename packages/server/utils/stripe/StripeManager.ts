@@ -6,7 +6,10 @@ export default class StripeManager {
   static PARABOL_TEAM_600 = 'parabol-pro-600' // $6/seat/mo
   static PARABOL_ENTERPRISE_2021_LOW = 'plan_2021_ann_low'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {apiVersion: '2020-08-27'})
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2020-08-27',
+    maxNetworkRetries: 3 // retry failed requests up to 3 times. This can happen when accessing the same Stripe object in quick succession: https://github.com/ParabolInc/parabol/issues/8544
+  })
 
   constructEvent(rawBody: string, signature: string) {
     try {

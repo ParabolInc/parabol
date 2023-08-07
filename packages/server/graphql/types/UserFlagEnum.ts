@@ -9,7 +9,8 @@ const UserFlagEnum = new GraphQLEnumType({
     noAISummary: {},
     noMeetingHistoryLimit: {},
     checkoutFlow: {},
-    canViewTeamsInDomain: {}
+    canViewTeamsInDomain: {},
+    gcal: {}
   }
 })
 

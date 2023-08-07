@@ -112,13 +112,13 @@ const resetRetroMeetingToGroupStage = {
       r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
       pg
         .updateTable('RetroReflectionGroup')
-        .set({voterIds: []})
+        .set({voterIds: [], summary: null, discussionPromptQuestion: null})
         .where('id', 'in', reflectionGroupIds)
         .execute(),
       r
         .table('RetroReflectionGroup')
         .getAll(r.args(reflectionGroupIds))
-        .update({voterIds: []})
+        .update({voterIds: [], summary: null, discussionPromptQuestion: null})
         .run(),
       r.table('NewMeeting').get(meetingId).update({phases: newPhases}).run(),
       (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)

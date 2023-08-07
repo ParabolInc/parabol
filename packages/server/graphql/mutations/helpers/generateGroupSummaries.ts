@@ -15,6 +15,7 @@ const generateGroupSummaries = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
+  const organization = await dataLoader.get('organizations').load(team.orgId)
   const isAISummaryAccessible = await canAccessAISummary(team, facilitator.featureFlags, dataLoader)
   if (!isAISummaryAccessible) return
   const [reflections, reflectionGroups] = await Promise.all([
@@ -29,6 +30,9 @@ const generateGroupSummaries = async (
     sendToSentry(error, {userId: facilitator.id, tags: {meetingId}})
     return
   }
+  const aiGeneratedDiscussionPromptEnabled = organization.featureFlags?.includes(
+    'AIGeneratedDiscussionPrompt'
+  )
   await Promise.all(
     reflectionGroups.map(async (group) => {
       const reflectionsByGroupId = reflections.filter(
@@ -38,12 +42,26 @@ const generateGroupSummaries = async (
       const reflectionTextByGroupId = reflectionsByGroupId.map(
         ({plaintextContent}) => plaintextContent
       )
-      const fullSummary = await manager.getSummary(reflectionTextByGroupId)
-      if (!fullSummary) return
-      const summary = fullSummary.slice(0, 2000)
+      const [fullSummary, fullQuestion] = await Promise.all([
+        manager.getSummary(reflectionTextByGroupId),
+        aiGeneratedDiscussionPromptEnabled
+          ? manager.getDiscussionPromptQuestion(group.title ?? 'Unknown', reflectionsByGroupId)
+          : undefined
+      ])
+      if (!fullSummary && !fullQuestion) return
+      const summary = fullSummary?.slice(0, 2000)
+      const discussionPromptQuestion = fullQuestion?.slice(0, 2000)
       return Promise.all([
-        pg.updateTable('RetroReflectionGroup').set({summary}).where('id', '=', group.id).execute(),
-        r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
+        pg
+          .updateTable('RetroReflectionGroup')
+          .set({summary, discussionPromptQuestion})
+          .where('id', '=', group.id)
+          .execute(),
+        r
+          .table('RetroReflectionGroup')
+          .get(group.id)
+          .update({summary, discussionPromptQuestion})
+          .run()
       ])
     })
   )

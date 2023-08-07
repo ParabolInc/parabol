@@ -12,6 +12,7 @@ enum UserFlagEnum {
   checkoutFlow
   retrosInDisguise
   canViewTeamsInDomain
+  gcal
 }
 
 """
@@ -28,6 +29,7 @@ type UserFeatureFlags {
   checkoutFlow: Boolean!
   retrosInDisguise: Boolean!
   canViewTeamsInDomain: Boolean!
+  gcal: Boolean!
 }
 
 extend type Mutation {

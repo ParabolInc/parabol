@@ -4,10 +4,12 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   SAMLUI: ({SAMLUI}) => !!SAMLUI,
   noAISummary: ({noAISummary}) => !!noAISummary,
   promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg,
+  AIGeneratedDiscussionPrompt: ({AIGeneratedDiscussionPrompt}) => !!AIGeneratedDiscussionPrompt,
   zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,
   shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
-  teamsLimit: ({teamsLimit}) => !!teamsLimit
+  teamsLimit: ({teamsLimit}) => !!teamsLimit,
+  teamInsights: ({teamInsights}) => !!teamInsights
 }
 
 export default OrganizationFeatureFlags

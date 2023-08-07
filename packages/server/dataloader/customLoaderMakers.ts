@@ -430,6 +430,39 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
   )
 }
 
+// :TODO:(jmtaber129): Generalize this to all meeting types if needed.
+export const retroTemplateLastUsedByTeam = (parent: RootDataLoader) => {
+  return new DataLoader<string, Record<string, Date>, string>(
+    async (teamIds) => {
+      const r = await getRethink()
+      const groups = (await (
+        r
+          .table('NewMeeting')
+          .getAll(r.args(teamIds), {index: 'teamId'})
+          .filter({meetingType: 'retrospective'})
+          .group((row) => ({teamId: row('teamId'), templateId: row('templateId')})) as any
+      )
+        .map((row: RDatum<AnyMeeting>) => row('createdAt'))
+        .reduce((timeA: Date, timeB: Date) => (timeA > timeB ? timeA : timeB))
+        .ungroup()
+        .run()) as {group: {teamId: string; templateId: string}; reduction: Date}[]
+      const lookup: Record<string, Record<string, Date>> = {}
+      groups.forEach(({group, reduction}) => {
+        if (lookup[group.teamId]) {
+          lookup[group.teamId]![group.templateId] = reduction
+        } else {
+          lookup[group.teamId] = {[group.templateId]: reduction}
+        }
+      })
+
+      return teamIds.map((teamId) => lookup[teamId] || {})
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, MeetingTemplate[], string>(
     async (orgIds) => {
