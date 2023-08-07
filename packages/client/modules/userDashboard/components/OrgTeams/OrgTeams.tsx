@@ -58,10 +58,11 @@ const OrgTeams = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {viewer} = data
   const {featureFlags, company, organization} = viewer
-  const {activeDomain, teams, isBillingLeader, name} = organization ?? {}
-  const {canViewTeamsInDomain} = featureFlags
+  const {id: viewerDomain} = company ?? {}
+  const {activeDomain: orgActiveDomain, teams, isBillingLeader, name} = organization ?? {}
+  const canViewTeamsInDomain = viewerDomain === orgActiveDomain && featureFlags.canViewTeamsInDomain
   const ALL_TEAMS_IN_ORG = `All Teams In ${name}`
-  const ALL_TEAMS_IN_DOMAIN = `All Teams In ${activeDomain}`
+  const ALL_TEAMS_IN_DOMAIN = `All Teams In ${orgActiveDomain}`
   const [isDomainSelected, setIsDomainSelected] = useState(canViewTeamsInDomain)
 
   const teamsByDomain = useMemo(() => {
