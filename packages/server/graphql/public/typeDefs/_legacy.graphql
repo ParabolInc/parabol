@@ -1505,6 +1505,18 @@ type MattermostIntegration {
   sharedProviders: [IntegrationProviderWebhook!]!
 }
 
+type MSTeamsIntegration {
+  """
+  The OAuth2 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthWebhook
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderWebhook!]!
+}
+
 """
 An integration authorization that connects via Webhook auth strategy
 """

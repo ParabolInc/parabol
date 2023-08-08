@@ -57,7 +57,7 @@ const GcalProviderRow = (props: Props) => {
   const {gcal} = integrations
   if (!gcal || !gcal.cloudProvider) return null
   const {auth, cloudProvider} = gcal
-  const hasAuth = !!(auth && auth.providerId)
+  const hasAuth = !!auth?.providerId
 
   const openOAuth = () => {
     const {clientId, id: providerId} = cloudProvider

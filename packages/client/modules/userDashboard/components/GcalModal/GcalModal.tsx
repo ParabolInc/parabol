@@ -149,10 +149,11 @@ const GcalModal = (props: Props) => {
             <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
           </div>
           <div className='flex items-center pt-4'>
-            <Checkbox active={inviteTeam} onClick={() => setInviteTeam(!inviteTeam)} />
+            <Checkbox active={inviteTeam} />
             <label
               htmlFor='link-checkbox'
-              className='text-gray-900 dark:text-gray-300 ml-2 text-sm font-medium'
+              className='text-gray-900 dark:text-gray-300 ml-2 text-sm font-medium hover:cursor-pointer'
+              onClick={() => setInviteTeam(!inviteTeam)}
             >
               Send a Google Calendar invite to my team members
             </label>

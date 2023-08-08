@@ -70,9 +70,7 @@ const query = graphql`
           }
           gcal {
             auth {
-              provider {
-                scope
-              }
+              id
             }
           }
           github {
