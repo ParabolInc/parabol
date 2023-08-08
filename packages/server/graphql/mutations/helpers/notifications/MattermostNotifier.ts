@@ -23,6 +23,7 @@ import {
 } from './makeMattermostAttachments'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
+import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 
 const notifyMattermost = async (
   event: EventEnum,
@@ -316,6 +317,10 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
       )
     ]
     return notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
+  },
+  async standupResponseSubmitted() {
+    // Not implemented
+    return 'success'
   }
 })
 
@@ -387,5 +392,26 @@ export const MattermostNotifier: Notifier = {
 
   async integrationUpdated(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
     ;(await getMattermost(dataLoader, teamId, userId))?.integrationUpdated()
+  },
+
+  async standupResponseSubmitted(
+    dataLoader: DataLoaderWorker,
+    meetingId: string,
+    teamId: string,
+    userId: string
+  ) {
+    const [{meeting, team}, user, responses] = await Promise.all([
+      loadMeetingTeam(dataLoader, meetingId, teamId),
+      dataLoader.get('users').load(userId),
+      getTeamPromptResponsesByMeetingId(meetingId)
+    ])
+    const response = responses.find(({userId: responseUserId}) => responseUserId === userId)
+    if (!meeting || !team || !response || !user) return
+    ;(await getMattermost(dataLoader, teamId, userId))?.standupResponseSubmitted(
+      meeting,
+      team,
+      user,
+      response
+    )
   }
 }
