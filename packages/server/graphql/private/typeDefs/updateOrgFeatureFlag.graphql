@@ -11,6 +11,7 @@ enum OrganizationFeatureFlagsEnum {
   shareSummary
   teamsLimit
   teamInsights
+  oneOnOne
 }
 
 extend type Mutation {
