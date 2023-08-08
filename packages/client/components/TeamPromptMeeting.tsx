@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useEffect, useMemo} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment, useLazyLoadQuery} from 'react-relay'
 import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
@@ -26,6 +26,7 @@ import {
 import {TeamPromptMeetingStatus} from './TeamPrompt/TeamPromptMeetingStatus'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
+import {TeamPromptMeetingQuery} from '../__generated__/TeamPromptMeetingQuery.graphql'
 
 const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
 
@@ -77,6 +78,7 @@ const TeamPromptMeeting = (props: Props) => {
         id
         isRightDrawerOpen
         endedAt
+        teamId
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -98,8 +100,82 @@ const TeamPromptMeeting = (props: Props) => {
     `,
     meetingRef
   )
-  const {phases} = meeting
+  const {phases, teamId} = meeting
   const atmosphere = useAtmosphere()
+
+  const query = useLazyLoadQuery<TeamPromptMeetingQuery>(
+    graphql`
+      query TeamPromptMeetingQuery($teamId: ID!) {
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              github {
+                api {
+                  errors {
+                    message
+                    locations {
+                      line
+                      column
+                    }
+                    path
+                  }
+                  query {
+                    issues: search(
+                      first: 15
+                      type: ISSUE
+                      query: "is:issue sort:updated assignee:@me"
+                    ) @connection(key: "TeamPromptMeeting_issues") {
+                      edges {
+                        node {
+                          __typename
+                          ... on _xGitHubIssue {
+                            ...GitHubScopingSelectAllIssues_issues
+                            id
+                            title
+                            number
+                            repository {
+                              nameWithOwner
+                            }
+                            url
+                            state
+                          }
+                        }
+                      }
+                    }
+                    pullRequests: search(
+                      first: 15
+                      type: ISSUE
+                      query: "is:pr sort:updated involves:@me"
+                    ) @connection(key: "TeamPromptMeeting_pullRequests") {
+                      edges {
+                        node {
+                          __typename
+                          ... on _xGitHubPullRequest {
+                            id
+                            title
+                            number
+                            repository {
+                              nameWithOwner
+                            }
+                            url
+                            state
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {teamId: teamId}
+  )
+
+  const {issues, pullRequests} = query.viewer.teamMember!.integrations.github!.api!.query!
+
   const {viewerId} = atmosphere
 
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
@@ -186,6 +262,45 @@ const TeamPromptMeeting = (props: Props) => {
                         />
                       )
                     })}
+                    <div>
+                      <b>Issues</b>
+                      {issues.edges?.map((edge) => {
+                        const issue = edge?.node
+                        if (!issue || issue.__typename !== '_xGitHubIssue') {
+                          return null
+                        }
+
+                        return (
+                          <div key={issue.id}>
+                            {issue.title}, {issue.repository.nameWithOwner},{' '}
+                            <a className='text-sky-600' href={issue.url}>
+                              #{issue.number}
+                            </a>
+                            , {issue.state}
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    <div>
+                      <b>Pull requests</b>
+                      {pullRequests.edges?.map((edge) => {
+                        const issue = edge?.node
+                        if (!issue || issue.__typename !== '_xGitHubPullRequest') {
+                          return null
+                        }
+
+                        return (
+                          <div key={issue.id}>
+                            {issue.title}, {issue.repository.nameWithOwner},{' '}
+                            <a className='text-sky-600' href={issue.url}>
+                              #{issue.number}
+                            </a>
+                            , {issue.state}
+                          </div>
+                        )
+                      })}
+                    </div>
                   </ResponsesGrid>
                 </ResponsesGridContainer>
               </ErrorBoundary>
