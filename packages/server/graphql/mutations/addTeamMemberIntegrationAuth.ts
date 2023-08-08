@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
-import GCalOAuth2Manager from '../../integrations/gcal/GcalOAuth2Manager'
+import GcalOAuth2Manager from '../../integrations/gcal/GcalOAuth2Manager'
 import JiraServerOAuth1Manager, {
   OAuth1Auth
 } from '../../integrations/jiraServer/JiraServerOAuth1Manager'
@@ -134,7 +134,7 @@ const addTeamMemberIntegrationAuth = {
       }
       if (service === 'gcal') {
         const {clientId, clientSecret, serverBaseUrl} = integrationProvider
-        const manager = new GCalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        const manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
 
         if ('expiresIn' in authRes) {

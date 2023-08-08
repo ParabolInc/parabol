@@ -10,7 +10,7 @@ import GcalConfigMenu from '../../../../components/GcalConfigMenu'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {GcalProviderRow_viewer$key} from '../../../../__generated__/GcalProviderRow_viewer.graphql'
-import GCalClientManager from '../../../../utils/GcalClientManager'
+import GcalClientManager from '../../../../utils/GcalClientManager'
 
 type Props = {
   teamId: string
@@ -61,7 +61,7 @@ const GcalProviderRow = (props: Props) => {
 
   const openOAuth = () => {
     const {clientId, id: providerId} = cloudProvider
-    GCalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
+    GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
   }
 
   return (
