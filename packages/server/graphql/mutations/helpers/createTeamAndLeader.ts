@@ -18,7 +18,7 @@ interface ValidNewTeam {
   isOnboardTeam: boolean
 }
 
-// used for addorg, addTeam
+// used for addorg, addTeam, maybeCreateOneOnOneTeam
 export default async function createTeamAndLeader(user: IUser, newTeam: ValidNewTeam) {
   const r = await getRethink()
   const {id: userId} = user

@@ -17,35 +17,60 @@ import createGcalEvent from './helpers/createGcalEvent'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
+import maybeCreateOneOnOneTeam from './helpers/maybeCreateOneOnOneTeam'
+import OneOnOneTeamInput, {CreateOneOnOneTeamInputType} from '../public/types/OneOnOneTeamInput'
 
 export default {
   type: new GraphQLNonNull(StartCheckInPayload),
   description: 'Start a new meeting',
   args: {
     teamId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The team starting the meeting'
     },
     gcalInput: {
       type: CreateGcalEventInput,
       description: 'The gcal event to create. If not provided, no event will be created'
+    },
+    oneOnOneTeamInput: {
+      type: OneOnOneTeamInput,
+      description: 'One-on-One ad-hoc team to create. If provided, teamId ignored'
     }
   },
   async resolve(
     _source: unknown,
-    {teamId, gcalInput}: {teamId: string; gcalInput?: CreateGcalEventInputType},
-    {authToken, socketId: mutatorId, dataLoader}: GQLContext
+    {
+      teamId: existingTeamId,
+      gcalInput,
+      oneOnOneTeamInput
+    }: {
+      teamId: string
+      gcalInput?: CreateGcalEventInputType
+      oneOnOneTeamInput?: CreateOneOnOneTeamInputType
+    },
+    context: GQLContext
   ) {
     const r = await getRethink()
+    const {authToken, socketId: mutatorId, dataLoader} = context
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+
+    let teamId = existingTeamId
+
+    if (teamId) {
+      if (!isTeamMember(authToken, teamId)) {
+        return standardError(new Error('Team not found'), {userId: viewerId})
+      }
+      const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+      if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+    } else if (oneOnOneTeamInput) {
+      const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+      teamId = await maybeCreateOneOnOneTeam(viewer, oneOnOneTeamInput, context)
+    } else {
+      return standardError(new Error('Must provide teamId or ad-hoc team'), {userId: viewerId})
     }
-    const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
-    if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
     const meetingType: MeetingTypeEnum = 'action'
 
