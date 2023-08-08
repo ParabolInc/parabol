@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import styled from '@emotion/styled'
 import {useFragment} from 'react-relay'
 import {TeamPromptResponseEmojis_response$key} from '~/__generated__/TeamPromptResponseEmojis_response.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -8,11 +7,6 @@ import AddReactjiToReactableMutation from '../../mutations/AddReactjiToReactable
 import ReactjiId from '../../shared/gqlIds/ReactjiId'
 import React from 'react'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
-
-const StyledReactjis = styled(ReactjiSection)({
-  paddingRight: '8px',
-  paddingTop: '8px'
-})
 
 interface Props {
   meetingId: string
@@ -38,7 +32,6 @@ export const TeamPromptResponseEmojis = (props: Props) => {
   )
   const {reactjis} = response
   const atmosphere = useAtmosphere()
-
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
   const onToggleReactji = (emojiId: string) => {
@@ -60,5 +53,5 @@ export const TeamPromptResponseEmojis = (props: Props) => {
     )
   }
 
-  return <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+  return <ReactjiSection className='pt-2 pr-2' reactjis={reactjis} onToggle={onToggleReactji} />
 }

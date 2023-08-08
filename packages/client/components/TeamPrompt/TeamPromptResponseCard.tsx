@@ -236,9 +236,9 @@ const TeamPromptResponseCard = (props: Props) => {
               placeholder={viewerEmptyResponsePlaceholder}
               draftStorageKey={`draftResponse:${stageId}`}
             />
-            {!!plaintextContent && (
+            {!!response && (
               <ResponseCardFooter>
-                <TeamPromptResponseEmojis responseRef={response!} meetingId={meetingId} />
+                <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} />
                 <ReplyButton onClick={() => onSelectDiscussion()}>
                   {replyCount > 0 ? (
                     <>
