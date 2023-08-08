@@ -8,8 +8,6 @@ import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
 import {TransitionStatus} from '~/hooks/useTransition'
-import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
-import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve, Card} from '~/types/constEnums'
@@ -20,10 +18,10 @@ import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptRe
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
-import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import {ResponseCardDimensions, ResponsesGridBreakpoints} from './TeamPromptGridDimensions'
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
+import {TeamPromptResponseEmojis} from './TeamPromptResponseEmojis'
 
 const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
 const threeColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.THREE_RESPONSE_COLUMNS}px)`
@@ -91,11 +89,6 @@ export const TeamMemberName = styled('h3')({
   textOverflow: 'ellipsis'
 })
 
-const StyledReactjis = styled(ReactjiSection)({
-  paddingRight: '8px',
-  paddingTop: '8px'
-})
-
 const ReplyButton = styled(PlainButton)({
   display: 'flex',
   alignItems: 'flex-start',
@@ -149,11 +142,7 @@ const TeamPromptResponseCard = (props: Props) => {
           plaintextContent
           updatedAt
           createdAt
-          reactjis {
-            ...ReactjiSection_reactjis
-            id
-            isViewerReactji
-          }
+          ...TeamPromptResponseEmojis_response
         }
       }
     `,
@@ -189,7 +178,6 @@ const TeamPromptResponseCard = (props: Props) => {
     [response]
   )
   const plaintextContent = response?.plaintextContent ?? ''
-  const reactjis = response?.reactjis ?? []
 
   const discussionEdges = discussion.thread.edges
   const replyCount = discussionEdges.length
@@ -214,25 +202,6 @@ const TeamPromptResponseCard = (props: Props) => {
       {plaintextContent, onError, onCompleted}
     )
   })
-
-  const onToggleReactji = (emojiId: string) => {
-    if (submitting || !response) return
-    const isRemove = !!reactjis.find((reactji) => {
-      return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
-    })
-    submitMutation()
-    AddReactjiToReactableMutation(
-      atmosphere,
-      {
-        reactableId: response?.id,
-        reactableType: 'RESPONSE',
-        isRemove,
-        reactji: emojiId,
-        meetingId
-      },
-      {onCompleted, onError}
-    )
-  }
 
   const ref = useAnimatedCard(displayIdx, status)
 
@@ -269,7 +238,7 @@ const TeamPromptResponseCard = (props: Props) => {
             />
             {!!plaintextContent && (
               <ResponseCardFooter>
-                <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+                <TeamPromptResponseEmojis responseRef={response!} meetingId={meetingId} />
                 <ReplyButton onClick={() => onSelectDiscussion()}>
                   {replyCount > 0 ? (
                     <>
