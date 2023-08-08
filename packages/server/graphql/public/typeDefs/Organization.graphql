@@ -171,6 +171,7 @@ type OrganizationFeatureFlags {
   SAMLUI: Boolean!
   noAISummary: Boolean!
   AIGeneratedDiscussionPrompt: Boolean!
+  standupAISummary: Boolean!
   promptToJoinOrg: Boolean!
   suggestGroups: Boolean!
   zoomTranscription: Boolean!
