@@ -400,9 +400,11 @@ export const MattermostNotifier: Notifier = {
     teamId: string,
     userId: string
   ) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    const user = await dataLoader.get('users').load(userId)
-    const responses = await getTeamPromptResponsesByMeetingId(meetingId)
+    const [{meeting, team}, user, responses] = await Promise.all([
+      loadMeetingTeam(dataLoader, meetingId, teamId),
+      dataLoader.get('users').load(userId),
+      getTeamPromptResponsesByMeetingId(meetingId)
+    ])
     const response = responses.find(({userId: responseUserId}) => responseUserId === userId)
     if (!meeting || !team || !response || !user) return
     ;(await getMattermost(dataLoader, teamId, userId))?.standupResponseSubmitted(
