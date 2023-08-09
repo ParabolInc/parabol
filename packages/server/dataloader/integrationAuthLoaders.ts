@@ -7,7 +7,6 @@ import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
-import {IGetSharedIntegrationProvidersQueryResult} from '../postgres/queries/generated/getSharedIntegrationProvidersQuery'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import getBestTeamIntegrationAuth from '../postgres/queries/getBestTeamIntegrationAuth'
 import getIntegrationProvidersByIds, {
@@ -52,11 +51,7 @@ export const integrationProviders = (parent: RootDataLoader) => {
 }
 
 export const sharedIntegrationProviders = (parent: RootDataLoader) => {
-  return new DataLoader<
-    SharedIntegrationProviderKey,
-    IGetSharedIntegrationProvidersQueryResult[],
-    string
-  >(
+  return new DataLoader<SharedIntegrationProviderKey, TIntegrationProvider[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({service, orgTeamIds, teamIds}) =>

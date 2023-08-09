@@ -57,7 +57,7 @@
           "File": "./types/File#TFile",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
-          "IntegrationProviderOAuth2": "../../postgres/queries/getIntegrationProvidersByIds#IntegrationProviderOAuth2DB",
+          "IntegrationProviderOAuth2": "../../postgres/queries/getIntegrationProvidersByIds#TIntegrationProvider",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",

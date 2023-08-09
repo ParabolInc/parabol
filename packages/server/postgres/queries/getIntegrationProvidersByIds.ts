@@ -5,8 +5,6 @@ import {
   IntegrationProviderScopeEnum
 } from './generated/getIntegrationProvidersByIdsQuery'
 
-export type IntegrationProviderOAuth2DB = IGetIntegrationProvidersByIdsQueryResult
-
 interface IntegrationProviderActive extends IGetIntegrationProvidersByIdsQueryResult {
   isActive: true
 }
@@ -23,7 +21,7 @@ interface IntegrationProviderOAuth1 extends IntegrationProviderActive {
   serverBaseUrl: string
 }
 
-interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
+export interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
   authStrategy: 'oauth2'
   clientId: string
   clientSecret: string

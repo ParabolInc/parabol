@@ -6,16 +6,14 @@ export type GcalIntegrationSource = {
 }
 
 const GcalIntegration: GcalIntegrationResolvers = {
-  auth: async ({teamId, userId}, _args, {dataLoader}) => {
-    const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
-    if (!gcalAuth) throw new Error('No auth found')
-    return gcalAuth
+  auth: ({teamId, userId}, _args, {dataLoader}) => {
+    return dataLoader.get('freshGcalAuth').load({teamId, userId})
   },
   cloudProvider: async (_source, _args, {dataLoader}) => {
     const [globalProvider] = await dataLoader
       .get('sharedIntegrationProviders')
       .load({service: 'gcal', orgTeamIds: ['aGhostTeam'], teamIds: []})
-    if (!globalProvider) throw new Error('No global provider found')
+    if (!globalProvider) return null
     return globalProvider
   }
 }
