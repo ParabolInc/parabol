@@ -121,7 +121,7 @@ const query = graphql`
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
       }
-      availableTemplates(first: 200) @connection(key: "ActivityLibrary_availableTemplates") {
+      availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
             name
