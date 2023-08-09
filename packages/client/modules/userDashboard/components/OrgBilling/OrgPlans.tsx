@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
@@ -77,8 +77,8 @@ const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   fontStyle: isItalic ? 'italic' : 'normal'
 }))
 
-const Plan = styled('div')<{tier: TierEnum; isTablet: boolean; outlineColor: boolean}>(
-  ({tier, isTablet, outlineColor}) => ({
+const Plan = styled('div')<{tier: TierEnum; isTablet: boolean; isActive: boolean}>(
+  ({tier, isTablet, isActive}) => ({
     background:
       tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
     fontSize: 12,
@@ -95,7 +95,7 @@ const Plan = styled('div')<{tier: TierEnum; isTablet: boolean; outlineColor: boo
     padding: '16px 8px',
     borderRadius: 4,
     border: '2px solid white',
-    outline: outlineColor
+    outline: isActive
       ? tier === 'starter'
         ? `2px solid ${PALETTE.GRAPE_500}`
         : tier === 'team'
@@ -203,14 +203,6 @@ const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
   }
 }
 
-const getActivePlan = (tier: TierEnum, plan: TierEnum) => {
-  if (tier === plan) {
-    return true
-  } else {
-    return false
-  }
-}
-
 type Props = {
   organizationRef: OrgPlans_organization$key
 }
@@ -236,9 +228,17 @@ const OrgPlans = (props: Props) => {
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
+  const [selectedPlan, setSelectedPlan] = useState<TierEnum | null>(null)
   const {id: orgId, tier, scheduledLockAt, lockedAt} = organization
   const showNudge = scheduledLockAt || lockedAt
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
+
+  const getActivePlan = (tier: TierEnum, plan: TierEnum) => {
+    if (selectedPlan) {
+      return selectedPlan === plan
+    }
+    return tier === plan
+  }
 
   const plans = [
     {
@@ -253,14 +253,14 @@ const OrgPlans = (props: Props) => {
       activeColor: PALETTE.GRAPE_500,
       buttonStyle: getButtonStyle(tier, 'starter'),
       buttonLabel: getButtonLabel(tier, 'starter'),
-      outlineColor: getActivePlan(tier, 'starter')
+      isActive: getActivePlan(tier, 'starter')
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
       buttonStyle: getButtonStyle(tier, 'team'),
       buttonLabel: getButtonLabel(tier, 'team'),
-      outlineColor: getActivePlan(tier, 'team')
+      isActive: getActivePlan(tier, 'team')
     },
     {
       tier: 'enterprise',
@@ -268,7 +268,7 @@ const OrgPlans = (props: Props) => {
       details: ['Everything in Team', ...EnterpriseBenefits],
       buttonStyle: getButtonStyle(tier, 'enterprise'),
       buttonLabel: getButtonLabel(tier, 'enterprise'),
-      outlineColor: getActivePlan(tier, 'enterprise')
+      isActive: getActivePlan(tier, 'enterprise')
     }
   ] as const
 
@@ -283,7 +283,7 @@ const OrgPlans = (props: Props) => {
     if (label === 'Contact') {
       window.open('mailto:love@parabol.co', '_blank')
     } else if (label === 'Select Plan') {
-      // TODO: handle select plan when billing is implemented
+      setSelectedPlan(tier)
     } else if (label === 'Downgrade') {
       openPortal()
       SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
@@ -292,7 +292,6 @@ const OrgPlans = (props: Props) => {
       })
     }
   }
-
   return (
     <>
       <StyledPanel label='Plans'>
@@ -302,12 +301,7 @@ const OrgPlans = (props: Props) => {
         </StyledRow>
         <StyledRow isTablet={isTablet}>
           {plans.map((plan) => (
-            <Plan
-              key={plan.tier}
-              tier={plan.tier}
-              isTablet={isTablet}
-              outlineColor={plan.outlineColor}
-            >
+            <Plan key={plan.tier} tier={plan.tier} isTablet={isTablet} isActive={plan.isActive}>
               <HeadingBlock>
                 <PlanTitle>{plan.tier}</PlanTitle>
                 {plan.tier === 'team' ? (
