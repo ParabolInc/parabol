@@ -5,6 +5,8 @@ import {
   IntegrationProviderScopeEnum
 } from './generated/getIntegrationProvidersByIdsQuery'
 
+export type IntegrationProviderOAuth2DB = IGetIntegrationProvidersByIdsQueryResult
+
 interface IntegrationProviderActive extends IGetIntegrationProvidersByIdsQueryResult {
   isActive: true
 }

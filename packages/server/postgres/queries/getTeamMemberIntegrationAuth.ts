@@ -1,6 +1,11 @@
 import getPg from '../getPg'
 import {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
-import {getTeamMemberIntegrationAuthQuery} from './generated/getTeamMemberIntegrationAuthQuery'
+import {
+  getTeamMemberIntegrationAuthQuery,
+  IGetTeamMemberIntegrationAuthQueryResult
+} from './generated/getTeamMemberIntegrationAuthQuery'
+
+export type TeamMemberIntegrationAuth = IGetTeamMemberIntegrationAuthQueryResult
 
 const getTeamMemberIntegrationAuth = async (
   service: IntegrationProviderServiceEnum,

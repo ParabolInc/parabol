@@ -1,8 +1,13 @@
 import {TeamMemberIntegrationsResolvers} from '../resolverTypes'
 
+export type TeamMemberIntegrationsSource = {
+  teamId: string
+  userId: string
+}
+
 const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
-  gcal: (_source) => {
-    return _source
+  gcal: async ({teamId, userId}) => {
+    return {teamId, userId}
   }
 }
 

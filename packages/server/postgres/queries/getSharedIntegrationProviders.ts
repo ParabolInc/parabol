@@ -2,11 +2,11 @@ import {MaybeReadonly} from 'parabol-client/types/generics'
 import getPg from '../getPg'
 import {
   getSharedIntegrationProvidersQuery,
+  IGetSharedIntegrationProvidersQueryResult,
   IntegrationProviderServiceEnum
 } from './generated/getSharedIntegrationProvidersQuery'
-import {TIntegrationProvider} from './getIntegrationProvidersByIds'
 
-const getSharedIntegrationProviders = async <T = TIntegrationProvider>(
+const getSharedIntegrationProviders = async <T = IGetSharedIntegrationProvidersQueryResult>(
   service: IntegrationProviderServiceEnum,
   orgTeamIds: MaybeReadonly<string[]>,
   teamIds: MaybeReadonly<string[]>
