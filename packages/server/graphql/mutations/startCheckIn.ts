@@ -18,7 +18,9 @@ import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import maybeCreateOneOnOneTeam from './helpers/maybeCreateOneOnOneTeam'
-import OneOnOneTeamInput, {CreateOneOnOneTeamInputType} from '../public/types/OneOnOneTeamInput'
+import CreateOneOnOneTeamInput, {
+  CreateOneOnOneTeamInputType
+} from '../public/types/CreateOneOnOneTeamInput'
 
 export default {
   type: new GraphQLNonNull(StartCheckInPayload),
@@ -33,7 +35,7 @@ export default {
       description: 'The gcal event to create. If not provided, no event will be created'
     },
     oneOnOneTeamInput: {
-      type: OneOnOneTeamInput,
+      type: CreateOneOnOneTeamInput,
       description: 'One-on-One ad-hoc team to create. If provided, teamId ignored'
     }
   },
@@ -103,11 +105,12 @@ export default {
     await r.table('NewMeeting').insert(meeting).run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
+    const DUPLICATE_THRESHOLD = 3000
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-      const {id} = activeMeeting
+      const {createdAt, id} = activeMeeting
       if (id === meetingId || activeMeeting.meetingType !== meetingType) return false
-      return true
+      return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
       await r.table('NewMeeting').get(meetingId).delete().run()

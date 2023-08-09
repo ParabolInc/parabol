@@ -24,7 +24,7 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     r
       .table('TeamMember')
       // Select teams where both users exists
-      .getAll(r.args([userIds]), {index: 'userId'})
+      .getAll(r.args(userIds), {index: 'userId'})
       .filter({isNotRemoved: true}) // Only consider users who are not removed
       .group('teamId') as RValue
   )
@@ -46,6 +46,10 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     .coerceTo('array')
     .run()
 
+  if (!existingTeamIds.length) {
+    return []
+  }
+
   return pg
     .selectFrom('Team')
     .selectAll()
@@ -55,8 +59,12 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     .execute()
 }
 
-const getExistingExactOneOnOneTeam = async (userId: string, orgId: string) => {
-  const teams = await getExistingExactTeams([userId], orgId)
+const getExistingExactOneOnOneTeam = async (
+  userId: string,
+  secondUserId: string,
+  orgId: string
+) => {
+  const teams = await getExistingExactTeams([userId, secondUserId], orgId)
   return teams[0]
 }
 
@@ -82,7 +90,7 @@ const createNewTeamAndInvite = async (
 }
 
 const generateOneOnOneTeamName = (firstUserName: string, secondUserName: string) => {
-  return `${firstUserName}, ${secondUserName}`
+  return `${firstUserName} / ${secondUserName}`
 }
 
 const maybeCreteOneOnOneTeamFromEmail = async (
@@ -101,7 +109,7 @@ const maybeCreteOneOnOneTeamFromEmail = async (
   }
 
   // If user exists, check if the team with that user already exists
-  const existingTeam = await getExistingExactOneOnOneTeam(existingUser.id, orgId)
+  const existingTeam = await getExistingExactOneOnOneTeam(existingUser.id, viewer.id, orgId)
   if (existingTeam) {
     return existingTeam.id
   }
@@ -115,7 +123,7 @@ const maybeCreateOneOnOneTeamFromUserId = async (
   orgId: string,
   context: GQLContext
 ) => {
-  const existingTeam = await getExistingExactOneOnOneTeam(userId, orgId)
+  const existingTeam = await getExistingExactOneOnOneTeam(userId, viewer.id, orgId)
 
   if (existingTeam) {
     return existingTeam.id
