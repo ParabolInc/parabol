@@ -74,7 +74,7 @@ graphql`
 const query = graphql`
   query ActivityLibraryQuery {
     viewer {
-      availableTemplates(first: 200) @connection(key: "ActivityLibrary_availableTemplates") {
+      availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
             ...ActivityLibrary_template @relay(mask: false)
