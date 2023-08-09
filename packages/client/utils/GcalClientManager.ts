@@ -5,7 +5,7 @@ import makeHref from './makeHref'
 import Atmosphere from '../Atmosphere'
 
 class GcalClientManager {
-  static SCOPES = 'https://www.googleapis.com/auth/calendar'
+  static SCOPES = 'https://www.googleapis.com/auth/calendar.events'
   static openOAuth(
     atmosphere: Atmosphere,
     providerId: string,
