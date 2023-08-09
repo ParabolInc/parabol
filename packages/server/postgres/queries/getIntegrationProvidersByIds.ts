@@ -21,7 +21,7 @@ interface IntegrationProviderOAuth1 extends IntegrationProviderActive {
   serverBaseUrl: string
 }
 
-export interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
+interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
   authStrategy: 'oauth2'
   clientId: string
   clientSecret: string
