@@ -13698,9 +13698,9 @@ import-from@4.0.0:
   integrity sha512-P9J71vT5nLlDeV8FHs5nNxaLbrpfAV5cF5srvbZfpwpcJoM/xZR3hiv+q+SAnuSmuGbXMWud063iIMx/V/EWZQ==
 
 import-in-the-middle@^1.3.5:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/import-in-the-middle/-/import-in-the-middle-1.4.1.tgz#31b25123bc35d556986a172bb398a3e6c32af9be"
-  integrity sha512-hGG0PcCsykVo8MBVH8l0uEWLWW6DXMgJA9jvC0yps6M3uIJ8L/tagTCbyF8Ud5TtqJ8/jmZL1YkyySyeVkVQrA==
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/import-in-the-middle/-/import-in-the-middle-1.4.2.tgz#2a266676e3495e72c04bbaa5ec14756ba168391b"
+  integrity sha512-9WOz1Yh/cvO/p69sxRmhyQwrIGGSp7EIdcb+fFNVi7CzQGQB8U1/1XrKVSbEd/GNOAeM0peJtmi7+qphe7NvAw==
   dependencies:
     acorn "^8.8.2"
     acorn-import-assertions "^1.9.0"
