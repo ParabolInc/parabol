@@ -292,6 +292,7 @@ const OrgPlans = (props: Props) => {
       })
     }
   }
+
   return (
     <>
       <StyledPanel label='Plans'>
