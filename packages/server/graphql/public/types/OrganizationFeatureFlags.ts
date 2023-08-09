@@ -3,6 +3,7 @@ import {OrganizationFeatureFlagsResolvers} from '../resolverTypes'
 const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   SAMLUI: ({SAMLUI}) => !!SAMLUI,
   noAISummary: ({noAISummary}) => !!noAISummary,
+  standupAISummary: ({standupAISummary}) => !!standupAISummary,
   promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg,
   AIGeneratedDiscussionPrompt: ({AIGeneratedDiscussionPrompt}) => !!AIGeneratedDiscussionPrompt,
   zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,

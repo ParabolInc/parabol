@@ -20,6 +20,7 @@ import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper, NotifyResponse} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
 import SlackAuth from '../../../../database/types/SlackAuth'
+import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 
 type SlackNotification = {
   title: string
@@ -250,6 +251,24 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   async integrationUpdated() {
     // Slack sends a system message on its own
     return 'success'
+  },
+
+  async standupResponseSubmitted(meeting, team, user, response) {
+    const options = {
+      searchParams: {
+        utm_source: 'slack standup submission',
+        utm_medium: 'product',
+        utm_campaign: 'notifications',
+        responseId: response.id
+      }
+    }
+    const responseUrl = makeAppURL(appOrigin, `meet/${meeting.id}/responses`, options)
+    const title = `${user.preferredName} has added their response in ${meeting.name}`
+    const blocks: Array<{type: string}> = [
+      makeSection(title),
+      makeButtons([{text: 'See their response', url: responseUrl, type: 'primary'}])
+    ]
+    return notifySlack(notificationChannel, 'STANDUP_RESPONSE_SUBMITTED', team.id, blocks, title)
   }
 })
 
@@ -311,6 +330,28 @@ export const SlackNotifier: Notifier = {
 
   async integrationUpdated() {
     // Slack sends a system message on its own
+  },
+
+  async standupResponseSubmitted(
+    dataLoader: DataLoaderWorker,
+    meetingId: string,
+    teamId: string,
+    userId: string
+  ) {
+    const [{meeting, team}, user, responses] = await Promise.all([
+      loadMeetingTeam(dataLoader, meetingId, teamId),
+      dataLoader.get('users').load(userId),
+      getTeamPromptResponsesByMeetingId(meetingId)
+    ])
+    const response = responses.find(({userId: responseUserId}) => responseUserId === userId)
+    if (!meeting || !team || !response || !user) {
+      return
+    }
+
+    const notifiers = await getSlack(dataLoader, 'STANDUP_RESPONSE_SUBMITTED', team.id)
+    notifiers.forEach((notifier) =>
+      notifier.standupResponseSubmitted(meeting, team, user, response)
+    )
   },
 
   async shareTopic(

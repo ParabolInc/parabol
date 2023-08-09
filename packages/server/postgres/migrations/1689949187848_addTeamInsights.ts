@@ -8,13 +8,13 @@ export async function up() {
     DO $$
     BEGIN
       ALTER TABLE "Team"
-        ADD COLUMN "insightsUpdatedAt" TIMESTAMP WITH TIME ZONE,
+        ADD COLUMN IF NOT EXISTS "insightsUpdatedAt" TIMESTAMP WITH TIME ZONE,
         -- 3 most used emojis in format [{id: string, count: number}]
-        ADD COLUMN "mostUsedEmojis" JSONB,
+        ADD COLUMN IF NOT EXISTS "mostUsedEmojis" JSONB,
         -- 3 most used retro templates in format [{templateId: string, count: number}]
-        ADD COLUMN "topRetroTemplates" JSONB,
+        ADD COLUMN IF NOT EXISTS "topRetroTemplates" JSONB,
         -- meeting engagement in format {meetingType: string, engagement: number}
-        ADD COLUMN "meetingEngagement" JSONB;
+        ADD COLUMN IF NOT EXISTS "meetingEngagement" JSONB;
     END
     $$;
   `)

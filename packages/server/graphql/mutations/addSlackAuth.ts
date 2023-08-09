@@ -26,7 +26,8 @@ export const upsertNotifications = async (
   const teamEvents = [
     'meetingStart',
     'meetingEnd',
-    'MEETING_STAGE_TIME_LIMIT_START'
+    'MEETING_STAGE_TIME_LIMIT_START',
+    'STANDUP_RESPONSE_SUBMITTED'
   ] as SlackNotificationEvent[]
   const userEvents = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEvent[]
   const events = [...teamEvents, ...userEvents]
