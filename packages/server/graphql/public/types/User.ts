@@ -130,7 +130,10 @@ const User: UserResolvers = {
         )
       }
     } else if (parabolActivities!.length + allUserActivities.length > 1000) {
-      sendToSentry(new Error('User.activities exceeds 1000 activities'))
+      sendToSentry(new Error('User.activities exceeds 1000 activities'), {
+        userId,
+        extras: {numActivities: parabolActivities!.length + allUserActivities.length}
+      })
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
       const SEASONAL = 1 << 8 // put seasonal templates at the top
