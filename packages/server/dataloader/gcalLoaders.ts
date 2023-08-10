@@ -1,11 +1,11 @@
 import DataLoader from 'dataloader'
-import GitLabOAuth2Manager from '../integrations/gitlab/GitLabOAuth2Manager'
+import GcalOAuth2Manager from '../integrations/gcal/GcalOAuth2Manager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
 
-export const freshGitlabAuth = (parent: RootDataLoader) => {
+export const freshGcalAuth = (parent: RootDataLoader) => {
   return new DataLoader<
     {teamId: string; userId: string},
     IGetTeamMemberIntegrationAuthQueryResult | null,
@@ -14,38 +14,41 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => {
-          const gitlabAuth = await parent.get('teamMemberIntegrationAuths').load({
-            service: 'gitlab',
+          const gcalAuth = await parent.get('teamMemberIntegrationAuths').load({
+            service: 'gcal',
             teamId,
             userId
           })
-          if (!gitlabAuth) return null
-          const {expiresAt} = gitlabAuth
+          if (!gcalAuth) return null
+          const {expiresAt} = gcalAuth
           const now = new Date()
           if (expiresAt && expiresAt < now) {
-            const {providerId, refreshToken} = gitlabAuth
+            const {providerId, refreshToken} = gcalAuth
             if (!refreshToken) {
-              sendToSentry(new Error('No refresh token in gitlabAuth'), {userId})
+              sendToSentry(new Error('No refresh token in gcalAuth'), {userId})
               return null
             }
             const provider = await parent.get('integrationProviders').loadNonNull(providerId)
             const {clientId, clientSecret, serverBaseUrl} = provider
-            const manager = new GitLabOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
+            const manager = new GcalOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) return null
-            const {accessToken, refreshToken: newRefreshToken, expiresIn} = oauthRes
-            const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
+            const {accessToken, expiresIn} = oauthRes
+            const bufferBeforeExpires = 30
+            const millisecondsInSeconds = 1000
+            const expiresAtTimestamp =
+              new Date().getTime() + (expiresIn - bufferBeforeExpires) * millisecondsInSeconds
             const expiresAt = new Date(expiresAtTimestamp)
-            const newGitlabAuth = {
-              ...gitlabAuth,
+            const newGcalAuth = {
+              ...gcalAuth,
               accessToken,
-              refreshToken: newRefreshToken,
+              refreshToken: refreshToken,
               expiresAt
             }
-            await upsertTeamMemberIntegrationAuth(newGitlabAuth)
-            return newGitlabAuth
+            await upsertTeamMemberIntegrationAuth(newGcalAuth)
+            return newGcalAuth
           }
-          return gitlabAuth as IGetTeamMemberIntegrationAuthQueryResult
+          return gcalAuth as IGetTeamMemberIntegrationAuthQueryResult
         })
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
