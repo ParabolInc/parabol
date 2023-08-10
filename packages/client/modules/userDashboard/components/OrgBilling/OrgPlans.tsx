@@ -121,7 +121,6 @@ const OrgPlans = (props: Props) => {
     label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan',
     planTier: TierEnum
   ) => {
-    console.log('🚀 ~ planTier:', {planTier, label})
     SendClientSegmentEventMutation(atmosphere, 'Plan Tier Selected', {
       orgId,
       tier: planTier
