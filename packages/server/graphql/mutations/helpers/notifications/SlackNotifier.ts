@@ -417,15 +417,13 @@ export const SlackNotifier: Notifier = {
   async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     const meetingResponses = await getTeamPromptResponsesByMeetingId(meetingId)
-    const standupResponses: Array<{user: User; response: TeamPromptResponse}> = []
-    await Promise.allSettled(
+    // const standupResponses: Array<{user: User; response: TeamPromptResponse}> = []
+    const standupResponses = await Promise.all(
       meetingResponses.map(async (response) => {
-        const user = await dataLoader.get('users').load(response.userId)
-        if (user) {
-          standupResponses.push({
-            user,
-            response
-          })
+        const user = await dataLoader.get('users').loadNonNull(response.userId)
+        return {
+          user,
+          response
         }
       })
     )
