@@ -111,18 +111,16 @@ const AnalyticsPage = () => {
         const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
         if (!res) return
         const {viewer} = res
-        const {id, segmentId, isPatient0} = viewer
+        const {id, isPatient0} = viewer
         ReactGA.set({
           userId: id,
-          clientId: segmentId ?? getAnonymousId(),
           user_properties: {
             is_patient_0: !!isPatient0
           }
         })
       } else {
         ReactGA.set({
-          userId: null,
-          clientId: getAnonymousId()
+          userId: null
         })
       }
     }
