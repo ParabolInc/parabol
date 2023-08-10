@@ -34,13 +34,13 @@ const preDeploy = async () => {
   const envPath = path.join(__PROJECT_ROOT__, '.env')
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
-
+  console.log(`🚀 Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
   // first we migrate DBs & add env vars to client assets
   await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
 
   // The we can prime the DB & CDN
   await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])
-
+  console.log(`🚀 Predeploy Complete`)
   process.exit()
 }
 
