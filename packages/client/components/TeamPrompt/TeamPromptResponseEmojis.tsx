@@ -35,7 +35,7 @@ export const TeamPromptResponseEmojis = (props: Props) => {
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
   const onToggleReactji = (emojiId: string) => {
-    if (submitting || !response) return
+    if (submitting) return
     const isRemove = !!reactjis.find((reactji) => {
       return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
     })
