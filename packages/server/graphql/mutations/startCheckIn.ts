@@ -104,13 +104,12 @@ export default {
     })
     await r.table('NewMeeting').insert(meeting).run()
 
-    // Disallow accidental starts (2 meetings within 2 seconds)
-    const DUPLICATE_THRESHOLD = 3000
+    // Disallow 2 active check-in meetings
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-      const {createdAt, id} = activeMeeting
+      const {id} = activeMeeting
       if (id === meetingId || activeMeeting.meetingType !== meetingType) return false
-      return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
+      return true
     })
     if (otherActiveMeeting) {
       await r.table('NewMeeting').get(meetingId).delete().run()
