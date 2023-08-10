@@ -15,6 +15,7 @@ import MeetingTopBar from './MeetingTopBar'
 import PhaseWrapper from './PhaseWrapper'
 import PhaseCompleteTag from './Tag/PhaseCompleteTag'
 import TaskColumns from './TaskColumns/TaskColumns'
+import PromptResponseEditor from './promptResponse/PromptResponseEditor'
 
 const StyledColumnsWrapper = styled(MeetingPhaseWrapper)({
   position: 'relative'
@@ -60,6 +61,12 @@ const ActionMeetingUpdates = (props: Props) => {
             isComplete
           }
         }
+        standupMeeting {
+          responses {
+            userId
+            content
+          }
+        }
         team {
           id
           tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
@@ -82,7 +89,15 @@ const ActionMeetingUpdates = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team, localPhase} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    localStage,
+    showSidebar,
+    team,
+    localPhase,
+    standupMeeting
+  } = meeting
   const {id: teamId, tasks} = team
   const {teamMember} = localStage!
   const {userId} = teamMember!
@@ -91,6 +106,9 @@ const ActionMeetingUpdates = (props: Props) => {
       .map(({node}) => node)
       .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
   }, [tasks, userId])
+  const teamMemberResponse = standupMeeting?.responses?.find(
+    (response) => response.userId === userId
+  )
   const {stages} = localPhase
   const isPhaseComplete = stages.every((stage) => stage.isComplete)
 
@@ -108,14 +126,23 @@ const ActionMeetingUpdates = (props: Props) => {
           <PhaseCompleteTag isComplete={isPhaseComplete} />
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>
-              <TaskColumns
-                area='meeting'
-                isViewerMeetingSection={userId === viewerId}
-                meetingId={meetingId}
-                myTeamMemberId={toTeamMemberId(teamId, viewerId)}
-                tasks={teamMemberTasks}
-                teams={null}
-              />
+              {teamMemberResponse ? (
+                <div className='mx-auto mt-8 h-fit min-h-[100px] min-w-[60%] rounded-md bg-white p-4 shadow'>
+                  <PromptResponseEditor
+                    content={JSON.parse(teamMemberResponse.content)}
+                    readOnly={true}
+                  />
+                </div>
+              ) : (
+                <TaskColumns
+                  area='meeting'
+                  isViewerMeetingSection={userId === viewerId}
+                  meetingId={meetingId}
+                  myTeamMemberId={toTeamMemberId(teamId, viewerId)}
+                  tasks={teamMemberTasks}
+                  teams={null}
+                />
+              )}
             </InnerColumnsWrapper>
           </StyledColumnsWrapper>
         </PhaseWrapper>

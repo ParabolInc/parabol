@@ -12,6 +12,7 @@ interface Input {
   name?: string
   phases: [CheckInMeetingPhase, ...CheckInMeetingPhase[]]
   facilitatorUserId: string
+  standupMeetingId?: string
 }
 
 export function isMeetingAction(meeting: Meeting): meeting is MeetingAction {
@@ -23,8 +24,9 @@ export default class MeetingAction extends Meeting {
   taskCount?: number
   commentCount?: number
   agendaItemCount?: number
+  standupMeetingId?: string
   constructor(input: Input) {
-    const {id, teamId, meetingCount, name, phases, facilitatorUserId} = input
+    const {id, teamId, meetingCount, name, phases, facilitatorUserId, standupMeetingId} = input
     super({
       id,
       teamId,
@@ -34,5 +36,6 @@ export default class MeetingAction extends Meeting {
       meetingType: 'action',
       name: name ?? `Check-in #${meetingCount + 1}`
     })
+    this.standupMeetingId = standupMeetingId
   }
 }

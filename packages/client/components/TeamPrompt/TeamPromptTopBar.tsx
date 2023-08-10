@@ -18,6 +18,9 @@ import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
+import useMutationProps from '../../hooks/useMutationProps'
+import StartCheckInMutation from '../../mutations/StartCheckInMutation'
+import {useHistory} from 'react-router'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',
@@ -94,6 +97,7 @@ const TeamPromptTopBar = (props: Props) => {
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         id
+        teamId
         name
         facilitatorUserId
         prevMeeting {
@@ -125,6 +129,7 @@ const TeamPromptTopBar = (props: Props) => {
   const {
     id: meetingId,
     name: meetingName,
+    teamId,
     facilitatorUserId,
     meetingSeries,
     prevMeeting,
@@ -133,6 +138,16 @@ const TeamPromptTopBar = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+  const {onError, onCompleted} = useMutationProps()
+  const history = useHistory()
+
+  const onStartCheckin = () => {
+    StartCheckInMutation(
+      atmosphere,
+      {teamId, standupMeetingId: meetingId},
+      {history, onError, onCompleted}
+    )
+  }
 
   return (
     <MeetingTopBarStyles>
@@ -178,6 +193,12 @@ const TeamPromptTopBar = (props: Props) => {
       )}
       <RightSection>
         <RightSectionContainer>
+          <button
+            className='mr-4 cursor-pointer rounded-full border border-slate-300 bg-slate-100 px-4 py-2 text-center font-sans text-base font-medium'
+            onClick={onStartCheckin}
+          >
+            Start sync check-in
+          </button>
           <NewMeetingAvatarGroup meetingRef={meeting} />
           <ButtonContainer>
             <TeamPromptOptions

@@ -29,11 +29,19 @@ export default {
     gcalInput: {
       type: CreateGcalEventInput,
       description: 'The gcal event to create. If not provided, no event will be created'
+    },
+    standupMeetingId: {
+      type: GraphQLID,
+      description: 'The standup meeting to use in individual updates'
     }
   },
   async resolve(
     _source: unknown,
-    {teamId, gcalInput}: {teamId: string; gcalInput?: CreateGcalEventInputType},
+    {
+      teamId,
+      gcalInput,
+      standupMeetingId
+    }: {teamId: string; gcalInput?: CreateGcalEventInputType; standupMeetingId?: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()
@@ -73,7 +81,8 @@ export default {
       teamId,
       meetingCount,
       phases,
-      facilitatorUserId: viewerId
+      facilitatorUserId: viewerId,
+      standupMeetingId
     })
     await r.table('NewMeeting').insert(meeting).run()
 

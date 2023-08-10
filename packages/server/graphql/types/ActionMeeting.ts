@@ -7,6 +7,7 @@ import ActionMeetingMember from './ActionMeetingMember'
 import AgendaItem from './AgendaItem'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
+import TeamPromptMeeting from './TeamPromptMeeting'
 
 const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'ActionMeeting',
@@ -85,6 +86,21 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
         return meetingMember || null
+      }
+    },
+    standupMeeting: {
+      type: TeamPromptMeeting,
+      resolve: async ({standupMeetingId, teamId}, _args: unknown, {dataLoader}: GQLContext) => {
+        if (!standupMeetingId) {
+          return null
+        }
+
+        const standupMeeting = await dataLoader.get('newMeetings').load(standupMeetingId)
+        if (standupMeeting.teamId === teamId) {
+          return standupMeeting
+        }
+
+        return null
       }
     }
   })
