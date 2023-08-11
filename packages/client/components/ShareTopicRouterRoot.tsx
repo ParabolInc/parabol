@@ -17,7 +17,7 @@ const ShareTopicRouterRoot = () => {
   const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
     shareTopicModalQuery,
     {meetingId},
-    'store-or-network'
+    'network-only'
   )
 
   const location = useLocation<{backgroundLocation?: Location}>()
