@@ -8,6 +8,7 @@ interface Input {
 }
 
 export default class NotificationResponseReplied extends Notification {
+  type: 'RESPONSE_REPLIED'
   meetingId: string
   authorId: string
   commentId: string
@@ -15,6 +16,7 @@ export default class NotificationResponseReplied extends Notification {
   constructor(input: Input) {
     const {meetingId, authorId, userId, commentId} = input
     super({userId, type: 'RESPONSE_REPLIED'})
+    this.type = 'RESPONSE_REPLIED'
     this.meetingId = meetingId
     this.authorId = authorId
     this.commentId = commentId

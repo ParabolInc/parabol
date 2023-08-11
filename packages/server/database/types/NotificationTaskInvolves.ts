@@ -11,6 +11,7 @@ interface Input {
 }
 
 export default class NotificationTaskInvolves extends Notification {
+  type: 'TASK_INVOLVES'
   changeAuthorId: string
   involvement: TaskInvolvement
   taskId: string
@@ -19,6 +20,7 @@ export default class NotificationTaskInvolves extends Notification {
   constructor(input: Input) {
     const {teamId, changeAuthorId, involvement, taskId, userId} = input
     super({userId, type: 'TASK_INVOLVES'})
+    this.type = 'TASK_INVOLVES'
     this.changeAuthorId = changeAuthorId
     this.involvement = involvement
     this.taskId = taskId

@@ -25,6 +25,8 @@ import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResp
 import User from '../../../../postgres/types/IUser'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import {analytics} from '../../../../utils/analytics/analytics'
+import errorFilter from '../../../errorFilter'
+import {isNotNull} from '../../../../../client/utils/predicates'
 
 type SlackNotification = {
   title: string
@@ -442,6 +444,46 @@ async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, 
   }
 }
 
+const getDmSlackForMeeting = async (
+  dataLoader: DataLoaderWorker,
+  meeting: Meeting,
+  userId: string
+) => {
+  // Order of slack auth is:
+  // 1. Auth on team
+  // 2. Auth in org (auth team is in same org as meeting team)
+  // 3. Any auth for user
+  const meetingTeamOrgId = (await dataLoader.get('teams').loadNonNull(meeting.teamId)).orgId
+  const userSlackAuths = (await dataLoader.get('slackAuthByUserId').load(userId)).filter(
+    (auth) => !!auth.botAccessToken
+  )
+
+  const authTeamsLookup = Object.fromEntries(
+    (await dataLoader.get('teams').loadMany(userSlackAuths.map((auth) => auth.teamId)))
+      .filter(errorFilter)
+      .filter(isNotNull)
+      .map((team) => [team.id, team])
+  )
+
+  return userSlackAuths.sort((a, b) => {
+    if (a.teamId === meeting.teamId) {
+      return -1
+    } else if (b.teamId === meeting.teamId) {
+      return 1
+    }
+
+    const aHasOrg = authTeamsLookup[a.teamId]?.orgId === meetingTeamOrgId
+    const bHasOrg = authTeamsLookup[b.teamId]?.orgId === meetingTeamOrgId
+    if (aHasOrg && !bHasOrg) {
+      return -1
+    } else if (!aHasOrg && bHasOrg) {
+      return 1
+    }
+
+    return 0
+  })[0]
+}
+
 export const SlackNotifier: Notifier = {
   async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
@@ -618,5 +660,64 @@ export const SlackNotifier: Notifier = {
       return handleError(res, team.id, notificationChannel)
     }
     return 'success'
+  },
+
+  async sendNotificationToUser(
+    dataLoader: DataLoaderWorker,
+    notificationId: string,
+    userId: string
+  ) {
+    const notification = await dataLoader.get('notifications').load(notificationId)
+    if (notification.type !== 'RESPONSE_MENTIONED' && notification.type !== 'RESPONSE_REPLIED') {
+      return
+    }
+
+    const meeting = await dataLoader.get('newMeetings').load(notification.meetingId)
+
+    const userSlackAuth = await getDmSlackForMeeting(dataLoader, meeting, userId)
+    if (!userSlackAuth) {
+      return
+    }
+
+    let responseId: string | undefined
+    let title: string | undefined
+    let buttonText: string | undefined
+
+    if (notification.type === 'RESPONSE_REPLIED') {
+      const responses = await getTeamPromptResponsesByMeetingId(notification.meetingId)
+      responseId = responses.find(({userId: responseUserId}) => responseUserId === userId)?.id
+      const user = await dataLoader.get('users').loadNonNull(notification.authorId)
+      title = `${user.preferredName} replied to your response in ${meeting.name}`
+      buttonText = 'See the discussion'
+    } else {
+      responseId = notification.responseId
+      const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
+      const user = await dataLoader.get('users').loadNonNull(response.userId)
+      title = `${user.preferredName} mentioned you in their response in ${meeting.name}`
+      buttonText = 'See their response'
+    }
+
+    if (!responseId) {
+      return
+    }
+
+    const options = {
+      searchParams: {
+        utm_source: 'slack standup notification',
+        utm_medium: 'product',
+        utm_campaign: 'notifications',
+        responseId
+      }
+    }
+
+    const responseUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
+    const blocks: Array<{type: string}> = [
+      makeSection(title),
+      makeButtons([{text: buttonText, url: responseUrl, type: 'primary'}])
+    ]
+
+    const {botAccessToken} = userSlackAuth
+    const manager = new SlackServerManager(botAccessToken!)
+    manager.postMessage(userSlackAuth.slackUserId, blocks, title)
   }
 }
