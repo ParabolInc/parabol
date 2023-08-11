@@ -7,11 +7,13 @@ interface Input {
 }
 
 export default class NotificationKickedOut extends Notification {
+  type: 'KICKED_OUT'
   teamId: string
   evictorUserId: string
   constructor(input: Input) {
     const {evictorUserId, teamId, userId} = input
     super({userId, type: 'KICKED_OUT'})
+    this.type = 'KICKED_OUT'
     this.teamId = teamId
     this.evictorUserId = evictorUserId
   }

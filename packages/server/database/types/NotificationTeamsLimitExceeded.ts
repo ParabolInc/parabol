@@ -8,12 +8,14 @@ interface Input {
 }
 
 export default class NotificationTeamsLimitExceeded extends Notification {
+  type: 'TEAMS_LIMIT_EXCEEDED'
   orgId: string
   orgName: string
   orgPicture?: string
   constructor(input: Input) {
     const {userId, orgId, orgName, orgPicture} = input
     super({userId, type: 'TEAMS_LIMIT_EXCEEDED'})
+    this.type = 'TEAMS_LIMIT_EXCEEDED'
     this.orgId = orgId
     this.orgName = orgName
     this.orgPicture = orgPicture

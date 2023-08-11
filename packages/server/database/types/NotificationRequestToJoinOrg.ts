@@ -10,6 +10,7 @@ interface Input {
 }
 
 export default class NotificationRequestToJoinOrg extends Notification {
+  type: 'REQUEST_TO_JOIN_ORG'
   domainJoinRequestId: number
   email: string
   name: string
@@ -18,6 +19,7 @@ export default class NotificationRequestToJoinOrg extends Notification {
   constructor(input: Input) {
     const {domainJoinRequestId, requestCreatedBy, email, name, picture, userId} = input
     super({userId, type: 'REQUEST_TO_JOIN_ORG'})
+    this.type = 'REQUEST_TO_JOIN_ORG'
     this.domainJoinRequestId = domainJoinRequestId
     this.email = email
     this.name = name

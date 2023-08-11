@@ -21,6 +21,11 @@ export type Notifier = {
     stageIndex: number,
     channelId: string
   ): Promise<NotifyResponse>
+  sendNotificationToUser?(
+    dataLoader: DataLoaderWorker,
+    notificationId: string,
+    userId: string
+  ): Promise<void>
   standupResponseSubmitted(
     dataLoader: DataLoaderWorker,
     meetingId: string,

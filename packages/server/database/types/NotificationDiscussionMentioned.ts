@@ -9,6 +9,7 @@ interface Input {
 }
 
 export default class NotificationDiscussionMentioned extends Notification {
+  type: 'DISCUSSION_MENTIONED'
   meetingId: string
   authorId: string
   commentId: string
@@ -17,6 +18,7 @@ export default class NotificationDiscussionMentioned extends Notification {
   constructor(input: Input) {
     const {meetingId, authorId, userId, commentId, discussionId} = input
     super({userId, type: 'DISCUSSION_MENTIONED'})
+    this.type = 'DISCUSSION_MENTIONED'
     this.meetingId = meetingId
     this.authorId = authorId
     this.commentId = commentId

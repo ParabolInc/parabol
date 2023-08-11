@@ -6,10 +6,12 @@ interface Input {
 }
 
 export default class NotificationPromptToJoinOrg extends Notification {
+  type: 'PROMPT_TO_JOIN_ORG'
   activeDomain: string
   constructor(input: Input) {
     const {userId, activeDomain} = input
     super({userId, type: 'PROMPT_TO_JOIN_ORG'})
+    this.type = 'PROMPT_TO_JOIN_ORG'
     this.activeDomain = activeDomain
   }
 }

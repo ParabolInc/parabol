@@ -9,6 +9,7 @@ interface Input {
 }
 
 export default class NotificationTeamsLimitReminder extends Notification {
+  type: 'TEAMS_LIMIT_REMINDER'
   orgId: string
   orgName: string
   orgPicture?: string
@@ -16,6 +17,7 @@ export default class NotificationTeamsLimitReminder extends Notification {
   constructor(input: Input) {
     const {userId, orgId, orgName, orgPicture, scheduledLockAt} = input
     super({userId, type: 'TEAMS_LIMIT_REMINDER'})
+    this.type = 'TEAMS_LIMIT_REMINDER'
     this.orgId = orgId
     this.scheduledLockAt = scheduledLockAt
     this.orgName = orgName
