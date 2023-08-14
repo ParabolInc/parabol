@@ -67,13 +67,16 @@ const GcalModal = (props: Props) => {
         name
         teamMembers {
           email
+          isSelf
         }
       }
     `,
     teamRef
   )
-  console.log('🚀 ~ team:', team)
   const {teamMembers, name: teamName} = team ?? {}
+  console.log('🚀 ~ teamMembers:', teamMembers)
+  const teamMemberEmails = teamMembers?.filter(({isSelf}) => !isSelf).map(({email}) => email)
+  const hasTeamMemberEmails = teamMemberEmails?.length > 0
 
   const {fields, onChange} = useForm({
     title: {
@@ -115,7 +118,6 @@ const GcalModal = (props: Props) => {
   }
 
   const handleToggleInviteAll = () => {
-    const teamMemberEmails = teamMembers?.map(({email}) => email)
     if (!inviteAll) {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
       const currentInvitees = parsedInvitees
@@ -171,21 +173,21 @@ const GcalModal = (props: Props) => {
           <div className='pt-2'>
             <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
           </div>
-          <p className='mb-3 pt-4 text-xs leading-4'>
-            {'Invite others to your Google Calendar event'}
-          </p>
+          <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea
             name='rawInvitees'
             onChange={(e) => setRawInvitees(e.target.value)}
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
-          <div className='flex cursor-pointer items-center pt-2' onClick={handleToggleInviteAll}>
-            <Checkbox active={inviteAll} />
-            <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
-              {`Invite team members from ${teamName}`}
-            </label>
-          </div>
+          {hasTeamMemberEmails && (
+            <div className='flex cursor-pointer items-center pt-1' onClick={handleToggleInviteAll}>
+              <Checkbox active={inviteAll} />
+              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+                {`Invite team members from ${teamName}`}
+              </label>
+            </div>
+          )}
         </div>
         <DialogActions>
           <PrimaryButton size='medium' onClick={handleClick}>
