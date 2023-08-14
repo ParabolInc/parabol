@@ -95,7 +95,7 @@ export const createEditorExtensions = (
       }
     }
   }).configure({
-    openOnClick: isReadOnly
+    openOnClick: false
   }),
   Placeholder.configure({
     showOnlyWhenEditable: false,
