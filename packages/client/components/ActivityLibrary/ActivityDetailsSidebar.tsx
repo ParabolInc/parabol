@@ -98,6 +98,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
+        ...GcalModal_team
       }
     `,
     teamsRef
@@ -322,6 +323,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         closeModal={closeScheduleDialog}
         isOpen={isScheduleDialogOpen}
         handleStartActivityWithGcalEvent={handleStartActivity}
+        teamRef={selectedTeam}
       />
     </>
   )
