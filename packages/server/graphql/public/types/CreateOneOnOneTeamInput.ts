@@ -3,11 +3,8 @@ import {GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
 const CreateOneOnOneTeamInput = new GraphQLInputObjectType({
   name: 'CreateOneOnOneTeamInput',
   fields: () => ({
-    userId: {
-      type: GraphQLString
-    },
     email: {
-      type: GraphQLString
+      type: new GraphQLNonNull(GraphQLString)
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLString)
@@ -16,8 +13,7 @@ const CreateOneOnOneTeamInput = new GraphQLInputObjectType({
 })
 
 export type CreateOneOnOneTeamInputType = {
-  userId: string | null
-  email: string | null
+  email: string
   orgId: string
 }
 

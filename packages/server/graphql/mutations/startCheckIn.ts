@@ -28,7 +28,7 @@ export default {
   args: {
     teamId: {
       type: GraphQLID,
-      description: 'The team starting the meeting'
+      description: 'The team starting the meeting. Can be null if oneOnOneTeamInput is provided'
     },
     gcalInput: {
       type: CreateGcalEventInput,
@@ -46,7 +46,7 @@ export default {
       gcalInput,
       oneOnOneTeamInput
     }: {
-      teamId: string
+      teamId?: string
       gcalInput?: CreateGcalEventInputType
       oneOnOneTeamInput?: CreateOneOnOneTeamInputType
     },
@@ -71,7 +71,9 @@ export default {
       const viewer = await dataLoader.get('users').loadNonNull(viewerId)
       teamId = await maybeCreateOneOnOneTeam(viewer, oneOnOneTeamInput, context)
     } else {
-      return standardError(new Error('Must provide teamId or ad-hoc team'), {userId: viewerId})
+      return standardError(new Error('Must provide teamId or oneOnOneTeamInput'), {
+        userId: viewerId
+      })
     }
 
     const meetingType: MeetingTypeEnum = 'action'
