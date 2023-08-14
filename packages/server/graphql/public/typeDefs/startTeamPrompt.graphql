@@ -56,7 +56,7 @@ input CreateGcalEventInput {
   """
   timeZone: String!
   """
-  The emails to be invites to the gcal event
+  The emails that will be invited to the gcal event. If not provided, the no one will be invited
   """
   invitees: [String!]
 }
