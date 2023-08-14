@@ -2,9 +2,10 @@ import {
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLString,
-  GraphQLBoolean,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLList
 } from 'graphql'
+import GraphQLEmailType from '../../types/GraphQLEmailType'
 
 const CreateGcalEventInput = new GraphQLInputObjectType({
   name: 'CreateGcalEventInput',
@@ -25,13 +26,14 @@ const CreateGcalEventInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The end dateTime of the meeting'
     },
-    inviteTeam: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'Whether the users in the team should be invited in gcal'
-    },
     timeZone: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The timeZone of the meeting'
+    },
+    emails: {
+      type: new GraphQLList(GraphQLEmailType),
+      description:
+        'The email addresses that will be invited to the gcal event. If not provided, no one will be invited'
     }
   })
 })
@@ -41,8 +43,8 @@ export type CreateGcalEventInputType = {
   description: string
   startTimestamp: number
   endTimestamp: number
-  inviteTeam: boolean
   timeZone: string
+  emails?: string[]
 }
 
 export default CreateGcalEventInput

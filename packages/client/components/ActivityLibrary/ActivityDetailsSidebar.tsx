@@ -181,11 +181,6 @@ const ActivityDetailsSidebar = (props: Props) => {
     }
   }
 
-  const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
-    openScheduleDialog()
-    handleStartActivity(gcalInput)
-  }
-
   const handleShareToOrg = () => {
     selectedTemplate &&
       UpdateReflectTemplateScopeMutation(
@@ -326,7 +321,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       <GcalModal
         closeModal={closeScheduleDialog}
         isOpen={isScheduleDialogOpen}
-        handleCreateGcalEvent={handleStartActivityWithGcalEvent}
+        handleStartActivityWithGcalEvent={handleStartActivity}
       />
     </>
   )

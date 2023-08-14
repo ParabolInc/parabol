@@ -40,13 +40,13 @@ const validateTitle = (title: string) => {
 }
 
 interface Props {
-  handleCreateGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
+  handleStartActivityWithGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
   closeModal: () => void
   isOpen: boolean
 }
 
 const GcalModal = (props: Props) => {
-  const {handleCreateGcalEvent, closeModal, isOpen} = props
+  const {handleStartActivityWithGcalEvent, closeModal, isOpen} = props
 
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
@@ -83,7 +83,7 @@ const GcalModal = (props: Props) => {
       inviteTeam,
       timeZone
     }
-    handleCreateGcalEvent(input)
+    handleStartActivityWithGcalEvent(input)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
