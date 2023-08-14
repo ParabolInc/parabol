@@ -5,12 +5,14 @@ enum OrganizationFeatureFlagsEnum {
   SAMLUI
   noAISummary
   AIGeneratedDiscussionPrompt
+  standupAISummary
   promptToJoinOrg
   suggestGroups
   zoomTranscription
   shareSummary
   teamsLimit
   teamInsights
+  oneOnOne
 }
 
 extend type Mutation {

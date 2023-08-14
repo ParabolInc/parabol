@@ -73,6 +73,22 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
   }
 }
 
+const ACTIVITY_ID_DATA_LOOKUP: Record<
+  string,
+  {description: React.ReactNode; integrationsTip: React.ReactNode}
+> = {
+  oneOnOneAction: {
+    description: (
+      <>
+        This is a space to check in one-on-one. Share a personal update using the <b>Icebreaker</b>{' '}
+        phase. Give a brief update on what’s changed with your work during the <b>Solo Updates</b>{' '}
+        phase. Raise issues for discussion in the <b>Agenda</b> phase.
+      </>
+    ),
+    integrationsTip: <>push takeaway tasks to your backlog</>
+  }
+}
+
 interface Props {
   activityRef: TemplateDetails_activity$key
   isEditing: boolean
@@ -126,7 +142,10 @@ export const TemplateDetails = (props: Props) => {
     viewerLowestScope
   } = activity
   const {id: teamId, editingScaleId} = team
-  const {description: activityDescription, integrationsTip} = ACTIVITY_TYPE_DATA_LOOKUP[type]
+
+  const {description: activityDescription, integrationsTip} =
+    ACTIVITY_ID_DATA_LOOKUP[activityId] ?? ACTIVITY_TYPE_DATA_LOOKUP[type]
+
   const viewer = useFragment(
     graphql`
       fragment TemplateDetails_user on User {

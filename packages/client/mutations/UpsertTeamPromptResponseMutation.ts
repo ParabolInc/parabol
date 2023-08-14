@@ -15,6 +15,7 @@ graphql`
       plaintextContent
       updatedAt
       createdAt
+      ...TeamPromptResponseEmojis_response
     }
   }
 `
@@ -82,7 +83,8 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
         content,
         plaintextContent,
         updatedAt: now,
-        createdAt: !teamPromptResponseId ? now : undefined
+        createdAt: !teamPromptResponseId ? now : undefined,
+        reactjis: []
       }
     }
   }

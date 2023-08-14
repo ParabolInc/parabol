@@ -104,6 +104,7 @@ enum IntegrationProviderServiceEnum {
   gitlab
   mattermost
   jiraServer
+  gcal
 }
 
 """
@@ -1011,46 +1012,6 @@ enum TeamDrawer {
 scalar Email
 
 """
-All the available integrations available for this team member
-"""
-type TeamMemberIntegrations {
-  """
-  composite
-  """
-  id: ID!
-
-  """
-  All things associated with an Atlassian integration for a team member
-  """
-  atlassian: AtlassianIntegration
-
-  """
-  All things associated with a Jira Server integration for a team member
-  """
-  jiraServer: JiraServerIntegration!
-
-  """
-  All things associated with a GitHub integration for a team member
-  """
-  github: GitHubIntegration
-
-  """
-  All things associated with a GitLab integration for a team member
-  """
-  gitlab: GitLabIntegration!
-
-  """
-  All things associated with a Mattermost integration for a team member
-  """
-  mattermost: MattermostIntegration!
-
-  """
-  All things associated with a slack integration for a team member
-  """
-  slack: SlackIntegration
-}
-
-"""
 The atlassian auth + integration helpers for a specific team member
 """
 type AtlassianIntegration {
@@ -1493,6 +1454,18 @@ type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
 Integration Auth and shared providers available to the team member
 """
 type MattermostIntegration {
+  """
+  The OAuth2 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthWebhook
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderWebhook!]!
+}
+
+type MSTeamsIntegration {
   """
   The OAuth2 Authorization for this team member
   """
@@ -6029,7 +6002,7 @@ type Mutation {
     The name of the new team
     """
     orgName: String!
-    invitees: [String!]
+    invitees: [Email!]
   ): AddOrgPayload!
 
   """
@@ -6040,7 +6013,7 @@ type Mutation {
     The new team object
     """
     newTeam: NewTeamInput!
-    invitees: [String!]
+    invitees: [Email!]
   ): AddTeamPayload!
   archiveOrganization(
     """

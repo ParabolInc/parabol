@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
-import {ParabolR} from '../../../database/rethinkDriver'
+import getRethink, {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
@@ -12,6 +12,39 @@ import collectReactjis from './collectReactjis'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import updateTeamInsights from './updateTeamInsights'
+import generateStandupMeetingSummary from './generateStandupMeetingSummary'
+import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
+
+const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
+  const {dataLoader} = context
+  const r = await getRethink()
+
+  const [summary, usedReactjis] = await Promise.all([
+    generateStandupMeetingSummary(meeting, dataLoader),
+    collectReactjis(meeting, dataLoader)
+  ])
+
+  await r
+    .table('NewMeeting')
+    .get(meeting.id)
+    .update({
+      summary,
+      usedReactjis
+    })
+    .run()
+
+  dataLoader.get('newMeetings').clear(meeting.id)
+  // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
+  sendNewMeetingSummary(meeting, context).catch(console.log)
+  updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
+  updateTeamInsights(meeting.teamId, dataLoader)
+  // wait for meeting stats to be generated before sending Slack notification
+  IntegrationNotifier.endMeeting(dataLoader, meeting.id, meeting.teamId)
+  const data = {meetingId: meeting.id}
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
+  publish(SubscriptionChannel.MEETING, meeting.id, 'EndTeamPromptSuccess', data, subOptions)
+}
 
 const safeEndTeamPrompt = async ({
   meeting,
@@ -34,16 +67,13 @@ const safeEndTeamPrompt = async ({
 
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
-  const usedReactjis = await collectReactjis(meeting, dataLoader)
-
   // RESOLUTION
   const completedTeamPrompt = (await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
       {
-        endedAt: now,
-        usedReactjis
+        endedAt: now
       },
       {returnChanges: true}
     )('changes')(0)('new_val')
@@ -74,11 +104,9 @@ const safeEndTeamPrompt = async ({
   )
   const timelineEventId = events[0]!.id
   await r.table('TimelineEvent').insert(events).run()
-  IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
-  sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
-  checkTeamsLimit(team.orgId, dataLoader)
-  updateTeamInsights(teamId, dataLoader)
+  finishTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
+  checkTeamsLimit(team.orgId, dataLoader)
   dataLoader.get('newMeetings').clear(meetingId)
 
   const data = {
