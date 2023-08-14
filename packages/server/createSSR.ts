@@ -6,7 +6,8 @@ import acceptsBrotli from './acceptsBrotli'
 
 const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
 const indexPath = path.join(localClientAssetsDir, 'index.html')
-const minifiedHTML = fs.readFileSync(indexPath, 'utf8')
+// In dev mode we don't use this, we proxy to the in-memory Dev Server
+const minifiedHTML = __PRODUCTION__ ? fs.readFileSync(indexPath, 'utf8') : ''
 const brotliHTML = brotliCompressSync(minifiedHTML)
 
 const createSSR = (res: HttpResponse, req: HttpRequest) => {
