@@ -7,6 +7,7 @@ const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const cp = require('child_process')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -14,6 +15,8 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
+
+const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 
 module.exports = ({noDeps}) => ({
   mode: 'production',
@@ -79,6 +82,7 @@ module.exports = ({noDeps}) => ({
       __PRODUCTION__: true,
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+      __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
       'process.env.DEBUG': false,
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
       'process.platform': JSON.stringify(process.platform),
