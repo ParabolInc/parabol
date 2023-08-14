@@ -9,6 +9,7 @@ import inviteToTeamHelper from './inviteToTeamHelper'
 import {GQLContext} from '../../graphql'
 import publish from '../../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
+import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 
 type OneOnOneTeam = {
   email: string
@@ -69,14 +70,25 @@ const createNewTeamAndInvite = async (
   invitees: string[],
   context: GQLContext
 ) => {
-  const {authToken} = context
+  const {authToken, socketId: mutatorId, dataLoader} = context
+  const {id: viewerId} = viewer
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
   const teamId = generateUID()
   await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, name, orgId})
 
   const {tms} = authToken
   // MUTATIVE
   tms.push(teamId)
-  publish(SubscriptionChannel.NOTIFICATION, viewer.id, 'AuthTokenPayload', {tms})
+  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
+
+  const teamMemberId = toTeamMemberId(teamId, viewerId)
+  const teamData = {
+    orgId,
+    teamId,
+    teamMemberId
+  }
+  publish(SubscriptionChannel.TEAM, viewerId, 'AddTeamPayload', teamData, subOptions)
 
   await inviteToTeamHelper(invitees, teamId, undefined, context)
 

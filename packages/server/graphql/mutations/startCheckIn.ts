@@ -59,18 +59,18 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
 
-    let teamId = existingTeamId
-
-    if (teamId) {
-      if (!isTeamMember(authToken, teamId)) {
+    if (existingTeamId) {
+      if (!isTeamMember(authToken, existingTeamId)) {
         return standardError(new Error('Team not found'), {userId: viewerId})
       }
-      const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+      const unpaidError = await isStartMeetingLocked(existingTeamId, dataLoader)
       if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
-    } else if (oneOnOneTeamInput) {
-      const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-      teamId = await maybeCreateOneOnOneTeam(viewer, oneOnOneTeamInput, context)
-    } else {
+    }
+    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+    const teamId = oneOnOneTeamInput
+      ? await maybeCreateOneOnOneTeam(viewer, oneOnOneTeamInput, context)
+      : existingTeamId
+    if (!teamId) {
       return standardError(new Error('Must provide teamId or oneOnOneTeamInput'), {
         userId: viewerId
       })
