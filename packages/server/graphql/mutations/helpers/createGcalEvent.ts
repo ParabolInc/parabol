@@ -12,18 +12,19 @@ type Input = {
   gcalInput?: CreateGcalEventInput | null
   meetingId: string
   viewerId: string
+  teamId: string
   dataLoader: DataLoaderWorker
 }
 
 const createGcalEvent = async (input: Input) => {
-  const {gcalInput, meetingId, viewerId, dataLoader} = input
+  const {gcalInput, meetingId, viewerId, dataLoader, teamId} = input
   if (!gcalInput) return
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {featureFlags} = viewer
   if (!featureFlags.includes('gcal')) {
     return standardError(new Error('Does not have gcal feature flag'), {userId: viewerId})
   }
-  const {startTimestamp, endTimestamp, title, description, timeZone, emails} = gcalInput
+  const {startTimestamp, endTimestamp, title, description, timeZone, invitees} = gcalInput
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
   if (!gcalAuth) {
@@ -43,6 +44,7 @@ const createGcalEvent = async (input: Input) => {
   oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
+  const attendeesWithEmailObjects = invitees.map((email) => ({email}))
 
   const event = {
     summary: title,
@@ -56,7 +58,7 @@ const createGcalEvent = async (input: Input) => {
       dateTime: endDateTime,
       timeZone
     },
-    attendees: emails,
+    attendees: attendeesWithEmailObjects,
     reminders: {
       useDefault: false,
       overrides: [

@@ -52,11 +52,11 @@ input CreateGcalEventInput {
   """
   endTimestamp: Int!
   """
-  Whether to invite the team to the event
-  """
-  inviteTeam: Boolean!
-  """
   The timezone of the event
   """
   timeZone: String!
+  """
+  The emails to be invites to the gcal event
+  """
+  invitees: [String!]!
 }

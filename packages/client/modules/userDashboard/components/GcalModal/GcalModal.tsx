@@ -11,7 +11,6 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import DateTimePicker from './DateTimePicker'
 import Checkbox from '../../../../components/Checkbox'
-import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
 import Legitity from '../../../../validation/Legitity'
 import {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
@@ -19,6 +18,7 @@ import {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graph
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import {useFragment} from 'react-relay'
+import StyledError from '../../../../components/StyledError'
 
 const StyledInput = styled('input')({
   border: `1px solid ${PALETTE.SLATE_400}`,
@@ -58,6 +58,7 @@ const GcalModal = (props: Props) => {
   const [start, setStart] = useState(startOfNextHour)
   const [end, setEnd] = useState(endOfNextHour)
   const [inviteAll, setInviteAll] = useState(false)
+  const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
 
@@ -74,7 +75,6 @@ const GcalModal = (props: Props) => {
     teamRef
   )
   const {teamMembers, name: teamName} = team ?? {}
-  console.log('🚀 ~ teamMembers:', teamMembers)
   const teamMemberEmails = teamMembers?.filter(({isSelf}) => !isSelf).map(({email}) => email)
   const hasTeamMemberEmails = teamMemberEmails?.length > 0
 
@@ -105,7 +105,7 @@ const GcalModal = (props: Props) => {
       startTimestamp,
       endTimestamp,
       timeZone,
-      emails: invitees
+      invitees
     }
     handleStartActivityWithGcalEvent(input)
   }
@@ -115,6 +115,26 @@ const GcalModal = (props: Props) => {
       fields.title.setError('')
     }
     onChange(e)
+  }
+
+  const onInvitesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nextValue = e.target.value
+    if (rawInvitees === nextValue) return
+    const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
+    const allInvitees = parsedInvitees
+      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+      : []
+    const uniqueInvitees = Array.from(new Set(allInvitees))
+    if (invalidEmailExists) {
+      const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
+      lastValidEmail
+        ? setInviteError(`Invalid email(s) after ${lastValidEmail}`)
+        : setInviteError(`Invalid email(s)`)
+    } else {
+      setInviteError(null)
+    }
+    setRawInvitees(nextValue)
+    setInvitees(uniqueInvitees)
   }
 
   const handleToggleInviteAll = () => {
@@ -176,7 +196,7 @@ const GcalModal = (props: Props) => {
           <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea
             name='rawInvitees'
-            onChange={(e) => setRawInvitees(e.target.value)}
+            onChange={onInvitesChange}
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
@@ -188,6 +208,7 @@ const GcalModal = (props: Props) => {
               </label>
             </div>
           )}
+          {inviteError && <ErrorMessage>{inviteError}</ErrorMessage>}
         </div>
         <DialogActions>
           <PrimaryButton size='medium' onClick={handleClick}>
