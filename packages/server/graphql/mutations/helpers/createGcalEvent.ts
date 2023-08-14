@@ -44,7 +44,7 @@ const createGcalEvent = async (input: Input) => {
   oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
-  const attendeesWithEmailObjects = invitees.map((email) => ({email}))
+  const attendeesWithEmailObjects = invitees?.map((email) => ({email}))
 
   const event = {
     summary: title,
@@ -68,15 +68,20 @@ const createGcalEvent = async (input: Input) => {
     }
   }
 
-  const createdEvent = await calendar.events.insert({
-    calendarId: 'primary',
-    requestBody: event
-  })
-  const gcalLink = createdEvent.data.htmlLink
-  if (!gcalLink) {
-    return standardError(new Error('Could not create event'), {userId: viewerId})
+  try {
+    const createdEvent = await calendar.events.insert({
+      calendarId: 'primary',
+      requestBody: event
+    })
+    const gcalLink = createdEvent.data.htmlLink
+    if (!gcalLink) {
+      return standardError(new Error('Could not create event'), {userId: viewerId})
+    }
+    return {gcalLink}
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error('Unable to create event in gcal')
+    return standardError(error, {userId: viewerId})
   }
-  return {gcalLink}
 }
 
 export default createGcalEvent

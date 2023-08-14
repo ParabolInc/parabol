@@ -58,5 +58,5 @@ input CreateGcalEventInput {
   """
   The emails to be invites to the gcal event
   """
-  invitees: [String!]!
+  invitees: [String!]
 }
