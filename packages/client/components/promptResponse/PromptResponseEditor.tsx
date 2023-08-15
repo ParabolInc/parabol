@@ -3,7 +3,7 @@ import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
 import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import BaseButton from '../BaseButton'
@@ -12,6 +12,7 @@ import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
 import EmojiMenuTipTap from './EmojiMenuTipTap'
 import MentionsTipTap from './MentionsTipTap'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
+import {unfurlLoomLinks} from './loomExtension'
 
 const LinkIcon = styled(Link)({
   height: 18,
@@ -111,20 +112,6 @@ const StyledEditor = styled('div')`
     margin-block-start: 4px;
     margin-block-end: 4px;
   }
-
-  .ProseMirror iframe {
-    border: 8px solid #000;
-    border-radius: 4px;
-    min-width: 200px;
-    min-height: 200px;
-    display: block;
-    outline: 0px solid transparent;
-  }
-
-  .ProseMirror-selectednode iframe {
-    transition: outline 0.15s;
-    outline: 6px solid #ece111;
-  }
 `
 
 interface Props {
@@ -140,7 +127,7 @@ interface Props {
 const PromptResponseEditor = (props: Props) => {
   const {
     autoFocus: autoFocusProp,
-    content,
+    content: rawContent,
     handleSubmit,
     readOnly,
     placeholder,
@@ -149,6 +136,11 @@ const PromptResponseEditor = (props: Props) => {
   } = props
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
+
+  const content = useMemo(
+    () => (rawContent && readOnly ? unfurlLoomLinks(rawContent) : rawContent),
+    [rawContent, readOnly]
+  )
 
   const [linkOverlayProps, setLinkOverlayProps] = useState<
     | {
