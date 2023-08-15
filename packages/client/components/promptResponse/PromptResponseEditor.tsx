@@ -101,7 +101,7 @@ const StyledEditor = styled('div')`
 
   a {
     text-decoration: underline;
-    color: ${PALETTE.SLATE_600};
+    color: ${PALETTE.SLATE_700};
     :hover {
       cursor: pointer;
     }
