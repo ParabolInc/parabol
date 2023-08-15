@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLList
 } from 'graphql'
+import GraphQLEmailType from '../../types/GraphQLEmailType'
 
 const CreateGcalEventInput = new GraphQLInputObjectType({
   name: 'CreateGcalEventInput',
@@ -30,7 +31,7 @@ const CreateGcalEventInput = new GraphQLInputObjectType({
       description: 'The timeZone of the meeting'
     },
     invitees: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLEmailType)),
       description:
         'The email addresses that will be invited to the gcal event. If not provided, no one will be invited'
     }

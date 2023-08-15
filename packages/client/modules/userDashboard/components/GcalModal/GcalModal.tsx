@@ -141,7 +141,7 @@ const GcalModal = (props: Props) => {
     if (!inviteAll) {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
       const currentInvitees = parsedInvitees
-        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+        ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
         : []
       const emailsToAdd = teamMemberEmails.filter((email) => !currentInvitees.includes(email))
       const lastInvitee = currentInvitees[currentInvitees.length - 1]
