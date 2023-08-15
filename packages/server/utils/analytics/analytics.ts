@@ -16,6 +16,7 @@ import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import segment from '../segmentIo'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
+import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
@@ -118,9 +119,11 @@ export type AnalyticsEvent =
  * Provides a unified inteface for sending all the analytics events
  */
 class Analytics {
+  private amplitudeAnalytics: AmplitudeAnalytics
   private segmentAnalytics: SegmentAnalytics
 
   constructor() {
+    this.amplitudeAnalytics = new AmplitudeAnalytics()
     this.segmentAnalytics = new SegmentAnalytics(segment)
   }
 
@@ -445,8 +448,10 @@ class Analytics {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
   }
 
-  private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>
+  private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
+    this.amplitudeAnalytics.track(userId, event, properties)
     this.segmentAnalytics.track(userId, event, properties)
+  }
 }
 
 export const analytics = new Analytics()
