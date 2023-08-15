@@ -135,6 +135,16 @@ const ActivityDetailsSidebar = (props: Props) => {
     close: closeScheduleDialog
   } = useDialogState()
 
+  const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
+
+  const oneOnOneTeamInput = selectedUsers[0]
+    ? {
+        email: selectedUsers[0].email,
+        // TODO: always pick default orgId for now, this will be changed in next PRs
+        orgId: selectedTeam.orgId
+      }
+    : null
+
   const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
     submitMutation()
@@ -154,7 +164,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     } else if (type === 'action') {
       StartCheckInMutation(
         atmosphere,
-        {teamId: selectedTeam.id, gcalInput},
+        {teamId: !oneOnOneTeamInput ? selectedTeam.id : null, oneOnOneTeamInput, gcalInput},
         {history, onError, onCompleted}
       )
     } else {
@@ -226,8 +236,6 @@ const ActivityDetailsSidebar = (props: Props) => {
     })
     history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
-
-  const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
 
   return (
     <>

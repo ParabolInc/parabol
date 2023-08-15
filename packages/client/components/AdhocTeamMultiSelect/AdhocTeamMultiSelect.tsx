@@ -90,7 +90,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
   const createCustomOption = (option: string): Option => {
     return {
       label: `Invite ${option}`,
-      email: 'option',
+      email: option,
       organizationIds: [],
       picture: null,
       id: null
