@@ -35,6 +35,7 @@ import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeeting
 import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
+import {AdhocTeamMultiSelect, Option} from '../AdhocTeamMultiSelect/AdhocTeamMultiSelect'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -67,6 +68,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         featureFlags {
           gcal
         }
+        ...AdhocTeamMultiSelect_viewer
       }
     `,
     viewerRef
@@ -225,6 +227,8 @@ const ActivityDetailsSidebar = (props: Props) => {
     history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 
+  const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
+
   return (
     <>
       {isOpen && <div className='w-96' />}
@@ -238,16 +242,12 @@ const ActivityDetailsSidebar = (props: Props) => {
 
         <div className='flex grow flex-col gap-2'>
           {selectedTemplate.id === 'oneOnOneAction' ? (
-            // TODO: replace it with new user picker
-            <NewMeetingTeamPicker
-              positionOverride={MenuPosition.UPPER_LEFT}
-              onSelectTeam={(teamId) => {
-                const newTeam = availableTeams.find((team) => team.id === teamId)
-                newTeam && setSelectedTeam(newTeam)
+            <AdhocTeamMultiSelect
+              viewerRef={viewer}
+              onChange={(newUsers: Option[]) => {
+                setSelectedUsers(newUsers)
               }}
-              selectedTeamRef={selectedTeam}
-              teamsRef={availableTeams}
-              customPortal={teamScopePopover}
+              value={selectedUsers}
             />
           ) : (
             <NewMeetingTeamPicker
