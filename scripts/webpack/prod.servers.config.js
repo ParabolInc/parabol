@@ -83,7 +83,6 @@ module.exports = ({noDeps}) => ({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
-      'process.env.DEBUG': false,
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
       'process.platform': JSON.stringify(process.platform),
       'process.arch': JSON.stringify(process.arch),
