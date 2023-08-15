@@ -107,8 +107,7 @@ module.exports = ({isDeploy, isStats}) => ({
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.DEBUG': false
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
       // Environment variables go in applyEnvVarsToClientAssets.ts, not here
       // This build may be deployed to many different environments
     }),
