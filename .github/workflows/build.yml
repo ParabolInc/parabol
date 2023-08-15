@@ -1,10 +1,6 @@
 name: Build
 
-on:
-  push:
-    paths-ignore:
-      # don't run this if docs are the only thing affected
-      - "docs/**"
+on: [push]
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
