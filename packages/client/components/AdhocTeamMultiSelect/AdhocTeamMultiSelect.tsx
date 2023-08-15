@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField'
 import {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
 import {Send as SendIcon} from '@mui/icons-material'
 import {Chip} from '../../ui/Chip/Chip'
-// import { Input } from "../../ui/Input/Input";
 
 export type Option = {
   id: string | null
@@ -144,7 +143,6 @@ export const AdhocTeamMultiSelect = (props: Props) => {
         )
       }}
       renderInput={(params) => (
-        // <Input {...params} />
         <TextField {...params} variant='filled' placeholder='ex. Traci or traci@company.com' />
       )}
     />
