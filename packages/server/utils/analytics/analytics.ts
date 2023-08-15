@@ -449,8 +449,10 @@ class Analytics {
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
-    this.amplitudeAnalytics.track(userId, event, properties)
-    this.segmentAnalytics.track(userId, event, properties)
+    Promise.all([
+      this.amplitudeAnalytics.track(userId, event, properties),
+      this.segmentAnalytics.track(userId, event, properties)
+    ])
   }
 }
 
