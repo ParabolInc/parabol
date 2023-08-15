@@ -10,6 +10,8 @@ const segmentIo = new SegmentIo(SEGMENT_WRITE_KEY || 'x', {
 }) as any
 segmentIo._track = segmentIo.track
 segmentIo.track = async (options: any) => {
+  // used as a failsafe for PPMIs
+  if (!SEGMENT_WRITE_KEY) return
   const {userId, event, properties: inProps} = options
   const user = options.userId ? await getUserById(options.userId) : null
   const {email, segmentId} = user ?? {}
