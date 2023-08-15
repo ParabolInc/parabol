@@ -1,6 +1,7 @@
 import {init, track} from '@amplitude/analytics-node'
-import PROD from '../../../PROD'
 import {AnalyticsEvent} from '../analytics'
+import {getUserById} from '../../../postgres/queries/getUsersByIds'
+import PROD from '../../../PROD'
 
 const {AMPLITUDE_WRITE_KEY} = process.env
 
@@ -15,8 +16,11 @@ export class AmplitudeAnalytics {
     })
   }
 
-  track(userId: string, event: AnalyticsEvent, properties?: Record<string, any>) {
-    return track(event, properties, {
+  async track(userId: string, event: AnalyticsEvent, properties?: Record<string, any>) {
+    const user = userId ? await getUserById(userId) : null
+    const {email} = user ?? {}
+    const props = {...properties, email}
+    return track(event, props, {
       user_id: userId
     })
   }
