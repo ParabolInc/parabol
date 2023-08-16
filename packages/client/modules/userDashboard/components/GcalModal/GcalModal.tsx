@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import React, {useState} from 'react'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
@@ -10,10 +11,14 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import DateTimePicker from './DateTimePicker'
 import Checkbox from '../../../../components/Checkbox'
-import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
 import Legitity from '../../../../validation/Legitity'
 import {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
+import {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
+import BasicTextArea from '../../../../components/InputField/BasicTextArea'
+import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
+import {useFragment} from 'react-relay'
+import StyledError from '../../../../components/StyledError'
 
 const StyledInput = styled('input')({
   border: `1px solid ${PALETTE.SLATE_400}`,
@@ -40,19 +45,38 @@ const validateTitle = (title: string) => {
 }
 
 interface Props {
-  handleCreateGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
+  handleStartActivityWithGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
   closeModal: () => void
   isOpen: boolean
+  teamRef: GcalModal_team$key
 }
 
 const GcalModal = (props: Props) => {
-  const {handleCreateGcalEvent, closeModal, isOpen} = props
-
+  const {handleStartActivityWithGcalEvent, closeModal, isOpen, teamRef} = props
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
   const [end, setEnd] = useState(endOfNextHour)
-  const [inviteTeam, setInviteTeam] = useState(true)
+  const [inviteAll, setInviteAll] = useState(false)
+  const [inviteError, setInviteError] = useState<null | string>(null)
+  const [rawInvitees, setRawInvitees] = useState('')
+  const [invitees, setInvitees] = useState([] as string[])
+
+  const team = useFragment(
+    graphql`
+      fragment GcalModal_team on Team {
+        name
+        teamMembers {
+          email
+          isSelf
+        }
+      }
+    `,
+    teamRef
+  )
+  const {teamMembers, name: teamName} = team ?? {}
+  const teamMemberEmails = teamMembers?.filter(({isSelf}) => !isSelf).map(({email}) => email)
+  const hasTeamMemberEmails = teamMemberEmails?.length > 0
 
   const {fields, onChange} = useForm({
     title: {
@@ -80,10 +104,10 @@ const GcalModal = (props: Props) => {
       description,
       startTimestamp,
       endTimestamp,
-      inviteTeam,
-      timeZone
+      timeZone,
+      invitees
     }
-    handleCreateGcalEvent(input)
+    handleStartActivityWithGcalEvent(input)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +115,52 @@ const GcalModal = (props: Props) => {
       fields.title.setError('')
     }
     onChange(e)
+  }
+
+  const onInvitesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nextValue = e.target.value
+    if (rawInvitees === nextValue) return
+    const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
+    const allInvitees = parsedInvitees
+      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+      : []
+    const uniqueInvitees = Array.from(new Set(allInvitees))
+    if (invalidEmailExists) {
+      const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
+      lastValidEmail
+        ? setInviteError(`Invalid email(s) after ${lastValidEmail}`)
+        : setInviteError(`Invalid email(s)`)
+    } else {
+      setInviteError(null)
+    }
+    setRawInvitees(nextValue)
+    setInvitees(uniqueInvitees)
+  }
+
+  const handleToggleInviteAll = () => {
+    if (!inviteAll) {
+      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+      const currentInvitees = parsedInvitees
+        ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
+        : []
+      const emailsToAdd = teamMemberEmails.filter((email) => !currentInvitees.includes(email))
+      const lastInvitee = currentInvitees[currentInvitees.length - 1]
+      const formattedCurrentInvitees =
+        currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
+          ? `${currentInvitees.join(', ')}, `
+          : currentInvitees.join(', ')
+      setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
+      setInvitees([...currentInvitees, ...emailsToAdd])
+    } else {
+      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+      const currentInvitees = parsedInvitees
+        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+        : []
+      const remainingInvitees = currentInvitees.filter((email) => !teamMemberEmails.includes(email))
+      setRawInvitees(remainingInvitees.join(', '))
+      setInvitees(remainingInvitees)
+    }
+    setInviteAll((inviteAll) => !inviteAll)
   }
 
   return (
@@ -123,16 +193,22 @@ const GcalModal = (props: Props) => {
           <div className='pt-2'>
             <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
           </div>
-          <div className='flex items-center pt-4'>
-            <Checkbox active={inviteTeam} />
-            <label
-              htmlFor='link-checkbox'
-              className='text-gray-900 dark:text-gray-300 ml-2 text-sm font-medium hover:cursor-pointer'
-              onClick={() => setInviteTeam(!inviteTeam)}
-            >
-              Send a Google Calendar invite to my team members
-            </label>
-          </div>
+          <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
+          <BasicTextArea
+            name='rawInvitees'
+            onChange={onInvitesChange}
+            placeholder='email@example.co, another@example.co'
+            value={rawInvitees}
+          />
+          {hasTeamMemberEmails && (
+            <div className='flex cursor-pointer items-center pt-1' onClick={handleToggleInviteAll}>
+              <Checkbox active={inviteAll} />
+              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+                {`Invite team members from ${teamName}`}
+              </label>
+            </div>
+          )}
+          {inviteError && <ErrorMessage>{inviteError}</ErrorMessage>}
         </div>
         <DialogActions>
           <PrimaryButton size='medium' onClick={handleClick}>
