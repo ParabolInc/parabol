@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import getSafeRegex from '../../../../utils/getSafeRegex'
 import {UserColumnsContainer_viewer$key} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
@@ -46,7 +46,7 @@ const UserColumnsContainer = (props: Props) => {
     `,
     viewerRef
   )
-  const {userIds, teamIds} = useUserTaskFilters(viewer.id)
+  const {userIds, teamIds} = useQueryParameterParser(viewer.id)
   const {dashSearch, tasks, teams} = viewer
   const filteredTasks = useMemo(() => {
     const dashSearchRegex = getSafeRegex(dashSearch, 'i')

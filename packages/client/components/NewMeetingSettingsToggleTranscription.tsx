@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import StyledError from './StyledError'
+import DeleteIcon from '@mui/icons-material/Delete'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -15,8 +16,8 @@ import Checkbox from './Checkbox'
 import FlatButton from './FlatButton'
 import PlainButton from './PlainButton/PlainButton'
 
-const ButtonRow = styled(PlainButton)<{isInput?: boolean}>(({isInput}) => ({
-  background: isInput ? 'transparent' : PALETTE.SLATE_200,
+const ButtonRow = styled(PlainButton)({
+  background: PALETTE.SLATE_200,
   borderRadius: '8px',
   display: 'flex',
   fontSize: 14,
@@ -25,11 +26,11 @@ const ButtonRow = styled(PlainButton)<{isInput?: boolean}>(({isInput}) => ({
   userSelect: 'none',
   width: '100%',
   ':hover': {
-    backgroundColor: isInput ? 'transparent' : PALETTE.SLATE_300
+    backgroundColor: PALETTE.SLATE_300
   },
   padding: '22px 16px',
   alignItems: 'center'
-}))
+})
 
 const Label = styled('div')({
   flex: 1,
@@ -41,15 +42,26 @@ const Label = styled('div')({
   color: PALETTE.SLATE_900
 })
 
+const StyledDeleteIcon = styled(DeleteIcon)({
+  fontSize: 28,
+  cursor: 'pointer',
+  color: PALETTE.SLATE_600,
+  '&:hover': {
+    color: PALETTE.SLATE_700
+  }
+})
+
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
-  color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
-  svg: {
-    fontSize: 28
-  },
-  width: 28,
-  height: 28,
-  textAlign: 'center',
-  userSelect: 'none'
+  '&&': {
+    color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
+    svg: {
+      fontSize: 28
+    },
+    width: 28,
+    height: 28,
+    textAlign: 'center',
+    userSelect: 'none'
+  }
 }))
 
 const StyledButton = styled(FlatButton)({
@@ -94,6 +106,7 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
     settingsRef
   )
   const {id: settingsId, videoMeetingURL} = settings
+  const hasVideoMeetingURL = !!videoMeetingURL
   const [isChecked, setIsChecked] = useState(false)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
@@ -126,7 +139,18 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
       {onError, onCompleted}
     )
   }
-  const showInput = isChecked || videoMeetingURL
+
+  const handleDelete = () => {
+    if (submitting) return
+    submitMutation()
+    SetMeetingSettingsMutation(
+      atmosphere,
+      {videoMeetingURL: null, settingsId},
+      {onError, onCompleted}
+    )
+  }
+
+  const showInput = isChecked || hasVideoMeetingURL
 
   return (
     <>
@@ -142,10 +166,10 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
             onChange={onChange}
             name='url'
             value={urlValue}
-            readOnly={!!videoMeetingURL}
+            readOnly={hasVideoMeetingURL}
           />
-          {!!videoMeetingURL ? (
-            <StyledCheckbox active />
+          {hasVideoMeetingURL ? (
+            <StyledDeleteIcon onClick={handleDelete} />
           ) : (
             <StyledButton onClick={handleSubmit} size='medium'>
               Submit

@@ -37,9 +37,6 @@ const RetroMeetingSidebar = (props: Props) => {
         ...RetroSidebarPhaseListItemChildren_meeting
         ...NewMeetingSidebar_meeting
         showSidebar
-        settings {
-          phaseTypes
-        }
         id
         endedAt
         facilitatorUserId
@@ -75,10 +72,8 @@ const RetroMeetingSidebar = (props: Props) => {
     localPhase,
     localStage,
     phases,
-    settings,
     meetingMembers
   } = meeting
-  const {phaseTypes} = settings
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
@@ -93,7 +88,7 @@ const RetroMeetingSidebar = (props: Props) => {
       meeting={meeting}
     >
       <MeetingNavList>
-        {phaseTypes.map((phaseType, index) => {
+        {phases.map(({phaseType}, index) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
           const {
             id: itemStageId = '',
@@ -103,7 +98,7 @@ const RetroMeetingSidebar = (props: Props) => {
           } = itemStage ?? {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
-            const prevPhaseType = phaseTypes[index - 1]
+            const prevPhaseType = phases[index - 1]?.phaseType
             const prevItemStage = prevPhaseType
               ? getSidebarItemStage(prevPhaseType, phases, facilitatorStageId)
               : null

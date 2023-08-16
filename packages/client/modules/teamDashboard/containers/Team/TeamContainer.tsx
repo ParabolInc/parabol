@@ -72,7 +72,6 @@ const TeamContainer = (props: Props) => {
         <Suspense fallback={''}>
           <Switch>
             {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
-            <Route exact path={match.path} component={TeamDashMain} />
             <Route path={`${match.path}/settings`} component={TeamSettings} />
             <Route
               path={`${match.path}/archive`}
@@ -80,6 +79,7 @@ const TeamContainer = (props: Props) => {
                 <ArchivedTasks {...p} team={team} returnToTeamId={teamId} teamIds={[teamId]} />
               )}
             />
+            <Route path={match.path} component={TeamDashMain} />
           </Switch>
         </Suspense>
       </Team>

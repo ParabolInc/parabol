@@ -63,13 +63,17 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
     return {error: {message: 'Votes are already revealed'}}
   }
 
-  await upsertVote(meetingId, stageId, {userId: viewerId, label})
+  const vote = stage.labels.indexOf(label)
+  if (vote === -1) {
+    return {error: {message: 'Invalid label provided'}}
+  }
+  await upsertVote(meetingId, stageId, {userId: viewerId, vote})
   // update dataloader
   const existingVote = stage.votes.find((vote) => vote.userId === viewerId)
   if (existingVote) {
-    existingVote.label = label
+    existingVote.vote = vote
   } else {
-    stage.votes.push({userId: viewerId, label})
+    stage.votes.push({userId: viewerId, vote})
   }
 
   const data = {

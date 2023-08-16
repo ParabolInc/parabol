@@ -23,6 +23,10 @@ const TallMenu = styled(Menu)({
 const CheckInHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
 )
+const TeamHealthHelpMenu = lazyPreload(
+  async () =>
+    import(/* webpackChunkName: 'TeamHealthHelpMenu' */ './MeetingHelp/TeamHealthHelpMenu')
+)
 
 const ReflectHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'ReflectHelpMenu' */ './MeetingHelp/ReflectHelpMenu')
@@ -90,6 +94,7 @@ const demoHelps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
 const helps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>> = {
   checkin: CheckInHelpMenu,
+  TEAM_HEALTH: TeamHealthHelpMenu,
   reflect: ReflectHelpMenu,
   group: GroupHelpMenu,
   vote: VoteHelpMenu,
@@ -119,6 +124,9 @@ const BottomControlBarTips = (props: Props) => {
         localPhase {
           phaseType
         }
+        localStage {
+          ...TeamHealthHelpMenu_stage
+        }
         phases {
           phaseType
         }
@@ -127,7 +135,7 @@ const BottomControlBarTips = (props: Props) => {
     meetingRef
   )
 
-  const {localPhase, meetingType} = meeting
+  const {localPhase, localStage, meetingType} = meeting
   const {phaseType} = localPhase
   const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
     MenuPosition.LOWER_LEFT
@@ -166,7 +174,7 @@ const BottomControlBarTips = (props: Props) => {
       <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
-          <MenuContent meetingType={meetingType} />
+          <MenuContent meetingType={meetingType} stageRef={localStage} />
         </TallMenu>
       )}
     </BottomNavControl>

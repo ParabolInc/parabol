@@ -41,9 +41,7 @@ const RetroReflectPhase = (props: Props) => {
           ...RetroReflectPhase_phase @relay(mask: false)
         }
         showSidebar
-        settings {
-          disableAnonymity
-        }
+        disableAnonymity
       }
     `,
     meetingRef
@@ -51,8 +49,7 @@ const RetroReflectPhase = (props: Props) => {
   const [callbackRef, phaseRef] = useCallbackRef()
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const {localPhase, endedAt, showSidebar, settings} = meeting
-  const {disableAnonymity} = settings
+  const {disableAnonymity, localPhase, endedAt, showSidebar} = meeting
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
   const focusedPromptId = localPhase!.focusedPromptId

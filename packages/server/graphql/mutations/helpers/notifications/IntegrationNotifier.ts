@@ -32,5 +32,12 @@ export const IntegrationNotifier: Notifier = {
     await Promise.allSettled(
       notifiers.map(async (notifier) => notifier.integrationUpdated(dataLoader, teamId, userId))
     )
+  },
+  async standupResponseSubmitted(dataLoader, meetingId, teamId, userId) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) =>
+        notifier.standupResponseSubmitted(dataLoader, meetingId, teamId, userId)
+      )
+    )
   }
 }

@@ -42,7 +42,7 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
               refreshToken: newRefreshToken,
               expiresAt
             }
-            upsertTeamMemberIntegrationAuth(newGitlabAuth)
+            await upsertTeamMemberIntegrationAuth(newGitlabAuth)
             return newGitlabAuth
           }
           return gitlabAuth as IGetTeamMemberIntegrationAuthQueryResult

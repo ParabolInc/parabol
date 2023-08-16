@@ -15,7 +15,7 @@ import MeetingsDashEmpty from './MeetingsDashEmpty'
 import MeetingsDashHeader from './MeetingsDashHeader'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
-import {useUserTaskFilters} from '../utils/useUserTaskFilters'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
@@ -60,7 +60,7 @@ const MeetingsDash = (props: Props) => {
     viewerRef
   )
   const atmosphere = useAtmosphere()
-  const {teamIds: teamFilterIds} = useUserTaskFilters(atmosphere.viewerId)
+  const {teamIds: teamFilterIds} = useQueryParameterParser(atmosphere.viewerId)
   const {
     teams = [],
     preferredName = '',

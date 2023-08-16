@@ -35,9 +35,6 @@ const PokerMeetingSidebar = (props: Props) => {
         ...PokerSidebarPhaseListItemChildren_meeting
         ...NewMeetingSidebar_meeting
         showSidebar
-        settings {
-          phaseTypes
-        }
         id
         endedAt
         facilitatorUserId
@@ -71,10 +68,8 @@ const PokerMeetingSidebar = (props: Props) => {
     facilitatorStageId,
     localPhase,
     localStage,
-    phases,
-    settings
+    phases
   } = meeting
-  const {phaseTypes} = settings
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
@@ -88,7 +83,7 @@ const PokerMeetingSidebar = (props: Props) => {
       meeting={meeting}
     >
       <MeetingNavList>
-        {phaseTypes.map((phaseType) => {
+        {phases.map(({phaseType}) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
           const {
             id: itemStageId = '',

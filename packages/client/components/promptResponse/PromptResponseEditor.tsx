@@ -101,7 +101,7 @@ const StyledEditor = styled('div')`
 
   a {
     text-decoration: underline;
-    color: ${PALETTE.SLATE_600};
+    color: ${PALETTE.SLATE_700};
     :hover {
       cursor: pointer;
     }
@@ -260,31 +260,33 @@ const PromptResponseEditor = (props: Props) => {
       <StyledEditor>
         {editor && !readOnly && (
           <>
-            <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
-              <BubbleMenuWrapper>
-                <BubbleMenuButton
-                  onClick={() => editor.chain().focus().toggleBold().run()}
-                  isActive={editor.isActive('bold')}
-                >
-                  <b>B</b>
-                </BubbleMenuButton>
-                <BubbleMenuButton
-                  onClick={() => editor.chain().focus().toggleItalic().run()}
-                  isActive={editor.isActive('italic')}
-                >
-                  <i>I</i>
-                </BubbleMenuButton>
-                <BubbleMenuButton
-                  onClick={() => editor.chain().focus().toggleStrike().run()}
-                  isActive={editor.isActive('strike')}
-                >
-                  <s>S</s>
-                </BubbleMenuButton>
-                <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
-                  <LinkIcon />
-                </BubbleMenuButton>
-              </BubbleMenuWrapper>
-            </BubbleMenu>
+            <div>
+              <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
+                <BubbleMenuWrapper>
+                  <BubbleMenuButton
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    isActive={editor.isActive('bold')}
+                  >
+                    <b>B</b>
+                  </BubbleMenuButton>
+                  <BubbleMenuButton
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    isActive={editor.isActive('italic')}
+                  >
+                    <i>I</i>
+                  </BubbleMenuButton>
+                  <BubbleMenuButton
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    isActive={editor.isActive('strike')}
+                  >
+                    <s>S</s>
+                  </BubbleMenuButton>
+                  <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
+                    <LinkIcon />
+                  </BubbleMenuButton>
+                </BubbleMenuWrapper>
+              </BubbleMenu>
+            </div>
             <EmojiMenuTipTap tiptapEditor={editor} />
             {teamId && <MentionsTipTap tiptapEditor={editor} teamId={teamId} />}
             {linkOverlayProps?.linkMenuProps && (

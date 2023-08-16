@@ -73,9 +73,9 @@ const selectTemplate = {
       .default(null)
       .run()
 
-    if (!meetingSettingsId) {
-      return standardError(new Error('Template already updated'), {userId: viewerId})
-    }
+    // No need to check if a non-null 'meetingSettingsId' was returned - the Activity Library client
+    // will always attempt to update the template, even if it's already selected, and we don't need
+    // to return a 'meetingSettingsId' if no updates took place.
 
     const data = {meetingSettingsId}
     publish(SubscriptionChannel.TEAM, teamId, 'SelectTemplatePayload', data, subOptions)
