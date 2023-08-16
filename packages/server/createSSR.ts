@@ -4,10 +4,10 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {brotliCompressSync} from 'zlib'
 import acceptsBrotli from './acceptsBrotli'
 
-const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
-const indexPath = path.join(localClientAssetsDir, 'index.html')
 // In dev mode we don't use this, we proxy to the in-memory Dev Server
-const minifiedHTML = __PRODUCTION__ ? fs.readFileSync(indexPath, 'utf8') : ''
+const minifiedHTML = __PRODUCTION__
+  ? fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8')
+  : ''
 const brotliHTML = brotliCompressSync(minifiedHTML)
 
 const createSSR = (res: HttpResponse, req: HttpRequest) => {
