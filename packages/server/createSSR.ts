@@ -6,7 +6,7 @@ import acceptsBrotli from './acceptsBrotli'
 
 // In dev mode we don't use this, we proxy to the in-memory Dev Server
 const minifiedHTML = __PRODUCTION__
-  ? fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8')
+  ? fs.readFileSync(path.join(__dirname, '../build', 'index.html'), 'utf8')
   : ''
 const brotliHTML = brotliCompressSync(minifiedHTML)
 
