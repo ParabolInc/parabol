@@ -29,19 +29,19 @@ const TeamHealthStage: TeamHealthStageResolvers = {
   timeRemaining: ({scheduledEndTime}) => {
     return scheduledEndTime ? scheduledEndTime.valueOf() - Date.now() : null
   },
-  viewerVote: async ({votes}, _args, {authToken}) => {
+  viewerVote: async ({labels, votes}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)
-    return votes.find(({userId}) => userId === viewerId)?.label ?? null
+    const vote = votes.find(({userId}) => userId === viewerId)?.vote
+    return (vote !== undefined && labels[vote]) || null
   },
   votes: ({labels, votes, isRevealed}) => {
     if (!isRevealed) return null
-    const counted = new Map<string, number>()
-    votes.forEach((vote) => {
-      const {label} = vote
-      const currentCount = counted.get(label) ?? 0
-      counted.set(label, currentCount + 1)
+    const counted = new Map<number, number>()
+    votes.forEach(({vote}) => {
+      const currentCount = counted.get(vote) ?? 0
+      counted.set(vote, currentCount + 1)
     })
-    return labels.map((label) => counted.get(label) ?? 0)
+    return labels.map((_, idx) => counted.get(idx) ?? 0)
   },
   votedUserIds: ({votes}) => votes.map(({userId}) => userId),
   votedUsers: async ({votes}, _args, {dataLoader}) => {

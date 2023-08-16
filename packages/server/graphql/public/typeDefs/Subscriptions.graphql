@@ -13,7 +13,6 @@ type MeetingSubscriptionPayload {
   CreatePollSuccess: CreatePollSuccess
   AddReactjiToReflectionSuccess: AddReactjiToReflectionSuccess
   AddReactjiToReactableSuccess: AddReactjiToReactableSuccess
-  AutoGroupReflectionsPayload: AutoGroupReflectionsPayload
   CreateReflectionPayload: CreateReflectionPayload
   DeleteCommentSuccess: DeleteCommentSuccess
   DragDiscussionTopicPayload: DragDiscussionTopicPayload
@@ -22,6 +21,7 @@ type MeetingSubscriptionPayload {
   EditReflectionPayload: EditReflectionPayload
   EndDraggingReflectionPayload: EndDraggingReflectionPayload
   EndRetrospectiveSuccess: EndRetrospectiveSuccess
+  EndTeamPromptSuccess: EndTeamPromptSuccess
   FlagReadyToAdvanceSuccess: FlagReadyToAdvanceSuccess
   GenerateGroupsSuccess: GenerateGroupsSuccess
   NewMeetingCheckInPayload: NewMeetingCheckInPayload

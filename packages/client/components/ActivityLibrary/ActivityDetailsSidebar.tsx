@@ -3,12 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
+import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
-import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
-import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
+import {ActivityDetailsSidebar_viewer$key} from '~/__generated__/ActivityDetailsSidebar_viewer.graphql'
+import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -17,18 +18,22 @@ import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEve
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
+import SecondaryButton from '../SecondaryButton'
+import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
+import {useDialogState} from '../../ui/Dialog/useDialogState'
+import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
+import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
+import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
+import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
+import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
+import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
-import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
-import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
-import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import RaisedButton from '../RaisedButton'
-import StyledError from '../StyledError'
-import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 
 interface Props {
@@ -37,10 +42,11 @@ interface Props {
   type: MeetingTypeEnum
   isOpen: boolean
   preferredTeamId: string | null
+  viewerRef: ActivityDetailsSidebar_viewer$key
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId} = props
+  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId, viewerRef} = props
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -54,6 +60,18 @@ const ActivityDetailsSidebar = (props: Props) => {
     `,
     selectedTemplateRef
   )
+
+  const viewer = useFragment(
+    graphql`
+      fragment ActivityDetailsSidebar_viewer on User {
+        featureFlags {
+          gcal
+        }
+      }
+    `,
+    viewerRef
+  )
+  const hasGcalFlag = viewer.featureFlags.gcal
 
   const teams = useFragment(
     graphql`
@@ -86,6 +104,10 @@ const ActivityDetailsSidebar = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
+  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
+    name: '',
+    rrule: null
+  })
 
   const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
 
@@ -105,8 +127,13 @@ const ActivityDetailsSidebar = (props: Props) => {
   )
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
+  const {
+    isOpen: isScheduleDialogOpen,
+    open: openScheduleDialog,
+    close: closeScheduleDialog
+  } = useDialogState()
 
-  const handleStartActivity = () => {
+  const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
     submitMutation()
     if (type === 'teamPrompt') {
@@ -117,12 +144,17 @@ const ActivityDetailsSidebar = (props: Props) => {
           recurrenceSettings: {
             rrule: recurrenceSettings.rrule?.toString(),
             name: recurrenceSettings.name
-          }
+          },
+          gcalInput
         },
         {history, onError, onCompleted}
       )
     } else if (type === 'action') {
-      StartCheckInMutation(atmosphere, {teamId: selectedTeam.id}, {history, onError, onCompleted})
+      StartCheckInMutation(
+        atmosphere,
+        {teamId: selectedTeam.id, gcalInput},
+        {history, onError, onCompleted}
+      )
     } else {
       SelectTemplateMutation(
         atmosphere,
@@ -132,13 +164,13 @@ const ActivityDetailsSidebar = (props: Props) => {
             if (type === 'retrospective') {
               StartRetrospectiveMutation(
                 atmosphere,
-                {teamId: selectedTeam.id},
+                {teamId: selectedTeam.id, gcalInput},
                 {history, onError, onCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
-                {teamId: selectedTeam.id},
+                {teamId: selectedTeam.id, gcalInput},
                 {history, onError, onCompleted}
               )
             }
@@ -149,10 +181,10 @@ const ActivityDetailsSidebar = (props: Props) => {
     }
   }
 
-  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
-    name: '',
-    rrule: null
-  })
+  const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
+    openScheduleDialog()
+    handleStartActivity(gcalInput)
+  }
 
   const handleShareToOrg = () => {
     selectedTemplate &&
@@ -205,16 +237,30 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
-          <NewMeetingTeamPicker
-            positionOverride={MenuPosition.UPPER_LEFT}
-            onSelectTeam={(teamId) => {
-              const newTeam = availableTeams.find((team) => team.id === teamId)
-              newTeam && setSelectedTeam(newTeam)
-            }}
-            selectedTeamRef={selectedTeam}
-            teamsRef={availableTeams}
-            customPortal={teamScopePopover}
-          />
+          {selectedTemplate.id === 'oneOnOneAction' ? (
+            // TODO: replace it with new user picker
+            <NewMeetingTeamPicker
+              positionOverride={MenuPosition.UPPER_LEFT}
+              onSelectTeam={(teamId) => {
+                const newTeam = availableTeams.find((team) => team.id === teamId)
+                newTeam && setSelectedTeam(newTeam)
+              }}
+              selectedTeamRef={selectedTeam}
+              teamsRef={availableTeams}
+              customPortal={teamScopePopover}
+            />
+          ) : (
+            <NewMeetingTeamPicker
+              positionOverride={MenuPosition.UPPER_LEFT}
+              onSelectTeam={(teamId) => {
+                const newTeam = availableTeams.find((team) => team.id === teamId)
+                newTeam && setSelectedTeam(newTeam)
+              }}
+              selectedTeamRef={selectedTeam}
+              teamsRef={availableTeams}
+              customPortal={teamScopePopover}
+            />
+          )}
 
           {selectedTeam.tier === 'starter' && !selectedTemplate.isFree ? (
             <div className='flex grow flex-col'>
@@ -256,8 +302,17 @@ const ActivityDetailsSidebar = (props: Props) => {
               <div className='flex grow flex-col justify-end gap-2'>
                 {error && <StyledError>{error.message}</StyledError>}
                 <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                {hasGcalFlag && (
+                  <SecondaryButton
+                    onClick={openScheduleDialog}
+                    waiting={submitting}
+                    className='h-14'
+                  >
+                    <div className='text-lg'>Schedule</div>
+                  </SecondaryButton>
+                )}
                 <FlatPrimaryButton
-                  onClick={handleStartActivity}
+                  onClick={() => handleStartActivity()}
                   waiting={submitting}
                   className='h-14'
                 >
@@ -268,6 +323,11 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
         </div>
       </div>
+      <GcalModal
+        closeModal={closeScheduleDialog}
+        isOpen={isScheduleDialogOpen}
+        handleCreateGcalEvent={handleStartActivityWithGcalEvent}
+      />
     </>
   )
 }

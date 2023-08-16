@@ -66,7 +66,9 @@ module.exports = {
     },
     {
       name: 'PG Typed',
-      script: 'yarn pg:build -w'
+      script: 'yarn pg:build',
+      watch: ['packages/server/postgres/queries/src/*.sql'],
+      autorestart: false
     }
   ].map((app) => ({
     env_production: {

@@ -7,7 +7,8 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   noAISummary: ({noAISummary}) => !!noAISummary,
   noMeetingHistoryLimit: ({noMeetingHistoryLimit}) => !!noMeetingHistoryLimit,
   checkoutFlow: ({checkoutFlow}) => !!checkoutFlow,
-  retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise
+  retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
+  gcal: ({gcal}) => !!gcal
 }
 
 export default UserFeatureFlags

@@ -4,9 +4,9 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {UserTaskViewFilterLabels} from '~/types/constEnums'
-import constructTeamFilterQueryParamURL from '~/utils/constructTeamFilterQueryParamURL'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {FilterLabels} from '~/types/constEnums'
+import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
+import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import {
   TeamFilterMenu_viewer$data,
   TeamFilterMenu_viewer$key
@@ -49,7 +49,7 @@ const TeamFilterMenu = (props: Props) => {
   }
   const teams = oldTeamsRef.current
   const atmosphere = useAtmosphere()
-  const {teamIds, userIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
+  const {teamIds, userIds, showArchived, eventTypes} = useQueryParameterParser(atmosphere.viewerId)
   const showAllTeams = !!userIds
   const {filteredTeams, defaultActiveIdx} = useMemo(() => {
     const filteredTeams = userIds
@@ -87,9 +87,9 @@ const TeamFilterMenu = (props: Props) => {
       {query === '' && showAllTeams && (
         <MenuItem
           key={'teamFilterNULL'}
-          label={UserTaskViewFilterLabels.ALL_TEAMS}
+          label={FilterLabels.ALL_TEAMS}
           onClick={() =>
-            history.push(constructTeamFilterQueryParamURL(null, userIds, showArchived))
+            history.push(constructFilterQueryParamURL(null, userIds, showArchived, eventTypes))
           }
         />
       )}
@@ -99,7 +99,7 @@ const TeamFilterMenu = (props: Props) => {
           dataCy={`team-filter-${team.id}`}
           label={team.name}
           onClick={() =>
-            history.push(constructTeamFilterQueryParamURL([team.id], userIds, showArchived))
+            history.push(constructFilterQueryParamURL([team.id], userIds, showArchived, eventTypes))
           }
         />
       ))}

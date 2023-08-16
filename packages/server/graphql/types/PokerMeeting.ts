@@ -4,7 +4,6 @@ import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
-import PokerMeetingSettings from './PokerMeetingSettings'
 import Task from './Task'
 
 const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
@@ -29,13 +28,6 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of stories scored during a meeting',
       resolve: ({storyCount}) => storyCount || 0
-    },
-    settings: {
-      type: new GraphQLNonNull(PokerMeetingSettings),
-      description: 'The settings that govern the Poker meeting',
-      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'poker'})
-      }
     },
     story: {
       type: Task,

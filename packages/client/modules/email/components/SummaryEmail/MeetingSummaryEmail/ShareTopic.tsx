@@ -1,11 +1,10 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React, {Suspense} from 'react'
+import React from 'react'
 import AnchorIfEmail from './AnchorIfEmail'
 import makeAppURL from '../../../../../utils/makeAppURL'
-import {renderLoader} from '../../../../../utils/relay/renderLoader'
-import ShareTopicModal from '../../../../../components/ShareTopicModal'
 import {useDialogState} from '../../../../../ui/Dialog/useDialogState'
+import ShareTopicRoot from '../../../../../components/ShareTopicRoot'
 
 interface Props {
   isEmail: boolean
@@ -34,7 +33,13 @@ const ShareTopic = (props: Props) => {
   const {isDemo, isEmail, meetingId, stageId, appOrigin} = props
 
   const path = `new-summary/${meetingId}/share/${stageId}`
-  const href = makeAppURL(appOrigin, path)
+  const href = makeAppURL(appOrigin, path, {
+    searchParams: {
+      utm_source: 'summary email',
+      utm_medium: 'email',
+      utm_campaign: 'sharing'
+    }
+  })
 
   if (isEmail) {
     return (
@@ -57,9 +62,8 @@ const ShareTopic = (props: Props) => {
       <span style={style} onClick={onClick}>
         {label}
       </span>
-      <Suspense fallback={renderLoader()}>
-        <ShareTopicModal stageId={stageId} isOpen={isOpen} onClose={close} />
-      </Suspense>
+
+      {isOpen && <ShareTopicRoot onClose={close} stageId={stageId} meetingId={meetingId} />}
     </>
   )
 }

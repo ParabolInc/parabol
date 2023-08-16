@@ -583,6 +583,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflections: [reflection],
         sortOrder,
         summary: null,
+        discussionPromptQuestion: null,
         tasks: [],
         thread: makeReflectionGroupThread(),
         titleIsUserDefined: false,

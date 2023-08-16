@@ -162,11 +162,11 @@ const SummarySheet = (props: Props) => {
             )}
         <EmailBorderBottom />
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
+        <WholeMeetingSummary meetingRef={meeting} />
         {meetingType === 'teamPrompt' ? (
           <TeamPromptResponseSummary meetingRef={meeting} />
         ) : (
           <>
-            <WholeMeetingSummary meetingRef={meeting} />
             <MeetingMembersWithTasks meeting={meeting} />
             <MeetingMembersWithoutTasks meeting={meeting} />
             <RetroTopics

@@ -18,15 +18,17 @@ interface Props {
   onChange(e: ChangeEvent<HTMLInputElement>): void
   teamName: string
   disabled?: boolean
+  autoFocus?: boolean
 }
 
 const NewTeamFormTeamName = (props: Props) => {
-  const {error, onChange, teamName, disabled} = props
+  const {error, onChange, teamName, disabled, autoFocus} = props
   return (
     <FormBlockInline>
       <FieldLabel fieldSize='medium' htmlFor='teamName' indent inline label='Team Name' />
       <NewTeamFieldBlock>
         <BasicInput
+          autoFocus={autoFocus}
           disabled={disabled}
           error={error}
           name='teamName'

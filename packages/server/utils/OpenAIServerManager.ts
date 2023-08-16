@@ -1,5 +1,6 @@
 import {Configuration, OpenAIApi} from 'openai'
 import sendToSentry from './sendToSentry'
+import Reflection from '../database/types/Reflection'
 
 class OpenAIServerManager {
   private openAIApi: OpenAIApi | null
@@ -16,26 +17,128 @@ class OpenAIServerManager {
     this.openAIApi = new OpenAIApi(configuration)
   }
 
+  async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
+    if (!this.openAIApi) return null
+    // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM
+    // can include that in the response, e.g. "James is working on AI Summaries" vs. "Someone is
+    // working on AI Summaries".
+    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the responses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
+
+    Desired format:
+    - <theme title>: <theme summary>
+    - <theme title>: <theme summary>
+    - <theme title>: <theme summary>
+
+    Responses: """
+    ${plaintextResponses.join('\nNEW_RESPONSE\n')}
+    """`
+    try {
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      return (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
+
   async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
-    try {
-      const location = summaryLocation ?? 'retro meeting'
-      const response = await this.openAIApi.createCompletion({
-        model: 'text-davinci-003',
-        prompt: `Below is a comma-separated list of text from a ${location}. Summarize the text for a second-grade student in one or two sentences.
+    const textStr = Array.isArray(text) ? text.join('\n') : text
+    const location = summaryLocation ?? 'retro meeting'
+    const prompt = `Below is a newline delimited text from a ${location}.
+    Summarize the text for the meeting facilitator in one or two sentences.
+    When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
 
-        Text: """
-        ${text}
-        """`,
+    Text: """
+    ${textStr}
+    """`
+    try {
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
         temperature: 0.7,
         max_tokens: 80,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      return (response.data.choices[0]?.text?.trim() as string) ?? null
+      return (response.data.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
+
+  async getDiscussionPromptQuestion(topic: string, reflections: Reflection[]) {
+    if (!this.openAIApi) return null
+    const prompt = `As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:
+
+    Step 1: Categorize the discussion into one of the following four groups:
+
+    Group 1: Requirement/Seeking help/Requesting permission
+    Example Question: "What specific assistance do you need to move forward?"
+
+    Group 2: Retrospection/Post-mortem/Looking back/Incident analysis/Root cause analysis
+    Example Question: "What were the underlying factors contributing to the situation?"
+
+    Group 3: Improvement/Measurement/Experiment
+    Example Question: "What factors are you aiming to optimize or minimize?"
+
+    Group 4: New plan/New feature/New launch/Exploring new approaches
+    Example Question: "How can we expedite the learning process or streamline our approach?"
+
+    Step 2: Once you have categorized the topic, formulate a question that aligns with the example question provided for that group. If the topic does not belong to any of the groups, come up with a good question yourself for a productive discussion.
+
+    Step 3: Finally, provide me with the question you have formulated without disclosing any information about the group it belongs to. When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
+
+    Topic: ${topic}
+    Comments:
+    ${reflections
+      .map(({plaintextContent}) => plaintextContent.trim().replace(/\n/g, '\t'))
+      .join('\n')}`
+    try {
+      const response = await this.openAIApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 80
+      })
+      const question =
+        (response.data.choices[0]?.message?.content?.trim() as string).replace(
+          /^[Qq]uestion:*\s*/gi,
+          ''
+        ) ?? null
+      return question ? question.replace(/['"]+/g, '') : null
+    } catch (e) {
+      const error =
+        e instanceof Error
+          ? e
+          : new Error(`OpenAI failed to generate a question for the topic ${topic}`)
       sendToSentry(error)
       return null
     }
@@ -44,11 +147,11 @@ class OpenAIServerManager {
   async generateThemes(reflectionsText: string[]) {
     if (!this.openAIApi) return null
     const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
-    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 4)
+    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 3)
     // Specify the approximate number of themes as it will often create too many themes otherwise
     const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
       ', '
-    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} or ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
+    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} to ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
 
     try {
       const response = await this.openAIApi.createChatCompletion({

@@ -104,6 +104,7 @@ enum IntegrationProviderServiceEnum {
   gitlab
   mattermost
   jiraServer
+  gcal
 }
 
 """
@@ -1011,46 +1012,6 @@ enum TeamDrawer {
 scalar Email
 
 """
-All the available integrations available for this team member
-"""
-type TeamMemberIntegrations {
-  """
-  composite
-  """
-  id: ID!
-
-  """
-  All things associated with an Atlassian integration for a team member
-  """
-  atlassian: AtlassianIntegration
-
-  """
-  All things associated with a Jira Server integration for a team member
-  """
-  jiraServer: JiraServerIntegration!
-
-  """
-  All things associated with a GitHub integration for a team member
-  """
-  github: GitHubIntegration
-
-  """
-  All things associated with a GitLab integration for a team member
-  """
-  gitlab: GitLabIntegration!
-
-  """
-  All things associated with a Mattermost integration for a team member
-  """
-  mattermost: MattermostIntegration!
-
-  """
-  All things associated with a slack integration for a team member
-  """
-  slack: SlackIntegration
-}
-
-"""
 The atlassian auth + integration helpers for a specific team member
 """
 type AtlassianIntegration {
@@ -1504,6 +1465,18 @@ type MattermostIntegration {
   sharedProviders: [IntegrationProviderWebhook!]!
 }
 
+type MSTeamsIntegration {
+  """
+  The OAuth2 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthWebhook
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderWebhook!]!
+}
+
 """
 An integration authorization that connects via Webhook auth strategy
 """
@@ -1719,165 +1692,6 @@ type RepoIntegrationQueryPayload {
   All the integrations that are likely to be integrated
   """
   items: [RepoIntegration!]
-}
-
-"""
-A team
-"""
-type Team {
-  """
-  A shortid for the team
-  """
-  id: ID!
-
-  """
-  The datetime the team was created
-  """
-  createdAt: DateTime!
-
-  """
-  The userId that created the team. Non-null at v2.22.0+
-  """
-  createdBy: ID
-
-  """
-  true if the team was created when the account was created, else false
-  """
-  isOnboardTeam: Boolean!
-
-  """
-  The type of the last meeting run
-  """
-  lastMeetingType: MeetingTypeEnum!
-
-  """
-  The HTML message to show if isPaid is false
-  """
-  lockMessageHTML: String
-
-  """
-  The hash and expiration for a token that allows anyone with it to join the team
-  """
-  massInvitation(
-    """
-    the meetingId to optionally direct them to
-    """
-    meetingId: ID
-  ): MassInvitation!
-
-  """
-  true if the underlying org has a validUntil date greater than now. if false, subs do not work
-  """
-  isPaid: Boolean
-
-  """
-  The name of the team
-  """
-  name: String!
-
-  """
-  The organization to which the team belongs
-  """
-  orgId: ID!
-
-  """
-  Arbitrary tags that the team uses
-  """
-  tags: [String]
-
-  """
-  The datetime the team was last updated
-  """
-  updatedAt: DateTime
-  customPhaseItems: [ReflectPrompt] @deprecated(reason: "Field no longer needs to exist for now")
-
-  """
-  The outstanding invitations to join the team
-  """
-  teamInvitations: [TeamInvitation!]!
-
-  """
-  true if the viewer is the team lead, else false
-  """
-  isLead: Boolean!
-
-  """
-  The team-specific settings for running all available types of meetings
-  """
-  meetingSettings(
-    """
-    the type of meeting for the settings
-    """
-    meetingType: MeetingTypeEnum!
-  ): TeamMeetingSettings!
-
-  """
-  A query for the scale
-  """
-  scale(
-    """
-    The scale ID for the desired scale
-    """
-    scaleId: ID!
-  ): TemplateScale
-
-  """
-  The list of scales this team can use
-  """
-  scales: [TemplateScale!]!
-
-  """
-  a list of meetings that are currently in progress
-  """
-  activeMeetings: [NewMeeting!]!
-
-  """
-  The new meeting in progress, if any
-  """
-  meeting(
-    """
-    The unique meetingId
-    """
-    meetingId: ID!
-  ): NewMeeting
-
-  """
-  The level of access to features on the parabol site
-  """
-  tier: TierEnum!
-  organization: Organization!
-
-  """
-  The agenda items for the upcoming or current meeting
-  """
-  agendaItems: [AgendaItem!]!
-
-  """
-  All of the tasks for this team
-  """
-  tasks(
-    first: Int
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-  ): TaskConnection!
-
-  """
-  All the team members actively associated with the team
-  """
-  teamMembers(
-    """
-    the field to sort the teamMembers by
-    """
-    sortBy: String
-  ): [TeamMember!]!
-
-  """
-  true if the team has been archived
-  """
-  isArchived: Boolean
 }
 
 """
@@ -4542,11 +4356,6 @@ type ActionMeeting implements NewMeeting {
   commentCount: Int!
 
   """
-  The settings that govern the action meeting
-  """
-  settings: ActionMeetingSettings!
-
-  """
   The number of tasks generated in the meeting
   """
   taskCount: Int!
@@ -4792,11 +4601,6 @@ type RetrospectiveMeeting implements NewMeeting {
   The grouped reflections
   """
   reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
-
-  """
-  The settings that govern the retrospective meeting
-  """
-  settings: RetrospectiveMeetingSettings!
 
   """
   The number of tasks generated in the meeting
@@ -5645,11 +5449,6 @@ type PokerMeeting implements NewMeeting {
   storyCount: Int!
 
   """
-  The settings that govern the Poker meeting
-  """
-  settings: PokerMeetingSettings!
-
-  """
   A single story created in a Sprint Poker meeting
   """
   story(storyId: ID!): Task
@@ -6203,6 +6002,7 @@ type Mutation {
     The name of the new team
     """
     orgName: String!
+    invitees: [Email!]
   ): AddOrgPayload!
 
   """
@@ -6213,6 +6013,7 @@ type Mutation {
     The new team object
     """
     newTeam: NewTeamInput!
+    invitees: [Email!]
   ): AddTeamPayload!
   archiveOrganization(
     """
@@ -6236,18 +6037,6 @@ type Mutation {
     """
     timelineEventId: ID!
   ): ArchiveTimelineEventPayload!
-
-  """
-  Automatically group reflections
-  """
-  autoGroupReflections(
-    meetingId: ID!
-
-    """
-    A number from 0 to 1 to determine how tightly to pack the groups. Higher means fewer groups
-    """
-    groupingThreshold: Float!
-  ): AutoGroupReflectionsPayload
 
   """
   Change the team a task is associated with. Also copy the viewers integration if necessary.
@@ -6966,6 +6755,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartCheckInPayload!
 
   """
@@ -6976,6 +6769,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartRetrospectivePayload!
 
   """
@@ -6986,6 +6783,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartSprintPokerPayload!
 
   """
@@ -7739,14 +7540,6 @@ type ArchiveTimelineEventSuccess {
   the archived timelineEvent
   """
   timelineEvent: TimelineEvent!
-}
-
-type AutoGroupReflectionsPayload {
-  error: StandardMutationError
-  meeting: RetrospectiveMeeting
-  reflections: [RetroReflection]
-  reflectionGroups: [RetroReflectionGroup]
-  removedReflectionGroups: [RetroReflectionGroup]
 }
 
 type ChangeTaskTeamPayload {

@@ -7,6 +7,7 @@ declare module '*.png' {
   export = value
 }
 declare module '*.svg'
+declare module '*.mp3'
 declare module '*.woff2'
 declare module 'json2csv/lib/JSON2CSVParser'
 declare module 'string-score'
@@ -20,6 +21,7 @@ declare module 'emoji-mart/dist-modern/components/picker/nimble-picker'
 declare module 'react-textarea-autosize'
 declare module 'react-copy-to-clipboard'
 
+declare let __webpack_public_path__: string
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
 declare const __SOCKET_PORT__: string
@@ -32,12 +34,13 @@ interface Window {
     github: string
     google: string
     googleAnalytics: string
+    publicPath: string
     segment: string
     sentry: string
     slack: string
     stripe: string
     oauth2Redirect: string
-    prblIn: string
+    prblIn: string | undefined
     AUTH_INTERNAL_ENABLED: boolean
     AUTH_GOOGLE_ENABLED: boolean
     AUTH_SSO_ENABLED: boolean
