@@ -81,6 +81,16 @@ const ActivityDetailsSidebar = (props: Props) => {
         name
         tier
         orgId
+        teamMembers {
+          isSelf
+          integrations {
+            gcal {
+              auth {
+                id
+              }
+            }
+          }
+        }
         organization {
           name
         }
@@ -125,6 +135,9 @@ const ActivityDetailsSidebar = (props: Props) => {
       availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
       sortByTier(availableTeams)[0]!
+  )
+  const selectedTeamHasGcalAuth = selectedTeam.teamMembers.some(
+    (teamMember) => teamMember.integrations.gcal.auth && teamMember.isSelf
   )
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
