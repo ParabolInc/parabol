@@ -1,6 +1,6 @@
 import SegmentIo from 'analytics-node'
-import {getUserById} from '../postgres/queries/getUsersByIds'
 import PROD from '../PROD'
+import {getUserById} from '../postgres/queries/getUsersByIds'
 
 const {SEGMENT_WRITE_KEY} = process.env
 
@@ -10,8 +10,11 @@ const segmentIo = new SegmentIo(SEGMENT_WRITE_KEY || 'x', {
 }) as any
 segmentIo._track = segmentIo.track
 segmentIo.track = async (options: any) => {
+  // used as a failsafe for PPMIs
+  if (!SEGMENT_WRITE_KEY) return
   const {userId, event, properties: inProps} = options
-  const user = options.userId ? await getUserById(options.userId) : null
+  if (!userId) return
+  const user = await getUserById(userId)
   const {email, segmentId} = user ?? {}
   const properties = {...inProps, email}
   return (segmentIo as any)._track({
