@@ -1,5 +1,5 @@
 import {Node} from '@tiptap/core'
-import {JSONContent} from '@tiptap/react'
+import {JSONContent, mergeAttributes} from '@tiptap/react'
 
 const LOOM_REGEX = /^(?:https:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]*\?.*$/g
 
@@ -70,21 +70,19 @@ export const LoomExtension = Node.create({
     const components = HTMLAttributes.src.split('/')
     return [
       'div',
-      HTMLAttributes,
+      mergeAttributes(HTMLAttributes, {
+        style: 'position: relative; padding-bottom: 75%; height: 0; margin: 8px 0px;'
+      }),
       [
-        'div',
-        {style: 'position: relative; padding-bottom: 75%; height: 0; margin-bottom: 4px'},
-        [
-          'iframe',
-          {
-            src: `https://www.loom.com/embed/${components[components.length - 1]}`,
-            style: 'position: absolute; top: 0; left: 0; width: 100%; height: 100%;',
-            frameborder: '0',
-            webkitallowfullscreen: true,
-            mozallowfullscreen: true,
-            allowfullscreen: true
-          }
-        ]
+        'iframe',
+        {
+          src: `https://www.loom.com/embed/${components[components.length - 1]}`,
+          style: 'position: absolute; top: 0; left: 0; width: 100%; height: 100%;',
+          frameborder: '0',
+          webkitallowfullscreen: true,
+          mozallowfullscreen: true,
+          allowfullscreen: true
+        }
       ]
     ]
   }
