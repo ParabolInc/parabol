@@ -5,6 +5,45 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.116.0 2023-Aug-16
+
+### Added
+
+- **standups**: Standup AI Summaries (#8569)
+- **standups**: Notify slack when user submits standup response (#8607)
+- **standups**: Post standup responses in 'meeting ended' message thread (#8610)
+
+### Changed
+
+- Cleanup old starter tier organizations (#8617)
+- **one-on-one**: add oneOnOne org feature flag (#8571)
+- **one-on-one**: add one-on-one meeting template (#8573)
+- CI=true in tests (#8638)
+- **gcal**: implement oauth (#8594)
+- Build once, run everywhere (#8557)
+- **deps**: bump word-wrap from 1.2.3 to 1.2.4 (#8543)
+- **deps**: bump import-in-the-middle from 1.4.1 to 1.4.2 (#8632)
+- **deps**: bump protobufjs from 7.2.3 to 7.2.4 (#8494)
+- **deps**: bump semver from 5.7.1 to 5.7.2 (#8645)
+- **deps**: bump tough-cookie from 4.1.2 to 4.1.3 (#8495)
+- active plan visual cue (#8637)
+- fix a couple vulns (#8648)
+- **suggest-groups**: increase number of suggested groups (#8625)
+- add version and sha to predeploy logs (#8646)
+
+### Fixed
+
+- Promote new facilitator when facilitator leaves the team (#8611)
+- Remove check for whether template was updated (#8626)
+- **al**: Number of activities exceeds number requested (#8641)
+- prevent scroll jump when emoji is added (#8630)
+- fix share topic modal don't see slack integration (#8652)
+- include TeamPromptResponseEmojis_response in UpsertTeamPromptResponseMutation_meeting to prevent undefined emoji list when adding initial standup response (#8655)
+- build in dev mode from clean clone (#8661)
+- **analytics**: preserve GA4 client_id after sign-up/sign-in (#8650)
+- Show Team Insights emojis correctly (#8667)
+- terser in prod build (#8665)
+
 ## 6.115.0 2023-Aug-01
 
 ### Added
@@ -25,7 +64,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Do not trust invites sent to emails from the untrusted domains (#8584)
 - unable to ungroup some reflection groups (#8623)
 - increase size of the runner used for the build action (#8619)
-- fix: make AIGeneratedDiscussionPrompt org level feature flag (#8601)
+- make AIGeneratedDiscussionPrompt org level feature flag (#8601)
 
 ## 6.114.1 2023-Jul-31
 
