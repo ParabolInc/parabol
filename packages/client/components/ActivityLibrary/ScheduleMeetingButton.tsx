@@ -26,7 +26,7 @@ const ScheduleMeetingButton = (props: Props) => {
     close: closeScheduleDialog
   } = useDialogState()
   const atmosphere = useAtmosphere()
-  const [hasStartedGcalAuth, setHasStartedGcalAuth] = useState(false)
+  const [hasStartedGcalAuthTeamId, setHasStartedGcalAuthTeamId] = useState<null | string>(null)
   const {submitting} = mutationProps
 
   const viewer = useFragment(
@@ -65,6 +65,8 @@ const ScheduleMeetingButton = (props: Props) => {
     teamRef
   )
   const {id: teamId, teamMembers} = team
+  const hasStartedGcalAuth = hasStartedGcalAuthTeamId === teamId
+
   const viewerGcalIntegration = teamMembers.find((teamMember) => teamMember.isSelf)?.integrations
     .gcal
 
@@ -75,7 +77,7 @@ const ScheduleMeetingButton = (props: Props) => {
       const {cloudProvider} = viewerGcalIntegration
       const {clientId, id: providerId} = cloudProvider
       GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
-      setHasStartedGcalAuth(true)
+      setHasStartedGcalAuthTeamId(teamId)
     }
   }
 
