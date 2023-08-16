@@ -3,9 +3,11 @@ import {minify} from 'html-minifier-terser'
 import path from 'path'
 import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
 
-const clientDir = path.join(__PROJECT_ROOT__, 'build')
-const serverDir = path.join(__PROJECT_ROOT__, 'dist')
+const PROJECT_ROOT = getProjectRoot()
+const clientDir = path.join(PROJECT_ROOT, 'build')
+const serverDir = path.join(PROJECT_ROOT, 'dist')
 
 const getCDNURL = () => {
   const {CDN_BASE_URL} = process.env
