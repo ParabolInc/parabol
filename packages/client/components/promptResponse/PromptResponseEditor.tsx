@@ -208,7 +208,6 @@ const PromptResponseEditor = (props: Props) => {
     {
       content,
       extensions: createEditorExtensions(
-        readOnly,
         setLinkMenuProps,
         setLinkPreviewProps,
         setLinkOverlayProps,

@@ -65,7 +65,6 @@ export const getLinkProps = (editor: Editor) => {
  * @returns an array of extensions to be used by the tip tap editor
  */
 export const createEditorExtensions = (
-  isReadOnly?: boolean,
   setLinkMenuProps?: (props: LinkMenuProps) => void,
   setLinkPreviewProps?: (props: LinkPreviewProps) => void,
   setLinkOverlayProps?: (props: LinkOverlayProps) => void,
