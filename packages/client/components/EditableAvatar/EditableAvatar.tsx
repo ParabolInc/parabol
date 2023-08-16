@@ -10,11 +10,12 @@ const borderRadiusPanel = 4
 const panelPadding = 8
 const panelPaddingHorizontal = panelPadding * 2
 
-const EditableAvatarRoot = styled('div')<Pick<Props, 'hasPanel'>>(({hasPanel}) => ({
+const EditableAvatarRoot = styled('button')<Pick<Props, 'hasPanel'>>(({hasPanel}) => ({
   backgroundColor: hasPanel ? '#FFFFFF' : undefined,
   boxShadow: hasPanel ? panelShadow : undefined,
   borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
-  padding: hasPanel ? panelPadding : '',
+  display: 'block',
+  padding: hasPanel ? panelPadding : '0',
   position: 'relative'
 }))
 
@@ -74,7 +75,7 @@ const EditableAvatar = (props: Props) => {
     >
       <div
         aria-hidden
-        className='icon-wrapper absolute top-0 right-0 z-20 rounded-full bg-slate-200 px-1.5 hover:bg-slate-200'
+        className='icon-wrapper absolute top-0 right-0 z-10 rounded-full bg-slate-200 px-1.5 hover:bg-slate-200'
       >
         <EditIcon className='mb-[-2px] w-3.5 pt-0.5' />
       </div>
