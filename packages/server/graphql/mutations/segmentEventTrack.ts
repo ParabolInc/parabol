@@ -54,8 +54,14 @@ export default {
     {event, options}: SendClientSegmentEventMutationVariables,
     {authToken, dataLoader}: GQLContext
   ) => {
+    // For PPMIs & dev envs
+    if (!process.env.SEGMENT_WRITE_KEY) return
+
     // AUTH
     const viewerId = getUserId(authToken)
+    // segment requires a userId or anonymousId
+    if (!viewerId) return false
+
     const {teamId, orgId} = options || {teamId: undefined, orgId: undefined}
     if (teamId) {
       // fail silently. they're being sneaky
