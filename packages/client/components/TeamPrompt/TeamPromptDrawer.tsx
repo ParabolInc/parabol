@@ -1,0 +1,98 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {TeamPromptDrawer_meeting$key} from '~/__generated__/TeamPromptDrawer_meeting.graphql'
+import {desktopSidebarShadow} from '../../styles/elevation'
+import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
+import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
+import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
+import TeamPromptWorkDrawerRoot from './TeamPromptWorkDrawerRoot'
+
+const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
+  boxShadow: isDesktop ? desktopSidebarShadow : undefined,
+  backgroundColor: '#FFFFFF',
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  justifyContent: 'stretch',
+  overflow: 'hidden',
+  position: isDesktop ? 'fixed' : 'static',
+  bottom: 0,
+  top: 0,
+  right: isDesktop ? 0 : undefined,
+  userSelect: isDesktop ? undefined : 'none',
+  transition: `all 200ms ${BezierCurve.DECELERATE}`,
+  transform: `translateX(${isOpen ? 0 : DiscussionThreadEnum.WIDTH}px)`,
+  width: DiscussionThreadEnum.WIDTH,
+  zIndex: ZIndex.SIDEBAR,
+  height: '100%',
+  '@supports (height: 1svh) and (height: 1lvh)': {
+    height: isDesktop ? '100lvh' : '100svh'
+  }
+}))
+
+interface Props {
+  meetingRef: TeamPromptDrawer_meeting$key
+  isDesktop: boolean
+}
+
+const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
+  const meeting = useFragment(
+    graphql`
+      fragment TeamPromptDrawer_meeting on TeamPromptMeeting {
+        ...TeamPromptDiscussionDrawer_meeting
+        id
+        isRightDrawerOpen
+        localStageId
+        showWorkSidebar
+      }
+    `,
+    meetingRef
+  )
+
+  const atmosphere = useAtmosphere()
+  const {id: meetingId, isRightDrawerOpen, localStageId, showWorkSidebar} = meeting
+
+  const onToggleDrawer = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)
+      if (!meeting) return
+      const isRightDrawerOpen = meeting.getValue('isRightDrawerOpen')
+      meeting.setValue(!isRightDrawerOpen, 'isRightDrawerOpen')
+    })
+  }
+
+  let renderedInnerDrawer: React.ReactNode | null = null
+  if (localStageId && showWorkSidebar) {
+    renderedInnerDrawer = (
+      <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
+    ) ?? <TeamPromptWorkDrawerRoot onToggleDrawer={onToggleDrawer} />
+  } else if (localStageId) {
+    renderedInnerDrawer = (
+      <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
+    )
+  } else if (showWorkSidebar) {
+    renderedInnerDrawer = <TeamPromptWorkDrawerRoot onToggleDrawer={onToggleDrawer} />
+  }
+
+  if (!renderedInnerDrawer) {
+    return null
+  }
+
+  return (
+    <ResponsiveDashSidebar
+      isOpen={isRightDrawerOpen}
+      isRightDrawer
+      onToggle={onToggleDrawer}
+      sidebarWidth={DiscussionThreadEnum.WIDTH}
+    >
+      <Drawer isDesktop={isDesktop} isOpen={isRightDrawerOpen}>
+        {renderedInnerDrawer}
+      </Drawer>
+    </ResponsiveDashSidebar>
+  )
+}
+
+export default TeamPromptDrawer
