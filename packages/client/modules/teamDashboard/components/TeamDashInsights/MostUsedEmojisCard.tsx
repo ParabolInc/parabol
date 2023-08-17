@@ -15,6 +15,7 @@ const MostUsedEmojisCard = (props: Props) => {
   const insights = useFragment(
     graphql`
       fragment MostUsedEmojisCard_insights on TeamInsights {
+        ...TeamInsightsCard_insights
         mostUsedEmojis {
           id
           count
@@ -30,7 +31,11 @@ const MostUsedEmojisCard = (props: Props) => {
   }
 
   return (
-    <TeamInsightsCard title='Favorite Reactions' tooltip='Your team’s most used emoji reactions'>
+    <TeamInsightsCard
+      teamInsightsRef={insights}
+      title='Favorite Reactions'
+      tooltip='Your team’s most used emoji reactions'
+    >
       {mostUsedEmojis.map((emoji) => {
         const {unicode, shortName} = getReactji(emoji.id)
         return (
