@@ -30,7 +30,7 @@
       name="description"
       content="Parabol is a free online retrospective tool. Try it without creating an account. Parabol features custom templates, powerful analytics, multi-user grouping, rich text editing, integrations, and gorgeous meeting summaries. Tasks are assigned and tracked so your team can continuously improve."
     />
-    <link href="/manifest.json" rel="manifest" />
+    <link href="/manifest.json" rel="manifest" crossorigin="use-credentials" />
     <link href="__PUBLIC_PATH__/favicon.ico" rel="shortcut icon" crossorigin="" />
     <%= htmlWebpackPlugin.tags.headTags.map((tag) => { tag.attributes.crossorigin=''; return tag
     }).join('') %>
