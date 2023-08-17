@@ -126,7 +126,6 @@ export default {
     const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
     const data = {teamId, meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
-    console.log('🚀 ~ data:', data)
     return data
   }
 }
