@@ -6,7 +6,7 @@ import PROD from '../../../PROD'
 const {AMPLITUDE_WRITE_KEY} = process.env
 
 /**
- * Wrapper for segment providing a more typesafe interface
+ * Wrapper for amplitude providing a more typesafe interface
  */
 export class AmplitudeAnalytics {
   constructor() {
@@ -17,7 +17,9 @@ export class AmplitudeAnalytics {
   }
 
   async track(userId: string, event: AnalyticsEvent, properties?: Record<string, any>) {
-    const user = userId ? await getUserById(userId) : null
+    // used as a failsafe for PPMIs
+    if (!AMPLITUDE_WRITE_KEY) return
+    const user = await getUserById(userId)
     const {email} = user ?? {}
     const props = {...properties, email}
     return track(event, props, {
