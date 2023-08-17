@@ -104,8 +104,8 @@ export default {
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting)
-    // const {error} = await createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
-    const data = {teamId, meetingId}
+    const {error} = await createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
+    const data = {teamId, meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
     return data
   }

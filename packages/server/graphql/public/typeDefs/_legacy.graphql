@@ -8684,6 +8684,7 @@ type StartCheckInSuccess {
   meeting: ActionMeeting!
   meetingId: ID!
   team: Team!
+  hasGcalError: Boolean!
 }
 
 """
@@ -8708,6 +8709,7 @@ type StartSprintPokerSuccess {
   meeting: PokerMeeting!
   team: Team!
   teamId: ID!
+  hasGcalError: Boolean!
 }
 
 """
