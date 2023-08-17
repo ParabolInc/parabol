@@ -18,13 +18,12 @@ type Input = {
 
 const createGcalEvent = async (input: Input) => {
   const {gcalInput, meetingId, viewerId, dataLoader, teamId} = input
-  // if (!gcalInput) {
-  //   return {error: null}
-  // }
+  if (!gcalInput) {
+    return {error: null}
+  }
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {featureFlags} = viewer
-  // if (featureFlags.includes('gcal')) {
-  if (true) {
+  if (featureFlags.includes('gcal')) {
     return standardError(new Error('Does not have gcal feature flag'), {userId: viewerId})
   }
   const {startTimestamp, endTimestamp, title, description, timeZone, invitees} = gcalInput
