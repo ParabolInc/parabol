@@ -29,14 +29,8 @@ const TeamPromptWorkDrawer = (props: Props) => {
             edges {
               node {
                 ...NullableTask_task
-                # grab these so we can sort correctly
                 id
-                content
-                plaintextContent
                 status
-                sortOrder
-                teamId
-                userId
               }
             }
           }
