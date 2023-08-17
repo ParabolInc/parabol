@@ -2,10 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import React, {useState} from 'react'
-import {Dialog} from '../../../../ui/Dialog/Dialog'
-import {DialogContent} from '../../../../ui/Dialog/DialogContent'
-import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
-import {DialogDescription} from '../../../../ui/Dialog/DialogDescription'
+import DialogContent from '../../../../components/DialogContent'
+import DialogTitle from '../../../../components/DialogTitle'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -19,6 +17,32 @@ import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import {useFragment} from 'react-relay'
 import StyledError from '../../../../components/StyledError'
+import DialogContainer from '../../../../components/DialogContainer'
+import {Close} from '@mui/icons-material'
+import PlainButton from '../../../../components/PlainButton/PlainButton'
+
+const Wrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  paddingTop: 16
+})
+
+const StyledDialogContainer = styled(DialogContainer)({
+  width: 'auto'
+})
+
+const CloseIcon = styled(Close)({
+  color: PALETTE.SLATE_600,
+  cursor: 'pointer',
+  '&:hover': {
+    opacity: 0.5
+  }
+})
+
+const StyledCloseButton = styled(PlainButton)({
+  height: 24,
+  marginLeft: 'auto'
+})
 
 const StyledInput = styled('input')({
   border: `1px solid ${PALETTE.SLATE_400}`,
@@ -164,14 +188,14 @@ const GcalModal = (props: Props) => {
   }
 
   return (
-    <Dialog isOpen={isOpen} onClose={closeModal}>
+    <StyledDialogContainer>
+      <DialogTitle>
+        {'Schedule Your Meeting'}
+        <StyledCloseButton onClick={closeModal}>
+          <CloseIcon />
+        </StyledCloseButton>
+      </DialogTitle>
       <DialogContent>
-        <DialogTitle>Schedule Your Meeting</DialogTitle>
-        <DialogDescription>
-          {
-            'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link'
-          }
-        </DialogDescription>
         <div className='space-y-1'>
           <div>
             <StyledInput
@@ -210,13 +234,15 @@ const GcalModal = (props: Props) => {
           )}
           {inviteError && <ErrorMessage>{inviteError}</ErrorMessage>}
         </div>
-        <DialogActions>
-          <PrimaryButton size='medium' onClick={handleClick}>
-            {`Create Meeting & Gcal Invite`}
-          </PrimaryButton>
-        </DialogActions>
+        <Wrapper>
+          <DialogActions>
+            <PrimaryButton size='medium' onClick={handleClick}>
+              {`Create Meeting & Gcal Invite`}
+            </PrimaryButton>
+          </DialogActions>
+        </Wrapper>
       </DialogContent>
-    </Dialog>
+    </StyledDialogContainer>
   )
 }
 

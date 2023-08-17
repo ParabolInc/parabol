@@ -10,6 +10,7 @@ import {useFragment} from 'react-relay'
 import {ScheduleMeetingButton_team$key} from '~/__generated__/ScheduleMeetingButton_team.graphql'
 import {ScheduleMeetingButton_viewer$key} from '~/__generated__/ScheduleMeetingButton_viewer.graphql'
 import {MenuMutationProps} from '../../hooks/useMutationProps'
+import useModal from '../../hooks/useModal'
 
 type Props = {
   mutationProps: MenuMutationProps
@@ -27,6 +28,9 @@ const ScheduleMeetingButton = (props: Props) => {
   } = useDialogState()
   const atmosphere = useAtmosphere()
   const [hasStartedGcalAuthTeamId, setHasStartedGcalAuthTeamId] = useState<null | string>(null)
+  const {togglePortal: toggleModal, modalPortal} = useModal({
+    id: 'createGcalEventModal'
+  })
   const {submitting} = mutationProps
 
   const viewer = useFragment(
@@ -72,7 +76,7 @@ const ScheduleMeetingButton = (props: Props) => {
 
   const handleClick = () => {
     if (viewerGcalIntegration?.auth) {
-      openScheduleDialog()
+      toggleModal()
     } else if (viewerGcalIntegration?.cloudProvider) {
       const {cloudProvider} = viewerGcalIntegration
       const {clientId, id: providerId} = cloudProvider
@@ -93,12 +97,14 @@ const ScheduleMeetingButton = (props: Props) => {
       <SecondaryButton onClick={handleClick} waiting={submitting} className='h-14'>
         <div className='text-lg'>Schedule</div>
       </SecondaryButton>
-      <GcalModal
-        closeModal={closeScheduleDialog}
-        isOpen={isScheduleDialogOpen}
-        handleStartActivityWithGcalEvent={handleStartActivity}
-        teamRef={team}
-      />
+      {modalPortal(
+        <GcalModal
+          closeModal={closeScheduleDialog}
+          isOpen={isScheduleDialogOpen}
+          handleStartActivityWithGcalEvent={handleStartActivity}
+          teamRef={team}
+        />
+      )}
     </>
   )
 }

@@ -21,6 +21,9 @@ const DateTimePicker = (props: Props) => {
   const handleChangeStart = (newValue: Dayjs | null) => {
     if (newValue) {
       setStart(newValue)
+      if (endValue.isBefore(newValue)) {
+        setEnd(newValue.add(1, 'hour'))
+      }
     }
   }
 
@@ -30,52 +33,34 @@ const DateTimePicker = (props: Props) => {
     }
   }
 
+  const handleMouseDown = (e) => {
+    e.stopPropagation()
+  }
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='flex justify-between space-x-4 pt-3'>
-        <div className={'w-1/2'}>
+      <div className='z-50 flex justify-between space-x-4 pt-3'>
+        <div className={'w-1/2'} onMouseDown={handleMouseDown}>
           <MuiDateTimePicker
             label={`Meeting Start Time (${timeZoneShort})`}
             value={startValue}
             closeOnSelect={false}
             disablePast
+            ampm={false}
             minDate={dayjs().add(1, 'hour')}
             onChange={handleChangeStart}
             format='LLL'
-            slotProps={{
-              inputAdornment: {
-                style: {
-                  display: 'none'
-                }
-              }
-            }}
-            sx={{
-              '&': {
-                width: '100%'
-              }
-            }}
           />
         </div>
-        <div className={'w-1/2'}>
+        <div className={'w-1/2'} onMouseDown={handleMouseDown}>
           <MuiDateTimePicker
             label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
             disablePast
-            minDate={dayjs().add(1, 'hour')}
+            ampm={false}
+            minDate={startValue.add(1, 'hour')}
             onChange={handleChangeEnd}
             format='LLL'
-            slotProps={{
-              inputAdornment: {
-                style: {
-                  display: 'none'
-                }
-              }
-            }}
-            sx={{
-              '&': {
-                width: '100%'
-              }
-            }}
           />
         </div>
       </div>
