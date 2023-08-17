@@ -121,11 +121,12 @@ export default {
         .run(),
       updateTeamByTeamId(updates, teamId)
     ])
-    createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting, template)
-    const data = {teamId, meetingId}
+    const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+    const data = {teamId, meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
+    console.log('🚀 ~ data:', data)
     return data
   }
 }
