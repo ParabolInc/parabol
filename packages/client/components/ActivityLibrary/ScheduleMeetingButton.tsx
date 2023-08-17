@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {useDialogState} from '../../ui/Dialog/useDialogState'
 import SecondaryButton from '../SecondaryButton'
 import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
 import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
@@ -21,11 +20,6 @@ type Props = {
 
 const ScheduleMeetingButton = (props: Props) => {
   const {mutationProps, handleStartActivity, teamRef, viewerRef} = props
-  const {
-    isOpen: isScheduleDialogOpen,
-    open: openScheduleDialog,
-    close: closeScheduleDialog
-  } = useDialogState()
   const atmosphere = useAtmosphere()
   const [hasStartedGcalAuthTeamId, setHasStartedGcalAuthTeamId] = useState<null | string>(null)
   const {togglePortal: toggleModal, modalPortal} = useModal({
@@ -87,7 +81,7 @@ const ScheduleMeetingButton = (props: Props) => {
 
   useEffect(() => {
     if (hasStartedGcalAuth && viewerGcalIntegration?.auth) {
-      openScheduleDialog()
+      toggleModal()
     }
   }, [hasStartedGcalAuth, viewerGcalIntegration])
 
@@ -99,8 +93,7 @@ const ScheduleMeetingButton = (props: Props) => {
       </SecondaryButton>
       {modalPortal(
         <GcalModal
-          closeModal={closeScheduleDialog}
-          isOpen={isScheduleDialogOpen}
+          closeModal={toggleModal}
           handleStartActivityWithGcalEvent={handleStartActivity}
           teamRef={team}
         />
