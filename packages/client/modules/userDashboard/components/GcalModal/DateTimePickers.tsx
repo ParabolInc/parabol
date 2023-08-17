@@ -3,6 +3,7 @@ import dayjs, {Dayjs} from 'dayjs'
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {DateTimePicker as MuiDateTimePicker} from '@mui/x-date-pickers/DateTimePicker'
+import {PALETTE} from '../../../../styles/paletteV3'
 
 type Props = {
   startValue: Dayjs
@@ -37,6 +38,30 @@ const DateTimePickers = (props: Props) => {
     e.stopPropagation()
   }
 
+  const customStyles = {
+    width: '100%',
+    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: PALETTE.SLATE_400,
+      borderWidth: '1px'
+    },
+    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: PALETTE.SLATE_400,
+      borderWidth: '1px'
+    },
+    '& .Mui-focused': {
+      outline: 'none'
+    },
+    '& label.Mui-focused': {
+      color: PALETTE.SLATE_600
+    },
+    '& label': {
+      color: PALETTE.SLATE_600
+    },
+    '& .MuiOutlinedInput-root:focus-within .MuiOutlinedInput-notchedOutline': {
+      borderColor: PALETTE.SLATE_400
+    }
+  }
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className='w flex justify-between space-x-4 pt-3'>
@@ -47,7 +72,7 @@ const DateTimePickers = (props: Props) => {
             closeOnSelect={false}
             disablePast
             ampm={false}
-            sx={{width: '100%'}}
+            sx={customStyles}
             minDate={dayjs().add(1, 'hour')}
             onChange={handleChangeStart}
             format='MMMM D, YYYY, HH:mm'
@@ -55,7 +80,7 @@ const DateTimePickers = (props: Props) => {
         </div>
         <div className={'w-[300px]'} onMouseDown={handleMouseDown}>
           <MuiDateTimePicker
-            sx={{width: '100%'}}
+            sx={customStyles}
             label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
             disablePast
