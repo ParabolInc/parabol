@@ -12,6 +12,14 @@ export class SegmentAnalytics {
     this.segmentIo = segment
   }
 
+  identify(userId: string, anonymousId?: string, traits?: Record<string, any>) {
+    return this.segmentIo.identify({
+      userId,
+      traits,
+      anonymousId
+    })
+  }
+
   track(
     userId: string,
     event: AnalyticsEvent,

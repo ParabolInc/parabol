@@ -1,4 +1,4 @@
-import {init, track} from '@amplitude/analytics-node'
+import {identify, Identify, init, track} from '@amplitude/analytics-node'
 import {AnalyticsEvent} from '../analytics'
 import PROD from '../../../PROD'
 import {CacheWorker, DataLoaderBase} from '../../../graphql/DataLoaderCache'
@@ -15,6 +15,19 @@ export class AmplitudeAnalytics {
     init(AMPLITUDE_WRITE_KEY, {
       flushQueueSize: PROD ? 20 : 1,
       optOut: !AMPLITUDE_WRITE_KEY
+    })
+  }
+
+  identify(userId: string, anonymousId?: string, traits?: Record<string, any>) {
+    const identity = new Identify()
+
+    for (const trait in traits) {
+      identity.set(trait, traits[trait])
+    }
+
+    return identify(identity, {
+      user_id: userId,
+      device_id: anonymousId
     })
   }
 
