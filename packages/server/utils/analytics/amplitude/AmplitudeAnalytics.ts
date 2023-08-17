@@ -19,6 +19,8 @@ export class AmplitudeAnalytics {
   }
 
   identify(userId: string, anonymousId?: string, traits?: Record<string, any>) {
+    // used as a failsafe for PPMIs
+    if (!AMPLITUDE_WRITE_KEY) return
     const identity = new Identify()
 
     for (const trait in traits) {
