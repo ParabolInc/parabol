@@ -58,7 +58,8 @@ const DateTimePickers = (props: Props) => {
       color: PALETTE.SLATE_600
     },
     '& .MuiOutlinedInput-root:focus-within .MuiOutlinedInput-notchedOutline': {
-      borderColor: PALETTE.SLATE_400
+      borderColor: PALETTE.SLATE_400,
+      borderWidth: '1px'
     }
   }
 
