@@ -23,16 +23,21 @@ interface Props {
 }
 
 const autocompleteEmail = (input: string, domain: string) => {
+  // If the input already ends with the provided domain, or is just "@" then return it as-is.
   if (input.endsWith(`@${domain}`) || input === '@') {
     return input
   }
-  const parts = input.split('@')
 
-  if (parts.length > 1 && (parts[1] ?? '').length > 0) {
+  // Split the input by "@" to separate the username and domain parts.
+  const [username, potentialDomain] = input.split('@')
+
+  // If there's a domain part and it's not empty, return the input as-is.
+  if (potentialDomain && potentialDomain.length > 0) {
     return input
   }
 
-  return `${parts[0]}@${domain}`
+  // If the input doesn't have a domain part, append the provided domain.
+  return `${username}@${domain}`
 }
 
 export const AdhocTeamMultiSelect = (props: Props) => {
@@ -100,7 +105,6 @@ export const AdhocTeamMultiSelect = (props: Props) => {
     <Autocomplete
       multiple
       options={options}
-      defaultValue={undefined}
       value={value}
       freeSolo
       onChange={(_: any, newValue: (Option | string)[]) => {
@@ -115,8 +119,11 @@ export const AdhocTeamMultiSelect = (props: Props) => {
           return label.toLowerCase().includes(params.inputValue.toLowerCase())
         })
 
+        const autocompletedEmail = autocompleteEmail(params.inputValue, viewerDomain)
+        const suggestedInvitationOption = createCustomOption(autocompletedEmail)
+
         if (params.inputValue) {
-          filtered.unshift(createCustomOption(autocompleteEmail(params.inputValue, viewerDomain)))
+          filtered.unshift(suggestedInvitationOption)
         }
 
         return filtered
