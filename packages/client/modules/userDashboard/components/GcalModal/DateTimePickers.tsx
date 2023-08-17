@@ -5,6 +5,36 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {DateTimePicker as MuiDateTimePicker} from '@mui/x-date-pickers/DateTimePicker'
 import {PALETTE} from '../../../../styles/paletteV3'
 
+const customStyles = {
+  width: '100%',
+  '& .MuiOutlinedInput-root': {
+    '&:hover .MuiOutlinedInput-notchedOutline, &.Mui-focused .MuiOutlinedInput-notchedOutline, &.focus-within .MuiOutlinedInput-notchedOutline':
+      {
+        borderColor: PALETTE.SLATE_400,
+        borderWidth: '1px'
+      },
+    '&.Mui-focused': {
+      outline: 'none'
+    }
+  },
+  '& label': {
+    color: PALETTE.SLATE_600,
+    '&.Mui-focused': {
+      color: PALETTE.SLATE_600
+    }
+  },
+  '& .MuiPickersDay-dayWithMargin': {
+    '&:hover, &:focus': {
+      borderColor: PALETTE.SLATE_400,
+      outline: 'none'
+    }
+  },
+  '& .MuiPickersCalendarHeader-switchHeader button:focus': {
+    outline: 'none',
+    color: PALETTE.SLATE_600
+  }
+}
+
 type Props = {
   startValue: Dayjs
   setStart: (newValue: Dayjs) => void
@@ -34,31 +64,6 @@ const DateTimePickers = (props: Props) => {
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation()
-  }
-
-  const customStyles = {
-    width: '100%',
-    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: PALETTE.SLATE_400,
-      borderWidth: '1px'
-    },
-    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: PALETTE.SLATE_400,
-      borderWidth: '1px'
-    },
-    '& .Mui-focused': {
-      outline: 'none'
-    },
-    '& label.Mui-focused': {
-      color: PALETTE.SLATE_600
-    },
-    '& label': {
-      color: PALETTE.SLATE_600
-    },
-    '& .MuiOutlinedInput-root:focus-within .MuiOutlinedInput-notchedOutline': {
-      borderColor: PALETTE.SLATE_400,
-      borderWidth: '1px'
-    }
   }
 
   return (
