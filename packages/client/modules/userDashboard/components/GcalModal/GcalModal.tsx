@@ -7,7 +7,7 @@ import DialogTitle from '../../../../components/DialogTitle'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
-import DateTimePicker from './DateTimePicker'
+import DateTimePickers from './DateTimePickers'
 import Checkbox from '../../../../components/Checkbox'
 import useForm from '../../../../hooks/useForm'
 import Legitity from '../../../../validation/Legitity'
@@ -71,12 +71,11 @@ const validateTitle = (title: string) => {
 interface Props {
   handleStartActivityWithGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
   closeModal: () => void
-  isOpen: boolean
   teamRef: GcalModal_team$key
 }
 
 const GcalModal = (props: Props) => {
-  const {handleStartActivityWithGcalEvent, closeModal, isOpen, teamRef} = props
+  const {handleStartActivityWithGcalEvent, closeModal, teamRef} = props
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
@@ -215,7 +214,12 @@ const GcalModal = (props: Props) => {
             placeholder='Enter your meeting description (optional)'
           />
           <div className='pt-2'>
-            <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
+            <DateTimePickers
+              startValue={start}
+              endValue={end}
+              setStart={setStart}
+              setEnd={setEnd}
+            />
           </div>
           <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea

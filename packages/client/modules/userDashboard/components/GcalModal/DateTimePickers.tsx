@@ -11,7 +11,7 @@ type Props = {
   setEnd: (newValue: Dayjs) => void
 }
 
-const DateTimePicker = (props: Props) => {
+const DateTimePickers = (props: Props) => {
   const {startValue, setStart, endValue, setEnd} = props
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const date = new Date()
@@ -33,13 +33,13 @@ const DateTimePicker = (props: Props) => {
     }
   }
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation()
   }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='z-50 flex justify-between space-x-4 pt-3'>
+      <div className='w flex justify-between space-x-4 pt-3'>
         <div className={'w-1/2'} onMouseDown={handleMouseDown}>
           <MuiDateTimePicker
             label={`Meeting Start Time (${timeZoneShort})`}
@@ -47,20 +47,22 @@ const DateTimePicker = (props: Props) => {
             closeOnSelect={false}
             disablePast
             ampm={false}
+            sx={{width: '100%'}}
             minDate={dayjs().add(1, 'hour')}
             onChange={handleChangeStart}
-            format='LLL'
+            format='MMMM D, YYYY, HH:mm'
           />
         </div>
-        <div className={'w-1/2'} onMouseDown={handleMouseDown}>
+        <div className={'w-[300px]'} onMouseDown={handleMouseDown}>
           <MuiDateTimePicker
+            sx={{width: '100%'}}
             label={`Meeting End Time (${timeZoneShort})`}
             value={endValue}
             disablePast
             ampm={false}
             minDate={startValue.add(1, 'hour')}
             onChange={handleChangeEnd}
-            format='LLL'
+            format='MMMM D, YYYY, HH:mm'
           />
         </div>
       </div>
@@ -68,4 +70,4 @@ const DateTimePicker = (props: Props) => {
   )
 }
 
-export default DateTimePicker
+export default DateTimePickers
