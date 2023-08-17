@@ -43,6 +43,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **analytics**: preserve GA4 client_id after sign-up/sign-in (#8650)
 - Show Team Insights emojis correctly (#8667)
 - terser in prod build (#8665)
+- fix: Uncompressing emojies twice causes a failure #8687
 
 ## 6.115.0 2023-Aug-01
 
