@@ -448,10 +448,10 @@ class Analytics {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
   }
 
-  identify = (userId: string, anonymousId?: string, traits?: Record<string, any>) => {
+  identify = (userId: string, traits: Record<string, any>, anonymousId?: string) => {
     Promise.all([
-      this.amplitudeAnalytics.identify(userId, anonymousId, traits),
-      this.segmentAnalytics.identify(userId, anonymousId, traits)
+      this.amplitudeAnalytics.identify(userId, traits, anonymousId),
+      this.segmentAnalytics.identify(userId, traits, anonymousId)
     ])
   }
 

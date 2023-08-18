@@ -14,7 +14,7 @@ export class SegmentAnalytics {
     this.segmentIo = segment
   }
 
-  identify(userId: string, anonymousId?: string, traits?: Record<string, any>) {
+  identify(userId: string, traits: Record<string, any>, anonymousId?: string) {
     // used as a failsafe for PPMIs
     if (!SEGMENT_WRITE_KEY) return
     return this.segmentIo.identify({
