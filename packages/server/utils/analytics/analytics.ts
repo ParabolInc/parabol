@@ -129,6 +129,7 @@ export type AnalyticsEvent =
   // These will be replaced with tracking plan compliant versions by the data team
   | 'Added Agenda Item'
   | 'Enterprise Over User Limit'
+  | 'New Org'
 
 /**
  * Provides a unified interface for sending all the analytics events
@@ -469,6 +470,10 @@ class Analytics {
 
   enterpriseOverUserLimit = (userId: string, orgId: string) => {
     this.track(userId, 'Enterprise Over User Limit', {orgId})
+  }
+
+  newOrg = (userId: string, orgId: string, teamId: string, fromSignup: boolean) => {
+    this.track(userId, 'New Org', {orgId, teamId, fromSignup})
   }
 
   identify = (options: IdentifyOptions) => {
