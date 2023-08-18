@@ -103,7 +103,6 @@ export type AnalyticsEvent =
   | 'Downgrade Continue Clicked'
   | 'Organization Downgraded'
   | 'Billing Leader Modified'
-
   // task
   | 'Task Created'
   | 'Task Published'
@@ -126,9 +125,11 @@ export type AnalyticsEvent =
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
   | 'Reset Groups Clicked'
+  // Deprecated Events
+  | 'Enterprise Over User Limit'
 
 /**
- * Provides a unified inteface for sending all the analytics events
+ * Provides a unified interface for sending all the analytics events
  */
 class Analytics {
   private amplitudeAnalytics: AmplitudeAnalytics
@@ -458,6 +459,10 @@ class Analytics {
 
   resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
+  }
+
+  enterpriseOverUserLimit = (userId: string, orgId: string) => {
+    this.track(userId, 'Enterprise Over User Limit', {orgId})
   }
 
   identify = (options: IdentifyOptions) => {

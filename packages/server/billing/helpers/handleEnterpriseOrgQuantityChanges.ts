@@ -1,6 +1,6 @@
 import getRethink from '../../database/rethinkDriver'
 import Organization from '../../database/types/Organization'
-import segmentIo from '../../utils/segmentIo'
+import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 
 const sendEnterpriseOverageToSegment = async (organization: Organization) => {
@@ -29,11 +29,7 @@ const sendEnterpriseOverageToSegment = async (organization: Organization) => {
       .nth(0)
       .run()
     const {id: userId} = billingLeaderOrgUser
-    segmentIo.track({
-      userId,
-      event: 'Enterprise Over User Limit',
-      properties: {orgId}
-    })
+    analytics.enterpriseOverUserLimit(userId, orgId)
   }
 }
 
