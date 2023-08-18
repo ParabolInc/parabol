@@ -63,7 +63,7 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
           <u>Upgrade</u> to enable team health checks
         </div>
       </div>
-      <Lock className='text-slate-600' />
+      <Lock className='m-0.5 text-slate-600' />
     </ButtonRow>
   )
 }

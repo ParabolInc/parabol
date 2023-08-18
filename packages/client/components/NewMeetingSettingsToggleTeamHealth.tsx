@@ -11,7 +11,6 @@ import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
 import {PALETTE} from '../styles/paletteV3'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
-import Tooltip from './Tooltip'
 import NewMeetingSettingsUpgradeForTeamHealth from './NewMeetingSettingsUpgradeForTeamHealth'
 
 const ButtonRow = styled(PlainButton)({
@@ -30,15 +29,15 @@ const ButtonRow = styled(PlainButton)({
   alignItems: 'center'
 })
 
-const Label = styled('div')<{disabled: boolean}>(({disabled}) => ({
+const Label = styled('div')({
   flex: 1,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   fontSize: 20,
   fontWeight: 600,
-  color: disabled ? PALETTE.SLATE_600 : PALETTE.SLATE_900
-}))
+  color: PALETTE.SLATE_900
+})
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
   '&&': {
@@ -103,18 +102,10 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     return <NewMeetingSettingsUpgradeForTeamHealth teamRef={team} className={className} />
   }
   return (
-    <Tooltip
-      text={
-        teamHealthAvailable
-          ? undefined
-          : 'Team Health is only available on Team and Enterprise plans'
-      }
-    >
-      <ButtonRow onClick={toggleTeamHealth} className={className} disabled={!teamHealthAvailable}>
-        <Label disabled={!teamHealthAvailable}>{'Include Team Health check'}</Label>
-        <StyledCheckbox active={hasTeamHealth} disabled={!teamHealthAvailable} />
-      </ButtonRow>
-    </Tooltip>
+    <ButtonRow onClick={toggleTeamHealth} className={className}>
+      <Label>{'Include Team Health check'}</Label>
+      <StyledCheckbox active={hasTeamHealth} />
+    </ButtonRow>
   )
 }
 

@@ -15,14 +15,10 @@ const Tooltip = (props: Props) => {
     MenuPosition.UPPER_CENTER
   )
 
-  if (!text) {
-    return <>{children}</>
-  }
-
   return (
     <div
-      onPointerEnter={openTooltip}
-      onPointerLeave={closeTooltip} //onMouseLeave does not fire for disabled buttons
+      onMouseEnter={openTooltip}
+      onMouseLeave={closeTooltip}
       className={clsx('cursor-pointer', className)}
       ref={originRef}
     >
