@@ -4,9 +4,26 @@ import {useFragment} from 'react-relay'
 import {NewMeetingSettingsUpgradeForTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsUpgradeForTeamHealth_team.graphql'
 import PlainButton from './PlainButton/PlainButton'
 import {Lock} from '@mui/icons-material'
-import clsx from 'clsx'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
+import styled from '@emotion/styled'
+import {PALETTE} from '../styles/paletteV3'
+
+const ButtonRow = styled(PlainButton)({
+  background: PALETTE.SLATE_200,
+  borderRadius: '8px',
+  display: 'flex',
+  fontSize: 14,
+  fontWeight: 600,
+  userSelect: 'none',
+  width: '100%',
+  ':hover': {
+    backgroundColor: PALETTE.SLATE_300
+  },
+  height: '72px',
+  padding: '12px 16px',
+  alignItems: 'center'
+})
 
 interface Props {
   teamRef: NewMeetingSettingsUpgradeForTeamHealth_team$key
@@ -37,13 +54,7 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   }
 
   return (
-    <PlainButton
-      className={clsx(
-        'flex w-full select-none items-center rounded-lg bg-slate-200 p-4 py-3 text-white hover:bg-slate-300',
-        className
-      )}
-      onClick={handleUpgrade}
-    >
+    <ButtonRow className={className} onClick={handleUpgrade}>
       <div className='mt-1 flex w-full flex-col'>
         <div className='flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-semibold text-slate-600'>
           Health Check
@@ -52,8 +63,8 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
           <u>Upgrade</u> to enable team health checks
         </div>
       </div>
-      <Lock className='m-1 text-slate-600' />
-    </PlainButton>
+      <Lock className='text-slate-600' />
+    </ButtonRow>
   )
 }
 
