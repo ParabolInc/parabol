@@ -129,6 +129,7 @@ export type AnalyticsEvent =
   // These will be replaced with tracking plan compliant versions by the data team
   | 'Added Agenda Item'
   | 'Archive Organization'
+  | 'Archive Team'
   | 'Enterprise Over User Limit'
   | 'New Org'
   | 'New Team'
@@ -472,6 +473,10 @@ class Analytics {
 
   archiveOrganization = (userId: string, orgId: string) => {
     this.track(userId, 'Archive Organization', {orgId})
+  }
+
+  archiveTeam = (userId: string, teamId: string) => {
+    this.track(userId, 'Archive Team', {teamId})
   }
 
   enterpriseOverUserLimit = (userId: string, orgId: string) => {
