@@ -133,6 +133,7 @@ export type AnalyticsEvent =
   | 'Enterprise Over User Limit'
   | 'New Org'
   | 'New Team'
+  | 'Poll added'
 
 /**
  * Provides a unified interface for sending all the analytics events
@@ -489,6 +490,11 @@ class Analytics {
 
   newTeam = (userId: string, orgId: string, teamId: string, teamNumber: number) => {
     this.track(userId, 'New Team', {orgId, teamId, teamNumber})
+  }
+
+  pollAdded = (userId: string, teamId: string, meetingId: string) => {
+    // 'added' is intentionally lowercase for backwards compatibility
+    this.track(userId, 'Poll added', {meetingId, teamId})
   }
 
   identify = (options: IdentifyOptions) => {
