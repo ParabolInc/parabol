@@ -126,6 +126,8 @@ export type AnalyticsEvent =
   | 'Suggest Groups Clicked'
   | 'Reset Groups Clicked'
   // Deprecated Events
+  // These will be replaced with tracking plan compliant versions by the data team
+  | 'Added Agenda Item'
   | 'Enterprise Over User Limit'
 
 /**
@@ -459,6 +461,10 @@ class Analytics {
 
   resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
+  }
+
+  addedAgendaItem = (userId: string, teamId: string, meetingId?: string) => {
+    this.track(userId, 'Added Agenda Item', {teamId, meetingId})
   }
 
   enterpriseOverUserLimit = (userId: string, orgId: string) => {
