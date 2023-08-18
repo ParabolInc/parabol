@@ -128,6 +128,7 @@ export type AnalyticsEvent =
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
   | 'Added Agenda Item'
+  | 'Archive Organization'
   | 'Enterprise Over User Limit'
   | 'New Org'
   | 'New Team'
@@ -467,6 +468,10 @@ class Analytics {
 
   addedAgendaItem = (userId: string, teamId: string, meetingId?: string) => {
     this.track(userId, 'Added Agenda Item', {teamId, meetingId})
+  }
+
+  archiveOrganization = (userId: string, orgId: string) => {
+    this.track(userId, 'Archive Organization', {orgId})
   }
 
   enterpriseOverUserLimit = (userId: string, orgId: string) => {
