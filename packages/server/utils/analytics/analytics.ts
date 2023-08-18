@@ -85,6 +85,7 @@ export type AnalyticsEvent =
   | 'Comment Added'
   | 'Response Added'
   | 'Reactji Interacted'
+  | 'Reflection Added'
   | 'Meeting Recurrence Started'
   | 'Meeting Recurrence Stopped'
   | 'Meeting Settings Changed'
@@ -287,6 +288,10 @@ class Analytics {
       isRemove,
       isAIComment
     })
+  }
+
+  reflectionAdded = (userId: string, teamId: string, meetingId: string) => {
+    this.track(userId, 'Reflection Added', {teamId, meetingId})
   }
 
   // team
