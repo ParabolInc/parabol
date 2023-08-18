@@ -12,6 +12,7 @@ import {PALETTE} from '../styles/paletteV3'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
 import Tooltip from './Tooltip'
+import NewMeetingSettingsUpgradeForTeamHealth from './NewMeetingSettingsUpgradeForTeamHealth'
 
 const ButtonRow = styled(PlainButton)({
   background: PALETTE.SLATE_200,
@@ -64,6 +65,7 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   const team = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleTeamHealth_team on Team {
+        ...NewMeetingSettingsUpgradeForTeamHealth_team
         id
         tier
       }
@@ -96,6 +98,9 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
       {teamHealthEnabled: !hasTeamHealth, settingsId},
       {onError, onCompleted}
     )
+  }
+  if (!teamHealthAvailable) {
+    return <NewMeetingSettingsUpgradeForTeamHealth teamRef={team} className={className} />
   }
   return (
     <Tooltip
