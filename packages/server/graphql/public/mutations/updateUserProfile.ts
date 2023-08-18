@@ -6,7 +6,6 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import segmentIo from '../../../utils/segmentIo'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -63,13 +62,11 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
   const user = await dataLoader.get('users').loadNonNull(userId)
   if (normalizedPreferredName) {
     analytics.accountNameChanged(userId, normalizedPreferredName)
-    segmentIo.identify({
-      userId,
-      traits: {
+    analytics.identify(userId, {
         email: user.email,
         name: normalizedPreferredName
       }
-    })
+    )
   }
 
   const teamIds = teamMembers.map(({teamId}) => teamId)

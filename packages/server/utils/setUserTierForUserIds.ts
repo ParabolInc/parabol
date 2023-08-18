@@ -4,7 +4,7 @@ import OrganizationUser from '../database/types/OrganizationUser'
 import {TierEnum} from '../postgres/queries/generated/updateUserQuery'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import updateUserTiers from '../postgres/queries/updateUserTiers'
-import segmentIo from './segmentIo'
+import {analytics} from './analytics/analytics'
 
 const setUserTierForUserIds = async (userIds: string[]) => {
   const r = await getRethink()
@@ -40,12 +40,9 @@ const setUserTierForUserIds = async (userIds: string[]) => {
   const users = await getUsersByIds(userIds)
   users.forEach((user) => {
     user &&
-      segmentIo.identify({
-        userId: user.id,
-        traits: {
-          email: user.email,
-          highestTier: user.tier
-        }
+      analytics.identify(user.id, {
+        email: user.email,
+        highestTier: user.tier
       })
   })
 }

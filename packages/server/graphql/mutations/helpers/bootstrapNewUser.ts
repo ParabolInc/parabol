@@ -51,9 +51,9 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   ])
 
   // Identify the user so user properties are set before any events are sent
-  segmentIo.identify({
+  analytics.identify(
     userId,
-    traits: {
+    {
       createdAt,
       email,
       name: preferredName,
@@ -62,8 +62,8 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
       highestTier: tier,
       isPatient0
     },
-    anonymousId: segmentId
-  })
+    segmentId
+  )
 
   const tms = [] as string[]
   if (isOrganic) {
