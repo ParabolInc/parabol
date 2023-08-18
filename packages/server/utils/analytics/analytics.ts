@@ -130,6 +130,7 @@ export type AnalyticsEvent =
   | 'Added Agenda Item'
   | 'Enterprise Over User Limit'
   | 'New Org'
+  | 'New Team'
 
 /**
  * Provides a unified interface for sending all the analytics events
@@ -474,6 +475,10 @@ class Analytics {
 
   newOrg = (userId: string, orgId: string, teamId: string, fromSignup: boolean) => {
     this.track(userId, 'New Org', {orgId, teamId, fromSignup})
+  }
+
+  newTeam = (userId: string, orgId: string, teamId: string, teamNumber: number) => {
+    this.track(userId, 'New Team', {orgId, teamId, teamNumber})
   }
 
   identify = (options: IdentifyOptions) => {
