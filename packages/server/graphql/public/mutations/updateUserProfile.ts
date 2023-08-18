@@ -63,10 +63,9 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
   if (normalizedPreferredName) {
     analytics.accountNameChanged(userId, normalizedPreferredName)
     analytics.identify(userId, {
-        email: user.email,
-        name: normalizedPreferredName
-      }
-    )
+      email: user.email,
+      name: normalizedPreferredName
+    })
   }
 
   const teamIds = teamMembers.map(({teamId}) => teamId)
