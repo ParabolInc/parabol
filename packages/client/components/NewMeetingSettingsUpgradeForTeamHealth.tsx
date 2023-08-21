@@ -45,10 +45,19 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   const {orgId} = team
   const atmosphere = useAtmosphere()
 
+  React.useEffect(() => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+      upgradeCTALocation: 'meetingSettingsTeamHealth',
+      meetingType: 'retrospective',
+      orgId
+    })
+  }, [])
+
   const handleUpgrade = () => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'meetingSettingsTeamHealth',
-      meetingType: 'retrospective'
+      meetingType: 'retrospective',
+      orgId
     })
     window.open(`/me/organizations/${orgId}/billing`, '_blank', 'noreferrer')
   }
