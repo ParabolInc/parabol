@@ -1,7 +1,7 @@
-import {sql} from 'kysely'
+import {Kysely, PostgresDialect, sql} from 'kysely'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
-import getKysely from '../getKysely'
+import getPg from '../getPg'
 import getPgConfig from '../getPgConfig'
 
 interface TeamMeetingTemplate {
@@ -21,7 +21,11 @@ const connectRethinkDB = async () => {
 
 export async function up() {
   await connectRethinkDB()
-  const pg = getKysely()
+  const pg = new Kysely<any>({
+    dialect: new PostgresDialect({
+      pool: getPg()
+    })
+  })
   await sql`
   CREATE TABLE IF NOT EXISTS "TeamMeetingTemplate" (
     "teamId" VARCHAR(100) NOT NULL,
