@@ -75,7 +75,13 @@ const createNewTeamAndInvite = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const teamId = generateUID()
-  await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, name, orgId})
+  await createTeamAndLeader(viewer, {
+    id: teamId,
+    isOnboardTeam: false,
+    isOneOnOneTeam: true,
+    name,
+    orgId
+  })
 
   const {tms} = authToken
   // MUTATIVE
