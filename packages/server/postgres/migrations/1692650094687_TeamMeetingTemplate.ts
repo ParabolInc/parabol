@@ -26,6 +26,7 @@ export async function up() {
       pool: getPg()
     })
   })
+  console.log('1')
   await sql`
   CREATE TABLE IF NOT EXISTS "TeamMeetingTemplate" (
     "teamId" VARCHAR(100) NOT NULL,
@@ -34,10 +35,12 @@ export async function up() {
   );
   CREATE INDEX IF NOT EXISTS "idx_TeamMeetingTemplate_teamId" ON "TeamMeetingTemplate"("teamId");
   `.execute(pg)
+  console.log(2)
 
   // If we miss a new team or 2 that gets created while this is running that's OK!
   // They don't have any used templates to start with
   const teamIdsRes = await pg.selectFrom('Team').select('id').execute()
+  console.log(3)
   const teamIds = teamIdsRes.map((row) => row.id)
   const BATCH_SIZE = 10000
 
@@ -46,6 +49,7 @@ export async function up() {
     const end = start + BATCH_SIZE
     const teamIdBatch = teamIds.slice(start, end)
     if (teamIdBatch.length === 0) break
+    console.log(4 + i)
     const res = (await r
       .table('NewMeeting')
       .getAll(r.args(teamIdBatch), {index: 'teamId'})
@@ -59,6 +63,7 @@ export async function up() {
       }))
       .filter((row: any) => row('templateId').default(null).ne(null))
       .run()) as TeamMeetingTemplate[]
+    console.log('4a' + i)
     await pg.insertInto('TeamMeetingTemplate').values(res).execute()
   }
 
