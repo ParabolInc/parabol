@@ -45,7 +45,7 @@ const ScheduleMeetingButton = (props: Props) => {
     graphql`
       fragment ScheduleMeetingButton_team on Team {
         id
-        teamMembers {
+        viewerTeamMember {
           isSelf
           integrations {
             gcal {
@@ -64,11 +64,10 @@ const ScheduleMeetingButton = (props: Props) => {
     `,
     teamRef
   )
-  const {id: teamId, teamMembers} = team
+  const {id: teamId, viewerTeamMember} = team
   const hasStartedGcalAuth = hasStartedGcalAuthTeamId === teamId
 
-  const viewerGcalIntegration = teamMembers.find((teamMember) => teamMember.isSelf)?.integrations
-    .gcal
+  const viewerGcalIntegration = viewerTeamMember?.integrations.gcal
 
   const handleClick = () => {
     if (viewerGcalIntegration?.auth) {
