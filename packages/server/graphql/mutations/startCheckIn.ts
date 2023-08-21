@@ -60,9 +60,12 @@ export default {
     const viewerId = getUserId(authToken)
 
     if (existingTeamId && oneOnOneTeamInput) {
-      return standardError(new Error('Please provide either "teamId" or "oneOnOneTeamInput", but not both'), {
-        userId: viewerId
-      })
+      return standardError(
+        new Error('Please provide either "teamId" or "oneOnOneTeamInput", but not both'),
+        {
+          userId: viewerId
+        }
+      )
     }
 
     if (existingTeamId) {
