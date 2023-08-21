@@ -1,8 +1,8 @@
 import React from 'react'
-import dayjs, {Dayjs} from 'dayjs'
+import {Dayjs} from 'dayjs'
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
-import {DateTimePicker as MuiDateTimePicker} from '@mui/x-date-pickers/DateTimePicker'
+import {DatePicker, TimePicker} from '@mui/x-date-pickers'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const customStyles = {
@@ -35,6 +35,11 @@ const customStyles = {
   }
 }
 
+const timePickerStyles = {
+  ...customStyles,
+  width: '50%'
+}
+
 type Props = {
   startValue: Dayjs
   setStart: (newValue: Dayjs) => void
@@ -49,15 +54,17 @@ const DateTimePickers = (props: Props) => {
   const dateTimeString = date.toLocaleString('en-US', {timeZone: timeZone, timeZoneName: 'short'})
   const timeZoneShort = dateTimeString.split(' ').pop()
 
-  const handleChangeStart = (newValue: Dayjs | null) => {
-    if (newValue) {
+  const handleChangeStart = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const newValue = date.hour(time.hour()).minute(time.minute())
       setStart(newValue)
       setEnd(newValue.add(1, 'hour'))
     }
   }
 
-  const handleChangeEnd = (newValue: Dayjs | null) => {
-    if (newValue) {
+  const handleChangeEnd = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const newValue = date.hour(time.hour()).minute(time.minute())
       setEnd(newValue)
     }
   }
@@ -68,30 +75,35 @@ const DateTimePickers = (props: Props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='w flex justify-between space-x-4 pt-3'>
-        <div className={'w-1/2'} onMouseDown={handleMouseDown}>
-          <MuiDateTimePicker
-            label={`Meeting Start Time (${timeZoneShort})`}
+      <div className='w flex flex-col justify-between space-y-4 pt-3'>
+        <div className='flex space-x-2' onMouseDown={handleMouseDown}>
+          <DatePicker
+            label={`Meeting Start Date`}
             value={startValue}
-            closeOnSelect={false}
-            disablePast
-            ampm={false}
+            onChange={(date) => handleChangeStart(date, startValue)}
+            format='MMMM D, YYYY'
             sx={customStyles}
-            minDate={dayjs().add(1, 'hour')}
-            onChange={handleChangeStart}
-            format='MMMM D, YYYY, HH:mm'
+          />
+          <TimePicker
+            label={`Start Time (${timeZoneShort})`}
+            value={startValue}
+            onChange={(time) => handleChangeStart(startValue, time)}
+            sx={timePickerStyles}
           />
         </div>
-        <div className={'w-[300px]'} onMouseDown={handleMouseDown}>
-          <MuiDateTimePicker
-            sx={customStyles}
-            label={`Meeting End Time (${timeZoneShort})`}
+        <div className='flex space-x-2' onMouseDown={handleMouseDown}>
+          <DatePicker
+            label={`Meeting End Date`}
             value={endValue}
-            disablePast
-            ampm={false}
-            minDate={startValue.add(1, 'hour')}
-            onChange={handleChangeEnd}
-            format='MMMM D, YYYY, HH:mm'
+            onChange={(date) => handleChangeEnd(date, endValue)}
+            format='MMMM D, YYYY'
+            sx={customStyles}
+          />
+          <TimePicker
+            label={`End Time (${timeZoneShort})`}
+            value={endValue}
+            onChange={(time) => handleChangeEnd(endValue, time)}
+            sx={timePickerStyles}
           />
         </div>
       </div>
