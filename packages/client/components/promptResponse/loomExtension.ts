@@ -1,7 +1,7 @@
 import {Node} from '@tiptap/core'
 import {JSONContent, mergeAttributes} from '@tiptap/react'
 
-const LOOM_REGEX = /^(?:https:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]*\?.*$/g
+const LOOM_REGEX = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/g
 
 export const unfurlLoomLinks = (rawContent: JSONContent): JSONContent => {
   if (!rawContent.content) {
