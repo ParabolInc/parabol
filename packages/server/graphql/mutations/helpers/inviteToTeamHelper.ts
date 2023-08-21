@@ -20,8 +20,8 @@ import {analytics} from '../../../utils/analytics/analytics'
 import util from 'util'
 import crypto from 'crypto'
 import publish from '../../../utils/publish'
-import MailManagerMailgun from '../../../email/MailManagerMailgun'
 import sendToSentry from '../../../utils/sendToSentry'
+import MailManagerMailgun from '../../../email/MailManagerMailgun'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
