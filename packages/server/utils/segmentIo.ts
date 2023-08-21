@@ -1,6 +1,6 @@
 import SegmentIo from 'analytics-node'
 import PROD from '../PROD'
-import {getUserById} from '../postgres/queries/getUsersByIds'
+import getDataLoader from '../graphql/getDataLoader'
 
 const {SEGMENT_WRITE_KEY} = process.env
 
@@ -14,7 +14,7 @@ segmentIo.track = async (options: any) => {
   if (!SEGMENT_WRITE_KEY) return
   const {userId, event, properties: inProps} = options
   if (!userId) return
-  const user = await getUserById(userId)
+  const user = await getDataLoader().get('users').load(userId)
   const {email, segmentId} = user ?? {}
   const properties = {...inProps, email}
   return (segmentIo as any)._track({

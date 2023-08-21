@@ -1,7 +1,7 @@
 import {init, track} from '@amplitude/analytics-node'
 import {AnalyticsEvent} from '../analytics'
-import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import PROD from '../../../PROD'
+import getDataLoader from '../../../graphql/getDataLoader'
 
 const {AMPLITUDE_WRITE_KEY} = process.env
 
@@ -19,7 +19,7 @@ export class AmplitudeAnalytics {
   async track(userId: string, event: AnalyticsEvent, properties?: Record<string, any>) {
     // used as a failsafe for PPMIs
     if (!AMPLITUDE_WRITE_KEY) return
-    const user = await getUserById(userId)
+    const user = await getDataLoader().get('users').load(userId)
     const {email} = user ?? {}
     const props = {...properties, email}
     return track(event, props, {
