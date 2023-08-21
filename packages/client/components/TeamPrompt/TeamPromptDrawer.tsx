@@ -45,15 +45,13 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
         ...TeamPromptDiscussionDrawer_meeting
         id
         isRightDrawerOpen
-        localStageId
-        showWorkSidebar
       }
     `,
     meetingRef
   )
 
   const atmosphere = useAtmosphere()
-  const {id: meetingId, isRightDrawerOpen, localStageId, showWorkSidebar} = meeting
+  const {id: meetingId, isRightDrawerOpen} = meeting
 
   const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -64,22 +62,13 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
-  let renderedInnerDrawer: React.ReactNode | null = null
-  if (localStageId && showWorkSidebar) {
-    renderedInnerDrawer = (
-      <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
-    ) ?? <TeamPromptWorkDrawerRoot onToggleDrawer={onToggleDrawer} />
-  } else if (localStageId) {
-    renderedInnerDrawer = (
-      <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
-    )
-  } else if (showWorkSidebar) {
-    renderedInnerDrawer = <TeamPromptWorkDrawerRoot onToggleDrawer={onToggleDrawer} />
-  }
-
-  if (!renderedInnerDrawer) {
-    return null
-  }
+  // Render the discussion thread if it can be rendered, otherwise fall back on the work sidebar.
+  // :TRICKY: Elements rendered with JSX never return null, so we need to render both possible
+  // internal drawers via function calls in order to nullish coalesce. We also have to call both
+  // every time for the React hooks to be consistent.
+  const renderedDiscussionDrawer = TeamPromptDiscussionDrawer({meetingRef: meeting, onToggleDrawer})
+  const renderedWorkDrawer = TeamPromptWorkDrawerRoot({onToggleDrawer})
+  const renderedInnerDrawer = renderedDiscussionDrawer ?? renderedWorkDrawer
 
   return (
     <ResponsiveDashSidebar
