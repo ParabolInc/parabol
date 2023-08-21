@@ -95,8 +95,16 @@ const createNewTeamAndInvite = async (
   return teamId
 }
 
-const generateOneOnOneTeamName = (firstUserName: string, secondUserName: string) => {
-  return `${firstUserName} / ${secondUserName}`
+const generateOneOnOneTeamName = (
+  firstUserName: string,
+  secondUserEmail: string,
+  secondUserName?: string
+) => {
+  if (secondUserName) {
+    return `${firstUserName} / ${secondUserName}`
+  }
+
+  return `${firstUserName} / ${secondUserEmail.split('@')[0]!}`
 }
 
 export default async function maybeCreateOneOnOneTeam(
@@ -108,8 +116,13 @@ export default async function maybeCreateOneOnOneTeam(
 
   const existingUser = await getUserByEmail(email)
 
+  const teamName = generateOneOnOneTeamName(
+    viewer.preferredName,
+    email,
+    existingUser?.preferredName
+  )
+
   if (!existingUser) {
-    const teamName = generateOneOnOneTeamName(viewer.preferredName, email.split('@')[0]!)
     return createNewTeamAndInvite(viewer, teamName, orgId, [email], context)
   }
 
@@ -119,6 +132,5 @@ export default async function maybeCreateOneOnOneTeam(
     return existingTeam.id
   }
 
-  const teamName = generateOneOnOneTeamName(viewer.preferredName, existingUser.preferredName)
   return createNewTeamAndInvite(viewer, teamName, orgId, [existingUser.email], context)
 }
