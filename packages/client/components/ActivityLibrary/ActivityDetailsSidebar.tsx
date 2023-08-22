@@ -258,6 +258,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                   setSelectedUsers(newUsers)
                 }}
                 value={selectedUsers}
+                multiple={false}
               />
             </div>
           ) : (
