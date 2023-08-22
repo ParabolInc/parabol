@@ -12,6 +12,7 @@ import clsx from 'clsx'
 import {meetingColumnArray} from '../../utils/constants'
 import {taskStatusLabels} from '../../utils/taskStatus'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import AddTaskButton from '../AddTaskButton'
 
 interface Props {
   queryRef: PreloadedQuery<TeamPromptWorkDrawerQuery>
@@ -94,6 +95,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
             </div>
           </div>
         )}
+      </div>
+      <div className='flex items-center justify-center border-t border-solid border-slate-200 p-2'>
+        <AddTaskButton dataCy={`your-work-task`} onClick={() => console.log('clicked')} />
       </div>
     </>
   )
