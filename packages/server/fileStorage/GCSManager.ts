@@ -1,7 +1,6 @@
 import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import path from 'path'
-import url from 'url'
 import FileStoreManager from './FileStoreManager'
 
 interface CloudKey {
@@ -17,7 +16,7 @@ export default class GCSManager extends FileStoreManager {
   // e.g. action-files.parabol.co
   private bucket: string
   private accessToken: string | undefined
-
+  private baseUrl: string
   private cloudKey: CloudKey
   constructor() {
     super()
@@ -41,13 +40,18 @@ export default class GCSManager extends FileStoreManager {
     if (!GOOGLE_GCS_BUCKET) {
       throw new Error('GOOGLE_GCS_BUCKET ENV VAR NOT SET')
     }
-    const baseUrl = url.parse(CDN_BASE_URL.replace(/^\/+/, 'https://'))
+    const baseUrl = new URL(CDN_BASE_URL.replace(/^\/+/, 'https://'))
     const {hostname, pathname} = baseUrl
     if (!hostname || !pathname) {
       throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
     }
+    this.baseUrl = baseUrl.href
 
     this.envSubDir = pathname.replace(/^\//, '')
+    if (!this.envSubDir) {
+      throw new Error('CDN_BASE_URL must end with a pathname, e.g. /production')
+    }
+
     this.bucket = GOOGLE_GCS_BUCKET
     this.cloudKey = {
       clientEmail: GOOGLE_CLOUD_CLIENT_EMAIL,
@@ -101,15 +105,12 @@ export default class GCSManager extends FileStoreManager {
     return this.accessToken
   }
 
-  private prependPath(partialPath: string) {
-    return path.join(this.envSubDir, partialPath)
+  protected async putUserFile(file: Buffer, partialPath: string) {
+    const fullPath = this.prependPath(partialPath)
+    return this.putFile(file, fullPath)
   }
 
-  private getPublicFileLocation(fullPath: string) {
-    return encodeURI(`https://storage.googleapis.com/${this.bucket}/${fullPath}`)
-  }
-  protected async putFile(file: Buffer, partialPath: string) {
-    const fullPath = this.prependPath(partialPath)
+  protected async putFile(file: Buffer, fullPath: string) {
     const url = new URL(`https://storage.googleapis.com/upload/storage/v1/b/${this.bucket}/o`)
     url.searchParams.append('uploadType', 'media')
     url.searchParams.append('name', fullPath)
@@ -120,10 +121,22 @@ export default class GCSManager extends FileStoreManager {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: 'application/json',
-        'Content-Type': mime.lookup(partialPath) || ''
+        'Content-Type': mime.lookup(fullPath) || ''
       }
     })
     return this.getPublicFileLocation(fullPath)
+  }
+
+  putBuildFile(file: Buffer, partialPath: string): Promise<string> {
+    const fullPath = path.join(this.envSubDir, 'build', partialPath)
+    return this.putFile(file, fullPath)
+  }
+
+  prependPath(partialPath: string) {
+    return path.join(this.envSubDir, 'store', partialPath)
+  }
+  getPublicFileLocation(fullPath: string) {
+    return encodeURI(`https://${this.baseUrl}${fullPath}`)
   }
   async checkExists(partialPath: string) {
     const fullPath = encodeURIComponent(this.prependPath(partialPath))

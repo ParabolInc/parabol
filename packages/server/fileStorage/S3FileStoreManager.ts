@@ -6,8 +6,11 @@ import FileStoreManager from './FileStoreManager'
 export default class S3Manager extends FileStoreManager {
   // e.g. development, production
   private envSubDir: string
-  // e.g. action-files.parabol.co
+  // e.g. action-files.parabol.co. Usually matches CDN_BASE_URL for DNS reasons
   private bucket: string
+
+  // e.g. https://action-files.parabol.co
+  private baseUrl: string
   private s3: S3Client
   constructor() {
     super()
@@ -24,19 +27,15 @@ export default class S3Manager extends FileStoreManager {
     if (!hostname || !pathname) {
       throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
     }
-
+    this.baseUrl = baseUrl.href
     this.envSubDir = pathname.replace(/^\//, '')
+    if (!this.envSubDir) {
+      throw new Error('CDN_BASE_URL must end with a pathname, e.g. /production')
+    }
     this.bucket = AWS_S3_BUCKET
     this.s3 = new S3Client({
       region: AWS_REGION
     })
-  }
-  private prependPath(partialPath: string) {
-    return path.join(this.envSubDir, 'store', partialPath)
-  }
-
-  private getPublicFileLocation(fullPath: string) {
-    return encodeURI(`https://${this.bucket}/${fullPath}`)
   }
 
   protected async putUserFile(file: Buffer, partialPath: string) {
@@ -52,6 +51,14 @@ export default class S3Manager extends FileStoreManager {
     }
     await this.s3.send(new PutObjectCommand(s3Params))
     return this.getPublicFileLocation(fullPath)
+  }
+
+  prependPath(partialPath: string) {
+    return path.join(this.envSubDir, 'store', partialPath)
+  }
+
+  getPublicFileLocation(fullPath: string) {
+    return encodeURI(`https://${this.baseUrl}${fullPath}`)
   }
 
   putBuildFile(file: Buffer, partialPath: string): Promise<string> {
