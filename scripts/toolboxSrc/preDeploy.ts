@@ -1,23 +1,23 @@
 import dotenv from 'dotenv'
 import dotenvExpand from 'dotenv-expand'
-import fs from 'fs'
 import path from 'path'
 import getRethink from '../../packages/server/database/rethinkDriver'
+import queryMap from '../../queryMap.json'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
 import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
 import primeIntegrations from './primeIntegrations'
 import pushToCDN from './pushToCDN'
 import standaloneMigrations from './standaloneMigrations'
 
+const PROJECT_ROOT = getProjectRoot()
+
 const storePersistedQueries = async () => {
   console.log('🔗 QueryMap Persistence Started')
-  const queryMap = JSON.parse(
-    fs.readFileSync(path.join(__PROJECT_ROOT__, 'queryMap.json')).toString()
-  )
   const hashes = Object.keys(queryMap)
   const now = new Date()
   const records = hashes.map((hash) => ({
     id: hash,
-    query: queryMap[hash],
+    query: queryMap[hash as keyof typeof queryMap],
     createdAt: now
   }))
 
@@ -31,7 +31,8 @@ const storePersistedQueries = async () => {
 }
 
 const preDeploy = async () => {
-  const envPath = path.join(__PROJECT_ROOT__, '.env')
+  // .env is typically only used in testing prod deploys
+  const envPath = path.join(PROJECT_ROOT, '.env')
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
   console.log(`🚀 Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)

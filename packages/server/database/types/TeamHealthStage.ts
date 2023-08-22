@@ -7,6 +7,6 @@ export default class TeamHealthStage extends GenericMeetingStage {
   isRevealed = false
 
   constructor(public question: string, public labels: string[], durations?: number[] | undefined) {
-    super({phaseType: 'TEAM_HEALTH', durations})
+    super({phaseType: 'TEAM_HEALTH', durations, isNavigable: true})
   }
 }

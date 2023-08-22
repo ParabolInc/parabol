@@ -45,7 +45,7 @@ const ScheduleMeetingButton = (props: Props) => {
     graphql`
       fragment ScheduleMeetingButton_team on Team {
         id
-        teamMembers {
+        viewerTeamMember {
           isSelf
           integrations {
             gcal {
@@ -64,17 +64,16 @@ const ScheduleMeetingButton = (props: Props) => {
     `,
     teamRef
   )
-  const {id: teamId, teamMembers} = team
+  const {id: teamId, viewerTeamMember} = team
   const hasStartedGcalAuth = hasStartedGcalAuthTeamId === teamId
 
-  const viewerGcalIntegration = teamMembers.find((teamMember) => teamMember.isSelf)?.integrations
-    .gcal
+  const viewerGcalIntegration = viewerTeamMember?.integrations.gcal
+  const cloudProvider = viewerGcalIntegration?.cloudProvider
 
   const handleClick = () => {
     if (viewerGcalIntegration?.auth) {
       openScheduleDialog()
-    } else if (viewerGcalIntegration?.cloudProvider) {
-      const {cloudProvider} = viewerGcalIntegration
+    } else if (cloudProvider) {
       const {clientId, id: providerId} = cloudProvider
       GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
       setHasStartedGcalAuthTeamId(teamId)
@@ -87,7 +86,7 @@ const ScheduleMeetingButton = (props: Props) => {
     }
   }, [hasStartedGcalAuth, viewerGcalIntegration])
 
-  if (!hasGcalFlag) return null
+  if (!hasGcalFlag || !cloudProvider) return null
   return (
     <>
       <SecondaryButton onClick={handleClick} waiting={submitting} className='h-14'>

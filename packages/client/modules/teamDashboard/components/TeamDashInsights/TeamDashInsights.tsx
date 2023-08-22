@@ -2,20 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {TeamDashInsights_insights$key} from '~/__generated__/TeamDashInsights_insights.graphql'
-import appleEmojis from 'emoji-mart/data/apple.json'
-import {uncompress} from 'emoji-mart/dist-modern/utils/data.js'
 import Tooltip from '../../../../components/Tooltip'
 import {Info as InfoIcon} from '@mui/icons-material'
-import {unifiedToNative} from 'emoji-mart/dist-modern/utils/index.js'
+import getReactji from '../../../../utils/getReactji'
 
 interface Props {
   teamInsightsRef: TeamDashInsights_insights$key
-}
-
-uncompress(appleEmojis)
-const emojiToNative = (emoji: string) => {
-  const value = appleEmojis.emojis[emoji as keyof typeof appleEmojis.emojis] as any
-  return unifiedToNative(value.unified) || ''
 }
 
 const TeamDashInsights = (props: Props) => {
@@ -48,15 +40,20 @@ const TeamDashInsights = (props: Props) => {
               </Tooltip>
             </div>
             <div className='flex flex-row justify-center'>
-              {mostUsedEmojis.map((emoji) => (
-                <div
-                  key={emoji.id}
-                  className='flex h-24 w-1/4 flex-col items-center justify-center'
-                >
-                  <div className='text-2xl'>{emojiToNative(emoji.id)}</div>
-                  <div className='p-2 font-semibold'>{emoji.count}</div>
-                </div>
-              ))}
+              {mostUsedEmojis.map((emoji) => {
+                const {unicode, shortName} = getReactji(emoji.id)
+                return (
+                  <div
+                    key={emoji.id}
+                    className='flex h-24 w-1/4 flex-col items-center justify-center'
+                  >
+                    <Tooltip text={`:${shortName}:`}>
+                      <div className='text-2xl'>{unicode}</div>
+                    </Tooltip>
+                    <div className='p-2 font-semibold'>{emoji.count}</div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}

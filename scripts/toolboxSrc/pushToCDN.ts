@@ -1,10 +1,13 @@
 import fs from 'fs'
 import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
 import path from 'path'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
+
+const PROJECT_ROOT = getProjectRoot()
 
 const pushClientAssetsToCDN = async () => {
   const fileStoreManager = getFileStoreManager()
-  const localClientAssetsDir = path.join(__PROJECT_ROOT__, 'build')
+  const localClientAssetsDir = path.join(PROJECT_ROOT, 'build')
   if (process.env.FILE_STORE_PROVIDER === 'local') {
     console.log('⛅️ Using Local File Store for client assets. Skipping...')
     return
