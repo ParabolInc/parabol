@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import Tooltip from '../../../../components/Tooltip'
 import {Info as InfoIcon} from '@mui/icons-material'
@@ -9,6 +9,7 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {TeamInsightsCard_insights$key} from '../../../../__generated__/TeamInsightsCard_insights.graphql'
 import TeamInsightsId from '../../../../shared/gqlIds/TeamInsightsId'
+import clsx from 'clsx'
 
 interface Props {
   title: string
@@ -19,6 +20,7 @@ interface Props {
 
 const TeamInsightsCard = (props: Props) => {
   const {children, teamInsightsRef, title, tooltip} = props
+  const [isHelpful, setIsHelpful] = useState<boolean>()
 
   const insights = useFragment(
     graphql`
@@ -41,6 +43,7 @@ const TeamInsightsCard = (props: Props) => {
       teamId,
       isHelpfulInsight
     })
+    setIsHelpful(isHelpfulInsight)
   }
 
   return (
@@ -54,10 +57,16 @@ const TeamInsightsCard = (props: Props) => {
       <div className='flex flex-row justify-center'>{children}</div>
       <div className='flex items-center justify-center bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600'>
         <div className='grow'>Is this helpful?</div>
-        <FlatButton className='mx-4 p-0 text-slate-500' onClick={() => trackClick(false)}>
+        <FlatButton
+          className={clsx('mx-4 p-0', isHelpful === false ? 'text-slate-800' : 'text-slate-500')}
+          onClick={() => trackClick(false)}
+        >
           <ThumbDown />
         </FlatButton>
-        <FlatButton className='p-0 text-slate-500' onClick={() => trackClick(true)}>
+        <FlatButton
+          className={clsx('p-0', isHelpful ? 'text-slate-800' : 'text-slate-500')}
+          onClick={() => trackClick(true)}
+        >
           <ThumbUp />
         </FlatButton>
       </div>
