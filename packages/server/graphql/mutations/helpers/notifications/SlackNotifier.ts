@@ -24,6 +24,9 @@ import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/ge
 import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
 import User from '../../../../postgres/types/IUser'
+import TurndownService from 'turndown'
+import {generateHTML} from '@tiptap/html'
+import {createEditorExtensions} from '../../../../../client/components/promptResponse/tiptapConfig'
 
 type SlackNotification = {
   title: string
@@ -210,6 +213,8 @@ const addStandupResponsesToThread = async (
     return 'success'
   }
 
+  const turndownService = new TurndownService()
+
   const results = await Promise.all(
     standupResponses.map(async ({user, response}) => {
       const options = {
@@ -221,9 +226,11 @@ const addStandupResponsesToThread = async (
         }
       }
       const responseUrl = makeAppURL(appOrigin, `meet/${meeting.id}/responses`, options)
+      const html = generateHTML(response.content, createEditorExtensions())
+
       const threadBlocks: Array<{type: string}> = [
         makeSection(`${user.preferredName} responded:`),
-        makeSection(response.plaintextContent),
+        makeSection(turndownService.turndown(html)),
         makeButtons([{text: 'See their response', url: responseUrl, type: 'primary'}])
       ]
       const threadRes = await notifySlack(
