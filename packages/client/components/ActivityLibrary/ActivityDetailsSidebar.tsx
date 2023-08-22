@@ -36,6 +36,12 @@ import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 import {AdhocTeamMultiSelect, Option} from '../AdhocTeamMultiSelect/AdhocTeamMultiSelect'
+import {Select} from '../../ui/Select/Select'
+import {SelectTrigger} from '../../ui/Select/SelectTrigger'
+import {SelectValue} from '../../ui/Select/SelectValue'
+import {SelectContent} from '../../ui/Select/SelectContent'
+import {SelectGroup} from '../../ui/Select/SelectGroup'
+import {SelectItem} from '../../ui/Select/SelectItem'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -69,6 +75,10 @@ const ActivityDetailsSidebar = (props: Props) => {
           gcal
         }
         ...AdhocTeamMultiSelect_viewer
+        organizations {
+          id
+          name
+        }
       }
     `,
     viewerRef
@@ -127,6 +137,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       templateTeam ??
       sortByTier(availableTeams)[0]!
   )
+  const [selectedOrgId, setSelectedOrgId] = useState('')
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
   const {
@@ -136,12 +147,27 @@ const ActivityDetailsSidebar = (props: Props) => {
   } = useDialogState()
 
   const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
+  const selectedUser = selectedUsers[0]
+  const {organizations: viewerOrganizations} = viewer
+
+  const viewerOrganizationIds = new Set(viewerOrganizations.map((org) => org.id))
+
+  const selectedUserOrganizationIds = selectedUser?.organizationIds ?? []
+  const mutualOrgs = selectedUserOrganizationIds.filter((orgId) => viewerOrganizationIds.has(orgId))
+
+  const showOrgPicker = selectedUser && (mutualOrgs.length > 1 || !mutualOrgs.length)
+
+  const manuallySelectedOrgId = showOrgPicker && selectedOrgId !== '' && selectedOrgId
+  const firstMutualOrgId = mutualOrgs[0]
+  const defaultOrgId = selectedTeam.orgId
+  const newOneOnOneTeamOrgId = manuallySelectedOrgId
+    ? manuallySelectedOrgId
+    : firstMutualOrgId ?? defaultOrgId
 
   const oneOnOneTeamInput = selectedUsers[0]
     ? {
         email: selectedUsers[0].email,
-        // TODO: always pick default orgId for now, this will be changed in next PRs
-        orgId: selectedTeam.orgId
+        orgId: newOneOnOneTeamOrgId
       }
     : null
 
@@ -259,6 +285,29 @@ const ActivityDetailsSidebar = (props: Props) => {
                 }}
                 value={selectedUsers}
               />
+
+              {showOrgPicker && (
+                <>
+                  <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
+                  <Select
+                    onValueChange={(orgId) => setSelectedOrgId(orgId)}
+                    value={newOneOnOneTeamOrgId}
+                  >
+                    <SelectTrigger className='bg-white'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {viewerOrganizations.map((org) => (
+                          <SelectItem value={org.id} key={org.id}>
+                            {org.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
             </div>
           ) : (
             <NewMeetingTeamPicker
