@@ -25,7 +25,6 @@ import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
-import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
 import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
@@ -90,6 +89,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         actionSettings: meetingSettings(meetingType: action) {
           ...NewMeetingSettingsToggleCheckIn_settings
         }
+        ...NewMeetingSettingsToggleTeamHealth_team
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
@@ -268,9 +268,10 @@ const ActivityDetailsSidebar = (props: Props) => {
               {type === 'retrospective' && (
                 <>
                   <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                  {isTeamHealthAvailable(selectedTeam.tier) && (
-                    <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
-                  )}
+                  <NewMeetingSettingsToggleTeamHealth
+                    settingsRef={selectedTeam.retroSettings}
+                    teamRef={selectedTeam}
+                  />
                   <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
                 </>
               )}
