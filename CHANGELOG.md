@@ -30,6 +30,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - fix a couple vulns (#8648)
 - **suggest-groups**: increase number of suggested groups (#8625)
 - add version and sha to predeploy logs (#8646)
+- chore: use client dir for index.html
 
 ### Fixed
 
@@ -43,6 +44,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **analytics**: preserve GA4 client_id after sign-up/sign-in (#8650)
 - Show Team Insights emojis correctly (#8667)
 - terser in prod build (#8665)
+- fix: Uncompressing emojies twice causes a failure (#8687)
+- fix: re-add getProjectRoot in preDeploy
+- fix: re-add minification to client build
+- fix: check favicon in build
+- fix: Remove segment when the env var is missing (#8674)
+- fix: use-credentials for manifest.json in staging
 
 ## 6.115.0 2023-Aug-01
 

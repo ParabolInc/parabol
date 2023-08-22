@@ -18,9 +18,6 @@ import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEve
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import SecondaryButton from '../SecondaryButton'
-import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
-import {useDialogState} from '../../ui/Dialog/useDialogState'
 import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
@@ -28,13 +25,13 @@ import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
-import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
 import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
+import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -64,14 +61,11 @@ const ActivityDetailsSidebar = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_viewer on User {
-        featureFlags {
-          gcal
-        }
+        ...ScheduleMeetingButton_viewer
       }
     `,
     viewerRef
   )
-  const hasGcalFlag = viewer.featureFlags.gcal
 
   const teams = useFragment(
     graphql`
@@ -95,9 +89,11 @@ const ActivityDetailsSidebar = (props: Props) => {
         actionSettings: meetingSettings(meetingType: action) {
           ...NewMeetingSettingsToggleCheckIn_settings
         }
+        ...NewMeetingSettingsToggleTeamHealth_team
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
+        ...ScheduleMeetingButton_team
       }
     `,
     teamsRef
@@ -125,13 +121,9 @@ const ActivityDetailsSidebar = (props: Props) => {
       templateTeam ??
       sortByTier(availableTeams)[0]!
   )
-  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
+  const mutationProps = useMutationProps()
+  const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
-  const {
-    isOpen: isScheduleDialogOpen,
-    open: openScheduleDialog,
-    close: closeScheduleDialog
-  } = useDialogState()
 
   const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
@@ -179,11 +171,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         }
       )
     }
-  }
-
-  const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
-    openScheduleDialog()
-    handleStartActivity(gcalInput)
   }
 
   const handleShareToOrg = () => {
@@ -281,9 +268,10 @@ const ActivityDetailsSidebar = (props: Props) => {
               {type === 'retrospective' && (
                 <>
                   <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                  {isTeamHealthAvailable(selectedTeam.tier) && (
-                    <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
-                  )}
+                  <NewMeetingSettingsToggleTeamHealth
+                    settingsRef={selectedTeam.retroSettings}
+                    teamRef={selectedTeam}
+                  />
                   <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
                 </>
               )}
@@ -302,15 +290,12 @@ const ActivityDetailsSidebar = (props: Props) => {
               <div className='flex grow flex-col justify-end gap-2'>
                 {error && <StyledError>{error.message}</StyledError>}
                 <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-                {hasGcalFlag && (
-                  <SecondaryButton
-                    onClick={openScheduleDialog}
-                    waiting={submitting}
-                    className='h-14'
-                  >
-                    <div className='text-lg'>Schedule</div>
-                  </SecondaryButton>
-                )}
+                <ScheduleMeetingButton
+                  handleStartActivity={handleStartActivity}
+                  mutationProps={mutationProps}
+                  teamRef={selectedTeam}
+                  viewerRef={viewer}
+                />
                 <FlatPrimaryButton
                   onClick={() => handleStartActivity()}
                   waiting={submitting}
@@ -323,11 +308,6 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
         </div>
       </div>
-      <GcalModal
-        closeModal={closeScheduleDialog}
-        isOpen={isScheduleDialogOpen}
-        handleCreateGcalEvent={handleStartActivityWithGcalEvent}
-      />
     </>
   )
 }

@@ -1,8 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import data from 'emoji-mart/data/apple.json'
-import {uncompress} from 'emoji-mart/dist-modern/utils/data.js'
-import {unifiedToNative} from 'emoji-mart/dist-modern/utils/index.js'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
@@ -14,8 +11,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import ReactjiId from '../../shared/gqlIds/ReactjiId'
 import EmojiUsersReaction from './EmojiUsersReaction'
-
-uncompress(data)
+import getReactji from '../../utils/getReactji'
 
 const Parent = styled('div')<{status: TransitionStatus}>(({status}) => ({
   height: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 24,
@@ -82,11 +78,9 @@ const ReactjiCount = (props: Props) => {
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
   const reactjiObj = ReactjiId.split(id)
-  const name = reactjiObj.name as keyof typeof emojis
-  const {emojis} = data
-  const emojiData = emojis[name] as any
-  const unified = emojiData?.unified ?? ''
-  const unicode = unifiedToNative(unified) || ''
+  const name = reactjiObj.name
+
+  const {unicode, shortName} = getReactji(name)
   const onClick = () => {
     onToggle(name)
   }
@@ -102,9 +96,7 @@ const ReactjiCount = (props: Props) => {
       >
         <Emoji>{unicode}</Emoji>
         <Count>{count}</Count>
-        {tooltipPortal(
-          <EmojiUsersReaction reactjiRef={reactji} reactjiShortName={emojiData?.short_names[0]} />
-        )}
+        {tooltipPortal(<EmojiUsersReaction reactjiRef={reactji} reactjiShortName={shortName} />)}
       </Inner>
     </Parent>
   )
