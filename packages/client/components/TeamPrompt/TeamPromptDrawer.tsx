@@ -24,8 +24,12 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   right: isDesktop ? 0 : undefined,
   userSelect: isDesktop ? undefined : 'none',
   transition: `all 200ms ${BezierCurve.DECELERATE}`,
-  transform: `translateX(${isOpen ? 0 : DiscussionThreadEnum.WIDTH}px)`,
-  width: DiscussionThreadEnum.WIDTH,
+  transform: `translateX(${
+    isOpen
+      ? `calc(${DiscussionThreadEnum.WIDTH}px - min(${DiscussionThreadEnum.WIDTH}px, 100vw))`
+      : `${DiscussionThreadEnum.WIDTH}px`
+  })`,
+  width: `min(${DiscussionThreadEnum.WIDTH}px, 100vw)`,
   zIndex: ZIndex.SIDEBAR,
   height: '100%',
   '@supports (height: 1svh) and (height: 1lvh)': {
