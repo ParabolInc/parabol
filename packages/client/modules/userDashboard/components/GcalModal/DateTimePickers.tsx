@@ -65,7 +65,13 @@ const DateTimePickers = (props: Props) => {
   const handleChangeEnd = (date: Dayjs | null, time: Dayjs | null) => {
     if (date && time) {
       const newValue = date.hour(time.hour()).minute(time.minute())
-      setEnd(newValue)
+      if (newValue.isAfter(startValue)) {
+        setEnd(newValue)
+      } else {
+        const newStartValue = newValue.subtract(1, 'hour')
+        setStart(newStartValue)
+        setEnd(newValue)
+      }
     }
   }
 
