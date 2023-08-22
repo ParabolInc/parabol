@@ -32,6 +32,9 @@ export default class S3Manager extends FileStoreManager {
     if (!this.envSubDir) {
       throw new Error('CDN_BASE_URL must end with a pathname, e.g. /production')
     }
+    if (this.envSubDir.endsWith('/')) {
+      throw new Error('CDN_BASE_URL must not end with a trailing slash /')
+    }
     this.bucket = AWS_S3_BUCKET
     this.s3 = new S3Client({
       region: AWS_REGION

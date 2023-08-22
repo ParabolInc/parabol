@@ -51,6 +51,9 @@ export default class GCSManager extends FileStoreManager {
     if (!this.envSubDir) {
       throw new Error('CDN_BASE_URL must end with a pathname, e.g. /production')
     }
+    if (this.envSubDir.endsWith('/')) {
+      throw new Error('CDN_BASE_URL must not end with a trailing slash /')
+    }
 
     this.bucket = GOOGLE_GCS_BUCKET
     this.cloudKey = {
@@ -99,7 +102,7 @@ export default class GCSManager extends FileStoreManager {
     }
   }
 
-  async getAccessToken() {
+  private async getAccessToken() {
     if (this.accessToken) return this.accessToken
     this.accessToken = await this.getFreshAccessToken()
     return this.accessToken
