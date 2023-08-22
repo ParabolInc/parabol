@@ -44,7 +44,7 @@ const DiscussionResponseCard = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
-  padding: '8px 8px 8px 12px',
+  padding: '16px 8px 8px 12px',
   width: '100%'
 })
 
@@ -52,7 +52,6 @@ const Header = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   flexDirection: 'row',
-  alignItems: 'center',
   padding: '0 8px'
 })
 
@@ -157,16 +156,18 @@ const TeamPromptDiscussionDrawer = ({meetingRef, onToggleDrawer}: Props) => {
     <>
       <DiscussionResponseCard>
         <Header>
-          <Avatar picture={teamMember.picture} size={48} />
-          <TeamMemberName>
-            {teamMember.preferredName}
-            {response && (
-              <TeamPromptLastUpdatedTime
-                updatedAt={response.updatedAt}
-                createdAt={response.createdAt}
-              />
-            )}
-          </TeamMemberName>
+          <div className='flex items-center'>
+            <Avatar picture={teamMember.picture} size={48} />
+            <TeamMemberName>
+              {teamMember.preferredName}
+              {response && (
+                <TeamPromptLastUpdatedTime
+                  updatedAt={response.updatedAt}
+                  createdAt={response.createdAt}
+                />
+              )}
+            </TeamMemberName>
+          </div>
           <StyledCloseButton onClick={onToggleDrawer}>
             <CloseIcon />
           </StyledCloseButton>
