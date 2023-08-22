@@ -3,7 +3,6 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {useAutocomplete} from '@mui/base/AutocompleteUnstyled'
 import CheckIcon from '@mui/icons-material/Check'
-import {autocompleteClasses} from '@mui/material/Autocomplete'
 
 import {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
 import {Send as SendIcon} from '@mui/icons-material'
@@ -20,6 +19,7 @@ export type Option = {
 interface Props {
   viewerRef: AdhocTeamMultiSelect_viewer$key
   value: Option[]
+  multiple?: boolean
   onChange: (values: Option[]) => void
 }
 
@@ -42,7 +42,7 @@ const autocompleteEmail = (input: string, domain: string) => {
 }
 
 export const AdhocTeamMultiSelect = (props: Props) => {
-  const {viewerRef, onChange, value} = props
+  const {viewerRef, onChange, value, multiple = true} = props
   const viewer = useFragment(
     graphql`
       fragment AdhocTeamMultiSelect_viewer on User {
@@ -119,7 +119,10 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       return !!(option.id && value.id && option.id === value.id)
     },
     onChange: (_: any, newValue: (Option | string)[]) => {
-      const normalizedNewValue = newValue.map((value) =>
+      // We manually handle multiple = false, as we want chips and multiple behaviour but just limit items to 1
+      const valueArray = multiple ? newValue : newValue[0] ? [newValue[1] ?? newValue[0]] : []
+
+      const normalizedNewValue = valueArray.map((value) =>
         typeof value === 'string' ? createCustomOption(value) : value
       )
       onChange(normalizedNewValue)
@@ -154,7 +157,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
               picture={option.picture}
               icon={!option.id ? <SendIcon className='text-base' /> : null}
               {...getTagProps({index})}
-              key={index}
+              key={option.id ?? option.email}
               className='m-0.5'
             />
           ))}
@@ -175,9 +178,11 @@ export const AdhocTeamMultiSelect = (props: Props) => {
             const isSelected = optionProps['aria-selected']
             return (
               <li
-                key={index}
                 {...optionProps}
-                className={`[&.${autocompleteClasses.focused}]:bg-slate-100 flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-none hover:bg-slate-100 focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50`}
+                key={option.id ?? option.email}
+                className={`[&.Mui-focused]:bg-slate-100 ${
+                  isSelected ? 'bg-slate-100' : ''
+                } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-none hover:bg-slate-100 focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50`}
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
                 <span className={'flex-grow'}>{option.label}</span>
