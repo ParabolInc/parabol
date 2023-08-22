@@ -5,37 +5,42 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {TeamPromptDrawer_meeting$key} from '~/__generated__/TeamPromptDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '../../styles/elevation'
-import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
 import TeamPromptWorkDrawerRoot from './TeamPromptWorkDrawerRoot'
+import useBreakpoint from '../../hooks/useBreakpoint'
 
-const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
-  boxShadow: isDesktop ? desktopSidebarShadow : undefined,
-  backgroundColor: '#FFFFFF',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  justifyContent: 'stretch',
-  overflow: 'hidden',
-  position: isDesktop ? 'fixed' : 'static',
-  bottom: 0,
-  top: 0,
-  right: isDesktop ? 0 : undefined,
-  userSelect: isDesktop ? undefined : 'none',
-  transition: `all 200ms ${BezierCurve.DECELERATE}`,
-  transform: `translateX(${
-    isOpen
-      ? `calc(${DiscussionThreadEnum.WIDTH}px - min(${DiscussionThreadEnum.WIDTH}px, 100vw))`
-      : `${DiscussionThreadEnum.WIDTH}px`
-  })`,
-  width: `min(${DiscussionThreadEnum.WIDTH}px, 100vw)`,
-  zIndex: ZIndex.SIDEBAR,
-  height: '100%',
-  '@supports (height: 1svh) and (height: 1lvh)': {
-    height: isDesktop ? '100lvh' : '100svh'
-  }
-}))
+const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
+  ({isDesktop, isMobile, isOpen}) => ({
+    boxShadow: isDesktop ? desktopSidebarShadow : undefined,
+    backgroundColor: '#FFFFFF',
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'stretch',
+    overflow: 'hidden',
+    position: isDesktop ? 'fixed' : 'static',
+    bottom: 0,
+    top: 0,
+    right: isDesktop ? 0 : undefined,
+    userSelect: isDesktop ? undefined : 'none',
+    transition: `all 200ms ${BezierCurve.DECELERATE}`,
+    transform: `translateX(${
+      isOpen
+        ? isMobile
+          ? `calc(${DiscussionThreadEnum.WIDTH}px - 100vw)`
+          : 0
+        : `${DiscussionThreadEnum.WIDTH}px`
+    })`,
+    width: isMobile ? '100vw' : `min(${DiscussionThreadEnum.WIDTH}px, 100vw)`,
+    zIndex: ZIndex.SIDEBAR,
+    height: '100%',
+    '@supports (height: 1svh) and (height: 1lvh)': {
+      height: isDesktop ? '100lvh' : '100svh'
+    }
+  })
+)
 
 interface Props {
   meetingRef: TeamPromptDrawer_meeting$key
@@ -54,6 +59,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
     meetingRef
   )
 
+  const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmosphere = useAtmosphere()
   const {id: meetingId, isRightDrawerOpen} = meeting
 
@@ -81,7 +87,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
       onToggle={onToggleDrawer}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
-      <Drawer isDesktop={isDesktop} isOpen={isRightDrawerOpen}>
+      <Drawer isDesktop={isDesktop} isMobile={isMobile} isOpen={isRightDrawerOpen}>
         {renderedInnerDrawer}
       </Drawer>
     </ResponsiveDashSidebar>
