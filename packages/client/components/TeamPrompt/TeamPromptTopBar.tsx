@@ -95,6 +95,8 @@ const TeamPromptTopBar = (props: Props) => {
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         id
         name
+        isRightDrawerOpen
+        showWorkSidebar
         facilitatorUserId
         prevMeeting {
           id
@@ -135,13 +137,22 @@ const TeamPromptTopBar = (props: Props) => {
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
   const onOpenWorkSidebar = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const meetingProxy = store.get(meetingId)
-      if (!meetingProxy) return
-      meetingProxy.setValue(null, 'localStageId')
-      meetingProxy.setValue(true, 'showWorkSidebar')
-      meetingProxy.setValue(true, 'isRightDrawerOpen')
-    })
+    if (meeting.isRightDrawerOpen && meeting.showWorkSidebar) {
+      // If we're selecting a discussion that's already open, just close the drawer.
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(false, 'isRightDrawerOpen')
+      })
+    } else {
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(null, 'localStageId')
+        meetingProxy.setValue(true, 'showWorkSidebar')
+        meetingProxy.setValue(true, 'isRightDrawerOpen')
+      })
+    }
   }
 
   const buttons = (
