@@ -17,6 +17,7 @@ import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
+import ServerAuthToken from '../../database/types/ServerAuthToken'
 import getDataLoader from '../../graphql/getDataLoader'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
@@ -477,8 +478,29 @@ class Analytics {
     })
   }
 
-  accountRemoved = (userId: string, reason: string, parabolPayload: object) => {
-    this.track(userId, 'Account Removed', {reason, parabolPayload})
+  accountRemoved = async (userIdToDelete: string, email: string, validReason: string) => {
+    const executeGraphQL = require('../../executeGraphQL').default
+    const parabolPayload = await executeGraphQL({
+      authToken: new ServerAuthToken(), // Need admin access to run the query
+      query: `
+      query AccountRemoved($userId: ID!) {
+        user(userId: $userId) {
+          isRemoved
+          email
+          company {
+            userCount
+            activeUserCount
+          }
+        }
+      }
+    `,
+      variables: {userId: userIdToDelete},
+      isPrivate: true
+    })
+    parabolPayload.data.user.email = email
+    parabolPayload.data.user.isRemoved = true
+    const payload = parabolPayload.data
+    this.track(userIdToDelete, 'Account Removed', {validReason, parabolPayload: payload})
   }
 
   accountPaused = (userId: string) => this.track(userId, 'Account Paused')

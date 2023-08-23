@@ -6,8 +6,8 @@ import updateUser from '../../postgres/queries/updateUser'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
-import sendAccountRemovedToSegment from './helpers/sendAccountRemovedToSegment'
 import softDeleteUser from './helpers/softDeleteUser'
+import {analytics} from '../../utils/analytics/analytics'
 
 const markUserSoftDeleted = async (
   userIdToDelete: string,
@@ -69,7 +69,7 @@ export default {
     const deletedUserEmail = await softDeleteUser(userIdToDelete, dataLoader)
     await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
 
-    sendAccountRemovedToSegment(userIdToDelete, user.email, validReason)
+    analytics.accountRemoved(userIdToDelete, user.email, validReason)
 
     return {}
   }
