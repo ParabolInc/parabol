@@ -1,0 +1,6 @@
+type IsOneOnOneTeamExistsPayload {
+  """
+  Return team if it exists
+  """
+  team: Team
+}

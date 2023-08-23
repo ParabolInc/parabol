@@ -42,6 +42,7 @@ import {SelectValue} from '../../ui/Select/SelectValue'
 import {SelectContent} from '../../ui/Select/SelectContent'
 import {SelectGroup} from '../../ui/Select/SelectGroup'
 import {SelectItem} from '../../ui/Select/SelectItem'
+import IsOneOnOneTeamExists from './IsOneOnOneTeamExists'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -362,7 +363,12 @@ const ActivityDetailsSidebar = (props: Props) => {
               )}
               <div className='flex grow flex-col justify-end gap-2'>
                 {error && <StyledError>{error.message}</StyledError>}
-                <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                {oneOnOneTeamInput && (
+                  <IsOneOnOneTeamExists oneOnOneTeamInput={oneOnOneTeamInput} />
+                )}
+                {selectedTemplate.id !== 'oneOnOneAction' && (
+                  <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                )}
                 {hasGcalFlag && (
                   <SecondaryButton
                     onClick={openScheduleDialog}
