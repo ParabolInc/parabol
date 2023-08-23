@@ -138,6 +138,7 @@ export type AnalyticsEvent =
   | 'New Org'
   | 'New Team'
   | 'Poll added'
+  | 'Slack notification sent'
 
 /**
  * Provides a unified interface for sending all the analytics events
@@ -519,6 +520,15 @@ class Analytics {
   pollAdded = (userId: string, teamId: string, meetingId: string) => {
     // 'added' is intentionally lowercase for backwards compatibility
     this.track(userId, 'Poll added', {meetingId, teamId})
+  }
+
+  slackNotificationSent = (
+    userId: string,
+    teamId: string,
+    notificationEvent: SlackNotificationEventEnum,
+    segmentProperties?: object
+  ) => {
+    this.track(userId, 'Slack notification sent', {teamId, notificationEvent, ...segmentProperties})
   }
 
   identify = (options: IdentifyOptions) => {
