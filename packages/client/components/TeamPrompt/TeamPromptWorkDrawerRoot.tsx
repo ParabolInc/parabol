@@ -12,13 +12,15 @@ import {renderLoader} from '~/utils/relay/renderLoader'
 interface Props {
   onToggleDrawer: () => void
   meetingRef: TeamPromptWorkDrawer_meeting$key
+  teamId: string
 }
 
 const TeamPromptWorkDrawerRoot = (props: Props) => {
-  const {meetingRef, onToggleDrawer} = props
+  const {meetingRef, onToggleDrawer, teamId} = props
   const atmosphere = useAtmosphere()
   const queryRef = useQueryLoaderNow<TeamPromptWorkDrawerQuery>(teamPromptWorkDrawerQuery, {
-    userIds: [atmosphere.viewerId]
+    userIds: [atmosphere.viewerId],
+    teamId: teamId
   })
   return (
     <ErrorBoundary>
