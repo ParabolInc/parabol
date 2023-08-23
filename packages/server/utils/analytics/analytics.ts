@@ -99,6 +99,9 @@ export type AnalyticsEvent =
   // meeting templates
   | 'Scale Created'
   | 'Scale Cloned'
+  | 'Template Created'
+  | 'Template Cloned'
+  | 'Template Shared'
   // team
   | 'Team Name Changed'
   | 'Integration Added'
@@ -367,6 +370,33 @@ class Analytics {
       scaleId: scale.id,
       scaleName: scale.name,
       teamId: scale.teamId
+    })
+  }
+
+  templateCreated = (userId: string, template: MeetingTemplate) => {
+    this.track(userId, 'Template Created', {
+      meetingTemplateId: template.id,
+      meetingTemplateType: template.type,
+      meetingTemplateScope: template.scope,
+      teamId: template.teamId
+    })
+  }
+
+  templateCloned = (userId: string, template: MeetingTemplate) => {
+    this.track(userId, 'Template Cloned', {
+      meetingTemplateId: template.id,
+      meetingTemplateType: template.type,
+      meetingTemplateScope: template.scope,
+      teamId: template.teamId
+    })
+  }
+
+  templateShared = (userId: string, template: MeetingTemplate) => {
+    this.track(userId, 'Template Shared', {
+      meetingTemplateId: template.id,
+      meetingTemplateType: template.type,
+      meetingTemplateScope: template.scope,
+      teamId: template.teamId
     })
   }
 

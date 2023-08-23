@@ -11,7 +11,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
-import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
+import {analytics} from '../../utils/analytics/analytics'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -102,7 +102,7 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
+      analytics.templateCloned(viewerId, newTemplate)
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -131,7 +131,7 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
+      analytics.templateCreated(viewerId, newTemplate)
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePayload', data, subOptions)
