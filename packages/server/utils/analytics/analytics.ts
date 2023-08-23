@@ -334,22 +334,19 @@ class Analytics {
     })
   }
 
-  pokerMeetingTeamRevoted = (
-    userId: string,
-    teamId: string,
-    hasIcebreaker: boolean,
-    wasFacilitator: boolean,
-    meetingNumber: number,
-    teamMembersCount: number,
-    teamMembersPresentCount: number
-  ) => {
-    this.track(userId, 'Poker Meeting Team Revoted', {
-      hasIcebreaker,
-      wasFacilitator,
-      meetingNumber,
-      teamMembersCount,
-      teamMembersPresentCount,
-      teamId
+  pokerMeetingTeamRevoted = async (meeting: Meeting, meetingMembers: MeetingMember[]) => {
+    const {facilitatorUserId, meetingNumber, phases, teamId} = meeting
+    const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
+    presentMemberUserIds.forEach((userId) => {
+      const wasFacilitator = userId === facilitatorUserId
+      this.track(userId, 'Poker Meeting Team Revoted', {
+        hasIcebreaker: phases[0]?.phaseType === 'checkin',
+        wasFacilitator,
+        meetingNumber,
+        teamMembersCount: meetingMembers.length,
+        teamMembersPresentCount: meetingMembers.length,
+        teamId
+      })
     })
   }
 

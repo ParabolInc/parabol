@@ -11,7 +11,7 @@ import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerResetDimensionPayload from '../types/PokerResetDimensionPayload'
-import sendPokerMeetingRevoteToSegment from './helpers/sendPokerMeetingRevoteToSegment'
+import {analytics} from '../../utils/analytics/analytics'
 
 const pokerResetDimension = {
   type: new GraphQLNonNull(PokerResetDimensionPayload),
@@ -85,7 +85,7 @@ const pokerResetDimension = {
     const data = {meetingId, stageId}
 
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-    sendPokerMeetingRevoteToSegment(meeting, meetingMembers as MeetingMember[])
+    analytics.pokerMeetingTeamRevoted(meeting, meetingMembers as MeetingMember[])
 
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionSuccess', data, subOptions)
     return data
