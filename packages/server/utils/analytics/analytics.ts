@@ -129,6 +129,8 @@ export type AnalyticsEvent =
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
   | 'Reset Groups Clicked'
+  // Conversion Tracking
+  | 'Conversion Modal Pay Later Clicked'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
   | 'Added Agenda Item'
@@ -501,6 +503,10 @@ class Analytics {
 
   resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
+  }
+
+  conversionModalPayLaterClicked = (userId: string) => {
+    this.track(userId, 'Conversion Modal Pay Later Clicked')
   }
 
   addedAgendaItem = (userId: string, teamId: string, meetingId?: string) => {
