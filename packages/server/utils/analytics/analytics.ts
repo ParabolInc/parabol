@@ -134,6 +134,7 @@ export type AnalyticsEvent =
   | 'Archive Team'
   | 'Enterprise Over User Limit'
   | 'Mattermost notification sent'
+  | 'Mentioned on Task'
   | 'MSTeams notification sent'
   | 'New Org'
   | 'New Team'
@@ -499,6 +500,10 @@ class Analytics {
     notificationEvent: SlackNotificationEventEnum
   ) => {
     this.track(userId, 'Mattermost notification sent', {teamId, notificationEvent})
+  }
+
+  mentionedOnTask = (userId: string, mentionedUserId: string, teamId: string) => {
+    this.track(userId, 'Mentioned on Task', {mentionedUserId, teamId})
   }
 
   teamsNotificationSent = (
