@@ -16,7 +16,7 @@ import sendToSentry from '../../../../utils/sendToSentry'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
-import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
+import {makeButtons, makeSection, makeSections, makeHeader} from './makeSlackBlocks'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
 import SlackAuth from '../../../../database/types/SlackAuth'
@@ -224,7 +224,7 @@ const addStandupResponsesToThread = async (
       const responseUrl = makeAppURL(appOrigin, `meet/${meeting.id}/responses`, options)
 
       const threadBlocks: Array<{type: string}> = [
-        makeSection(`${user.preferredName} responded:`),
+        makeHeader(`${user.preferredName} responded:`),
         makeSection(convertToMarkdown(response.content)),
         makeButtons([{text: 'See their response', url: responseUrl, type: 'primary'}])
       ]

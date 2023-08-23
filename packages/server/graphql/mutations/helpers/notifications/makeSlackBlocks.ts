@@ -22,6 +22,17 @@ export const makeSection = (text: string) => {
   }
 }
 
+export const makeHeader = (text: string) => {
+  const maybeTruncatedText = maybeTruncate(text)
+  return {
+    type: 'header',
+    text: {
+      type: 'plain_text',
+      text: maybeTruncatedText
+    }
+  }
+}
+
 export const makeSections = (fields: string[]) => {
   const truncatedFields = fields.map((field) => {
     const maybeTruncatedField = maybeTruncate(field)
