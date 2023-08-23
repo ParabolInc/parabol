@@ -9,7 +9,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplateScalePayload from '../types/AddPokerTemplateScalePayload'
-import sendScaleEventToSegment from './helpers/sendScaleEventToSegment'
+import {analytics} from '../../utils/analytics/analytics'
 
 const addPokerTemplateScale = {
   description: 'Add a new scale for the poker template',
@@ -91,7 +91,9 @@ const addPokerTemplateScale = {
 
     const scaleId = newScale.id
     const data = {scaleId}
-    sendScaleEventToSegment(viewerId, newScale, parentScaleId ? 'Scale Cloned' : 'Scale Created')
+    parentScaleId
+      ? analytics.scaleCloned(viewerId, newScale)
+      : analytics.scaleCreated(viewerId, newScale)
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScalePayload', data, subOptions)
     return data
   }

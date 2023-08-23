@@ -18,6 +18,7 @@ import {SegmentAnalytics} from './segment/SegmentAnalytics'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import ServerAuthToken from '../../database/types/ServerAuthToken'
+import TemplateScale from '../../database/types/TemplateScale'
 import getDataLoader from '../../graphql/getDataLoader'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
@@ -95,6 +96,9 @@ export type AnalyticsEvent =
   | 'Meeting Timer Stopped'
   | 'Meeting Timer Updated'
   | 'Poker Meeting Team Revoted'
+  // meeting templates
+  | 'Scale Created'
+  | 'Scale Cloned'
   // team
   | 'Team Name Changed'
   | 'Integration Added'
@@ -347,6 +351,22 @@ class Analytics {
         teamMembersPresentCount: meetingMembers.length,
         teamId
       })
+    })
+  }
+
+  scaleCreated = (userId: string, scale: TemplateScale) => {
+    this.track(userId, 'Scale Created', {
+      scaleId: scale.id,
+      scaleName: scale.name,
+      teamId: scale.teamId
+    })
+  }
+
+  scaleCloned = (userId: string, scale: TemplateScale) => {
+    this.track(userId, 'Scale Cloned', {
+      scaleId: scale.id,
+      scaleName: scale.name,
+      teamId: scale.teamId
     })
   }
 
