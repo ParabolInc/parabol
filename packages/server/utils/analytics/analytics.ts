@@ -133,6 +133,7 @@ export type AnalyticsEvent =
   | 'Archive Organization'
   | 'Archive Team'
   | 'Enterprise Over User Limit'
+  | 'Mattermost notification sent'
   | 'MSTeams notification sent'
   | 'New Org'
   | 'New Team'
@@ -489,6 +490,14 @@ class Analytics {
 
   enterpriseOverUserLimit = (userId: string, orgId: string) => {
     this.track(userId, 'Enterprise Over User Limit', {orgId})
+  }
+
+  mattermostNotificationSent = (
+    userId: string,
+    teamId: string,
+    notificationEvent: SlackNotificationEventEnum
+  ) => {
+    this.track(userId, 'Mattermost notification sent', {teamId, notificationEvent})
   }
 
   teamsNotificationSent = (
