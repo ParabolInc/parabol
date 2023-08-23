@@ -90,6 +90,7 @@ export type AnalyticsEvent =
   | 'Meeting Recurrence Started'
   | 'Meeting Recurrence Stopped'
   | 'Meeting Settings Changed'
+  | 'Poker Meeting Team Revoted'
   // team
   | 'Team Name Changed'
   | 'Integration Added'
@@ -298,6 +299,25 @@ class Analytics {
 
   reflectionAdded = (userId: string, teamId: string, meetingId: string) => {
     this.track(userId, 'Reflection Added', {teamId, meetingId})
+  }
+
+  pokerMeetingTeamRevoted = (
+    userId: string,
+    teamId: string,
+    hasIcebreaker: boolean,
+    wasFacilitator: boolean,
+    meetingNumber: number,
+    teamMembersCount: number,
+    teamMembersPresentCount: number
+  ) => {
+    this.track(userId, 'Poker Meeting Team Revoted', {
+      hasIcebreaker,
+      wasFacilitator,
+      meetingNumber,
+      teamMembersCount,
+      teamMembersPresentCount,
+      teamId
+    })
   }
 
   // team
