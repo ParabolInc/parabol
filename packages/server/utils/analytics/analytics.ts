@@ -16,6 +16,7 @@ import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
+import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import getDataLoader from '../../graphql/getDataLoader'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
@@ -132,6 +133,7 @@ export type AnalyticsEvent =
   | 'Archive Organization'
   | 'Archive Team'
   | 'Enterprise Over User Limit'
+  | 'MSTeams notification sent'
   | 'New Org'
   | 'New Team'
   | 'Poll added'
@@ -487,6 +489,14 @@ class Analytics {
 
   enterpriseOverUserLimit = (userId: string, orgId: string) => {
     this.track(userId, 'Enterprise Over User Limit', {orgId})
+  }
+
+  teamsNotificationSent = (
+    userId: string,
+    teamId: string,
+    notificationEvent: SlackNotificationEventEnum
+  ) => {
+    this.track(userId, 'MSTeams notification sent', {teamId, notificationEvent})
   }
 
   newOrg = (userId: string, orgId: string, teamId: string, fromSignup: boolean) => {

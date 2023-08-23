@@ -9,13 +9,13 @@ import {IntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegr
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
-import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {analytics} from '../../../../utils/analytics/analytics'
 
 const notifyMSTeams = async (
   event: EventEnum,
@@ -32,14 +32,7 @@ const notifyMSTeams = async (
       error: result
     }
   }
-  segmentIo.track({
-    userId,
-    event: 'MSTeams notification sent',
-    properties: {
-      teamId,
-      notificationEvent: event
-    }
-  })
+  analytics.teamsNotificationSent(userId, teamId, event)
 
   return 'success'
 }
@@ -370,6 +363,7 @@ async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, 
     team
   }
 }
+
 export const MSTeamsNotifier: Notifier = {
   async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
