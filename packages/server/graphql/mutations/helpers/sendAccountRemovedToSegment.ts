@@ -1,5 +1,5 @@
 import ServerAuthToken from '../../../database/types/ServerAuthToken'
-import segmentIo from '../../../utils/segmentIo'
+import {analytics} from '../../../utils/analytics/analytics'
 
 const sendAccountRemovedToSegment = async (
   userIdToDelete: string,
@@ -26,14 +26,7 @@ const sendAccountRemovedToSegment = async (
   })
   parabolPayload.data.user.email = email
   parabolPayload.data.user.isRemoved = true
-  segmentIo.track({
-    userId: userIdToDelete,
-    event: 'Account Removed',
-    properties: {
-      reason: validReason,
-      parabolPayload: parabolPayload.data
-    }
-  })
+  analytics.accountRemoved(userIdToDelete, validReason, parabolPayload.data)
 }
 
 export default sendAccountRemovedToSegment

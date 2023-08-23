@@ -111,6 +111,7 @@ export type AnalyticsEvent =
   | 'Task Estimate Set'
   // user
   | 'Account Created'
+  | 'Account Removed'
   | 'Account Paused'
   | 'Account Unpaused'
   | 'Account Name Changed'
@@ -422,6 +423,10 @@ class Analytics {
       category: 'All',
       label: isPatient0 ? 'isPatient0' : 'isNotPatient0'
     })
+  }
+
+  accountRemoved = (userId: string, reason: string, parabolPayload: object) => {
+    this.track(userId, 'Account Removed', {reason, parabolPayload})
   }
 
   accountPaused = (userId: string) => this.track(userId, 'Account Paused')
