@@ -9,7 +9,6 @@ import generateUID from '../../../generateUID'
 import insertUser from '../../../postgres/queries/insertUser'
 import IUser from '../../../postgres/types/IUser'
 import {analytics} from '../../../utils/analytics/analytics'
-import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
@@ -81,15 +80,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
       addSeedTasks(userId, teamId),
       r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
     ])
-    segmentIo.track({
-      userId,
-      event: 'New Org',
-      properties: {
-        teamId,
-        orgId,
-        fromSignup: true
-      }
-    })
+    analytics.newOrg(userId, orgId, teamId, true)
   } else {
     await r
       .table('SuggestedAction')
