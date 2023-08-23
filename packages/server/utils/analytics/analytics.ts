@@ -90,6 +90,9 @@ export type AnalyticsEvent =
   | 'Meeting Recurrence Started'
   | 'Meeting Recurrence Stopped'
   | 'Meeting Settings Changed'
+  | 'Meeting Timer Started'
+  | 'Meeting Timer Stopped'
+  | 'Meeting Timer Updated'
   | 'Poker Meeting Team Revoted'
   // team
   | 'Team Name Changed'
@@ -301,6 +304,30 @@ class Analytics {
 
   reflectionAdded = (userId: string, teamId: string, meetingId: string) => {
     this.track(userId, 'Reflection Added', {teamId, meetingId})
+  }
+
+  meetingTimerEvent = (
+    userId: string,
+    event: 'Meeting Timer Started' | 'Meeting Timer Stopped' | 'Meeting Timer Updated',
+    meetingId: string,
+    phaseType: string,
+    viewCount: number,
+    isAsync: boolean | null,
+    newScheduledEndTime: Date | null,
+    timeRemaining: number | null,
+    previousScheduledEndTime?: Date | null,
+    stageStartAt?: Date
+  ) => {
+    this.track(userId, event, {
+      isAsync,
+      meetingId,
+      newScheduledEndTime,
+      phaseType,
+      previousScheduledEndTime,
+      stageStartAt,
+      timeRemaining,
+      viewCount
+    })
   }
 
   pokerMeetingTeamRevoted = (

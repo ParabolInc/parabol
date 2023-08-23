@@ -5,13 +5,13 @@ import getRethink from '../../database/rethinkDriver'
 import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJobMetingStageTimeLimit'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import SetStageTimerPayload from '../types/SetStageTimerPayload'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
+import {analytics} from '../../utils/analytics/analytics'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
@@ -117,20 +117,18 @@ export default {
     const eventName =
       scheduledEndTime && newScheduledEndTime ? `Meeting Timer Updated` : stoppedOrStarted
     publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
-    segmentIo.track({
-      userId: viewerId,
-      event: eventName,
-      properties: {
-        isAsync,
-        meetingId,
-        newScheduledEndTime,
-        phaseType,
-        previousScheduledEndTime: scheduledEndTime,
-        stageStartAt: startAt,
-        timeRemaining,
-        viewCount
-      }
-    })
+    analytics.meetingTimerEvent(
+      viewerId,
+      eventName,
+      meetingId,
+      phaseType,
+      viewCount,
+      isAsync,
+      newScheduledEndTime,
+      timeRemaining,
+      scheduledEndTime,
+      startAt
+    )
     return data
   }
 }
