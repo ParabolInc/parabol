@@ -170,7 +170,8 @@ export const enum Gutters {
 export const enum InvitationTokenError {
   NOT_FOUND = 'notFound',
   EXPIRED = 'expired',
-  ALREADY_ACCEPTED = 'accepted'
+  ALREADY_ACCEPTED = 'accepted',
+  NOT_SIGNED_IN = 'notSignedIn'
 }
 export const enum InvoiceItemType {
   ADD_USER = 'addUser',
