@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.117.0 2023-Aug-23
+
+### Added
+
+- **gcal**: invite members from modal (#8662)
+- **tiptap**: Loom embed extension (#8612)
+- **gcal**: unauthed schedule button ux (#8688)
+
+### Changed
+
+- Normalize link styles (#8671)
+- avatar update (#8536)
+- Allow non-facilitator to advance to reflect phase (#8693)
+- Show disabled Team Health option to Starter tier (#8686)
+
+### Fixed
+
+- exit early if no segment write key (#8682)
+- Uncompressing emojies twice causes a failure (#8687)
+- **tiptap**: Show `<hr/>` nodes (#8697)
+- **standups**: do not open links twice (#8658)
+- **ai-summary**: update the prompt to emphasize brevity (#8703)
+
+
 ## 6.116.0 2023-Aug-16
 
 ### Added
@@ -30,7 +54,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - fix a couple vulns (#8648)
 - **suggest-groups**: increase number of suggested groups (#8625)
 - add version and sha to predeploy logs (#8646)
-- chore: use client dir for index.html
+- use client dir for index.html
 
 ### Fixed
 
@@ -44,12 +68,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **analytics**: preserve GA4 client_id after sign-up/sign-in (#8650)
 - Show Team Insights emojis correctly (#8667)
 - terser in prod build (#8665)
-- fix: Uncompressing emojies twice causes a failure (#8687)
-- fix: re-add getProjectRoot in preDeploy
-- fix: re-add minification to client build
-- fix: check favicon in build
-- fix: Remove segment when the env var is missing (#8674)
-- fix: use-credentials for manifest.json in staging
+- Uncompressing emojies twice causes a failure (#8687)
+- re-add getProjectRoot in preDeploy
+- re-add minification to client build
+- check favicon in build
+- Remove segment when the env var is missing (#8674)
+- use-credentials for manifest.json in staging
 
 ## 6.115.0 2023-Aug-01
 
