@@ -13,10 +13,10 @@ import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocation
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
-import segment from '../segmentIo'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
+import getDataLoader from '../../graphql/getDataLoader'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
@@ -124,7 +124,7 @@ class Analytics {
 
   constructor() {
     this.amplitudeAnalytics = new AmplitudeAnalytics()
-    this.segmentAnalytics = new SegmentAnalytics(segment)
+    this.segmentAnalytics = new SegmentAnalytics()
   }
 
   // meeting
@@ -449,10 +449,9 @@ class Analytics {
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
-    Promise.all([
-      this.amplitudeAnalytics.track(userId, event, properties),
-      this.segmentAnalytics.track(userId, event, properties)
-    ])
+    const dataloader = getDataLoader().get('users')
+    this.amplitudeAnalytics.track(userId, event, dataloader, properties)
+    this.segmentAnalytics.track(userId, event, dataloader, properties)
   }
 }
 
