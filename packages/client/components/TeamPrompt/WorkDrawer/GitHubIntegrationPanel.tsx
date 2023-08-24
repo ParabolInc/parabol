@@ -52,6 +52,7 @@ const GitHubIntegrationPanel = (props: Props) => {
                           number
                           repository {
                             nameWithOwner
+                            url
                           }
                           url
                           state
@@ -77,6 +78,7 @@ const GitHubIntegrationPanel = (props: Props) => {
                           number
                           repository {
                             nameWithOwner
+                            url
                           }
                           url
                           state
@@ -84,6 +86,7 @@ const GitHubIntegrationPanel = (props: Props) => {
                           lastEvent: timelineItems(last: 1) {
                             updatedAt
                           }
+                          isDraft
                         }
                       }
                     }
@@ -155,8 +158,10 @@ const GitHubIntegrationPanel = (props: Props) => {
                     status={object.state}
                     number={object.number}
                     repoName={object.repository.nameWithOwner}
+                    repoUrl={object.repository.url}
                     url={object.url}
                     updatedAt={object.lastEvent.updatedAt}
+                    prIsDraft={object?.__typename === '_xGitHubPullRequest' && object.isDraft}
                   />
                 )
               } else {

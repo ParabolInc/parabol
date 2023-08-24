@@ -22,26 +22,40 @@ interface Props {
   status: string
   number: number
   repoName: string
+  repoUrl: string
   url: string
   updatedAt: string
+  prIsDraft: boolean
 }
 
 const GitHubObjectCard = (props: Props) => {
-  const {title, status, number, repoName, type, updatedAt} = props
-  const statusImg = type === 'issue' ? ISSUE_STATUS_MAP[status] : PR_STATUS_MAP[status]
+  const {title, status, number, repoName, repoUrl, url, type, updatedAt, prIsDraft} = props
+  const modifiedStatus = prIsDraft && status === 'OPEN' ? 'DRAFT' : status
+  const statusImg =
+    type === 'issue' ? ISSUE_STATUS_MAP[modifiedStatus] : PR_STATUS_MAP[modifiedStatus]
   return (
     <div className='rounded border border-solid border-slate-300 p-4'>
       <div className='flex gap-2 text-xs text-slate-600'>
         {statusImg && <img src={statusImg} />}
-        <div className='font-medium'>#{number}</div>
+        <a href={url} target='_blank' className='font-medium hover:underline' rel='noreferrer'>
+          #{number}
+        </a>
         <div>Updated {relativeDate(updatedAt)}</div>
       </div>
-      <div className='my-2 text-sm'>{title}</div>
+      <div className='my-2 text-sm'>
+        <a href={url} target='_blank' className='hover:underline' rel='noreferrer'>
+          {title}
+        </a>
+      </div>
       <div className='flex items-center gap-2'>
         <div className='h-4 w-4'>
           <img src={gitHubSVG} />
         </div>
-        <div className='text-xs text-slate-600'>{repoName}</div>
+        <div className='text-xs text-slate-600'>
+          <a href={repoUrl} target='_blank' className='hover:underline' rel='noreferrer'>
+            {repoName}
+          </a>
+        </div>
       </div>
     </div>
   )
