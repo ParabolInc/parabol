@@ -55,6 +55,9 @@ export const getRedisOptions = () => {
   const password = REDIS_PASSWORD || undefined
   const tls = getRedisTLS()
   const mode = getMode(tls, password)
-  console.log(`Redis mode: ${mode}`)
+  // Keep logs quiet if using default
+  if (mode !== 'Unsecure') {
+    console.log(`Redis mode: ${mode}`)
+  }
   return {tls, password}
 }
