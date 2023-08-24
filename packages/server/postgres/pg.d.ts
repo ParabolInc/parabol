@@ -102,7 +102,7 @@ export interface IntegrationProvider {
   id: Generated<number>
   createdAt: Generated<Timestamp>
   updatedAt: Generated<Timestamp>
-  service: 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams'
+  service: 'azureDevOps' | 'gcal' | 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams'
   authStrategy: 'oauth1' | 'oauth2' | 'pat' | 'webhook'
   scope: 'global' | 'org' | 'team'
   scopeGlobal: Generated<boolean>
@@ -122,7 +122,7 @@ export interface IntegrationSearchQuery {
   userId: string
   teamId: string
   providerId: number | null
-  service: 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams'
+  service: 'azureDevOps' | 'gcal' | 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams'
   query: Generated<Json>
   lastUsedAt: Generated<Timestamp>
   createdAt: Generated<Timestamp>
@@ -232,6 +232,21 @@ export interface PollOption {
   title: string | null
 }
 
+export interface RetroReflectionGroup {
+  id: string
+  createdAt: Generated<Timestamp>
+  updatedAt: Generated<Timestamp>
+  isActive: Generated<boolean>
+  meetingId: string
+  promptId: string
+  sortOrder: Generated<number>
+  voterIds: Generated<string[]>
+  smartTitle: string | null
+  title: string | null
+  summary: string | null
+  discussionPromptQuestion: string | null
+}
+
 export interface TaskEstimate {
   id: Generated<number>
   createdAt: Generated<Timestamp>
@@ -263,6 +278,16 @@ export interface Team {
   updatedAt: Generated<Timestamp>
   lockMessageHTML: string | null
   qualAIMeetingsCount: Generated<number>
+  insightsUpdatedAt: Timestamp | null
+  mostUsedEmojis: Json | null
+  topRetroTemplates: Json | null
+  meetingEngagement: Json | null
+}
+
+export interface TeamMeetingTemplate {
+  teamId: string
+  templateId: string
+  lastUsedAt: Generated<Timestamp>
 }
 
 export interface TeamMemberIntegrationAuth {
@@ -271,7 +296,7 @@ export interface TeamMemberIntegrationAuth {
   teamId: string
   userId: string
   providerId: number
-  service: 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams'
+  service: 'azureDevOps' | 'gcal' | 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams'
   isActive: Generated<boolean>
   accessToken: string | null
   refreshToken: string | null
@@ -350,8 +375,10 @@ export interface DB {
   OrganizationUserAudit: OrganizationUserAudit
   Poll: Poll
   PollOption: PollOption
+  RetroReflectionGroup: RetroReflectionGroup
   TaskEstimate: TaskEstimate
   Team: Team
+  TeamMeetingTemplate: TeamMeetingTemplate
   TeamMemberIntegrationAuth: TeamMemberIntegrationAuth
   TeamPromptResponse: TeamPromptResponse
   TemplateRef: TemplateRef
