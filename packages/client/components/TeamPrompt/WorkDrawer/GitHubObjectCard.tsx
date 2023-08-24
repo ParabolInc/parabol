@@ -5,6 +5,8 @@ import gitHubMerged from '../../../styles/theme/images/graphics/github-merged.sv
 import githubIssueClosed from '../../../styles/theme/images/graphics/github-issue-closed.svg'
 import githubIssueOpen from '../../../styles/theme/images/graphics/github-issue-open.svg'
 import githubPROpen from '../../../styles/theme/images/graphics/github-pr-open.svg'
+import githubPRDraft from '../../../styles/theme/images/graphics/github-pr-draft.svg'
+import githubPRClosed from '../../../styles/theme/images/graphics/github-pr-closed.svg'
 import relativeDate from '../../../utils/date/relativeDate'
 import {Link} from '@mui/icons-material'
 import useTooltip from '../../../hooks/useTooltip'
@@ -17,8 +19,8 @@ const ISSUE_STATUS_MAP: Record<string, any> = {
 
 const PR_STATUS_MAP: Record<string, any> = {
   OPEN: githubPROpen,
-  DRAFT: null,
-  CLOSED: null,
+  DRAFT: githubPRDraft,
+  CLOSED: githubPRClosed,
   MERGED: gitHubMerged
 }
 
