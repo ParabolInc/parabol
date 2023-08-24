@@ -57,7 +57,6 @@ const ReflectTemplate: ReflectTemplateResolvers = {
       (tmt) => tmt.templateId === id
     )
 
-    //
     const lastUsedAtOnTeam = Math.max(
       ...orgTeamMeetingTemplatesForTemplateId
         .filter((row) => authToken.tms.includes(row.teamId))
