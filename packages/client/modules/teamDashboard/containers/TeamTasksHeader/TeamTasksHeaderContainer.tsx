@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import filterTeamMember from '~/utils/relay/filterTeamMember'
 import {TeamTasksHeaderContainer_team$key} from '~/__generated__/TeamTasksHeaderContainer_team.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
+import TeamTasksHeader from '../../components/TeamDashHeader/TeamDashHeader'
 
 interface Props {
   team: TeamTasksHeaderContainer_team$key
@@ -16,7 +16,7 @@ const TeamTasksHeaderContainer = (props: Props) => {
     graphql`
       fragment TeamTasksHeaderContainer_team on Team {
         id
-        ...TeamTasksHeader_team
+        ...TeamDashHeader_team
       }
     `,
     teamRef

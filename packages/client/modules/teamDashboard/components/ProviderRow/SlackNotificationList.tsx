@@ -47,7 +47,8 @@ const Heading = styled(LabelHeading)({
 const TEAM_EVENTS = [
   'meetingStart',
   'meetingEnd',
-  'MEETING_STAGE_TIME_LIMIT_START'
+  'MEETING_STAGE_TIME_LIMIT_START',
+  'STANDUP_RESPONSE_SUBMITTED'
 ] as SlackNotificationEventEnum[]
 const USER_EVENTS = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEventEnum[]
 

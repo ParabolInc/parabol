@@ -101,6 +101,15 @@ interface Props {
 
 const NewTeamForm = (props: Props) => {
   const {isInitiallyNewOrg, organizationsRef} = props
+
+  graphql`
+    fragment NewTeamForm_teams on Team @relay(plural: true) {
+      teamMembers {
+        email
+        isSelf
+      }
+    }
+  `
   const organizations = useFragment(
     graphql`
       fragment NewTeamForm_organizations on Organization @relay(plural: true) {
@@ -110,10 +119,7 @@ const NewTeamForm = (props: Props) => {
         name
         teams {
           name
-          teamMembers {
-            email
-            isSelf
-          }
+          ...NewTeamForm_teams @relay(mask: false)
         }
       }
     `,
@@ -250,7 +256,7 @@ const NewTeamForm = (props: Props) => {
     } else {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
       const currentInvitees = parsedInvitees
-        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+        ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
         : []
       const remainingInvitees = currentInvitees.filter(
         (email) => !uniqueEmailsFromSelectedOrg.includes(email)

@@ -170,9 +170,13 @@ The types of flags that give an individual organization super powers
 type OrganizationFeatureFlags {
   SAMLUI: Boolean!
   noAISummary: Boolean!
+  AIGeneratedDiscussionPrompt: Boolean!
+  standupAISummary: Boolean!
   promptToJoinOrg: Boolean!
   suggestGroups: Boolean!
   zoomTranscription: Boolean!
   shareSummary: Boolean!
   teamsLimit: Boolean!
+  teamInsights: Boolean!
+  oneOnOne: Boolean!
 }

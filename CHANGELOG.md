@@ -5,6 +5,183 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.117.0 2023-Aug-23
+
+### Added
+
+- **gcal**: invite members from modal (#8662)
+- **tiptap**: Loom embed extension (#8612)
+- **gcal**: unauthed schedule button ux (#8688)
+
+### Changed
+
+- Normalize link styles (#8671)
+- avatar update (#8536)
+- Allow non-facilitator to advance to reflect phase (#8693)
+- Show disabled Team Health option to Starter tier (#8686)
+
+### Fixed
+
+- exit early if no segment write key (#8682)
+- Uncompressing emojies twice causes a failure (#8687)
+- **tiptap**: Show `<hr/>` nodes (#8697)
+- **standups**: do not open links twice (#8658)
+- **ai-summary**: update the prompt to emphasize brevity (#8703)
+
+
+## 6.116.0 2023-Aug-16
+
+### Added
+
+- **standups**: Standup AI Summaries (#8569)
+- **standups**: Notify slack when user submits standup response (#8607)
+- **standups**: Post standup responses in 'meeting ended' message thread (#8610)
+
+### Changed
+
+- Cleanup old starter tier organizations (#8617)
+- **one-on-one**: add oneOnOne org feature flag (#8571)
+- **one-on-one**: add one-on-one meeting template (#8573)
+- CI=true in tests (#8638)
+- **gcal**: implement oauth (#8594)
+- Build once, run everywhere (#8557)
+- **deps**: bump word-wrap from 1.2.3 to 1.2.4 (#8543)
+- **deps**: bump import-in-the-middle from 1.4.1 to 1.4.2 (#8632)
+- **deps**: bump protobufjs from 7.2.3 to 7.2.4 (#8494)
+- **deps**: bump semver from 5.7.1 to 5.7.2 (#8645)
+- **deps**: bump tough-cookie from 4.1.2 to 4.1.3 (#8495)
+- active plan visual cue (#8637)
+- fix a couple vulns (#8648)
+- **suggest-groups**: increase number of suggested groups (#8625)
+- add version and sha to predeploy logs (#8646)
+- use client dir for index.html
+
+### Fixed
+
+- Promote new facilitator when facilitator leaves the team (#8611)
+- Remove check for whether template was updated (#8626)
+- **al**: Number of activities exceeds number requested (#8641)
+- prevent scroll jump when emoji is added (#8630)
+- fix share topic modal don't see slack integration (#8652)
+- include TeamPromptResponseEmojis_response in UpsertTeamPromptResponseMutation_meeting to prevent undefined emoji list when adding initial standup response (#8655)
+- build in dev mode from clean clone (#8661)
+- **analytics**: preserve GA4 client_id after sign-up/sign-in (#8650)
+- Show Team Insights emojis correctly (#8667)
+- terser in prod build (#8665)
+- Uncompressing emojies twice causes a failure (#8687)
+- re-add getProjectRoot in preDeploy
+- re-add minification to client build
+- check favicon in build
+- Remove segment when the env var is missing (#8674)
+- use-credentials for manifest.json in staging
+
+## 6.115.0 2023-Aug-01
+
+### Added
+
+- Activity Library: roll out Activity Library to all new users (#8574)
+- Add emoji insights (#8563)
+- AI Summary: Replace GPT-3 with GPT-3.5 for aiSummary (#8227)
+- Humanize count down timer (#8596)
+
+### Changed
+
+- Update enterprise advantages (#8577)
+- Remove and ignore pg.d.ts (#8587)
+
+### Fixed
+
+- Fix open pgtyped connections after running yarn dev (#8583)
+- Do not trust invites sent to emails from the untrusted domains (#8584)
+- unable to ungroup some reflection groups (#8623)
+- increase size of the runner used for the build action (#8619)
+- make AIGeneratedDiscussionPrompt org level feature flag (#8601)
+
+## 6.114.1 2023-Jul-31
+
+### Fixed
+
+- initialize reduce function in getLastUsedDateForTeams
+
+## 6.114.0 2023-Jul-26
+
+### Added
+
+- teams view (#8510)
+- Add team filter in timeline history page (#8521)
+- **discussionPromptQuestion**: Generate discussion prompt question for discussions (#8462)
+- show stripe invoices (#8534)
+- Add meetings to the team dashboard (#8551)
+- add gcal integration user flag (#8180)
+- add gcal integration UI (#8181)
+- Add team insights feature flag and types (#8556)
+- implement logic for new ready button (#8532)
+
+### Changed
+
+- **share-summary**: add utm params and reflectionGroupId param (#8522)
+- bump node to 18.17.0 (#8565)
+
+### Fixed
+
+- **standups**: Error when ending standup (#8540)
+- Correctly show error when email invite fails (#8541)
+- stripe console err (#8545)
+- **al**: Speedup subcategory resolver (#8564)
+
+## 6.113.0 2023-Jul-19
+
+### Added
+
+- add Zoom transcription bot in discuss phase (#8517)
+- retry invoice after failed payment (#8478)
+- show loading feedback while upgrading (#8514)
+- Add timer sound effect (#8508)
+- **share-summary**: Share summary mutation (#8412)
+- Add eventType filter in timeline view (#8397)
+- Add Team Health tips (#8506)
+
+### Changed
+
+- add RetroReflectionGroup table to PG (Part 1 of 3) (#8504)
+- **share-summary**: share summary dialog UI (#8463)
+- add radix Select component (#8460)
+- Replace TeamHealth answer emojis with their text representation (#8449)
+- remove old autogroup mutation (#8505)
+
+### Fixed
+
+- can create team within existing org (#8512)
+- avoid pronoun assumptions in ai summary (#8509)
+
+## 6.112.0 2023-Jul-12
+
+### Changed
+
+- drop unused RethinkDB tables (#8501)
+- bump pg to v12.15 (#8487)
+
+### Fixed
+
+- show correct drawer info after upgrade (#8485)
+- use unique server name for fresh namespace (#8416)
+- replace xml-lint due to mem leak (#8499)
+- Fix create Parabol task in Sprint Poker (#8496)
+- Limit number of teams that can be moved in one moveTeamToOrg call (#8486)
+- can create tasks (#8472)
+
+### Added
+
+- add invite all checkbox (#8482)
+- add metrics to invite on team creation (#8479)
+- invite users on team creation (#8476)
+- **suggest-groups**: add suggest groups metrics (#8459)
+- **suggest-groups**: add loading feedback while waiting for OpenAI response (#8440)
+- chronos in monorepo (#8429)
+- refactor postDeploy to preDeploy (#8446)
+- add radix Dialog component (#8450)
+- upgrade graphiql (#8461)
+
 ## 6.111.0 2023-Jul-05
 
 ### Added

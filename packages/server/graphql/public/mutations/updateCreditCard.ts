@@ -73,12 +73,31 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
         tier: 'team'
       },
       orgId
-    ),
-    removeTeamsLimitObjects(orgId, dataLoader)
+    )
   ])
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
-
   organization.creditCard = creditCard
+
+  // If there are unpaid open invoices, try to process them
+  const openInvoices = (await manager.listSubscriptionOpenInvoices(stripeSubscriptionId)).data
+
+  let unpaidInvoice = false
+  if (openInvoices.length) {
+    for (const invoice of openInvoices) {
+      const invoiceResult = await manager.payInvoice(invoice.id)
+      // Unlock teams only if all invoices are paid
+      if (invoiceResult.status !== 'paid') {
+        unpaidInvoice = true
+      }
+    }
+  }
+  if (unpaidInvoice) {
+    return standardError(new Error('Could not pay failed invoices'), {userId: viewerId})
+  }
+  await Promise.all([
+    removeTeamsLimitObjects(orgId, dataLoader),
+    setUserTierForOrgId(orgId),
+    setTierForOrgUsers(orgId)
+  ])
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)

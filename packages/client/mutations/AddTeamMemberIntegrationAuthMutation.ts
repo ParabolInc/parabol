@@ -31,6 +31,7 @@ const mutation = graphql`
           ...JiraServerProviderRowTeamMember
           ...AzureDevOpsProviderRowTeamMember
           ...MSTeamsProviderRowTeamMember
+          ...GcalProviderRowTeamMember
         }
       }
     }

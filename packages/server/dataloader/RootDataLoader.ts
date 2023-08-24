@@ -4,6 +4,7 @@ import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
+import * as gcalLoaders from './gcalLoaders'
 import * as githubLoaders from './githubLoaders'
 import * as gitlabLoaders from './gitlabLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
@@ -34,6 +35,7 @@ const loaderMakers = {
   ...customLoaderMakers,
   ...githubLoaders,
   ...gitlabLoaders,
+  ...gcalLoaders,
   ...integrationAuthLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders
@@ -64,7 +66,8 @@ type CustomLoaderMakers = typeof customLoaderMakers &
   typeof primaryKeyLoaderMakers &
   typeof foreignKeyLoaderMakers &
   typeof azureDevOpsLoaders &
-  typeof gitlabLoaders
+  typeof gitlabLoaders &
+  typeof gcalLoaders
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>

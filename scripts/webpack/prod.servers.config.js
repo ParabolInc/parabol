@@ -3,12 +3,11 @@ const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-const S3Plugin = require('webpack-s3-plugin')
-const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
-const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const cp = require('child_process')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -17,19 +16,11 @@ const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
 
-const publicPath = `${getWebpackPublicPath()}server/dist/`
+const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 
-const getNormalizedWebpackPublicPath = () => {
-  let normalizedPath = publicPath
-  if (normalizedPath.startsWith('//')) {
-    // protocol-relative url? normalize it:
-    normalizedPath = `https:${publicPath}`
-  }
-  return normalizedPath
-}
-
-module.exports = ({isDeploy, noDeps}) => ({
+module.exports = ({noDeps}) => ({
   mode: 'production',
+  devtool: 'source-map',
   node: {
     __dirname: false
   },
@@ -85,9 +76,13 @@ module.exports = ({isDeploy, noDeps}) => ({
     ]
   },
   plugins: [
+    // Pro tip: comment this out along with stable entry files for quick debugging
+    new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       __PRODUCTION__: true,
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+      __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
       'process.platform': JSON.stringify(process.platform),
       'process.arch': JSON.stringify(process.arch),
@@ -97,24 +92,6 @@ module.exports = ({isDeploy, noDeps}) => ({
     new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
     // native bindings might be faster, but abandonware & not currently used
     new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
-    new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[fullhash].js.map',
-      append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
-    }),
-    isDeploy &&
-      // #8101 Eventually this will be replaced with pushToCDN to decouple the push from the build
-      new S3Plugin({
-        s3Options: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION
-        },
-        s3UploadOptions: {
-          Bucket: process.env.AWS_S3_BUCKET
-        },
-        basePath: `${getS3BasePath()}server/dist/`,
-        directory: distPath
-      }),
     noDeps &&
       new CopyWebpackPlugin({
         patterns: [
@@ -133,7 +110,7 @@ module.exports = ({isDeploy, noDeps}) => ({
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         oneOf: [
           {
-            // Put templates in their own directory that will get pushed to the CDN & stored in PG
+            // Put templates in their own directory that will get pushed to the CDN. PG Migrations will reference that URL
             test: /Template.png$/,
             include: [path.resolve(PROJECT_ROOT, 'static/images/illustrations')],
             use: [
@@ -147,11 +124,24 @@ module.exports = ({isDeploy, noDeps}) => ({
             ]
           },
           {
+            // manifest.json icons just need the file name, we'll prefix them with the CDN in preDeploy
+            test: /mark-cropped-\d+.png$/,
+            include: [path.resolve(PROJECT_ROOT, 'static/images/brand')],
             use: [
               {
                 loader: 'file-loader',
                 options: {
-                  publicPath
+                  name: '[name].[ext]'
+                }
+              }
+            ]
+          },
+          {
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  publicPath: distPath
                 }
               }
             ]

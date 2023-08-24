@@ -22,6 +22,15 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       clientSecret: process.env.AZURE_DEVOPS_CLIENT_SECRET,
       // tenantId needs to be 'common' for apps shared with multiple tenants
       tenantId: 'common'
+    },
+    {
+      service: 'gcal',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      teamId: 'aGhostTeam',
+      serverBaseUrl: 'https://www.googleapis.com/calendar/v3',
+      clientId: process.env.GCAL_CLIENT_ID,
+      clientSecret: process.env.GCAL_CLIENT_SECRET
     }
   ] as const
 
@@ -35,13 +44,9 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
 
 const primeIntegrations = async () => {
   console.log('⛓️ Prime Integrationgs Started')
-  try {
-    const pg = getPg()
-    await upsertGlobalIntegrationProvidersFromEnv()
-    await pg.end()
-  } catch (e) {
-    console.log('⛓️ Prime Integrations error', e)
-  }
+  const pg = getPg()
+  await upsertGlobalIntegrationProvidersFromEnv()
+  await pg.end()
   console.log('⛓️ Prime Integrations Complete')
 }
 

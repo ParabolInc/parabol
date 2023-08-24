@@ -19,87 +19,89 @@ import {CronJob} from 'cron'
 import getGraphQLExecutor from 'parabol-server/utils/getGraphQLExecutor'
 import publishWebhookGQL from 'parabol-server/utils/publishWebhookGQL'
 
+interface PossibleJob {
+  onTick(): void
+  cronTime: string | undefined
+}
+
 const chronos = () => {
-  const {CHRONOS_PULSE_EMAIL, CHRONOS_PULSE_CHANNEL, SERVER_ID} = process.env
+  const {
+    CHRONOS_PULSE_EMAIL,
+    CHRONOS_PULSE_CHANNEL,
+    SERVER_ID,
+    CHRONOS_AUTOPAUSE,
+    CHRONOS_PULSE_DAILY,
+    CHRONOS_PULSE_WEEKLY,
+    CHRONOS_BATCH_EMAILS,
+    CHRONOS_SCHEDULE_JOBS,
+    CHRONOS_UPDATE_TOKENS,
+    CHRONOS_PROCESS_RECURRENCE
+  } = process.env
+
   if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
-  const canPulse = !!CHRONOS_PULSE_EMAIL && !!CHRONOS_PULSE_CHANNEL
 
   // listen to responses
   getGraphQLExecutor().subscribe()
 
-  new CronJob({
-    cronTime: '0 0 5 * * *' /* 5AM UTC */,
-    start: true,
-    onTick() {
-      const query = 'mutation AutoPauseUsers { autopauseUsers }'
-      publishWebhookGQL(query, {})
-    }
-  })
-
-  new CronJob({
-    cronTime: '0 0 4 * * *' /* 4AM UTC */,
-    start: canPulse,
-    onTick() {
-      const query = `query DailyPulse($after: DateTime!, $email: String!, $channelId: ID!) { dailyPulse(after: $after, email: $email, channelId: $channelId)}`
-      const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24).toJSON()
-      const variables = {
-        after: yesterday,
-        email: CHRONOS_PULSE_EMAIL,
-        channelId: CHRONOS_PULSE_CHANNEL
-      }
-      publishWebhookGQL(query, variables)
-    }
-  })
-
-  new CronJob({
-    cronTime: '0 0 4 * * 1' /* 4AM UTC on Monday */,
-    start: canPulse,
-    onTick() {
-      const query = `query WeeklyPulse($after: DateTime!, $email: String!, $channelId: ID!) { dailyPulse(after: $after, email: $email, channelId: $channelId)}`
-      const lastWeek = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toJSON()
-      const variables = {
-        after: lastWeek,
-        email: CHRONOS_PULSE_EMAIL,
-        channelId: CHRONOS_PULSE_CHANNEL
-      }
-      publishWebhookGQL(query, variables)
-    }
-  })
-
-  new CronJob({
-    cronTime: '0 0 10 * * *' /* 10AM UTC */,
-    start: true,
-    onTick() {
-      const query = 'mutation SendBatchNotificationEmails { sendBatchNotificationEmails }'
-      publishWebhookGQL(query, {})
-    }
-  })
-
-  new CronJob({
-    cronTime:
-      '0 */10 * * * *' /* every 10th minute, set up jobs scheduled within the next 10:05mins */,
-    start: true,
-    onTick() {
-      const query = 'mutation RunScheduledJobs { runScheduledJobs(seconds: 605) }'
-      publishWebhookGQL(query, {})
-    }
-  })
-
-  new CronJob({
-    cronTime: '0 0 0 1,15 * *' /* every 1st and 15th day of the month */,
-    start: true,
-    onTick() {
-      const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
-      const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
-      publishWebhookGQL(query, variables)
-    }
-  })
-
-  new CronJob({
-    cronTime: '0 */5 * * * *' /* every 5 minutes */,
-    start: true,
-    onTick() {
-      const query = `
+  const jobs: Record<string, PossibleJob> = {
+    autoPause: {
+      onTick: () => {
+        const query = 'mutation AutoPauseUsers { autopauseUsers }'
+        publishWebhookGQL(query, {})
+      },
+      cronTime: CHRONOS_AUTOPAUSE
+    },
+    dailyPulse: {
+      onTick: () => {
+        const query = `query DailyPulse($after: DateTime!, $email: String!, $channelId: ID!) { dailyPulse(after: $after, email: $email, channelId: $channelId)}`
+        const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24).toJSON()
+        const variables = {
+          after: yesterday,
+          email: CHRONOS_PULSE_EMAIL,
+          channelId: CHRONOS_PULSE_CHANNEL
+        }
+        publishWebhookGQL(query, variables)
+      },
+      cronTime: CHRONOS_PULSE_DAILY
+    },
+    weeklyPulse: {
+      onTick: () => {
+        const query = `query WeeklyPulse($after: DateTime!, $email: String!, $channelId: ID!) { dailyPulse(after: $after, email: $email, channelId: $channelId)}`
+        const lastWeek = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toJSON()
+        const variables = {
+          after: lastWeek,
+          email: CHRONOS_PULSE_EMAIL,
+          channelId: CHRONOS_PULSE_CHANNEL
+        }
+        publishWebhookGQL(query, variables)
+      },
+      cronTime: CHRONOS_PULSE_WEEKLY
+    },
+    batchEmails: {
+      onTick: () => {
+        const query = 'mutation SendBatchNotificationEmails { sendBatchNotificationEmails }'
+        publishWebhookGQL(query, {})
+      },
+      cronTime: CHRONOS_BATCH_EMAILS
+    },
+    scheduleJobs: {
+      onTick: () => {
+        const query = 'mutation RunScheduledJobs { runScheduledJobs(seconds: 605) }'
+        publishWebhookGQL(query, {})
+      },
+      cronTime: CHRONOS_SCHEDULE_JOBS
+    },
+    updateTokens: {
+      onTick: () => {
+        const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
+        const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
+        publishWebhookGQL(query, variables)
+      },
+      cronTime: CHRONOS_UPDATE_TOKENS
+    },
+    processRecurrence: {
+      onTick: () => {
+        const query = `
         mutation ProcessRecurrence{
           processRecurrence{
             ... on ProcessRecurrenceSuccess {
@@ -109,7 +111,22 @@ const chronos = () => {
           }
         }
       `
-      publishWebhookGQL(query, {})
+        publishWebhookGQL(query, {})
+      },
+      cronTime: CHRONOS_PROCESS_RECURRENCE
+    }
+  }
+  Object.entries(jobs).forEach(([name, {onTick, cronTime}]) => {
+    try {
+      new CronJob({
+        start: true,
+        // assume non-null & catch on fail
+        cronTime: cronTime!,
+        onTick
+      })
+      console.log(`🌱 Chronos Job ${name}: STARTED`)
+    } catch {
+      console.log(`🌱 Chronos Job ${name}: SKIPPED`)
     }
   })
 

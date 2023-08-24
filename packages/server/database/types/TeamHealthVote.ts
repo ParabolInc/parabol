@@ -1,14 +1,15 @@
 interface Input {
   userId: string
-  label: string
+  /// index in the labels array of the stage
+  vote: number
 }
 
 export default class TeamHealthVote {
   userId: string
-  label: string
+  vote: number
   constructor(input: Input) {
-    const {userId, label} = input
+    const {userId, vote} = input
     this.userId = userId
-    this.label = label
+    this.vote = vote
   }
 }

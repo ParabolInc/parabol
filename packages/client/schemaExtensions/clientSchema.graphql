@@ -44,6 +44,7 @@ extend type RetrospectiveMeeting {
 extend type TeamPromptMeeting {
   localStageId: String
   isRightDrawerOpen: Boolean!
+  showWorkSidebar: Boolean!
 }
 
 extend type Team {
@@ -125,4 +126,5 @@ extend type Discussion {
 
 extend type Organization {
   showDrawer: Boolean!
+  showConfetti: Boolean!
 }

@@ -54,7 +54,7 @@ const FloatingSealIcon = styled('div')({
   width: 36,
   position: 'absolute',
   svg: {
-    fontSize: 36
+    fontSize: 20
   },
   top: 100,
   userSelect: 'none'

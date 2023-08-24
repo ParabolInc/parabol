@@ -3,7 +3,6 @@ import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
 import {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -43,17 +42,6 @@ const InfoRowRight = styled('div')({
   textAlign: 'right'
 })
 
-const LinkStyles = styled('div')({
-  color: PALETTE.SLATE_700,
-  alignItems: 'flex-start',
-  display: 'flex',
-  justifyContent: 'space-between',
-  textDecoration: 'none',
-  width: '100%'
-})
-
-const RowLink = LinkStyles.withComponent(Link)
-
 const StyledDate = styled('span')<{styledToPay?: boolean; styledPaid?: boolean}>(
   ({styledToPay, styledPaid}) => ({
     fontSize: 13,
@@ -70,6 +58,7 @@ const PayURL = styled('a')({
 interface Props {
   invoice: InvoiceRow_invoice$key
 }
+
 const InvoiceRow = (props: Props) => {
   const {invoice: invoiceRef} = props
   const invoice = useFragment(
@@ -90,9 +79,15 @@ const InvoiceRow = (props: Props) => {
   )
   const {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status} = invoice
   const isEstimate = status === 'UPCOMING'
+
   return (
     <Row>
-      <RowLink rel='noopener noreferrer' target='_blank' to={`/invoice/${invoiceId}`}>
+      <a
+        href={payUrl || `/invoice/${invoiceId}`}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='flex w-full flex-row items-center justify-between text-slate-700 no-underline'
+      >
         <FileIcon isEstimate={isEstimate} />
         <InvoiceInfo>
           <InfoRow>
@@ -132,7 +127,7 @@ const InvoiceRow = (props: Props) => {
             )}
           </InfoRow>
         </InvoiceInfo>
-      </RowLink>
+      </a>
     </Row>
   )
 }

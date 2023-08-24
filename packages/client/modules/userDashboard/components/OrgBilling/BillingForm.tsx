@@ -9,7 +9,6 @@ import {
 } from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
-import Confetti from '../../../../components/Confetti'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
@@ -17,7 +16,7 @@ import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegm
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
-import {commitLocalUpdate} from 'relay-runtime'
+import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -40,13 +39,6 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
     background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
   }
 }))
-
-const ConfettiWrapper = styled('div')({
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)'
-})
 
 const ErrorMsg = styled(StyledError)({
   paddingTop: 8,
@@ -76,7 +68,6 @@ const BillingForm = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
-  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const [errorMsg, setErrorMsg] = useState<null | string>()
@@ -135,17 +126,11 @@ const BillingForm = (props: Props) => {
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
-      setIsLoading(false)
       if (error) {
         setErrorMsg(error.message)
+        setIsLoading(false)
         return
       }
-      commitLocalUpdate(atmosphere, (store) => {
-        const org = store.get(orgId)
-        if (!org) return
-        org.setValue(true, 'showDrawer')
-      })
-      setIsPaymentSuccessful(true)
       onCompleted()
     }
 
@@ -242,12 +227,15 @@ const BillingForm = (props: Props) => {
           isDisabled={isUpgradeDisabled}
           type={'submit'}
         >
-          {'Upgrade'}
+          {isLoading ? (
+            <>
+              Upgrading <Ellipsis />
+            </>
+          ) : (
+            'Upgrade'
+          )}
         </UpgradeButton>
       </ButtonBlock>
-      <ConfettiWrapper>
-        <Confetti active={isPaymentSuccessful} />
-      </ConfettiWrapper>
     </form>
   )
 }

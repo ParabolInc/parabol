@@ -14,7 +14,7 @@ import MassInvitationDB from '../../database/types/MassInvitation'
 import Task from '../../database/types/Task'
 import ITeam from '../../database/types/Team'
 import db from '../../db'
-import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import {GQLContext} from './../graphql'
@@ -327,9 +327,13 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve({id: teamId}, args: any, {authToken, dataLoader}) {
+      async resolve({id: teamId, orgId}, args: any, {authToken, dataLoader}) {
+        const viewerId = getUserId(authToken)
         const {sortBy = 'preferredName'} = args as {sortBy?: 'preferredName'}
-        if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) return []
+        const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
+        const canViewAllMembers =
+          isBillingLeader || isSuperUser(authToken) || isTeamMember(authToken, teamId)
+        if (!canViewAllMembers) return []
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => {
           let [aProp, bProp] = [a[sortBy], b[sortBy]]

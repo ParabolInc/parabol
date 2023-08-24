@@ -3,12 +3,15 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsToggleTeamHealth_settings$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_settings.graphql'
+import {NewMeetingSettingsToggleTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_team.graphql'
+import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
 import {PALETTE} from '../styles/paletteV3'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
+import NewMeetingSettingsUpgradeForTeamHealth from './NewMeetingSettingsUpgradeForTeamHealth'
 
 const ButtonRow = styled(PlainButton)({
   background: PALETTE.SLATE_200,
@@ -50,13 +53,26 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 }))
 
 interface Props {
+  teamRef: NewMeetingSettingsToggleTeamHealth_team$key
   settingsRef: NewMeetingSettingsToggleTeamHealth_settings$key
   className?: string
 }
 
 const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
-  const {settingsRef, className} = props
+  const {teamRef, settingsRef, className} = props
 
+  const team = useFragment(
+    graphql`
+      fragment NewMeetingSettingsToggleTeamHealth_team on Team {
+        ...NewMeetingSettingsUpgradeForTeamHealth_team
+        id
+        tier
+      }
+    `,
+    teamRef
+  )
+
+  // not part of the team fragment as we don't want to specify the meeting type here
   const settings = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleTeamHealth_settings on TeamMeetingSettings {
@@ -66,6 +82,8 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     `,
     settingsRef
   )
+  const {tier} = team
+  const teamHealthAvailable = isTeamHealthAvailable(tier)
 
   const {id: settingsId, phaseTypes} = settings
   const hasTeamHealth = phaseTypes.includes('TEAM_HEALTH')
@@ -79,6 +97,9 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
       {teamHealthEnabled: !hasTeamHealth, settingsId},
       {onError, onCompleted}
     )
+  }
+  if (!teamHealthAvailable) {
+    return <NewMeetingSettingsUpgradeForTeamHealth teamRef={team} className={className} />
   }
   return (
     <ButtonRow onClick={toggleTeamHealth} className={className}>
