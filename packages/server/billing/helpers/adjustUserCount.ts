@@ -43,7 +43,8 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
   const r = await getRethink()
   const {id: userId, email} = user
   inactive ? analytics.accountPaused(userId) : analytics.accountUnpaused(userId)
-  analytics.identify(userId, {
+  analytics.identify({
+    userId,
     email,
     isActive: !inactive
   })

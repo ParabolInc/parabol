@@ -40,7 +40,8 @@ const setUserTierForUserIds = async (userIds: string[]) => {
   const users = await getUsersByIds(userIds)
   users.forEach((user) => {
     user &&
-      analytics.identify(user.id, {
+      analytics.identify({
+        userId: user.id,
         email: user.email,
         highestTier: user.tier
       })

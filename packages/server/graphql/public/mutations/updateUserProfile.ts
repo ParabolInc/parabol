@@ -62,7 +62,8 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
   const user = await dataLoader.get('users').loadNonNull(userId)
   if (normalizedPreferredName) {
     analytics.accountNameChanged(userId, normalizedPreferredName)
-    analytics.identify(userId, {
+    analytics.identify({
+      userId,
       email: user.email,
       name: normalizedPreferredName
     })

@@ -1,4 +1,4 @@
-import {AnalyticsEvent} from '../analytics'
+import {AnalyticsEvent, IdentifyOptions} from '../analytics'
 import segment from '../../segmentIo'
 import {CacheWorker, DataLoaderBase} from '../../../graphql/DataLoaderCache'
 
@@ -14,9 +14,10 @@ export class SegmentAnalytics {
     this.segmentIo = segment
   }
 
-  identify(userId: string, traits: Record<string, any>, anonymousId?: string) {
+  identify(options: IdentifyOptions) {
     // used as a failsafe for PPMIs
     if (!SEGMENT_WRITE_KEY) return
+    const {userId, anonymousId, ...traits} = options
     return this.segmentIo.identify({
       userId,
       traits,

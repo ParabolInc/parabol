@@ -1,5 +1,5 @@
 import {identify, Identify, init, track} from '@amplitude/analytics-node'
-import {AnalyticsEvent} from '../analytics'
+import {AnalyticsEvent, IdentifyOptions} from '../analytics'
 import PROD from '../../../PROD'
 import {CacheWorker, DataLoaderBase} from '../../../graphql/DataLoaderCache'
 
@@ -18,13 +18,18 @@ export class AmplitudeAnalytics {
     })
   }
 
-  identify(userId: string, traits: Record<string, any>, anonymousId?: string) {
+  identify(options: IdentifyOptions) {
     // used as a failsafe for PPMIs
     if (!AMPLITUDE_WRITE_KEY) return
+    const {userId, anonymousId, ...traits} = options
     const identity = new Identify()
 
-    for (const trait in traits) {
-      identity.set(trait, traits[trait])
+    let trait: keyof Omit<IdentifyOptions, 'userId' | 'anonymousId'>
+    for (trait in traits) {
+      const traitValue = traits[trait]
+      if (traitValue !== undefined) {
+        identity.set(trait, traitValue.toString())
+      }
     }
 
     return identify(identity, {

@@ -51,19 +51,17 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   ])
 
   // Identify the user so user properties are set before any events are sent
-  analytics.identify(
+  analytics.identify({
     userId,
-    {
-      createdAt,
-      email,
-      name: preferredName,
-      isActive: true,
-      featureFlags: experimentalFlags,
-      highestTier: tier,
-      isPatient0
-    },
-    segmentId
-  )
+    createdAt,
+    email,
+    name: preferredName,
+    isActive: true,
+    featureFlags: experimentalFlags,
+    highestTier: tier,
+    isPatient0,
+    anonymousId: segmentId
+  })
 
   const tms = [] as string[]
   if (isOrganic) {

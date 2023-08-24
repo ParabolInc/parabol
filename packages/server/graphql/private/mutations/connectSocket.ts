@@ -77,7 +77,8 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     socketId,
     tms
   })
-  analytics.identify(userId, {
+  analytics.identify({
+    userId,
     email: user.email,
     isActive: true,
     featureFlags: user.featureFlags,
