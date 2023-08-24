@@ -27,7 +27,7 @@ interface Props {
 }
 
 const GitHubObjectCard = (props: Props) => {
-  const {title, status, number, repoName, url, type, updatedAt} = props
+  const {title, status, number, repoName, type, updatedAt} = props
   const statusImg = type === 'issue' ? ISSUE_STATUS_MAP[status] : PR_STATUS_MAP[status]
   return (
     <div className='rounded border border-solid border-slate-300 p-4'>
