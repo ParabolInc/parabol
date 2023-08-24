@@ -226,7 +226,7 @@ const GitHubIntegrationPanel = (props: Props) => {
             <div
               key={'issue'}
               className={clsx(
-                'grow cursor-pointer rounded-full py-2 px-4 text-center text-sm leading-3 text-slate-800',
+                'w-1/2 cursor-pointer rounded-full py-2 px-4 text-center text-sm leading-3 text-slate-800',
                 'issue' === githubType
                   ? 'bg-grape-700 font-semibold text-white focus:text-white'
                   : 'border border-slate-300 bg-white'
@@ -238,7 +238,7 @@ const GitHubIntegrationPanel = (props: Props) => {
             <div
               key={'pr'}
               className={clsx(
-                'grow cursor-pointer rounded-full py-2 px-4 text-center text-sm leading-3 text-slate-800',
+                'w-1/2 cursor-pointer rounded-full py-2 px-4 text-center text-sm leading-3 text-slate-800',
                 'pr' === githubType
                   ? 'bg-grape-700 font-semibold text-white focus:text-white'
                   : 'border border-slate-300 bg-white'
