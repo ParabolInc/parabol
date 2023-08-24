@@ -24,7 +24,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - exit early if no segment write key (#8682)
 - Uncompressing emojies twice causes a failure (#8687)
-- **tiptap**: Show <hr/> nodes (#8697)
+- **tiptap**: Show `<hr/>` nodes (#8697)
 - **standups**: do not open links twice (#8658)
 - **ai-summary**: update the prompt to emphasize brevity (#8703)
 
