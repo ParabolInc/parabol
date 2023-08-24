@@ -10,7 +10,9 @@ const {AMPLITUDE_WRITE_KEY} = process.env
  */
 export class AmplitudeAnalytics {
   constructor() {
-    init(AMPLITUDE_WRITE_KEY || 'x', {
+    // used as a failsafe for PPMIs
+    if (!AMPLITUDE_WRITE_KEY) return
+    init(AMPLITUDE_WRITE_KEY, {
       flushQueueSize: PROD ? 20 : 1,
       optOut: !AMPLITUDE_WRITE_KEY
     })
