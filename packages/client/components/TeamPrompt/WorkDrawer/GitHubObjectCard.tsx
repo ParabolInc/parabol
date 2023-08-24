@@ -17,6 +17,8 @@ const ISSUE_STATUS_MAP: Record<string, any> = {
 
 const PR_STATUS_MAP: Record<string, any> = {
   OPEN: githubPROpen,
+  DRAFT: null,
+  CLOSED: null,
   MERGED: gitHubMerged
 }
 
