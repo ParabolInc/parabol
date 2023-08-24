@@ -2,26 +2,15 @@ import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {
-  TaskStatusEnum,
-  TeamPromptWorkDrawerQuery
-} from '../../__generated__/TeamPromptWorkDrawerQuery.graphql'
+import {TeamPromptWorkDrawerQuery} from '../../__generated__/TeamPromptWorkDrawerQuery.graphql'
 import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
-import NullableTask from '../NullableTask/NullableTask'
-import {TaskStatus} from '../../types/constEnums'
 import clsx from 'clsx'
-import {meetingColumnArray} from '../../utils/constants'
-import {taskStatusLabels} from '../../utils/taskStatus'
-import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import AddTaskButton from '../AddTaskButton'
-import CreateTaskMutation from '../../mutations/CreateTaskMutation'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import dndNoise from '../../utils/dndNoise'
 import Tabs from '../Tabs/Tabs'
 import Tab from '../Tab/Tab'
 import ParabolLogoSVG from '../ParabolLogoSVG'
 import GitHubSVG from '../GitHubSVG'
 import GitHubObjectCard from './WorkDrawer/GitHubObjectCard'
+import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 
 interface Props {
   queryRef: PreloadedQuery<TeamPromptWorkDrawerQuery>
@@ -36,16 +25,6 @@ const TeamPromptWorkDrawer = (props: Props) => {
       query TeamPromptWorkDrawerQuery($after: DateTime, $teamId: ID!, $userIds: [ID!]) {
         viewer {
           id
-          tasks(first: 1000, after: $after, userIds: $userIds)
-            @connection(key: "UserColumnsContainer_tasks", filters: ["userIds"]) {
-            edges {
-              node {
-                ...NullableTask_task
-                id
-                status
-              }
-            }
-          }
           teamMember(teamId: $teamId) {
             integrations {
               github {
@@ -115,30 +94,23 @@ const TeamPromptWorkDrawer = (props: Props) => {
               }
             }
           }
+          ...ParabolTasksPanel_user @arguments(userIds: $userIds)
         }
       }
     `,
     queryRef
   )
   const {viewer} = data
-  const {tasks, id: viewerId, teamMember} = viewer
+  const {teamMember} = viewer
 
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
-        id
-        teamId
+        ...ParabolTasksPanel_meeting
       }
     `,
     meetingRef
   )
-  const {id: meetingId, teamId} = meeting
-
-  const atmosphere = useAtmosphere()
-  const [selectedStatus, setSelectedStatus] = useState<TaskStatusEnum>(TaskStatus.DONE)
-  const selectedTasks = tasks.edges
-    .map((edge) => edge.node)
-    .filter((task) => task.status === selectedStatus)
 
   const github = teamMember?.integrations.github
 
@@ -148,22 +120,6 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const githubPullRequests = teamMember?.integrations.github?.api?.query?.pullRequests.edges?.map(
     (edge) => edge?.node
   )
-
-  const handleAddTask = () => {
-    CreateTaskMutation(
-      atmosphere,
-      {
-        newTask: {
-          status: selectedStatus,
-          meetingId,
-          teamId,
-          userId: viewerId,
-          sortOrder: dndNoise()
-        }
-      },
-      {}
-    )
-  }
 
   const [activeIdx, setActiveIdx] = useState(0)
   const [githubType, setGithubType] = useState<'issue' | 'pr'>('issue')
@@ -205,51 +161,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
         </div>
       </div>
       {activeIdx === 0 ? (
-        <>
-          <div>
-            <div className='my-4 flex gap-2 px-4'>
-              {meetingColumnArray.map((status) => (
-                <div
-                  key={status}
-                  className={clsx(
-                    'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm leading-3 text-slate-800',
-                    status === selectedStatus
-                      ? 'bg-grape-700 font-semibold text-white focus:text-white'
-                      : 'border border-slate-300 bg-white'
-                  )}
-                  onClick={() => setSelectedStatus(status)}
-                >
-                  {taskStatusLabels[status]}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className='flex h-full flex-col items-center gap-y-2 overflow-auto px-4 pt-1 pb-4'>
-            {selectedTasks.length > 0 ? (
-              selectedTasks.map((task) => (
-                <NullableTask
-                  className='w-full rounded border border-solid border-slate-100'
-                  key={task.id}
-                  dataCy='foo'
-                  area={'userDash'}
-                  task={task}
-                />
-              ))
-            ) : (
-              <div className='-mt-14 flex h-full flex-col items-center justify-center'>
-                <img className='w-20' src={halloweenRetrospectiveTemplate} />
-                <div className='mt-7'>
-                  You don’t have any <b>{taskStatusLabels[selectedStatus]}</b> tasks.
-                  <br />
-                  Try adding new tasks below.
-                </div>
-              </div>
-            )}
-          </div>
-          <div className='flex items-center justify-center border-t border-solid border-slate-200 p-2'>
-            <AddTaskButton dataCy={`your-work-task`} onClick={handleAddTask} />
-          </div>
-        </>
+        <ParabolTasksPanel userRef={viewer} meetingRef={meeting} />
       ) : (
         <>
           {github?.isActive ? (
