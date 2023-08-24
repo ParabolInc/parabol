@@ -38,9 +38,10 @@ const TeamInsightsCard = (props: Props) => {
   const {viewerId} = atmosphere
 
   const trackClick = (isHelpfulInsight: boolean) => {
-    SendClientSegmentEventMutation(atmosphere, title, {
+    SendClientSegmentEventMutation(atmosphere, 'Insight Card Feedback Clicked', {
       viewerId,
       teamId,
+      insightTitle: title,
       isHelpfulInsight
     })
     setIsHelpful(isHelpfulInsight)
