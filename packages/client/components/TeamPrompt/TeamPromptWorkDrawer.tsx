@@ -22,10 +22,10 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const data = usePreloadedQuery<TeamPromptWorkDrawerQuery>(
     graphql`
       query TeamPromptWorkDrawerQuery($after: DateTime, $teamId: ID!, $userIds: [ID!]) {
+        ...GitHubIntegrationPanel_query @arguments(teamId: $teamId)
         viewer {
           id
           ...ParabolTasksPanel_user @arguments(userIds: $userIds)
-          ...GitHubIntegrationPanel_user @arguments(teamId: $teamId)
         }
       }
     `,
@@ -82,7 +82,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
       {activeIdx === 0 ? (
         <ParabolTasksPanel userRef={viewer} meetingRef={meeting} />
       ) : (
-        <GitHubIntegrationPanel userRef={viewer} />
+        <GitHubIntegrationPanel queryRef={data} />
       )}
     </>
   )

@@ -1,7 +1,9 @@
 import React, {useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
-import {GitHubIntegrationPanel_user$key} from '../../../__generated__/GitHubIntegrationPanel_user.graphql'
+import {useFragment, usePaginationFragment} from 'react-relay'
+import {GitHubIntegrationPanel_query$key} from '../../../__generated__/GitHubIntegrationPanel_query.graphql'
+import {GitHubIntegrationPanel_issues$key} from '../../../__generated__/GitHubIntegrationPanel_issues.graphql'
+import {GitHubIntegrationPanel_pullRequests$key} from '../../../__generated__/GitHubIntegrationPanel_pullRequests.graphql'
 // import {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
 // import {TaskStatus} from '../../../types/constEnums'
 // import {meetingColumnArray} from '../../../utils/constants'
@@ -12,81 +14,87 @@ import {GitHubIntegrationPanel_user$key} from '../../../__generated__/GitHubInte
 // import NullableTask from '../../NullableTask/NullableTask'
 // import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 // import AddTaskButton from '../../AddTaskButton'
+import {GitHubIntegrationPanelIssuesPaginationQuery} from '../../../__generated__/GitHubIntegrationPanelIssuesPaginationQuery.graphql'
+import {GitHubIntegrationPanelPullRequestsPaginationQuery} from '../../../__generated__/GitHubIntegrationPanelPullRequestsPaginationQuery.graphql'
 import clsx from 'clsx'
 import GitHubObjectCard from './GitHubObjectCard'
+import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
+import Ellipsis from '../../Ellipsis/Ellipsis'
 
 interface Props {
-  userRef: GitHubIntegrationPanel_user$key
+  queryRef: GitHubIntegrationPanel_query$key
 }
 
 const GitHubIntegrationPanel = (props: Props) => {
-  const {userRef} = props
-  const user = useFragment(
+  const {queryRef} = props
+  const query = useFragment(
     graphql`
-      fragment GitHubIntegrationPanel_user on User @argumentDefinitions(teamId: {type: "ID!"}) {
-        teamMember(teamId: $teamId) {
-          integrations {
-            github {
-              isActive
-              api {
-                errors {
-                  message
-                  locations {
-                    line
-                    column
-                  }
-                  path
-                }
-                query {
-                  issues: search(
-                    first: 15
-                    type: ISSUE
-                    query: "is:issue sort:updated assignee:@me"
-                  ) @connection(key: "GitHubIntegrationPanel_issues") {
-                    edges {
-                      node {
-                        __typename
-                        ... on _xGitHubIssue {
-                          id
-                          title
-                          number
-                          repository {
-                            nameWithOwner
-                            url
-                          }
-                          url
-                          state
-                          updatedAt
-                          lastEvent: timelineItems(last: 1) {
-                            updatedAt
-                          }
-                        }
-                      }
+      fragment GitHubIntegrationPanel_query on Query @argumentDefinitions(teamId: {type: "ID!"}) {
+        ...GitHubIntegrationPanel_issues @arguments(teamId: $teamId)
+        ...GitHubIntegrationPanel_pullRequests @arguments(teamId: $teamId)
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              github {
+                isActive
+              }
+            }
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+
+  const paginationIssuesRes = usePaginationFragment<
+    GitHubIntegrationPanelIssuesPaginationQuery,
+    GitHubIntegrationPanel_issues$key
+  >(
+    graphql`
+      fragment GitHubIntegrationPanel_issues on Query
+      @argumentDefinitions(
+        cursor: {type: "String"}
+        count: {type: "Int", defaultValue: 25}
+        teamId: {type: "ID!"}
+      )
+      @refetchable(queryName: "GitHubIntegrationPanelIssuesPaginationQuery") {
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              github {
+                api {
+                  errors {
+                    message
+                    locations {
+                      line
+                      column
                     }
+                    path
                   }
-                  pullRequests: search(
-                    first: 15
-                    type: ISSUE
-                    query: "is:pr sort:updated author:@me"
-                  ) @connection(key: "GitHubIntegrationPanel_pullRequests") {
-                    edges {
-                      node {
-                        __typename
-                        ... on _xGitHubPullRequest {
-                          id
-                          title
-                          number
-                          repository {
-                            nameWithOwner
+                  query {
+                    issues: search(
+                      first: $count
+                      after: $cursor
+                      type: ISSUE
+                      query: "is:issue sort:updated assignee:@me"
+                    ) @connection(key: "GitHubIntegrationPanel_issues") {
+                      edges {
+                        node {
+                          __typename
+                          ... on _xGitHubIssue {
+                            id
+                            title
+                            number
+                            repository {
+                              nameWithOwner
+                              url
+                            }
                             url
+                            state
+                            lastEvent: timelineItems(last: 1) {
+                              updatedAt
+                            }
                           }
-                          url
-                          state
-                          updatedAt
-                          lastEvent: timelineItems(last: 1) {
-                            updatedAt
-                          }
-                          isDraft
                         }
                       }
                     }
@@ -98,25 +106,98 @@ const GitHubIntegrationPanel = (props: Props) => {
         }
       }
     `,
-    userRef
+    query
   )
-  const {teamMember} = user
 
-  const github = teamMember?.integrations.github
-
-  const githubIssues = teamMember?.integrations.github?.api?.query?.issues.edges?.map(
-    (edge) => edge?.node
-  )
-  const githubPullRequests = teamMember?.integrations.github?.api?.query?.pullRequests.edges?.map(
-    (edge) => edge?.node
+  const paginationPullRequestsRes = usePaginationFragment<
+    GitHubIntegrationPanelPullRequestsPaginationQuery,
+    GitHubIntegrationPanel_pullRequests$key
+  >(
+    graphql`
+      fragment GitHubIntegrationPanel_pullRequests on Query
+      @argumentDefinitions(
+        cursor: {type: "String"}
+        count: {type: "Int", defaultValue: 25}
+        teamId: {type: "ID!"}
+      )
+      @refetchable(queryName: "GitHubIntegrationPanelPullRequestsPaginationQuery") {
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              github {
+                api {
+                  errors {
+                    message
+                    locations {
+                      line
+                      column
+                    }
+                    path
+                  }
+                  query {
+                    pullRequests: search(
+                      first: $count
+                      after: $cursor
+                      type: ISSUE
+                      query: "is:pr sort:updated author:@me"
+                    ) @connection(key: "GitHubIntegrationPanel_pullRequests") {
+                      edges {
+                        node {
+                          __typename
+                          ... on _xGitHubPullRequest {
+                            id
+                            title
+                            number
+                            repository {
+                              nameWithOwner
+                              url
+                            }
+                            url
+                            state
+                            lastEvent: timelineItems(last: 1) {
+                              updatedAt
+                            }
+                            isDraft
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    query
   )
 
   const [githubType, setGithubType] = useState<'issue' | 'pr'>('issue')
+
+  const lastItemIssues = useLoadNextOnScrollBottom(paginationIssuesRes, {}, 20)
+  const {data: dataIssues, hasNext: hasNextIssues} = paginationIssuesRes
+
+  const lastItemPullRequests = useLoadNextOnScrollBottom(paginationPullRequestsRes, {}, 20)
+  const {data: dataPullRequests, hasNext: hasNextPullRequests} = paginationPullRequestsRes
+
+  const lastItem = githubType === 'issue' ? lastItemIssues : lastItemPullRequests
+  const hasNext = githubType === 'issue' ? hasNextIssues : hasNextPullRequests
+
+  const githubIssues =
+    dataIssues.viewer.teamMember?.integrations.github?.api?.query?.issues.edges?.map(
+      (edge) => edge?.node
+    )
+  const githubPullRequests =
+    dataPullRequests.viewer.teamMember?.integrations.github?.api?.query?.pullRequests.edges?.map(
+      (edge) => edge?.node
+    )
+
   const githubObjects = githubType === 'issue' ? githubIssues : githubPullRequests
 
   return (
     <>
-      {github?.isActive ? (
+      {query.viewer.teamMember?.integrations.github?.isActive ? (
         <>
           <div className='my-4 flex w-full gap-2 px-4'>
             <div
@@ -168,6 +249,12 @@ const GitHubIntegrationPanel = (props: Props) => {
                 return null
               }
             })}
+            {lastItem}
+            {hasNext && (
+              <div className='mx-auto mb-4 -mt-4 h-8 text-2xl' key={'loadingNext'}>
+                <Ellipsis />
+              </div>
+            )}
           </div>
         </>
       ) : (
