@@ -52,6 +52,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
     graphql`
       fragment TeamPromptDrawer_meeting on TeamPromptMeeting {
         ...TeamPromptDiscussionDrawer_meeting
+        ...TeamPromptWorkDrawer_meeting
         id
         isRightDrawerOpen
       }
@@ -77,7 +78,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
   // internal drawers via function calls in order to nullish coalesce. We also have to call both
   // every time for the React hooks to be consistent.
   const renderedDiscussionDrawer = TeamPromptDiscussionDrawer({meetingRef: meeting, onToggleDrawer})
-  const renderedWorkDrawer = TeamPromptWorkDrawerRoot({onToggleDrawer})
+  const renderedWorkDrawer = TeamPromptWorkDrawerRoot({meetingRef: meeting, onToggleDrawer})
   const renderedInnerDrawer = renderedDiscussionDrawer ?? renderedWorkDrawer
 
   return (

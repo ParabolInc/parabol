@@ -1,29 +1,36 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {
   TaskStatusEnum,
   TeamPromptWorkDrawerQuery
 } from '../../__generated__/TeamPromptWorkDrawerQuery.graphql'
+import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import NullableTask from '../NullableTask/NullableTask'
 import {TaskStatus} from '../../types/constEnums'
 import clsx from 'clsx'
 import {meetingColumnArray} from '../../utils/constants'
 import {taskStatusLabels} from '../../utils/taskStatus'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import AddTaskButton from '../AddTaskButton'
+import CreateTaskMutation from '../../mutations/CreateTaskMutation'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import dndNoise from '../../utils/dndNoise'
 
 interface Props {
   queryRef: PreloadedQuery<TeamPromptWorkDrawerQuery>
+  meetingRef: TeamPromptWorkDrawer_meeting$key
   onToggleDrawer: () => void
 }
 
 const TeamPromptWorkDrawer = (props: Props) => {
-  const {queryRef, onToggleDrawer} = props
+  const {queryRef, meetingRef, onToggleDrawer} = props
   const data = usePreloadedQuery<TeamPromptWorkDrawerQuery>(
     graphql`
       query TeamPromptWorkDrawerQuery($after: DateTime, $userIds: [ID!]) {
         viewer {
+          id
           tasks(first: 1000, after: $after, userIds: $userIds)
             @connection(key: "UserColumnsContainer_tasks", filters: ["userIds"]) {
             edges {
@@ -40,12 +47,40 @@ const TeamPromptWorkDrawer = (props: Props) => {
     queryRef
   )
   const {viewer} = data
-  const {tasks} = viewer
+  const {tasks, id: viewerId} = viewer
 
+  const meeting = useFragment(
+    graphql`
+      fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
+        id
+        teamId
+      }
+    `,
+    meetingRef
+  )
+  const {id: meetingId, teamId} = meeting
+
+  const atmosphere = useAtmosphere()
   const [selectedStatus, setSelectedStatus] = useState<TaskStatusEnum>(TaskStatus.DONE)
   const selectedTasks = tasks.edges
     .map((edge) => edge.node)
     .filter((task) => task.status === selectedStatus)
+
+  const handleAddTask = () => {
+    CreateTaskMutation(
+      atmosphere,
+      {
+        newTask: {
+          status: selectedStatus,
+          meetingId,
+          teamId,
+          userId: viewerId,
+          sortOrder: dndNoise()
+        }
+      },
+      {}
+    )
+  }
 
   return (
     <>
@@ -94,6 +129,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
             </div>
           </div>
         )}
+      </div>
+      <div className='flex items-center justify-center border-t border-solid border-slate-200 p-2'>
+        <AddTaskButton dataCy={`your-work-task`} onClick={handleAddTask} />
       </div>
     </>
   )
