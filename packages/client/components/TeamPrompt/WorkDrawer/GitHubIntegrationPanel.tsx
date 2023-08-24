@@ -20,6 +20,11 @@ import clsx from 'clsx'
 import GitHubObjectCard from './GitHubObjectCard'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
+import GitHubClientManager from '../../../utils/GitHubClientManager'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 
 interface Props {
   queryRef: GitHubIntegrationPanel_query$key
@@ -34,6 +39,7 @@ const GitHubIntegrationPanel = (props: Props) => {
         ...GitHubIntegrationPanel_pullRequests @arguments(teamId: $teamId)
         viewer {
           teamMember(teamId: $teamId) {
+            teamId
             integrations {
               github {
                 isActive
@@ -45,6 +51,8 @@ const GitHubIntegrationPanel = (props: Props) => {
     `,
     queryRef
   )
+
+  const teamMember = query.viewer.teamMember
 
   const paginationIssuesRes = usePaginationFragment<
     GitHubIntegrationPanelIssuesPaginationQuery,
@@ -195,9 +203,24 @@ const GitHubIntegrationPanel = (props: Props) => {
 
   const githubObjects = githubType === 'issue' ? githubIssues : githubPullRequests
 
+  const atmosphere = useAtmosphere()
+  const mutationProps = useMutationProps()
+
+  const authGitHub = () => {
+    teamMember &&
+      GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, {
+        ...mutationProps,
+        onCompleted: (res, errors) => {
+          mutationProps.onCompleted(res, errors)
+          paginationIssuesRes.refetch({})
+          paginationPullRequestsRes.refetch({})
+        }
+      })
+  }
+
   return (
     <>
-      {query.viewer.teamMember?.integrations.github?.isActive ? (
+      {teamMember?.integrations.github?.isActive ? (
         <>
           <div className='my-4 flex w-full gap-2 px-4'>
             <div
@@ -226,29 +249,39 @@ const GitHubIntegrationPanel = (props: Props) => {
             </div>
           </div>
           <div className='flex flex h-full flex-col gap-y-2 overflow-auto px-4'>
-            {githubObjects?.map((object, idx) => {
-              if (
-                object?.__typename === '_xGitHubIssue' ||
-                object?.__typename === '_xGitHubPullRequest'
-              ) {
-                return (
-                  <GitHubObjectCard
-                    type={githubType}
-                    key={idx}
-                    title={object.title}
-                    status={object.state}
-                    number={object.number}
-                    repoName={object.repository.nameWithOwner}
-                    repoUrl={object.repository.url}
-                    url={object.url}
-                    updatedAt={object.lastEvent.updatedAt}
-                    prIsDraft={object?.__typename === '_xGitHubPullRequest' && object.isDraft}
-                  />
-                )
-              } else {
-                return null
-              }
-            })}
+            {githubObjects && githubObjects.length > 0 ? (
+              githubObjects?.map((object, idx) => {
+                if (
+                  object?.__typename === '_xGitHubIssue' ||
+                  object?.__typename === '_xGitHubPullRequest'
+                ) {
+                  return (
+                    <GitHubObjectCard
+                      type={githubType}
+                      key={idx}
+                      title={object.title}
+                      status={object.state}
+                      number={object.number}
+                      repoName={object.repository.nameWithOwner}
+                      repoUrl={object.repository.url}
+                      url={object.url}
+                      updatedAt={object.lastEvent.updatedAt}
+                      prIsDraft={object?.__typename === '_xGitHubPullRequest' && object.isDraft}
+                    />
+                  )
+                } else {
+                  return null
+                }
+              })
+            ) : (
+              <div className='-mt-14 flex h-full flex-col items-center justify-center'>
+                <img className='w-20' src={halloweenRetrospectiveTemplate} />
+                <div className='mt-7 w-2/3 text-center'>
+                  Looks like you don’t have any{' '}
+                  {githubType === 'issue' ? 'issues' : 'pull requests'} to display.
+                </div>
+              </div>
+            )}
             {lastItem}
             {hasNext && (
               <div className='mx-auto mb-4 -mt-4 h-8 text-2xl' key={'loadingNext'}>
@@ -258,7 +291,21 @@ const GitHubIntegrationPanel = (props: Props) => {
           </div>
         </>
       ) : (
-        <div>needs auth</div>
+        <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
+          <div className='h-10 w-10'>
+            <img className='h-10 w-10' src={gitHubSVG} />
+          </div>
+          <b>Connect to GitHub</b>
+          <div className='w-1/2 text-center text-sm'>
+            Connect to GitHub to view your issues and PRs.
+          </div>
+          <button
+            className='mt-4 cursor-pointer rounded-full bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
+            onClick={authGitHub}
+          >
+            Connect
+          </button>
+        </div>
       )}
     </>
   )
