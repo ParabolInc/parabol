@@ -31,16 +31,6 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     .ungroup()
     .filter(r.row('reduction').eq(userIds.length))
     .without('reduction')
-    // Get all team members for each team
-    .eqJoin('group', r.table('TeamMember'), {index: 'teamId'})
-    .zip()
-    .group('teamId')
-    .pluck('userId')
-    .ungroup()
-    // Select only teams with exact given number of team members
-    .filter((row: RValue) => {
-      return row('reduction').count().eq(userIds.length)
-    })
     .getField('group')
     .coerceTo('array')
     .run()
@@ -54,6 +44,7 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     .selectAll()
     .where('id', 'in', existingTeamIds)
     .where('orgId', '=', orgId)
+    .where('isOneOnOneTeam', '=', true)
     .where('isArchived', '=', false)
     .execute()
 }
