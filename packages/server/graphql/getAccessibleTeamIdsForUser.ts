@@ -14,7 +14,6 @@ export const getAccessibleTeamIdsForUser = async (
   teamIds: null | string[],
   dataLoader: DataLoaderWorker
 ) => {
-  const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
-  const userTeamIds = userTeamMembers.map(({teamId}) => teamId)
-  return teamIds?.length ? teamIds.filter((teamId) => userTeamIds.includes(teamId)) : userTeamIds
+  const user = await dataLoader.get('users').loadNonNull(userId)
+  return teamIds?.length ? teamIds.filter((teamId) => user.tms.includes(teamId)) : user.tms
 }
