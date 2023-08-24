@@ -27,14 +27,13 @@ export default class S3Manager extends FileStoreManager {
     if (!hostname || !pathname) {
       throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
     }
-    this.baseUrl = baseUrl.href
-    this.envSubDir = pathname.replace(/^\//, '')
-    if (!this.envSubDir) {
-      throw new Error('CDN_BASE_URL must end with a pathname, e.g. /production')
-    }
-    if (this.envSubDir.endsWith('/')) {
-      throw new Error('CDN_BASE_URL must not end with a trailing slash /')
-    }
+    if (pathname.endsWith('/'))
+      throw new Error('CDN_BASE_URL must end with the env, no trailing slash, e.g. /production')
+
+    this.envSubDir = pathname.split('/').at(-1) as string
+
+    this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
+
     this.bucket = AWS_S3_BUCKET
     this.s3 = new S3Client({
       region: AWS_REGION
@@ -61,7 +60,7 @@ export default class S3Manager extends FileStoreManager {
   }
 
   getPublicFileLocation(fullPath: string) {
-    return encodeURI(`https://${this.baseUrl}${fullPath}`)
+    return encodeURI(`${this.baseUrl}${fullPath}`)
   }
 
   putBuildFile(file: Buffer, partialPath: string): Promise<string> {

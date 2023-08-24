@@ -29,6 +29,6 @@
     "dd-trace": "^4.2.0",
     "parabol-client": "^6.116.0",
     "parabol-server": "^6.116.0",
-    "undici": "^5.22.1"
+    "undici": "^5.23.0"
   }
 }

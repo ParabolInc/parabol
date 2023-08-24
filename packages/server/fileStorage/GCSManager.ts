@@ -16,6 +16,8 @@ export default class GCSManager extends FileStoreManager {
   // e.g. action-files.parabol.co
   private bucket: string
   private accessToken: string | undefined
+
+  // The CDN_BASE_URL without the env, e.g. storage.google.com/:bucket
   private baseUrl: string
   private cloudKey: CloudKey
   constructor() {
@@ -45,15 +47,12 @@ export default class GCSManager extends FileStoreManager {
     if (!hostname || !pathname) {
       throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
     }
-    this.baseUrl = baseUrl.href
+    if (pathname.endsWith('/'))
+      throw new Error('CDN_BASE_URL must end with the env, no trailing slash, e.g. /production')
 
-    this.envSubDir = pathname.replace(/^\//, '')
-    if (!this.envSubDir) {
-      throw new Error('CDN_BASE_URL must end with a pathname, e.g. /production')
-    }
-    if (this.envSubDir.endsWith('/')) {
-      throw new Error('CDN_BASE_URL must not end with a trailing slash /')
-    }
+    this.envSubDir = pathname.split('/').at(-1) as string
+
+    this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
 
     this.bucket = GOOGLE_GCS_BUCKET
     this.cloudKey = {
@@ -63,9 +62,10 @@ export default class GCSManager extends FileStoreManager {
     }
     // refresh the token every hour
     // do this on an interval vs. on demand to reduce request latency
+    // unref it so things like pushToCDN can exit
     setInterval(async () => {
       this.accessToken = await this.getFreshAccessToken()
-    }, (GCSManager.GOOGLE_EXPIRY - 100) * 1000)
+    }, (GCSManager.GOOGLE_EXPIRY - 100) * 1000).unref()
   }
 
   private async getFreshAccessToken() {
@@ -118,15 +118,24 @@ export default class GCSManager extends FileStoreManager {
     url.searchParams.append('uploadType', 'media')
     url.searchParams.append('name', fullPath)
     const accessToken = await this.getAccessToken()
-    await fetch(url, {
-      method: 'POST',
-      body: file,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json',
-        'Content-Type': mime.lookup(fullPath) || ''
+    try {
+      await fetch(url, {
+        method: 'POST',
+        body: file,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+          'Content-Type': mime.lookup(fullPath) || ''
+        }
+      })
+    } catch (e) {
+      // https://github.com/nodejs/undici/issues/583#issuecomment-1577475664
+      // GCS will cause undici to error randomly with `SocketError: other side closed` `code: 'UND_ERR_SOCKET'`
+      if ((e as any).cause?.code === 'UND_ERR_SOCKET') {
+        console.log('   Retrying GCS Post:', fullPath)
+        await this.putFile(file, fullPath)
       }
-    })
+    }
     return this.getPublicFileLocation(fullPath)
   }
 
@@ -139,7 +148,7 @@ export default class GCSManager extends FileStoreManager {
     return path.join(this.envSubDir, 'store', partialPath)
   }
   getPublicFileLocation(fullPath: string) {
-    return encodeURI(`https://${this.baseUrl}${fullPath}`)
+    return encodeURI(`${this.baseUrl}${fullPath}`)
   }
   async checkExists(partialPath: string) {
     const fullPath = encodeURIComponent(this.prependPath(partialPath))
