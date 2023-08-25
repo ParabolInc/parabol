@@ -19,7 +19,7 @@ const tiptapNodeHandlersLookup: {[type: string]: (node: JSONContent, depth?: num
   heading: ({content = []}) => `*${content.map((node) => convertToMarkdown(node)).join('')}*`,
   bulletList: ({content = []}, depth = 0) =>
     content
-      .map((node) => `${LIST_SPACING.repeat(depth)}- ${convertToMarkdown(node, depth + 1)}`)
+      .map((node) => `${LIST_SPACING.repeat(depth)}• ${convertToMarkdown(node, depth + 1)}`)
       .join('\n'),
   orderedList: ({content = []}, depth = 0) =>
     content
@@ -41,7 +41,8 @@ const tiptapNodeHandlersLookup: {[type: string]: (node: JSONContent, depth?: num
       label
     } = attrs!
     return `<@${label}>`
-  }
+  },
+  horizontalRule: () => '---'
 }
 
 const textMarkHandlersLookup: {
