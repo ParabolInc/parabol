@@ -33,7 +33,8 @@ const tiptapNodeHandlersLookup: {[type: string]: (node: JSONContent, depth?: num
   codeBlock: ({content = []}) => {
     const markdownContent = content.map((node) => convertToMarkdown(node)).join('')
     return `\`\`\`${markdownContent}\`\`\`` // Triple backticks to denote a code block in Slack
-  }
+  },
+  blockquote: ({content = []}) => `> ${content.map((node) => convertToMarkdown(node)).join('')}`
 }
 
 const textMarkHandlersLookup: {
