@@ -58,7 +58,7 @@ const tiptapNodeHandlersLookup: Record<NodeType, NodeTypeHandler> = {
   blockquote: ({content = []}) => `> ${content.map((node) => convertToMarkdown(node)).join('')}`,
   mention: ({attrs}) => {
     const {
-      /** id - here's our internal Parabol user id that'd need to bo mapped to Slack user id */
+      /** id - TODO: here our internal Parabol user id would need to bo mapped to Slack user id */
       label
     } = attrs!
     return `<@${label}>`
