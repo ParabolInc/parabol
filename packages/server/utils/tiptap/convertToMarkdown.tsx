@@ -54,6 +54,12 @@ const textMarkHandlersLookup: {
   code: (text) => `\`${text}\``
 }
 
+/**
+ * Converts a tiptap JSONContent node to a markdown string supported by Slack
+ * See Slack markdown reference for limitations and features - https://api.slack.com/reference/surfaces/formatting#basics
+ * @param node - tiptap output in JSONContent format
+ * @param depth - used for nested lists
+ */
 export const convertToMarkdown = (node: JSONContent, depth?: number): string => {
   const handler = tiptapNodeHandlersLookup[node.type!]
   if (handler) {
