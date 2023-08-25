@@ -34,7 +34,14 @@ const tiptapNodeHandlersLookup: {[type: string]: (node: JSONContent, depth?: num
     const markdownContent = content.map((node) => convertToMarkdown(node)).join('')
     return `\`\`\`${markdownContent}\`\`\`` // Triple backticks to denote a code block in Slack
   },
-  blockquote: ({content = []}) => `> ${content.map((node) => convertToMarkdown(node)).join('')}`
+  blockquote: ({content = []}) => `> ${content.map((node) => convertToMarkdown(node)).join('')}`,
+  mention: ({attrs}) => {
+    const {
+      /** id - here's our internal Parabol user id that'd need to bo mapped to Slack user id */
+      label
+    } = attrs!
+    return `<@${label}>`
+  }
 }
 
 const textMarkHandlersLookup: {
