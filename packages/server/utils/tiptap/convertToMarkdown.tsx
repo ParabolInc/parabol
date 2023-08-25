@@ -42,7 +42,8 @@ const textMarkHandlersLookup: {
   bold: (text) => `*${text}*`,
   italic: (text) => `_${text}_`,
   link: (text, mark) => (mark.attrs && mark.attrs.href ? `<${mark.attrs.href}|${text}>` : text),
-  strike: (text) => `~${text}~`
+  strike: (text) => `~${text}~`,
+  code: (text) => `\`${text}\``
 }
 
 export const convertToMarkdown = (node: JSONContent, depth?: number): string => {
