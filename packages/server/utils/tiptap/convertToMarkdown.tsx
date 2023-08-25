@@ -2,7 +2,28 @@ import {JSONContent} from '@tiptap/core'
 
 const LIST_SPACING = '   '
 
-const tiptapNodeHandlersLookup: {[type: string]: (node: JSONContent, depth?: number) => string} = {
+const NodeTypes = [
+  'doc',
+  'paragraph',
+  'text',
+  'heading',
+  'bulletList',
+  'orderedList',
+  'listItem',
+  'codeBlock',
+  'blockquote',
+  'mention',
+  'horizontalRule'
+]
+type NodeType = typeof NodeTypes[number]
+type NodeTypeHandler = (node: JSONContent, depth?: number) => string
+
+const isSupportedNodeType = (value?: string): value is NodeType => {
+  if (!value) return false
+  return NodeTypes.includes(value)
+}
+
+const tiptapNodeHandlersLookup: Record<NodeType, NodeTypeHandler> = {
   doc: ({content = []}) => content.map((node) => convertToMarkdown(node)).join('\n'),
   paragraph: ({content = []}) => content.map((node) => convertToMarkdown(node)).join(''),
   text: (node) => {
@@ -45,9 +66,11 @@ const tiptapNodeHandlersLookup: {[type: string]: (node: JSONContent, depth?: num
   horizontalRule: () => '---'
 }
 
-const textMarkHandlersLookup: {
-  [type: string]: (text: string, mark: {type: string; attrs?: any}) => string
-} = {
+const MarkTypes = ['bold', 'italic', 'link', 'strike', 'code']
+type MarkType = typeof MarkTypes[number]
+type MarkTypeHandler = (text: string, mark: {type: string; attrs?: any}) => string
+
+const textMarkHandlersLookup: Record<MarkType, MarkTypeHandler> = {
   bold: (text) => `*${text}*`,
   italic: (text) => `_${text}_`,
   link: (text, mark) => (mark.attrs && mark.attrs.href ? `<${mark.attrs.href}|${text}>` : text),
@@ -62,10 +85,10 @@ const textMarkHandlersLookup: {
  * @param depth - used for nested lists
  */
 export const convertToMarkdown = (node: JSONContent, depth?: number): string => {
-  const handler = tiptapNodeHandlersLookup[node.type!]
-  if (handler) {
-    return handler(node, depth)
-  }
-  // If the node type isn't specifically handled (like an unsupported custom type), just iterate through its content if any
-  return (node.content || []).map((n) => convertToMarkdown(n)).join('')
+  const type = node.type
+  if (!isSupportedNodeType(type))
+    return node.content?.map((n) => convertToMarkdown(n)).join('') || ''
+
+  const handler = tiptapNodeHandlersLookup[type]!
+  return handler(node, depth)
 }
