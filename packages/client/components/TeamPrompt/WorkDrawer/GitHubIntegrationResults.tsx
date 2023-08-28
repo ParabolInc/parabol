@@ -112,9 +112,10 @@ const GitHubIntegrationResults = (props: Props) => {
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext} = paginationRes
 
-  const githubObjects = data.viewer.teamMember?.integrations.github?.api?.query?.search.edges?.map(
-    (edge) => edge?.node
-  )
+  const github = data.viewer.teamMember?.integrations.github
+
+  const githubObjects = github?.api?.query?.search.edges?.map((edge) => edge?.node)
+  const errors = github?.api?.errors ?? null
 
   return (
     <>
@@ -151,8 +152,11 @@ const GitHubIntegrationResults = (props: Props) => {
           <div className='-mt-14 flex h-full flex-col items-center justify-center'>
             <img className='w-20' src={halloweenRetrospectiveTemplate} />
             <div className='mt-7 w-2/3 text-center'>
-              Looks like you don’t have any {queryType === 'issue' ? 'issues' : 'pull requests'} to
-              display.
+              {errors?.[0]?.message
+                ? errors?.[0]?.message
+                : `Looks like you don’t have any ${
+                    queryType === 'issue' ? 'issues' : 'pull requests'
+                  } to display.`}
             </div>
           </div>
         )}
