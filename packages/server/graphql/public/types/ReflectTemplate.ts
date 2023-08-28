@@ -1,6 +1,8 @@
 import ms from 'ms'
 import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
+import {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
 import {ReflectTemplateResolvers} from '../resolverTypes'
 
 const POPULAR_RETROS = [
@@ -11,6 +13,20 @@ const POPULAR_RETROS = [
   'original4Template',
   'fourLsTemplate'
 ]
+
+const getLastUsedAtForTeams = async (
+  teamIds: string[],
+  templateId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const teamMeetingTemplates = await dataLoader.get('teamMeetingTemplateByTeamId').loadMany(teamIds)
+  const lastUsedAtsForTemplateId = teamMeetingTemplates
+    .filter(isValid)
+    .flat()
+    .filter((tmt) => tmt.templateId === templateId)
+    .map((row) => row.lastUsedAt.getTime())
+  return Math.max(...lastUsedAtsForTemplateId)
+}
 
 const ReflectTemplate: ReflectTemplateResolvers = {
   __isTypeOf: ({type}) => type === 'retrospective',
@@ -47,31 +63,19 @@ const ReflectTemplate: ReflectTemplateResolvers = {
       .map((team) => team.id)
 
     // The goal here is to issue all fetches to the DB at once, then we can parse out team membership
-    const orgTeamMeetingTemplates = (
-      await Promise.all(
-        orgTeamIds.map((teamId) => dataLoader.get('teamMeetingTemplateByTeamId').load(teamId))
+    const {tms} = authToken
+    const [lastUsedAtOnTeam, lastUsedAtOnOrg] = await Promise.all([
+      getLastUsedAtForTeams(tms, id, dataLoader),
+      getLastUsedAtForTeams(
+        orgTeamIds.filter((teamId) => !tms.includes(teamId)),
+        id,
+        dataLoader
       )
-    ).flat()
-
-    const orgTeamMeetingTemplatesForTemplateId = orgTeamMeetingTemplates.filter(
-      (tmt) => tmt.templateId === id
-    )
-
-    const lastUsedAtOnTeam = Math.max(
-      ...orgTeamMeetingTemplatesForTemplateId
-        .filter((row) => authToken.tms.includes(row.teamId))
-        .map((row) => row.lastUsedAt.getTime())
-    )
+    ])
 
     if (lastUsedAtOnTeam > Date.now() - ms('30d')) {
       subCategories.push('recentlyUsed')
     }
-
-    const lastUsedAtOnOrg = Math.max(
-      ...orgTeamMeetingTemplatesForTemplateId
-        .filter((row) => !authToken.tms.includes(row.teamId))
-        .map((row) => row.lastUsedAt.getTime())
-    )
 
     if (lastUsedAtOnOrg > Date.now() - ms('30d')) {
       subCategories.push('recentlyUsedInOrg')
