@@ -7,6 +7,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## 6.117.1 2023-Aug-28
 
+### Changed
+- **ci**: CircleCI using the new staging domain (#8729)
+- **doc**: release test template issue and manual testing guide updated with the new release url (#8736)
+
 ### Fixed
 
 - Allow login with google with ad blocker enabled (#8734)
