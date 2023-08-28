@@ -66,35 +66,7 @@ const GitHubIntegrationResults = (props: Props) => {
                       edges {
                         node {
                           __typename
-                          ... on _xGitHubIssue {
-                            id
-                            title
-                            number
-                            repository {
-                              nameWithOwner
-                              url
-                            }
-                            url
-                            issueState: state
-                            lastEvent: timelineItems(last: 1) {
-                              updatedAt
-                            }
-                          }
-                          ... on _xGitHubPullRequest {
-                            id
-                            title
-                            number
-                            repository {
-                              nameWithOwner
-                              url
-                            }
-                            url
-                            pullRequestState: state
-                            lastEvent: timelineItems(last: 1) {
-                              updatedAt
-                            }
-                            isDraft
-                          }
+                          ...GitHubObjectCard_result
                         }
                       }
                     }
@@ -114,39 +86,18 @@ const GitHubIntegrationResults = (props: Props) => {
 
   const github = data.viewer.teamMember?.integrations.github
 
-  const githubObjects = github?.api?.query?.search.edges?.map((edge) => edge?.node)
+  const githubResults = github?.api?.query?.search.edges?.map((edge) => edge?.node)
   const errors = github?.api?.errors ?? null
 
   return (
     <>
       <div className='flex flex h-full flex-col gap-y-2 overflow-auto px-4'>
-        {githubObjects && githubObjects.length > 0 ? (
-          githubObjects?.map((object, idx) => {
-            if (
-              object?.__typename === '_xGitHubIssue' ||
-              object?.__typename === '_xGitHubPullRequest'
-            ) {
-              return (
-                <GitHubObjectCard
-                  type={queryType}
-                  key={idx}
-                  title={object.title}
-                  status={
-                    object?.__typename === '_xGitHubIssue'
-                      ? object.issueState
-                      : object.pullRequestState
-                  }
-                  number={object.number}
-                  repoName={object.repository.nameWithOwner}
-                  repoUrl={object.repository.url}
-                  url={object.url}
-                  updatedAt={object.lastEvent.updatedAt}
-                  prIsDraft={object?.__typename === '_xGitHubPullRequest' && object.isDraft}
-                />
-              )
-            } else {
+        {githubResults && githubResults.length > 0 ? (
+          githubResults?.map((result, idx) => {
+            if (!result) {
               return null
             }
+            return <GitHubObjectCard key={idx} resultRef={result} />
           })
         ) : (
           <div className='-mt-14 flex h-full flex-col items-center justify-center'>

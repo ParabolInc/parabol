@@ -11,6 +11,9 @@ import relativeDate from '../../../utils/date/relativeDate'
 import {Link} from '@mui/icons-material'
 import useTooltip from '../../../hooks/useTooltip'
 import {MenuPosition} from '../../../hooks/useCoords'
+import {useFragment} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
   OPEN: githubIssueOpen,
@@ -25,26 +28,70 @@ const PR_STATUS_MAP: Record<string, any> = {
 }
 
 interface Props {
-  type: 'issue' | 'pullRequest'
-  title: string
-  status: string
-  number: number
-  repoName: string
-  repoUrl: string
-  url: string
-  updatedAt: string
-  prIsDraft: boolean
+  resultRef: GitHubObjectCard_result$key
 }
 
 const GitHubObjectCard = (props: Props) => {
-  const {title, status, number, repoName, repoUrl, url, type, updatedAt, prIsDraft} = props
-  const modifiedStatus = prIsDraft && status === 'OPEN' ? 'DRAFT' : status
-  const statusImg =
-    type === 'issue' ? ISSUE_STATUS_MAP[modifiedStatus] : PR_STATUS_MAP[modifiedStatus]
+  const {resultRef} = props
+
+  const result = useFragment(
+    graphql`
+      fragment GitHubObjectCard_result on _xGitHubSearchResultItem {
+        __typename
+        ... on _xGitHubIssue {
+          id
+          title
+          number
+          repository {
+            nameWithOwner
+            url
+          }
+          url
+          issueState: state
+          lastEvent: timelineItems(last: 1) {
+            updatedAt
+          }
+        }
+        ... on _xGitHubPullRequest {
+          id
+          title
+          number
+          repository {
+            nameWithOwner
+            url
+          }
+          url
+          pullRequestState: state
+          lastEvent: timelineItems(last: 1) {
+            updatedAt
+          }
+          isDraft
+        }
+      }
+    `,
+    resultRef
+  )
 
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
+
+  if (result?.__typename !== '_xGitHubIssue' && result?.__typename !== '_xGitHubPullRequest') {
+    return null
+  }
+
+  const {title, number, repository, url, lastEvent} = result
+  const {nameWithOwner: repoName, url: repoUrl} = repository
+  const {updatedAt} = lastEvent
+  const status =
+    result?.__typename === '_xGitHubIssue' ? result.issueState : result.pullRequestState
+  const prIsDraft = result?.__typename === '_xGitHubPullRequest' && result.isDraft
+
+  const modifiedStatus = prIsDraft && status === 'OPEN' ? 'DRAFT' : status
+  const statusImg =
+    result.__typename === '_xGitHubIssue'
+      ? ISSUE_STATUS_MAP[modifiedStatus]
+      : PR_STATUS_MAP[modifiedStatus]
 
   return (
     <div className='rounded border border-solid border-slate-300 p-4 hover:border-slate-600'>
