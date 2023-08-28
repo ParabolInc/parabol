@@ -31,16 +31,6 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     .ungroup()
     .filter(r.row('reduction').eq(userIds.length))
     .without('reduction')
-    // Get all team members for each team
-    .eqJoin('group', r.table('TeamMember'), {index: 'teamId'})
-    .zip()
-    .group('teamId')
-    .pluck('userId')
-    .ungroup()
-    // Select only teams with exact given number of team members
-    .filter((row: RValue) => {
-      return row('reduction').count().eq(userIds.length)
-    })
     .getField('group')
     .coerceTo('array')
     .run()
@@ -54,6 +44,7 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     .selectAll()
     .where('id', 'in', existingTeamIds)
     .where('orgId', '=', orgId)
+    .where('isOneOnOneTeam', '=', true)
     .where('isArchived', '=', false)
     .execute()
 }
@@ -75,7 +66,13 @@ const createNewTeamAndInvite = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const teamId = generateUID()
-  await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, name, orgId})
+  await createTeamAndLeader(viewer, {
+    id: teamId,
+    isOnboardTeam: false,
+    isOneOnOneTeam: true,
+    name,
+    orgId
+  })
 
   const {tms} = authToken
   // MUTATIVE
@@ -95,8 +92,16 @@ const createNewTeamAndInvite = async (
   return teamId
 }
 
-const generateOneOnOneTeamName = (firstUserName: string, secondUserName: string) => {
-  return `${firstUserName} / ${secondUserName}`
+const generateOneOnOneTeamName = (
+  firstUserName: string,
+  secondUserEmail: string,
+  secondUserName?: string
+) => {
+  if (secondUserName) {
+    return `${firstUserName} / ${secondUserName}`
+  }
+
+  return `${firstUserName} / ${secondUserEmail.split('@')[0]!}`
 }
 
 export default async function maybeCreateOneOnOneTeam(
@@ -108,8 +113,13 @@ export default async function maybeCreateOneOnOneTeam(
 
   const existingUser = await getUserByEmail(email)
 
+  const teamName = generateOneOnOneTeamName(
+    viewer.preferredName,
+    email,
+    existingUser?.preferredName
+  )
+
   if (!existingUser) {
-    const teamName = generateOneOnOneTeamName(viewer.preferredName, email.split('@')[0]!)
     return createNewTeamAndInvite(viewer, teamName, orgId, [email], context)
   }
 
@@ -119,6 +129,5 @@ export default async function maybeCreateOneOnOneTeam(
     return existingTeam.id
   }
 
-  const teamName = generateOneOnOneTeamName(viewer.preferredName, existingUser.preferredName)
   return createNewTeamAndInvite(viewer, teamName, orgId, [existingUser.email], context)
 }
