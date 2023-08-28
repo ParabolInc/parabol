@@ -1,7 +1,7 @@
 import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
@@ -137,7 +137,6 @@ const ActivityDetailsSidebar = (props: Props) => {
       templateTeam ??
       sortByTier(availableTeams)[0]!
   )
-  const [selectedOrgId, setSelectedOrgId] = useState('')
   const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
   const history = useHistory()
   const {
@@ -150,24 +149,24 @@ const ActivityDetailsSidebar = (props: Props) => {
   const selectedUser = selectedUsers[0]
   const {organizations: viewerOrganizations} = viewer
 
-  const viewerOrganizationIds = new Set(viewerOrganizations.map((org) => org.id))
-
-  const selectedUserOrganizationIds = selectedUser?.organizationIds ?? []
-  const mutualOrgs = selectedUserOrganizationIds.filter((orgId) => viewerOrganizationIds.has(orgId))
+  const selectedUserOrganizationIds = new Set(selectedUser?.organizationIds ?? [])
+  const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
+  const mutualOrgsIds = mutualOrgs.map((org) => org.id)
 
   const showOrgPicker = selectedUser && (mutualOrgs.length > 1 || !mutualOrgs.length)
 
-  const manuallySelectedOrgId = showOrgPicker && selectedOrgId !== '' && selectedOrgId
-  const firstMutualOrgId = mutualOrgs[0]
-  const defaultOrgId = selectedTeam.orgId
-  const newOneOnOneTeamOrgId = manuallySelectedOrgId
-    ? manuallySelectedOrgId
-    : firstMutualOrgId ?? defaultOrgId
+  const firstMutualOrgId = mutualOrgsIds[0]
+  const defaultOrgId = firstMutualOrgId ?? selectedTeam.orgId
+  const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
+
+  useEffect(() => {
+    setSelectedOrgId(defaultOrgId)
+  }, [selectedUser])
 
   const oneOnOneTeamInput = selectedUsers[0]
     ? {
         email: selectedUsers[0].email,
-        orgId: newOneOnOneTeamOrgId
+        orgId: selectedOrgId
       }
     : null
 
@@ -290,20 +289,21 @@ const ActivityDetailsSidebar = (props: Props) => {
               {showOrgPicker && (
                 <>
                   <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
-                  <Select
-                    onValueChange={(orgId) => setSelectedOrgId(orgId)}
-                    value={newOneOnOneTeamOrgId}
-                  >
+                  <Select onValueChange={(orgId) => setSelectedOrgId(orgId)} value={selectedOrgId}>
                     <SelectTrigger className='bg-white'>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {viewerOrganizations.map((org) => (
-                          <SelectItem value={org.id} key={org.id}>
-                            {org.name}
-                          </SelectItem>
-                        ))}
+                        {viewerOrganizations
+                          .filter((org) =>
+                            mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true
+                          )
+                          .map((org) => (
+                            <SelectItem value={org.id} key={org.id}>
+                              {org.name}
+                            </SelectItem>
+                          ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
