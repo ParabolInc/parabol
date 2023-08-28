@@ -240,7 +240,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             edges: []
           }
         }
-        const validTeamIds = await getAccessibleTeamIdsForUser(viewerId, teamIds, dataLoader)
+        const accessibleTeamIds = await getAccessibleTeamIdsForUser(viewerId, true, dataLoader)
+        const validTeamIds = teamIds
+          ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
+          : accessibleTeamIds
 
         if (viewerId !== id && !isSuperUser(authToken)) return null
         const dbAfter = after ? new Date(after) : r.maxval
@@ -595,17 +598,29 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the user is on that the viewer can see.',
+      args: {
+        includeArchived: {
+          type: GraphQLBoolean,
+          defaultValue: false,
+          description:
+            'If true, returns archived teams as well; otherwise only return active teams. Default to false.'
+        }
+      },
       resolve: async (
         {id: userId}: {id: string},
-        _args: unknown,
+        {includeArchived},
         {authToken, dataLoader}: GQLContext
       ) => {
         const viewerId = getUserId(authToken)
         const user = (await dataLoader.get('users').load(userId))!
-        const teamIds =
+        const activeTeamIds =
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
             : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+        const archivedTeamIds = includeArchived
+          ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
+          : []
+        const teamIds = [...activeTeamIds, ...archivedTeamIds]
         const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
