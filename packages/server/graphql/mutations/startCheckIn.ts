@@ -59,6 +59,15 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
 
+    if (existingTeamId && oneOnOneTeamInput) {
+      return standardError(
+        new Error('Please provide either "teamId" or "oneOnOneTeamInput", but not both'),
+        {
+          userId: viewerId
+        }
+      )
+    }
+
     if (existingTeamId) {
       if (!isTeamMember(authToken, existingTeamId)) {
         return standardError(new Error('Team not found'), {userId: viewerId})

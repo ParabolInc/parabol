@@ -16,6 +16,7 @@ interface ValidNewTeam {
   name: string
   orgId: string
   isOnboardTeam: boolean
+  isOneOnOneTeam?: boolean
 }
 
 // used for addorg, addTeam, maybeCreateOneOnOneTeam
