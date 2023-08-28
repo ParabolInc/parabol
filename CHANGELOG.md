@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.117.1 2023-Aug-28
+
+### Fixed
+
+- Allow login with google with ad blocker enabled (#8734)
+
 ## 6.117.0 2023-Aug-23
 
 ### Added
