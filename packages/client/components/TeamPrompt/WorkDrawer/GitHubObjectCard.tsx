@@ -47,7 +47,7 @@ const GitHubObjectCard = (props: Props) => {
   )
 
   return (
-    <div className='rounded border border-solid border-slate-300 p-4'>
+    <div className='rounded border border-solid border-slate-300 p-4 hover:border-slate-600'>
       <div className='flex gap-2 text-xs text-slate-600'>
         {statusImg && <img src={statusImg} />}
         <a href={url} target='_blank' className='font-medium hover:underline' rel='noreferrer'>
