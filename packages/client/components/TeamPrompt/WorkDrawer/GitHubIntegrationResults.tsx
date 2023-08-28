@@ -20,16 +20,6 @@ const GitHubIntegrationResults = (props: Props) => {
     graphql`
       query GitHubIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
         ...GitHubIntegrationResults_search @arguments(teamId: $teamId)
-        viewer {
-          teamMember(teamId: $teamId) {
-            teamId
-            integrations {
-              github {
-                isActive
-              }
-            }
-          }
-        }
       }
     `,
     queryRef
