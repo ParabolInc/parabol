@@ -620,7 +620,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const archivedTeamIds = includeArchived
           ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
           : []
-        const teamIds = [...activeTeamIds, ...archivedTeamIds]
+        const teamIds = [...new Set([...activeTeamIds, ...archivedTeamIds])]
         const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
