@@ -1,8 +1,7 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {TeamPromptWorkDrawerQuery} from '../../__generated__/TeamPromptWorkDrawerQuery.graphql'
+import {useFragment} from 'react-relay'
 import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import Tabs from '../Tabs/Tabs'
 import Tab from '../Tab/Tab'
@@ -12,31 +11,17 @@ import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
 
 interface Props {
-  queryRef: PreloadedQuery<TeamPromptWorkDrawerQuery>
   meetingRef: TeamPromptWorkDrawer_meeting$key
   onToggleDrawer: () => void
 }
 
 const TeamPromptWorkDrawer = (props: Props) => {
-  const {queryRef, meetingRef, onToggleDrawer} = props
-  const data = usePreloadedQuery<TeamPromptWorkDrawerQuery>(
-    graphql`
-      query TeamPromptWorkDrawerQuery($after: DateTime, $teamId: ID!, $userIds: [ID!]) {
-        ...GitHubIntegrationPanel_query @arguments(teamId: $teamId)
-        viewer {
-          id
-          ...ParabolTasksPanel_user @arguments(userIds: $userIds)
-        }
-      }
-    `,
-    queryRef
-  )
-  const {viewer} = data
-
+  const {meetingRef, onToggleDrawer} = props
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
         ...ParabolTasksPanel_meeting
+        ...GitHubIntegrationPanel_meeting
       }
     `,
     meetingRef
@@ -80,9 +65,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
         </div>
       </div>
       {activeIdx === 0 ? (
-        <ParabolTasksPanel userRef={viewer} meetingRef={meeting} />
+        <ParabolTasksPanel meetingRef={meeting} />
       ) : (
-        <GitHubIntegrationPanel queryRef={data} />
+        <GitHubIntegrationPanel meetingRef={meeting} />
       )}
     </>
   )

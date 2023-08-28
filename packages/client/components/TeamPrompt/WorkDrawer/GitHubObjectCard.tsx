@@ -25,7 +25,7 @@ const PR_STATUS_MAP: Record<string, any> = {
 }
 
 interface Props {
-  type: 'issue' | 'pr'
+  type: 'issue' | 'pullRequest'
   title: string
   status: string
   number: number

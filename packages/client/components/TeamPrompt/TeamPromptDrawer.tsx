@@ -8,7 +8,7 @@ import {desktopSidebarShadow} from '../../styles/elevation'
 import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
-import TeamPromptWorkDrawerRoot from './TeamPromptWorkDrawerRoot'
+import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
 import useBreakpoint from '../../hooks/useBreakpoint'
 
 const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
@@ -54,7 +54,6 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
         ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptWorkDrawer_meeting
         id
-        teamId
         isRightDrawerOpen
       }
     `,
@@ -63,7 +62,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
 
   const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmosphere = useAtmosphere()
-  const {id: meetingId, isRightDrawerOpen, teamId} = meeting
+  const {id: meetingId, isRightDrawerOpen} = meeting
 
   const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -79,7 +78,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
   // internal drawers via function calls in order to nullish coalesce. We also have to call both
   // every time for the React hooks to be consistent.
   const renderedDiscussionDrawer = TeamPromptDiscussionDrawer({meetingRef: meeting, onToggleDrawer})
-  const renderedWorkDrawer = TeamPromptWorkDrawerRoot({meetingRef: meeting, onToggleDrawer, teamId})
+  const renderedWorkDrawer = TeamPromptWorkDrawer({meetingRef: meeting, onToggleDrawer})
   const renderedInnerDrawer = renderedDiscussionDrawer ?? renderedWorkDrawer
 
   return (
