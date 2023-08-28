@@ -29,6 +29,17 @@ const TeamPromptWorkDrawer = (props: Props) => {
 
   const [activeIdx, setActiveIdx] = useState(0)
 
+  const baseTabs = [
+    {
+      icon: <ParabolLogoSVG />,
+      label: 'Parabol',
+      Component: ParabolTasksPanel
+    },
+    {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel}
+  ]
+
+  const {Component} = baseTabs[activeIdx]!
+
   return (
     <>
       <div className='pt-4'>
@@ -43,32 +54,17 @@ const TeamPromptWorkDrawer = (props: Props) => {
             </div>
           </div>
           <Tabs activeIdx={activeIdx}>
-            <Tab
-              key='parabol'
-              onClick={() => setActiveIdx(0)}
-              label={
-                <div className='flex items-center justify-center'>
-                  <ParabolLogoSVG />
-                </div>
-              }
-            />
-            <Tab
-              key='github'
-              onClick={() => setActiveIdx(1)}
-              label={
-                <div className='flex items-center justify-center'>
-                  <GitHubSVG />
-                </div>
-              }
-            />
+            {baseTabs.map((tab, idx) => (
+              <Tab
+                key={tab.label}
+                onClick={() => setActiveIdx(idx)}
+                label={<div className='flex items-center justify-center'>{tab.icon}</div>}
+              />
+            ))}
           </Tabs>
         </div>
       </div>
-      {activeIdx === 0 ? (
-        <ParabolTasksPanel meetingRef={meeting} />
-      ) : (
-        <GitHubIntegrationPanel meetingRef={meeting} />
-      )}
+      <Component meetingRef={meeting} />
     </>
   )
 }
