@@ -6,6 +6,8 @@ const retrieveGtagClientId = async (
 ): Promise<string | undefined> => {
   return new Promise((resolve) => {
     gtag('get', measurementId, 'client_id', resolve)
+    // if the call gets blocked, then it might never resolve
+    window.setTimeout(() => resolve(undefined), 1000)
   })
 }
 
