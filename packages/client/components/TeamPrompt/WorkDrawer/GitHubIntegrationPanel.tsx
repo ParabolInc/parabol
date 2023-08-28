@@ -59,7 +59,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               )}
               onClick={() => setGithubType('issue')}
             >
-              Your issues
+              Issues
             </div>
             <div
               key={'pullRequest'}
@@ -71,7 +71,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               )}
               onClick={() => setGithubType('pullRequest')}
             >
-              Your pull requests
+              Pull requests
             </div>
           </div>
           <GitHubIntegrationResultsRoot teamId={teamMember.teamId} queryType={githubType} />
