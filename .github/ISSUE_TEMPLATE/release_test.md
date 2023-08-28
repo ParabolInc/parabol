@@ -11,9 +11,9 @@ assignees: ''
 
 ## The basics
 
-Run through this list at least once at [staging](https://action-staging.parabol.co):
+Run through this list at least once at [staging](https://action.parabol.fun):
 
-- [ ] Smoke tested the [Demo](https://action-staging.parabol.co/retrospective-demo), unauthenticated
+- [ ] Smoke tested the [Demo](https://action.parabol.fun/retrospective-demo), unauthenticated
 - [ ] Created an account
 - [ ] Verified invite via mass link works (Team > Invite Button > Invite Link, visit URL in an incognito window)
 - [ ] Verified invite via email works
