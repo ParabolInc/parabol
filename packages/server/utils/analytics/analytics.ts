@@ -2,6 +2,7 @@ import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
+import {Team} from '../../postgres/queries/getTeamsByIds'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
@@ -142,9 +143,16 @@ class Analytics {
     })
   }
 
-  checkInEnd = (completedMeeting: Meeting, meetingMembers: MeetingMember[]) => {
+  checkInEnd = (completedMeeting: Meeting, meetingMembers: MeetingMember[], team: Team) => {
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers)
+      this.meetingEnd(
+        meetingMember.userId,
+        completedMeeting,
+        meetingMembers,
+        undefined,
+        undefined,
+        team
+      )
     )
   }
 
@@ -176,17 +184,22 @@ class Analytics {
     completedMeeting: Meeting,
     meetingMembers: MeetingMember[],
     template?: MeetingTemplate,
-    meetingSpecificProperties?: any
+    meetingSpecificProperties?: any,
+    team?: Team
   ) => {
     this.track(userId, 'Meeting Completed', {
       wasFacilitator: completedMeeting.facilitatorUserId === userId,
-      ...createMeetingProperties(completedMeeting, meetingMembers, template),
+      ...createMeetingProperties(completedMeeting, meetingMembers, template, team),
       ...meetingSpecificProperties
     })
   }
 
-  meetingStarted = (userId: string, meeting: Meeting, template?: MeetingTemplate) => {
-    this.track(userId, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
+  meetingStarted = (userId: string, meeting: Meeting, template?: MeetingTemplate, team?: Team) => {
+    this.track(
+      userId,
+      'Meeting Started',
+      createMeetingProperties(meeting, undefined, template, team)
+    )
   }
 
   recurrenceStarted = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
@@ -197,8 +210,12 @@ class Analytics {
     this.track(userId, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
-  meetingJoined = (userId: string, meeting: Meeting) => {
-    this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
+  meetingJoined = (userId: string, meeting: Meeting, team: Team) => {
+    this.track(
+      userId,
+      'Meeting Joined',
+      createMeetingProperties(meeting, undefined, undefined, team)
+    )
   }
 
   meetingSettingsChanged = (

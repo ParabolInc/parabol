@@ -10,6 +10,8 @@ import {GQLContext} from '../../graphql'
 import publish from '../../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
+import segmentIo from '../../../utils/segmentIo'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 
 type OneOnOneTeam = {
   email: string
@@ -74,9 +76,21 @@ const createNewTeamAndInvite = async (
     orgId
   })
 
+  const orgTeams = await getTeamsByOrgIds([orgId], {isArchived: false})
+
   const {tms} = authToken
   // MUTATIVE
   tms.push(teamId)
+  segmentIo.track({
+    userId: viewerId,
+    event: 'New Team',
+    properties: {
+      orgId,
+      teamId,
+      isOneOnOneTeam: true,
+      teamNumber: orgTeams.length + 1
+    }
+  })
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
