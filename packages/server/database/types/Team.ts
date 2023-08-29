@@ -15,6 +15,7 @@ interface Input {
   orgId: string
   qualAIMeetingsCount?: number
   isOnboardTeam?: boolean
+  isOneOnOneTeam?: boolean
   updatedAt?: Date
 }
 
@@ -30,6 +31,7 @@ export default class Team {
   tier: TierEnum
   orgId: string
   isOnboardTeam: boolean
+  isOneOnOneTeam?: boolean
   qualAIMeetingsCount: number
   updatedAt: Date
   constructor(input: Input) {
@@ -39,6 +41,7 @@ export default class Team {
       id,
       isArchived,
       isOnboardTeam,
+      isOneOnOneTeam,
       lastMeetingType,
       isPaid,
       name,
@@ -57,6 +60,7 @@ export default class Team {
     this.lastMeetingType = lastMeetingType ?? 'retrospective'
     this.isArchived = isArchived ?? false
     this.isOnboardTeam = isOnboardTeam ?? false
+    this.isOneOnOneTeam = isOneOnOneTeam ?? false
     this.isPaid = isPaid ?? true
     this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
   }

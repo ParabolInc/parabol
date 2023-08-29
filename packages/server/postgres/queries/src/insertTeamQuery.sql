@@ -12,6 +12,7 @@ INSERT INTO "Team" (
   "tier",
   "orgId",
   "isOnboardTeam",
+  "isOneOnOneTeam",
   "updatedAt"
 ) VALUES (
   :id,
@@ -24,5 +25,6 @@ INSERT INTO "Team" (
   :tier,
   :orgId,
   :isOnboardTeam,
+  :isOneOnOneTeam,
   :updatedAt
 );

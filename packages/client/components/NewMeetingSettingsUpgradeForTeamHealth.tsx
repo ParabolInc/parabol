@@ -1,0 +1,80 @@
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {NewMeetingSettingsUpgradeForTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsUpgradeForTeamHealth_team.graphql'
+import PlainButton from './PlainButton/PlainButton'
+import {Lock} from '@mui/icons-material'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
+import styled from '@emotion/styled'
+import {PALETTE} from '../styles/paletteV3'
+
+const ButtonRow = styled(PlainButton)({
+  background: PALETTE.SLATE_200,
+  borderRadius: '8px',
+  display: 'flex',
+  fontSize: 14,
+  fontWeight: 600,
+  userSelect: 'none',
+  width: '100%',
+  ':hover': {
+    backgroundColor: PALETTE.SLATE_300
+  },
+  height: '72px',
+  padding: '12px 16px',
+  alignItems: 'center'
+})
+
+interface Props {
+  teamRef: NewMeetingSettingsUpgradeForTeamHealth_team$key
+  className?: string
+}
+
+const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
+  const {teamRef, className} = props
+
+  const team = useFragment(
+    graphql`
+      fragment NewMeetingSettingsUpgradeForTeamHealth_team on Team {
+        orgId
+      }
+    `,
+    teamRef
+  )
+
+  const {orgId} = team
+  const atmosphere = useAtmosphere()
+
+  React.useEffect(() => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+      upgradeCTALocation: 'meetingSettingsTeamHealth',
+      meetingType: 'retrospective',
+      orgId
+    })
+  }, [])
+
+  const handleUpgrade = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'meetingSettingsTeamHealth',
+      meetingType: 'retrospective',
+      orgId
+    })
+    window.open(`/me/organizations/${orgId}/billing`, '_blank', 'noreferrer')
+  }
+
+  return (
+    <ButtonRow className={className} onClick={handleUpgrade}>
+      <div className='mt-1 flex w-full flex-col'>
+        <div className='flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-semibold text-slate-600'>
+          Health Check
+        </div>
+        <div className='w-full text-slate-800'>
+          <u>Upgrade</u> to enable team health checks
+        </div>
+      </div>
+      <Lock className='m-0.5 text-slate-600' />
+    </ButtonRow>
+  )
+}
+
+export default NewMeetingSettingsToggleTeamHealth

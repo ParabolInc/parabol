@@ -17,13 +17,12 @@ import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
-import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
+import TeamPromptDrawer from './TeamPrompt/TeamPromptDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
 import {
   GRID_PADDING_LEFT_RIGHT_PERCENT,
   ResponsesGridBreakpoints
 } from './TeamPrompt/TeamPromptGridDimensions'
-import {TeamPromptMeetingStatus} from './TeamPrompt/TeamPromptMeetingStatus'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
@@ -46,13 +45,6 @@ const ResponsesGrid = styled('div')({
   gap: 32
 })
 
-const BadgeContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginTop: 16
-})
-
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
 }
@@ -70,7 +62,7 @@ const TeamPromptMeeting = (props: Props) => {
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
         ...useMeeting_meeting
         ...TeamPromptTopBar_meeting
-        ...TeamPromptDiscussionDrawer_meeting
+        ...TeamPromptDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
         ...TeamPromptMeetingStatus_meeting
         ...MeetingLockedOverlay_meeting
@@ -164,10 +156,7 @@ const TeamPromptMeeting = (props: Props) => {
               isOpen={isRightDrawerOpen && isDesktop}
               hideBottomBar={true}
             >
-              <TeamPromptTopBar meetingRef={meeting} isDesktop={isDesktop} />
-              {!isDesktop && (
-                <BadgeContainer>{<TeamPromptMeetingStatus meetingRef={meeting} />}</BadgeContainer>
-              )}
+              <TeamPromptTopBar meetingRef={meeting} />
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer>
@@ -190,7 +179,7 @@ const TeamPromptMeeting = (props: Props) => {
                 </ResponsesGridContainer>
               </ErrorBoundary>
             </StyledMeetingHeaderAndPhase>
-            <TeamPromptDiscussionDrawer meetingRef={meeting} isDesktop={isDesktop} />
+            <TeamPromptDrawer meetingRef={meeting} isDesktop={isDesktop} />
           </MeetingContent>
         </Suspense>
       </MeetingArea>

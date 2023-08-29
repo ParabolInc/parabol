@@ -162,6 +162,7 @@ const TeamPromptResponseCard = (props: Props) => {
         const meetingProxy = store.get(responseStage.meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(responseStage.id, 'localStageId')
+        meetingProxy.setValue(false, 'showWorkSidebar')
         meetingProxy.setValue(true, 'isRightDrawerOpen')
       })
     }
