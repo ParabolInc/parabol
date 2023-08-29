@@ -15,8 +15,12 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartCheckInMutation($teamId: ID!, $gcalInput: CreateGcalEventInput) {
-    startCheckIn(teamId: $teamId, gcalInput: $gcalInput) {
+  mutation StartCheckInMutation(
+    $teamId: ID
+    $gcalInput: CreateGcalEventInput
+    $oneOnOneTeamInput: CreateOneOnOneTeamInput
+  ) {
+    startCheckIn(teamId: $teamId, gcalInput: $gcalInput, oneOnOneTeamInput: $oneOnOneTeamInput) {
       ... on ErrorPayload {
         error {
           message
