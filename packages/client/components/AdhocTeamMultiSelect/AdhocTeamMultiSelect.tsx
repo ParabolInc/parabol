@@ -76,6 +76,9 @@ export const AdhocTeamMultiSelect = (props: Props) => {
   organizations.forEach((org) => {
     org.organizationUsers.edges.forEach((edge) => {
       const user = edge.node.user
+      if (user.id === viewer.id) {
+        return
+      }
       if (!usersMap[user.id]) {
         usersMap[user.id] = {
           id: user.id,
@@ -163,7 +166,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
           ))}
           <input
             {...getInputProps()}
-            placeholder={!value.length ? 'ex. Traci or traci@company.com' : ''}
+            placeholder={!value.length ? 'ex. Traci or traci@example.com' : ''}
             className='m-0 box-border min-h-[36px] w-0 min-w-[30px] flex-grow border-0 bg-white pl-1 text-black outline-none'
           />
         </div>
