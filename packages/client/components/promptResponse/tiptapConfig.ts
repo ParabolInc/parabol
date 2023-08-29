@@ -4,6 +4,7 @@ import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import StarterKit from '@tiptap/starter-kit'
 import {BBox} from '~/types/animations'
+import {LoomExtension} from './loomExtension'
 
 export interface LinkMenuProps {
   text: string
@@ -65,13 +66,13 @@ export const getLinkProps = (editor: Editor) => {
  * @returns an array of extensions to be used by the tip tap editor
  */
 export const createEditorExtensions = (
-  isReadOnly?: boolean,
   setLinkMenuProps?: (props: LinkMenuProps) => void,
   setLinkPreviewProps?: (props: LinkPreviewProps) => void,
   setLinkOverlayProps?: (props: LinkOverlayProps) => void,
   placeholder?: string
 ) => [
   StarterKit,
+  LoomExtension,
   Link.extend({
     inclusive: false,
     addKeyboardShortcuts() {
@@ -95,7 +96,7 @@ export const createEditorExtensions = (
       }
     }
   }).configure({
-    openOnClick: isReadOnly
+    openOnClick: false
   }),
   Placeholder.configure({
     showOnlyWhenEditable: false,

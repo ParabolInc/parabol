@@ -380,7 +380,11 @@ export const MSTeamsNotifier: Notifier = {
   async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team) return
-    ;(await getMSTeams(dataLoader, team.id, meeting.facilitatorUserId))?.endMeeting(meeting, team)
+    ;(await getMSTeams(dataLoader, team.id, meeting.facilitatorUserId))?.endMeeting(
+      meeting,
+      team,
+      null
+    )
   },
 
   async startTimeLimit(

@@ -51,7 +51,9 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     notificationType: {type: NotificationEnum},
     tier: {type: TierEnum},
     discussionTopicId: {type: GraphQLID},
-    teamIds: {type: GraphQLList(GraphQLID)}
+    teamIds: {type: GraphQLList(GraphQLID)},
+    insightTitle: {type: GraphQLString},
+    isHelpfulInsight: {type: GraphQLBoolean}
   })
 })
 

@@ -140,7 +140,7 @@ export default {
       updateTeamByTeamId(updates, teamId),
       r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
     ])
-    createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+    createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting)
     const data = {teamId, meetingId}

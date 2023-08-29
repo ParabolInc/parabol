@@ -1,27 +1,73 @@
 import React from 'react'
+import graphql from 'babel-plugin-relay/macro'
 import GcalProviderLogo from '../../../../components/GcalProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import ProviderRow from './ProviderRow'
 import GcalConfigMenu from '../../../../components/GcalConfigMenu'
+import {useFragment} from 'react-relay'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {GcalProviderRow_viewer$key} from '../../../../__generated__/GcalProviderRow_viewer.graphql'
+import GcalClientManager from '../../../../utils/GcalClientManager'
 
-const GcalProviderRow = () => {
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
-  const gcalAuth = false
+type Props = {
+  teamId: string
+  viewerRef: GcalProviderRow_viewer$key
+}
 
-  // TODO: implement oauth
-  const openOAuth = () => {
-    // GCalClientManager.openOAuth(atmosphere, teamId, mutationProps)
+graphql`
+  fragment GcalProviderRowTeamMember on TeamMember {
+    integrations {
+      gcal {
+        auth {
+          providerId
+        }
+        cloudProvider {
+          id
+          clientId
+        }
+      }
+    }
   }
+`
+
+const GcalProviderRow = (props: Props) => {
+  const {viewerRef, teamId} = props
+  const atmosphere = useAtmosphere()
+  const mutationProps = useMutationProps()
+  const {submitting} = mutationProps
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+
+  const viewer = useFragment(
+    graphql`
+      fragment GcalProviderRow_viewer on User {
+        teamMember(teamId: $teamId) {
+          ...GcalProviderRowTeamMember @relay(mask: false)
+        }
+      }
+    `,
+    viewerRef
+  )
+  const {teamMember} = viewer
+
+  if (!teamMember) return null
+  const {integrations} = teamMember
+  const {gcal} = integrations
+  if (!gcal || !gcal.cloudProvider) return null
+  const {auth, cloudProvider} = gcal
+  const hasAuth = !!auth?.providerId
+
+  const openOAuth = () => {
+    const {clientId, id: providerId} = cloudProvider
+    GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
+  }
 
   return (
     <>
       <ProviderRow
-        connected={gcalAuth}
+        connected={hasAuth}
         onConnectClick={openOAuth}
         submitting={submitting}
         togglePortal={togglePortal}
@@ -30,7 +76,9 @@ const GcalProviderRow = () => {
         providerDescription={Providers.GCAL_DESC}
         providerLogo={<GcalProviderLogo />}
       />
-      {menuPortal(<GcalConfigMenu menuProps={menuProps} mutationProps={mutationProps} />)}
+      {menuPortal(
+        <GcalConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
+      )}
     </>
   )
 }

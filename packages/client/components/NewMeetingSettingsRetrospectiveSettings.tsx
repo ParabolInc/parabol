@@ -2,12 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {NewMeetingSettingsRetrospectiveSettings_settings$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_settings.graphql'
+import {NewMeetingSettingsRetrospectiveSettings_team$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_team.graphql'
 import {NewMeetingSettingsRetrospectiveSettings_organization$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_organization.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
-import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
@@ -30,12 +29,12 @@ const NewMeetingSettingsToggleAnonymityMenuEntry = styled(NewMeetingSettingsTogg
 })
 
 interface Props {
-  settingsRef: NewMeetingSettingsRetrospectiveSettings_settings$key
+  teamRef: NewMeetingSettingsRetrospectiveSettings_team$key
   organizationRef: NewMeetingSettingsRetrospectiveSettings_organization$key
 }
 
 const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
-  const {settingsRef, organizationRef} = props
+  const {teamRef, organizationRef} = props
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
@@ -43,22 +42,25 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
     }
   )
 
-  const settings = useFragment(
+  const team = useFragment(
     graphql`
-      fragment NewMeetingSettingsRetrospectiveSettings_settings on TeamMeetingSettings {
-        ...NewMeetingSettingsToggleCheckIn_settings
-        ...NewMeetingSettingsToggleTeamHealth_settings
-        ...NewMeetingSettingsToggleAnonymity_settings
-        ...NewMeetingSettingsToggleTranscription_settings
+      fragment NewMeetingSettingsRetrospectiveSettings_team on Team {
+        ...NewMeetingSettingsToggleTeamHealth_team
+        retroSettings: meetingSettings(meetingType: retrospective) {
+          ...NewMeetingSettingsToggleCheckIn_settings
+          ...NewMeetingSettingsToggleTeamHealth_settings
+          ...NewMeetingSettingsToggleAnonymity_settings
+          ...NewMeetingSettingsToggleTranscription_settings
+        }
       }
     `,
-    settingsRef
+    teamRef
   )
+  const {retroSettings} = team
 
   const organization = useFragment(
     graphql`
       fragment NewMeetingSettingsRetrospectiveSettings_organization on Organization {
-        tier
         featureFlags {
           zoomTranscription
         }
@@ -66,8 +68,6 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
     `,
     organizationRef
   )
-  const {tier} = organization
-  const teamHealthAvailable = isTeamHealthAvailable(tier)
   const {zoomTranscription} = organization.featureFlags
 
   return (
@@ -81,12 +81,12 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       />
       {menuPortal(
         <div {...menuProps}>
-          <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
-          {teamHealthAvailable && (
-            <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />
+          <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={retroSettings} />
+          <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={retroSettings} teamRef={team} />
+          <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={retroSettings} />
+          {zoomTranscription && (
+            <NewMeetingSettingsToggleTranscription settingsRef={retroSettings} />
           )}
-          <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
-          {zoomTranscription && <NewMeetingSettingsToggleTranscription settingsRef={settings} />}
         </div>
       )}
     </>
