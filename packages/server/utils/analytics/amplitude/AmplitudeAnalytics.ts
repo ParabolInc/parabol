@@ -24,7 +24,7 @@ export class AmplitudeAnalytics {
     const {userId, anonymousId, ...traits} = options
     const identity = new Identify()
 
-    let trait: keyof Omit<IdentifyOptions, 'userId' | 'anonymousId'>
+    let trait: keyof typeof traits
     for (trait in traits) {
       const traitValue = traits[trait]
       if (traitValue !== undefined) {
