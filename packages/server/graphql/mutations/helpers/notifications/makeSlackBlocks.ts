@@ -11,13 +11,14 @@ const maybeTruncate = (text: string) => {
   return text
 }
 
-export const makeSection = (text: string) => {
+export const makeSection = (text: string, disableAutomaticParsing = false) => {
   const maybeTruncatedText = maybeTruncate(text)
   return {
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: maybeTruncatedText
+      text: maybeTruncatedText,
+      verbatim: disableAutomaticParsing
     }
   }
 }

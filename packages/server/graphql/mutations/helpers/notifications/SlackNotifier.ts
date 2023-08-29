@@ -225,7 +225,7 @@ const addStandupResponsesToThread = async (
 
       const threadBlocks: Array<{type: string}> = [
         makeHeader(`${user.preferredName} responded:`),
-        makeSection(convertToMarkdown(response.content)),
+        makeSection(convertToMarkdown(response.content), true),
         makeButtons([{text: 'See their response', url: responseUrl, type: 'primary'}])
       ]
       const threadRes = await notifySlack(

@@ -61,7 +61,7 @@ const tiptapNodeHandlersLookup: Record<NodeType, NodeTypeHandler> = {
       /** id - TODO: here our internal Parabol user id would need to bo mapped to Slack user id */
       label
     } = attrs!
-    return `<@${label}>`
+    return `\`@${label}\``
   },
   horizontalRule: () => '---'
 }
