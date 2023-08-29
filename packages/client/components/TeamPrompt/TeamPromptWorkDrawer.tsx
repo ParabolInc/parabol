@@ -9,6 +9,8 @@ import ParabolLogoSVG from '../ParabolLogoSVG'
 import GitHubSVG from '../GitHubSVG'
 import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
+import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
+import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
@@ -22,6 +24,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
+        ...GCalIntegrationPanel_meeting
       }
     `,
     meetingRef
@@ -35,7 +38,12 @@ const TeamPromptWorkDrawer = (props: Props) => {
       label: 'Parabol',
       Component: ParabolTasksPanel
     },
-    {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel}
+    {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel},
+    {
+      icon: <img className='h-6 w-6' src={gcalLogo} />,
+      label: 'Google Calendar',
+      Component: GCalIntegrationPanel
+    }
   ]
 
   const {Component} = baseTabs[activeIdx]!
