@@ -449,7 +449,7 @@ class Analytics {
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
-    const dataloader = getDataLoader().get('users')
+    const dataloader = getDataLoader()
     this.amplitudeAnalytics.track(userId, event, dataloader, properties)
     this.segmentAnalytics.track(userId, event, dataloader, properties)
   }

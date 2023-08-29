@@ -1,7 +1,6 @@
 import {AnalyticsEvent} from '../analytics'
-import NullableDataLoader from '../../../dataloader/NullableDataLoader'
-import IUser from '../../../postgres/types/IUser'
 import segment from '../../segmentIo'
+import {CacheWorker, DataLoaderBase} from '../../../graphql/DataLoaderCache'
 
 /**
  * Wrapper for segment providing a more typesafe interface
@@ -16,7 +15,7 @@ export class SegmentAnalytics {
   track(
     userId: string,
     event: AnalyticsEvent,
-    dataloader: NullableDataLoader<string, IUser, string>,
+    dataloader: CacheWorker<DataLoaderBase>,
     properties?: any
   ) {
     return this.segmentIo.track(
