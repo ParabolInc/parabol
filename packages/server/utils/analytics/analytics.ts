@@ -23,6 +23,18 @@ export type MeetingSeriesAnalyticsProperties = Pick<
   'id' | 'duration' | 'recurrenceRule' | 'meetingType' | 'title'
 > & {teamId: string; facilitatorId: string}
 
+export type IdentifyOptions = {
+  userId: string
+  email: string
+  anonymousId?: string
+  name?: string
+  isActive?: boolean
+  featureFlags?: string[]
+  highestTier?: string
+  isPatient0?: boolean
+  createdAt?: Date
+}
+
 export type OrgTierChangeEventProperties = {
   orgId: string
   domain?: string
@@ -446,6 +458,11 @@ class Analytics {
 
   resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
+  }
+
+  identify = (options: IdentifyOptions) => {
+    this.amplitudeAnalytics.identify(options)
+    this.segmentAnalytics.identify(options)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {

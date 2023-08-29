@@ -7,7 +7,6 @@ import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
-import segmentIo from '../../../utils/segmentIo'
 import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
@@ -15,6 +14,7 @@ export interface UserPresence {
   socketInstanceId: string
   socketId: string
 }
+
 const connectSocket: MutationResolvers['connectSocket'] = async (
   _source,
   {socketInstanceId},
@@ -77,15 +77,13 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     socketId,
     tms
   })
-  segmentIo.identify({
+  analytics.identify({
     userId,
-    traits: {
-      email: user.email,
-      isActive: true,
-      featureFlags: user.featureFlags,
-      highestTier: user.tier,
-      isPatient0: user.isPatient0
-    }
+    email: user.email,
+    isActive: true,
+    featureFlags: user.featureFlags,
+    highestTier: user.tier,
+    isPatient0: user.isPatient0
   })
   return user
 }
