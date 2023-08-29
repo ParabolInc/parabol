@@ -80,7 +80,6 @@ module.exports = ({noDeps}) => ({
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       __PRODUCTION__: true,
-      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
