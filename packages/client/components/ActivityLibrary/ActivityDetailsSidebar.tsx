@@ -240,13 +240,17 @@ const ActivityDetailsSidebar = (props: Props) => {
 
         <div className='flex grow flex-col gap-2'>
           {selectedTemplate.id === 'oneOnOneAction' ? (
-            <AdhocTeamMultiSelect
-              viewerRef={viewer}
-              onChange={(newUsers: Option[]) => {
-                setSelectedUsers(newUsers)
-              }}
-              value={selectedUsers}
-            />
+            <div className='rounded-lg bg-slate-200 p-3'>
+              <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
+              <AdhocTeamMultiSelect
+                viewerRef={viewer}
+                onChange={(newUsers: Option[]) => {
+                  setSelectedUsers(newUsers)
+                }}
+                value={selectedUsers}
+                multiple={false}
+              />
+            </div>
           ) : (
             <NewMeetingTeamPicker
               positionOverride={MenuPosition.UPPER_LEFT}

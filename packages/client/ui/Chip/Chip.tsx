@@ -22,7 +22,7 @@ export const Chip = (props: Props) => {
     >
       {icon && icon}
       {picture && (
-        <div className='relative h-6 w-6 rounded-[320px] border border-slate-100'>
+        <div className='relative h-6 w-6 rounded border border-slate-100'>
           <div
             className='h-6 w-6 rounded-full bg-cover bg-center bg-no-repeat'
             style={{backgroundImage: `url('${picture}')`}}
