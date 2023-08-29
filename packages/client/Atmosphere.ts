@@ -153,7 +153,7 @@ export default class Atmosphere extends Environment {
 
     /* if uploadables, don't set content type bc we want the browser to set it o*/
     if (!uploadables) headers['content-type'] = 'application/json'
-    const res = await fetch('/graphql', {
+    const res = await fetch('http://localhost:3000/graphql', {
       method: 'POST',
       headers,
       body: uploadables ? toFormData(body) : JSON.stringify(body)

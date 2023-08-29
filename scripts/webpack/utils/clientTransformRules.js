@@ -22,7 +22,6 @@ const clientTransformRules = (projectRoot, USE_REFRESH) => {
                   }
                 }
               ],
-              'react-refresh/babel'
             ]
           }
         },

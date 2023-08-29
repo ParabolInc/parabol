@@ -21,7 +21,7 @@ const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
 ]
 
 interface Props {
-  meetingRef: GitHubIntegrationPanel_meeting$key
+  meetingRef: GitHubIntegrationPanel_meeting$key | null
 }
 
 const GitHubIntegrationPanel = (props: Props) => {
@@ -44,7 +44,7 @@ const GitHubIntegrationPanel = (props: Props) => {
     meetingRef
   )
 
-  const teamMember = meeting.viewerMeetingMember?.teamMember
+  const teamMember = meeting?.viewerMeetingMember?.teamMember
 
   const [githubType, setGithubType] = useState<'issue' | 'pullRequest'>('issue')
 
@@ -57,7 +57,7 @@ const GitHubIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {teamMember?.integrations.github?.isActive ? (
+      {true ? (
         <>
           <div className='my-4 flex w-full gap-2 px-4'>
             {GITHUB_QUERY_TABS.map((tab) => (
@@ -75,7 +75,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               </div>
             ))}
           </div>
-          <GitHubIntegrationResultsRoot teamId={teamMember.teamId} queryType={githubType} />
+          <GitHubIntegrationResultsRoot queryType={githubType} />
         </>
       ) : (
         <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>

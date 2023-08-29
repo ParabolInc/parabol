@@ -105,6 +105,9 @@ const User: UserResolvers = {
     const invoice = await manager.retrieveInvoice(invoiceId)
     return generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader)
   },
+  integrations: ({id: userId}) => {
+    return {userId}
+  },
   availableTemplates: async ({id: userId}, {first, after}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const user = await dataLoader.get('users').loadNonNull(userId)

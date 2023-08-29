@@ -18,8 +18,8 @@ const GitHubIntegrationResults = (props: Props) => {
   const {queryRef, queryType} = props
   const query = usePreloadedQuery(
     graphql`
-      query GitHubIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
-        ...GitHubIntegrationResults_search @arguments(teamId: $teamId)
+      query GitHubIntegrationResultsQuery($searchQuery: String!) {
+        ...GitHubIntegrationResults_search
       }
     `,
     queryRef
@@ -31,33 +31,27 @@ const GitHubIntegrationResults = (props: Props) => {
   >(
     graphql`
       fragment GitHubIntegrationResults_search on Query
-      @argumentDefinitions(
-        cursor: {type: "String"}
-        count: {type: "Int", defaultValue: 25}
-        teamId: {type: "ID!"}
-      )
+      @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
       @refetchable(queryName: "GitHubIntegrationResultsSearchPaginationQuery") {
         viewer {
-          teamMember(teamId: $teamId) {
-            integrations {
-              github {
-                api {
-                  errors {
-                    message
-                    locations {
-                      line
-                      column
-                    }
-                    path
+          integrations {
+            github {
+              api {
+                errors {
+                  message
+                  locations {
+                    line
+                    column
                   }
-                  query {
-                    search(first: $count, after: $cursor, type: ISSUE, query: $searchQuery)
-                      @connection(key: "GitHubIntegrationResults_search") {
-                      edges {
-                        node {
-                          __typename
-                          ...GitHubObjectCard_result
-                        }
+                  path
+                }
+                query {
+                  search(first: $count, after: $cursor, type: ISSUE, query: $searchQuery)
+                    @connection(key: "GitHubIntegrationResults_search") {
+                    edges {
+                      node {
+                        __typename
+                        ...GitHubObjectCard_result
                       }
                     }
                   }
@@ -74,7 +68,7 @@ const GitHubIntegrationResults = (props: Props) => {
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext} = paginationRes
 
-  const github = data.viewer.teamMember?.integrations.github
+  const github = data.viewer.integrations.github
 
   const githubResults = github?.api?.query?.search.edges?.map((edge) => edge?.node)
   const errors = github?.api?.errors ?? null

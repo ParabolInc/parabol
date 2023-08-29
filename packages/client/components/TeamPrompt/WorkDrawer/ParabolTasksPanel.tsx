@@ -14,7 +14,7 @@ import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
 import clsx from 'clsx'
 
 interface Props {
-  meetingRef: ParabolTasksPanel_meeting$key
+  meetingRef: ParabolTasksPanel_meeting$key | null
 }
 
 const ParabolTasksPanel = (props: Props) => {
@@ -34,19 +34,20 @@ const ParabolTasksPanel = (props: Props) => {
   const [selectedStatus, setSelectedStatus] = useState<TaskStatusEnum>(TaskStatus.DONE)
 
   const handleAddTask = () => {
-    CreateTaskMutation(
-      atmosphere,
-      {
-        newTask: {
-          status: selectedStatus,
-          meetingId: meeting.id,
-          teamId: meeting.teamId,
-          userId: atmosphere.viewerId,
-          sortOrder: dndNoise()
-        }
-      },
-      {}
-    )
+    meeting &&
+      CreateTaskMutation(
+        atmosphere,
+        {
+          newTask: {
+            status: selectedStatus,
+            meetingId: meeting.id,
+            teamId: meeting.teamId,
+            userId: atmosphere.viewerId,
+            sortOrder: dndNoise()
+          }
+        },
+        {}
+      )
   }
 
   return (

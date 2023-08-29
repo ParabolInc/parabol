@@ -1,0 +1,10 @@
+{
+  "name": "Parabol Work Integrator",
+  "version": "0.1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "./index.html",
+    "default_title": "Parabol Work Integrator"
+  },
+  "host_permissions": ["https://*/*", "http://*/*"]
+}

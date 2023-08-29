@@ -8,7 +8,6 @@ import GitHubIntegrationResults from './GitHubIntegrationResults'
 import {renderLoader} from '~/utils/relay/renderLoader'
 
 interface Props {
-  teamId: string
   queryType: 'issue' | 'pullRequest'
 }
 
@@ -18,9 +17,8 @@ const GITHUB_QUERY_MAPPING = {
 }
 
 const GitHubIntegrationResultsRoot = (props: Props) => {
-  const {teamId, queryType} = props
+  const {queryType} = props
   const queryRef = useQueryLoaderNow<GitHubIntegrationResultsQuery>(gitHubIntegrationResultsQuery, {
-    teamId: teamId,
     searchQuery: GITHUB_QUERY_MAPPING[queryType]
   })
   return (

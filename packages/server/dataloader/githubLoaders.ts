@@ -23,6 +23,33 @@ export const githubAuth = (parent: RootDataLoader) => {
   )
 }
 
+export const githubAuthForUser = (parent: RootDataLoader) => {
+  return new DataLoader<string, GitHubAuth | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async (userId) => {
+          const user = (await parent.get('users').load(userId))!
+          const auths = (
+            await Promise.all(
+              user.tms.map((teamId) => {
+                return getGitHubAuthByUserIdTeamId(userId, teamId)
+              })
+            )
+          )
+            .filter((auth) => !!auth && auth.isActive)
+            .sort((a, b) => b!.updatedAt.getTime() - a!.updatedAt.getTime()) as GitHubAuth[]
+          return auths[0] || null
+        })
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
   return new DataLoader<
     {teamId: string; dimensionName: string; nameWithOwner: string},

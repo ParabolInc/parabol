@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <%= htmlWebpackPlugin.options.__ACTION__ ? `
     <script>
-      window.__ACTION__ = <%= htmlWebpackPlugin.options.__ACTION__ %>
+      window.__ACTION__ = ${htmlWebpackPlugin.options.__ACTION__}
     </script>
+    ` : undefined %>
     <title>Free Online Retrospectives | Parabol</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

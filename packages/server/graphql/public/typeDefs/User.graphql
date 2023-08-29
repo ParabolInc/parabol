@@ -92,6 +92,8 @@ type User {
     orgId: ID!
   ): InvoiceConnection
 
+  integrations: UserIntegrations!
+
   """
   true if the user is a billing leader on any organization, else false
   """

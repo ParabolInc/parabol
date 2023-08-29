@@ -2131,6 +2131,21 @@ type OrganizationUserEdge {
 }
 
 """
+All the available integrations available for this team member
+"""
+type UserIntegrations {
+  """
+  composite
+  """
+  id: ID!
+
+  """
+  All things associated with a GitHub integration for a team member
+  """
+  github: GitHubIntegration
+}
+
+"""
 organization-specific details about a user
 """
 type OrganizationUser {
