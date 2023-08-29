@@ -8,6 +8,13 @@ export default class ReflectPhase extends GenericMeetingPhase {
 
   constructor(public teamId: string, durations: number[] | undefined) {
     super('reflect')
-    this.stages = [new GenericMeetingStage({phaseType: REFLECT, durations})]
+    this.stages = [
+      new GenericMeetingStage({
+        phaseType: REFLECT,
+        durations,
+        isNavigable: true,
+        isNavigableByFacilitator: true
+      })
+    ]
   }
 }

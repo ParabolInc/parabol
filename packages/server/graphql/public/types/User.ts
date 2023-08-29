@@ -19,6 +19,7 @@ import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {UserResolvers} from '../resolverTypes'
+import sendToSentry from '../../../utils/sendToSentry'
 
 declare const __PRODUCTION__: string
 
@@ -128,6 +129,11 @@ const User: UserResolvers = {
           'Please implement pagination for User.activities or increase `first` for the query'
         )
       }
+    } else if (parabolActivities!.length + allUserActivities.length > 1000) {
+      sendToSentry(new Error('User.activities exceeds 1000 activities'), {
+        userId,
+        extras: {numActivities: parabolActivities!.length + allUserActivities.length}
+      })
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
       const SEASONAL = 1 << 8 // put seasonal templates at the top

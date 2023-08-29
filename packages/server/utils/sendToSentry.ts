@@ -8,12 +8,18 @@ export interface SentryOptions {
   tags?: {
     [tag: string]: string | number
   }
+  extras?: Record<string, unknown>
 }
 
 // Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
 const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
-  console.trace('SEND TO SENTRY', JSON.stringify(error), JSON.stringify(options.tags))
-  const {sampleRate, tags, userId, ip} = options
+  console.trace(
+    'SEND TO SENTRY',
+    JSON.stringify(error),
+    JSON.stringify(options.tags),
+    JSON.stringify(options.extras)
+  )
+  const {sampleRate, tags, extras, userId, ip} = options
   if (sampleRate && Math.random() > sampleRate) return
   const fullUser = userId ? await getUserById(userId) : null
   const user = fullUser ? {id: fullUser.id, email: fullUser.email} : null
@@ -26,6 +32,9 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
       Object.keys(tags).forEach((tag) => {
         scope.setTag(tag, String(tags[tag]))
       })
+    }
+    if (extras) {
+      scope.setExtras(extras)
     }
     Sentry.captureException(error)
   })

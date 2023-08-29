@@ -2,24 +2,18 @@ require('./utils/dotenv')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-const S3Plugin = require('webpack-s3-plugin')
-const getS3BasePath = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const {InjectManifest} = require('workbox-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-
 const getProjectRoot = require('./utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 const buildPath = path.join(PROJECT_ROOT, 'build')
-const publicPath = getWebpackPublicPath()
 
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
@@ -43,15 +37,16 @@ module.exports = ({isDeploy, isStats}) => ({
   stats: {
     assets: false
   },
+  devtool: 'source-map',
   mode: 'production',
   entry: {
     app: [path.join(CLIENT_ROOT, 'polyfills.ts'), path.join(CLIENT_ROOT, 'client.tsx')]
   },
   output: {
     path: buildPath,
-    publicPath,
-    filename: '[name]_[fullhash].js',
-    chunkFilename: '[name]_[fullhash].js',
+    publicPath: 'auto',
+    filename: '[name]_[contenthash].js',
+    chunkFilename: '[name]_[contenthash].js',
     crossOriginLoading: 'anonymous'
   },
   resolve: {
@@ -96,63 +91,31 @@ module.exports = ({isDeploy, isStats}) => ({
     new CopyPlugin({
       patterns: [
         {
-          from: path.join(PROJECT_ROOT, 'static', 'manifest.json'),
-          to: buildPath
+          from: path.join(PROJECT_ROOT, 'static/favicon.ico')
         }
       ]
     }),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
+      inject: false,
+      filename: 'skeleton.html',
       template: path.join(PROJECT_ROOT, 'template.html'),
-      title: 'Free Online Retrospectives | Parabol'
-    }),
-    new ScriptExtHtmlWebpackPlugin({
-      custom: {
-        test: /\.js$/,
-        attribute: 'onerror',
-        value: 'fallback(this)'
-      }
-    }),
-    new ScriptExtHtmlWebpackPlugin({
-      custom: {
-        test: /\.js$/,
-        attribute: 'crossorigin',
-        value: ''
-      }
+      title: 'Free Online Retrospectives | Parabol',
+      // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
+      publicPath: '__PUBLIC_PATH__'
     }),
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.DEBUG': false
-      // Environment variables go in createSSR.ts, not here
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
+      // Environment variables go in applyEnvVarsToClientAssets.ts, not here
       // This build may be deployed to many different environments
-    }),
-    new webpack.SourceMapDevToolPlugin({
-      // exclude css sourcemaps
-      test: /\.(js|jsx|ts|tsx)($|\?)/i,
-      filename: '[file].map[query]',
-      append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     new InjectManifest({
       swSrc: path.join(PROJECT_ROOT, 'packages/client/serviceWorker/sw.ts'),
-      swDest: 'sw.js',
+      swDest: 'swSkeleton.js',
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
-    isDeploy &&
-      new S3Plugin({
-        s3Options: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION
-        },
-        s3UploadOptions: {
-          Bucket: process.env.AWS_S3_BUCKET
-        },
-        basePath: getS3BasePath(),
-        directory: buildPath
-      }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
   module: {

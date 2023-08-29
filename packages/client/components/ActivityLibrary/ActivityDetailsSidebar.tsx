@@ -1,7 +1,7 @@
 import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
@@ -18,9 +18,6 @@ import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEve
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import SecondaryButton from '../SecondaryButton'
-import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
-import {useDialogState} from '../../ui/Dialog/useDialogState'
 import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
@@ -28,7 +25,6 @@ import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
-import isTeamHealthAvailable from '../../utils/features/isTeamHealthAvailable'
 import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
@@ -43,6 +39,7 @@ import {SelectContent} from '../../ui/Select/SelectContent'
 import {SelectGroup} from '../../ui/Select/SelectGroup'
 import {SelectItem} from '../../ui/Select/SelectItem'
 import IsOneOnOneTeamExists from './IsOneOnOneTeamExists'
+import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -80,11 +77,11 @@ const ActivityDetailsSidebar = (props: Props) => {
           id
           name
         }
+        ...ScheduleMeetingButton_viewer
       }
     `,
     viewerRef
   )
-  const hasGcalFlag = viewer.featureFlags.gcal
 
   const teams = useFragment(
     graphql`
@@ -108,9 +105,11 @@ const ActivityDetailsSidebar = (props: Props) => {
         actionSettings: meetingSettings(meetingType: action) {
           ...NewMeetingSettingsToggleCheckIn_settings
         }
+        ...NewMeetingSettingsToggleTeamHealth_team
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
+        ...ScheduleMeetingButton_team
       }
     `,
     teamsRef
@@ -138,37 +137,32 @@ const ActivityDetailsSidebar = (props: Props) => {
       templateTeam ??
       sortByTier(availableTeams)[0]!
   )
-  const [selectedOrgId, setSelectedOrgId] = useState('')
-  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
+  const mutationProps = useMutationProps()
+  const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
-  const {
-    isOpen: isScheduleDialogOpen,
-    open: openScheduleDialog,
-    close: closeScheduleDialog
-  } = useDialogState()
 
   const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
   const selectedUser = selectedUsers[0]
   const {organizations: viewerOrganizations} = viewer
 
-  const viewerOrganizationIds = new Set(viewerOrganizations.map((org) => org.id))
-
-  const selectedUserOrganizationIds = selectedUser?.organizationIds ?? []
-  const mutualOrgs = selectedUserOrganizationIds.filter((orgId) => viewerOrganizationIds.has(orgId))
+  const selectedUserOrganizationIds = new Set(selectedUser?.organizationIds ?? [])
+  const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
+  const mutualOrgsIds = mutualOrgs.map((org) => org.id)
 
   const showOrgPicker = selectedUser && (mutualOrgs.length > 1 || !mutualOrgs.length)
 
-  const manuallySelectedOrgId = showOrgPicker && selectedOrgId !== '' && selectedOrgId
-  const firstMutualOrgId = mutualOrgs[0]
-  const defaultOrgId = selectedTeam.orgId
-  const newOneOnOneTeamOrgId = manuallySelectedOrgId
-    ? manuallySelectedOrgId
-    : firstMutualOrgId ?? defaultOrgId
+  const firstMutualOrgId = mutualOrgsIds[0]
+  const defaultOrgId = firstMutualOrgId ?? selectedTeam.orgId
+  const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
+
+  useEffect(() => {
+    setSelectedOrgId(defaultOrgId)
+  }, [selectedUser])
 
   const oneOnOneTeamInput = selectedUsers[0]
     ? {
         email: selectedUsers[0].email,
-        orgId: newOneOnOneTeamOrgId
+        orgId: selectedOrgId
       }
     : null
 
@@ -218,11 +212,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         }
       )
     }
-  }
-
-  const handleStartActivityWithGcalEvent = (gcalInput: CreateGcalEventInput) => {
-    openScheduleDialog()
-    handleStartActivity(gcalInput)
   }
 
   const handleShareToOrg = () => {
@@ -291,20 +280,21 @@ const ActivityDetailsSidebar = (props: Props) => {
               {showOrgPicker && (
                 <>
                   <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
-                  <Select
-                    onValueChange={(orgId) => setSelectedOrgId(orgId)}
-                    value={newOneOnOneTeamOrgId}
-                  >
+                  <Select onValueChange={(orgId) => setSelectedOrgId(orgId)} value={selectedOrgId}>
                     <SelectTrigger className='bg-white'>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {viewerOrganizations.map((org) => (
-                          <SelectItem value={org.id} key={org.id}>
-                            {org.name}
-                          </SelectItem>
-                        ))}
+                        {viewerOrganizations
+                          .filter((org) =>
+                            mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true
+                          )
+                          .map((org) => (
+                            <SelectItem value={org.id} key={org.id}>
+                              {org.name}
+                            </SelectItem>
+                          ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -343,9 +333,10 @@ const ActivityDetailsSidebar = (props: Props) => {
               {type === 'retrospective' && (
                 <>
                   <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                  {isTeamHealthAvailable(selectedTeam.tier) && (
-                    <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
-                  )}
+                  <NewMeetingSettingsToggleTeamHealth
+                    settingsRef={selectedTeam.retroSettings}
+                    teamRef={selectedTeam}
+                  />
                   <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
                 </>
               )}
@@ -369,15 +360,12 @@ const ActivityDetailsSidebar = (props: Props) => {
                 {selectedTemplate.id !== 'oneOnOneAction' && (
                   <NewMeetingActionsCurrentMeetings team={selectedTeam} />
                 )}
-                {hasGcalFlag && (
-                  <SecondaryButton
-                    onClick={openScheduleDialog}
-                    waiting={submitting}
-                    className='h-14'
-                  >
-                    <div className='text-lg'>Schedule</div>
-                  </SecondaryButton>
-                )}
+                <ScheduleMeetingButton
+                  handleStartActivity={handleStartActivity}
+                  mutationProps={mutationProps}
+                  teamRef={selectedTeam}
+                  viewerRef={viewer}
+                />
                 <FlatPrimaryButton
                   onClick={() => handleStartActivity()}
                   waiting={submitting}
@@ -390,11 +378,6 @@ const ActivityDetailsSidebar = (props: Props) => {
           )}
         </div>
       </div>
-      <GcalModal
-        closeModal={closeScheduleDialog}
-        isOpen={isScheduleDialogOpen}
-        handleCreateGcalEvent={handleStartActivityWithGcalEvent}
-      />
     </>
   )
 }

@@ -19,12 +19,22 @@ export default class LocalFileSystemManager extends FileStoreManager {
     return encodeURI(makeAppURL(appOrigin, fullPath))
   }
 
-  protected async putFile(file: Buffer, partialPath: string) {
+  protected async putUserFile(file: Buffer, partialPath: string) {
     const fullPath = this.prependPath(partialPath)
+    return this.putFile(file, fullPath)
+  }
+  protected async putFile(file: Buffer, fullPath: string) {
     const fsAbsLocation = path.join(process.cwd(), fullPath)
     await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
     await fs.promises.writeFile(fsAbsLocation, file)
     return this.getPublicFileLocation(fullPath)
+  }
+
+  async putBuildFile() {
+    console.error(
+      'Cannot call `putBuildFile` when using Local File Storage. The build files are already there'
+    )
+    return ''
   }
 
   async checkExists(partialPath: string) {

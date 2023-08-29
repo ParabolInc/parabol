@@ -2,9 +2,14 @@ import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {RValue} from '../../../database/stricterR'
 
-const getExistingExactTeams = async (userIds: string[], orgId: string) => {
+export const getExistingOneOnOneTeam = async (
+  userId: string,
+  secondUserId: string,
+  orgId: string
+) => {
   const r = await getRethink()
   const pg = getKysely()
+  const userIds = [userId, secondUserId]
   const existingTeamIds = await (
     r
       .table('TeamMember')
@@ -17,38 +22,22 @@ const getExistingExactTeams = async (userIds: string[], orgId: string) => {
     .ungroup()
     .filter(r.row('reduction').eq(userIds.length))
     .without('reduction')
-    // Get all team members for each team
-    .eqJoin('group', r.table('TeamMember'), {index: 'teamId'})
-    .zip()
-    .group('teamId')
-    .pluck('userId')
-    .ungroup()
-    // Select only teams with exact given number of team members
-    .filter((row: RValue) => {
-      return row('reduction').count().eq(userIds.length)
-    })
     .getField('group')
     .coerceTo('array')
     .run()
 
   if (!existingTeamIds.length) {
-    return []
+    return null
   }
 
-  return pg
+  const teams = await pg
     .selectFrom('Team')
     .selectAll()
     .where('id', 'in', existingTeamIds)
     .where('orgId', '=', orgId)
+    .where('isOneOnOneTeam', '=', true)
     .where('isArchived', '=', false)
     .execute()
-}
 
-export const getExistingOneOnOneTeam = async (
-  userId: string,
-  secondUserId: string,
-  orgId: string
-) => {
-  const teams = await getExistingExactTeams([userId, secondUserId], orgId)
   return teams[0]
 }

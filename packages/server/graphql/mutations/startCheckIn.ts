@@ -59,6 +59,15 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
 
+    if (existingTeamId && oneOnOneTeamInput) {
+      return standardError(
+        new Error('Please provide either "teamId" or "oneOnOneTeamInput", but not both'),
+        {
+          userId: viewerId
+        }
+      )
+    }
+
     if (existingTeamId) {
       if (!isTeamMember(authToken, existingTeamId)) {
         return standardError(new Error('Team not found'), {userId: viewerId})
@@ -131,9 +140,10 @@ export default {
       updateTeamByTeamId(updates, teamId),
       r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
     ])
-    createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+    createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    analytics.meetingStarted(viewerId, meeting)
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    analytics.meetingStarted(viewerId, meeting, undefined, team)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
     return data

@@ -41,6 +41,9 @@ export interface IntegrationProviderMattermost extends Omit<IntegrationProviderW
   scopeGlobal: false
 }
 
+export interface IntegrationProviderGcalOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'gcal'
+}
 export interface IntegrationProviderGitLabOAuth2 extends IntegrationProviderOAuth2 {
   service: 'gitlab'
 }
@@ -68,6 +71,7 @@ export type TIntegrationProvider =
   | IntegrationProviderJiraServer
   | IntegrationProviderAzureDevOps
   | IntegrationProviderMSTeams
+  | IntegrationProviderGcalOAuth2
 
 const getIntegrationProvidersByIds = async <T = TIntegrationProvider>(ids: readonly number[]) => {
   const providers = await getIntegrationProvidersByIdsQuery.run({ids}, getPg())
