@@ -22,7 +22,7 @@ const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
     {}
   )
   return (
-    <Suspense fallback={MockFieldList}>
+    <Suspense fallback={<MockFieldList />}>
       {queryRef && (
         <TaskFooterTeamAssigneeMenu queryRef={queryRef} menuProps={menuProps} task={task} />
       )}

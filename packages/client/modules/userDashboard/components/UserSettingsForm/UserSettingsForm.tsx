@@ -86,7 +86,7 @@ function UserSettings(props: UserSettingsProps) {
       <div onClick={togglePortal}>
         <EditableAvatar picture={pictureOrDefault} size={96} />
       </div>
-      {modalPortal(<UserAvatarInput picture={pictureOrDefault} />)}
+      {modalPortal(<UserAvatarInput closeModal={togglePortal} picture={pictureOrDefault} />)}
       <InfoBlock>
         <FieldLabel
           customStyles={{paddingBottom: 8}}

@@ -22,6 +22,15 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       clientSecret: process.env.AZURE_DEVOPS_CLIENT_SECRET,
       // tenantId needs to be 'common' for apps shared with multiple tenants
       tenantId: 'common'
+    },
+    {
+      service: 'gcal',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      teamId: 'aGhostTeam',
+      serverBaseUrl: 'https://www.googleapis.com/calendar/v3',
+      clientId: process.env.GCAL_CLIENT_ID,
+      clientSecret: process.env.GCAL_CLIENT_SECRET
     }
   ] as const
 
