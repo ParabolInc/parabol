@@ -1,12 +1,11 @@
 import SegmentIo from 'analytics-node'
-import PROD from '../PROD'
-import getDataLoader from '../graphql/getDataLoader'
 import {CacheWorker, DataLoaderBase} from '../graphql/DataLoaderCache'
+import getDataLoader from '../graphql/getDataLoader'
 
 const {SEGMENT_WRITE_KEY} = process.env
 
 const segmentIo = new SegmentIo(SEGMENT_WRITE_KEY || 'x', {
-  flushAt: PROD ? 20 : 1,
+  flushAt: __PRODUCTION__ ? 20 : 1,
   enable: !!SEGMENT_WRITE_KEY
 }) as any
 segmentIo._track = segmentIo.track

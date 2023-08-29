@@ -8,7 +8,6 @@ import tracer from 'dd-trace'
 import {graphql} from 'graphql'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
 import AuthToken from '../database/types/AuthToken'
-import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
@@ -77,7 +76,7 @@ const executeGraphQL = async (req: GQLRequest) => {
       response = {errors: [new Error(message)] as any}
     }
   }
-  if (!PROD && response.errors) {
+  if (!__PRODUCTION__ && response.errors) {
     const [firstError] = response.errors
     console.log((firstError as Error).stack)
     console.trace({error: JSON.stringify(response)})

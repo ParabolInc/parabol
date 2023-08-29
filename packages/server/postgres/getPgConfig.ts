@@ -1,4 +1,3 @@
-import PROD from '../PROD'
 // @ts-ignore
 import getPgSSL from './getPgSSL'
 
@@ -9,7 +8,7 @@ const getPgConfig = () => {
     database: process.env.POSTGRES_DB,
     host: process.env.POSTGRES_HOST,
     port: Number(process.env.POSTGRES_PORT),
-    max: Number(process.env.POSTGRES_POOL_SIZE) || PROD ? 20 : 5
+    max: Number(process.env.POSTGRES_POOL_SIZE) || __PRODUCTION__ ? 20 : 5
   }
   const ssl = getPgSSL()
   if (!ssl) return config
