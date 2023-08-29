@@ -256,7 +256,7 @@ const NewTeamForm = (props: Props) => {
     } else {
       const {parsedInvitees} = parseEmailAddressList(rawInvitees)
       const currentInvitees = parsedInvitees
-        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+        ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
         : []
       const remainingInvitees = currentInvitees.filter(
         (email) => !uniqueEmailsFromSelectedOrg.includes(email)

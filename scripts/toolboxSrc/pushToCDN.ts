@@ -1,21 +1,40 @@
 import fs from 'fs'
 import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
 import path from 'path'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
 
-/* Today, this just syncs meeting template illustrations.
-   In the future, we can use this to push an entire client build to a CDN.
-   That way each PPMI can function without access to our cloud CDN. #8101
-*/
-const pushToCDN = async () => {
-  console.log('⛅️ Push to CDN Started')
-  const collector = {}
+const PROJECT_ROOT = getProjectRoot()
+
+const pushClientAssetsToCDN = async () => {
+  const fileStoreManager = getFileStoreManager()
+  const localClientAssetsDir = path.join(PROJECT_ROOT, 'build')
+  if (process.env.FILE_STORE_PROVIDER === 'local') {
+    console.log('⛅️ Using Local File Store for client assets. Skipping...')
+    return
+  }
+
+  const dirEnts = await fs.promises.readdir(localClientAssetsDir, {withFileTypes: true})
+  await Promise.all(
+    dirEnts.map(async (dirent) => {
+      const {name} = dirent
+      if (!dirent.isFile()) throw new Error(`⛅️ Expected ${name} to be a file`)
+      const file = await fs.promises.readFile(path.join(localClientAssetsDir, name))
+      return fileStoreManager.putBuildFile(file, name)
+    })
+  )
+  console.log(`⛅️ Uploaded ${dirEnts.length} client assets to CDN`)
+}
+
+const pushTemplatesToCDN = async () => {
+  const fileStoreManager = getFileStoreManager()
+  const collector = {} as Record<string, string>
   const context = (require as any).context(
     '../../static/images/illustrations',
     false,
     /\/action.png$|\/teamPrompt.png$|Template.png$/
   )
 
-  context.keys().forEach((relativePath) => {
+  context.keys().forEach((relativePath: string) => {
     const {name, ext} = path.parse(relativePath)
     // This path only exists on the build machine
     const builtPath = context(relativePath).default
@@ -24,7 +43,6 @@ const pushToCDN = async () => {
     const absPath = builtPath.replace(/^.+\/dist(\/.+$)/, __dirname + '$1')
     collector[`${name}${ext}`] = absPath
   })
-  const fileStoreManager = getFileStoreManager()
   const results = await Promise.all(
     Object.entries(collector).map(async ([fileName, pathName]) => {
       // store meeting templates under our Parabol ghost organization
@@ -42,7 +60,12 @@ const pushToCDN = async () => {
     console.log(urls.join('\n'))
   }
 
-  console.log(`⛅️ Push to CDN Complete: ${urls.length} files pushed`)
+  console.log(`⛅️ Uploaded ${urls.length} Meeting Templates to CDN`)
+}
+const pushToCDN = async () => {
+  console.log('⛅️ Push to CDN Started')
+  await Promise.all([pushClientAssetsToCDN(), pushTemplatesToCDN()])
+  console.log('⛅️ Push to CDN Complete')
 }
 
 // If called via CLI

@@ -42,7 +42,7 @@ jobs:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
-      STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
+      STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.fun"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
     working_directory: ~/action
     resource_class: medium
@@ -116,7 +116,7 @@ jobs:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
-      STAGING_BACKUP_LOCATION: "dokku@backups.action-staging.parabol.co"
+      STAGING_BACKUP_LOCATION: "dokku@backups.action-staging.parabol.fun"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
     working_directory: ~/action
     resource_class: medium
@@ -153,7 +153,7 @@ jobs:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"$DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s dokku@backups.action-staging.parabol.co -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y\"
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"$DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s dokku@backups.action-staging.parabol.fun -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y\"
       - run:
           name: Clean up last backup
           no_output_timeout: 55m
@@ -182,7 +182,7 @@ jobs:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production-web-nyc1-03.parabol.co:web"
-      GITHUB_REMOTE_STAGING: "dokku@action-staging-web-nyc1-03.parabol.co:web"
+      GITHUB_REMOTE_STAGING: "dokku@action-staging-web-nyc1-03.parabol.fun:web"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching

@@ -62,6 +62,7 @@ class OpenAIServerManager {
     const prompt = `Below is a newline delimited text from a ${location}.
     Summarize the text for the meeting facilitator in one or two sentences.
     When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
+    Aim for brevity and clarity. If your summary exceeds 50 characters, iterate until it fits while retaining the essence. Your final response should only include the shortened summary.
 
     Text: """
     ${textStr}
@@ -147,11 +148,11 @@ class OpenAIServerManager {
   async generateThemes(reflectionsText: string[]) {
     if (!this.openAIApi) return null
     const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
-    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 4)
+    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 3)
     // Specify the approximate number of themes as it will often create too many themes otherwise
     const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
       ', '
-    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} or ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
+    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} to ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
 
     try {
       const response = await this.openAIApi.createChatCompletion({

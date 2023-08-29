@@ -9,39 +9,38 @@ import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
+import {Close} from '@mui/icons-material'
+import FlatButton from './FlatButton'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',
   width: '6rem'
 })
 
-const flexBase = {
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center'
-}
-
 const ModalBoundary = styled('div')({
-  ...flexBase,
+  display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'space-between',
   background: '#FFFFFF',
   borderRadius: 8,
   height: 374,
   width: 700
 })
 
-const StyledDialogTitle = styled(DialogTitle)({
-  textAlign: 'center'
-})
-
-interface Props {
+type Props = {
   picture: string
+  closeModal: () => void
 }
 
 const UserAvatarInput = (props: Props) => {
-  const {picture} = props
+  const {closeModal, picture} = props
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
+
+  const handleClose = () => {
+    closeModal()
+  }
 
   const onSubmit = async (file: File) => {
     if (submitting) return
@@ -69,11 +68,25 @@ const UserAvatarInput = (props: Props) => {
 
   return (
     <ModalBoundary>
-      <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
-      <AvatarBlock>
-        <Avatar picture={picture} size={96} />
-      </AvatarBlock>
-      <AvatarInput error={error?.message} onSubmit={onSubmit} />
+      <div className='title-wrapper flex w-full items-center justify-between pr-6'>
+        <DialogTitle className='text-slate-700'>{'Upload a New Photo'}</DialogTitle>
+        <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
+      </div>
+      <div>
+        {/* upload */}
+        <AvatarBlock>
+          <Avatar picture={picture} size={96} />
+        </AvatarBlock>
+        <AvatarInput error={error?.message} onSubmit={onSubmit} />
+      </div>
+      <div className='flex w-full justify-end'>
+        <FlatButton
+          onClick={handleClose}
+          className='mr-6 mb-6 bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
+        >
+          {'Save'}
+        </FlatButton>
+      </div>
     </ModalBoundary>
   )
 }
