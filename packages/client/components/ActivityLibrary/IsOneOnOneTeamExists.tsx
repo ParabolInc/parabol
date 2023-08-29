@@ -22,28 +22,34 @@ const isOneOnOneExistsQuery = graphql`
 
 interface ComponentProps {
   queryRef: PreloadedQuery<IsOneOnOneTeamExistsQuery>
+  name: string
 }
 
 const IsOneOnOneTeamExistsComponent = (props: ComponentProps) => {
-  const {queryRef} = props
+  const {queryRef, name} = props
   const data = usePreloadedQuery<IsOneOnOneTeamExistsQuery>(isOneOnOneExistsQuery, queryRef)
 
   const team = data.isOneOnOneTeamExists.team
 
-  return <div>{team ? 'Team already exists' : 'A new team will be created'}</div>
+  return (
+    <div className='mb-4 text-center text-sm'>
+      {team ? `"${team.name}" team will be used` : `A new team will be created for you and ${name}`}
+    </div>
+  )
 }
 
 interface Props {
   oneOnOneTeamInput: CreateOneOnOneTeamInput
+  name: string
 }
 
-const IsOneOnOneTeamExists = ({oneOnOneTeamInput}: Props) => {
+const IsOneOnOneTeamExists = ({oneOnOneTeamInput, name}: Props) => {
   const queryRef = useQueryLoaderNow<IsOneOnOneTeamExistsQuery>(isOneOnOneExistsQuery, {
     oneOnOneTeamInput
   })
   return (
-    <Suspense fallback={renderLoader({size: LoaderSize.PANEL})}>
-      {queryRef && <IsOneOnOneTeamExistsComponent queryRef={queryRef} />}
+    <Suspense fallback={renderLoader({size: LoaderSize.MENU})}>
+      {queryRef && <IsOneOnOneTeamExistsComponent queryRef={queryRef} name={name} />}
     </Suspense>
   )
 }

@@ -355,7 +355,10 @@ const ActivityDetailsSidebar = (props: Props) => {
               <div className='flex grow flex-col justify-end gap-2'>
                 {error && <StyledError>{error.message}</StyledError>}
                 {oneOnOneTeamInput && (
-                  <IsOneOnOneTeamExists oneOnOneTeamInput={oneOnOneTeamInput} />
+                  <IsOneOnOneTeamExists
+                    oneOnOneTeamInput={oneOnOneTeamInput}
+                    name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
+                  />
                 )}
                 {selectedTemplate.id !== 'oneOnOneAction' && (
                   <NewMeetingActionsCurrentMeetings team={selectedTeam} />
