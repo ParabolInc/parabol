@@ -135,7 +135,7 @@ export default {
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     await Promise.all([
       r.table('NewMeeting').insert(meeting).run(),
-      updateMeetingTemplateLastUsedAt(selectedTemplateId)
+      updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
     ])
 
     // Disallow accidental starts (2 meetings within 2 seconds)

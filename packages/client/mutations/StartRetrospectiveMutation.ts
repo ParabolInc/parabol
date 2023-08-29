@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {StartRetrospectiveMutation as TStartRetrospectiveMutation} from '../__generated__/StartRetrospectiveMutation.graphql'
+import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartRetrospectiveMutation_team on StartRetrospectiveSuccess {
@@ -10,6 +10,13 @@ graphql`
     }
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)
+      meetingSettings(meetingType: retrospective) {
+        ... on RetrospectiveMeetingSettings {
+          selectedTemplate {
+            subCategories
+          }
+        }
+      }
     }
   }
 `
