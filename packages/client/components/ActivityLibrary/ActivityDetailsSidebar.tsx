@@ -31,6 +31,7 @@ import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeeting
 import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
+import {AdhocTeamMultiSelect, Option} from '../AdhocTeamMultiSelect/AdhocTeamMultiSelect'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -61,6 +62,10 @@ const ActivityDetailsSidebar = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_viewer on User {
+        featureFlags {
+          gcal
+        }
+        ...AdhocTeamMultiSelect_viewer
         ...ScheduleMeetingButton_viewer
       }
     `,
@@ -125,6 +130,16 @@ const ActivityDetailsSidebar = (props: Props) => {
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
 
+  const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
+
+  const oneOnOneTeamInput = selectedUsers[0]
+    ? {
+        email: selectedUsers[0].email,
+        // TODO: always pick default orgId for now, this will be changed in next PRs
+        orgId: selectedTeam.orgId
+      }
+    : null
+
   const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
     submitMutation()
@@ -144,7 +159,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     } else if (type === 'action') {
       StartCheckInMutation(
         atmosphere,
-        {teamId: selectedTeam.id, gcalInput},
+        {teamId: !oneOnOneTeamInput ? selectedTeam.id : null, oneOnOneTeamInput, gcalInput},
         {history, onError, onCompleted}
       )
     } else {
@@ -225,16 +240,12 @@ const ActivityDetailsSidebar = (props: Props) => {
 
         <div className='flex grow flex-col gap-2'>
           {selectedTemplate.id === 'oneOnOneAction' ? (
-            // TODO: replace it with new user picker
-            <NewMeetingTeamPicker
-              positionOverride={MenuPosition.UPPER_LEFT}
-              onSelectTeam={(teamId) => {
-                const newTeam = availableTeams.find((team) => team.id === teamId)
-                newTeam && setSelectedTeam(newTeam)
+            <AdhocTeamMultiSelect
+              viewerRef={viewer}
+              onChange={(newUsers: Option[]) => {
+                setSelectedUsers(newUsers)
               }}
-              selectedTeamRef={selectedTeam}
-              teamsRef={availableTeams}
-              customPortal={teamScopePopover}
+              value={selectedUsers}
             />
           ) : (
             <NewMeetingTeamPicker
