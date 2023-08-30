@@ -122,7 +122,7 @@
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
-          "TeamPromptQuestion": "../../postgres/pg.d.ts#TeamPromptQuestion"
+          "TeamPromptQuestion": ".types/TeamPromptQuestion#TTeamPromptQuestion"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],
