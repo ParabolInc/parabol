@@ -157,6 +157,7 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   useEffect(() => {
     setSelectedOrgId(defaultOrgId)
+    onError(new Error(''))
   }, [selectedUser])
 
   const oneOnOneTeamInput = selectedUsers[0]
@@ -183,11 +184,23 @@ const ActivityDetailsSidebar = (props: Props) => {
         {history, onError, onCompleted}
       )
     } else if (type === 'action') {
-      StartCheckInMutation(
-        atmosphere,
-        {teamId: !oneOnOneTeamInput ? selectedTeam.id : null, oneOnOneTeamInput, gcalInput},
-        {history, onError, onCompleted}
-      )
+      const variables =
+        selectedTemplate.id !== 'oneOnOneAction'
+          ? {
+              teamId: selectedTeam.id,
+              gcalInput
+            }
+          : {
+              oneOnOneTeamInput,
+              gcalInput
+            }
+
+      if (selectedTemplate.id === 'oneOnOneAction' && !oneOnOneTeamInput) {
+        onError(new Error('Please select a teammate'))
+        return
+      }
+
+      StartCheckInMutation(atmosphere, variables, {history, onError, onCompleted})
     } else {
       SelectTemplateMutation(
         atmosphere,
@@ -353,13 +366,13 @@ const ActivityDetailsSidebar = (props: Props) => {
                 />
               )}
               <div className='flex grow flex-col justify-end gap-2'>
-                {error && <StyledError>{error.message}</StyledError>}
                 {oneOnOneTeamInput && (
                   <IsOneOnOneTeamExists
                     oneOnOneTeamInput={oneOnOneTeamInput}
                     name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
                   />
                 )}
+                {error && <StyledError>{error.message}</StyledError>}
                 {selectedTemplate.id !== 'oneOnOneAction' && (
                   <NewMeetingActionsCurrentMeetings team={selectedTeam} />
                 )}

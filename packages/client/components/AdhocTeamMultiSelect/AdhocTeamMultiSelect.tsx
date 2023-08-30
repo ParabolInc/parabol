@@ -7,6 +7,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
 import {Send as SendIcon} from '@mui/icons-material'
 import {Chip} from '../../ui/Chip/Chip'
+import {emailRegex} from '../../validation/regex'
 
 export type Option = {
   id: string | null
@@ -43,6 +44,8 @@ const autocompleteEmail = (input: string, domain: string) => {
 
 export const AdhocTeamMultiSelect = (props: Props) => {
   const {viewerRef, onChange, value, multiple = true} = props
+  const [error, setError] = React.useState<string | null>(null)
+
   const viewer = useFragment(
     graphql`
       fragment AdhocTeamMultiSelect_viewer on User {
@@ -128,6 +131,16 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       const normalizedNewValue = valueArray.map((value) =>
         typeof value === 'string' ? createCustomOption(value) : value
       )
+
+      const isValid =
+        !normalizedNewValue.length ||
+        normalizedNewValue.some((value) => emailRegex.test(value.email))
+      if (!isValid) {
+        setError('Please enter a valid email')
+        return
+      }
+
+      setError(null)
       onChange(normalizedNewValue)
     },
     filterOptions: (options, params) => {
@@ -170,6 +183,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
             className='m-0 box-border min-h-[36px] w-0 min-w-[30px] flex-grow border-0 bg-white pl-1 text-black outline-none'
           />
         </div>
+        <div className='mt-2 text-sm font-semibold text-tomato-500'>{error && error}</div>
       </div>
       {groupedOptions.length > 0 ? (
         <ul
