@@ -7,7 +7,7 @@ import useTooltip from '~/hooks/useTooltip'
 import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import textOverflow from '../../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../../styles/paletteV3'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
@@ -103,6 +103,7 @@ interface Props {
   canAssign: boolean
   cardIsActive: boolean
   task: TaskFooterUserAssignee_task$key
+  handleCardUpdate: () => void
   useTaskChild: UseTaskChild
 }
 
@@ -114,11 +115,12 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
-  const {area, canAssign, cardIsActive, task: taskRef, useTaskChild} = props
+  const {area, canAssign, cardIsActive, task: taskRef, handleCardUpdate, useTaskChild} = props
   const task = useFragment(
     graphql`
       fragment TaskFooterUserAssignee_task on Task {
         ...TaskFooterUserAssigneeMenuRoot_task
+        id
         user {
           picture
           preferredName
@@ -130,10 +132,11 @@ const TaskFooterUserAssignee = (props: Props) => {
     `,
     taskRef
   )
-  const {user} = task
+  const {user, id: taskId} = task
   const userImage = user?.picture || avatarUser
   const preferredName = user?.preferredName || 'Unassigned'
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
+  const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const {
     tooltipPortal,
     openTooltip,
@@ -151,6 +154,11 @@ const TaskFooterUserAssignee = (props: Props) => {
         <AvatarButton
           aria-label='Assign this task to a teammate'
           onClick={canAssign ? togglePortal : undefined}
+          onBlur={() => {
+            removeTaskChild('userAssignee')
+            setTimeout(handleCardUpdate)
+          }}
+          onFocus={() => addTaskChild('userAssignee')}
           onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
           ref={originRef}
         >

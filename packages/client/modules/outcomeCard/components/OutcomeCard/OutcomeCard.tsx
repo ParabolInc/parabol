@@ -141,6 +141,7 @@ const OutcomeCard = memo((props: Props) => {
           isTaskHovered={isTaskHovered}
           isArchived={isArchived}
           task={task}
+          handleCardUpdate={handleCardUpdate}
           useTaskChild={useTaskChild}
         >
           <StatusIndicatorBlock data-cy={`${dataCy}-status`} title={statusIndicatorTitle}>
@@ -175,6 +176,7 @@ const OutcomeCard = memo((props: Props) => {
           area={area}
           cardIsActive={isTaskFocused || isTaskHovered || isEditing}
           editorState={editorState}
+          handleCardUpdate={handleCardUpdate}
           isAgenda={isAgenda}
           task={task}
           useTaskChild={useTaskChild}

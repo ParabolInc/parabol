@@ -39,12 +39,13 @@ interface Props {
   children: ReactNode
   isTaskHovered: boolean
   task: EditingStatus_task$key
+  handleCardUpdate: () => void
   useTaskChild: UseTaskChild
   isArchived?: boolean
 }
 
 const EditingStatus = (props: Props) => {
-  const {children, isTaskHovered, task: taskRef, useTaskChild, isArchived} = props
+  const {children, isTaskHovered, task: taskRef, handleCardUpdate, useTaskChild, isArchived} = props
   const task = useFragment(
     graphql`
       fragment EditingStatus_task on Task {
@@ -102,6 +103,7 @@ const EditingStatus = (props: Props) => {
         cardIsActive={isEditing || isTaskHovered}
         isArchived={isArchived}
         task={task}
+        handleCardUpdate={handleCardUpdate}
         useTaskChild={useTaskChild}
       />
     </StatusHeader>

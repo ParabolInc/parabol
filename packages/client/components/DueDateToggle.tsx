@@ -7,7 +7,7 @@ import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {UseTaskChild} from '../hooks/useTaskChildFocus'
+import useTaskChildFocus, {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {PALETTE} from '../styles/paletteV3'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
@@ -101,6 +101,7 @@ const DateString = styled('span')({
 interface Props {
   cardIsActive: boolean
   task: DueDateToggle_task$key
+  handleCardUpdate: () => void
   useTaskChild: UseTaskChild
   isArchived?: boolean
 }
@@ -134,17 +135,18 @@ const DueDatePicker = lazyPreload(
 )
 
 const DueDateToggle = (props: Props) => {
-  const {cardIsActive, task: taskRef, useTaskChild, isArchived} = props
+  const {cardIsActive, task: taskRef, handleCardUpdate, useTaskChild, isArchived} = props
   const task = useFragment(
     graphql`
       fragment DueDateToggle_task on Task {
         dueDate
+        id
         ...DueDatePicker_task
       }
     `,
     taskRef
   )
-  const {dueDate} = task
+  const {dueDate, id: taskId} = task
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const {
     tooltipPortal,
@@ -153,6 +155,7 @@ const DueDateToggle = (props: Props) => {
     originRef: tipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
+  const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   return (
     <>
       {!isArchived && (
@@ -165,6 +168,11 @@ const DueDateToggle = (props: Props) => {
           ref={originRef}
           onClick={togglePortal}
           onMouseEnter={DueDatePicker.preload}
+          onBlur={() => {
+            removeTaskChild('dueDate')
+            setTimeout(handleCardUpdate)
+          }}
+          onFocus={() => addTaskChild('dueDate')}
         >
           <DueDateIcon
             onClick={closeTooltip}

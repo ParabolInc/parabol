@@ -55,12 +55,22 @@ interface Props {
   editorState: EditorState
   isAgenda: boolean
   task: TaskFooter_task$key
+  handleCardUpdate: () => void
   useTaskChild: UseTaskChild
   dataCy: string
 }
 
 const TaskFooter = (props: Props) => {
-  const {area, cardIsActive, editorState, isAgenda, task: taskRef, useTaskChild, dataCy} = props
+  const {
+    area,
+    cardIsActive,
+    editorState,
+    isAgenda,
+    task: taskRef,
+    handleCardUpdate,
+    useTaskChild,
+    dataCy
+  } = props
   const task = useFragment(
     graphql`
       fragment TaskFooter_task on Task {
@@ -117,6 +127,7 @@ const TaskFooter = (props: Props) => {
             <TaskFooterTeamAssignee
               canAssign={canAssignTeam}
               task={task}
+              handleCardUpdate={handleCardUpdate}
               useTaskChild={useTaskChild}
             />
           ) : (
@@ -125,6 +136,7 @@ const TaskFooter = (props: Props) => {
               canAssign={canAssignUser}
               cardIsActive={cardIsActive}
               task={task}
+              handleCardUpdate={handleCardUpdate}
               useTaskChild={useTaskChild}
             />
           )}
@@ -137,6 +149,7 @@ const TaskFooter = (props: Props) => {
               dataCy={`${dataCy}-integration`}
               mutationProps={mutationProps}
               task={task}
+              handleCardUpdate={handleCardUpdate}
               useTaskChild={useTaskChild}
             />
           )}
@@ -153,6 +166,7 @@ const TaskFooter = (props: Props) => {
               editorState={editorState}
               isAgenda={isAgenda}
               task={task}
+              handleCardUpdate={handleCardUpdate}
               useTaskChild={useTaskChild}
               mutationProps={mutationProps}
             />

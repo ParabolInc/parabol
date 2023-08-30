@@ -6,7 +6,7 @@ import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import textOverflow from '../../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Radius} from '../../../../types/constEnums'
@@ -46,6 +46,7 @@ const TeamToggleButton = styled(CardButton)({
 interface Props {
   canAssign: boolean
   task: TaskFooterTeamAssignee_task$key
+  handleCardUpdate: () => void
   useTaskChild: UseTaskChild
 }
 
@@ -57,12 +58,13 @@ const TaskFooterTeamAssigneeMenuRoot = lazyPreload(
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
-  const {canAssign, task: taskRef, useTaskChild} = props
+  const {canAssign, task: taskRef, handleCardUpdate, useTaskChild} = props
 
   const task = useFragment(
     graphql`
       fragment TaskFooterTeamAssignee_task on Task {
         ...TaskFooterTeamAssigneeMenu_task
+        id
         team {
           name
         }
@@ -71,7 +73,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
     taskRef
   )
 
-  const {team} = task
+  const {team, id: taskId} = task
   const {name: teamName} = team
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
     id: 'taskFooterTeamAssigneeMenu'
@@ -82,9 +84,19 @@ const TaskFooterTeamAssignee = (props: Props) => {
     closeTooltip,
     originRef: tipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
+  const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   return (
     <>
-      <TooltipToggle onClick={closeTooltip} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
+      <TooltipToggle
+        onClick={closeTooltip}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        onBlur={() => {
+          removeTaskChild('teamAssignee')
+          setTimeout(handleCardUpdate)
+        }}
+        onFocus={() => addTaskChild('teamAssignee')}
+      >
         <TeamToggleButton
           aria-label='Assign this task to another team'
           onClick={canAssign ? togglePortal : undefined}

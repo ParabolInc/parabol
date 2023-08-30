@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import {
   Add,
+  AppRegistration,
+  Apps,
   Archive,
   ArrowBack,
   ArrowForward,
@@ -25,7 +27,8 @@ import {
   TaskAlt,
   Tune,
   UnfoldMore,
-  WebAsset
+  WebAsset,
+  Widgets
 } from '@mui/icons-material'
 import React, {forwardRef, ReactNode} from 'react'
 
@@ -99,7 +102,10 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
             close: <Close />,
             publish: <Publish />,
             tune: <Tune />,
-            task_alt: <TaskAlt />
+            task_alt: <TaskAlt />,
+            apps: <Apps />,
+            app_registration: <AppRegistration />,
+            widgets: <Widgets />
           }[icon]
         }
       </StyledIcon>

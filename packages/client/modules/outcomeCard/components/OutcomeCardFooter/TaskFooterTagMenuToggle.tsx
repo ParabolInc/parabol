@@ -7,7 +7,7 @@ import IconLabel from '../../../../components/IconLabel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import lazyPreload from '../../../../utils/lazyPreload'
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
   editorState: EditorState
   isAgenda: boolean
   task: any
+  handleCardUpdate: () => void
   useTaskChild: UseTaskChild
   mutationProps: MenuMutationProps
   dataCy: string
@@ -26,8 +27,11 @@ const TaskFooterTagMenu = lazyPreload(
 )
 
 const TaskFooterTagMenuToggle = (props: Props) => {
-  const {area, editorState, isAgenda, mutationProps, task, useTaskChild, dataCy} = props
+  const {area, editorState, isAgenda, mutationProps, task, handleCardUpdate, useTaskChild, dataCy} =
+    props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {id: taskId} = task
+  const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const {
     tooltipPortal,
     openTooltip,
@@ -41,6 +45,11 @@ const TaskFooterTagMenuToggle = (props: Props) => {
         onMouseEnter={TaskFooterTagMenu.preload}
         ref={originRef}
         onClick={togglePortal}
+        onBlur={() => {
+          removeTaskChild('tag')
+          setTimeout(handleCardUpdate)
+        }}
+        onFocus={() => addTaskChild('tag')}
       >
         <IconLabel
           icon='more_vert'
