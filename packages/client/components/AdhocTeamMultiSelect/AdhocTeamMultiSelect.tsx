@@ -202,6 +202,14 @@ export const AdhocTeamMultiSelect = (props: Props) => {
                 } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-none hover:bg-slate-100 focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50`}
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
+                {option.id && (
+                  <div className='relative mr-2 h-6 w-6 rounded border border-slate-100'>
+                    <div
+                      className='h-6 w-6 rounded-full bg-cover bg-center bg-no-repeat'
+                      style={{backgroundImage: `url('${option.picture}')`}}
+                    />
+                  </div>
+                )}
                 <span className={'flex-grow'}>{option.label}</span>
 
                 {isSelected && <CheckIcon className='h-5 w-5' />}
