@@ -381,7 +381,12 @@ type User {
   """
   all the teams the user is on that the viewer can see.
   """
-  teams: [Team!]!
+  teams(
+    """
+    If true, returns archived teams as well; otherwise only return active teams. Default to false.
+    """
+    includeArchived: Boolean = false
+  ): [Team!]!
 
   """
   The team member associated with this user
