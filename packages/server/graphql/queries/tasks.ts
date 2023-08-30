@@ -123,7 +123,7 @@ export default {
 
     // if archived is true & no userId filter is provided, it should include tasks for ex-team members
     // under no condition should it show tasks for archived teams
-    const accessibleTeamIds = (await dataLoader.get('users').loadNonNull(viewerId)).tms
+    const accessibleTeamIds = authToken.tms
     const validTeamIds = teamIds
       ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
       : accessibleTeamIds
