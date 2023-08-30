@@ -1,0 +1,7 @@
+type TeamPromptQuestion {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  question: String!
+}

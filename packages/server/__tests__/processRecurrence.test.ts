@@ -70,6 +70,7 @@ test('Should not end meetings that are not scheduled to end', async () => {
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
+  const selectedTemplateId = 'classicStandup'
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
@@ -77,7 +78,8 @@ test('Should not end meetings that are not scheduled to end', async () => {
     meetingCount: 0,
     phases: [new TeamPromptResponsesPhase(['foobar'])],
     facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?'
+    meetingPrompt: 'What are you working on today? Stuck on anything?',
+    templateId: selectedTemplateId
   })
 
   await r.table('NewMeeting').insert(meeting).run()
@@ -107,6 +109,7 @@ test('Should not end meetings that are scheduled to end in the future', async ()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
+  const selectedTemplateId = 'classicStandup'
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
@@ -115,7 +118,8 @@ test('Should not end meetings that are scheduled to end in the future', async ()
     phases: [new TeamPromptResponsesPhase(['foobar'])],
     facilitatorUserId: userId,
     meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() + ms('5m'))
+    scheduledEndTime: new Date(Date.now() + ms('5m')),
+    templateId: selectedTemplateId
   })
 
   await r.table('NewMeeting').insert(meeting).run()
@@ -147,6 +151,7 @@ test('Should end meetings that are scheduled to end in the past', async () => {
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
+  const selectedTemplateId = 'classicStandup'
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
@@ -155,7 +160,8 @@ test('Should end meetings that are scheduled to end in the past', async () => {
     phases: [new TeamPromptResponsesPhase(['foobar'])],
     facilitatorUserId: userId,
     meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() - ms('5m'))
+    scheduledEndTime: new Date(Date.now() - ms('5m')),
+    templateId: selectedTemplateId
   })
 
   await r.table('NewMeeting').insert(meeting).run()
@@ -205,6 +211,7 @@ test('Should end the current meeting and start a new meeting', async () => {
     facilitatorId: userId
   })
 
+  const selectedTemplateId = 'classicStandup'
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
@@ -214,7 +221,8 @@ test('Should end the current meeting and start a new meeting', async () => {
     facilitatorUserId: userId,
     meetingPrompt: 'What are you working on today? Stuck on anything?',
     scheduledEndTime: new Date(Date.now() - ms('5m')),
-    meetingSeriesId: newMeetingSeriesId
+    meetingSeriesId: newMeetingSeriesId,
+    templateId: selectedTemplateId
   })
 
   // The last meeting in the series was created just over 24h ago, so the next one should start
@@ -279,6 +287,7 @@ test('Should only start a new meeting if it would still be active', async () => 
     facilitatorId: userId
   })
 
+  const selectedTemplateId = 'classicStandup'
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
@@ -288,7 +297,8 @@ test('Should only start a new meeting if it would still be active', async () => 
     facilitatorUserId: userId,
     meetingPrompt: 'What are you working on today? Stuck on anything?',
     scheduledEndTime: new Date(Date.now() - ms('73h')),
-    meetingSeriesId: newMeetingSeriesId
+    meetingSeriesId: newMeetingSeriesId,
+    templateId: selectedTemplateId
   })
 
   // The last meeting in the series was created just over 72h ago, so 3 meetings should have started
@@ -343,6 +353,7 @@ test('Should not start a new meeting if the rrule has not started', async () => 
     facilitatorId: userId
   })
 
+  const selectedTemplateId = 'classicStandup'
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
@@ -352,7 +363,8 @@ test('Should not start a new meeting if the rrule has not started', async () => 
     facilitatorUserId: userId,
     meetingPrompt: 'What are you working on today? Stuck on anything?',
     scheduledEndTime: new Date(Date.now() - ms('1h')),
-    meetingSeriesId: newMeetingSeriesId
+    meetingSeriesId: newMeetingSeriesId,
+    templateId: selectedTemplateId
   })
 
   // The last meeting in the series was created just over 24h ago, but the active rrule doesn't
@@ -410,6 +422,7 @@ test('Should not hang if the rrule interval is invalid', async () => {
   })
 
   const meetingId = generateUID()
+  const selectedTemplateId = 'classicStandup'
   const meeting = new MeetingTeamPrompt({
     id: meetingId,
     teamId,
@@ -418,7 +431,8 @@ test('Should not hang if the rrule interval is invalid', async () => {
     facilitatorUserId: userId,
     meetingPrompt: 'What are you working on today? Stuck on anything?',
     scheduledEndTime: new Date(Date.now() - ms('5m')),
-    meetingSeriesId: newMeetingSeriesId
+    meetingSeriesId: newMeetingSeriesId,
+    templateId: selectedTemplateId
   })
 
   // The last meeting in the series was created just over 24h ago, so the next one should start soon

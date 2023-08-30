@@ -37,11 +37,20 @@ const startRecurringTeamPrompt = async (
     startTime,
     rrule.options.tzid ?? 'UTC'
   )
-  const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, r, dataLoader, {
-    scheduledEndTime: nextMeetingStartDate ? getJSDateFromRRuleDate(nextMeetingStartDate) : null,
-    meetingSeriesId: meetingSeries.id,
-    meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : DEFAULT_PROMPT
-  })
+  const selectedTemplateId = 'classicStandup'
+  const meeting = await safeCreateTeamPrompt(
+    meetingName,
+    teamId,
+    facilitatorId,
+    selectedTemplateId,
+    r,
+    dataLoader,
+    {
+      scheduledEndTime: nextMeetingStartDate ? getJSDateFromRRuleDate(nextMeetingStartDate) : null,
+      meetingSeriesId: meetingSeries.id,
+      meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : DEFAULT_PROMPT
+    }
+  )
 
   await r.table('NewMeeting').insert(meeting).run()
 

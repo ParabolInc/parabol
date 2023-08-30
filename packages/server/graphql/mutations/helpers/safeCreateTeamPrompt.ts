@@ -11,6 +11,7 @@ const safeCreateTeamPrompt = async (
   name: string,
   teamId: string,
   facilitatorId: string,
+  selectedTemplateId: string,
   r: ParabolR,
   dataLoader: DataLoaderWorker,
   meetingOverrideProps = {}
@@ -32,6 +33,7 @@ const safeCreateTeamPrompt = async (
     meetingType,
     dataLoader
   )
+
   return new MeetingTeamPrompt({
     id: meetingId,
     name,
@@ -39,7 +41,7 @@ const safeCreateTeamPrompt = async (
     meetingCount,
     phases,
     facilitatorUserId: facilitatorId,
-    meetingPrompt: DEFAULT_PROMPT, // :TODO: (jmtaber129): Get this from meeting settings.
+    templateId: selectedTemplateId,
     ...meetingOverrideProps
   })
 }

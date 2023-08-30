@@ -48,7 +48,15 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     new Date(),
     'UTC'
   )
-  const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, r, dataLoader)
+  const selectedTemplateId = 'classicStandup'
+  const meeting = await safeCreateTeamPrompt(
+    meetingName,
+    teamId,
+    viewerId,
+    selectedTemplateId,
+    r,
+    dataLoader
+  )
 
   await Promise.all([
     r.table('NewMeeting').insert(meeting).run(),

@@ -16,6 +16,10 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
       description:
         'Team prompt response id in a format of `teamPromptResponse:idGeneratedByDatabase`'
     },
+    questionId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'Id of the question this response belongs to'
+    },
     userId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'Id of the user who created the team prompt response'
