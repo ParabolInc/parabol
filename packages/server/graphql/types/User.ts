@@ -49,7 +49,6 @@ import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import TimelineEvent from '../../database/types/TimelineEvent'
 import {RDatum} from '../../database/stricterR'
-import {getAccessibleTeamIdsForUser} from '../getAccessibleTeamIdsForUser'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -240,7 +239,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             edges: []
           }
         }
-        const accessibleTeamIds = await getAccessibleTeamIdsForUser(viewerId, true, dataLoader)
+        const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+        const accessibleTeamIds = userTeamMembers.map(({teamId}) => teamId)
         const validTeamIds = teamIds
           ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
           : accessibleTeamIds
@@ -617,10 +617,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
             : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
-        const archivedTeamIds = includeArchived
-          ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
-          : []
-        const teamIds = [...new Set([...activeTeamIds, ...archivedTeamIds])]
+        const allTeamIds = (await dataLoader.get('teamMembersByUserId').load(userId)).map(
+          ({teamId}) => teamId
+        )
+        const teamIds = includeArchived ? allTeamIds : activeTeamIds
         const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
