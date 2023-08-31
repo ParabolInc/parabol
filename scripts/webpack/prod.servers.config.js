@@ -4,7 +4,6 @@ const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
 const webpack = require('webpack')
-const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const cp = require('child_process')
@@ -18,9 +17,12 @@ const distPath = path.join(PROJECT_ROOT, 'dist')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 
+// When Node exits with an uncaughtException it prints the callstack, which is the line that caused the error.
+// We do not minify the server to prevent callstacks that can be longer than a terminal scrollback buffer
+// Not minifying costs us ~50MB extra, but it doesn't require sourcemaps & compiles 90s faster
+
 module.exports = ({noDeps}) => ({
   mode: 'production',
-  devtool: 'source-map',
   node: {
     __dirname: false
   },
@@ -56,25 +58,7 @@ module.exports = ({noDeps}) => ({
         allowlist: [/parabol-client/, /parabol-server/]
       })
   ].filter(Boolean),
-  optimization: {
-    minimize: noDeps,
-    minimizer: [
-      new TerserPlugin({
-        extractComments: false,
-        parallel: noDeps ? 2 : true,
-        terserOptions: {
-          output: {
-            comments: false,
-            ecma: 6
-          },
-          compress: {
-            ecma: 6
-          }
-          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-        }
-      })
-    ]
-  },
+
   plugins: [
     // Pro tip: comment this out along with stable entry files for quick debugging
     new CleanWebpackPlugin(),
