@@ -73,7 +73,7 @@ export async function up() {
         .insertInto('TeamMeetingTemplate')
         .values(res)
         // it's possible a templateId exists in NewMeeting, but not in Template
-        .onConflict((oc) => oc.column('templateId').doNothing())
+        .onConflict((oc) => oc.doNothing())
         .execute()
     }
   }
