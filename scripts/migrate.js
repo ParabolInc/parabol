@@ -6,8 +6,6 @@ const getProjectRoot = require('./webpack/utils/getProjectRoot')
 const fs = require('fs')
 
 const startMigration = async (direction = 'up') => {
-  // since this gets called outside of webpack we mock the webpack global var here
-  global.__PRODUCTION__ = process.env.NODE_ENV
   // migrating up goes all the way, migrating down goes down by 1
   const all = direction === 'up'
   if (process.env.NODE_ENV === 'test') {

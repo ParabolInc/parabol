@@ -8,7 +8,8 @@ const getPgConfig = () => {
     database: process.env.POSTGRES_DB,
     host: process.env.POSTGRES_HOST,
     port: Number(process.env.POSTGRES_PORT),
-    max: Number(process.env.POSTGRES_POOL_SIZE) || __PRODUCTION__ ? 20 : 5
+    // this is used outside of webpack transpiled scripts, so checking NODE_ENV is required
+    max: Number(process.env.POSTGRES_POOL_SIZE) || process.env.NODE_ENV === 'production' ? 20 : 5
   }
   const ssl = getPgSSL()
   if (!ssl) return config
