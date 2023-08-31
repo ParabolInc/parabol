@@ -146,11 +146,8 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   const selectedUserOrganizationIds = new Set(selectedUser?.organizationIds ?? [])
   const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
-  const mutualOrgsIds = mutualOrgs.map((org) => org.id)
 
-  const showOrgPicker = selectedUser && (mutualOrgs.length > 1 || !mutualOrgs.length)
-
-  const firstMutualOrgId = mutualOrgsIds[0]
+  const firstMutualOrgId = mutualOrgs[0]?.id
   const defaultOrgId = firstMutualOrgId ?? selectedTeam.orgId
   const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
 
@@ -276,7 +273,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                 multiple={false}
               />
 
-              {showOrgPicker && (
+              {selectedUser && mutualOrgs.length !== 1 && (
                 <>
                   <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
                   <Select onValueChange={(orgId) => setSelectedOrgId(orgId)} value={selectedOrgId}>
@@ -285,15 +282,11 @@ const ActivityDetailsSidebar = (props: Props) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {viewerOrganizations
-                          .filter((org) =>
-                            mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true
-                          )
-                          .map((org) => (
-                            <SelectItem value={org.id} key={org.id}>
-                              {org.name}
-                            </SelectItem>
-                          ))}
+                        {(mutualOrgs.length ? mutualOrgs : viewerOrganizations).map((org) => (
+                          <SelectItem value={org.id} key={org.id}>
+                            {org.name}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
