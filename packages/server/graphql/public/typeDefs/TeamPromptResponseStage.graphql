@@ -1,4 +1,3 @@
 extend type TeamPromptResponseStage {
   questions: [TeamPromptQuestion!]!
-  test: String!
 }

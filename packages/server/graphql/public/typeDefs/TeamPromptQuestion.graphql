@@ -4,4 +4,5 @@ type TeamPromptQuestion {
   updatedAt: DateTime!
   deletedAt: DateTime
   question: String!
+  response: TeamPromptResponse
 }

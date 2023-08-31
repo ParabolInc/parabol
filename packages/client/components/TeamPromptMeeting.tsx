@@ -77,10 +77,14 @@ const TeamPromptMeeting = (props: Props) => {
               teamMember {
                 userId
               }
-              response {
+              questions {
                 id
-                plaintextContent
-                createdAt
+                question
+                response {
+                  id
+                  plaintextContent
+                  createdAt
+                }
               }
               ...TeamPromptResponseCard_stage
             }

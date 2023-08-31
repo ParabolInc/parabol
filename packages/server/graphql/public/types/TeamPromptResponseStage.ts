@@ -13,7 +13,7 @@ const TeamPromptResponseStage: TeamPromptResponseStageResolvers = {
       .where('templateId', '=', meeting.templateId)
       .execute()
 
-    return questions.map((question) => ({...question, id: question.id}))
+    return questions
   }
 }
 
