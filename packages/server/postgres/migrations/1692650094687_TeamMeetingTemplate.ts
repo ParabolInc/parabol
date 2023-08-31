@@ -69,7 +69,12 @@ export async function up() {
       .filter((row: any) => row('templateId').default(null).ne(null))
       .run()) as TeamMeetingTemplate[]
     if (res.length > 0) {
-      await pg.insertInto('TeamMeetingTemplate').values(res).execute()
+      await pg
+        .insertInto('TeamMeetingTemplate')
+        .values(res)
+        // it's possible a templateId exists in NewMeeting, but not in Template
+        .onConflict((oc) => oc.column('templateId').doNothing())
+        .execute()
     }
   }
 
