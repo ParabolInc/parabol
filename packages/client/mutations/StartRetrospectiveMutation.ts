@@ -18,6 +18,7 @@ graphql`
         }
       }
     }
+    hasGcalError
   }
 `
 
@@ -45,9 +46,17 @@ const StartRetrospectiveMutation: StandardMutation<
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const {startRetrospective} = res
-      const {meeting} = startRetrospective
+      const {meeting, hasGcalError} = startRetrospective
       if (!meeting) return
       const {id: meetingId} = meeting
+      if (hasGcalError) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: `gcalError:${meetingId}`,
+          autoDismiss: 0,
+          showDismissButton: true,
+          message: `Sorry, we couldn't create your Google Calendar event`
+        })
+      }
       history.push(`/meet/${meetingId}`)
     }
   })

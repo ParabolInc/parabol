@@ -12,6 +12,7 @@ graphql`
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)
     }
+    hasGcalError
   }
 `
 
@@ -47,9 +48,17 @@ const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, Histor
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const {startTeamPrompt} = res
-      const {meeting} = startTeamPrompt
+      const {meeting, hasGcalError} = startTeamPrompt
       if (!meeting) return
       const {id: meetingId} = meeting
+      if (hasGcalError) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: `gcalError:${meetingId}`,
+          autoDismiss: 0,
+          showDismissButton: true,
+          message: `Sorry, we couldn't create your Google Calendar event`
+        })
+      }
       history.push(`/meet/${meetingId}`)
     },
     onError
