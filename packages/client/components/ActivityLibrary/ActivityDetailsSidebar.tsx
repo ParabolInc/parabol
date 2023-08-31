@@ -261,6 +261,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
+          {/* TODO: move one-on-one logic to its own component */}
           {selectedTemplate.id === 'oneOnOneAction' ? (
             <div className='rounded-lg bg-slate-200 p-3'>
               <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
