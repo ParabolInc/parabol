@@ -75,7 +75,7 @@ export async function up() {
     const validTemplates = await pg
       .selectFrom('MeetingTemplate')
       .select('id')
-      .where('templateId', 'in', attemptedTemplateIds)
+      .where('id', 'in', attemptedTemplateIds)
       .execute()
     if (validTemplates.length === 0) continue
     const validTemplateIds = new Set(validTemplates.map(({id}) => id))
