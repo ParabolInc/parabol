@@ -7,7 +7,7 @@ import {
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
@@ -42,7 +42,12 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   )
   if (invitationRes.error) {
     const {error: message, teamId, meetingId} = invitationRes
-    if (message === InvitationTokenError.ALREADY_ACCEPTED) {
+    // If the user already accepted the invite, then we want to send the needed data together with the error, unless they were removed in the meantime
+    if (
+      message === InvitationTokenError.ALREADY_ACCEPTED &&
+      teamId &&
+      isTeamMember(authToken, teamId)
+    ) {
       return {error: {message}, teamId, meetingId, teamMemberId: toTeamMemberId(teamId!, viewerId)}
     }
     return {error: {message}}
