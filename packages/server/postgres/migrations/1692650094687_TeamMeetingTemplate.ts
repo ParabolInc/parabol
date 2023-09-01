@@ -80,7 +80,11 @@ export async function up() {
     if (validTemplates.length === 0) continue
     const validTemplateIds = new Set(validTemplates.map(({id}) => id))
     const validRowsToInsert = rowsToInsert.filter((row) => validTemplateIds.has(row.templateId))
-    await pg.insertInto('TeamMeetingTemplate').values(validRowsToInsert).execute()
+    await pg
+      .insertInto('TeamMeetingTemplate')
+      .values(validRowsToInsert)
+      .onConflict((oc) => oc.doNothing())
+      .execute()
   }
 
   await r.getPoolMaster()?.drain()
