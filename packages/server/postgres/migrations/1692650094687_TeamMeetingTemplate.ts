@@ -86,9 +86,6 @@ export async function up() {
       .onConflict((oc) => oc.doNothing())
       .execute()
   }
-
-  await r.getPoolMaster()?.drain()
-  await pg.destroy()
 }
 
 export async function down() {
