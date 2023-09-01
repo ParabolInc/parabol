@@ -32,8 +32,13 @@ const BatchArchiveTasksMutation: StandardMutation<TBatchArchiveTasksMutation> = 
   return commitMutation<TBatchArchiveTasksMutation>(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('batchArchiveTasks')
+      if (!payload) return
+    },
     optimisticUpdater: (store) => {
-      const {} = variables
+      const payload = store.getRootField('batchArchiveTasks')
+      if (!payload) return
     },
     onCompleted,
     onError

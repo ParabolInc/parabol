@@ -7,11 +7,13 @@ import {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
-import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
+import {DONE, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
 import TaskColumnAddTask from './TaskColumnAddTask'
 import TaskColumnInner from './TaskColumnInner'
+import useModal from '../../../../hooks/useModal'
+import ArchiveAllDoneTasksModal from './ArchiveAllDoneTasksModal'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
   background: isDragging ? PALETTE.SLATE_300 : undefined,
@@ -101,6 +103,7 @@ const TaskColumn = (props: Props) => {
   )
   const label = taskStatusLabels[status]
   const userCanAdd = area === TEAM_DASH || area === USER_DASH || isViewerMeetingSection
+  const {togglePortal, modalPortal} = useModal()
   return (
     <Droppable droppableId={status} type={DroppableType.TASK}>
       {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
@@ -120,6 +123,20 @@ const TaskColumn = (props: Props) => {
               <StatusLabel>{label}</StatusLabel>
               {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
             </StatusLabelBlock>
+            {status === DONE && (
+              <a
+                onClick={togglePortal}
+                className='float-right cursor-pointer text-sm text-slate-600'
+              >
+                Archive all
+              </a>
+            )}
+            {modalPortal(
+              <ArchiveAllDoneTasksModal
+                closeModal={togglePortal}
+                taskIds={tasks.map((t) => t.id)}
+              />
+            )}
           </ColumnHeader>
           <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
             <TaskColumnInner
