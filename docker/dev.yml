@@ -51,12 +51,21 @@ services:
       - parabol-network
     restart: unless-stopped
   redis:
-    image: redis:6
+    image: bitnami/redis:6.2
     restart: unless-stopped
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PASSWORD=''
+      - REDIS_TLS_ENABLED=no
+      - REDIS_TLS_AUTH_CLIENTS=no
+      - REDIS_TLS_CERT_FILE=/opt/bitnami/redis/certs/redis.crt
+      - REDIS_TLS_KEY_FILE=/opt/bitnami/redis/certs/redis.key
+      - REDIS_TLS_CA_FILE=/opt/bitnami/redis/certs/redisCA.crt
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - bitnami-redis-data:/bitnami/redis/data
+      - ../certs:/opt/bitnami/redis/certs
     networks:
       - parabol-network
   redis-commander:
@@ -73,7 +82,7 @@ services:
 networks:
   parabol-network:
 volumes:
-  redis-data: {}
+  bitnami-redis-data: {}
   rethink-data: {}
   postgres-data: {}
   pgadmin-data: {}

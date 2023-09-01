@@ -1,18 +1,17 @@
-import Redis from 'ioredis'
-import sleep from 'parabol-client/utils/sleep'
+import sleep from '../../client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
 import {disconnectQuery} from '../socketHandlers/handleDisconnect'
 import publishInternalGQL from './publishInternalGQL'
 import sendToSentry from './sendToSentry'
+import RedisInstance from './RedisInstance'
 
-const REDIS_URL = process.env.REDIS_URL!
 const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
 
 class ServerHealthChecker {
-  private publisher = new Redis(REDIS_URL, {connectionName: 'serverHealth_pub'})
-  private subscriber = new Redis(REDIS_URL, {connectionName: 'serverHealth_sub'})
+  private publisher = new RedisInstance('serverHealth_pub')
+  private subscriber = new RedisInstance('serverHealth_sub')
   private remoteSocketServers: null | string[] = null
   private joinPoolPromise: null | Promise<void> = null
   private async joinPool() {
