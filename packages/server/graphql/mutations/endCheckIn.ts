@@ -20,8 +20,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
-import collectReactjis from './helpers/collectReactjis'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import gatherInsights from './helpers/gatherInsights'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateTeamInsights from './helpers/updateTeamInsights'
@@ -194,7 +194,7 @@ export default {
       stage.endAt = now
     }
     const phase = getMeetingPhase(phases)
-    const usedReactjis = await collectReactjis(meeting, dataLoader)
+    const insights = await gatherInsights(meeting, dataLoader)
 
     const completedCheckIn = (await r
       .table('NewMeeting')
@@ -203,7 +203,7 @@ export default {
         {
           endedAt: now,
           phases,
-          usedReactjis
+          ...insights
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
