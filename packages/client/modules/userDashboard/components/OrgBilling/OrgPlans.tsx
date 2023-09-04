@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'

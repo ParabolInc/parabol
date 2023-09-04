@@ -117,7 +117,7 @@ const PaymentDetails = (props: Props) => {
   const {id: orgId, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement | null>(null)
   useScrollIntoView(ref, hasSelectedTeamPlan)
 
   return (
