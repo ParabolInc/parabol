@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
+import React, {Suspense, useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
 import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
 import PaymentDetails from './PaymentDetails'
@@ -55,15 +55,27 @@ const OrgPlansAndBilling = (props: Props) => {
     `,
     organizationRef
   )
+  const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
   const {tier, isBillingLeader} = organization
+
+  const handleSelectTeamPlan = () => {
+    setHasSelectedTeamPlan(true)
+  }
 
   if (tier === 'starter') {
     return (
       <Suspense fallback={''}>
         <div className='pb-20'>
           <OrgPlansAndBillingHeading organizationRef={organization} />
-          <OrgPlans organizationRef={organization} />
-          <PaymentDetails organizationRef={organization} />
+          <OrgPlans
+            organizationRef={organization}
+            handleSelectTeamPlan={handleSelectTeamPlan}
+            hasSelectedTeamPlan={hasSelectedTeamPlan}
+          />
+          <PaymentDetails
+            organizationRef={organization}
+            hasSelectedTeamPlan={hasSelectedTeamPlan}
+          />
           <BillingLeaders organizationRef={organization} />
           <OrgPlanDrawer organizationRef={organization} />
         </div>

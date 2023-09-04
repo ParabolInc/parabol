@@ -5,13 +5,14 @@ import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
-import React from 'react'
+import React, {useRef} from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import BillingForm from './BillingForm'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
+import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -96,10 +97,11 @@ const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
   organizationRef: PaymentDetails_organization$key
+  hasSelectedTeamPlan: boolean
 }
 
 const PaymentDetails = (props: Props) => {
-  const {organizationRef} = props
+  const {organizationRef, hasSelectedTeamPlan} = props
 
   const organization = useFragment(
     graphql`
@@ -115,11 +117,13 @@ const PaymentDetails = (props: Props) => {
   const {id: orgId, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
+  const ref = useRef(null)
+  useScrollIntoView(ref, hasSelectedTeamPlan)
 
   return (
     <StyledPanel label='Credit Card'>
       <StyledRow className={'flex-col-reverse md:flex-row'}>
-        <Plan className={'w-full md:w-1/2'}>
+        <Plan className={'w-full md:w-1/2'} ref={ref}>
           <Title>{'Credit Card Details'}</Title>
           <Content>
             <Elements stripe={stripePromise}>

@@ -61,10 +61,12 @@ const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
 
 type Props = {
   organizationRef: OrgPlans_organization$key
+  handleSelectTeamPlan?: () => void
+  hasSelectedTeamPlan?: boolean
 }
 
 const OrgPlans = (props: Props) => {
-  const {organizationRef} = props
+  const {organizationRef, handleSelectTeamPlan, hasSelectedTeamPlan} = props
   const organization = useFragment(
     graphql`
       fragment OrgPlans_organization on Organization {
@@ -84,7 +86,6 @@ const OrgPlans = (props: Props) => {
   const {id: orgId, scheduledLockAt, lockedAt, tier} = organization
   const showNudge = scheduledLockAt || lockedAt
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
 
   const plans = [
     {
@@ -128,7 +129,7 @@ const OrgPlans = (props: Props) => {
     if (label === 'Contact') {
       window.open('mailto:love@parabol.co', '_blank')
     } else if (label === 'Select Plan') {
-      setHasSelectedTeamPlan(true)
+      handleSelectTeamPlan && handleSelectTeamPlan()
     } else if (label === 'Downgrade') {
       openPortal()
       SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
