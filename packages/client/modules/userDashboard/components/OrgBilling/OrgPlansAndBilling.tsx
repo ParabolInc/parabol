@@ -94,7 +94,11 @@ const OrgPlansAndBilling = (props: Props) => {
           </>
         )}
         <BillingLeaders organizationRef={organization} />
-        <OrgPlans organizationRef={organization} />
+        <OrgPlans
+          organizationRef={organization}
+          handleSelectTeamPlan={handleSelectTeamPlan}
+          hasSelectedTeamPlan={hasSelectedTeamPlan}
+        />
         <OrgPlanDrawer organizationRef={organization} />
       </div>
     </Suspense>

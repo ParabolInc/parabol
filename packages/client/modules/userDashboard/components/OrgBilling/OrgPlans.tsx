@@ -61,8 +61,8 @@ const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
 
 type Props = {
   organizationRef: OrgPlans_organization$key
-  handleSelectTeamPlan?: () => void
-  hasSelectedTeamPlan?: boolean
+  handleSelectTeamPlan: () => void
+  hasSelectedTeamPlan: boolean
 }
 
 const OrgPlans = (props: Props) => {
@@ -129,7 +129,7 @@ const OrgPlans = (props: Props) => {
     if (label === 'Contact') {
       window.open('mailto:love@parabol.co', '_blank')
     } else if (label === 'Select Plan') {
-      handleSelectTeamPlan && handleSelectTeamPlan()
+      handleSelectTeamPlan()
     } else if (label === 'Downgrade') {
       openPortal()
       SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
