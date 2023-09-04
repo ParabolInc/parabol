@@ -282,9 +282,13 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const {botAccessToken} = auth
     const {slackTs} = meeting
     if (!slackTs || !botAccessToken || !channelId) {
-      return handleError({ok: false, error: 'missing slackTs, botAccessToken, or channelId'}, team.id, notificationChannel)
+      return handleError(
+        {ok: false, error: 'missing slackTs, botAccessToken, or channelId'},
+        team.id,
+        notificationChannel
+      )
     }
- 
+
     const searchParams = {
       utm_source: 'slack meeting start',
       utm_medium: 'product',
@@ -300,7 +304,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
 
     const manager = new SlackServerManager(botAccessToken)
     const res = await manager.updateMessage(channelId, blocks, slackTs)
- 
+
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
