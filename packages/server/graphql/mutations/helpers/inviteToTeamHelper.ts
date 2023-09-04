@@ -55,6 +55,9 @@ const inviteToTeamHelper = async (
     }
     return true
   })
+  if (!validInvitees.length) {
+    return standardError(new Error('No valid emails'), {userId: viewerId})
+  }
 
   const [users, team, inviter] = await Promise.all([
     getUsersByEmails(validInvitees),
@@ -84,6 +87,7 @@ const inviteToTeamHelper = async (
       return getIsEmailApprovedByOrg(email, orgId, dataLoader)
     })
   )
+  console.log('🚀 ~ approvalErrors:', approvalErrors)
   const newAllowedInvitees = newInvitees
     .map((invitee, idx) => {
       return approvalErrors[idx] instanceof Error ? undefined : invitee
