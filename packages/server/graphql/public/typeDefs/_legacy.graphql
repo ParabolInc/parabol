@@ -6754,11 +6754,15 @@ type Mutation {
     """
     The team starting the meeting
     """
-    teamId: ID!
+    teamId: ID
     """
     The gcal input if creating a gcal event
     """
     gcalInput: CreateGcalEventInput
+    """
+    One-on-one ad-hoc team input
+    """
+    oneOnOneTeamInput: CreateOneOnOneTeamInput
   ): StartCheckInPayload!
 
   """
@@ -8684,6 +8688,7 @@ type StartCheckInSuccess {
   meeting: ActionMeeting!
   meetingId: ID!
   team: Team!
+  hasGcalError: Boolean!
 }
 
 """
@@ -8695,6 +8700,7 @@ type StartRetrospectiveSuccess {
   meeting: RetrospectiveMeeting!
   meetingId: ID!
   team: Team!
+  hasGcalError: Boolean!
 }
 
 """
@@ -8707,6 +8713,7 @@ type StartSprintPokerSuccess {
   meeting: PokerMeeting!
   team: Team!
   teamId: ID!
+  hasGcalError: Boolean!
 }
 
 """

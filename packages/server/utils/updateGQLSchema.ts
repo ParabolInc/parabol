@@ -10,8 +10,7 @@ import path from 'path'
 import {promisify} from 'util'
 import privateSchema from '../graphql/private/rootSchema'
 import publicSchema from '../graphql/public/rootSchema'
-
-declare const __PROJECT_ROOT__: string
+import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 
 const writeIfChanged = async (dataPath: string, data: string) => {
   const write = promisify(fs.writeFile)
@@ -26,7 +25,8 @@ const writeIfChanged = async (dataPath: string, data: string) => {
 }
 
 const updateGQLSchema = async () => {
-  const GQL_ROOT = path.join(__PROJECT_ROOT__, 'packages/server/graphql')
+  const projectRoot = getProjectRoot()!
+  const GQL_ROOT = path.join(projectRoot, 'packages/server/graphql')
   const publicSchemaPath = path.join(GQL_ROOT, 'public/schema.graphql')
   const privateSchemaPath = path.join(GQL_ROOT, 'private/schema.graphql')
   await Promise.all([

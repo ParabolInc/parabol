@@ -15,15 +15,15 @@ import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 const COPIED_TOOLTIP_DURATION_MS = 2000
 
 const OptionsButton = styled(BaseButton)({
-  color: PALETTE.SLATE_600,
+  color: PALETTE.SKY_500,
+  display: 'flex',
+  flexDirection: 'column',
   height: '100%',
-  aspectRatio: '1 / 1',
   opacity: 1,
-  borderRadius: '100%',
-  padding: 0,
+  padding: '0px 8px',
+  fontWeight: 600,
   ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700,
-    backgroundColor: PALETTE.SLATE_300
+    color: PALETTE.SKY_600
   }
 })
 
@@ -35,12 +35,6 @@ interface Props {
 
 const TeamPromptOptions = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {
-    tooltipPortal: optionsTooltipPortal,
-    openTooltip: openOptionsTooltip,
-    closeTooltip: closeOptionsTooltip,
-    originRef: optionsTooltipOriginRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
   const {
     tooltipPortal: copiedTooltipPortal,
     openTooltip: openCopiedTooltip,
@@ -67,15 +61,10 @@ const TeamPromptOptions = (props: Props) => {
 
   return (
     <>
-      <OptionsButton
-        ref={mergeRefs(originRef, optionsTooltipOriginRef, copiedTooltipRef)}
-        onClick={togglePortal}
-        onMouseEnter={openOptionsTooltip}
-        onMouseLeave={closeOptionsTooltip}
-      >
-        <IconLabel ref={originRef} icon='more_vert' iconLarge />
+      <OptionsButton ref={mergeRefs(originRef, copiedTooltipRef)} onClick={togglePortal}>
+        <IconLabel ref={originRef} icon='tune' iconLarge />
+        <div className='text-slate-700'>Options</div>
       </OptionsButton>
-      {optionsTooltipPortal('Options')}
       {copiedTooltipPortal('Copied!')}
       {menuPortal(
         <TeamPromptOptionsMenu

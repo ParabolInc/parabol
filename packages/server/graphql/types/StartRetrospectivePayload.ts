@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
@@ -21,6 +21,11 @@ export const StartRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>(
       resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
+    },
+    hasGcalError: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        'True if there was an error creating the Google Calendar event. False if there was no error or no gcalInput was provided.'
     }
   })
 })

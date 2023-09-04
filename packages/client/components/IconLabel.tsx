@@ -22,6 +22,8 @@ import {
   Reply,
   Search,
   SentimentSatisfied,
+  TaskAlt,
+  Tune,
   UnfoldMore,
   WebAsset
 } from '@mui/icons-material'
@@ -95,7 +97,9 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
             arrow_forward: <ArrowForward />,
             archive: <Archive />,
             close: <Close />,
-            publish: <Publish />
+            publish: <Publish />,
+            tune: <Tune />,
+            task_alt: <TaskAlt />
           }[icon]
         }
       </StyledIcon>

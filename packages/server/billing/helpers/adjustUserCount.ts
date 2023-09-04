@@ -11,7 +11,6 @@ import {analytics} from '../../utils/analytics/analytics'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../utils/isCompanyDomain'
-import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
@@ -44,12 +43,10 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
   const r = await getRethink()
   const {id: userId, email} = user
   inactive ? analytics.accountPaused(userId) : analytics.accountUnpaused(userId)
-  segmentIo.identify({
+  analytics.identify({
     userId,
-    traits: {
-      email,
-      isActive: !inactive
-    }
+    email,
+    isActive: !inactive
   })
   return Promise.all([
     updateUser(
