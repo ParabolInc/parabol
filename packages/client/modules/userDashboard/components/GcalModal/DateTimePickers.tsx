@@ -76,6 +76,7 @@ const DateTimePickers = (props: Props) => {
   }
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    // prevent gcal modal from closing when clicking datetime pickers
     e.stopPropagation()
   }
 
