@@ -7,6 +7,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import RenameMeetingPayload from '../types/RenameMeetingPayload'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 
 const renameMeeting = {
   type: new GraphQLNonNull(RenameMeetingPayload),
@@ -62,6 +63,7 @@ const renameMeeting = {
       .run()
 
     const data = {meetingId}
+    IntegrationNotifier.updateMeeting?.(dataLoader, meetingId, teamId)
     publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingSuccess', data, subOptions)
 
     return data
