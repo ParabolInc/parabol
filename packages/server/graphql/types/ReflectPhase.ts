@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import getKysely from '../../postgres/getKysely'
 import {GQLContext} from '../graphql'
 import {resolveGQLStagesFromPhase} from '../resolvers'
 import GenericMeetingStage from './GenericMeetingStage'
@@ -32,10 +33,18 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts used during the reflect phase',
       resolve: async (
-        {meetingId}: {meetingId: string},
+        {id, teamId, meetingId}: {teamId: string, meetingId: string},
         _args: unknown,
         {dataLoader}: GQLContext
       ) => {
+        console.log('GEORG id', id)
+        const pg = getKysely()
+        const customPrompts = (await pg.selectFrom('RetrospectivePrompt').selectAll().where('promptId', '=', id).execute()).map((prompt) => ({
+            ...prompt,
+            id: `MeetingRetrospectivePrompt:${meetingId}:${prompt.id}`,
+            teamId,
+          }))
+
         const meeting = (await dataLoader
           .get('newMeetings')
           .load(meetingId)) as MeetingRetrospective
@@ -46,7 +55,7 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
           (prompt: RetrospectivePrompt) =>
             prompt.createdAt < meeting.createdAt &&
             (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
-        )
+        ).concat(customPrompts)
       }
     },
     stages: {

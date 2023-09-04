@@ -804,3 +804,49 @@ export const isCompanyDomain = (parent: RootDataLoader) => {
     }
   )
 }
+
+type RetrospectivePrompt = {
+  id: string
+  createdAt: Date
+  question: string
+  description?: string | null
+  groupColor?: string | null
+  sortOrder: number
+  meetingId?: string
+  teamId?: string
+  templateId?: string
+  removedAt?: Date | null
+  updatedAt: Date
+  parentPromptId?: string
+}
+
+export const reflectPrompts = (parent: RootDataLoader) => {
+  return new DataLoader<string, RetrospectivePrompt, string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map(async (id) => {
+          if (id.startsWith('MeetingRetrospectivePrompt:')) {
+            const promptId = Number.parseInt(id.split(':')[2]!)
+            const pg = getKysely()
+            try {
+              const prompt = await pg.selectFrom('RetrospectivePrompt').selectAll().where('id', '=', promptId).executeTakeFirst()
+              return prompt || new Error('Prompt not found')
+            } catch (e) {
+              console.log('GEORG catch e', e)
+              return e
+            }
+          }
+          return r
+            .table('ReflectPrompt')
+            .get(id)
+            .run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}

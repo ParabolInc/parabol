@@ -3,6 +3,7 @@ import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import ReflectTemplate from './ReflectTemplate'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
 
 const ReflectPrompt: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
@@ -33,13 +34,21 @@ const ReflectPrompt: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>(
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'the order of the items in the template'
     },
+    meetingId: {
+      type: GraphQLID,
+      description: 'ID of the meeting if this is a one off prompt'
+    },
+    meeting: {
+      type: RetrospectiveMeeting,
+      description: 'The meeting if this is a one off prompt'
+    },
     templateId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'FK for template'
+      type: GraphQLID,
+      description: 'FK for template, can be null if the prompt is meeting specific'
     },
     template: {
-      type: new GraphQLNonNull(ReflectTemplate),
-      description: 'The template that this prompt belongs to',
+      type: ReflectTemplate,
+      description: 'The template that this prompt belongs to, can be null if the prompt is meeting specific',
       resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingTemplates').load(templateId)
       }

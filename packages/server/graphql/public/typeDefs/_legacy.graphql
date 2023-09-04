@@ -1780,14 +1780,24 @@ type ReflectPrompt {
   sortOrder: Float!
 
   """
+  ID of the meeting if this is a one off prompt
+  """
+  meetingId: ID
+
+  """
+  The meeting if this is a one off prompt
+  """
+  meeting: RetrospectiveMeeting
+
+  """
   FK for template
   """
-  templateId: ID!
+  templateId: ID
 
   """
   The template that this prompt belongs to
   """
-  template: ReflectTemplate!
+  template: ReflectTemplate
 
   """
   The question to answer during the phase of the retrospective (eg What went well?)
