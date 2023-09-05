@@ -13,6 +13,7 @@ enum OrganizationFeatureFlagsEnum {
   teamsLimit
   teamInsights
   oneOnOne
+  teamHealth
 }
 
 extend type Mutation {

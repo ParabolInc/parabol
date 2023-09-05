@@ -67,6 +67,12 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
         ...NewMeetingSettingsUpgradeForTeamHealth_team
         id
         tier
+        organization {
+          id
+          featureFlags {
+            teamHealth
+          }
+        }
       }
     `,
     teamRef
@@ -82,8 +88,9 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     `,
     settingsRef
   )
-  const {tier} = team
-  const teamHealthAvailable = isTeamHealthAvailable(tier)
+  const {tier, organization} = team
+  const {featureFlags} = organization
+  const teamHealthAvailable = isTeamHealthAvailable(tier, featureFlags.teamHealth)
 
   const {id: settingsId, phaseTypes} = settings
   const hasTeamHealth = phaseTypes.includes('TEAM_HEALTH')

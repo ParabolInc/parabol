@@ -179,4 +179,5 @@ type OrganizationFeatureFlags {
   teamsLimit: Boolean!
   teamInsights: Boolean!
   oneOnOne: Boolean!
+  teamHealth: Boolean!
 }
