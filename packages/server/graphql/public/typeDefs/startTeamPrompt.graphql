@@ -44,10 +44,6 @@ input CreateGcalEventInput {
   """
   title: String!
   """
-  The description of the event
-  """
-  description: String!
-  """
   The start timestamp of the event
   """
   startTimestamp: Int!

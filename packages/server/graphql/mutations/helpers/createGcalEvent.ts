@@ -26,7 +26,7 @@ const createGcalEvent = async (input: Input) => {
   if (!featureFlags.includes('gcal')) {
     return standardError(new Error('Does not have gcal feature flag'), {userId: viewerId})
   }
-  const {startTimestamp, endTimestamp, title, description, timeZone, invitees} = gcalInput
+  const {startTimestamp, endTimestamp, title, timeZone, invitees} = gcalInput
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
   if (!gcalAuth) {
@@ -48,9 +48,12 @@ const createGcalEvent = async (input: Input) => {
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const attendeesWithEmailObjects = invitees?.map((email) => ({email}))
 
+  const description = `Here's the link to your Parabol meeting: ${meetingUrl}
+
+` // add a newline to separate the link from the rest of the description
+
   const event = {
     summary: title,
-    location: meetingUrl,
     description,
     start: {
       dateTime: startDateTime,
