@@ -47,7 +47,6 @@ const createGcalEvent = async (input: Input) => {
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const attendeesWithEmailObjects = invitees?.map((email) => ({email}))
-
   const description = `Here's the link to your Parabol meeting: ${meetingUrl}
 
 ` // add a newline to separate the link from the rest of the description
