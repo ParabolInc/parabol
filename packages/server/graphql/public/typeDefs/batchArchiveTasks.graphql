@@ -19,5 +19,5 @@ type BatchArchiveTasksSuccess {
   """
   the archived tasks
   """
-  tasks: [Task!]!
+  tasks: [Task!]
 }
