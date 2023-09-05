@@ -13,6 +13,7 @@ import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import getContentGroup from '../utils/getContentGroup'
 import makeHref from '../utils/makeHref'
+import * as amplitude from '@amplitude/analytics-browser'
 
 const query = graphql`
   query AnalyticsPageQuery {
@@ -207,6 +208,15 @@ const AnalyticsPage = () => {
   useEffect(() => {
     window.HubSpotConversations?.widget?.refresh?.()
   }, [pathname])
+
+  useEffect(() => {
+    amplitude.init(window.__ACTION__.AMPLITUDE_API_KEY, {
+      defaultTracking: {
+        pageViews: true
+      },
+      logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
+    })
+  }, [])
 
   useEffect(() => {
     if (!datadogEnabled) {
