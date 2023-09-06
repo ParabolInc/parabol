@@ -140,6 +140,7 @@ export type AnalyticsEvent =
   | 'Archive Organization'
   | 'Archive Team'
   | 'Enterprise Over User Limit'
+  | 'Locked user attempted to join a team'
   | 'Mattermost notification sent'
   | 'Mentioned on Task'
   | 'MSTeams notification sent'
@@ -551,6 +552,10 @@ class Analytics {
 
   enterpriseOverUserLimit = (userId: string, orgId: string) => {
     this.track(userId, 'Enterprise Over User Limit', {orgId})
+  }
+
+  lockedUserAttemptToJoinTeam = (userId: string, invitingOrgId: string) => {
+    this.track(userId, 'Locked user attempted to join a team', {invitingOrgId})
   }
 
   mattermostNotificationSent = (
