@@ -1,6 +1,7 @@
 import {GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {r} from 'rethinkdb-ts'
 import AuthToken from '../../database/types/AuthToken'
 import generateUID from '../../generateUID'
 import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
@@ -15,6 +16,7 @@ import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
+import {TeamDrawer} from '../types/TeamDrawerEnum'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
@@ -107,7 +109,17 @@ export default {
         teamMemberId
       }
 
-      const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
+      const teamDrawerType: TeamDrawer = 'manageTeam'
+      const removedSuggestedActionId = await Promise.all([
+        removeSuggestedAction(viewerId, 'createNewTeam'),
+        r
+          .table('TeamMember')
+          .get(teamMemberId)
+          .update({
+            openDrawer: teamDrawerType
+          })
+          .run()
+      ])
       if (removedSuggestedActionId) {
         publish(
           SubscriptionChannel.NOTIFICATION,
