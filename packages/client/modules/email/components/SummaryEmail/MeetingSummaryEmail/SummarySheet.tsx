@@ -161,38 +161,40 @@ const SummarySheet = (props: Props) => {
                                 <ExportAllTasks meetingRef={meeting} />
                               )}
                             </div>
-                            <div className='flex justify-center gap-4'>
-                              <Link
-                                to={emailCSVUrl}
-                                className={
-                                  'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
-                                }
-                              >
-                                <TableChart
-                                  style={{
-                                    width: '14px',
-                                    height: '14px',
-                                    color: PALETTE.SLATE_600
-                                  }}
-                                />
-                                Export to CSV
-                              </Link>
-                              <button
-                                onClick={downloadPDF}
-                                className={
-                                  'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
-                                }
-                              >
-                                <PictureAsPdf
-                                  style={{
-                                    width: '14px',
-                                    height: '14px',
-                                    color: PALETTE.SLATE_600
-                                  }}
-                                />
-                                Download PDF
-                              </button>
-                            </div>
+                            {meetingType !== 'teamPrompt' && (
+                              <div className='flex justify-center gap-4'>
+                                <Link
+                                  to={emailCSVUrl}
+                                  className={
+                                    'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                  }
+                                >
+                                  <TableChart
+                                    style={{
+                                      width: '14px',
+                                      height: '14px',
+                                      color: PALETTE.SLATE_600
+                                    }}
+                                  />
+                                  Export to CSV
+                                </Link>
+                                <button
+                                  onClick={downloadPDF}
+                                  className={
+                                    'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                  }
+                                >
+                                  <PictureAsPdf
+                                    style={{
+                                      width: '14px',
+                                      height: '14px',
+                                      color: PALETTE.SLATE_600
+                                    }}
+                                  />
+                                  Download PDF
+                                </button>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       </tbody>
