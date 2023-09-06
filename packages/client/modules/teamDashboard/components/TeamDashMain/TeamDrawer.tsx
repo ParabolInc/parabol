@@ -111,7 +111,7 @@ const TeamDrawer = (props: Props) => {
                 Share this link
               </h2>
               <p className='my-0 py-0 pb-4 text-sm leading-[16px]'>This link expires in 30 days.</p>
-              <div className='overflow-x-hidden'>
+              <div className='overflow-x-hidden pb-2'>
                 <div className='bg-white'>
                   <MassInvitationTokenLinkRoot meetingId={undefined} teamId={teamId} />
                 </div>

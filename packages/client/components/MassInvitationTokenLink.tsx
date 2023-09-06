@@ -19,7 +19,6 @@ const StyledCopyShortLink = styled(CopyShortLink)({
   color: PALETTE.SKY_500,
   fontSize: 15,
   fontWeight: 600,
-  margin: '0 0 32px',
   padding: 11,
   ':hover': {
     color: PALETTE.SKY_400
