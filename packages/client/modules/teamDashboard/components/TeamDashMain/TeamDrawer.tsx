@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import {TeamDrawer_viewer$key} from '~/__generated__/TeamDrawer_viewer.graphql'
 import {TeamDrawer as TeamDrawerType} from '~/__generated__/ToggleTeamDrawerMutation.graphql'
+import MassInvitationTokenLinkRoot from '../../../../components/MassInvitationTokenLinkRoot'
 import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
@@ -30,6 +31,7 @@ const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   padding: `0 0 ${isDesktop ? 58 : 0}px`,
   height: '100vh',
   flexDirection: 'column',
+  justifyContent: 'space-between',
   width: RightSidebar.WIDTH
 }))
 
@@ -89,17 +91,26 @@ const TeamDrawer = (props: Props) => {
   return (
     <ResponsiveDashSidebar isOpen={openDrawer !== null} isRightDrawer onToggle={toggleDrawer}>
       <DrawerContent isDesktop={isDesktop}>
-        <DrawerHeader>
-          <StyledLabelHeading>
-            {drawerTypeRef.current === 'manageTeam' ? 'Manage Team' : 'Team Agenda'}
-          </StyledLabelHeading>
-          <CloseDrawer teamId={teamId} />
-        </DrawerHeader>
-        {drawerTypeRef.current === 'manageTeam' ? (
-          <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
-        ) : (
-          <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
-        )}
+        <div>
+          <DrawerHeader>
+            <StyledLabelHeading>
+              {drawerTypeRef.current === 'manageTeam' ? 'Manage Team' : 'Team Agenda'}
+            </StyledLabelHeading>
+            <CloseDrawer teamId={teamId} />
+          </DrawerHeader>
+          {drawerTypeRef.current === 'manageTeam' ? (
+            <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
+          ) : (
+            <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
+          )}
+        </div>
+        <div style={{backgroundColor: 'grey-200'}} className='p-4'>
+          <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>
+            Share this link
+          </h2>
+          <p className='my-0 py-0 pb-4 text-sm leading-[16px]'>This link expires in 30 days.</p>
+          <MassInvitationTokenLinkRoot meetingId={undefined} teamId={teamId} />
+        </div>
       </DrawerContent>
     </ResponsiveDashSidebar>
   )
