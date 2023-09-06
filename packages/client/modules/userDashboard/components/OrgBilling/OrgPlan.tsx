@@ -183,7 +183,7 @@ const OrgPlan = (props: Props) => {
     defaultLabel === 'Select Plan' && hasSelectedTeamPlan ? 'Selected Plan' : defaultLabel
 
   return (
-    <Plan tier={planTier} isTablet={isTablet} isActive={isActive}>
+    <Plan tier={planTier} isTablet={isTablet} isActive={isActive} onClick={handleClickCTA}>
       <HeadingBlock>
         <PlanTitle>{planTier}</PlanTitle>
         {planTier === 'team' ? (
@@ -208,7 +208,7 @@ const OrgPlan = (props: Props) => {
           </LI>
         ))}
       </UL>
-      <CTAButton onClick={handleClickCTA} buttonStyle={buttonStyle} size='medium'>
+      <CTAButton buttonStyle={buttonStyle} size='medium'>
         {buttonLabel}
       </CTAButton>
     </Plan>
