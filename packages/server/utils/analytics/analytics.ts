@@ -147,6 +147,7 @@ export type AnalyticsEvent =
   | 'New Team'
   | 'Poll added'
   | 'Slack notification sent'
+  | 'Smart group title changed'
 
 /**
  * Provides a unified interface for sending all the analytics events
@@ -592,6 +593,19 @@ class Analytics {
     segmentProperties?: object
   ) => {
     this.track(userId, 'Slack notification sent', {teamId, notificationEvent, ...segmentProperties})
+  }
+
+  smartGroupTitleChanged = (
+    userId: string,
+    similarity: number,
+    smartTitle: string,
+    normalizedTitle: string
+  ) => {
+    this.track(userId, 'Smart group title changed', {
+      similarity,
+      smartTitle,
+      title: normalizedTitle
+    })
   }
 
   identify = (options: IdentifyOptions) => {
