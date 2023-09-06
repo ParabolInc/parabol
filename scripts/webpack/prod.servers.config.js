@@ -17,10 +17,6 @@ const distPath = path.join(PROJECT_ROOT, 'dist')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 
-// When Node exits with an uncaughtException it prints the callstack, which is the line that caused the error.
-// We do not minify the server to prevent callstacks that can be longer than a terminal scrollback buffer
-// Not minifying costs us ~50MB extra, but it doesn't require sourcemaps & compiles 90s faster
-
 module.exports = ({noDeps}) => ({
   mode: 'production',
   node: {
@@ -58,7 +54,12 @@ module.exports = ({noDeps}) => ({
         allowlist: [/parabol-client/, /parabol-server/]
       })
   ].filter(Boolean),
-
+  optimization: {
+    // When Node exits with an uncaughtException it prints the callstack, which is the line that caused the error.
+    // We do not minify the server to prevent callstacks that can be longer than a terminal scrollback buffer
+    // Not minifying costs us ~50MB extra, but it doesn't require sourcemaps & compiles 90s faster
+    minimize: false
+  },
   plugins: [
     // Pro tip: comment this out along with stable entry files for quick debugging
     new CleanWebpackPlugin(),

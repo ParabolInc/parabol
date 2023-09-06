@@ -55,7 +55,7 @@ export async function up() {
     const end = start + BATCH_SIZE
     const teamIdBatch = teamIds.slice(start, end)
     if (teamIdBatch.length === 0) break
-    const res = (await r
+    const rowsToInsert = (await r
       .table('NewMeeting')
       .getAll(r.args(teamIdBatch), {index: 'teamId'})
       .group((row) => ({teamId: row('teamId'), templateId: row('templateId')}))
@@ -68,13 +68,24 @@ export async function up() {
       }))
       .filter((row: any) => row('templateId').default(null).ne(null))
       .run()) as TeamMeetingTemplate[]
-    if (res.length > 0) {
-      await pg.insertInto('TeamMeetingTemplate').values(res).execute()
-    }
-  }
 
-  await r.getPoolMaster()?.drain()
-  await pg.destroy()
+    // it's possible a templateId exists in NewMeeting, but not in MeetingTemplate
+    const attemptedTemplateIds = rowsToInsert.map((r) => r.templateId)
+    if (attemptedTemplateIds.length === 0) continue
+    const validTemplates = await pg
+      .selectFrom('MeetingTemplate')
+      .select('id')
+      .where('id', 'in', attemptedTemplateIds)
+      .execute()
+    if (validTemplates.length === 0) continue
+    const validTemplateIds = new Set(validTemplates.map(({id}) => id))
+    const validRowsToInsert = rowsToInsert.filter((row) => validTemplateIds.has(row.templateId))
+    await pg
+      .insertInto('TeamMeetingTemplate')
+      .values(validRowsToInsert)
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+  }
 }
 
 export async function down() {
