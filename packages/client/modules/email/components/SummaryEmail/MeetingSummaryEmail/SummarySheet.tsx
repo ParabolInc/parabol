@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import PictureAsPdf from '@mui/icons-material/PictureAsPdf'
 import {jsPDF} from 'jspdf'
 import html2canvas from 'html2canvas'
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
@@ -86,7 +87,7 @@ const SummarySheet = (props: Props) => {
     `,
     meetingRef
   )
-  const summaryRef = useRef(null)
+  const summaryRef = useRef<HTMLTableElement | null>(null)
   const {id: meetingId, meetingType, taskCount} = meeting
   const isDemo = !!props.isDemo
 
@@ -156,39 +157,45 @@ const SummarySheet = (props: Props) => {
                       <tbody>
                         <tr>
                           <td align='center' width='100%'>
-                            <div className='flex justify-center gap-4'>
+                            <div className='mb-2 flex justify-center gap-4'>
                               {!!taskCount && taskCount > 0 && (
                                 <ExportAllTasks meetingRef={meeting} />
                               )}
-                              {meetingType !== 'teamPrompt' && (
-                                <>
-                                  <Link
-                                    to={emailCSVUrl}
-                                    className={
-                                      'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
-                                    }
-                                  >
-                                    <TableChart
-                                      style={{
-                                        width: '14px',
-                                        height: '14px',
-                                        color: PALETTE.SLATE_600
-                                      }}
-                                    />
-                                    Export to CSV
-                                  </Link>
-                                  <button
-                                    onClick={downloadPDF}
-                                    className={
-                                      'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
-                                    }
-                                  >
-                                    {/* Your PDF icon here */}
-                                    Download PDF
-                                  </button>
-                                </>
-                              )}
                             </div>
+                            {meetingType !== 'teamPrompt' && (
+                              <div className='flex justify-center gap-4'>
+                                <Link
+                                  to={emailCSVUrl}
+                                  className={
+                                    'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                  }
+                                >
+                                  <TableChart
+                                    style={{
+                                      width: '14px',
+                                      height: '14px',
+                                      color: PALETTE.SLATE_600
+                                    }}
+                                  />
+                                  Export to CSV
+                                </Link>
+                                <button
+                                  onClick={downloadPDF}
+                                  className={
+                                    'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                  }
+                                >
+                                  <PictureAsPdf
+                                    style={{
+                                      width: '14px',
+                                      height: '14px',
+                                      color: PALETTE.SLATE_600
+                                    }}
+                                  />
+                                  Download PDF
+                                </button>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       </tbody>
