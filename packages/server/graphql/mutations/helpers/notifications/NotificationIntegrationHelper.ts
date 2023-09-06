@@ -13,6 +13,7 @@ export type NotifyResponse =
 
 export type NotificationIntegration = {
   startMeeting(meeting: Meeting, team: Team): Promise<NotifyResponse>
+  updateMeeting?(meeting: Meeting, team: Team): Promise<NotifyResponse>
   endMeeting(
     meeting: Meeting,
     team: Team,
