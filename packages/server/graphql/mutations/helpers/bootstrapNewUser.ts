@@ -99,7 +99,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   analytics.accountCreated(userId, !isOrganic, isPatient0)
 
   if (isOrganic) {
-    sendPromptToJoinOrg(email, userId)
+    sendPromptToJoinOrg(newUser)
   }
 
   return new AuthToken({sub: userId, tms})
