@@ -1,9 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import {jsPDF} from 'jspdf'
+import html2canvas from 'html2canvas'
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
 import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
 import {SummarySheet_meeting$key} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
-import React from 'react'
+import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {CorsOptions} from '../../../../../types/cors'
 import ExportToCSV from '../ExportToCSV'
@@ -45,6 +47,9 @@ const sheetStyle = {
   boxShadow: sheetShadow
 }
 
+const pageWidth = 210 // a4 width in mm
+const pageHeight = 297 // a4 height in mm
+
 const SummarySheet = (props: Props) => {
   const {
     emailCSVUrl,
@@ -84,113 +89,196 @@ const SummarySheet = (props: Props) => {
     `,
     meetingRef
   )
+  const summaryRef = useRef(null)
   const {id: meetingId, meetingType, taskCount} = meeting
   const isDemo = !!props.isDemo
 
+  const calculateDimensions = (imgWidth: number, imgHeight: number) => {
+    const imgRatio = imgWidth / imgHeight
+    const pageRatio = pageWidth / pageHeight
+    if (imgRatio > pageRatio) {
+      imgWidth = pageWidth
+      imgHeight = pageWidth / imgRatio
+    } else {
+      imgHeight = pageHeight
+      imgWidth = pageHeight * imgRatio
+    }
+    const leftMargin = (pageWidth - imgWidth) / 2
+    const topMargin = (pageHeight - imgHeight) / 2
+
+    return {imgWidth, imgHeight, leftMargin, topMargin}
+  }
+
+  const downloadPDF = async () => {
+    const input = summaryRef.current
+    if (!input) return
+
+    const canvas = await html2canvas(input, {
+      scrollY: -window.scrollY,
+      useCORS: true
+    })
+    const imgData = canvas.toDataURL('image/png')
+    const pdf = new jsPDF()
+
+    const imgWidth = canvas.width * 0.264583 // convert pixel to mm
+    const imgHeight = canvas.height * 0.264583 // convert pixel to mm
+    const {
+      imgWidth: fitWidth,
+      imgHeight: fitHeight,
+      leftMargin,
+      topMargin
+    } = calculateDimensions(imgWidth, imgHeight)
+
+    let currentHeight = 0
+    while (currentHeight < fitHeight) {
+      pdf.addImage(
+        imgData,
+        'PNG',
+        leftMargin,
+        topMargin - currentHeight * (pageHeight / fitHeight),
+        fitWidth,
+        fitHeight,
+        undefined,
+        'FAST'
+      )
+      currentHeight += pageHeight
+      if (currentHeight < fitHeight) {
+        pdf.addPage()
+      }
+    }
+
+    pdf.save(`Parabol_summary_${meeting.id}.pdf`)
+  }
+
   return (
-    <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
-      <tbody>
-        <tr>
-          <td>
-            <SummaryHeader meeting={meeting} corsOptions={corsOptions} />
-            <QuickStats meeting={meeting} />
-            <TeamHealthSummary meeting={meeting} />
-          </td>
-        </tr>
-        <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
-        {referrer === 'meeting'
-          ? (meetingType !== 'teamPrompt' || (!!taskCount && taskCount > 0)) && (
-              <>
-                <tr>
-                  <td>
-                    <table width='90%' align='center' className='mt-8 rounded-lg bg-slate-200 py-4'>
-                      <tbody>
-                        <tr>
-                          <td align='center' width='100%'>
-                            <div className='flex justify-center gap-4'>
-                              {!!taskCount && taskCount > 0 && (
-                                <ExportAllTasks meetingRef={meeting} />
-                              )}
-                              {meetingType !== 'teamPrompt' && (
-                                <Link
-                                  to={emailCSVUrl}
-                                  className={
-                                    'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
-                                  }
-                                >
-                                  <TableChart
-                                    style={{
-                                      width: '14px',
-                                      height: '14px',
-                                      color: PALETTE.SLATE_600
-                                    }}
-                                  />
-                                  Export to CSV
-                                </Link>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-                {/* :HACK: The 'ExportToCSV' component both downloads the CSV if 'urlAction' is 'csv'
+    <div ref={summaryRef}>
+      <table
+        id='summary'
+        width='100%'
+        height='100%'
+        align='center'
+        bgcolor='#FFFFFF'
+        style={sheetStyle}
+        // ref={summaryRef}
+      >
+        <tbody>
+          <tr>
+            <td>
+              <SummaryHeader meeting={meeting} corsOptions={corsOptions} />
+              <QuickStats meeting={meeting} />
+              <TeamHealthSummary meeting={meeting} />
+            </td>
+          </tr>
+          <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
+          {referrer === 'meeting'
+            ? (meetingType !== 'teamPrompt' || (!!taskCount && taskCount > 0)) && (
+                <>
+                  <tr>
+                    <td>
+                      <table
+                        width='90%'
+                        align='center'
+                        className='mt-8 rounded-lg bg-slate-200 py-4'
+                      >
+                        <tbody>
+                          <tr>
+                            <td align='center' width='100%'>
+                              <div className='flex justify-center gap-4'>
+                                {!!taskCount && taskCount > 0 && (
+                                  <ExportAllTasks meetingRef={meeting} />
+                                )}
+                                {meetingType !== 'teamPrompt' && (
+                                  <>
+                                    <Link
+                                      to={emailCSVUrl}
+                                      className={
+                                        'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                      }
+                                    >
+                                      <TableChart
+                                        style={{
+                                          width: '14px',
+                                          height: '14px',
+                                          color: PALETTE.SLATE_600
+                                        }}
+                                      />
+                                      Export to CSV
+                                    </Link>
+                                    <button
+                                      onClick={downloadPDF}
+                                      className={
+                                        'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                      }
+                                    >
+                                      {/* Your PDF icon here */}
+                                      Download PDF
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                  {/* :HACK: The 'ExportToCSV' component both downloads the CSV if 'urlAction' is 'csv'
                 and shows the 'Export to CSV' button. We need the download functionality, but we
                 don't want to show the button as-is, so hide it in the DOM */}
-                <div className='hidden'>
-                  {/* :TODO: (jmtaber129): Decouple the download and button functionality of this
+                  <div className='hidden'>
+                    {/* :TODO: (jmtaber129): Decouple the download and button functionality of this
                   component. */}
-                  <ExportToCSV
-                    emailCSVUrl={emailCSVUrl}
-                    meetingId={meetingId}
-                    urlAction={urlAction}
-                    referrer={referrer}
-                    corsOptions={corsOptions}
-                  />
-                </div>
-              </>
-            )
-          : meetingType !== 'teamPrompt' && (
-              <ExportToCSV
-                emailCSVUrl={emailCSVUrl}
-                meetingId={meetingId}
-                urlAction={urlAction}
-                referrer={referrer}
-                corsOptions={corsOptions}
+                    <ExportToCSV
+                      emailCSVUrl={emailCSVUrl}
+                      meetingId={meetingId}
+                      urlAction={urlAction}
+                      referrer={referrer}
+                      corsOptions={corsOptions}
+                    />
+                  </div>
+                </>
+              )
+            : meetingType !== 'teamPrompt' && (
+                <ExportToCSV
+                  emailCSVUrl={emailCSVUrl}
+                  meetingId={meetingId}
+                  urlAction={urlAction}
+                  referrer={referrer}
+                  corsOptions={corsOptions}
+                />
+              )}
+          <EmailBorderBottom />
+          <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
+          <WholeMeetingSummary meetingRef={meeting} />
+          {meetingType === 'teamPrompt' ? (
+            <TeamPromptResponseSummary meetingRef={meeting} />
+          ) : (
+            <>
+              <MeetingMembersWithTasks meeting={meeting} />
+              <MeetingMembersWithoutTasks meeting={meeting} />
+              <RetroTopics
+                isDemo={isDemo}
+                isEmail={referrer === 'email'}
+                meeting={meeting}
+                appOrigin={appOrigin}
               />
-            )}
-        <EmailBorderBottom />
-        <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
-        <WholeMeetingSummary meetingRef={meeting} />
-        {meetingType === 'teamPrompt' ? (
-          <TeamPromptResponseSummary meetingRef={meeting} />
-        ) : (
-          <>
-            <MeetingMembersWithTasks meeting={meeting} />
-            <MeetingMembersWithoutTasks meeting={meeting} />
-            <RetroTopics
-              isDemo={isDemo}
-              isEmail={referrer === 'email'}
-              meeting={meeting}
-              appOrigin={appOrigin}
-            />
-            <SummaryPokerStories
-              appOrigin={appOrigin}
-              meeting={meeting}
-              isEmail={referrer === 'email'}
-            />
-          </>
-        )}
-        <ContactUsFooter
-          isDemo={isDemo}
-          hasLearningLink={meetingType === ACTION}
-          prompt={`How’d your meeting go?`}
-          tagline='We’re eager for your feedback!'
-        />
-        <LogoFooter corsOptions={corsOptions} />
-      </tbody>
-    </table>
+              <SummaryPokerStories
+                appOrigin={appOrigin}
+                meeting={meeting}
+                isEmail={referrer === 'email'}
+              />
+            </>
+          )}
+          <ContactUsFooter
+            isDemo={isDemo}
+            hasLearningLink={meetingType === ACTION}
+            prompt={`How’d your meeting go?`}
+            tagline='We’re eager for your feedback!'
+          />
+          <LogoFooter corsOptions={corsOptions} />
+        </tbody>
+      </table>
+    </div>
   )
 }
 
