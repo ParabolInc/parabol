@@ -149,6 +149,7 @@ export type AnalyticsEvent =
   | 'Poll added'
   | 'Slack notification sent'
   | 'Smart group title changed'
+  | 'Task due date set'
 
 /**
  * Provides a unified interface for sending all the analytics events
@@ -611,6 +612,10 @@ class Analytics {
       smartTitle,
       title: normalizedTitle
     })
+  }
+
+  taskDueDateSet = (userId: string, taskId: string, teamId: string) => {
+    this.track(userId, 'Task due date set', {taskId, teamId})
   }
 
   identify = (options: IdentifyOptions) => {
