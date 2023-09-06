@@ -2,6 +2,7 @@ import {getUserTeams, sendPublic, signUp} from './common'
 
 test('Invite to team, works for ordinary email domain', async () => {
   const {userId, authToken} = await signUp()
+  const {email: inviteeEmail} = await signUp()
 
   const teamId = (await getUserTeams(userId))[0].id
   const inviteToTeam = await sendPublic({
@@ -18,7 +19,7 @@ test('Invite to team, works for ordinary email domain', async () => {
     `,
     variables: {
       teamId,
-      invitees: ['foo@example.com']
+      invitees: ['foo@example.com', inviteeEmail]
     },
     authToken
   })
@@ -27,7 +28,7 @@ test('Invite to team, works for ordinary email domain', async () => {
     data: {
       inviteToTeam: {
         error: null,
-        invitees: ['foo@example.com']
+        invitees: ['foo@example.com', inviteeEmail]
       }
     }
   })
@@ -35,6 +36,7 @@ test('Invite to team, works for ordinary email domain', async () => {
 
 test('Invite to team, deny for untrusted domain', async () => {
   const {userId, authToken} = await signUp()
+  const {email: inviteeEmail} = await signUp()
 
   const teamId = (await getUserTeams(userId))[0].id
   const inviteToTeam = await sendPublic({
@@ -51,7 +53,7 @@ test('Invite to team, deny for untrusted domain', async () => {
     `,
     variables: {
       teamId,
-      invitees: ['foo@qq.com']
+      invitees: ['foo@qq.com', inviteeEmail]
     },
     authToken
   })
