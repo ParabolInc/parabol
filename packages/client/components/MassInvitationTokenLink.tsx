@@ -5,7 +5,6 @@ import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
-import makeMinWidthQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
@@ -24,10 +23,6 @@ const StyledCopyShortLink = styled(CopyShortLink)({
   padding: 11,
   ':hover': {
     color: PALETTE.SKY_400
-  },
-  [makeMinWidthQuery(400)]: {
-    // make sure the length doesn't change the width
-    minWidth: 280
   }
 })
 

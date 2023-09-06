@@ -104,12 +104,18 @@ const TeamDrawer = (props: Props) => {
             <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
           )}
         </div>
-        <div style={{backgroundColor: 'grey-200'}} className='p-4'>
-          <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>
-            Share this link
-          </h2>
-          <p className='my-0 py-0 pb-4 text-sm leading-[16px]'>This link expires in 30 days.</p>
-          <MassInvitationTokenLinkRoot meetingId={undefined} teamId={teamId} />
+        <div className='p-4'>
+          <div style={{backgroundColor: PALETTE.SLATE_200}} className='rounded-lg p-4'>
+            <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>
+              Share this link
+            </h2>
+            <p className='my-0 py-0 pb-4 text-sm leading-[16px]'>This link expires in 30 days.</p>
+            <div className='overflow-x-hidden'>
+              <div className='bg-white'>
+                <MassInvitationTokenLinkRoot meetingId={undefined} teamId={teamId} />
+              </div>
+            </div>
+          </div>
         </div>
       </DrawerContent>
     </ResponsiveDashSidebar>
