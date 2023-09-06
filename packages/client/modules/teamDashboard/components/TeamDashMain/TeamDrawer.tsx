@@ -91,32 +91,38 @@ const TeamDrawer = (props: Props) => {
   return (
     <ResponsiveDashSidebar isOpen={openDrawer !== null} isRightDrawer onToggle={toggleDrawer}>
       <DrawerContent isDesktop={isDesktop}>
-        <div>
-          <DrawerHeader>
-            <StyledLabelHeading>
-              {drawerTypeRef.current === 'manageTeam' ? 'Manage Team' : 'Team Agenda'}
-            </StyledLabelHeading>
-            <CloseDrawer teamId={teamId} />
-          </DrawerHeader>
-          {drawerTypeRef.current === 'manageTeam' ? (
-            <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
-          ) : (
-            <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
-          )}
-        </div>
-        {drawerTypeRef.current === 'manageTeam' && (
-          <div className='p-4'>
-            <div style={{backgroundColor: PALETTE.SLATE_200}} className='rounded-lg p-4'>
-              <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>Invite</h2>
-              <p className='my-0 py-0 pb-4 text-sm leading-[16px]'>This link expires in 30 days</p>
-              <div className='overflow-x-hidden pb-2'>
-                <div className='bg-white'>
-                  <MassInvitationTokenLinkRoot meetingId={undefined} teamId={teamId} />
+        <div className='flex h-full flex-col'>
+          <div className='flex-1 overflow-y-auto'>
+            <DrawerHeader>
+              <StyledLabelHeading>
+                {drawerTypeRef.current === 'manageTeam' ? 'Manage Team' : 'Team Agenda'}
+              </StyledLabelHeading>
+              <CloseDrawer teamId={teamId} />
+            </DrawerHeader>
+            {drawerTypeRef.current === 'manageTeam' ? (
+              <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
+            ) : (
+              <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
+            )}
+          </div>
+          {drawerTypeRef.current === 'manageTeam' && (
+            <div className='mt-auto p-4'>
+              <div style={{backgroundColor: PALETTE.SLATE_200}} className='rounded-lg p-4'>
+                <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>
+                  Invite
+                </h2>
+                <p className='my-0 py-0 pb-4 text-sm leading-[16px]'>
+                  This link expires in 30 days
+                </p>
+                <div className='overflow-x-hidden pb-2'>
+                  <div className='bg-white'>
+                    <MassInvitationTokenLinkRoot meetingId={undefined} teamId={teamId} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </DrawerContent>
     </ResponsiveDashSidebar>
   )
