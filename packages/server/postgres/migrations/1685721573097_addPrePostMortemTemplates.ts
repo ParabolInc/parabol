@@ -965,6 +965,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
 const createdAt = new Date()
 
 const makeId = (name: string, type: 'template' | 'prompt') => {
+  // FIXME truncate to 100 characters
   const cleanedName = name
     .replace(/[^0-9a-zA-Z ]/g, '') // remove emojis, apostrophes, and dashes
     .split(' ')
