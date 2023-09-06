@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {RValue} from '../../database/stricterR'
-import MeetingMember from '../../database/types/MeetingMember'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTaskEstimates'
@@ -78,14 +77,15 @@ const pokerResetDimension = {
     // mutate the cached meeting
     Object.assign(stage, updates)
     const updater = (estimateStage: RValue) => estimateStage.merge(updates)
-    await Promise.all([
+    const [_updateResult, _removeResult, meetingMembers, teamMembers] = await Promise.all([
       updateStage(meetingId, stageId, 'ESTIMATE', updater),
-      removeMeetingTaskEstimates(meetingId, stageId)
+      removeMeetingTaskEstimates(meetingId, stageId),
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
     const data = {meetingId, stageId}
 
-    const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-    sendPokerMeetingRevoteToSegment(meeting, meetingMembers as MeetingMember[])
+    sendPokerMeetingRevoteToSegment(meeting, teamMembers, meetingMembers)
 
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionSuccess', data, subOptions)
     return data
