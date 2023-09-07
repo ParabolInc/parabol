@@ -1,0 +1,24 @@
+"""
+A SAML Authentication Strategy
+"""
+type SAML {
+  """
+  The name of the company, used as a slug in signon URLs
+  """
+  id: ID!
+
+  """
+  The domains the company has ownership of. Usually one, but large orgs can have many for contractors, etc.
+  """
+  domains: [String!]!
+
+  """
+  The IdP Signon URL typically the HTTP-Post in metadata, including the SAMLRequest
+  """
+  url: String
+
+  """
+  A blob of XML from the IdP describing how to handle authentication
+  """
+  metadata: String
+}

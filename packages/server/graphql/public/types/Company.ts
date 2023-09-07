@@ -1,14 +1,14 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
+import AuthToken from '../../../database/types/AuthToken'
 import TeamMember from '../../../database/types/TeamMember'
 import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
+import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {CompanyResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
 import {getTeamsByOrgIds} from './helpers/getTeamsByOrgIds'
-import {DataLoaderWorker} from '../../graphql'
-import AuthToken from '../../../database/types/AuthToken'
 
 export type CompanySource = {id: string}
 
@@ -238,6 +238,9 @@ const Company: CompanyResolvers = {
     const userIds = organizationUsers.map((organizationUser) => organizationUser.userId)
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size
+  },
+  saml: async ({id: domain}, _args, {dataLoader}) => {
+    return dataLoader.get('samlByDomain').load(domain)
   }
 }
 

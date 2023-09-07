@@ -1,6 +1,9 @@
 import styled from '@emotion/styled'
 import {Add, Check} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgAuthenticationSSOFrame_saml$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_saml.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks} from '../../../../types/constEnums'
@@ -59,22 +62,31 @@ const ContactLink = styled('a')({
 })
 
 interface Props {
-  disabled: boolean
+  samlRef: OrgAuthenticationSSOFrame_saml$key | null
 }
 
 const OrgAuthenticationSSOFrame = (props: Props) => {
-  const {disabled} = props
-
-  const isSSOEnabled = false
+  const {samlRef} = props
+  const saml = useFragment(
+    graphql`
+      fragment OrgAuthenticationSSOFrame_saml on SAML {
+        id
+        domains
+      }
+    `,
+    samlRef
+  )
+  const disabled = saml?.id
+  const domains: readonly string[] = saml?.domains ?? []
 
   return (
     <SSOEnabledToggleBlock>
       <ContentWrapper>
         <IconBlock>
-          {isSSOEnabled ? (
-            <StyledCheckIcon>{'check'}</StyledCheckIcon>
+          {disabled ? (
+            <StyledCheckIcon>{'add'}</StyledCheckIcon>
           ) : (
-            <StyledAddIcon>{'add'}</StyledAddIcon>
+            <StyledAddIcon>{'check'}</StyledAddIcon>
           )}
         </IconBlock>
         <SSOEnabledLabelBlock>
@@ -90,6 +102,20 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
             </ContactLink>{' '}
             {disabled ? 'to enable SSO' : 'to update email domains'}
           </SSOEnabledLabel>
+          <div className={'flex gap-2 pt-2 pb-1 empty:hidden'}>
+            {domains.map((domain) => {
+              return (
+                <div
+                  key={domain}
+                  className={
+                    'bg w-max select-none rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-800'
+                  }
+                >
+                  {domain}
+                </div>
+              )
+            })}
+          </div>
         </SSOEnabledLabelBlock>
       </ContentWrapper>
     </SSOEnabledToggleBlock>

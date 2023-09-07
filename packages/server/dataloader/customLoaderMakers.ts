@@ -7,6 +7,7 @@ import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamProm
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
+import SAML from '../database/types/SAML'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
@@ -625,6 +626,23 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
             .filter({removedAt: null, role: 'BILLING_LEADER'})
             .coerceTo('array')('userId')
             .run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const samlByDomain = (parent: RootDataLoader) => {
+  return new DataLoader<string, SAML, string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((domain) => {
+          return r.table('SAML').get(domain).run()
         })
       )
       return res
