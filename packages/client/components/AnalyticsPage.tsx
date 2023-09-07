@@ -89,6 +89,17 @@ if (datadogEnabled) {
   datadogRum.startSessionReplayRecording()
 }
 
+amplitude.init(window.__ACTION__.AMPLITUDE_API_KEY, {
+  defaultTracking: {
+    attribution: false,
+    pageViews: false,
+    sessions: false,
+    formInteractions: false,
+    fileDownloads: false
+  },
+  logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
+})
+
 // page titles are changed in child components via useDocumentTitle, which fires after this
 // we must guarantee that this runs after useDocumentTitle
 // we can't move this into useDocumentTitle since the pathname may change without chaging the title
@@ -124,6 +135,7 @@ const AnalyticsPage = () => {
             is_patient_0: !!isPatient0
           }
         })
+        amplitude.setUserId(id)
       } else {
         ReactGA.set({
           userId: null
@@ -201,6 +213,15 @@ const AnalyticsPage = () => {
         {integrations: {'Google Analytics': {clientId: await getAnonymousId()}}}
       )
       ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
+      amplitude.track('Loaded a Page', {
+        name: document.title || '',
+        path: pathname,
+        referrer: makeHref(prevPathname),
+        search: location.search,
+        title: document.title || '',
+        translated,
+        url: href
+      })
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
 
@@ -208,15 +229,6 @@ const AnalyticsPage = () => {
   useEffect(() => {
     window.HubSpotConversations?.widget?.refresh?.()
   }, [pathname])
-
-  useEffect(() => {
-    amplitude.init(window.__ACTION__.AMPLITUDE_API_KEY, {
-      defaultTracking: {
-        pageViews: true
-      },
-      logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
-    })
-  }, [])
 
   useEffect(() => {
     if (!datadogEnabled) {
