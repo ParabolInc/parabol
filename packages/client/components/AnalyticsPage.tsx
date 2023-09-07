@@ -135,7 +135,6 @@ const AnalyticsPage = () => {
             is_patient_0: !!isPatient0
           }
         })
-        amplitude.setUserId(id)
       } else {
         ReactGA.set({
           userId: null
@@ -213,17 +212,23 @@ const AnalyticsPage = () => {
         {integrations: {'Google Analytics': {clientId: await getAnonymousId()}}}
       )
       ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
-      amplitude.track('Loaded a Page', {
-        name: document.title || '',
-        path: pathname,
-        referrer: makeHref(prevPathname),
-        search: location.search,
-        title: document.title || '',
-        translated,
-        url: href
-      })
+      amplitude.track(
+        'Loaded a Page',
+        {
+          name: pageName,
+          referrer: makeHref(prevPathname),
+          title,
+          path: pathname,
+          url: href,
+          translated,
+          search: location.search
+        },
+        {
+          user_id: atmosphere.viewerId
+        }
+      )
     }, TIME_TO_RENDER_TREE)
-  }, [isSegmentLoaded, pathname])
+  }, [isSegmentLoaded, pathname, location.search])
 
   // We need to refresh the chat widget so it can recheck the URL
   useEffect(() => {
