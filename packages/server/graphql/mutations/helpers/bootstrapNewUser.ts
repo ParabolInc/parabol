@@ -18,8 +18,14 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
+import {DataLoaderWorker} from '../../graphql'
 
-const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
+const bootstrapNewUser = async (
+  newUser: User,
+  isOrganic: boolean,
+  dataLoader: DataLoaderWorker,
+  searchParams?: string
+) => {
   const r = await getRethink()
   const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
   // email is checked by the caller
@@ -99,7 +105,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   analytics.accountCreated(userId, !isOrganic, isPatient0)
 
   if (isOrganic) {
-    sendPromptToJoinOrg(newUser)
+    sendPromptToJoinOrg(newUser, dataLoader)
   }
 
   return new AuthToken({sub: userId, tms})

@@ -26,7 +26,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const domain = getDomainFromEmail(viewer.email)
   const now = new Date()
 
-  const orgIds = await getEligibleOrgIdsByDomain(domain, viewerId)
+  const orgIds = await getEligibleOrgIdsByDomain(domain, viewerId, dataLoader)
 
   if (!orgIds.length) {
     return standardError(new Error('No relevant organizations in the domain were found'))
