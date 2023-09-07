@@ -31,7 +31,7 @@ const enableSAMLForDomain: MutationResolvers['enableSAMLForDomain'] = async (
   const slugName = normalizeSlugName(name)
   if (slugName instanceof Error) return {error: {message: slugName.message}}
 
-  const signOnURL = getSignOnURL(metadata, slugName)
+  const signOnURL = metadata ? getSignOnURL(metadata, slugName) : undefined
   if (signOnURL instanceof Error) return {error: {message: signOnURL.message}}
 
   const normalizedDomains = await validateDomains(domains, slugName)

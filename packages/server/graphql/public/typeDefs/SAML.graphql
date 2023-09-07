@@ -22,3 +22,9 @@ type SAML {
   """
   metadata: String
 }
+
+type ParseSAMLMetadataSuccess {
+  url: String!
+}
+
+union ParseSAMLMetadataPayload = ErrorPayload | ParseSAMLMetadataSuccess

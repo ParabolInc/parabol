@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import DialogTitle from '../../../../components/DialogTitle'
+import {useFragment} from 'react-relay'
+import {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -14,19 +16,6 @@ const InputSection = styled('div')({
   padding: '0 16px 8px 16px'
 })
 
-const SubTitle = styled(DialogTitle)<{disabled: boolean}>(({disabled}) => ({
-  color: disabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
-  fontSize: '16px',
-  padding: 0
-}))
-
-const Label = styled('div')<{disabled: boolean}>(({disabled}) => ({
-  color: disabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
-  fontSize: '14px',
-  display: 'flex',
-  alignItems: 'center'
-}))
-
 const Container = styled('div')({
   marginBottom: '16px'
 })
@@ -39,30 +28,41 @@ const ButtonSection = styled('div')({
 })
 
 interface Props {
-  disabled: boolean
+  samlRef: OrgAuthenticationMetadata_saml$key | null
 }
 
 const OrgAuthenticationMetadata = (props: Props) => {
-  const [metadata, setMetadata] = useState('')
-  const {disabled} = props
-
+  const {samlRef} = props
+  const saml = useFragment(
+    graphql`
+      fragment OrgAuthenticationMetadata_saml on SAML {
+        metadata
+      }
+    `,
+    samlRef
+  )
+  const [metadata, setMetadata] = useState(saml?.metadata ?? '')
+  const submitMetadata = () => {
+    /*  */
+  }
   return (
     <Container>
       <Section>
-        <SubTitle disabled={disabled}>Metadata</SubTitle>
-        <Label disabled={disabled}>Paste metadata from your identity provider</Label>
+        <div className='flex text-base font-semibold leading-6 text-slate-700'>Metadata</div>
+        <div className={'flex items-center text-sm text-slate-700'}>
+          Paste metadata from your identity provider
+        </div>
       </Section>
       <InputSection>
         <BasicTextArea
-          disabled={disabled}
           name='metadata'
-          placeholder='Paste your metadata here'
+          placeholder={`<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID=...`}
           value={metadata}
           onChange={(e) => setMetadata(e.target.value)}
         />
       </InputSection>
       <ButtonSection>
-        <SecondaryButton disabled={disabled} size='medium'>
+        <SecondaryButton size='medium' onClick={submitMetadata}>
           Update Metadata
         </SecondaryButton>
       </ButtonSection>

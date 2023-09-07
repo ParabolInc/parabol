@@ -21,6 +21,8 @@ const OrgAuthentication = (props: Props) => {
             company {
               saml {
                 ...OrgAuthenticationSSOFrame_saml
+                ...OrgAuthenticationSignOnUrl_saml
+                ...OrgAuthenticationMetadata_saml
                 id
               }
             }
@@ -39,8 +41,8 @@ const OrgAuthentication = (props: Props) => {
       <OrgAuthenticationHeader />
       <OrgAuthenticationSSOFrame samlRef={saml} />
       <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
-        <OrgAuthenticationSignOnUrl disabled={false} />
-        <OrgAuthenticationMetadata disabled={false} />
+        <OrgAuthenticationSignOnUrl samlRef={saml} />
+        <OrgAuthenticationMetadata samlRef={saml} />
       </div>
     </Panel>
   )

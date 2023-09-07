@@ -1,8 +1,8 @@
 import * as samlify from 'samlify'
 import getURLWithSAMLRequestParam from './getURLWithSAMLRequestParam'
 
-const getSignOnURL = (metadata: string | null | undefined, slugName: string) => {
-  if (!metadata) return undefined
+const getSignOnURL = (metadata: string, slugName: string) => {
+  if (!metadata) return new Error('No metadata provided')
   const idp = samlify.IdentityProvider({metadata})
   const {singleSignOnService} = idp.entityMeta.meta
   const [fallbackKey] = Object.keys(singleSignOnService)

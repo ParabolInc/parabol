@@ -15,11 +15,12 @@ import {
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
+import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
-import sendToSentry from '../../../utils/sendToSentry'
 
 declare const __PRODUCTION__: string
 
@@ -166,6 +167,13 @@ const User: UserResolvers = {
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
 
     return connectionFromTemplateArray(allActivities, first, after)
+  },
+  parseSAMLMetadata: async (_source, {metadata, domain}) => {
+    const url = getSignOnURL(metadata, domain)
+    if (url instanceof Error) {
+      return {error: {message: url.message}}
+    }
+    return {url}
   }
 }
 
