@@ -94,6 +94,7 @@
           "ShareTopicSuccess": "./types/ShareTopicSuccess#ShareTopicSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
+          "SAML": "./types/SAML#SAMLSource",
           "Task": "../../database/types/Task#default",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",

@@ -7,8 +7,8 @@ import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamProm
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
-import SAML from '../database/types/SAML'
 import Task, {TaskStatusEnum} from '../database/types/Task'
+import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
@@ -637,12 +637,21 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
 }
 
 export const samlByDomain = (parent: RootDataLoader) => {
-  return new DataLoader<string, SAML | null, string>(
+  return new DataLoader<string, SAMLSource | null, string>(
     async (keys) => {
-      const r = await getRethink()
+      const pg = getKysely()
       const res = await Promise.all(
-        keys.map((domain) => {
-          return r.table('SAML').get(domain).run()
+        keys.map(async (domain) => {
+          const res = await pg
+            .selectFrom('SAMLDomain')
+            .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+            .where('SAMLDomain.samlId', '=', domain)
+            .groupBy('SAML.id')
+            .selectAll('SAML')
+            .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+            .limit(1)
+            .execute()
+          return res[0] ?? null
         })
       )
       return res
@@ -654,12 +663,21 @@ export const samlByDomain = (parent: RootDataLoader) => {
 }
 
 export const samlByOrgId = (parent: RootDataLoader) => {
-  return new DataLoader<string, SAML | null, string>(
+  return new DataLoader<string, SAMLSource | null, string>(
     async (keys) => {
-      const r = await getRethink()
+      const pg = await getKysely()
       const res = await Promise.all(
-        keys.map((orgId) => {
-          return r.table('SAML').getAll(orgId, {index: 'orgId'}).limit(1).nth(0).default(null).run()
+        keys.map(async (orgId) => {
+          const res = await pg
+            .selectFrom('SAMLDomain')
+            .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+            .where('SAML.orgId', '=', orgId)
+            .groupBy('SAML.id')
+            .selectAll('SAML')
+            .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+            .limit(1)
+            .execute()
+          return res[0] ?? null
         })
       )
       return res

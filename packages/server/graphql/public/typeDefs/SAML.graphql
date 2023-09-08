@@ -3,7 +3,7 @@ A SAML Authentication Strategy
 """
 type SAML {
   """
-  The name of the company, used as a slug in signon URLs
+  The name of the company, used as a slug in signon URLs. Usually the domain without the tld
   """
   id: ID!
 
@@ -13,7 +13,7 @@ type SAML {
   domains: [String!]!
 
   """
-  The IdP Signon URL typically the HTTP-Post in metadata, including the SAMLRequest
+  The IdP Signon URL typically the HTTP-Post in metadata, including the SAMLRequest param
   """
   url: String
 
@@ -21,6 +21,29 @@ type SAML {
   A verified blob of XML from the IdP describing how to handle authentication
   """
   metadata: String
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  """
+  The userId that last updated the record. aGhostUser if the original user was deleted
+  """
+  lastUpdatedBy: ID!
+
+  """
+  The user that last updated the record. aGhostUser if the original user was deleted
+  """
+  lastUpdatedByUser: User!
+
+  """
+  The orgId that owns this SAML record and corresponding domain. Null if SAML record is a legacy orphan
+  """
+  orgId: ID
+
+  """
+  The organization that owns this SAML record and corresponding domain. Null if SAML record is a legacy orphan
+  """
+  organization: Organization
 }
 
 type ParseSAMLMetadataSuccess {
