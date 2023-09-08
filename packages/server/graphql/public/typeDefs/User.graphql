@@ -455,8 +455,8 @@ type User {
     """
     metadata: String!
     """
-    The name of the company, used as a slug in signon URLs
+    The name of the company, used as a slug in signon URLs.
     """
     domain: String!
-  ): ParseSAMLMetadataPayload
+  ): ParseSAMLMetadataPayload!
 }

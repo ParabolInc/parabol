@@ -637,12 +637,29 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
 }
 
 export const samlByDomain = (parent: RootDataLoader) => {
-  return new DataLoader<string, SAML, string>(
+  return new DataLoader<string, SAML | null, string>(
     async (keys) => {
       const r = await getRethink()
       const res = await Promise.all(
         keys.map((domain) => {
           return r.table('SAML').get(domain).run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const samlByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, SAML | null, string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((orgId) => {
+          return r.table('SAML').getAll(orgId, {index: 'orgId'}).limit(1).nth(0).default(null).run()
         })
       )
       return res

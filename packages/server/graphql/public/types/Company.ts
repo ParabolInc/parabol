@@ -238,9 +238,6 @@ const Company: CompanyResolvers = {
     const userIds = organizationUsers.map((organizationUser) => organizationUser.userId)
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size
-  },
-  saml: async ({id: domain}, _args, {dataLoader}) => {
-    return dataLoader.get('samlByDomain').load(domain)
   }
 }
 

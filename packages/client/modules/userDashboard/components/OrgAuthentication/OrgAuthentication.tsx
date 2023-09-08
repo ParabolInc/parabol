@@ -18,13 +18,11 @@ const OrgAuthentication = (props: Props) => {
       query OrgAuthenticationQuery($orgId: ID!) {
         viewer {
           organization(orgId: $orgId) {
-            company {
-              saml {
-                ...OrgAuthenticationSSOFrame_saml
-                ...OrgAuthenticationSignOnUrl_saml
-                ...OrgAuthenticationMetadata_saml
-                id
-              }
+            saml {
+              ...OrgAuthenticationSSOFrame_saml
+              ...OrgAuthenticationSignOnUrl_saml
+              ...OrgAuthenticationMetadata_saml
+              id
             }
           }
         }
@@ -34,7 +32,7 @@ const OrgAuthentication = (props: Props) => {
   )
   const {viewer} = data
   const {organization} = viewer
-  const saml = organization?.company?.saml ?? null
+  const saml = organization?.saml ?? null
   const disabled = !!saml
   return (
     <Panel>

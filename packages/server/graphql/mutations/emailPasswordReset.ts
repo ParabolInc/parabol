@@ -54,6 +54,8 @@ const emailPasswordReset = {
       const samlDomainExists = await r
         .table('SAML')
         .filter((row: RDatum) => row('domains').contains(domain))
+        //
+        .filter((row: RDatum) => row('metadata').default(null).ne(null))
         .run()
       if (samlDomainExists.length) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
       if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}

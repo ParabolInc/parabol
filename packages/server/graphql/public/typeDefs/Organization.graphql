@@ -151,6 +151,11 @@ type Organization {
   Any super power given to the organization via a super user
   """
   featureFlags: OrganizationFeatureFlags!
+
+  """
+  The SAML record attached to the Organization, if any
+  """
+  saml: SAML
 }
 
 type MeetingStat {

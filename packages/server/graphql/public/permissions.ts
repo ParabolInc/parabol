@@ -56,6 +56,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': isAuthenticated,
     getDemoEntities: rateLimit({perMinute: 5, perHour: 50})
   },
+  Organization: {
+    saml: and(isViewerBillingLeader, isOrgTier('enterprise'))
+  },
   User: {
     domains: or(isSuperUser, isUserViewer)
   }

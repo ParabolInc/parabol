@@ -61,9 +61,4 @@ type Company {
   the total number of users across all organizations
   """
   userCount: Int!
-
-  """
-  The SAML record, if that is their authentication strategy
-  """
-  saml: SAML
 }

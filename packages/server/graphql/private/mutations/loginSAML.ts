@@ -11,17 +11,17 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
+import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
 
-const getRelayState = (body: any) => {
-  const {RelayState} = body
+const getRelayState = (body: querystring.ParsedUrlQuery) => {
   let relayState = {} as SSORelayState
   try {
-    relayState = JSON.parse(base64url.decode(RelayState))
+    relayState = JSON.parse(base64url.decode(body.RelayState as string))
   } catch (e) {
     // ignore
   }
@@ -30,24 +30,34 @@ const getRelayState = (body: any) => {
 
 const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
   const r = await getRethink()
-  const body = querystring.parse(queryString)
   const normalizedName = samlName.trim().toLowerCase()
+  const body = querystring.parse(queryString)
+  const relayState = getRelayState(body)
+  const {isInvited, metadata: newMetadata} = relayState
   const doc = await r.table('SAML').get(normalizedName).run()
-
-  if (!doc) throw new Error(`${normalizedName} has not been created in Parabol yet`)
-  const {domains, metadata} = doc
-  const idp = samlify.IdentityProvider({metadata: metadata ?? undefined})
+  if (!doc)
+    return {
+      error: {
+        message: `Ask customer service to enable SSO for ${normalizedName}.`
+      }
+    }
+  const {domains, metadata: existingMetadata} = doc
+  const metadata = newMetadata || existingMetadata
+  if (!metadata) {
+    return {error: {message: 'No metadata found! Please contact customer service'}}
+  }
+  const idp = samlify.IdentityProvider({metadata})
   let loginResponse
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
   } catch (e) {
-    throw e
+    const message = e instanceof Error ? e.message : 'parseLoginResponse failed'
+    return {error: {message}}
   }
   if (!loginResponse) {
-    throw new Error('Error with query from identity provider')
+    return {error: {message: 'Error with query from identity provider'}}
   }
-  const relayState = getRelayState(body)
-  const {isInvited} = relayState
+
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
   const caseInsensitiveAttributes = {} as Record<string, string | undefined>
@@ -60,15 +70,25 @@ const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, que
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
-    throw new Error('Email attribute was not included in SAML response')
+    return {error: {message: 'Email attribute was not included in SAML response'}}
   }
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
-    throw new Error('Email is too long')
+    return {error: {message: 'Email is too long'}}
   }
   const ssoDomain = getSSODomainFromEmail(email)
   if (!ssoDomain || !domains.includes(ssoDomain)) {
     // don't blindly trust the IdP
-    throw new Error(`${email} does not belong to ${domains.join(', ')}`)
+    return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
+  }
+
+  if (newMetadata) {
+    // The user is updating their SAML metadata
+    // Revalidate it & persist to DB
+    const url = getSignOnURL(metadata, normalizedName)
+    if (url instanceof Error) {
+      return {error: {message: url.message}}
+    }
+    await r.table('SAML').get(normalizedName).update({metadata: newMetadata, url}).run()
   }
 
   const user = await getUserByEmail(email)

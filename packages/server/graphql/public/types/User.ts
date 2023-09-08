@@ -21,6 +21,7 @@ import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
+import base64url from 'base64url'
 
 declare const __PRODUCTION__: string
 
@@ -169,11 +170,16 @@ const User: UserResolvers = {
     return connectionFromTemplateArray(allActivities, first, after)
   },
   parseSAMLMetadata: async (_source, {metadata, domain}) => {
-    const url = getSignOnURL(metadata, domain)
-    if (url instanceof Error) {
-      return {error: {message: url.message}}
+    const baseUrl = getSignOnURL(metadata, domain)
+    if (baseUrl instanceof Error) {
+      return {error: {message: baseUrl.message}}
     }
-    return {url}
+    // append the new metadata to the RelayState
+    // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
+    const relayState = base64url.encode(JSON.stringify({metadata}))
+    const urlObj = new URL(baseUrl)
+    urlObj.searchParams.append('RelayState', relayState)
+    return {url: urlObj.toString()}
   }
 }
 
