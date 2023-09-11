@@ -211,24 +211,35 @@ const AnalyticsPage = () => {
         // See: segmentIo.ts:28 for more information on the next line
         {integrations: {'Google Analytics': {clientId: await getAnonymousId()}}}
       )
-      ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
-      amplitude.track(
-        'Loaded a Page',
-        {
-          name: pageName,
-          referrer: makeHref(prevPathname),
-          title,
-          path: pathname,
-          url: href,
-          translated,
-          search: location.search
-        },
-        {
-          user_id: atmosphere.viewerId
-        }
-      )
     }, TIME_TO_RENDER_TREE)
-  }, [isSegmentLoaded, pathname, location.search])
+  }, [isSegmentLoaded, pathname])
+
+  useEffect(() => {
+    ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
+  }, [pathname])
+
+  useEffect(() => {
+    const title = document.title || ''
+    const [pageName] = title.split(' | ')
+    const translated = !!document.querySelector(
+      'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
+    )
+    amplitude.track(
+      'Loaded a Page',
+      {
+        name: pageName,
+        referrer: document.referrer,
+        title,
+        path: pathname,
+        url: href,
+        translated,
+        search: location.search
+      },
+      {
+        user_id: atmosphere.viewerId
+      }
+    )
+  }, [pathname, location.search, atmosphere.viewerId])
 
   // We need to refresh the chat widget so it can recheck the URL
   useEffect(() => {
