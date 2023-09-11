@@ -110,6 +110,7 @@ export default {
       id: meetingId,
       teamId,
       meetingCount,
+      name: oneOnOneTeamInput ? `One on One #${meetingCount + 1}` : undefined,
       phases,
       facilitatorUserId: viewerId
     })
