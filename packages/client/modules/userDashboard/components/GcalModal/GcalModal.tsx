@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import React, {useState} from 'react'
@@ -21,14 +20,7 @@ import StyledError from '../../../../components/StyledError'
 import DialogContainer from '../../../../components/DialogContainer'
 import {Close} from '@mui/icons-material'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
-import useMenu from '../../../../hooks/useMenu'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import RaisedButton from '../../../../components/RaisedButton'
-import {Elevation} from '../../../../styles/elevation'
-import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
-import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
+import VideoConferencing from './VideoConferencing'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -73,11 +65,6 @@ const ErrorMessage = styled(StyledError)({
   paddingBottom: 8
 })
 
-const StyledButton = styled(RaisedButton)({
-  borderRadius: 4,
-  padding: '6px 12px'
-})
-
 const validateTitle = (title: string) => {
   return new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
 }
@@ -98,7 +85,6 @@ const GcalModal = (props: Props) => {
   const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_CENTER)
 
   const team = useFragment(
     graphql`
@@ -230,36 +216,7 @@ const GcalModal = (props: Props) => {
               setEnd={setEnd}
             />
           </div>
-          <div className='pt-2'>
-            <StyledButton onClick={togglePortal} ref={originRef} elevationHovered={Elevation.Z3}>
-              {'Add Video Conferencing'} <ArrowDropDownIcon />
-            </StyledButton>
-          </div>
-          {menuPortal(
-            <Menu ariaLabel={'Select a video conferencing option'} {...menuProps}>
-              <MenuItem
-                label={
-                  <div className='flex items-center p-3 hover:cursor-pointer'>
-                    <GoogleMeetProviderLogo />
-                    <label className='text-gray-500 pl-2 text-sm font-normal hover:cursor-pointer'>
-                      Google Meet
-                    </label>
-                  </div>
-                }
-              ></MenuItem>
-              <MenuItem
-                isDisabled
-                label={
-                  <div className='flex items-center p-3 hover:cursor-not-allowed'>
-                    <ZoomProviderLogo />
-                    <label className='text-gray-500 pl-2 text-sm font-normal hover:cursor-not-allowed'>
-                      Zoom (Coming Soon!)
-                    </label>
-                  </div>
-                }
-              ></MenuItem>
-            </Menu>
-          )}
+          <VideoConferencing />
           <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea
             name='rawInvitees'
