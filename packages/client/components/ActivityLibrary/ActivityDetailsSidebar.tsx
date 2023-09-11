@@ -1,7 +1,7 @@
 import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
@@ -140,25 +140,25 @@ const ActivityDetailsSidebar = (props: Props) => {
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
-
-  const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
-  const selectedUser = selectedUsers[0]
   const {organizations: viewerOrganizations} = viewer
+  const [selectedUser, setSelectedUser] = React.useState<Option>()
+  const [mutualOrgsIds, setMutualOrgsIds] = React.useState<string[]>([])
 
-  const selectedUserOrganizationIds = new Set(selectedUser?.organizationIds ?? [])
-  const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
-  const mutualOrgsIds = mutualOrgs.map((org) => org.id)
+  const showOrgPicker = selectedUser && (mutualOrgsIds.length > 1 || !mutualOrgsIds.length)
 
-  const showOrgPicker = selectedUser && (mutualOrgs.length > 1 || !mutualOrgs.length)
-
-  const firstMutualOrgId = mutualOrgsIds[0]
-  const defaultOrgId = firstMutualOrgId ?? selectedTeam.orgId
+  const defaultOrgId = mutualOrgsIds[0] ?? selectedTeam.orgId
   const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
 
-
-  useEffect(() => {
-    setSelectedOrgId(defaultOrgId)
-  }, [selectedUser])
+  const onUserSelected = (newUsers: Option[]) => {
+    const user = newUsers[0]
+    setSelectedUser(user)
+    const selectedUserOrganizationIds = new Set(user?.organizationIds ?? [])
+    const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
+    const mutualOrgsIds = mutualOrgs.map((org) => org.id)
+    setMutualOrgsIds(mutualOrgsIds)
+    setSelectedOrgId(mutualOrgsIds[0] ?? selectedTeam.orgId)
+    onError(new Error(''))
+  }
 
   const oneOnOneTeamInput = selectedUser
     ? {
@@ -284,11 +284,8 @@ const ActivityDetailsSidebar = (props: Props) => {
               <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
               <AdhocTeamMultiSelect
                 viewerRef={viewer}
-                onChange={(newUsers: Option[]) => {
-                  setSelectedUsers(newUsers)
-                  onError(new Error(''))
-                }}
-                value={selectedUsers}
+                onChange={onUserSelected}
+                value={selectedUser ? [selectedUser] : []}
                 multiple={false}
               />
 
