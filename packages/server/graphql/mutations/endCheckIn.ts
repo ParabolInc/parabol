@@ -227,7 +227,8 @@ export default {
     const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
-    analytics.checkInEnd(completedCheckIn, meetingMembers)
+
+    analytics.checkInEnd(completedCheckIn, meetingMembers, team)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     checkTeamsLimit(team.orgId, dataLoader)
     updateTeamInsights(teamId, dataLoader)
