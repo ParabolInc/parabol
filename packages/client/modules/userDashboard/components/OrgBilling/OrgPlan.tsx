@@ -98,7 +98,6 @@ const Plan = styled('div')<{tier: TierEnum; isTablet: boolean; isActive: boolean
       : '2px solid transparent',
     transition: 'all ease 0.5s',
     '&:hover': {
-      cursor: 'pointer',
       outline: `2px solid ${
         tier === 'starter'
           ? PALETTE.GRAPE_500
@@ -142,9 +141,8 @@ const CTAButton = styled(BaseButton)<{
       buttonStyle === 'primary'
         ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
         : buttonStyle === 'secondary'
-        ? PALETTE.TOMATO_100
-        : PALETTE.SLATE_300,
-    borderColor: buttonStyle === 'secondary' ? PALETTE.TOMATO_500 : 'none'
+        ? PALETTE.SLATE_300
+        : PALETTE.SLATE_300
   }
 }))
 
