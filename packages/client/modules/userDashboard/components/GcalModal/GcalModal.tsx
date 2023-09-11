@@ -28,6 +28,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import RaisedButton from '../../../../components/RaisedButton'
 import {Elevation} from '../../../../styles/elevation'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
+import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -238,7 +239,7 @@ const GcalModal = (props: Props) => {
             <Menu ariaLabel={'Select a video conferencing option'} {...menuProps}>
               <MenuItem
                 label={
-                  <div className='align-center flex p-3 hover:cursor-pointer'>
+                  <div className='flex items-center p-3 hover:cursor-pointer'>
                     <GoogleMeetProviderLogo />
                     <label className='text-gray-500 pl-2 text-sm font-normal hover:cursor-pointer'>
                       Google Meet
@@ -246,7 +247,17 @@ const GcalModal = (props: Props) => {
                   </div>
                 }
               ></MenuItem>
-              <MenuItem isDisabled label={'Zoom (Coming Soon!)'}></MenuItem>
+              <MenuItem
+                isDisabled
+                label={
+                  <div className='flex items-center p-3 hover:cursor-not-allowed'>
+                    <ZoomProviderLogo />
+                    <label className='text-gray-500 pl-2 text-sm font-normal hover:cursor-not-allowed'>
+                      Zoom (Coming Soon!)
+                    </label>
+                  </div>
+                }
+              ></MenuItem>
             </Menu>
           )}
           <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
