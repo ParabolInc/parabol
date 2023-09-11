@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import orgAuthenticationMetadataQuery, {
   OrgAuthenticationMetadataQuery
 } from '../../../../__generated__/OrgAuthenticationMetadataQuery.graphql'
@@ -101,6 +101,28 @@ const OrgAuthenticationMetadata = (props: Props) => {
       return
     }
     onCompleted()
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(saml!.id)?.setValue(metadata, 'metadata')
+    })
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      message: 'SSO Configured Successfully',
+      autoDismiss: 5,
+      key: 'submitMetadata'
+    })
+  }
+  const checkForURL = async (e: React.ClipboardEvent) => {
+    const pastedText = e.clipboardData?.getData('Text')
+    if (!pastedText) return
+    try {
+      const url = new URL(pastedText)
+      const fetchedMetadata = await fetch(url)
+      const fetchedMetadataStr = await fetchedMetadata.text()
+      if (fetchedMetadataStr.startsWith('<?xml')) {
+        setMetadata(fetchedMetadataStr)
+      }
+    } catch {
+      // not a URL
+    }
   }
   return (
     <Container>
@@ -116,6 +138,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
           placeholder={`<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID=...`}
           value={metadata}
           onChange={(e) => setMetadata(e.target.value)}
+          onPaste={checkForURL}
         />
       </InputSection>
       <div className={'px-4 text-tomato-500 empty:hidden'}>{error?.message}</div>

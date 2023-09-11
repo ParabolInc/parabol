@@ -58,7 +58,8 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'parseLoginResponse failed'
+    const message =
+      e instanceof Error ? e.message : typeof e === 'string' ? e : 'parseLoginResponse failed'
     return {error: {message}}
   }
   if (!loginResponse) {

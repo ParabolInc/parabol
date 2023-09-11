@@ -16,7 +16,7 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
   // VALIDATION
   const slugName = normalizeSlugName(slug)
   if (slugName instanceof Error) return {error: {message: slugName.message}}
-  const res = await pg.transaction().execute(async (trx) => {
+  await pg.transaction().execute(async (trx) => {
     // upsert the record with orgId
     const saml = await trx
       .insertInto('SAML')
@@ -28,33 +28,22 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
       .onConflict((oc) => oc.column('id').doUpdateSet({lastUpdatedBy: viewerId, orgId}))
       .returning('id')
       .executeTakeFirst()
-
-    console.log({saml})
-
     if (domainsToRemove.length > 0) {
-      const removedDomains = await trx
-        .deleteFrom('SAMLDomain')
-        .where('domain', 'in', domainsToRemove)
-        .execute()
-      console.log({removedDomains})
+      await trx.deleteFrom('SAMLDomain').where('domain', 'in', domainsToRemove).execute()
     }
     if (domainsToAdd.length > 0) {
       const values = domainsToAdd.map((domain) => ({
         domain,
         samlId: slugName
       }))
-      const samlDomains = await trx
+      await trx
         .insertInto('SAMLDomain')
         .values(values)
         .onConflict((oc) => oc.column('domain').doNothing())
         .execute()
-      console.log({samlDomains})
-      return samlDomains
     }
     return saml
   })
-  console.log({res})
-
   return {samlId: slugName}
 }
 

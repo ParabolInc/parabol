@@ -4,10 +4,10 @@ import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
-import isOrgTier from './rules/isOrgTier'
+import {isOrgTier, isOrgTierSource} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import isUserViewer from './rules/isUserViewer'
-import isViewerBillingLeader from './rules/isViewerBillingLeader'
+import {isViewerBillingLeader, isViewerBillingLeaderSource} from './rules/isViewerBillingLeader'
 import isViewerOnTeam from './rules/isViewerOnTeam'
 import rateLimit from './rules/rateLimit'
 
@@ -49,7 +49,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       and(isViewerBillingLeader, isOrgTier('enterprise'))
     ),
     removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader),
-    updateSAML: and(isViewerBillingLeader, isOrgTier('enterprise')),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId)
   },
   Query: {
@@ -57,7 +56,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     getDemoEntities: rateLimit({perMinute: 5, perHour: 50})
   },
   Organization: {
-    saml: and(isViewerBillingLeader, isOrgTier('enterprise'))
+    saml: and(isViewerBillingLeaderSource, isOrgTierSource('enterprise'))
   },
   User: {
     domains: or(isSuperUser, isUserViewer)

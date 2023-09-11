@@ -89,6 +89,6 @@ export async function up() {
 export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`DROP TABLE IF EXISTS "SAML"; DROP TABLE IF EXISTS "SAMLDomain";`)
+  await client.query(`DROP TABLE IF EXISTS "SAMLDomain"; DROP TABLE IF EXISTS "SAML"; `)
   await client.end()
 }

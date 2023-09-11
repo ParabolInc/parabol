@@ -33,7 +33,7 @@ const OrgAuthentication = (props: Props) => {
   const {viewer} = data
   const {organization} = viewer
   const saml = organization?.saml ?? null
-  const disabled = !!saml
+  const disabled = !saml
   return (
     <Panel>
       <OrgAuthenticationHeader />

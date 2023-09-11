@@ -76,21 +76,15 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
     `,
     samlRef
   )
-  const disabled = saml?.id
+  const disabled = !saml
   const domains: readonly string[] = saml?.domains ?? []
 
   return (
     <SSOEnabledToggleBlock>
       <ContentWrapper>
-        <IconBlock>
-          {disabled ? (
-            <StyledCheckIcon>{'add'}</StyledCheckIcon>
-          ) : (
-            <StyledAddIcon>{'check'}</StyledAddIcon>
-          )}
-        </IconBlock>
+        <IconBlock>{disabled ? <StyledAddIcon /> : <StyledCheckIcon />}</IconBlock>
         <SSOEnabledLabelBlock>
-          <SubTitle>Enable SSO</SubTitle>
+          <SubTitle>{disabled ? 'Enable SSO' : 'SSO Enabled'}</SubTitle>
           <SSOEnabledLabel>
             <ContactLink
               href={`${ExternalLinks.CONTACT}?subject=${
