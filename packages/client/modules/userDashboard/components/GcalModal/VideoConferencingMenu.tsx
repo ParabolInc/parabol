@@ -7,17 +7,17 @@ import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
 
 type Props = {
   menuProps: MenuProps
-  handleClick: (option: 'meet' | 'zoom') => void
-  selectedOption: 'meet' | 'zoom' | null
+  handleChangeVideoType: (option: 'meet' | 'zoom' | null) => void
+  videoType: 'meet' | 'zoom' | null
 }
 
 const VideoConferencingMenu = (props: Props) => {
-  const {menuProps, handleClick, selectedOption} = props
-  if (selectedOption) return null
+  const {menuProps, handleChangeVideoType, videoType} = props
+  if (videoType) return null
   return (
     <Menu ariaLabel={'Select a video conferencing option'} {...menuProps}>
       <MenuItem
-        onClick={() => handleClick('meet')}
+        onClick={() => handleChangeVideoType('meet')}
         label={
           <div className='flex items-center p-3 hover:cursor-pointer'>
             <GoogleMeetProviderLogo />

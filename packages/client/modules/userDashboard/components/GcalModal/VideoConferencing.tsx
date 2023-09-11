@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import {Close} from '@mui/icons-material'
-import React, {useState} from 'react'
+import React from 'react'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import VideoConferencingMenu from './VideoConferencingMenu'
@@ -24,29 +24,25 @@ const CloseIcon = styled(Close)({
   }
 })
 
-const VideoConferencing = () => {
+type Props = {
+  videoType: 'meet' | 'zoom' | null
+  handleChangeVideoType: (videoType: 'meet' | 'zoom' | null) => void
+}
+
+const VideoConferencing = (props: Props) => {
+  const {videoType, handleChangeVideoType} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_CENTER)
-  const [selectedOption, setSelectedOption] = useState<'meet' | 'zoom' | null>(null)
-  console.log('🚀 ~ selectedOption:', selectedOption)
 
-  const handleClick = (option: 'meet' | 'zoom') => {
-    setSelectedOption(option)
-  }
-
-  const handleDeselect = () => {
-    setSelectedOption(null)
-  }
-  const selectedOptionLabel = selectedOption === 'meet' ? 'Google Meet' : 'Zoom'
-
+  const selectedOptionLabel = videoType === 'meet' ? 'Google Meet' : 'Zoom'
   return (
     <div>
-      {selectedOption ? (
+      {videoType ? (
         <div className='bg-gray-100 flex items-center rounded py-3 px-2'>
-          {selectedOption === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
+          {videoType === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
           <span className='text-gray-500 text-md h-[38px] py-2 pl-2 font-normal'>
             {selectedOptionLabel}
           </span>
-          <CloseIcon className='ml-auto' onClick={handleDeselect} />
+          <CloseIcon className='ml-auto' onClick={() => handleChangeVideoType(null)} />
         </div>
       ) : (
         <div className='py-3'>
@@ -58,8 +54,8 @@ const VideoConferencing = () => {
       {menuPortal(
         <VideoConferencingMenu
           menuProps={menuProps}
-          selectedOption={selectedOption}
-          handleClick={handleClick}
+          videoType={videoType}
+          handleChangeVideoType={handleChangeVideoType}
         />
       )}
     </div>

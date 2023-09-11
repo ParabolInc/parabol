@@ -26,7 +26,7 @@ const createGcalEvent = async (input: Input) => {
   if (!featureFlags.includes('gcal')) {
     return standardError(new Error('Does not have gcal feature flag'), {userId: viewerId})
   }
-  const {startTimestamp, endTimestamp, title, timeZone, invitees} = gcalInput
+  const {startTimestamp, endTimestamp, title, timeZone, invitees, videoType} = gcalInput
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
   if (!gcalAuth) {
@@ -51,6 +51,18 @@ const createGcalEvent = async (input: Input) => {
 
 ` // add a newline to separate the link from the rest of the description
 
+  const conferenceData =
+    videoType === 'meet'
+      ? {
+          createRequest: {
+            requestId: meetingId,
+            conferenceSolutionKey: {
+              type: 'hangoutsMeet'
+            }
+          }
+        }
+      : undefined
+
   const event = {
     summary: title,
     description,
@@ -69,13 +81,15 @@ const createGcalEvent = async (input: Input) => {
         {method: 'email', minutes: emailRemindMinsBeforeMeeting},
         {method: 'popup', minutes: popupRemindMinsBeforeMeeting}
       ]
-    }
+    },
+    conferenceData
   }
 
   try {
     await calendar.events.insert({
       calendarId: 'primary',
-      requestBody: event
+      requestBody: event,
+      conferenceDataVersion: 1
     })
   } catch (err) {
     const error = err instanceof Error ? err : new Error('Unable to create event in gcal')

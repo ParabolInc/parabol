@@ -85,6 +85,7 @@ const GcalModal = (props: Props) => {
   const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
+  const [videoType, setVideoType] = useState<'meet' | 'zoom' | null>(null)
 
   const team = useFragment(
     graphql`
@@ -124,7 +125,8 @@ const GcalModal = (props: Props) => {
       startTimestamp,
       endTimestamp,
       timeZone,
-      invitees
+      invitees,
+      videoType: videoType ?? undefined
     }
     handleStartActivityWithGcalEvent(input)
   }
@@ -182,6 +184,10 @@ const GcalModal = (props: Props) => {
     setInviteAll((inviteAll) => !inviteAll)
   }
 
+  const handleChangeVideoType = (option: 'meet' | 'zoom' | null) => {
+    setVideoType(option)
+  }
+
   return (
     <StyledDialogContainer>
       <DialogTitle>
@@ -216,7 +222,7 @@ const GcalModal = (props: Props) => {
               setEnd={setEnd}
             />
           </div>
-          <VideoConferencing />
+          <VideoConferencing videoType={videoType} handleChangeVideoType={handleChangeVideoType} />
           <p className='pt-2 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea
             name='rawInvitees'
