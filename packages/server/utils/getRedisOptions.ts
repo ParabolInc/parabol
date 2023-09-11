@@ -11,7 +11,6 @@ const getAbsPath = (maybeRelativePath: string) => {
 const getRedisTLS = () => {
   // optional env var, likely outside the app dir
   const {
-    REDIS_URL,
     REDIS_TLS_CERT_FILE,
     REDIS_TLS_KEY_FILE,
     REDIS_TLS_CA_FILE,
