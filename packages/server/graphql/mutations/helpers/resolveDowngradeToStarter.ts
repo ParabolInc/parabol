@@ -29,7 +29,7 @@ const resolveDowngradeToStarter = async (
     r.table('Organization').get(orgId).run() as unknown as Organization,
     pg
       .updateTable('SAML')
-      .set({metadata: null})
+      .set({metadata: null, lastUpdatedBy: userId})
       .where('orgId', '=', orgId)
       .executeTakeFirstOrThrow(),
     r({

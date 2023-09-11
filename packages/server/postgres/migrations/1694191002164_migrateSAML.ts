@@ -21,9 +21,7 @@ export async function up() {
     })
   })
 
-  // Create the table in PG
-  // Only 1 SAML record can control a given domain, unique indexes on string arrays is ugly
-  // So it's been normalized to 3NF
+  // I had to normalize domains to its own table to guarantee uniqueness (and make indexing easier)
   await sql`
   CREATE TABLE IF NOT EXISTS "SAML" (
     "id" VARCHAR(100) PRIMARY KEY,
@@ -55,7 +53,7 @@ export async function up() {
 
   // Attempt to assign an orgId to existing SAML records
   // It isn't perfect because some orgs have downgraded, leaving orphaned SAML records
-  // This is why orgId is nullable
+  // This is why orgId is nullable for now
   await r
     .table('SAML')
     .update(
@@ -91,6 +89,6 @@ export async function up() {
 export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`DROP TABLE IF EXISTS "SAML";`)
+  await client.query(`DROP TABLE IF EXISTS "SAML"; DROP TABLE IF EXISTS "SAMLDomain";`)
   await client.end()
 }

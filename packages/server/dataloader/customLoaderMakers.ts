@@ -643,7 +643,7 @@ export const saml = (parent: RootDataLoader) => {
       const pg = await getKysely()
       const res = await Promise.all(
         keys.map(async (id) => {
-          const res = await pg
+          return pg
             .selectFrom('SAMLDomain')
             .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
             .where('SAML.id', '=', id)
@@ -651,8 +651,7 @@ export const saml = (parent: RootDataLoader) => {
             .selectAll('SAML')
             .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
             .limit(1)
-            .execute()
-          return res[0] ?? null
+            .executeTakeFirst()
         })
       )
       return res
@@ -669,7 +668,7 @@ export const samlByDomain = (parent: RootDataLoader) => {
       const pg = getKysely()
       const res = await Promise.all(
         keys.map(async (domain) => {
-          const res = await pg
+          return pg
             .selectFrom('SAMLDomain')
             .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
             .where('SAMLDomain.samlId', '=', domain)
@@ -677,8 +676,7 @@ export const samlByDomain = (parent: RootDataLoader) => {
             .selectAll('SAML')
             .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
             .limit(1)
-            .execute()
-          return res[0] ?? null
+            .executeTakeFirst()
         })
       )
       return res
@@ -695,7 +693,7 @@ export const samlByOrgId = (parent: RootDataLoader) => {
       const pg = await getKysely()
       const res = await Promise.all(
         keys.map(async (orgId) => {
-          const res = await pg
+          return pg
             .selectFrom('SAMLDomain')
             .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
             .where('SAML.orgId', '=', orgId)
@@ -703,8 +701,7 @@ export const samlByOrgId = (parent: RootDataLoader) => {
             .selectAll('SAML')
             .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
             .limit(1)
-            .execute()
-          return res[0] ?? null
+            .executeTakeFirst()
         })
       )
       return res

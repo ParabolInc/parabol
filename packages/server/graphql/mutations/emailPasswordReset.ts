@@ -55,7 +55,7 @@ const emailPasswordReset = {
         return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
       }
       const domain = getSSODomainFromEmail(email)
-      const saml = await dataLoader.get('samlByDomain').load(domain!)
+      const saml = domain ? await dataLoader.get('samlByDomain').load(domain) : null
       const samlDomainExists = !!saml?.metadata
 
       if (samlDomainExists) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
