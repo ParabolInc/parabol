@@ -1,7 +1,7 @@
-import Redis from 'ioredis'
 import ms from 'ms'
 import GQLExecutorChannelId from '../../client/shared/gqlIds/GQLExecutorChannelId'
 import numToBase64 from './numToBase64'
+import RedisInstance from './RedisInstance'
 import sendToSentry from './sendToSentry'
 
 const STANDARD_TIMEOUT = ms('10s')
@@ -12,7 +12,7 @@ interface Job {
   timeoutId: NodeJS.Timeout
 }
 
-const {SERVER_ID, REDIS_URL} = process.env
+const {SERVER_ID} = process.env
 
 interface BaseRequest {
   executorServerId?: string
@@ -21,8 +21,8 @@ interface BaseRequest {
 
 export default class PubSubPromise<Request extends BaseRequest, Response> {
   jobs = {} as {[jobId: string]: Job}
-  publisher = new Redis(REDIS_URL!, {connectionName: 'pubsubPromise_pub'})
-  subscriber = new Redis(REDIS_URL!, {connectionName: 'pubsubPromise_sub'})
+  publisher = new RedisInstance('pubsubPromise_pub')
+  subscriber = new RedisInstance('pubsubPromise_sub')
   subChannel: string
   stream: string
   jobCounter = 0

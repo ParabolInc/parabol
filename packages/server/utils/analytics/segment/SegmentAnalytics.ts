@@ -1,17 +1,45 @@
-import SegmentIo from 'analytics-node'
-import {AnalyticsEvent} from '../analytics'
+import {AnalyticsEvent, IdentifyOptions} from '../analytics'
+import segment from '../../segmentIo'
+import {CacheWorker, DataLoaderBase} from '../../../graphql/DataLoaderCache'
+
+const {SEGMENT_WRITE_KEY} = process.env
 
 /**
  * Wrapper for segment providing a more typesafe interface
  */
 export class SegmentAnalytics {
-  constructor(private segmentIo: SegmentIo) {}
+  private segmentIo: any
 
-  track(userId: string, event: AnalyticsEvent, properties?: any) {
-    return this.segmentIo.track({
+  constructor() {
+    this.segmentIo = segment
+  }
+
+  identify(options: IdentifyOptions) {
+    // used as a failsafe for PPMIs
+    if (!SEGMENT_WRITE_KEY) return
+    const {userId, anonymousId, ...traits} = options
+    return this.segmentIo.identify({
       userId,
-      event,
-      properties
+      traits,
+      anonymousId
     })
+  }
+
+  track(
+    userId: string,
+    event: AnalyticsEvent,
+    dataloader: CacheWorker<DataLoaderBase>,
+    properties?: any
+  ) {
+    // used as a failsafe for PPMIs
+    if (!SEGMENT_WRITE_KEY) return
+    return this.segmentIo.track(
+      {
+        userId,
+        event,
+        properties
+      },
+      dataloader
+    )
   }
 }

@@ -1,8 +1,8 @@
 require('./webpack/utils/dotenv')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
-const Redis = require('ioredis')
 const path = require('path')
+const Redis = require('ioredis')
 
 const migrateRethinkDB = async () => {
   return require('./migrate')()
@@ -19,6 +19,8 @@ const migratePG = async () => {
 }
 
 const clearRedis = async () => {
+  // Files run by pm2 must be pure JS (not .ts).
+  // The RedisInstance (TLS) logic is written in .ts, so we can't use TLS here
   const redis = new Redis(process.env.REDIS_URL, {connectionName: 'devRedis'})
   await redis.flushall()
   redis.disconnect()

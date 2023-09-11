@@ -1,9 +1,22 @@
-import getPg from '../getPg'
+import {sql} from 'kysely'
+import getKysely from '../getKysely'
 
-const updateMeetingTemplateLastUsedAt = async (templateId: string) => {
-  const pg = getPg()
-  await pg.query(`UPDATE "MeetingTemplate" SET "lastUsedAt" = CURRENT_TIMESTAMP WHERE id = $1;`, [
-    templateId
+const updateMeetingTemplateLastUsedAt = async (templateId: string, teamId: string) => {
+  const pg = getKysely()
+
+  await Promise.all([
+    pg
+      .updateTable('MeetingTemplate')
+      .set({lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', templateId)
+      .execute(),
+    pg
+      .insertInto('TeamMeetingTemplate')
+      .values({teamId, templateId, lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      .onConflict((oc) =>
+        oc.columns(['teamId', 'templateId']).doUpdateSet({lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      )
+      .execute()
   ])
 }
 

@@ -14,14 +14,27 @@ import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocation
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
-import segment from '../segmentIo'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
+import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
+import getDataLoader from '../../graphql/getDataLoader'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
   'id' | 'duration' | 'recurrenceRule' | 'meetingType' | 'title'
 > & {teamId: string; facilitatorId: string}
+
+export type IdentifyOptions = {
+  userId: string
+  email: string
+  anonymousId?: string
+  name?: string
+  isActive?: boolean
+  featureFlags?: string[]
+  highestTier?: string
+  isPatient0?: boolean
+  createdAt?: Date
+}
 
 export type OrgTierChangeEventProperties = {
   orgId: string
@@ -119,10 +132,12 @@ export type AnalyticsEvent =
  * Provides a unified inteface for sending all the analytics events
  */
 class Analytics {
+  private amplitudeAnalytics: AmplitudeAnalytics
   private segmentAnalytics: SegmentAnalytics
 
   constructor() {
-    this.segmentAnalytics = new SegmentAnalytics(segment)
+    this.amplitudeAnalytics = new AmplitudeAnalytics()
+    this.segmentAnalytics = new SegmentAnalytics()
   }
 
   // meeting
@@ -462,8 +477,16 @@ class Analytics {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
   }
 
-  private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>
-    this.segmentAnalytics.track(userId, event, properties)
+  identify = (options: IdentifyOptions) => {
+    this.amplitudeAnalytics.identify(options)
+    this.segmentAnalytics.identify(options)
+  }
+
+  private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
+    const dataloader = getDataLoader()
+    this.amplitudeAnalytics.track(userId, event, dataloader, properties)
+    this.segmentAnalytics.track(userId, event, dataloader, properties)
+  }
 }
 
 export const analytics = new Analytics()

@@ -5,9 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.118.0 2023-Aug-31
+
+### Added
+
+- feat: give users feedback if there's a gcal error (#8694)
+- chore: first pass at lastUsedAt caching (#8708)
+- chore(one-on-one): add user picker styles (#8700)
+- chore(one-on-one): Add user picker (#8666)
+- feat(one-on-one): allow oneOnOne input in startCheckIn mutation (#8629)
+- feat: Add "Is this helpful?" for insights (#8695)
+- feat(standups): "Add task" button in Parabol task drawer (#8716)
+- feat(standups): "Your tasks" drawer with Parabol tasks (#8690)
+
+### Changed
+
+- chore: remove **PROJECT_ROOT** (#8746)
+- chore: docker rm queryMap (#8745)
+- chore: no minify server (#8761)
+
+### Fixed
+
+- chore: fix cleanup-changelog.sh on mac os (#8685)
+- fix: user tasks should not return from archived teams (#8728)
+- chore(analytics): Route analytics identify calls through analytics.ts (#8699)
+- chore(analytics): Add Amplitude server side event tracking (#8681)
+- fix: Show correct error message on login failure with invitation (#8726)
+- fix(standups): Selecting team in Parabol card throws error (#8738)
+
 ## 6.117.1 2023-Aug-28
 
 ### Changed
+
 - **ci**: CircleCI using the new staging domain (#8729)
 - **doc**: release test template issue and manual testing guide updated with the new release url (#8736)
 
@@ -37,7 +66,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **tiptap**: Show `<hr/>` nodes (#8697)
 - **standups**: do not open links twice (#8658)
 - **ai-summary**: update the prompt to emphasize brevity (#8703)
-
 
 ## 6.116.0 2023-Aug-16
 
