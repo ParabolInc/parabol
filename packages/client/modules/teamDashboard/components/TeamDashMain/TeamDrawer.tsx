@@ -109,7 +109,7 @@ const TeamDrawer = (props: Props) => {
             <div className='mt-auto p-4'>
               <div style={{backgroundColor: PALETTE.SLATE_200}} className='rounded-lg p-4'>
                 <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>
-                  Invite
+                  Invite to Team
                 </h2>
                 <p className='my-0 py-0 pb-4 text-sm leading-[16px]'>
                   This link expires in 30 days
