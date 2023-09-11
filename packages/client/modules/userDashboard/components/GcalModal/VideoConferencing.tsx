@@ -8,6 +8,8 @@ import VideoConferencingMenu from './VideoConferencingMenu'
 import RaisedButton from '../../../../components/RaisedButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Elevation} from '../../../../styles/elevation'
+import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
+import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
 
 const StyledButton = styled(RaisedButton)({
   borderRadius: 4,
@@ -39,12 +41,15 @@ const VideoConferencing = () => {
   return (
     <div>
       {selectedOption ? (
-        <div className='flex items-center'>
-          <span>{selectedOptionLabel}</span>
-          <CloseIcon onClick={handleDeselect} />
+        <div className='bg-gray-100 flex items-center rounded py-3 px-2'>
+          {selectedOption === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
+          <span className='text-gray-500 text-md h-[38px] py-2 pl-2 font-normal'>
+            {selectedOptionLabel}
+          </span>
+          <CloseIcon className='ml-auto' onClick={handleDeselect} />
         </div>
       ) : (
-        <div className='pt-2'>
+        <div className='py-3'>
           <StyledButton onClick={togglePortal} ref={originRef} elevationHovered={Elevation.Z3}>
             {'Add Video Conferencing'} <ArrowDropDownIcon />
           </StyledButton>
@@ -57,7 +62,6 @@ const VideoConferencing = () => {
           handleClick={handleClick}
         />
       )}
-
     </div>
   )
 }

@@ -217,7 +217,7 @@ const GcalModal = (props: Props) => {
             />
           </div>
           <VideoConferencing />
-          <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
+          <p className='pt-2 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea
             name='rawInvitees'
             onChange={onInvitesChange}
