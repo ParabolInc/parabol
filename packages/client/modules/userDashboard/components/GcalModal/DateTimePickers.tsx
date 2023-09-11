@@ -82,7 +82,7 @@ const DateTimePickers = (props: Props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='w flex flex-col justify-between space-y-4 pt-3'>
+      <div className='w flex flex-col justify-between space-y-6 pt-3'>
         <div className='flex space-x-2' onMouseDown={handleMouseDown}>
           <DatePicker
             label={`Meeting Start Date`}

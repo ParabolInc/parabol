@@ -158,7 +158,7 @@ const TeamPromptTopBar = (props: Props) => {
   const buttons = (
     <ButtonContainer>
       <button
-        className='group flex h-max w-max cursor-pointer flex-col items-center px-2 text-sm font-semibold text-sky-500 hover:text-sky-600'
+        className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 text-sm font-semibold text-sky-500 hover:text-sky-600'
         onClick={onOpenWorkSidebar}
       >
         <IconLabel icon='task_alt' iconLarge />

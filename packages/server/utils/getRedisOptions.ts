@@ -11,7 +11,6 @@ const getAbsPath = (maybeRelativePath: string) => {
 const getRedisTLS = () => {
   // optional env var, likely outside the app dir
   const {
-    REDIS_URL,
     REDIS_TLS_CERT_FILE,
     REDIS_TLS_KEY_FILE,
     REDIS_TLS_CA_FILE,
@@ -21,9 +20,7 @@ const getRedisTLS = () => {
   try {
     ca = readFileSync(getAbsPath(REDIS_TLS_CA_FILE!), 'ascii')
   } catch {
-    if (REDIS_URL?.startsWith('rediss')) {
-      throw new Error('Env VAR REDIS_URL must start with redis:// when not using TLS')
-    }
+    // Some managed services use rediss:// proto, presumably they do the TLS handshake in wrappers around the app/DB
     return undefined
   }
   const rejectUnauthorized = REDIS_TLS_REJECT_UNAUTHORIZED === 'false' ? false : true

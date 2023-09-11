@@ -141,7 +141,8 @@ export default {
       r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    analytics.meetingStarted(viewerId, meeting)
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    analytics.meetingStarted(viewerId, meeting, undefined, team)
     const {error} = await createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
     const data = {teamId, meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
