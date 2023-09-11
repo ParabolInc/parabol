@@ -89,7 +89,7 @@ if (datadogEnabled) {
   datadogRum.startSessionReplayRecording()
 }
 
-amplitude.init(window.__ACTION__.AMPLITUDE_API_KEY, {
+amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
   defaultTracking: {
     attribution: false,
     pageViews: false,
