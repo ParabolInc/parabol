@@ -173,7 +173,6 @@ type TeamStat {
 The types of flags that give an individual organization super powers
 """
 type OrganizationFeatureFlags {
-  SAMLUI: Boolean!
   noAISummary: Boolean!
   AIGeneratedDiscussionPrompt: Boolean!
   standupAISummary: Boolean!

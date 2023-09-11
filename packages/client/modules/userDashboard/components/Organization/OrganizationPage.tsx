@@ -37,16 +37,12 @@ const OrganizationPage = (props: Props) => {
         id
         isBillingLeader
         tier
-        featureFlags {
-          SAMLUI
-        }
       }
     `,
     organizationRef
   )
-  const {isBillingLeader, tier, featureFlags} = organization
+  const {isBillingLeader, tier} = organization
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
-  const SAMLUI = featureFlags?.SAMLUI
   const {
     params: {orgId}
   } = match
@@ -71,13 +67,11 @@ const OrganizationPage = (props: Props) => {
             path={`${match.url}/${MEMBERS_PAGE}`}
             render={(p) => <OrgMembers {...p} orgId={orgId} />}
           />
-          {SAMLUI && (
-            <Route
-              exact
-              path={`${match.url}/${AUTHENTICATION_PAGE}`}
-              render={() => <OrgAuthentication orgId={orgId} />}
-            />
-          )}
+          <Route
+            exact
+            path={`${match.url}/${AUTHENTICATION_PAGE}`}
+            render={() => <OrgAuthentication orgId={orgId} />}
+          />
         </Switch>
       )}
     </Suspense>

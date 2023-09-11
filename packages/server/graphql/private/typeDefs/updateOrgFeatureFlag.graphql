@@ -2,7 +2,6 @@
 A flag to give an individual organization super powers
 """
 enum OrganizationFeatureFlagsEnum {
-  SAMLUI
   noAISummary
   AIGeneratedDiscussionPrompt
   standupAISummary
