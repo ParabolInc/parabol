@@ -72,9 +72,6 @@ export async function up() {
       await pg.insertInto('TeamMeetingTemplate').values(res).execute()
     }
   }
-
-  await r.getPoolMaster()?.drain()
-  await pg.destroy()
 }
 
 export async function down() {
