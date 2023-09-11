@@ -24,6 +24,7 @@ const PasswordInputField = (props: Props) => {
       <Label>Password</Label>
       <UnderlineInput
         ariaLabel={'Password'}
+        autoComplete='current-password'
         autoFocus={autoFocus}
         error={dirty ? (error as string) : undefined}
         name='password'

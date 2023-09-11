@@ -5,33 +5,50 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.119.0 2023-Sep-6
+
+### Added
+
+- **gcal**: gcal date UI/UX (#8696)
+- Update Slack message on meeting rename (#8768)
+- **standups**: rich text in slack notifications (#8715)
+
+### Changed
+
+- support SSL for redis (#8488)
+
+### Fixed
+
+- Check if team member status on accepting an invite twice (#8735)
+- too long reflect prompt ids broke the retro (#8789)
+
 ## 6.118.0 2023-Aug-31
 
 ### Added
 
-- feat: give users feedback if there's a gcal error (#8694)
-- chore: first pass at lastUsedAt caching (#8708)
-- chore(one-on-one): add user picker styles (#8700)
-- chore(one-on-one): Add user picker (#8666)
-- feat(one-on-one): allow oneOnOne input in startCheckIn mutation (#8629)
-- feat: Add "Is this helpful?" for insights (#8695)
-- feat(standups): "Add task" button in Parabol task drawer (#8716)
-- feat(standups): "Your tasks" drawer with Parabol tasks (#8690)
+- give users feedback if there's a gcal error (#8694)
+- first pass at lastUsedAt caching (#8708)
+- **one-on-one**: add user picker styles (#8700)
+- **one-on-one**: Add user picker (#8666)
+- **one-on-one**: allow oneOnOne input in startCheckIn mutation (#8629)
+- Add "Is this helpful?" for insights (#8695)
+- **standups**: "Add task" button in Parabol task drawer (#8716)
+- **standups**: "Your tasks" drawer with Parabol tasks (#8690)
 
 ### Changed
 
-- chore: remove **PROJECT_ROOT** (#8746)
-- chore: docker rm queryMap (#8745)
-- chore: no minify server (#8761)
+- remove **PROJECT_ROOT** (#8746)
+- docker rm queryMap (#8745)
+- no minify server (#8761)
 
 ### Fixed
 
-- chore: fix cleanup-changelog.sh on mac os (#8685)
-- fix: user tasks should not return from archived teams (#8728)
-- chore(analytics): Route analytics identify calls through analytics.ts (#8699)
-- chore(analytics): Add Amplitude server side event tracking (#8681)
-- fix: Show correct error message on login failure with invitation (#8726)
-- fix(standups): Selecting team in Parabol card throws error (#8738)
+- fix cleanup-changelog.sh on mac os (#8685)
+- user tasks should not return from archived teams (#8728)
+- **analytics**: Route analytics identify calls through analytics.ts (#8699)
+- **analytics**: Add Amplitude server side event tracking (#8681)
+- Show correct error message on login failure with invitation (#8726)
+- **standups**: Selecting team in Parabol card throws error (#8738)
 
 ## 6.117.1 2023-Aug-28
 
