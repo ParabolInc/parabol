@@ -11,6 +11,7 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
+          "VerifyDomainSuccess": "./types/VerifyDomainSuccess#VerifyDomainSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
@@ -30,7 +31,8 @@
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
           "UpgradeToTeamTierSuccess": "./mutations/upgradeToTeamTier#UpgradeToTeamTierSuccessSource",
-          "User": "../../postgres/types/IUser#default as IUser"
+          "User": "../../postgres/types/IUser#default as IUser",
+          "SAML": "./types/SAML#SAMLSource"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],

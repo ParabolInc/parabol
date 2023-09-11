@@ -20,7 +20,8 @@ const Organization: OrganizationResolvers = {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
   saml: async ({id: orgId}, _args, {dataLoader}) => {
-    return dataLoader.get('samlByOrgId').load(orgId)
+    const saml = await dataLoader.get('samlByOrgId').load(orgId)
+    return saml || null
   }
 }
 

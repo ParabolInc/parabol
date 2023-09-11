@@ -29,6 +29,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
+import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeResults from './normalizeResults'
 
@@ -636,8 +637,34 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
   )
 }
 
+export const saml = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, SAMLSource | null, string>(
+    async (keys) => {
+      const pg = await getKysely()
+      const res = await Promise.all(
+        keys.map(async (id) => {
+          const res = await pg
+            .selectFrom('SAMLDomain')
+            .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+            .where('SAML.id', '=', id)
+            .groupBy('SAML.id')
+            .selectAll('SAML')
+            .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+            .limit(1)
+            .execute()
+          return res[0] ?? null
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const samlByDomain = (parent: RootDataLoader) => {
-  return new DataLoader<string, SAMLSource | null, string>(
+  return new NullableDataLoader<string, SAMLSource | null, string>(
     async (keys) => {
       const pg = getKysely()
       const res = await Promise.all(
@@ -663,7 +690,7 @@ export const samlByDomain = (parent: RootDataLoader) => {
 }
 
 export const samlByOrgId = (parent: RootDataLoader) => {
-  return new DataLoader<string, SAMLSource | null, string>(
+  return new NullableDataLoader<string, SAMLSource | null, string>(
     async (keys) => {
       const pg = await getKysely()
       const res = await Promise.all(

@@ -22,7 +22,11 @@ const emailPasswordReset = {
     }
   },
   resolve: rateLimit({perMinute: 5, perHour: 50})(
-    async (_source: unknown, {email: denormEmail}: {email: string}, {ip}: GQLContext) => {
+    async (
+      _source: unknown,
+      {email: denormEmail}: {email: string},
+      {ip, dataLoader}: GQLContext
+    ) => {
       if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
         return {error: {message: 'Resetting password is disabled'}}
       }
@@ -51,13 +55,10 @@ const emailPasswordReset = {
         return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
       }
       const domain = getSSODomainFromEmail(email)
-      const samlDomainExists = await r
-        .table('SAML')
-        .filter((row: RDatum) => row('domains').contains(domain))
-        //
-        .filter((row: RDatum) => row('metadata').default(null).ne(null))
-        .run()
-      if (samlDomainExists.length) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
+      const saml = await dataLoader.get('samlByDomain').load(domain!)
+      const samlDomainExists = !!saml?.metadata
+
+      if (samlDomainExists) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
       if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}
       const {id: userId, identities} = user
       const googleIdentity = identities.find(

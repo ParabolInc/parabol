@@ -2,11 +2,11 @@ import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
-import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
+import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
@@ -28,13 +28,20 @@ const getRelayState = (body: querystring.ParsedUrlQuery) => {
   return relayState
 }
 
-const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
-  const r = await getRethink()
+const loginSAML: MutationResolvers['loginSAML'] = async (
+  _source,
+  {samlName, queryString},
+  {dataLoader}
+) => {
+  const pg = getKysely()
+
   const normalizedName = samlName.trim().toLowerCase()
   const body = querystring.parse(queryString)
   const relayState = getRelayState(body)
   const {isInvited, metadata: newMetadata} = relayState
-  const doc = await r.table('SAML').get(normalizedName).run()
+  const doc = await dataLoader.get('saml').load(normalizedName)
+  dataLoader.get('saml').clear(normalizedName)
+
   if (!doc)
     return {
       error: {
@@ -88,7 +95,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, que
     if (url instanceof Error) {
       return {error: {message: url.message}}
     }
-    await r.table('SAML').get(normalizedName).update({metadata: newMetadata, url}).run()
+    await pg
+      .updateTable('SAML')
+      .set({metadata: newMetadata, url})
+      .where('id', '=', normalizedName)
+      .execute()
   }
 
   const user = await getUserByEmail(email)

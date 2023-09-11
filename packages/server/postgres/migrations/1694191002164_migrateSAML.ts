@@ -39,9 +39,11 @@ export async function up() {
         ON DELETE SET DEFAULT
   );
   CREATE INDEX IF NOT EXISTS "idx_SAML_orgId" ON "SAML"("orgId");
+  DROP TRIGGER IF EXISTS "update_SAML_updatedAt" ON "SAML";
+  CREATE TRIGGER "update_SAML_updatedAt" BEFORE UPDATE ON "SAML" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
 
   CREATE TABLE IF NOT EXISTS "SAMLDomain" (
-    "domain" VARCHAR(255) PRIMARY KEY,
+    "domain" VARCHAR(255) CHECK (lower(domain) = domain) PRIMARY KEY,
     "samlId" VARCHAR(100),
     CONSTRAINT "fk_samlId"
       FOREIGN KEY("samlId")

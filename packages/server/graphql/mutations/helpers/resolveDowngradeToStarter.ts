@@ -1,5 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import Organization from '../../../database/types/Organization'
+import getKysely from '../../../postgres/getKysely'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
@@ -17,6 +18,7 @@ const resolveDowngradeToStarter = async (
   const now = new Date()
   const manager = getStripeManager()
   const r = await getRethink()
+  const pg = getKysely()
   try {
     await manager.deleteSubscription(stripeSubscriptionId)
   } catch (e) {
@@ -25,6 +27,11 @@ const resolveDowngradeToStarter = async (
 
   const [org] = await Promise.all([
     r.table('Organization').get(orgId).run() as unknown as Organization,
+    pg
+      .updateTable('SAML')
+      .set({metadata: null})
+      .where('orgId', '=', orgId)
+      .executeTakeFirstOrThrow(),
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
         tier: 'starter',
