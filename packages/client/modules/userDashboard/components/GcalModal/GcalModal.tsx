@@ -104,9 +104,6 @@ const GcalModal = (props: Props) => {
   const {fields, onChange} = useForm({
     title: {
       getDefault: () => ''
-    },
-    description: {
-      getDefault: () => ''
     }
   })
   const titleErr = fields.title.error
@@ -120,11 +117,9 @@ const GcalModal = (props: Props) => {
     }
     const startTimestamp = start.unix()
     const endTimestamp = end.unix()
-    const description = fields.description.value
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const input = {
       title,
-      description,
       startTimestamp,
       endTimestamp,
       timeZone,
@@ -189,13 +184,18 @@ const GcalModal = (props: Props) => {
   return (
     <StyledDialogContainer>
       <DialogTitle>
-        {'Schedule Your Meeting'}
+        <div className='flex flex-col'>
+          <div className='text-lg'>{'Schedule Your Meeting'}</div>
+          <div className='text-gray-500 mt-1 text-sm font-normal'>
+            We'll include a link to the Parabol meeting in the description
+          </div>
+        </div>
         <StyledCloseButton onClick={closeModal}>
           <CloseIcon />
         </StyledCloseButton>
       </DialogTitle>
       <DialogContent>
-        <div className='space-y-1'>
+        <div className='space-y-2'>
           <div>
             <StyledInput
               autoFocus
@@ -207,13 +207,7 @@ const GcalModal = (props: Props) => {
             />
             {titleErr && <ErrorMessage>{titleErr}</ErrorMessage>}
           </div>
-          <StyledInput
-            maxLength={100}
-            name='description'
-            onChange={onChange}
-            placeholder='Enter your meeting description (optional)'
-          />
-          <div className='pt-2'>
+          <div className='pt-1'>
             <DateTimePickers
               startValue={start}
               endValue={end}

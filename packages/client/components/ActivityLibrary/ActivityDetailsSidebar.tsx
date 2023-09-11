@@ -1,7 +1,7 @@
 import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
@@ -32,6 +32,12 @@ import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 import {AdhocTeamMultiSelect, Option} from '../AdhocTeamMultiSelect/AdhocTeamMultiSelect'
+import {Select} from '../../ui/Select/Select'
+import {SelectTrigger} from '../../ui/Select/SelectTrigger'
+import {SelectValue} from '../../ui/Select/SelectValue'
+import {SelectContent} from '../../ui/Select/SelectContent'
+import {SelectGroup} from '../../ui/Select/SelectGroup'
+import {SelectItem} from '../../ui/Select/SelectItem'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -66,6 +72,10 @@ const ActivityDetailsSidebar = (props: Props) => {
           gcal
         }
         ...AdhocTeamMultiSelect_viewer
+        organizations {
+          id
+          name
+        }
         ...ScheduleMeetingButton_viewer
       }
     `,
@@ -131,12 +141,24 @@ const ActivityDetailsSidebar = (props: Props) => {
   const history = useHistory()
 
   const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
+  const selectedUser = selectedUsers[0]
+  const {organizations: viewerOrganizations} = viewer
+
+  const selectedUserOrganizationIds = new Set(selectedUser?.organizationIds ?? [])
+  const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
+
+  const firstMutualOrgId = mutualOrgs[0]?.id
+  const defaultOrgId = firstMutualOrgId ?? selectedTeam.orgId
+  const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
+
+  useEffect(() => {
+    setSelectedOrgId(defaultOrgId)
+  }, [selectedUser])
 
   const oneOnOneTeamInput = selectedUsers[0]
     ? {
         email: selectedUsers[0].email,
-        // TODO: always pick default orgId for now, this will be changed in next PRs
-        orgId: selectedTeam.orgId
+        orgId: selectedOrgId
       }
     : null
 
@@ -239,6 +261,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='mb-6 text-xl font-semibold'>Settings</div>
 
         <div className='flex grow flex-col gap-2'>
+          {/* TODO: move one-on-one logic to its own component */}
           {selectedTemplate.id === 'oneOnOneAction' ? (
             <div className='rounded-lg bg-slate-200 p-3'>
               <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
@@ -250,6 +273,26 @@ const ActivityDetailsSidebar = (props: Props) => {
                 value={selectedUsers}
                 multiple={false}
               />
+
+              {selectedUser && mutualOrgs.length !== 1 && (
+                <>
+                  <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
+                  <Select onValueChange={(orgId) => setSelectedOrgId(orgId)} value={selectedOrgId}>
+                    <SelectTrigger className='bg-white'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {(mutualOrgs.length ? mutualOrgs : viewerOrganizations).map((org) => (
+                          <SelectItem value={org.id} key={org.id}>
+                            {org.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
             </div>
           ) : (
             <NewMeetingTeamPicker
