@@ -1,10 +1,10 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {IsOneOnOneTeamExistsQuery} from '../../__generated__/IsOneOnOneTeamExistsQuery.graphql'
+import {IsOneOnOneTeamExistsComponentQuery} from '../../__generated__/IsOneOnOneTeamExistsComponentQuery.graphql'
 
-export const isOneOnOneExistsQuery = graphql`
-  query IsOneOnOneTeamExistsQuery($oneOnOneTeamInput: CreateOneOnOneTeamInput!) {
+export const isOneOnOneExistsComponentQuery = graphql`
+  query IsOneOnOneTeamExistsComponentQuery($oneOnOneTeamInput: CreateOneOnOneTeamInput!) {
     isOneOnOneTeamExists(oneOnOneTeamInput: $oneOnOneTeamInput) {
       team {
         id
@@ -15,13 +15,16 @@ export const isOneOnOneExistsQuery = graphql`
 `
 
 interface Props {
-  queryRef: PreloadedQuery<IsOneOnOneTeamExistsQuery>
+  queryRef: PreloadedQuery<IsOneOnOneTeamExistsComponentQuery>
   name: string
 }
 
 const IsOneOnOneTeamExistsComponent = (props: Props) => {
   const {queryRef, name} = props
-  const data = usePreloadedQuery<IsOneOnOneTeamExistsQuery>(isOneOnOneExistsQuery, queryRef)
+  const data = usePreloadedQuery<IsOneOnOneTeamExistsComponentQuery>(
+    isOneOnOneExistsComponentQuery,
+    queryRef
+  )
 
   const team = data.isOneOnOneTeamExists.team
 

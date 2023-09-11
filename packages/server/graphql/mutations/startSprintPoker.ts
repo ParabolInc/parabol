@@ -135,7 +135,7 @@ export default {
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     await Promise.all([
       r.table('NewMeeting').insert(meeting).run(),
-      updateMeetingTemplateLastUsedAt(selectedTemplateId)
+      updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
     ])
 
     // Disallow accidental starts (2 meetings within 2 seconds)
@@ -170,10 +170,10 @@ export default {
         .run(),
       updateTeamByTeamId(updates, teamId)
     ])
-    createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting, template)
-    const data = {teamId, meetingId: meetingId}
+    const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+    const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)
     return data
   }

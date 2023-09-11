@@ -50,12 +50,9 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
   const now = new Date()
   const {id: teamId, orgId} = team
   const [user, organizationUser] = await Promise.all([
-    dataLoader.get('users').load(userId),
+    dataLoader.get('users').loadNonNull(userId),
     dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
   ])
-  if (!user) {
-    throw new Error('User not found')
-  }
   const {email} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
   const [, invitationNotificationIds] = await Promise.all([

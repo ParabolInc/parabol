@@ -1,6 +1,7 @@
 import SegmentIo from 'analytics-node'
 import PROD from '../PROD'
-import {getUserById} from '../postgres/queries/getUsersByIds'
+import getDataLoader from '../graphql/getDataLoader'
+import {CacheWorker, DataLoaderBase} from '../graphql/DataLoaderCache'
 
 const {SEGMENT_WRITE_KEY} = process.env
 
@@ -9,12 +10,17 @@ const segmentIo = new SegmentIo(SEGMENT_WRITE_KEY || 'x', {
   enable: !!SEGMENT_WRITE_KEY
 }) as any
 segmentIo._track = segmentIo.track
-segmentIo.track = async (options: any) => {
+segmentIo.track = async (options: any, dataloader?: CacheWorker<DataLoaderBase>) => {
   // used as a failsafe for PPMIs
   if (!SEGMENT_WRITE_KEY) return
   const {userId, event, properties: inProps} = options
   if (!userId) return
-  const user = await getUserById(userId)
+  /*
+   * Since segmentIo is called directly throughout server side code, we can't depend on the dataloader
+   * from analytics.ts and create a new one as needed
+   */
+  const localDataloader = dataloader ?? getDataLoader()
+  const user = await localDataloader.get('users').load(userId)
   const {email, segmentId} = user ?? {}
   const properties = {...inProps, email}
   return (segmentIo as any)._track({

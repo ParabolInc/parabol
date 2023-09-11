@@ -4,7 +4,6 @@ const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
 const webpack = require('webpack')
-const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const cp = require('child_process')
@@ -20,7 +19,6 @@ const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 
 module.exports = ({noDeps}) => ({
   mode: 'production',
-  devtool: 'source-map',
   node: {
     __dirname: false
   },
@@ -57,30 +55,16 @@ module.exports = ({noDeps}) => ({
       })
   ].filter(Boolean),
   optimization: {
-    minimize: noDeps,
-    minimizer: [
-      new TerserPlugin({
-        extractComments: false,
-        parallel: noDeps ? 2 : true,
-        terserOptions: {
-          output: {
-            comments: false,
-            ecma: 6
-          },
-          compress: {
-            ecma: 6
-          }
-          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-        }
-      })
-    ]
+    // When Node exits with an uncaughtException it prints the callstack, which is the line that caused the error.
+    // We do not minify the server to prevent callstacks that can be longer than a terminal scrollback buffer
+    // Not minifying costs us ~50MB extra, but it doesn't require sourcemaps & compiles 90s faster
+    minimize: false
   },
   plugins: [
     // Pro tip: comment this out along with stable entry files for quick debugging
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       __PRODUCTION__: true,
-      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary

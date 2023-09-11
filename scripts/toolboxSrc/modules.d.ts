@@ -8,6 +8,5 @@ declare module '*/getProjectRoot' {
   export = value
 }
 
-declare const __PROJECT_ROOT__: string
 declare const __APP_VERSION__: string
 declare const __COMMIT_HASH__: string

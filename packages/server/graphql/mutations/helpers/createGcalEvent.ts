@@ -18,7 +18,9 @@ type Input = {
 
 const createGcalEvent = async (input: Input) => {
   const {gcalInput, meetingId, viewerId, dataLoader, teamId} = input
-  if (!gcalInput) return
+  if (!gcalInput) {
+    return {error: null}
+  }
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {featureFlags} = viewer
   if (!featureFlags.includes('gcal')) {
@@ -69,18 +71,16 @@ const createGcalEvent = async (input: Input) => {
   }
 
   try {
-    const createdEvent = await calendar.events.insert({
+    await calendar.events.insert({
       calendarId: 'primary',
       requestBody: event
     })
-    const gcalLink = createdEvent.data.htmlLink
-    if (!gcalLink) {
-      return standardError(new Error('Could not create event'), {userId: viewerId})
-    }
-    return {gcalLink}
   } catch (err) {
     const error = err instanceof Error ? err : new Error('Unable to create event in gcal')
     return standardError(error, {userId: viewerId})
+  }
+  return {
+    error: null
   }
 }
 

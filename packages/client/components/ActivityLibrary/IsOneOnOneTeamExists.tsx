@@ -1,12 +1,14 @@
 import React, {Suspense} from 'react'
 import {
-  IsOneOnOneTeamExistsQuery,
+  IsOneOnOneTeamExistsComponentQuery,
   CreateOneOnOneTeamInput
-} from '../../__generated__/IsOneOnOneTeamExistsQuery.graphql'
+} from '../../__generated__/IsOneOnOneTeamExistsComponentQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {renderLoader} from '../../utils/relay/renderLoader'
 import {LoaderSize} from '../../types/constEnums'
-import IsOneOnOneTeamExistsComponent, {isOneOnOneExistsQuery} from './IsOneOnOneTeamExistsComponent'
+import IsOneOnOneTeamExistsComponent, {
+  isOneOnOneExistsComponentQuery
+} from './IsOneOnOneTeamExistsComponent'
 
 interface Props {
   oneOnOneTeamInput: CreateOneOnOneTeamInput
@@ -14,9 +16,12 @@ interface Props {
 }
 
 const IsOneOnOneTeamExists = ({oneOnOneTeamInput, name}: Props) => {
-  const queryRef = useQueryLoaderNow<IsOneOnOneTeamExistsQuery>(isOneOnOneExistsQuery, {
-    oneOnOneTeamInput
-  })
+  const queryRef = useQueryLoaderNow<IsOneOnOneTeamExistsComponentQuery>(
+    isOneOnOneExistsComponentQuery,
+    {
+      oneOnOneTeamInput
+    }
+  )
   return (
     <Suspense fallback={renderLoader({size: LoaderSize.MENU})}>
       {queryRef && <IsOneOnOneTeamExistsComponent queryRef={queryRef} name={name} />}
