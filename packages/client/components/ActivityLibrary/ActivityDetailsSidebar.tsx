@@ -155,14 +155,14 @@ const ActivityDetailsSidebar = (props: Props) => {
   const defaultOrgId = firstMutualOrgId ?? selectedTeam.orgId
   const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
 
+
   useEffect(() => {
     setSelectedOrgId(defaultOrgId)
-    onError(new Error(''))
   }, [selectedUser])
 
-  const oneOnOneTeamInput = selectedUsers[0]
+  const oneOnOneTeamInput = selectedUser
     ? {
-        email: selectedUsers[0].email,
+        email: selectedUser.email,
         orgId: selectedOrgId
       }
     : null
@@ -286,6 +286,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                 viewerRef={viewer}
                 onChange={(newUsers: Option[]) => {
                   setSelectedUsers(newUsers)
+                  onError(new Error(''))
                 }}
                 value={selectedUsers}
                 multiple={false}
