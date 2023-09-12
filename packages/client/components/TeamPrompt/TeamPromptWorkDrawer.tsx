@@ -112,7 +112,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
         {selectedTasks.length > 0 ? (
           selectedTasks.map((task) => (
             <NullableTask
-              className='w-full rounded border border-solid border-slate-100'
+              className='w-full'
               key={task.id}
               dataCy='foo'
               area={'userDash'}

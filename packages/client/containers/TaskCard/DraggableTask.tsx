@@ -44,6 +44,7 @@ const DraggableTask = (props: Props) => {
           {...dragProvided.dragHandleProps}
         >
           <NullableTask
+            className='max-w-[296px]'
             dataCy={`draggable-task`}
             area={area}
             task={task}
