@@ -352,7 +352,8 @@ const ExportToCSV = (props: Props) => {
   const {emailCSVUrl, referrer, corsOptions} = props
   return (
     <>
-      <tr>
+      {/* id used to remove csv button in createPDF server mutation*/}
+      <tr id='export-to-csv-section'>
         <td align='center' style={iconLinkLabel} width='100%'>
           <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
             <img

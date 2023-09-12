@@ -1,4 +1,6 @@
 import puppeteer from 'puppeteer'
+import {PALETTE} from '../../../../client/styles/paletteV3'
+import {FONT_FAMILY} from '../../../../client/styles/typographyV2'
 import {MutationResolvers} from '../resolverTypes'
 
 const createPDF: MutationResolvers['createPDF'] = async (_source, {htmlContent}) => {
@@ -6,7 +8,24 @@ const createPDF: MutationResolvers['createPDF'] = async (_source, {htmlContent})
   const page = await browser.newPage()
 
   await page.setContent(htmlContent, {
-    waitUntil: 'networkidle0' // wait until there are no new network requests so that we include imgs in the pdf
+    waitUntil: 'networkidle0' // wait until there are no more network connections so the images are loaded
+  })
+
+  await page.evaluate(() => {
+    // the buttons looks bad in the pdf and aren't needed, so remove them
+    const tableToRemove = document.querySelector('#buttons-table')
+    if (tableToRemove) {
+      tableToRemove.remove()
+    }
+    const csvButtton = document.querySelector('#export-to-csv-section')
+    if (csvButtton) {
+      csvButtton.remove()
+    }
+  })
+
+  // draftJS styles are not applied so do this manually
+  await page.addStyleTag({
+    content: `.public-DraftEditor-content { font-family: ${FONT_FAMILY.SANS_SERIF}; color: ${PALETTE.SLATE_700}; font-size: 14px;}`
   })
 
   const pdfBuffer = await page.pdf({

@@ -98,14 +98,7 @@ const SummarySheet = (props: Props) => {
     if (submitting) return
     const summaryTable = summaryRef.current
     if (!summaryTable) return
-
-    const clonedTable = summaryTable.cloneNode(true) as HTMLElement
-    const tableToRemove = clonedTable.querySelector('#buttons-table')
-    if (tableToRemove) {
-      // buttons look bad in pdf and are not needed, so remove them
-      tableToRemove.remove()
-    }
-    const htmlContent = clonedTable.outerHTML
+    const htmlContent = summaryTable.outerHTML
 
     CreatePDFMutation(
       atmosphere,
@@ -163,7 +156,7 @@ const SummarySheet = (props: Props) => {
                 <tr>
                   <td>
                     <table
-                      id='buttons-table'
+                      id='buttons-table' // used to remove buttons from pdf in createPDF server mutation
                       width='90%'
                       align='center'
                       className='mt-8 rounded-lg bg-slate-200 py-4'
