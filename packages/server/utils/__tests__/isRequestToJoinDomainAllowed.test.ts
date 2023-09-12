@@ -284,5 +284,5 @@ test('All orgs with verified emails qualify', async () => {
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user2'])
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user3'])
-  expect(orgIds).toEqual([org1, org2])
+  expect(orgIds).toIncludeSameMembers([org1, org2])
 })
