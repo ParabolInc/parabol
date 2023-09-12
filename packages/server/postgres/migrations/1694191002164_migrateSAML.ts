@@ -70,6 +70,7 @@ export async function up() {
     .run()
 
   const existingSAMLs = await r.table('SAML').coerceTo('array').run()
+  if (existingSAMLs.length === 0) return
   const nextSAMLs = existingSAMLs.map((saml) => {
     const {domains, ...rest} = saml
     return rest
