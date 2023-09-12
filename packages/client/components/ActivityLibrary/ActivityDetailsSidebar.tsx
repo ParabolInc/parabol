@@ -373,14 +373,17 @@ const ActivityDetailsSidebar = (props: Props) => {
                 )}
                 {error && <StyledError>{error.message}</StyledError>}
                 {selectedTemplate.id !== 'oneOnOneAction' && (
-                  <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                  <>
+                    <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                    {/* TODO: scheduling meeting does not work with one-on-one https://github.com/ParabolInc/parabol/issues/8820  */}
+                    <ScheduleMeetingButton
+                      handleStartActivity={handleStartActivity}
+                      mutationProps={mutationProps}
+                      teamRef={selectedTeam}
+                      viewerRef={viewer}
+                    />
+                  </>
                 )}
-                <ScheduleMeetingButton
-                  handleStartActivity={handleStartActivity}
-                  mutationProps={mutationProps}
-                  teamRef={selectedTeam}
-                  viewerRef={viewer}
-                />
                 <FlatPrimaryButton
                   onClick={() => handleStartActivity()}
                   waiting={submitting}
