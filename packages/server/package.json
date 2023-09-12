@@ -64,6 +64,7 @@
     "lint-staged": "^10.1.7",
     "prettier": "^2.6.1",
     "prettier-plugin-organize-imports": "^2.3.4",
+    "puppeteer": "^21.1.1",
     "rethinkdb-ts-migrate": "^0.3.6",
     "style-loader": "2.0.0",
     "sucrase": "^3.32.0",

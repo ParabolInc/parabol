@@ -1,7 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import PictureAsPdf from '@mui/icons-material/PictureAsPdf'
-import {jsPDF} from 'jspdf'
-import html2canvas from 'html2canvas'
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
 import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
@@ -28,6 +26,9 @@ import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import {TableChart} from '@mui/icons-material'
 import {Link} from 'react-router-dom'
+import useMutationProps from '../../../../../hooks/useMutationProps'
+import useAtmosphere from '../../../../../hooks/useAtmosphere'
+import CreatePDFMutation from '../../../../../mutations/CreatePDFMutation'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
 
@@ -88,55 +89,64 @@ const SummarySheet = (props: Props) => {
     meetingRef
   )
   const summaryRef = useRef<HTMLTableElement | null>(null)
+  const {submitting, onError} = useMutationProps()
+  const atmosphere = useAtmosphere()
   const {id: meetingId, meetingType, taskCount} = meeting
   const isDemo = !!props.isDemo
 
   const downloadPDF = async () => {
+    if (submitting) return
     const summaryTable = summaryRef.current
     if (!summaryTable) return
 
-    const canvas = await html2canvas(summaryTable, {
-      scrollY: -window.scrollY,
-      useCORS: true
-    })
-    const pdf = new jsPDF()
-    const imgData = canvas.toDataURL('image/png')
-
-    const pageWidth = 210 // A4 width in mm
-    const pageHeight = 297 // A4 height in mm
-    const imgWidth = canvas.width * 0.264583 // convert pixel to mm
-    const imgHeight = canvas.height * 0.264583 // convert pixel to mm
-
-    const scale = pageWidth / imgWidth
-    const scaledWidth = imgWidth * scale
-    const scaledHeight = imgHeight * scale
-
-    let remainingHeight = scaledHeight
-    let isFirstPage = true
-
-    while (remainingHeight >= 0) {
-      const position = remainingHeight - scaledHeight
-      if (!isFirstPage) {
-        pdf.addPage()
-      } else {
-        isFirstPage = false
-      }
-
-      pdf.addImage(imgData, 'PNG', 0, position, scaledWidth, scaledHeight)
-      remainingHeight -= pageHeight
+    const clonedTable = summaryTable.cloneNode(true) as HTMLElement
+    const tableToRemove = clonedTable.querySelector('#buttons-table')
+    if (tableToRemove) {
+      // buttons look bad in pdf and are not needed, so remove them
+      tableToRemove.remove()
     }
+    const htmlContent = clonedTable.outerHTML
 
-    pdf.save(`Parabol_summary_${meeting.id}.pdf`)
+    CreatePDFMutation(
+      atmosphere,
+      {htmlContent},
+      {
+        onError,
+        onCompleted: (data) => {
+          const pdfBase64 = data?.createPDF?.pdfBase64
+          if (!pdfBase64) return
+          const pdfBlob = new Blob(
+            [
+              new Uint8Array(
+                atob(pdfBase64)
+                  .split('')
+                  .map((char) => char.charCodeAt(0))
+              )
+            ],
+            {
+              type: 'application/pdf'
+            }
+          )
+
+          const pdfUrl = URL.createObjectURL(pdfBlob)
+          const link = document.createElement('a')
+          link.href = pdfUrl
+          link.download = `parabol-summary-${meetingId}.pdf`
+          link.click()
+          URL.revokeObjectURL(pdfUrl)
+        }
+      }
+    )
   }
 
   return (
     <table
+      ref={summaryRef}
       width='100%'
       height='100%'
       align='center'
       bgcolor='#FFFFFF'
       style={sheetStyle}
-      ref={summaryRef}
     >
       <tbody>
         <tr>
@@ -152,7 +162,12 @@ const SummarySheet = (props: Props) => {
               <>
                 <tr>
                   <td>
-                    <table width='90%' align='center' className='mt-8 rounded-lg bg-slate-200 py-4'>
+                    <table
+                      id='buttons-table'
+                      width='90%'
+                      align='center'
+                      className='mt-8 rounded-lg bg-slate-200 py-4'
+                    >
                       <tbody>
                         <tr>
                           <td align='center' width='100%'>

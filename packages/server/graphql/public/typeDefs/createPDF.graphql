@@ -1,0 +1,15 @@
+extend type Mutation {
+  """
+  Create a PDF using HTML
+  """
+  createPDF(htmlContent: String!): CreatePDFPayload!
+}
+
+"""
+Return value for createPDF, which could be an error
+"""
+union CreatePDFPayload = ErrorPayload | CreatePDFSuccess
+
+type CreatePDFSuccess {
+  pdfBase64: String!
+}
