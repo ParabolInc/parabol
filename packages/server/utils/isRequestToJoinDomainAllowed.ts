@@ -29,7 +29,7 @@ export const getEligibleOrgIdsByDomain = async (
         .coerceTo('array')
     }))
     .merge((org: RDatum) => ({
-      founder: org('members').limit(1),
+      founder: org('members').limit(1).nth(0).default(null),
       billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false}),
       activeMembers: org('members').filter({inactive: false, removedAt: null}).count()
     }))
@@ -41,8 +41,8 @@ export const getEligibleOrgIdsByDomain = async (
   const eligibleOrgs = await Promise.all(
     orgs.map(async (org) => {
       const {founder} = org
-      const importentMembers = org.billingLeads as TeamMember[]
-      if (!founder.inactive && !founder.removedAt) {
+      const importentMembers = org.billingLeads.slice() as TeamMember[]
+      if (!founder.inactive && !founder.removedAt && founder.role !== 'BILLING_LEADER') {
         importentMembers.push(founder)
       }
 
@@ -55,7 +55,6 @@ export const getEligibleOrgIdsByDomain = async (
       return org
     })
   )
-  console.log('GEORG orgs', orgs, eligibleOrgs)
   return eligibleOrgs.filter(isValid).map(({id}) => id)
 }
 
