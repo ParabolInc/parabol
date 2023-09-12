@@ -118,6 +118,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
     setAnchorEl
   } = useAutocomplete<Option, true, true, true>({
     multiple: true,
+    autoSelect: true,
     options,
     value,
     freeSolo: true,
