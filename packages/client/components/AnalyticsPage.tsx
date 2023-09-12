@@ -100,11 +100,6 @@ amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
   logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
 })
 
-// page titles are changed in child components via useDocumentTitle, which fires after this
-// we must guarantee that this runs after useDocumentTitle
-// we can't move this into useDocumentTitle since the pathname may change without chaging the title
-const TIME_TO_RENDER_TREE = 100
-
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
   useEffect(() => {
@@ -187,6 +182,10 @@ const AnalyticsPage = () => {
     cacheEmail().catch()
   }, [isSegmentLoaded])
 
+  // page titles are changed in child components via useDocumentTitle, which fires after this
+  // we must guarantee that this runs after useDocumentTitle
+  // we can't move this into useDocumentTitle since the pathname may change without chaging the title
+  const TIME_TO_RENDER_TREE = 100
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics || typeof window.analytics.page !== 'function') return
     const prevPathname = pathnameRef.current
@@ -219,26 +218,28 @@ const AnalyticsPage = () => {
   }, [pathname])
 
   useEffect(() => {
-    const title = document.title || ''
-    const [pageName] = title.split(' | ')
-    const translated = !!document.querySelector(
-      'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
-    )
-    amplitude.track(
-      'Loaded a Page',
-      {
-        name: pageName,
-        referrer: document.referrer,
-        title,
-        path: pathname,
-        url: href,
-        translated,
-        search: location.search
-      },
-      {
-        user_id: atmosphere.viewerId
-      }
-    )
+    setTimeout(async () => {
+      const title = document.title || ''
+      const [pageName] = title.split(' | ')
+      const translated = !!document.querySelector(
+        'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
+      )
+      amplitude.track(
+        'Loaded a Page',
+        {
+          name: pageName,
+          referrer: document.referrer,
+          title,
+          path: pathname,
+          url: href,
+          translated,
+          search: location.search
+        },
+        {
+          user_id: atmosphere.viewerId
+        }
+      )
+    }, TIME_TO_RENDER_TREE)
   }, [pathname, location.search, atmosphere.viewerId])
 
   // We need to refresh the chat widget so it can recheck the URL
