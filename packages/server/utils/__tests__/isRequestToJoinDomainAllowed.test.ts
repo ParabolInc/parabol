@@ -63,16 +63,13 @@ const addOrg = async (activeDomain: string | null, members: TestOrganizationUser
   return orgId
 }
 
-const mockLoaders = () => {
-  const userLoader = {
-    load: jest.fn(),
-    loadMany: jest.fn()
-  }
-  userLoader.loadMany.mockReturnValue([])
-  const dataLoader = {
-    get: jest.fn((loader) => (loader === 'users' ? userLoader : null))
-  }
-  return {userLoader, dataLoader}
+const userLoader = {
+  load: jest.fn(),
+  loadMany: jest.fn()
+}
+userLoader.loadMany.mockReturnValue([])
+const dataLoader = {
+  get: jest.fn((loader) => (loader === 'users' ? userLoader : null))
 }
 
 beforeAll(async () => {
@@ -108,7 +105,6 @@ test('Founder is billing lead', async () => {
       userId: 'user2'
     }
   ])
-  const {userLoader, dataLoader} = mockLoaders()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
@@ -128,7 +124,6 @@ test('Inactive founder is ignored', async () => {
       userId: 'user2'
     }
   ])
-  const {userLoader, dataLoader} = mockLoaders()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   // implementation detail, important is only that no user was loaded
@@ -150,7 +145,6 @@ test('Non-founder billing lead is checked', async () => {
       userId: 'user2'
     }
   ])
-  const {userLoader, dataLoader} = mockLoaders()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
@@ -168,7 +162,6 @@ test('Founder is checked even when not billing lead', async () => {
       userId: 'user2'
     }
   ])
-  const {userLoader, dataLoader} = mockLoaders()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
@@ -188,7 +181,6 @@ test('All matching orgs are checked', async () => {
       userId: 'user2'
     }
   ])
-  const {userLoader, dataLoader} = mockLoaders()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   // implementation detail, important is only that both users were loaded
@@ -199,14 +191,12 @@ test('All matching orgs are checked', async () => {
 
 test('Empty org does not throw', async () => {
   await addOrg('parabol.co', [])
-  const {userLoader, dataLoader} = mockLoaders()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
 test('No org does not throw', async () => {
-  const {userLoader, dataLoader} = mockLoaders()
   const orgIds = await getEligibleOrgIdsByDomain('example.com', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
@@ -222,7 +212,6 @@ test('Org matching the user are ignored', async () => {
       userId: 'newUser'
     }
   ])
-  const {userLoader, dataLoader} = mockLoaders()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
@@ -247,38 +236,37 @@ test('All orgs with verified emails qualify', async () => {
       userId: 'user3'
     }
   ])
-  const {userLoader, dataLoader} = mockLoaders()
 
-  userLoader.loadMany.mockReturnValueOnce([
-    {
-      id: 'user1',
-      identities: [
-        {
-          isEmailVerified: true
-        }
-      ]
+  userLoader.loadMany.mockImplementation((userIds) => {
+    const users = {
+      user1: {
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      user2: {
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      user3: {
+        identities: [
+          {
+            isEmailVerified: false
+          }
+        ]
+      }
     }
-  ])
-  userLoader.loadMany.mockReturnValueOnce([
-    {
-      id: 'user2',
-      identities: [
-        {
-          isEmailVerified: true
-        }
-      ]
-    }
-  ])
-  userLoader.loadMany.mockReturnValueOnce([
-    {
-      id: 'user3',
-      identities: [
-        {
-          isEmailVerified: false
-        }
-      ]
-    }
-  ])
+    return userIds.map((id) => ({
+      id,
+      ...users[id]
+    }))
+  })
+
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(3)
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
