@@ -30,7 +30,9 @@ const HeaderActions = styled('div')({
   paddingRight: 32
 })
 
-const StyledNullableTask = styled(NullableTask)({})
+const StyledNullableTask = styled(NullableTask)({
+  maxWidth: 296
+})
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
