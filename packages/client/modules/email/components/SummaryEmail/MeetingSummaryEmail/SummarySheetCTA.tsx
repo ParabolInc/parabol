@@ -35,7 +35,8 @@ const SummarySheetCTA = (props: Props) => {
   const {isDemo, referrer, teamDashUrl} = props
   if (isDemo) return null
   return (
-    <tr>
+    // id used to remove button from PDF in createPDF server mutation
+    <tr id={'hideCTAInPDF'}>
       <td align={'center'} style={buttonCellStyle}>
         <AnchorIfEmail
           isEmail={referrer === 'email'}

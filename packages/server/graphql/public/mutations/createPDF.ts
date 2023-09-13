@@ -13,13 +13,18 @@ const createPDF: MutationResolvers['createPDF'] = async (_source, {htmlContent})
 
   await page.evaluate(() => {
     // the buttons looks bad in the pdf and aren't needed, so remove them
-    const tableToRemove = document.querySelector('#buttons-table')
-    if (tableToRemove) {
-      tableToRemove.remove()
+    const buttonsTable = document.querySelector(`#hideButtonsInPDF`)
+    if (buttonsTable) {
+      buttonsTable.remove()
     }
-    const csvButtton = document.querySelector('#export-to-csv-section')
-    if (csvButtton) {
-      csvButtton.remove()
+
+    const goToDashButton = document.querySelector(`#hideCTAInPDF`)
+    if (goToDashButton) {
+      goToDashButton.remove()
+    }
+    const csvButton = document.querySelector(`#hideExportToCSVInPDF`)
+    if (csvButton) {
+      csvButton.remove()
     }
   })
 

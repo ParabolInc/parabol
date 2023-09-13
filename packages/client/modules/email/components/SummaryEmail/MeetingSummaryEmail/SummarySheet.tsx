@@ -156,7 +156,7 @@ const SummarySheet = (props: Props) => {
                 <tr>
                   <td>
                     <table
-                      id='buttons-table' // used to remove buttons from pdf in createPDF server mutation
+                      id={'hideButtonsInPDF'} // used to remove buttons from pdf in createPDF server mutation
                       width='90%'
                       align='center'
                       className='mt-8 rounded-lg bg-slate-200 py-4'
