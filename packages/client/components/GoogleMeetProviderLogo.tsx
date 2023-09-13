@@ -1,12 +1,13 @@
-import styled from '@emotion/styled'
 import logo from '../styles/theme/images/graphics/google-meet-icon.svg'
+import React from 'react'
 
-const GoogleMeetProviderLogo = styled('div')({
-  background: `url("${logo}")`,
-  height: 24,
-  width: 24,
-  backgroundSize: 'contain',
-  backgroundRepeat: 'no-repeat'
-})
+const GoogleMeetProviderLogo = () => {
+  return (
+    <div
+      className='h-6 w-6 bg-contain bg-no-repeat'
+      style={{backgroundImage: `url(${logo})`}}
+    ></div>
+  )
+}
 
 export default GoogleMeetProviderLogo

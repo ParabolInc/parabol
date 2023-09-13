@@ -56,7 +56,7 @@ input CreateGcalEventInput {
   """
   timeZone: String!
   """
-  TThe type of video call to added to the gcal event. If not provided, no video call will be added
+  The type of video call to added to the gcal event. If not provided, no video call will be added
   """
   videoType: GcalVideoTypeEnum
   """
