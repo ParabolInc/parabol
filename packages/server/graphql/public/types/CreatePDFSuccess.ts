@@ -1,10 +1,10 @@
-import {CreatePDFSuccessResolvers} from '../resolverTypes'
+import {CreatePdfSuccessResolvers} from '../resolverTypes'
 
 export type CreatePDFSuccessSource = {
   pdfBase64: string
 }
 
-const CreatePDFSuccess: CreatePDFSuccessResolvers = {
+const CreatePDFSuccess: CreatePdfSuccessResolvers = {
   pdfBase64: async ({pdfBase64}) => {
     return pdfBase64
   }
