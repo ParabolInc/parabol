@@ -275,7 +275,12 @@ type User {
   """
   Get the list of all organizations a user belongs to
   """
-  organizations: [Organization!]!
+  organizations(
+    """
+    Filter by organization id
+    """
+    id: ID
+  ): [Organization!]!
 
   """
   a string with message stating that the user is over the free tier limit, else null

@@ -184,7 +184,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
             className='m-0 box-border min-h-[36px] w-0 min-w-[30px] flex-grow border-0 bg-white pl-1 text-black outline-none'
           />
         </div>
-        <div className='mt-2 text-sm font-semibold text-tomato-500'>{error && error}</div>
+        <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>
       </div>
       {groupedOptions.length > 0 ? (
         <ul

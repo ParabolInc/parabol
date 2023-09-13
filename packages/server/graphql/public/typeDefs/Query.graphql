@@ -29,5 +29,4 @@ type Query {
     """
     isInvited: Boolean
   ): String
-  isOneOnOneTeamExists(oneOnOneTeamInput: CreateOneOnOneTeamInput!): IsOneOnOneTeamExistsPayload!
 }

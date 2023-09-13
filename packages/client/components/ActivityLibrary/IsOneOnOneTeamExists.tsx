@@ -19,7 +19,8 @@ const IsOneOnOneTeamExists = ({oneOnOneTeamInput, name}: Props) => {
   const queryRef = useQueryLoaderNow<IsOneOnOneTeamExistsComponentQuery>(
     isOneOnOneExistsComponentQuery,
     {
-      oneOnOneTeamInput
+      oneOnOneTeamInput,
+      orgId: oneOnOneTeamInput.orgId
     }
   )
   return (

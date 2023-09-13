@@ -4,11 +4,16 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {IsOneOnOneTeamExistsComponentQuery} from '../../__generated__/IsOneOnOneTeamExistsComponentQuery.graphql'
 
 export const isOneOnOneExistsComponentQuery = graphql`
-  query IsOneOnOneTeamExistsComponentQuery($oneOnOneTeamInput: CreateOneOnOneTeamInput!) {
-    isOneOnOneTeamExists(oneOnOneTeamInput: $oneOnOneTeamInput) {
-      team {
-        id
-        name
+  query IsOneOnOneTeamExistsComponentQuery(
+    $oneOnOneTeamInput: CreateOneOnOneTeamInput!
+    $orgId: ID!
+  ) {
+    viewer {
+      organizations(id: $orgId) {
+        oneOnOneTeam(oneOnOneTeamInput: $oneOnOneTeamInput) {
+          id
+          name
+        }
       }
     }
   }
@@ -26,7 +31,7 @@ const IsOneOnOneTeamExistsComponent = (props: Props) => {
     queryRef
   )
 
-  const team = data.isOneOnOneTeamExists.team
+  const team = data.viewer.organizations[0]?.oneOnOneTeam
 
   return (
     <div className='mb-4 text-center text-sm'>
