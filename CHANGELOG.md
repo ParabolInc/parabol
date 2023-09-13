@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.120.0 2023-Sep-13
+
+### Added
+- scroll to card section (#8774)
+- invite link in right drawer (#8806)
+
+### Changed
+- Delete unused file (#8790)
+- update instances of GitLab logo SVG (#8783)
+- **one-on-one**: show organiation picker if can't determine org automatically (#8712)
+- remove unused REDIS_URL
+- Allow google to index /create-account (#8811)
+- Update dev readme with assign SU script (#8815)
+
+### Fixed
+- **gcal**: handle Zoom add-on conflict (#8776)
+- prevent newly added agenda item to be accessible when agenda items phase has not been started yet (#8799)
+- removed default button background from your tasks button (#8805)
+
 ## 6.119.0 2023-Sep-6
 
 ### Added
