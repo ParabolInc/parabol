@@ -38,6 +38,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
                 ...NullableTask_task
                 id
                 status
+                userId
               }
             }
           }
@@ -64,6 +65,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const [selectedStatus, setSelectedStatus] = useState<TaskStatusEnum>(TaskStatus.DONE)
   const selectedTasks = tasks.edges
     .map((edge) => edge.node)
+    .filter((task) => task.userId === atmosphere.viewerId)
     .filter((task) => task.status === selectedStatus)
 
   const handleAddTask = () => {
