@@ -240,6 +240,7 @@ test('All orgs with verified emails qualify', async () => {
   userLoader.loadMany.mockImplementation((userIds) => {
     const users = {
       user1: {
+        email: 'user1@parabol.co',
         identities: [
           {
             isEmailVerified: true
@@ -247,6 +248,7 @@ test('All orgs with verified emails qualify', async () => {
         ]
       },
       user2: {
+        email: 'user2@parabol.co',
         identities: [
           {
             isEmailVerified: true
@@ -254,6 +256,7 @@ test('All orgs with verified emails qualify', async () => {
         ]
       },
       user3: {
+        email: 'user3@parabol.co',
         identities: [
           {
             isEmailVerified: false
@@ -273,4 +276,85 @@ test('All orgs with verified emails qualify', async () => {
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user2'])
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user3'])
   expect(orgIds).toIncludeSameMembers([org1, org2])
+})
+
+test('Orgs with verified emails from different domains do not qualify', async () => {
+  const org1 = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'user1'
+    }
+  ])
+
+  userLoader.loadMany.mockReturnValue([
+    {
+      id: 'user1',
+      email: 'user1@parabol.fun',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    }
+  ])
+
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
+  expect(orgIds).toIncludeSameMembers([])
+})
+
+test('Orgs with at least 1 verified billing lead with correct email qualify', async () => {
+  const org1 = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'user1',
+      role: 'BILLING_LEADER'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'user2',
+      role: 'BILLING_LEADER'
+    },
+    {
+      joinedAt: new Date('2023-09-08'),
+      userId: 'user3',
+      role: 'BILLING_LEADER'
+    }
+  ])
+
+  userLoader.loadMany.mockReturnValue([
+    {
+      id: 'user1',
+      email: 'user1@parabol.fun',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    },
+    {
+      id: 'user2',
+      email: 'user2@parabol.fun',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    },
+    {
+      id: 'user3',
+      email: 'user3@parabol.co',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    }
+  ])
+
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['user1', 'user2', 'user3'])
+  expect(orgIds).toIncludeSameMembers([org1])
 })

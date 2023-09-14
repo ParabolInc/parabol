@@ -29,7 +29,7 @@ export const getEligibleOrgIdsByDomain = async (
         .coerceTo('array')
     }))
     .merge((org: RDatum) => ({
-      founder: org('members').limit(1).nth(0).default(null),
+      founder: org('members').nth(0).default(null),
       billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false}),
       activeMembers: org('members').filter({inactive: false, removedAt: null}).count()
     }))
@@ -49,7 +49,9 @@ export const getEligibleOrgIdsByDomain = async (
       const users = (
         await dataLoader.get('users').loadMany(importentMembers.map(({userId}) => userId))
       ).filter(isValid)
-      if (!users.find(isUserVerified)) {
+      if (
+        !users.some((user) => user.email.split('@')[1] === activeDomain && isUserVerified(user))
+      ) {
         return null
       }
       return org
