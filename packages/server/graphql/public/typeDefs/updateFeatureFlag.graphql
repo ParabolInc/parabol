@@ -12,6 +12,7 @@ enum UserFlagEnum {
   checkoutFlow
   retrosInDisguise
   gcal
+  adHocTeams
 }
 
 """
@@ -28,6 +29,7 @@ type UserFeatureFlags {
   checkoutFlow: Boolean!
   retrosInDisguise: Boolean!
   gcal: Boolean!
+  adHocTeams: Boolean!
 }
 
 extend type Mutation {

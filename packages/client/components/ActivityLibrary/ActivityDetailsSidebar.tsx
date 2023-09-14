@@ -71,6 +71,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
           gcal
+          adHocTeams
         }
         ...AdhocTeamMultiSelect_viewer
         organizations {
@@ -323,6 +324,7 @@ const ActivityDetailsSidebar = (props: Props) => {
               selectedTeamRef={selectedTeam}
               teamsRef={availableTeams}
               customPortal={teamScopePopover}
+              allowAddTeam={viewer.featureFlags.adHocTeams}
             />
           )}
 
