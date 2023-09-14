@@ -22,6 +22,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - **gcal**: handle Zoom add-on conflict (#8776)
 - prevent newly added agenda item to be accessible when agenda items phase has not been started yet (#8799)
+- make new agenda items accessible from first call phase (#8835)
 - removed default button background from your tasks button (#8805)
 
 ## 6.119.0 2023-Sep-6
