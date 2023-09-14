@@ -98,3 +98,5 @@ const rewriteIndexHTML = async () => {
 export const applyEnvVarsToClientAssets = async () => {
   return Promise.all([rewriteServiceWorker(), rewriteIndexHTML(), writeManifest()])
 }
+
+if (require.main === module) applyEnvVarsToClientAssets()

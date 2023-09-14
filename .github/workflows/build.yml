@@ -150,6 +150,10 @@ jobs:
           path: test-results/
           retention-days: 7
 
+      - name: Cleanup Predeploy for Docker Image
+        if: env.DOCKERIZE == 'true'
+        run: rm build/index.html build/sw.js build/manifest.json
+
       - name: Set up Docker Buildx
         if: env.DOCKERIZE == 'true'
         uses: docker/setup-buildx-action@v2
