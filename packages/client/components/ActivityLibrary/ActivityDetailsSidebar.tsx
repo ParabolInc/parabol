@@ -38,7 +38,7 @@ import {SelectValue} from '../../ui/Select/SelectValue'
 import {SelectContent} from '../../ui/Select/SelectContent'
 import {SelectGroup} from '../../ui/Select/SelectGroup'
 import {SelectItem} from '../../ui/Select/SelectItem'
-import IsOneOnOneTeamExists from './IsOneOnOneTeamExists'
+import OneOnOneTeamStatus from './OneOnOneTeamStatus'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -366,7 +366,7 @@ const ActivityDetailsSidebar = (props: Props) => {
               )}
               <div className='flex grow flex-col justify-end gap-2'>
                 {oneOnOneTeamInput && (
-                  <IsOneOnOneTeamExists
+                  <OneOnOneTeamStatus
                     oneOnOneTeamInput={oneOnOneTeamInput}
                     name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
                   />
