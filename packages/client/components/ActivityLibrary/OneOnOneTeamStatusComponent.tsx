@@ -9,7 +9,7 @@ export const oneOnOneTeamStatusComponentQuery = graphql`
     $orgId: ID!
   ) {
     viewer {
-      organizations(id: $orgId) {
+      organization(orgId: $orgId) {
         oneOnOneTeam(oneOnOneTeamInput: $oneOnOneTeamInput) {
           id
           name
@@ -31,7 +31,7 @@ const OneOnOneTeamStatusComponent = (props: Props) => {
     queryRef
   )
 
-  const team = data.viewer.organizations[0]?.oneOnOneTeam
+  const team = data.viewer.organization?.oneOnOneTeam
 
   return (
     <div className='mb-4 text-center text-sm'>
