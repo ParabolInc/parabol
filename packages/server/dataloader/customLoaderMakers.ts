@@ -639,22 +639,17 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
 
 export const saml = (parent: RootDataLoader) => {
   return new NullableDataLoader<string, SAMLSource | null, string>(
-    async (keys) => {
-      const pg = await getKysely()
-      const res = await Promise.all(
-        keys.map(async (id) => {
-          return pg
-            .selectFrom('SAMLDomain')
-            .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
-            .where('SAML.id', '=', id)
-            .groupBy('SAML.id')
-            .selectAll('SAML')
-            .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
-            .limit(1)
-            .executeTakeFirst()
-        })
-      )
-      return res
+    async (samlIds) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAML.id', 'in', samlIds)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return samlIds.map((samlId) => res.find((row) => row.id === samlId))
     },
     {
       ...parent.dataLoaderOptions
@@ -664,22 +659,17 @@ export const saml = (parent: RootDataLoader) => {
 
 export const samlByDomain = (parent: RootDataLoader) => {
   return new NullableDataLoader<string, SAMLSource | null, string>(
-    async (keys) => {
+    async (domains) => {
       const pg = getKysely()
-      const res = await Promise.all(
-        keys.map(async (domain) => {
-          return pg
-            .selectFrom('SAMLDomain')
-            .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
-            .where('SAMLDomain.samlId', '=', domain)
-            .groupBy('SAML.id')
-            .selectAll('SAML')
-            .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
-            .limit(1)
-            .executeTakeFirst()
-        })
-      )
-      return res
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAMLDomain.domain', 'in', domains)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return domains.map((domain) => res.find((row) => row.domains.includes(domain)))
     },
     {
       ...parent.dataLoaderOptions
@@ -689,22 +679,17 @@ export const samlByDomain = (parent: RootDataLoader) => {
 
 export const samlByOrgId = (parent: RootDataLoader) => {
   return new NullableDataLoader<string, SAMLSource | null, string>(
-    async (keys) => {
-      const pg = await getKysely()
-      const res = await Promise.all(
-        keys.map(async (orgId) => {
-          return pg
-            .selectFrom('SAMLDomain')
-            .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
-            .where('SAML.orgId', '=', orgId)
-            .groupBy('SAML.id')
-            .selectAll('SAML')
-            .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
-            .limit(1)
-            .executeTakeFirst()
-        })
-      )
-      return res
+    async (orgIds) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAML.orgId', 'in', orgIds)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
     },
     {
       ...parent.dataLoaderOptions

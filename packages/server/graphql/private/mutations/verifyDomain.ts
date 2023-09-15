@@ -18,7 +18,7 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
   if (slugName instanceof Error) return {error: {message: slugName.message}}
   await pg.transaction().execute(async (trx) => {
     // upsert the record with orgId
-    const saml = await trx
+    await trx
       .insertInto('SAML')
       .values({
         id: slugName,
@@ -42,7 +42,6 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
         .onConflict((oc) => oc.column('domain').doNothing())
         .execute()
     }
-    return saml
   })
   return {samlId: slugName}
 }

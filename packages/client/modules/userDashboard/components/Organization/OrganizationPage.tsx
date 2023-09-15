@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {Redirect, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
+import {Redirect, Route, Switch} from 'react-router'
 import {OrganizationPage_organization$key} from '../../../../__generated__/OrganizationPage_organization.graphql'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import useRouter from '../../../../hooks/useRouter'
 import {LoaderSize} from '../../../../types/constEnums'
 import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
 
-interface Props extends RouteComponentProps<{orgId: string}> {
+interface Props {
   organization: OrganizationPage_organization$key
 }
 
@@ -78,4 +78,4 @@ const OrganizationPage = (props: Props) => {
   )
 }
 
-export default withRouter(OrganizationPage)
+export default OrganizationPage

@@ -31,7 +31,7 @@ const resolveDowngradeToStarter = async (
       .updateTable('SAML')
       .set({metadata: null, lastUpdatedBy: userId})
       .where('orgId', '=', orgId)
-      .executeTakeFirstOrThrow(),
+      .execute(),
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
         tier: 'starter',

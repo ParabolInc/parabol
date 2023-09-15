@@ -60,8 +60,8 @@ export async function up() {
       (saml) => ({
         orgId: r
           .table('Organization')
-          .getAll('enterprise', {index: 'tier'})
-          .filter((org) => saml('domains').contains(org('activeDomain')))
+          .getAll(r.args(saml('domains')), {index: 'activeDomain'})
+          .limit(1)
           .nth(0)('id')
           .default(null)
       }),
