@@ -1,23 +1,23 @@
-import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
-import {Team} from '../../postgres/queries/getTeamsByIds'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {Reactable} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
+import getDataLoader from '../../graphql/getDataLoader'
 import {ReactableEnum} from '../../graphql/private/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
+import {Team} from '../../postgres/queries/getTeamsByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
+import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
-import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
-import getDataLoader from '../../graphql/getDataLoader'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
@@ -483,9 +483,11 @@ class Analytics {
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
+    // in a perfect world we would pass in the existing dataloader since the user object is already cached in it
     const dataloader = getDataLoader()
     this.amplitudeAnalytics.track(userId, event, dataloader, properties)
     this.segmentAnalytics.track(userId, event, dataloader, properties)
+    dataloader.dispose()
   }
 }
 
