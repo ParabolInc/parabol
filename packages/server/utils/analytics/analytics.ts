@@ -596,9 +596,9 @@ class Analytics {
     userId: string,
     teamId: string,
     notificationEvent: SlackNotificationEventEnum,
-    segmentProperties?: object
+    reflectionGroupId?: string
   ) => {
-    this.track(userId, 'Slack notification sent', {teamId, notificationEvent, ...segmentProperties})
+    this.track(userId, 'Slack notification sent', {teamId, notificationEvent, reflectionGroupId})
   }
 
   smartGroupTitleChanged = (

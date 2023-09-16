@@ -15,7 +15,7 @@ import sendToSentry from '../../../../utils/sendToSentry'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
-import {makeButtons, makeSection, makeSections, makeHeader} from './makeSlackBlocks'
+import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
 import SlackAuth from '../../../../database/types/SlackAuth'
@@ -82,13 +82,13 @@ const notifySlack = async (
   slackMessage: string | Array<{type: string}>,
   notificationText?: string,
   ts?: string,
-  segmentProperties?: object
+  reflectionGroupId?: string
 ): Promise<PostMessageResponse | ErrorResponse> => {
   const {channelId, auth} = notificationChannel
   const {botAccessToken, userId} = auth
   const manager = new SlackServerManager(botAccessToken!)
   const res = await manager.postMessage(channelId!, slackMessage, notificationText, ts)
-  analytics.slackNotificationSent(userId, teamId, event, segmentProperties)
+  analytics.slackNotificationSent(userId, teamId, event, reflectionGroupId)
 
   return res
 }
@@ -612,9 +612,7 @@ export const SlackNotifier: Notifier = {
       slackBlocks,
       undefined,
       undefined,
-      {
-        reflectionGroupId
-      }
+      reflectionGroupId
     )
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
