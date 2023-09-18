@@ -108,11 +108,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
     >
       <Drawer isDesktop={isDesktop} isMobile={isMobile} isOpen={isRightDrawerOpen}>
         {shouldRenderDiscussionDrawer() ? (
-          <TeamPromptDiscussionDrawer
-            key={meeting.localStageId!}
-            meetingRef={meeting}
-            onToggleDrawer={onToggleDrawer}
-          />
+          <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
         ) : (
           <TeamPromptWorkDrawerRoot meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
         )}
