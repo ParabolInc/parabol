@@ -27,7 +27,8 @@ interface Props {
   error: string | undefined
   name: string
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
   placeholder?: string
   spellCheck?: boolean
   type?: string
@@ -45,6 +46,7 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
     name,
     onBlur,
     onChange,
+    onFocus,
     placeholder,
     spellCheck,
     type = 'text',
@@ -64,6 +66,7 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
         placeholder={placeholder}
         onBlur={onBlur}
         onChange={onChange}
+        onFocus={onFocus}
         spellCheck={spellCheck}
         type={type}
         value={value}
