@@ -1,10 +1,31 @@
-import puppeteer from 'puppeteer'
+import puppeteer, {Browser} from 'puppeteer'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import {FONT_FAMILY} from '../../../../client/styles/typographyV2'
 import {MutationResolvers} from '../resolverTypes'
 
+let browser: Browser | null = null
+let lastUsed: number
+
+const getBrowser = async (): Promise<Browser> => {
+  const now = Date.now()
+  if (!browser) {
+    browser = await puppeteer.launch({headless: true})
+  }
+  lastUsed = now
+
+  const thirtyMinutes = 1800000
+  setTimeout(() => {
+    if (Date.now() - lastUsed > thirtyMinutes && browser) {
+      browser.close()
+      browser = null
+    }
+  }, thirtyMinutes + 1)
+
+  return browser
+}
+
 const createPDF: MutationResolvers['createPDF'] = async (_source, {htmlContent}) => {
-  const browser = await puppeteer.launch({headless: 'new'})
+  const browser = await getBrowser()
   const page = await browser.newPage()
 
   await page.setContent(htmlContent, {
@@ -13,19 +34,13 @@ const createPDF: MutationResolvers['createPDF'] = async (_source, {htmlContent})
 
   await page.evaluate(() => {
     // the buttons looks bad in the pdf and aren't needed, so remove them
-    const buttonsTable = document.querySelector(`#hideButtonsInPDF`)
-    if (buttonsTable) {
-      buttonsTable.remove()
-    }
-
-    const goToDashButton = document.querySelector(`#hideCTAInPDF`)
-    if (goToDashButton) {
-      goToDashButton.remove()
-    }
-    const csvButton = document.querySelector(`#hideExportToCSVInPDF`)
-    if (csvButton) {
-      csvButton.remove()
-    }
+    const elementsToRemove = ['#hideButtonsInPDF', '#hideCTAInPDF', '#hideExportToCSVInPDF']
+    elementsToRemove.forEach((selector) => {
+      const element = document.querySelector(selector)
+      if (element) {
+        element.remove()
+      }
+    })
   })
 
   // draftJS styles are not applied so do this manually
@@ -37,7 +52,6 @@ const createPDF: MutationResolvers['createPDF'] = async (_source, {htmlContent})
     format: 'A4',
     printBackground: true
   })
-  await browser.close()
   const pdfBase64 = pdfBuffer.toString('base64')
 
   return {
