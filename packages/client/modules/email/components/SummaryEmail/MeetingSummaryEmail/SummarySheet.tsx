@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import PictureAsPdf from '@mui/icons-material/PictureAsPdf'
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
 import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
@@ -87,6 +88,10 @@ const SummarySheet = (props: Props) => {
   const {id: meetingId, meetingType, taskCount} = meeting
   const isDemo = !!props.isDemo
 
+  const downloadPDF = async () => {
+    window.print()
+  }
+
   return (
     <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
       <tbody>
@@ -107,28 +112,49 @@ const SummarySheet = (props: Props) => {
                       <tbody>
                         <tr>
                           <td align='center' width='100%'>
-                            <div className='flex justify-center gap-4'>
+                            <div className='mb-2 flex justify-center gap-4'>
                               {!!taskCount && taskCount > 0 && (
                                 <ExportAllTasks meetingRef={meeting} />
                               )}
-                              {meetingType !== 'teamPrompt' && (
-                                <Link
-                                  to={emailCSVUrl}
-                                  className={
-                                    'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
-                                  }
-                                >
-                                  <TableChart
-                                    style={{
-                                      width: '14px',
-                                      height: '14px',
-                                      color: PALETTE.SLATE_600
-                                    }}
-                                  />
-                                  Export to CSV
-                                </Link>
-                              )}
                             </div>
+                            {meetingType !== 'teamPrompt' && (
+                              <tr>
+                                <td align='center' width='100%'>
+                                  <div className='flex justify-center gap-4'>
+                                    <Link
+                                      to={emailCSVUrl}
+                                      className={
+                                        'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                      }
+                                    >
+                                      <TableChart
+                                        style={{
+                                          width: '14px',
+                                          height: '14px',
+                                          color: PALETTE.SLATE_600
+                                        }}
+                                      />
+                                      Export to CSV
+                                    </Link>
+                                    <button
+                                      onClick={downloadPDF}
+                                      className={
+                                        'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                      }
+                                    >
+                                      <PictureAsPdf
+                                        style={{
+                                          width: '14px',
+                                          height: '14px',
+                                          color: PALETTE.SLATE_600
+                                        }}
+                                      />
+                                      Download PDF
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
                           </td>
                         </tr>
                       </tbody>
