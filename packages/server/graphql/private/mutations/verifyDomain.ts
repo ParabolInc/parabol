@@ -6,7 +6,7 @@ import normalizeSlugName from './helpers/normalizeSlugName'
 const verifyDomain: MutationResolvers['verifyDomain'] = async (
   _source,
   {slug, addDomains, orgId, removeDomains},
-  {authToken}
+  {authToken, dataLoader}
 ) => {
   const pg = getKysely()
   const viewerId = getUserId(authToken)
@@ -16,6 +16,16 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
   // VALIDATION
   const slugName = normalizeSlugName(slug)
   if (slugName instanceof Error) return {error: {message: slugName.message}}
+  const existingRowForOrgId = await dataLoader.get('samlByOrgId').load(orgId)
+  dataLoader.get('samlByOrgId').clear(orgId)
+  const existingSlugName = existingRowForOrgId?.id
+  if (existingSlugName && existingSlugName !== slugName) {
+    return {
+      error: {
+        message: `orgId ${orgId} is already controlled by ${existingSlugName}. You must first update ${existingSlugName} with a new orgId`
+      }
+    }
+  }
   await pg.transaction().execute(async (trx) => {
     // upsert the record with orgId
     await trx
@@ -39,7 +49,7 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
       await trx
         .insertInto('SAMLDomain')
         .values(values)
-        .onConflict((oc) => oc.column('domain').doNothing())
+        .onConflict((oc) => oc.column('domain').doUpdateSet({samlId: slugName}))
         .execute()
     }
   })
