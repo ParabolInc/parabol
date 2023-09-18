@@ -46,6 +46,10 @@ const NewMeetingTeamPicker = (props: Props) => {
     onSelectTeam(teamId)
   }
 
+  const handleAddTeamClick = () => {
+    window.open(`/newteam/1`, '_blank', 'noreferrer')
+  }
+
   const selectedTeam = useFragment(
     graphql`
       fragment NewMeetingTeamPicker_selectedTeam on Team {
@@ -88,13 +92,7 @@ const NewMeetingTeamPicker = (props: Props) => {
             menuProps={menuProps}
             teams={teams}
             teamHandleClick={handleSelectTeam}
-            onAddTeamClick={
-              allowAddTeam
-                ? () => {
-                    window.open(`/newteam/1`, '_blank', 'noreferrer')
-                  }
-                : undefined
-            }
+            onAddTeamClick={allowAddTeam ? handleAddTeamClick : undefined}
           />
         )
       )}
