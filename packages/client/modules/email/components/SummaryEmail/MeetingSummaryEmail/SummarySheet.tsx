@@ -88,7 +88,7 @@ const SummarySheet = (props: Props) => {
   const {id: meetingId, meetingType, taskCount} = meeting
   const isDemo = !!props.isDemo
 
-  const downloadPDF = async () => {
+  const downloadPDF = () => {
     window.print()
   }
 
