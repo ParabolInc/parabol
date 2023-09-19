@@ -93,7 +93,14 @@ const SummarySheet = (props: Props) => {
   }
 
   return (
-    <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
+    <table
+      className='print:w-[210mm]'
+      width='100%'
+      height='100%'
+      align='center'
+      bgcolor='#FFFFFF'
+      style={sheetStyle}
+    >
       <tbody>
         <tr>
           <td>
@@ -106,13 +113,13 @@ const SummarySheet = (props: Props) => {
         {referrer === 'meeting'
           ? (meetingType !== 'teamPrompt' || (!!taskCount && taskCount > 0)) && (
               <>
-                <tr>
+                <tr className='print:hidden'>
                   <td>
                     <table width='90%' align='center' className='mt-8 rounded-lg bg-slate-200 py-4'>
                       <tbody>
                         <tr>
                           <td align='center' width='100%'>
-                            <div className='mb-2 flex justify-center gap-4'>
+                            <div className='flex justify-center gap-4'>
                               {!!taskCount && taskCount > 0 && (
                                 <ExportAllTasks meetingRef={meeting} />
                               )}
