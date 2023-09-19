@@ -21,6 +21,7 @@ import DialogContainer from '../../../../components/DialogContainer'
 import {Close} from '@mui/icons-material'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import VideoConferencing from './VideoConferencing'
+import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -85,7 +86,7 @@ const GcalModal = (props: Props) => {
   const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
-  const [videoType, setVideoType] = useState<'meet' | 'zoom' | null>(null)
+  const [videoType, setVideoType] = useState<GcalVideoTypeEnum | null>(null)
 
   const team = useFragment(
     graphql`
@@ -184,7 +185,7 @@ const GcalModal = (props: Props) => {
     setInviteAll((inviteAll) => !inviteAll)
   }
 
-  const handleChangeVideoType = (option: 'meet' | 'zoom' | null) => {
+  const handleChangeVideoType = (option: GcalVideoTypeEnum | null) => {
     setVideoType(option)
   }
 

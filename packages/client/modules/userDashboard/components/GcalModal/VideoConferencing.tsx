@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import {Close} from '@mui/icons-material'
 import React from 'react'
@@ -6,27 +5,14 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import VideoConferencingMenu from './VideoConferencingMenu'
 import RaisedButton from '../../../../components/RaisedButton'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Elevation} from '../../../../styles/elevation'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
 import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
-
-const StyledButton = styled(RaisedButton)({
-  borderRadius: 4,
-  padding: '6px 12px'
-})
-
-const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  '&:hover': {
-    opacity: 0.5
-  }
-})
+import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 
 type Props = {
-  videoType: 'meet' | 'zoom' | null
-  handleChangeVideoType: (videoType: 'meet' | 'zoom' | null) => void
+  videoType: GcalVideoTypeEnum | null
+  handleChangeVideoType: (videoType: GcalVideoTypeEnum | null) => void
 }
 
 const VideoConferencing = (props: Props) => {
@@ -34,6 +20,7 @@ const VideoConferencing = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_CENTER)
 
   const selectedOptionLabel = videoType === 'meet' ? 'Google Meet' : 'Zoom'
+
   return (
     <div>
       {videoType ? (
@@ -42,13 +29,21 @@ const VideoConferencing = (props: Props) => {
           <span className='text-gray-500 text-md h-[38px] py-2 pl-2 font-normal'>
             {selectedOptionLabel}
           </span>
-          <CloseIcon className='ml-auto' onClick={() => handleChangeVideoType(null)} />
+          <Close
+            className='text-gray-500 ml-auto cursor-pointer hover:opacity-50'
+            onClick={() => handleChangeVideoType(null)}
+          />
         </div>
       ) : (
         <div className='py-3'>
-          <StyledButton onClick={togglePortal} ref={originRef} elevationHovered={Elevation.Z3}>
+          <RaisedButton
+            onClick={togglePortal}
+            ref={originRef}
+            className='rounded py-1.5 px-4'
+            elevationHovered={Elevation.Z3}
+          >
             {'Add Video Conferencing'} <ArrowDropDownIcon />
-          </StyledButton>
+          </RaisedButton>
         </div>
       )}
       {menuPortal(

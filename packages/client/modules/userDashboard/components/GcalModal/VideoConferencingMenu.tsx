@@ -4,11 +4,12 @@ import MenuItem from '../../../../components/MenuItem'
 import {MenuProps} from '../../../../hooks/useMenu'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
 import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
+import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 
 type Props = {
   menuProps: MenuProps
-  handleChangeVideoType: (option: 'meet' | 'zoom' | null) => void
-  videoType: 'meet' | 'zoom' | null
+  handleChangeVideoType: (option: GcalVideoTypeEnum | null) => void
+  videoType: GcalVideoTypeEnum | null
 }
 
 const VideoConferencingMenu = (props: Props) => {
