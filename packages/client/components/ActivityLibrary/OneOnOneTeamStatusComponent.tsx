@@ -1,15 +1,15 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {IsOneOnOneTeamExistsComponentQuery} from '../../__generated__/IsOneOnOneTeamExistsComponentQuery.graphql'
+import {OneOnOneTeamStatusComponentQuery} from '../../__generated__/OneOnOneTeamStatusComponentQuery.graphql'
 
-export const isOneOnOneExistsComponentQuery = graphql`
-  query IsOneOnOneTeamExistsComponentQuery(
+export const oneOnOneTeamStatusComponentQuery = graphql`
+  query OneOnOneTeamStatusComponentQuery(
     $oneOnOneTeamInput: CreateOneOnOneTeamInput!
     $orgId: ID!
   ) {
     viewer {
-      organizations(id: $orgId) {
+      organization(orgId: $orgId) {
         oneOnOneTeam(oneOnOneTeamInput: $oneOnOneTeamInput) {
           id
           name
@@ -20,18 +20,18 @@ export const isOneOnOneExistsComponentQuery = graphql`
 `
 
 interface Props {
-  queryRef: PreloadedQuery<IsOneOnOneTeamExistsComponentQuery>
+  queryRef: PreloadedQuery<OneOnOneTeamStatusComponentQuery>
   name: string
 }
 
-const IsOneOnOneTeamExistsComponent = (props: Props) => {
+const OneOnOneTeamStatusComponent = (props: Props) => {
   const {queryRef, name} = props
-  const data = usePreloadedQuery<IsOneOnOneTeamExistsComponentQuery>(
-    isOneOnOneExistsComponentQuery,
+  const data = usePreloadedQuery<OneOnOneTeamStatusComponentQuery>(
+    oneOnOneTeamStatusComponentQuery,
     queryRef
   )
 
-  const team = data.viewer.organizations[0]?.oneOnOneTeam
+  const team = data.viewer.organization?.oneOnOneTeam
 
   return (
     <div className='mb-4 text-center text-sm'>
@@ -40,4 +40,4 @@ const IsOneOnOneTeamExistsComponent = (props: Props) => {
   )
 }
 
-export default IsOneOnOneTeamExistsComponent
+export default OneOnOneTeamStatusComponent

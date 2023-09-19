@@ -38,7 +38,7 @@ import {SelectValue} from '../../ui/Select/SelectValue'
 import {SelectContent} from '../../ui/Select/SelectContent'
 import {SelectGroup} from '../../ui/Select/SelectGroup'
 import {SelectItem} from '../../ui/Select/SelectItem'
-import IsOneOnOneTeamExists from './IsOneOnOneTeamExists'
+import OneOnOneTeamStatus from './OneOnOneTeamStatus'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -153,6 +153,11 @@ const ActivityDetailsSidebar = (props: Props) => {
   const onUserSelected = (newUsers: Option[]) => {
     const user = newUsers[0]
     setSelectedUser(user)
+    if (user) {
+      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
+        selectionLocation: 'oneOnOneUserPicker'
+      })
+    }
     const selectedUserOrganizationIds = new Set(user?.organizationIds ?? [])
     const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
     const mutualOrgsIds = mutualOrgs.map((org) => org.id)
@@ -368,7 +373,7 @@ const ActivityDetailsSidebar = (props: Props) => {
               )}
               <div className='flex grow flex-col justify-end gap-2'>
                 {oneOnOneTeamInput && (
-                  <IsOneOnOneTeamExists
+                  <OneOnOneTeamStatus
                     oneOnOneTeamInput={oneOnOneTeamInput}
                     name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
                   />

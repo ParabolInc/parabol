@@ -15048,10 +15048,10 @@ kysely-codegen@^0.10.0:
     micromatch "^4.0.5"
     minimist "^1.2.8"
 
-kysely@^0.24.2:
-  version "0.24.2"
-  resolved "https://registry.yarnpkg.com/kysely/-/kysely-0.24.2.tgz#caf3be037939bd20449c0b7840e932f074b4d12c"
-  integrity sha512-+7eaTJNUYm2yRq1x+lEOZc+78TO35dTZ9b0dh49+Z9CTt2byMSbMiOKpwPlOyCAaHD4kILkAYWYZNywFlmBwRA==
+kysely@^0.26.3:
+  version "0.26.3"
+  resolved "https://registry.yarnpkg.com/kysely/-/kysely-0.26.3.tgz#45fdd0153d8c9418b0ea9a6f05ed46b95ed27678"
+  integrity sha512-yWSgGi9bY13b/W06DD2OCDDHQmq1kwTGYlQ4wpZkMOJqMGCstVCFIvxCCVG4KfY1/3G0MhDAcZsip/Lw8/vJWw==
 
 launch-editor@^2.6.0:
   version "2.6.0"

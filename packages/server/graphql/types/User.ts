@@ -416,22 +416,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     organizations: {
       description: 'Get the list of all organizations a user belongs to',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
-      args: {
-        id: {
-          type: GraphQLID,
-          description: 'Filter by organization id'
-        }
-      },
       async resolve(
         {id: userId}: {id: string},
-        {id: organizationId}: {id?: string},
+        _args: unknown,
         {authToken, dataLoader}: GQLContext
       ) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        let orgIds = organizationUsers.map(({orgId}: OrganizationUserType) => orgId)
-        if (organizationId) {
-          orgIds = orgIds.filter((orgId) => orgId === organizationId)
-        }
+        const orgIds = organizationUsers.map(({orgId}: OrganizationUserType) => orgId)
         const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(
           errorFilter
         )

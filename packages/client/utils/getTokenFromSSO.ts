@@ -40,7 +40,7 @@ const getTokenFromSSO = (url: string): ReturnType | Promise<ReturnType> => {
       if (userId) {
         resolve({token, ga4Args: {userId, isNewUser, isPatient0}})
       } else {
-        resolve({error: 'userId is null'})
+        resolve({error: error || 'userId is null'})
       }
     }
 

@@ -1,13 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {Redirect, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
+import {Redirect, Route, Switch} from 'react-router'
+import {OrganizationPage_organization$key} from '../../../../__generated__/OrganizationPage_organization.graphql'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
+import useRouter from '../../../../hooks/useRouter'
 import {LoaderSize} from '../../../../types/constEnums'
 import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
-import {OrganizationPage_organization$key} from '../../../../__generated__/OrganizationPage_organization.graphql'
 
-interface Props extends RouteComponentProps<{orgId: string}> {
+interface Props {
   organization: OrganizationPage_organization$key
 }
 
@@ -27,7 +28,8 @@ const OrgAuthentication = lazy(
 )
 
 const OrganizationPage = (props: Props) => {
-  const {match, organization: organizationRef} = props
+  const {organization: organizationRef} = props
+  const {match} = useRouter<{orgId: string}>()
   const organization = useFragment(
     graphql`
       fragment OrganizationPage_organization on Organization {
@@ -35,16 +37,12 @@ const OrganizationPage = (props: Props) => {
         id
         isBillingLeader
         tier
-        featureFlags {
-          SAMLUI
-        }
       }
     `,
     organizationRef
   )
-  const {isBillingLeader, tier, featureFlags} = organization
+  const {isBillingLeader, tier} = organization
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
-  const SAMLUI = featureFlags?.SAMLUI
   const {
     params: {orgId}
   } = match
@@ -69,17 +67,15 @@ const OrganizationPage = (props: Props) => {
             path={`${match.url}/${MEMBERS_PAGE}`}
             render={(p) => <OrgMembers {...p} orgId={orgId} />}
           />
-          {SAMLUI && (
-            <Route
-              exact
-              path={`${match.url}/${AUTHENTICATION_PAGE}`}
-              render={() => <OrgAuthentication />}
-            />
-          )}
+          <Route
+            exact
+            path={`${match.url}/${AUTHENTICATION_PAGE}`}
+            render={() => <OrgAuthentication orgId={orgId} />}
+          />
         </Switch>
       )}
     </Suspense>
   )
 }
 
-export default withRouter(OrganizationPage)
+export default OrganizationPage
