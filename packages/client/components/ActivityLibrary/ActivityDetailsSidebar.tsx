@@ -152,6 +152,11 @@ const ActivityDetailsSidebar = (props: Props) => {
   const onUserSelected = (newUsers: Option[]) => {
     const user = newUsers[0]
     setSelectedUser(user)
+    if (user) {
+      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
+        selectionLocation: 'oneOnOneUserPicker'
+      })
+    }
     const selectedUserOrganizationIds = new Set(user?.organizationIds ?? [])
     const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
     const mutualOrgsIds = mutualOrgs.map((org) => org.id)
