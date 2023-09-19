@@ -11,6 +11,8 @@ import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
 import useAtmosphere from '../hooks/useAtmosphere'
 import setPreferredTeamId from '../utils/relay/setPreferredTeamId'
+// import {useDialogState} from "~/ui/Dialog/useDialogState";
+import AddTeamDialogRoot from '~/components/AddTeamDialogRoot'
 
 const SelectTeamDropdown = lazyPreload(
   () =>
@@ -39,6 +41,8 @@ const NewMeetingTeamPicker = (props: Props) => {
     }
   )
 
+  const [addTeamDialogOpen, setAddTeamDialogOpen] = React.useState(false)
+
   const atmosphere = useAtmosphere()
 
   const handleSelectTeam = (teamId: string) => {
@@ -47,7 +51,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   }
 
   const handleAddTeamClick = () => {
-    window.open(`/newteam/1`, '_blank', 'noreferrer')
+    setAddTeamDialogOpen(true)
   }
 
   const selectedTeam = useFragment(
@@ -95,6 +99,13 @@ const NewMeetingTeamPicker = (props: Props) => {
             onAddTeamClick={allowAddTeam ? handleAddTeamClick : undefined}
           />
         )
+      )}
+      {addTeamDialogOpen && (
+        <AddTeamDialogRoot
+          onClose={() => {
+            setAddTeamDialogOpen(false)
+          }}
+        />
       )}
     </>
   )
