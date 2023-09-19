@@ -14,6 +14,7 @@ import {MenuPosition} from '../../../hooks/useCoords'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
+import {mergeRefs} from '../../../utils/react/mergeRefs'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
   OPEN: githubIssueOpen,
@@ -76,6 +77,20 @@ const GitHubObjectCard = (props: Props) => {
     MenuPosition.UPPER_CENTER
   )
 
+  const {
+    tooltipPortal: copiedTooltipPortal,
+    openTooltip: openCopiedTooltip,
+    closeTooltip: closeCopiedTooltip,
+    originRef: copiedTooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+
+  const handleCopy = () => {
+    openCopiedTooltip()
+    setTimeout(() => {
+      closeCopiedTooltip()
+    }, 2000)
+  }
+
   if (result?.__typename !== '_xGitHubIssue' && result?.__typename !== '_xGitHubPullRequest') {
     return null
   }
@@ -121,17 +136,18 @@ const GitHubObjectCard = (props: Props) => {
             {repoName}
           </a>
         </div>
-        <CopyToClipboard text={url}>
+        <CopyToClipboard text={url} onCopy={handleCopy}>
           <div
             className='h-6 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200'
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
-            ref={originRef}
+            ref={mergeRefs(originRef, copiedTooltipRef)}
           >
             <Link className='h-6 w-6 cursor-pointer p-0.5' />
           </div>
         </CopyToClipboard>
         {tooltipPortal('Copy link')}
+        {copiedTooltipPortal('Copied!')}
       </div>
     </div>
   )
