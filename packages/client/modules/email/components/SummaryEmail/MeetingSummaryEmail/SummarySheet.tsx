@@ -119,7 +119,7 @@ const SummarySheet = (props: Props) => {
                       <tbody>
                         <tr>
                           <td align='center' width='100%'>
-                            <div className='flex justify-center gap-4'>
+                            <div className='mb-2 flex justify-center gap-4'>
                               {!!taskCount && taskCount > 0 && (
                                 <ExportAllTasks meetingRef={meeting} />
                               )}
