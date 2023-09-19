@@ -50,8 +50,12 @@ const GitHubIntegrationPanel = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
+  const {error, onError} = mutationProps
 
   const authGitHub = () => {
+    if (!teamMember) {
+      return onError(new Error('Could not find team member'))
+    }
     teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
   }
 
@@ -92,6 +96,7 @@ const GitHubIntegrationPanel = (props: Props) => {
           >
             Connect
           </button>
+          {error && <div className='text-tomato-500'>Error: {error.message}</div>}
         </div>
       )}
     </>
