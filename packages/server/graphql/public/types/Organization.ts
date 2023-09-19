@@ -53,6 +53,10 @@ const Organization: OrganizationResolvers = {
     }
 
     return null
+  },
+  saml: async ({id: orgId}, _args, {dataLoader}) => {
+    const saml = await dataLoader.get('samlByOrgId').load(orgId)
+    return saml || null
   }
 }
 
