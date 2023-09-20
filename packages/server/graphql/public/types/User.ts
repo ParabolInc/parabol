@@ -15,11 +15,13 @@ import {
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
+import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
-import sendToSentry from '../../../utils/sendToSentry'
+import base64url from 'base64url'
 
 declare const __PRODUCTION__: string
 
@@ -166,6 +168,18 @@ const User: UserResolvers = {
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
 
     return connectionFromTemplateArray(allActivities, first, after)
+  },
+  parseSAMLMetadata: async (_source, {metadata, domain}) => {
+    const baseUrl = getSignOnURL(metadata, domain)
+    if (baseUrl instanceof Error) {
+      return {error: {message: baseUrl.message}}
+    }
+    // append the new metadata to the RelayState
+    // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
+    const relayState = base64url.encode(JSON.stringify({metadata}))
+    const urlObj = new URL(baseUrl)
+    urlObj.searchParams.append('RelayState', relayState)
+    return {url: urlObj.toString()}
   }
 }
 

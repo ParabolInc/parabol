@@ -8,6 +8,7 @@ import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
+import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
@@ -28,6 +29,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
+import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeResults from './normalizeResults'
 
@@ -628,6 +630,66 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
         })
       )
       return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const saml = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, SAMLSource | null, string>(
+    async (samlIds) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAML.id', 'in', samlIds)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return samlIds.map((samlId) => res.find((row) => row.id === samlId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const samlByDomain = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, SAMLSource | null, string>(
+    async (domains) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAMLDomain.domain', 'in', domains)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return domains.map((domain) => res.find((row) => row.domains.includes(domain)))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const samlByOrgId = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, SAMLSource | null, string>(
+    async (orgIds) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAML.orgId', 'in', orgIds)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
     },
     {
       ...parent.dataLoaderOptions

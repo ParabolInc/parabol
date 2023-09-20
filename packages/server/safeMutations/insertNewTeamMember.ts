@@ -35,7 +35,8 @@ const insertNewTeamMember = async (user: IUser, teamId: string) => {
     picture,
     preferredName,
     email,
-    isLead
+    isLead,
+    openDrawer: 'manageTeam'
   })
   await r.table('TeamMember').insert(teamMember).run()
   return teamMember

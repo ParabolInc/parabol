@@ -1,13 +1,16 @@
 import styled from '@emotion/styled'
 import {ContentCopy} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgAuthenticationSignOnUrl_saml$key} from '../../../../__generated__/OrgAuthenticationSignOnUrl_saml.graphql'
 import CopyLink from '../../../../components/CopyLink'
-import DialogTitle from '../../../../components/DialogTitle'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
+import makeAppURL from '../../../../utils/makeAppURL'
 
 const Section = styled('div')({
   padding: '0px 28px 12px 28px'
@@ -18,19 +21,6 @@ const InputSection = styled('div')({
   flexDirection: 'row',
   padding: '0 16px'
 })
-
-const SubTitle = styled(DialogTitle)<{disabled: boolean}>(({disabled}) => ({
-  color: disabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
-  fontSize: '16px',
-  padding: 0
-}))
-
-const Label = styled('div')<{disabled: boolean}>(({disabled}) => ({
-  color: disabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
-  fontSize: '14px',
-  display: 'flex',
-  alignItems: 'center'
-}))
 
 const CopyButton = styled(SecondaryButton)({
   color: PALETTE.SLATE_600,
@@ -49,14 +39,21 @@ const StyledContentCopyIcon = styled(ContentCopy)({
 })
 
 interface Props {
-  disabled: boolean
-  singleSignOnUrl?: string | null
+  samlRef: OrgAuthenticationSignOnUrl_saml$key | null
 }
 
 const OrgAuthenticationSignOutUrl = (props: Props) => {
-  const {disabled} = props
-  const singleSignOnUrl = props.singleSignOnUrl ?? ''
-
+  const {samlRef} = props
+  const saml = useFragment(
+    graphql`
+      fragment OrgAuthenticationSignOnUrl_saml on SAML {
+        id
+      }
+    `,
+    samlRef
+  )
+  const domain = saml?.id ?? 'XXXX-XXXX'
+  const url = makeAppURL(window.location.origin, `/saml/${domain}`)
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -64,23 +61,24 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
   return (
     <>
       <Section>
-        <SubTitle disabled={disabled}>Single Sign-On URL</SubTitle>
-        <Label disabled={disabled}>
-          Copy and paste this into your identity providers SAML configuration
-        </Label>
+        <div className='flex text-base font-semibold leading-6 text-slate-700'>
+          Single Sign-On URL
+        </div>
+        <div className={'flex items-center text-sm text-slate-700'}>
+          Copy and paste this into your identity provider’s SAML configuration
+        </div>
       </Section>
       <InputSection>
         <BasicInput
           readOnly
-          disabled={disabled}
           name='singleSignOnUrl'
-          placeholder='https://action.parabol.co/sso/saml/xxxxxxx-xxxxx-xxxxx-xxxxxxx'
-          value={singleSignOnUrl}
+          value={url}
           error={undefined}
-          onChange={(e) => e.preventDefault()}
+          onFocus={(e) => e.target.select()}
+          className='select-all'
         />
         <CopyButton onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-          <CopyLink title={undefined} tooltip={undefined} url={singleSignOnUrl}>
+          <CopyLink title={undefined} tooltip={undefined} url={url}>
             <StyledContentCopyIcon />
           </CopyLink>
         </CopyButton>
