@@ -117,18 +117,16 @@ export default {
     const eventName =
       scheduledEndTime && newScheduledEndTime ? `Meeting Timer Updated` : stoppedOrStarted
     publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
-    analytics.meetingTimerEvent(
-      viewerId,
-      eventName,
+    analytics.meetingTimerEvent(viewerId, eventName, {
       meetingId,
       phaseType,
       viewCount,
       isAsync,
       newScheduledEndTime,
       timeRemaining,
-      scheduledEndTime,
-      startAt
-    )
+      previousScheduledEndTime: scheduledEndTime,
+      stageStartAt: startAt
+    })
     return data
   }
 }

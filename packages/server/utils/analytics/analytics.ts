@@ -36,6 +36,17 @@ export type IdentifyOptions = {
   createdAt?: Date
 }
 
+export type MeetingTimerEventProperties = {
+  meetingId: string
+  phaseType: string
+  viewCount: number
+  isAsync: boolean | null
+  newScheduledEndTime: Date | null
+  timeRemaining: number | null
+  previousScheduledEndTime?: Date | null
+  stageStartAt?: Date
+}
+
 export type OrgTierChangeEventProperties = {
   orgId: string
   domain?: string
@@ -322,25 +333,9 @@ class Analytics {
   meetingTimerEvent = (
     userId: string,
     event: 'Meeting Timer Started' | 'Meeting Timer Stopped' | 'Meeting Timer Updated',
-    meetingId: string,
-    phaseType: string,
-    viewCount: number,
-    isAsync: boolean | null,
-    newScheduledEndTime: Date | null,
-    timeRemaining: number | null,
-    previousScheduledEndTime?: Date | null,
-    stageStartAt?: Date
+    eventProperties: MeetingTimerEventProperties
   ) => {
-    this.track(userId, event, {
-      isAsync,
-      meetingId,
-      newScheduledEndTime,
-      phaseType,
-      previousScheduledEndTime,
-      stageStartAt,
-      timeRemaining,
-      viewCount
-    })
+    this.track(userId, event, eventProperties)
   }
 
   pokerMeetingTeamRevoted = (
