@@ -92,9 +92,7 @@ const SummarySheet = (props: Props) => {
   const isDemo = !!props.isDemo
 
   const downloadPDF = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Download PDF Clicked', {
-      meetingId
-    })
+    SendClientSegmentEventMutation(atmosphere, 'Download PDF Clicked', {meetingId})
     window.print()
   }
 
