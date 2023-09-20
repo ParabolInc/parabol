@@ -4,13 +4,10 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {OneOnOneTeamStatusComponentQuery} from '../../__generated__/OneOnOneTeamStatusComponentQuery.graphql'
 
 export const oneOnOneTeamStatusComponentQuery = graphql`
-  query OneOnOneTeamStatusComponentQuery(
-    $oneOnOneTeamInput: CreateOneOnOneTeamInput!
-    $orgId: ID!
-  ) {
+  query OneOnOneTeamStatusComponentQuery($email: Email!, $orgId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        oneOnOneTeam(oneOnOneTeamInput: $oneOnOneTeamInput) {
+        oneOnOneTeam(email: $email) {
           id
           name
         }

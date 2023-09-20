@@ -372,7 +372,8 @@ const ActivityDetailsSidebar = (props: Props) => {
               <div className='flex grow flex-col justify-end gap-2'>
                 {oneOnOneTeamInput && (
                   <OneOnOneTeamStatus
-                    oneOnOneTeamInput={oneOnOneTeamInput}
+                    email={oneOnOneTeamInput.email}
+                    orgId={oneOnOneTeamInput.orgId}
                     name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
                   />
                 )}
