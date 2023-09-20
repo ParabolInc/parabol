@@ -611,7 +611,7 @@ class Analytics {
     })
   }
 
-  taskDueDateSet = (userId: string, taskId: string, teamId: string) => {
+  taskDueDateSet = (userId: string, teamId: string, taskId: string) => {
     this.track(userId, 'Task due date set', {taskId, teamId})
   }
 

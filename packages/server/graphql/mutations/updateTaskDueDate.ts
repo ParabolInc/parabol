@@ -65,7 +65,7 @@ export default {
         publish(SubscriptionChannel.TASK, userId, 'UpdateTaskDueDatePayload', data, subOptions)
       })
     }
-    analytics.taskDueDateSet(viewerId, taskId, task.teamId)
+    analytics.taskDueDateSet(viewerId, task.teamId, taskId)
     return data
   }
 }
