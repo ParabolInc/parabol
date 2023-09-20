@@ -6,24 +6,18 @@ import addTeamDialogQuery, {AddTeamDialogQuery} from '../__generated__/AddTeamDi
 
 interface Props {
   onClose: () => void
+  onAddTeam: (teamId: string) => void
 }
 
 const AddTeamDialogRoot = (props: Props) => {
-  const {onClose} = props
+  const {onClose, onAddTeam} = props
 
   const queryRef = useQueryLoaderNow<AddTeamDialogQuery>(addTeamDialogQuery, {}, 'network-only')
 
   return (
     <Suspense fallback={renderLoader()}>
       {queryRef && (
-        <AddTeamDialog
-          onAddTeam={() => {
-            /* TODO */
-          }}
-          isOpen={true}
-          onClose={onClose}
-          queryRef={queryRef}
-        />
+        <AddTeamDialog onAddTeam={onAddTeam} isOpen={true} onClose={onClose} queryRef={queryRef} />
       )}
     </Suspense>
   )

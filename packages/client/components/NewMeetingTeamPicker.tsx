@@ -102,6 +102,10 @@ const NewMeetingTeamPicker = (props: Props) => {
       )}
       {addTeamDialogOpen && (
         <AddTeamDialogRoot
+          onAddTeam={(teamId) => {
+            setAddTeamDialogOpen(false)
+            handleSelectTeam(teamId)
+          }}
           onClose={() => {
             setAddTeamDialogOpen(false)
           }}

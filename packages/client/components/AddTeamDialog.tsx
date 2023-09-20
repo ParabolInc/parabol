@@ -21,11 +21,12 @@ import {AdhocTeamMultiSelect, Option} from '../components/AdhocTeamMultiSelect/A
 import {Input} from '../ui/Input/Input'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import useRouter from '~/hooks/useRouter'
+import getGraphQLError from '~/utils/relay/getGraphQLError'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
-  onAddTeam: () => void
+  onAddTeam: (teamId: string) => void
   queryRef: PreloadedQuery<AddTeamDialogQuery>
 }
 
@@ -51,8 +52,7 @@ const AddTeamDialog = (props: Props) => {
   const {isOpen, onClose, queryRef, onAddTeam} = props
   const atmosphere = useAtmosphere()
 
-  // FIXME error
-  const {submitting, onError, /*error,*/ onCompleted, submitMutation} = useMutationProps()
+  const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
   const {history} = useRouter()
 
   const data = usePreloadedQuery<AddTeamDialogQuery>(query, queryRef)
@@ -83,14 +83,12 @@ const AddTeamDialog = (props: Props) => {
         selectedUsersOrganizationIds.add(organizationId)
       })
     })
-    console.log('selectedUsersOrganizationIds', selectedUsersOrganizationIds)
 
     const mutualOrgs = viewerOrganizations.filter((org) => selectedUsersOrganizationIds.has(org.id))
 
     const mutualOrgsIds = mutualOrgs.map((org) => org.id)
     setMutualOrgsIds(mutualOrgsIds)
     setSelectedOrgId(mutualOrgsIds[0] ?? viewerOrganizations[0]?.id)
-    // onError(new Error(''))
   }
 
   const handleAddTeam = () => {
@@ -100,13 +98,22 @@ const AddTeamDialog = (props: Props) => {
     }
     submitMutation()
 
-    // FIXME dont redirect
     AddTeamMutation(
       atmosphere,
       {newTeam, invitees: selectedUsers.map((user) => user.email)},
-      {onError, onCompleted, history}
+      {
+        onError,
+        onCompleted: (res, errors) => {
+          onCompleted(res, errors)
+          const error = getGraphQLError(res, errors)
+          if (!error) {
+            onAddTeam(res.addTeam.team.id)
+          }
+        },
+        history,
+        showTeamCreatedToast: false
+      }
     )
-    onAddTeam()
   }
 
   return (
@@ -155,7 +162,7 @@ const AddTeamDialog = (props: Props) => {
             value={teamName}
           />
         </fieldset>
-
+        {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>}
         <DialogActions>
           <SecondaryButton onClick={onClose} size='small'>
             Cancel
