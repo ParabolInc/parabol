@@ -47,6 +47,15 @@ export type OrgTierChangeEventProperties = {
   billingLeaderEmail?: string
 }
 
+export type PokerMeetingTeamRevotedProperties = {
+  teamId: string
+  hasIcebreaker: boolean
+  wasFacilitator: boolean
+  meetingNumber: number
+  teamMembersCount: number
+  teamMembersPresentCount: number
+}
+
 export type TaskProperties = {
   taskId: string
   teamId: string
@@ -336,21 +345,9 @@ class Analytics {
 
   pokerMeetingTeamRevoted = (
     userId: string,
-    teamId: string,
-    hasIcebreaker: boolean,
-    wasFacilitator: boolean,
-    meetingNumber: number,
-    teamMembersCount: number,
-    teamMembersPresentCount: number
+    eventProperties: PokerMeetingTeamRevotedProperties
   ) => {
-    this.track(userId, 'Poker Meeting Team Revoted', {
-      hasIcebreaker,
-      wasFacilitator,
-      meetingNumber,
-      teamMembersCount,
-      teamMembersPresentCount,
-      teamId
-    })
+    this.track(userId, 'Poker Meeting Team Revoted', eventProperties)
   }
 
   // team

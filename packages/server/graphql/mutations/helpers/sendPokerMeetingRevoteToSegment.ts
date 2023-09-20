@@ -12,15 +12,14 @@ const sendPokerMeetingRevoteToSegment = async (
   const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
   presentMemberUserIds.forEach((userId) => {
     const wasFacilitator = userId === facilitatorUserId
-    analytics.pokerMeetingTeamRevoted(
-      userId,
+    analytics.pokerMeetingTeamRevoted(userId, {
       teamId,
-      phases[0]?.phaseType === 'checkin',
+      hasIcebreaker: phases[0]?.phaseType === 'checkin',
       wasFacilitator,
       meetingNumber,
-      teamMembers.length,
-      meetingMembers.length
-    )
+      teamMembersCount: teamMembers.length,
+      teamMembersPresentCount: meetingMembers.length
+    })
   })
 }
 
