@@ -136,6 +136,7 @@ export type AnalyticsEvent =
   | 'Conversion Modal Pay Later Clicked'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
+  // Lowercase words are for backwards compatibility
   | 'Added Agenda Item'
   | 'Archive Organization'
   | 'Archive Team'
@@ -588,7 +589,6 @@ class Analytics {
   }
 
   pollAdded = (userId: string, teamId: string, meetingId: string) => {
-    // 'added' is intentionally lowercase for backwards compatibility
     this.track(userId, 'Poll added', {meetingId, teamId})
   }
 
