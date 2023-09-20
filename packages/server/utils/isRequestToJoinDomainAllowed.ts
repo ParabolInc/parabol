@@ -41,13 +41,13 @@ export const getEligibleOrgIdsByDomain = async (
   const eligibleOrgs = await Promise.all(
     orgs.map(async (org) => {
       const {founder} = org
-      const importentMembers = org.billingLeads.slice() as TeamMember[]
+      const importantMembers = org.billingLeads.slice() as TeamMember[]
       if (!founder.inactive && !founder.removedAt && founder.role !== 'BILLING_LEADER') {
-        importentMembers.push(founder)
+        importantMembers.push(founder)
       }
 
       const users = (
-        await dataLoader.get('users').loadMany(importentMembers.map(({userId}) => userId))
+        await dataLoader.get('users').loadMany(importantMembers.map(({userId}) => userId))
       ).filter(isValid)
       if (
         !users.some((user) => user.email.split('@')[1] === activeDomain && isUserVerified(user))
