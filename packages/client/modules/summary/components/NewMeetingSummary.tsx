@@ -1,10 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import DashSidebar from '../../../components/Dashboard/DashSidebar'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
+import useBreakpoint from '../../../hooks/useBreakpoint'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV3'
+import {Breakpoint} from '../../../types/constEnums'
 import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
@@ -21,6 +24,7 @@ interface Props {
 const query = graphql`
   query NewMeetingSummaryQuery($meetingId: ID!) {
     viewer {
+      ...DashSidebar_viewer
       newMeeting(meetingId: $meetingId) {
         ...MeetingSummaryEmail_meeting
         ...MeetingLockedOverlay_meeting
@@ -54,26 +58,31 @@ const NewMeetingSummary = (props: Props) => {
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useDocumentTitle(title, 'Summary')
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`
   const emailCSVUrl = isDemoRoute()
     ? `/retrospective-demo-summary/csv`
     : `/new-summary/${meetingId}/csv`
+
   return (
-    <div style={{backgroundColor: PALETTE.SLATE_200, minHeight: '100vh'}}>
-      <MeetingSummaryEmail
-        appOrigin={window.location.origin}
-        urlAction={urlAction}
-        isDemo={teamId === demoTeamId}
-        meeting={newMeeting}
-        referrer='meeting'
-        meetingUrl={meetingUrl}
-        teamDashUrl={teamDashUrl}
-        emailCSVUrl={emailCSVUrl}
-        corsOptions={APP_CORS_OPTIONS}
-      />
-      <MeetingLockedOverlay meetingRef={newMeeting} />
-    </div>
+    <>
+      <div style={{display: 'flex', backgroundColor: PALETTE.SLATE_200, minHeight: '100vh'}}>
+        {isDesktop && <DashSidebar viewerRef={viewer} isOpen />}
+        <MeetingSummaryEmail
+          appOrigin={window.location.origin}
+          urlAction={urlAction}
+          isDemo={teamId === demoTeamId}
+          meeting={newMeeting}
+          referrer='meeting'
+          meetingUrl={meetingUrl}
+          teamDashUrl={teamDashUrl}
+          emailCSVUrl={emailCSVUrl}
+          corsOptions={APP_CORS_OPTIONS}
+        />
+        <MeetingLockedOverlay meetingRef={newMeeting} />
+      </div>
+    </>
   )
 }
 
