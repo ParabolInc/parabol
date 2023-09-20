@@ -4,19 +4,24 @@ extend type Mutation {
   """
   verifyDomain(
     """
-    a list of domains that the account has control over. usually the part after the @ of their email
+    Add the following domains to the list that org has control over. A domain is usually the part after the @ of their email.
     """
-    domains: [ID!]!
+    addDomains: [ID!]
 
     """
-    organization id
+    organization id. If the record already exists, this will overwite the value
     """
     orgId: ID!
 
     """
-    Company's slug
+    The name of the company, used as a slug in signon URLs. Usually the domain without the tld
     """
     slug: ID!
+
+    """
+    A list of domains to remove from the control of the org. Useful if you previously added the incorrect domains
+    """
+    removeDomains: [ID!]
   ): VerifyDomainPayload!
 }
 
@@ -29,5 +34,5 @@ type VerifyDomainSuccess {
   """
   Describe the first return field here
   """
-  success: Boolean!
+  saml: SAML!
 }

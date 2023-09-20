@@ -1,5 +1,5 @@
-import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
@@ -7,16 +7,17 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {Reactable} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
+import getDataLoader from '../../graphql/getDataLoader'
 import {ReactableEnum} from '../../graphql/private/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
+import {Team} from '../../postgres/queries/getTeamsByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
+import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
-import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
-import getDataLoader from '../../graphql/getDataLoader'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
@@ -157,9 +158,16 @@ class Analytics {
     })
   }
 
-  checkInEnd = (completedMeeting: Meeting, meetingMembers: MeetingMember[]) => {
+  checkInEnd = (completedMeeting: Meeting, meetingMembers: MeetingMember[], team: Team) => {
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers)
+      this.meetingEnd(
+        meetingMember.userId,
+        completedMeeting,
+        meetingMembers,
+        undefined,
+        undefined,
+        team
+      )
     )
   }
 
@@ -191,17 +199,22 @@ class Analytics {
     completedMeeting: Meeting,
     meetingMembers: MeetingMember[],
     template?: MeetingTemplate,
-    meetingSpecificProperties?: any
+    meetingSpecificProperties?: any,
+    team?: Team
   ) => {
     this.track(userId, 'Meeting Completed', {
       wasFacilitator: completedMeeting.facilitatorUserId === userId,
-      ...createMeetingProperties(completedMeeting, meetingMembers, template),
+      ...createMeetingProperties(completedMeeting, meetingMembers, template, team),
       ...meetingSpecificProperties
     })
   }
 
-  meetingStarted = (userId: string, meeting: Meeting, template?: MeetingTemplate) => {
-    this.track(userId, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
+  meetingStarted = (userId: string, meeting: Meeting, template?: MeetingTemplate, team?: Team) => {
+    this.track(
+      userId,
+      'Meeting Started',
+      createMeetingProperties(meeting, undefined, template, team)
+    )
   }
 
   recurrenceStarted = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
@@ -212,8 +225,12 @@ class Analytics {
     this.track(userId, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
-  meetingJoined = (userId: string, meeting: Meeting) => {
-    this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
+  meetingJoined = (userId: string, meeting: Meeting, team: Team) => {
+    this.track(
+      userId,
+      'Meeting Joined',
+      createMeetingProperties(meeting, undefined, undefined, team)
+    )
   }
 
   meetingSettingsChanged = (
@@ -466,9 +483,11 @@ class Analytics {
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
+    // in a perfect world we would pass in the existing dataloader since the user object is already cached in it
     const dataloader = getDataLoader()
     this.amplitudeAnalytics.track(userId, event, dataloader, properties)
     this.segmentAnalytics.track(userId, event, dataloader, properties)
+    dataloader.dispose()
   }
 }
 

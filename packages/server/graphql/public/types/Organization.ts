@@ -18,6 +18,10 @@ const Organization: OrganizationResolvers = {
   featureFlags: ({featureFlags}) => {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
+  },
+  saml: async ({id: orgId}, _args, {dataLoader}) => {
+    const saml = await dataLoader.get('samlByOrgId').load(orgId)
+    return saml || null
   }
 }
 

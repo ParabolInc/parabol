@@ -3,7 +3,8 @@ import {sendIntranet} from './common'
 
 test('SAML', async () => {
   const companyName = faker.company.companyName()
-  const samlName = faker.helpers.slugify(companyName)
+  const samlName = faker.helpers.slugify(companyName).toLowerCase()
+  const orgId = `${samlName}-orgId`
   const domain = 'example.com'
 
   const metadata = `
@@ -30,34 +31,37 @@ test('SAML', async () => {
     </md:EntityDescriptor>
   `
 
-  const enableSaml = await sendIntranet({
+  const verifyDomain = await sendIntranet({
     query: `
-      mutation EnableSAMLForDomain($name: ID!, $domains: [ID!]!, $metadata: String!) {
-        enableSAMLForDomain(name: $name, domains: $domains, metadata: $metadata) {
+      mutation VerifyDomain($slug: ID!, $addDomains: [ID!], $orgId: ID!) {
+        verifyDomain(slug: $slug, addDomains: $addDomains, orgId: $orgId) {
           ... on ErrorPayload {
             error {
-              title
               message
             }
           }
-          ... on EnableSAMLForDomainSuccess {
-            success
+          ... on VerifyDomainSuccess {
+            saml {
+              id
+            }
           }
         }
       }
     `,
     variables: {
-      name: samlName,
-      domains: [domain],
-      metadata
+      slug: samlName,
+      addDomains: [domain],
+      orgId
     },
     isPrivate: true
   })
 
-  expect(enableSaml).toMatchObject({
+  expect(verifyDomain).toMatchObject({
     data: {
-      enableSAMLForDomain: {
-        success: true
+      verifyDomain: {
+        saml: {
+          id: samlName
+        }
       }
     }
   })
@@ -101,7 +105,8 @@ test('SAML', async () => {
     </saml:Assertion>
   </samlp:Response>
   `
-
+  const samlResponse = Buffer.from(response).toString('base64url')
+  const relayState = Buffer.from(JSON.stringify({metadata})).toString('base64url')
   const saml = await sendIntranet({
     query: `
       mutation loginSAML($queryString: String!, $samlName: ID!) {
@@ -115,7 +120,7 @@ test('SAML', async () => {
       }
     `,
     variables: {
-      queryString: `SAMLResponse=${Buffer.from(response).toString('base64url')}`,
+      queryString: `SAMLResponse=${samlResponse}&RelayState=${relayState}`,
       samlName
     },
     isPrivate: true
