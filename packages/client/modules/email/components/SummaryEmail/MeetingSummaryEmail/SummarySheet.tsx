@@ -26,6 +26,8 @@ import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import {TableChart} from '@mui/icons-material'
 import {Link} from 'react-router-dom'
+import useBreakpoint from '../../../../../hooks/useBreakpoint'
+import {Breakpoint} from '../../../../../types/constEnums'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
 
@@ -85,6 +87,7 @@ const SummarySheet = (props: Props) => {
     `,
     meetingRef
   )
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {id: meetingId, meetingType, taskCount} = meeting
   const isDemo = !!props.isDemo
 
@@ -109,7 +112,9 @@ const SummarySheet = (props: Props) => {
             <TeamHealthSummary meeting={meeting} />
           </td>
         </tr>
-        <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
+        {!isDesktop && (
+          <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
+        )}
         {referrer === 'meeting'
           ? (meetingType !== 'teamPrompt' || (!!taskCount && taskCount > 0)) && (
               <>

@@ -6,7 +6,6 @@ import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useBreakpoint from '../../../hooks/useBreakpoint'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
-import {PALETTE} from '../../../styles/paletteV3'
 import {Breakpoint} from '../../../types/constEnums'
 import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
@@ -66,23 +65,25 @@ const NewMeetingSummary = (props: Props) => {
     : `/new-summary/${meetingId}/csv`
 
   return (
-    <>
-      <div style={{display: 'flex', backgroundColor: PALETTE.SLATE_200, minHeight: '100vh'}}>
-        {isDesktop && <DashSidebar viewerRef={viewer} isOpen />}
-        <MeetingSummaryEmail
-          appOrigin={window.location.origin}
-          urlAction={urlAction}
-          isDemo={teamId === demoTeamId}
-          meeting={newMeeting}
-          referrer='meeting'
-          meetingUrl={meetingUrl}
-          teamDashUrl={teamDashUrl}
-          emailCSVUrl={emailCSVUrl}
-          corsOptions={APP_CORS_OPTIONS}
-        />
-        <MeetingLockedOverlay meetingRef={newMeeting} />
-      </div>
-    </>
+    <div className='flex min-h-screen bg-slate-200'>
+      {isDesktop && (
+        <div className='print:hidden'>
+          <DashSidebar viewerRef={viewer} isOpen />
+        </div>
+      )}
+      <MeetingSummaryEmail
+        appOrigin={window.location.origin}
+        urlAction={urlAction}
+        isDemo={teamId === demoTeamId}
+        meeting={newMeeting}
+        referrer='meeting'
+        meetingUrl={meetingUrl}
+        teamDashUrl={teamDashUrl}
+        emailCSVUrl={emailCSVUrl}
+        corsOptions={APP_CORS_OPTIONS}
+      />
+      <MeetingLockedOverlay meetingRef={newMeeting} />
+    </div>
   )
 }
 
