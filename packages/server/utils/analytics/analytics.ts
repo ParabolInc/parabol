@@ -126,8 +126,6 @@ export type AnalyticsEvent =
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
   | 'Reset Groups Clicked'
-  // summary
-  | 'Download PDF Clicked'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -476,10 +474,6 @@ class Analytics {
 
   resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
-  }
-
-  downloadPDFClicked = (userId: string, meetingId: string) => {
-    this.track(userId, 'Download PDF Clicked', {meetingId})
   }
 
   identify = (options: IdentifyOptions) => {
