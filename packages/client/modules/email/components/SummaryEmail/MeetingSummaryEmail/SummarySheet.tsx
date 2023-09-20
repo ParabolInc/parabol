@@ -28,6 +28,8 @@ import {TableChart} from '@mui/icons-material'
 import {Link} from 'react-router-dom'
 import useBreakpoint from '../../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../../types/constEnums'
+import SendClientSegmentEventMutation from '../../../../../mutations/SendClientSegmentEventMutation'
+import useAtmosphere from '../../../../../hooks/useAtmosphere'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
 
@@ -58,6 +60,7 @@ const SummarySheet = (props: Props) => {
     appOrigin,
     corsOptions
   } = props
+  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment SummarySheet_meeting on NewMeeting {
@@ -92,6 +95,7 @@ const SummarySheet = (props: Props) => {
   const isDemo = !!props.isDemo
 
   const downloadPDF = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Download PDF Clicked', {meetingId})
     window.print()
   }
 
