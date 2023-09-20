@@ -77,11 +77,11 @@ const pokerResetDimension = {
     // mutate the cached meeting
     Object.assign(stage, updates)
     const updater = (estimateStage: RValue) => estimateStage.merge(updates)
-    const [_updateResult, _removeResult, meetingMembers, teamMembers] = await Promise.all([
-      updateStage(meetingId, stageId, 'ESTIMATE', updater),
-      removeMeetingTaskEstimates(meetingId, stageId),
+    const [meetingMembers, teamMembers] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teamMembersByTeamId').load(teamId)
+      dataLoader.get('teamMembersByTeamId').load(teamId),
+      updateStage(meetingId, stageId, 'ESTIMATE', updater),
+      removeMeetingTaskEstimates(meetingId, stageId)
     ])
     const data = {meetingId, stageId}
 
