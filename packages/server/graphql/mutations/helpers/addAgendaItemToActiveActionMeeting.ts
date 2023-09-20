@@ -31,8 +31,8 @@ const addAgendaItemToActiveActionMeeting = async (
   const {stages} = agendaItemPhase
   const newStage = new AgendaItemsStage({
     agendaItemId,
-    isNavigableByFacilitator: true,
-    isNavigable: true
+    isNavigableByFacilitator: isNewAgendaItemStageNavigable,
+    isNavigable: isNewAgendaItemStageNavigable
   })
   const {discussionId} = newStage
   stages.push(newStage)
