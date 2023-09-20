@@ -138,6 +138,7 @@ const User: UserResolvers = {
       })
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
+      const IS_STANDUP = 1 << 9 // prioritize standups (see https://github.com/ParabolInc/parabol/issues/8848)
       const SEASONAL = 1 << 8 // put seasonal templates at the top
       const USED_LAST_90 = 1 << 7 // next, show all templates used within the last 90 days
       const ON_TEAM = 1 << 6 // tiebreak by putting team templates first
@@ -145,12 +146,14 @@ const User: UserResolvers = {
       const IS_FREE = 1 << 4 // then free parabol templates
       const USED_LAST_30 = 1 << 3 // tiebreak on being used in last 30
       const {hideStartingAt, teamId, orgId, lastUsedAt, isFree} = activity
+      const isStandup = activity.type === 'teamPrompt'
       const isSeasonal = !!hideStartingAt
       const isOnTeam = teamIds.includes(teamId)
       const isOnOrg = orgId !== 'aGhostOrg' && !isOnTeam
       const isUsedLast30 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('30d'))
       const isUsedLast90 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('90d'))
       let score = 0
+      if (isStandup) score += IS_STANDUP
       if (isSeasonal) score += SEASONAL
       if (isUsedLast90) score += USED_LAST_90
       if (isOnTeam) score += ON_TEAM
