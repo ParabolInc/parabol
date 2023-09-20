@@ -477,8 +477,8 @@ class Analytics {
     })
   }
 
-  accountRemoved = (userId: string, reason: string, parabolPayload: object) => {
-    this.track(userId, 'Account Removed', {reason, parabolPayload})
+  accountRemoved = (userId: string, reason: string) => {
+    this.track(userId, 'Account Removed', {reason})
   }
 
   accountPaused = (userId: string) => this.track(userId, 'Account Paused')

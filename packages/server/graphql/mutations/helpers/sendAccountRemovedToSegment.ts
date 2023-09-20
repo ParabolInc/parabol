@@ -26,7 +26,7 @@ const sendAccountRemovedToSegment = async (
   })
   parabolPayload.data.user.email = email
   parabolPayload.data.user.isRemoved = true
-  analytics.accountRemoved(userIdToDelete, validReason, parabolPayload.data)
+  analytics.accountRemoved(userIdToDelete, validReason)
 }
 
 export default sendAccountRemovedToSegment
