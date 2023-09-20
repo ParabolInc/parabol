@@ -65,6 +65,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.2.3",
     "@datadog/browser-rum": "^3.6.12",
     "@emotion/core": "^10.0.27",
     "@emotion/react": "^11.9.3",
