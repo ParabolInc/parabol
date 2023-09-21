@@ -4,7 +4,6 @@ import Reflection from '../database/types/Reflection'
 
 class OpenAIServerManager {
   private openAIApi: OpenAI | null
-
   constructor() {
     if (!process.env.OPEN_AI_API_KEY) {
       this.openAIApi = null
