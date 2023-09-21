@@ -60,7 +60,7 @@ const NewMeetingSummary = (props: Props) => {
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`
-  const {toggle} = useSidebar()
+  const {isOpen, toggle} = useSidebar()
   const emailCSVUrl = isDemoRoute()
     ? `/retrospective-demo-summary/csv`
     : `/new-summary/${meetingId}/csv`
@@ -72,7 +72,7 @@ const NewMeetingSummary = (props: Props) => {
       </div>
       <div className='flex min-h-screen bg-slate-200'>
         <div className='hidden print:hidden lg:block'>
-          <DashSidebar viewerRef={viewer} isOpen />
+          <DashSidebar viewerRef={viewer} isOpen={isOpen} />
         </div>
         <div className='w-full'>
           <MeetingSummaryEmail
