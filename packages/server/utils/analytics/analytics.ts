@@ -104,7 +104,6 @@ export type AnalyticsEvent =
   | 'Downgrade Continue Clicked'
   | 'Organization Downgraded'
   | 'Billing Leader Modified'
-
   // task
   | 'Task Created'
   | 'Task Published'

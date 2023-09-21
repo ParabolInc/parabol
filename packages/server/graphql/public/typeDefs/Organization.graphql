@@ -140,7 +140,7 @@ type Organization {
   """
   Returns one on one team if exists
   """
-  oneOnOneTeam(oneOnOneTeamInput: CreateOneOnOneTeamInput!): Team
+  oneOnOneTeam(email: Email!): Team
 
   """
   The leaders of the org
