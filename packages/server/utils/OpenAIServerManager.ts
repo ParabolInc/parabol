@@ -1,20 +1,19 @@
-import {Configuration, OpenAIApi} from 'openai'
+import OpenAI from 'openai'
 import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
 
 class OpenAIServerManager {
-  private openAIApi: OpenAIApi | null
+  private openAIApi: OpenAI | null
 
   constructor() {
     if (!process.env.OPEN_AI_API_KEY) {
       this.openAIApi = null
       return
     }
-    const configuration = new Configuration({
+    this.openAIApi = new OpenAI({
       apiKey: process.env.OPEN_AI_API_KEY,
       organization: process.env.OPEN_AI_ORG_ID
     })
-    this.openAIApi = new OpenAIApi(configuration)
   }
 
   async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
@@ -33,7 +32,7 @@ class OpenAIServerManager {
     ${plaintextResponses.join('\nNEW_RESPONSE\n')}
     """`
     try {
-      const response = await this.openAIApi.createChatCompletion({
+      const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
           {
@@ -47,7 +46,7 @@ class OpenAIServerManager {
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      return (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      return (response.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
@@ -68,7 +67,7 @@ class OpenAIServerManager {
     ${textStr}
     """`
     try {
-      const response = await this.openAIApi.createChatCompletion({
+      const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
           {
@@ -82,7 +81,7 @@ class OpenAIServerManager {
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      return (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      return (response.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
@@ -118,7 +117,7 @@ class OpenAIServerManager {
       .map(({plaintextContent}) => plaintextContent.trim().replace(/\n/g, '\t'))
       .join('\n')}`
     try {
-      const response = await this.openAIApi.createChatCompletion({
+      const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
           {
@@ -130,7 +129,7 @@ class OpenAIServerManager {
         max_tokens: 80
       })
       const question =
-        (response.data.choices[0]?.message?.content?.trim() as string).replace(
+        (response.choices[0]?.message?.content?.trim() as string).replace(
           /^[Qq]uestion:*\s*/gi,
           ''
         ) ?? null
@@ -155,7 +154,7 @@ class OpenAIServerManager {
     )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} to ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
 
     try {
-      const response = await this.openAIApi.createChatCompletion({
+      const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-4',
         messages: [
           {
@@ -168,7 +167,7 @@ class OpenAIServerManager {
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      const themes = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      const themes = (response.choices[0]?.message?.content?.trim() as string) ?? null
       return themes.split(', ')
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
@@ -189,7 +188,7 @@ class OpenAIServerManager {
         ', '
       )}, and the following reflection: "${reflection}", classify the reflection into the theme it fits in best. The reflection can only be added to one theme. Do not edit the reflection text. Your output should just be the theme name, and must be one of the themes I've provided.`
 
-      const response = await this.openAIApi!.createChatCompletion({
+      const response = await this.openAIApi!.chat.completions.create({
         model: 'gpt-4',
         messages: [
           {
@@ -203,7 +202,7 @@ class OpenAIServerManager {
         presence_penalty: 0
       })
 
-      const theme = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      const theme = (response.choices[0]?.message?.content?.trim() as string) ?? null
       if (!theme || !themes.includes(theme)) {
         if (!retry) {
           return getThemeForReflection(reflection, true)
