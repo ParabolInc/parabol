@@ -154,6 +154,7 @@ const DashSidebar = (props: Props) => {
           <DashHR />
           <NavMain>
             <NavList viewer={viewer} />
+            <NavList viewer={viewer} />
           </NavMain>
           <DashHR />
           <NavItemsWrap>
