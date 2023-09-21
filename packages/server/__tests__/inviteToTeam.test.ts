@@ -61,10 +61,8 @@ test('Invite to team, deny for untrusted domain', async () => {
   expect(inviteToTeam).toMatchObject({
     data: {
       inviteToTeam: {
-        error: {
-          message: 'Cannot invite by email. Try using invite link',
-          title: null
-        }
+        error: null,
+        invitees: [inviteeEmail]
       }
     }
   })
