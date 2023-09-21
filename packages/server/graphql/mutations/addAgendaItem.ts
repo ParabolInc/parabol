@@ -6,12 +6,12 @@ import AgendaItem, {AgendaItemInput} from '../../database/types/AgendaItem'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput, {CreateAgendaItemInputType} from '../types/CreateAgendaItemInput'
 import {GQLContext} from './../graphql'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
+import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: AddAgendaItemPayload,
@@ -57,14 +57,7 @@ export default {
       .run()
 
     const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Added Agenda Item',
-      properties: {
-        teamId,
-        meetingId
-      }
-    })
+    analytics.addedAgendaItem(viewerId, teamId, meetingId)
     const data = {agendaItemId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddAgendaItemPayload', data, subOptions)
     return data

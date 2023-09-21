@@ -18,6 +18,7 @@ import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
+import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
@@ -36,6 +37,17 @@ export type IdentifyOptions = {
   createdAt?: Date
 }
 
+export type MeetingTimerEventProperties = {
+  meetingId: string
+  phaseType: string
+  viewCount: number
+  isAsync: boolean | null
+  newScheduledEndTime: Date | null
+  timeRemaining: number | null
+  previousScheduledEndTime?: Date | null
+  stageStartAt?: Date
+}
+
 export type OrgTierChangeEventProperties = {
   orgId: string
   domain?: string
@@ -45,6 +57,15 @@ export type OrgTierChangeEventProperties = {
   reasonsForLeaving?: ReasonToDowngradeEnum[]
   otherTool?: string
   billingLeaderEmail?: string
+}
+
+export type PokerMeetingTeamRevotedProperties = {
+  teamId: string
+  hasIcebreaker: boolean
+  wasFacilitator: boolean
+  meetingNumber: number
+  teamMembersCount: number
+  teamMembersPresentCount: number
 }
 
 export type TaskProperties = {
@@ -86,9 +107,14 @@ export type AnalyticsEvent =
   | 'Comment Added'
   | 'Response Added'
   | 'Reactji Interacted'
+  | 'Reflection Added'
   | 'Meeting Recurrence Started'
   | 'Meeting Recurrence Stopped'
   | 'Meeting Settings Changed'
+  | 'Meeting Timer Started'
+  | 'Meeting Timer Stopped'
+  | 'Meeting Timer Updated'
+  | 'Poker Meeting Team Revoted'
   // team
   | 'Team Name Changed'
   | 'Integration Added'
@@ -110,6 +136,7 @@ export type AnalyticsEvent =
   | 'Task Estimate Set'
   // user
   | 'Account Created'
+  | 'Account Removed'
   | 'Account Paused'
   | 'Account Unpaused'
   | 'Account Name Changed'
@@ -126,9 +153,28 @@ export type AnalyticsEvent =
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
   | 'Reset Groups Clicked'
+  // Conversion Tracking
+  | 'Conversion Modal Pay Later Clicked'
+  // Deprecated Events
+  // These will be replaced with tracking plan compliant versions by the data team
+  // Lowercase words are for backwards compatibility
+  | 'Added Agenda Item'
+  | 'Archive Organization'
+  | 'Archive Team'
+  | 'Enterprise Over User Limit'
+  | 'Locked user attempted to join a team'
+  | 'Mattermost notification sent'
+  | 'Mentioned on Task'
+  | 'MSTeams notification sent'
+  | 'New Org'
+  | 'New Team'
+  | 'Poll added'
+  | 'Slack notification sent'
+  | 'Smart group title changed'
+  | 'Task due date set'
 
 /**
- * Provides a unified inteface for sending all the analytics events
+ * Provides a unified interface for sending all the analytics events
  */
 class Analytics {
   private amplitudeAnalytics: AmplitudeAnalytics
@@ -297,6 +343,25 @@ class Analytics {
     })
   }
 
+  reflectionAdded = (userId: string, teamId: string, meetingId: string) => {
+    this.track(userId, 'Reflection Added', {teamId, meetingId})
+  }
+
+  meetingTimerEvent = (
+    userId: string,
+    event: 'Meeting Timer Started' | 'Meeting Timer Stopped' | 'Meeting Timer Updated',
+    eventProperties: MeetingTimerEventProperties
+  ) => {
+    this.track(userId, event, eventProperties)
+  }
+
+  pokerMeetingTeamRevoted = (
+    userId: string,
+    eventProperties: PokerMeetingTeamRevotedProperties
+  ) => {
+    this.track(userId, 'Poker Meeting Team Revoted', eventProperties)
+  }
+
   // team
   teamNameChanged = (
     userId: string,
@@ -422,6 +487,10 @@ class Analytics {
     })
   }
 
+  accountRemoved = (userId: string, reason: string) => {
+    this.track(userId, 'Account Removed', {reason})
+  }
+
   accountPaused = (userId: string) => this.track(userId, 'Account Paused')
 
   accountUnpaused = (userId: string) => this.track(userId, 'Account Unpaused')
@@ -474,6 +543,88 @@ class Analytics {
 
   resetGroupsClicked = (userId: string, meetingId: string, teamId: string) => {
     this.track(userId, 'Reset Groups Clicked', {meetingId, teamId})
+  }
+
+  conversionModalPayLaterClicked = (userId: string) => {
+    this.track(userId, 'Conversion Modal Pay Later Clicked')
+  }
+
+  addedAgendaItem = (userId: string, teamId: string, meetingId?: string) => {
+    this.track(userId, 'Added Agenda Item', {teamId, meetingId})
+  }
+
+  archiveOrganization = (userId: string, orgId: string) => {
+    this.track(userId, 'Archive Organization', {orgId})
+  }
+
+  archiveTeam = (userId: string, teamId: string) => {
+    this.track(userId, 'Archive Team', {teamId})
+  }
+
+  enterpriseOverUserLimit = (userId: string, orgId: string) => {
+    this.track(userId, 'Enterprise Over User Limit', {orgId})
+  }
+
+  lockedUserAttemptToJoinTeam = (userId: string, invitingOrgId: string) => {
+    this.track(userId, 'Locked user attempted to join a team', {invitingOrgId})
+  }
+
+  mattermostNotificationSent = (
+    userId: string,
+    teamId: string,
+    notificationEvent: SlackNotificationEventEnum
+  ) => {
+    this.track(userId, 'Mattermost notification sent', {teamId, notificationEvent})
+  }
+
+  mentionedOnTask = (userId: string, mentionedUserId: string, teamId: string) => {
+    this.track(userId, 'Mentioned on Task', {mentionedUserId, teamId})
+  }
+
+  teamsNotificationSent = (
+    userId: string,
+    teamId: string,
+    notificationEvent: SlackNotificationEventEnum
+  ) => {
+    this.track(userId, 'MSTeams notification sent', {teamId, notificationEvent})
+  }
+
+  newOrg = (userId: string, orgId: string, teamId: string, fromSignup: boolean) => {
+    this.track(userId, 'New Org', {orgId, teamId, fromSignup})
+  }
+
+  newTeam = (userId: string, orgId: string, teamId: string, teamNumber: number) => {
+    this.track(userId, 'New Team', {orgId, teamId, teamNumber})
+  }
+
+  pollAdded = (userId: string, teamId: string, meetingId: string) => {
+    this.track(userId, 'Poll added', {meetingId, teamId})
+  }
+
+  slackNotificationSent = (
+    userId: string,
+    teamId: string,
+    notificationEvent: SlackNotificationEventEnum,
+    reflectionGroupId?: string
+  ) => {
+    this.track(userId, 'Slack notification sent', {teamId, notificationEvent, reflectionGroupId})
+  }
+
+  smartGroupTitleChanged = (
+    userId: string,
+    similarity: number,
+    smartTitle: string,
+    normalizedTitle: string
+  ) => {
+    this.track(userId, 'Smart group title changed', {
+      similarity,
+      smartTitle,
+      title: normalizedTitle
+    })
+  }
+
+  taskDueDateSet = (userId: string, teamId: string, taskId: string) => {
+    this.track(userId, 'Task due date set', {taskId, teamId})
   }
 
   identify = (options: IdentifyOptions) => {
