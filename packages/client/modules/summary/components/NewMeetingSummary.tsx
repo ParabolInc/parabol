@@ -4,11 +4,9 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DashSidebar from '../../../components/Dashboard/DashSidebar'
 import DashTopBar from '../../../components/DashTopBar'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
-import useBreakpoint from '../../../hooks/useBreakpoint'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import useSidebar from '../../../hooks/useSidebar'
-import {Breakpoint} from '../../../types/constEnums'
 import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
@@ -60,7 +58,6 @@ const NewMeetingSummary = (props: Props) => {
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useDocumentTitle(title, 'Summary')
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`
   const {toggle} = useSidebar()
@@ -70,17 +67,13 @@ const NewMeetingSummary = (props: Props) => {
 
   return (
     <>
-      {isDesktop && (
-        <div className='print:hidden'>
-          <DashTopBar queryRef={data} toggle={toggle} />
-        </div>
-      )}
+      <div className='hidden print:hidden lg:block'>
+        <DashTopBar queryRef={data} toggle={toggle} />
+      </div>
       <div className='flex min-h-screen bg-slate-200'>
-        {isDesktop && (
-          <div className='print:hidden'>
-            <DashSidebar viewerRef={viewer} isOpen />
-          </div>
-        )}
+        <div className='hidden print:hidden lg:block'>
+          <DashSidebar viewerRef={viewer} isOpen />
+        </div>
         <div className='w-full'>
           <MeetingSummaryEmail
             appOrigin={window.location.origin}
