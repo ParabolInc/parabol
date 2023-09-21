@@ -142,8 +142,8 @@ const TeamPromptOptionsMenu = (props: Props) => {
           >
             <OptionMenuItem>
               <SlackSVG />
-              <span className='ml-2'>Configure slack</span>
-              <OpenInNew className='ml-1 text-base text-slate-600' />
+              <span className='ml-2'>Configure Slack</span>
+              <OpenInNew className='ml-auto text-base text-slate-600' />
             </OptionMenuItem>
           </Link>
         }
