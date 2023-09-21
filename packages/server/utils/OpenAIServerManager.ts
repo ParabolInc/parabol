@@ -3,7 +3,7 @@ import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
 
 class OpenAIServerManager {
-  private openAIApi: OpenAI | null
+  private openAIApi
   constructor() {
     if (!process.env.OPEN_AI_API_KEY) {
       this.openAIApi = null
