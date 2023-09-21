@@ -21,7 +21,7 @@ import util from 'util'
 import crypto from 'crypto'
 import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
-import MailManagerMailgun from '../../../email/MailManagerMailgun'
+import isValid from '../../isValid'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -41,20 +41,20 @@ const inviteToTeamHelper = async (
   const filteredInvitees = invitees.filter(
     (invitee) => !untrustedDomains.includes(getDomainFromEmail(invitee).toLowerCase())
   )
-  const mailManager = new MailManagerMailgun()
-  const validateEmailRes = await Promise.all(
-    invitees.map((invitee) => mailManager.validateEmail(invitee))
-  )
-  const validInvitees = filteredInvitees.filter((invitee, index) => {
-    const validationResult = validateEmailRes[index]
-    if (!validationResult) return false
-    if (validationResult === 'undeliverable' || validationResult === 'do_not_send') {
-      const error = new Error(`Email validation error: ${validationResult}`)
-      sendToSentry(error, {tags: {invitee}})
-      return false
-    }
-    return true
-  })
+  const validInvitees = (
+    await Promise.all(
+      filteredInvitees.map(async (invitee) => {
+        const validationResult = await getMailManager().validateEmail(invitee)
+        if (!validationResult || ['undeliverable', 'do_not_send'].includes(validationResult)) {
+          const error = new Error(`Email validation error: ${validationResult}`)
+          sendToSentry(error, {tags: {invitee}})
+          return null
+        }
+        return invitee
+      })
+    )
+  ).filter(isValid)
+
   if (!validInvitees.length) {
     return standardError(new Error('No valid emails'), {userId: viewerId})
   }
@@ -87,7 +87,6 @@ const inviteToTeamHelper = async (
       return getIsEmailApprovedByOrg(email, orgId, dataLoader)
     })
   )
-  console.log('🚀 ~ approvalErrors:', approvalErrors)
   const newAllowedInvitees = newInvitees
     .map((invitee, idx) => {
       return approvalErrors[idx] instanceof Error ? undefined : invitee

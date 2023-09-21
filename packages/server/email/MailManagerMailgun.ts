@@ -3,7 +3,7 @@ import Mailgun from 'mailgun.js'
 import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 
-type MailgunValidateResult =
+export type MailgunValidateResult =
   | 'deliverable'
   | 'undeliverable'
   | 'do_not_send'
