@@ -697,6 +697,9 @@ export const samlByOrgId = (parent: RootDataLoader) => {
   )
 }
 
+/**
+ * Assuming the input is a domain, is it also a company domain?
+ */
 export const isCompanyDomain = (parent: RootDataLoader) => {
   return new DataLoader<string, boolean, string>(
     async (domains) => {

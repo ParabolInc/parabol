@@ -14,7 +14,6 @@ import {
   isUserBillingLeader
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
-import isCompanyDomain from '../../../utils/isCompanyDomain'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
@@ -51,9 +50,15 @@ const User: UserResolvers = {
         return false
     }
   },
-  company: async ({email}, _args, {authToken}) => {
+  company: async ({email}, _args, {authToken, dataLoader}) => {
     const domain = getDomainFromEmail(email)
-    if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
+    if (
+      !domain ||
+      !isSuperUser(authToken) ||
+      !(await dataLoader.get('isCompanyDomain').load(domain))
+    ) {
+      return null
+    }
     return {id: domain}
   },
   domains: async ({id: userId}, _args, {dataLoader}) => {

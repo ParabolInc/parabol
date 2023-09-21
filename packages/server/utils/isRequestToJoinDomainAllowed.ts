@@ -1,4 +1,3 @@
-import isCompanyDomain from './isCompanyDomain'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import isUserVerified from './isUserVerified'
@@ -12,7 +11,7 @@ export const getEligibleOrgIdsByDomain = async (
   userId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  if (!isCompanyDomain(activeDomain)) {
+  if (!(await dataLoader.get('isCompanyDomain').load(activeDomain))) {
     return []
   }
 

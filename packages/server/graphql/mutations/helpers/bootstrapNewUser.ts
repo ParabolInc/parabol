@@ -13,11 +13,9 @@ import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
-import isPatientZero from './isPatientZero'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
-import isCompanyDomain from '../../../utils/isCompanyDomain'
 import {DataLoaderWorker} from '../../graphql'
 
 const bootstrapNewUser = async (
@@ -30,10 +28,9 @@ const bootstrapNewUser = async (
   const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
-  const [isPatient0, usersWithDomain] = await Promise.all([
-    isPatientZero(domain),
-    isCompanyDomain(domain) ? getUsersbyDomain(domain) : []
-  ])
+  const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(domain)
+  const usersWithDomain = isCompanyDomain ? await getUsersbyDomain(domain) : []
+  const isPatient0 = !!domain && isCompanyDomain && usersWithDomain.length === 0
 
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
@@ -81,7 +78,7 @@ const bootstrapNewUser = async (
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`
-    await createNewOrg(orgId, orgName, userId, email)
+    await createNewOrg(orgId, orgName, userId, email, dataLoader)
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam),
       addSeedTasks(userId, teamId),

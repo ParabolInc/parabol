@@ -3,17 +3,20 @@ import Organization from '../../../database/types/Organization'
 import OrganizationUser from '../../../database/types/OrganizationUser'
 import insertOrgUserAudit from '../../../postgres/helpers/insertOrgUserAudit'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
-import isCompanyDomain from '../../../utils/isCompanyDomain'
+import {DataLoaderWorker} from '../../graphql'
 
 export default async function createNewOrg(
   orgId: string,
   orgName: string,
   leaderUserId: string,
-  leaderEmail: string
+  leaderEmail: string,
+  dataLoader: DataLoaderWorker
 ) {
   const r = await getRethink()
   const userDomain = getDomainFromEmail(leaderEmail)
-  const activeDomain = isCompanyDomain(userDomain) ? userDomain : undefined
+  const activeDomain = (await dataLoader.get('isCompanyDomain').load(userDomain))
+    ? userDomain
+    : undefined
   const org = new Organization({
     id: orgId,
     tier: 'starter',
