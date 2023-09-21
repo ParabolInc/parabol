@@ -30,23 +30,26 @@ const fiveColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesG
 
 const ResponseWrapper = styled('div')<{
   status: TransitionStatus
-}>(({status}) => ({
+  isSingleColumn: boolean
+}>(({status, isSingleColumn}) => ({
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
+  maxWidth: isSingleColumn ? '850px' : undefined,
+  margin: isSingleColumn ? '0 auto' : undefined,
   [twoColumnResponseMediaQuery]: {
-    width: `calc(100% / 2 - ${ResponseCardDimensions.GAP}px)`
+    width: isSingleColumn ? undefined : `calc(100% / 2 - ${ResponseCardDimensions.GAP}px)`
   },
   [threeColumnResponseMediaQuery]: {
-    width: `calc(100% / 3 - ${ResponseCardDimensions.GAP}px)`
+    width: isSingleColumn ? undefined : `calc(100% / 3 - ${ResponseCardDimensions.GAP}px)`
   },
   [fourColumnResponseMediaQuery]: {
-    width: `calc(100% / 4 - ${ResponseCardDimensions.GAP}px)`
+    width: isSingleColumn ? undefined : `calc(100% / 4 - ${ResponseCardDimensions.GAP}px)`
   },
   [fiveColumnResponseMediaQuery]: {
-    width: `calc(100% / 5 - ${ResponseCardDimensions.GAP}px)`
+    width: isSingleColumn ? undefined : `calc(100% / 5 - ${ResponseCardDimensions.GAP}px)`
   }
 }))
 
@@ -105,11 +108,12 @@ interface Props {
   stageRef: TeamPromptResponseCard_stage$key
   status: TransitionStatus
   displayIdx: number
+  isSingleColumn: boolean
   onTransitionEnd: () => void
 }
 
 const TeamPromptResponseCard = (props: Props) => {
-  const {stageRef, status, onTransitionEnd, displayIdx} = props
+  const {stageRef, status, onTransitionEnd, displayIdx, isSingleColumn} = props
   const responseStage = useFragment(
     graphql`
       fragment TeamPromptResponseCard_stage on TeamPromptResponseStage {
@@ -207,7 +211,12 @@ const TeamPromptResponseCard = (props: Props) => {
   const ref = useAnimatedCard(displayIdx, status)
 
   return (
-    <ResponseWrapper ref={ref} status={status} onTransitionEnd={onTransitionEnd}>
+    <ResponseWrapper
+      ref={ref}
+      status={status}
+      onTransitionEnd={onTransitionEnd}
+      isSingleColumn={isSingleColumn}
+    >
       <ResponseHeader>
         <Avatar picture={picture} size={48} />
         <TeamMemberName>

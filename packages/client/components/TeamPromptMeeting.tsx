@@ -86,11 +86,18 @@ const TeamPromptMeeting = (props: Props) => {
             }
           }
         }
+        organization {
+          featureFlags {
+            singleColumnStandups
+          }
+        }
       }
     `,
     meetingRef
   )
-  const {phases} = meeting
+  const {phases, organization} = meeting
+  const {featureFlags} = organization
+  const {singleColumnStandups} = featureFlags
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -172,6 +179,7 @@ const TeamPromptMeeting = (props: Props) => {
                           onTransitionEnd={onTransitionEnd}
                           displayIdx={displayIdx}
                           stageRef={stage}
+                          isSingleColumn={singleColumnStandups}
                         />
                       )
                     })}
