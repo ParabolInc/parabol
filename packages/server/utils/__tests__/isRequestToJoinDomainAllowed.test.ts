@@ -116,12 +116,16 @@ test('Inactive founder is ignored', async () => {
     {
       joinedAt: new Date('2023-09-06'),
       role: 'BILLING_LEADER',
-      userId: 'user1',
+      userId: 'founder1',
       inactive: true
     },
     {
       joinedAt: new Date('2023-09-12'),
-      userId: 'user2'
+      userId: 'member1'
+    },
+    {
+      joinedAt: new Date('2023-09-12'),
+      userId: 'member2'
     }
   ])
 
@@ -136,19 +140,23 @@ test('Non-founder billing lead is checked', async () => {
     {
       joinedAt: new Date('2023-09-06'),
       role: 'BILLING_LEADER',
-      userId: 'user1',
+      userId: 'founder1',
       inactive: true
     },
     {
       joinedAt: new Date('2023-09-12'),
       role: 'BILLING_LEADER',
-      userId: 'user2'
+      userId: 'billing1'
+    },
+    {
+      joinedAt: new Date('2023-09-12'),
+      userId: 'member1'
     }
   ])
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
-  expect(userLoader.loadMany).toHaveBeenCalledWith(['user2'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['billing1'])
 })
 
 test('Founder is checked even when not billing lead', async () => {
@@ -172,21 +180,29 @@ test('All matching orgs are checked', async () => {
   await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
-      userId: 'user1'
+      userId: 'founder1'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member1'
     }
   ])
   await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-12'),
-      userId: 'user2'
+      userId: 'founder2'
+    },
+    {
+      joinedAt: new Date('2023-09-13'),
+      userId: 'member2'
     }
   ])
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   // implementation detail, important is only that both users were loaded
   expect(userLoader.loadMany).toHaveBeenCalledTimes(2)
-  expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
-  expect(userLoader.loadMany).toHaveBeenCalledWith(['user2'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder1'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder2'])
 })
 
 test('Empty org does not throw', async () => {
@@ -198,6 +214,19 @@ test('Empty org does not throw', async () => {
 
 test('No org does not throw', async () => {
   const orgIds = await getEligibleOrgIdsByDomain('example.com', 'newUser', dataLoader)
+  expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
+})
+
+test('1 person orgs are ignored', async () => {
+  await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      role: 'BILLING_LEADER',
+      userId: 'founder1'
+    }
+  ])
+
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
@@ -221,25 +250,37 @@ test('All orgs with verified emails qualify', async () => {
   const org1 = await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
-      userId: 'user1'
+      userId: 'founder1'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member1'
     }
   ])
   const org2 = await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
-      userId: 'user2'
+      userId: 'founder2'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member2'
     }
   ])
   await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
-      userId: 'user3'
+      userId: 'founder3'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member3'
     }
   ])
 
   userLoader.loadMany.mockImplementation((userIds) => {
     const users = {
-      user1: {
+      founder1: {
         email: 'user1@parabol.co',
         identities: [
           {
@@ -247,7 +288,7 @@ test('All orgs with verified emails qualify', async () => {
           }
         ]
       },
-      user2: {
+      founder2: {
         email: 'user2@parabol.co',
         identities: [
           {
@@ -255,7 +296,7 @@ test('All orgs with verified emails qualify', async () => {
           }
         ]
       },
-      user3: {
+      founder3: {
         email: 'user3@parabol.co',
         identities: [
           {
@@ -272,9 +313,9 @@ test('All orgs with verified emails qualify', async () => {
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(3)
-  expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
-  expect(userLoader.loadMany).toHaveBeenCalledWith(['user2'])
-  expect(userLoader.loadMany).toHaveBeenCalledWith(['user3'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder1'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder2'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder3'])
   expect(orgIds).toIncludeSameMembers([org1, org2])
 })
 
@@ -282,13 +323,17 @@ test('Orgs with verified emails from different domains do not qualify', async ()
   const org1 = await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
-      userId: 'user1'
+      userId: 'founder1'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member1'
     }
   ])
 
   userLoader.loadMany.mockReturnValue([
     {
-      id: 'user1',
+      id: 'founder1',
       email: 'user1@parabol.fun',
       identities: [
         {
@@ -300,7 +345,7 @@ test('Orgs with verified emails from different domains do not qualify', async ()
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
-  expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder1'])
   expect(orgIds).toIncludeSameMembers([])
 })
 

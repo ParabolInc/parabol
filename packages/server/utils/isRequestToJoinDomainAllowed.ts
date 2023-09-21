@@ -34,7 +34,7 @@ export const getEligibleOrgIdsByDomain = async (
       activeMembers: org('members').filter({inactive: false, removedAt: null}).count()
     }))
     .filter((org: RDatum) =>
-      org('activeMembers').gt(0).and(org('members').filter({userId}).isEmpty())
+      org('activeMembers').gt(1).and(org('members').filter({userId}).isEmpty())
     )
     .run()
 
