@@ -7,6 +7,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
 import {Send as SendIcon} from '@mui/icons-material'
 import {Chip} from '../../ui/Chip/Chip'
+import {emailRegex} from '../../validation/regex'
 
 export type Option = {
   id: string | null
@@ -43,6 +44,8 @@ const autocompleteEmail = (input: string, domain: string) => {
 
 export const AdhocTeamMultiSelect = (props: Props) => {
   const {viewerRef, onChange, value, multiple = true} = props
+  const [error, setError] = React.useState<string | null>(null)
+
   const viewer = useFragment(
     graphql`
       fragment AdhocTeamMultiSelect_viewer on User {
@@ -76,6 +79,9 @@ export const AdhocTeamMultiSelect = (props: Props) => {
   organizations.forEach((org) => {
     org.organizationUsers.edges.forEach((edge) => {
       const user = edge.node.user
+      if (user.id === viewer.id) {
+        return
+      }
       if (!usersMap[user.id]) {
         usersMap[user.id] = {
           id: user.id,
@@ -112,6 +118,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
     setAnchorEl
   } = useAutocomplete<Option, true, true, true>({
     multiple: true,
+    autoSelect: true,
     options,
     value,
     freeSolo: true,
@@ -125,6 +132,16 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       const normalizedNewValue = valueArray.map((value) =>
         typeof value === 'string' ? createCustomOption(value) : value
       )
+
+      const isValid =
+        !normalizedNewValue.length ||
+        normalizedNewValue.some((value) => emailRegex.test(value.email))
+      if (!isValid) {
+        setError('Please enter a valid email')
+        return
+      }
+
+      setError(null)
       onChange(normalizedNewValue)
     },
     filterOptions: (options, params) => {
@@ -163,10 +180,11 @@ export const AdhocTeamMultiSelect = (props: Props) => {
           ))}
           <input
             {...getInputProps()}
-            placeholder={!value.length ? 'ex. Traci or traci@company.com' : ''}
+            placeholder={!value.length ? 'ex. Traci or traci@example.com' : ''}
             className='m-0 box-border min-h-[36px] w-0 min-w-[30px] flex-grow border-0 bg-white pl-1 text-black outline-none'
           />
         </div>
+        <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>
       </div>
       {groupedOptions.length > 0 ? (
         <ul
@@ -185,6 +203,14 @@ export const AdhocTeamMultiSelect = (props: Props) => {
                 } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-none hover:bg-slate-100 focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50`}
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
+                {option.id && (
+                  <div className='relative mr-2 h-6 w-6 rounded border border-slate-100'>
+                    <div
+                      className='h-6 w-6 rounded-full bg-cover bg-center bg-no-repeat'
+                      style={{backgroundImage: `url('${option.picture}')`}}
+                    />
+                  </div>
+                )}
                 <span className={'flex-grow'}>{option.label}</span>
 
                 {isSelected && <CheckIcon className='h-5 w-5' />}
