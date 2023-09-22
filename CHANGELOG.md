@@ -5,6 +5,40 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.121.0 2023-Sep-20
+
+### Added
+- SAML self-serve (#8802)
+- download summary as pdf (#8845)
+- **standups**: 'Your work' GitHub integration (#8724)
+
+### Fixed
+- allow to set task max-width (#8819)
+- filter tasks that are being created by different users in your work drawer (#8829)
+- remove memory leak from analytics (#8839)
+- **check-in**: fix navigating from first call to a new agenda item (#8833)
+
+
+## 6.120.0 2023-Sep-13
+
+### Added
+- scroll to card section (#8774)
+- invite link in right drawer (#8806)
+
+### Changed
+- Delete unused file (#8790)
+- update instances of GitLab logo SVG (#8783)
+- **one-on-one**: show organiation picker if can't determine org automatically (#8712)
+- remove unused REDIS_URL
+- Allow google to index /create-account (#8811)
+- Update dev readme with assign SU script (#8815)
+
+### Fixed
+- **gcal**: handle Zoom add-on conflict (#8776)
+- prevent newly added agenda item to be accessible when agenda items phase has not been started yet (#8799)
+- make new agenda items accessible from first call phase (#8835)
+- removed default button background from your tasks button (#8805)
+
 ## 6.119.0 2023-Sep-6
 
 ### Added

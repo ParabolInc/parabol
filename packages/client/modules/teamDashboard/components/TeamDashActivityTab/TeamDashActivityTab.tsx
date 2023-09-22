@@ -65,7 +65,8 @@ const TeamDashActivityTab = (props: Props) => {
         ) : (
           <>
             <DemoMeetingCard />
-            <TutorialMeetingCard />
+            <TutorialMeetingCard type='standup' />
+            <TutorialMeetingCard type='poker' />
           </>
         )}
       </div>

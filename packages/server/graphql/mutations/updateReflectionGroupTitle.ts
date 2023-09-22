@@ -6,10 +6,10 @@ import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionGroupTitlePayload from '../types/UpdateReflectionGroupTitlePayload'
+import {analytics} from '../../utils/analytics/analytics'
 
 type UpdateReflectionGroupTitleMutationVariables = {
   title: string
@@ -95,15 +95,7 @@ export default {
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!
       const similarity = stringSimilarity.compareTwoStrings(smartTitle, normalizedTitle)
-      segmentIo.track({
-        userId: viewerId,
-        event: 'Smart group title changed',
-        properties: {
-          similarity,
-          smartTitle,
-          title: normalizedTitle
-        }
-      })
+      analytics.smartGroupTitleChanged(viewerId, similarity, smartTitle, normalizedTitle)
     }
 
     const data = {meetingId, reflectionGroupId}

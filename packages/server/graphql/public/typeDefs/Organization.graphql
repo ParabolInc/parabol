@@ -138,6 +138,11 @@ type Organization {
   orgUserCount: OrgUserCount!
 
   """
+  Returns one on one team if exists
+  """
+  oneOnOneTeam(email: Email!): Team
+
+  """
   The leaders of the org
   """
   billingLeaders: [User!]!
@@ -151,6 +156,11 @@ type Organization {
   Any super power given to the organization via a super user
   """
   featureFlags: OrganizationFeatureFlags!
+
+  """
+  The SAML record attached to the Organization, if any
+  """
+  saml: SAML
 }
 
 type MeetingStat {
@@ -168,7 +178,6 @@ type TeamStat {
 The types of flags that give an individual organization super powers
 """
 type OrganizationFeatureFlags {
-  SAMLUI: Boolean!
   noAISummary: Boolean!
   AIGeneratedDiscussionPrompt: Boolean!
   standupAISummary: Boolean!

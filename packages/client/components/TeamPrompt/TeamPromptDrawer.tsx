@@ -8,7 +8,7 @@ import {desktopSidebarShadow} from '../../styles/elevation'
 import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
-import TeamPromptWorkDrawerRoot from './TeamPromptWorkDrawerRoot'
+import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import findStageById from '../../utils/meetings/findStageById'
 
@@ -110,7 +110,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
         {shouldRenderDiscussionDrawer() ? (
           <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
         ) : (
-          <TeamPromptWorkDrawerRoot meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
+          <TeamPromptWorkDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
         )}
       </Drawer>
     </ResponsiveDashSidebar>

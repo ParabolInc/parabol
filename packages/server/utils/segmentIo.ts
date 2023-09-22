@@ -21,6 +21,10 @@ segmentIo.track = async (options: any, dataloader?: CacheWorker<DataLoaderBase>)
    */
   const localDataloader = dataloader ?? getDataLoader()
   const user = await localDataloader.get('users').load(userId)
+  if (localDataloader !== dataloader) {
+    // if it's new, dispose of it. if it's old, the GQL lifecycle will do that for us when it's ready
+    localDataloader.dispose()
+  }
   const {email, segmentId} = user ?? {}
   const properties = {...inProps, email}
   return (segmentIo as any)._track({

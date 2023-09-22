@@ -30,10 +30,7 @@ const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
   } = stripeCustomer
   if (!orgId) throw new Error(`orgId not found on metadata for invoice ${invoiceId}`)
 
-  const isTierModeVolume = stripeLineItems.every(({plan}) => plan?.tiers_mode === 'volume')
-  if (!isTierModeVolume) {
-    await updateSubscriptionQuantity(orgId, true)
-  }
+  await updateSubscriptionQuantity(orgId, true)
 
   await Promise.all([
     generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader),
