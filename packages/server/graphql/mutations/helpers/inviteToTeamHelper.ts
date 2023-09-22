@@ -11,7 +11,7 @@ import {getUserId} from '../../../utils/authorization'
 import getBestInvitationMeeting from '../../../utils/getBestInvitationMeeting'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import standardError from '../../../utils/standardError'
-import {DataLoaderWorker, GQLContext} from '../../graphql'
+import {GQLContext} from '../../graphql'
 import getIsEmailApprovedByOrg from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
@@ -20,51 +20,10 @@ import {analytics} from '../../../utils/analytics/analytics'
 import util from 'util'
 import crypto from 'crypto'
 import publish from '../../../utils/publish'
+import sendToSentry from '../../../utils/sendToSentry'
+import isValid from '../../isValid'
 
 const randomBytes = util.promisify(crypto.randomBytes)
-
-const getInviteTrustScore = async (
-  userId: string,
-  teamId: string,
-  inviteeEmails: string[],
-  dataLoader: DataLoaderWorker
-) => {
-  const r = await getRethink()
-  // hardcoded list of trouble domains. we can move to a DB table later if needed
-  const untrustedDomains = ['tempmail.cn', 'qq.com']
-
-  // do not trust inviters from untrusted domains
-  const user = await dataLoader.get('users').loadNonNull(userId)
-  const {email} = user
-  const userDomain = getDomainFromEmail(email).toLowerCase()
-  const isUntrustedDomain = untrustedDomains.includes(userDomain)
-  if (isUntrustedDomain) return 0.05
-
-  // do not trust invites going to invitees from untrusted domains
-  const inviteeDomains = inviteeEmails.map((inviteeEmail) =>
-    getDomainFromEmail(inviteeEmail).toLowerCase()
-  )
-  const overlapped =
-    inviteeDomains.filter((domain: string) => untrustedDomains.includes(domain)).length > 0
-  if (overlapped) return 0.05
-
-  const [total, pending] = await Promise.all([
-    r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
-    r
-      .table('TeamInvitation')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({acceptedAt: null})
-      .count()
-      .run()
-  ])
-  // trust their first 10 invites
-  if (total <= 10) return 0.95
-  const accepted = total - pending
-  // if no one has accepted one of their 10+ invites, don't trust them
-  if (accepted === 0) return 0.05
-  // the more folks accept their invite, the more trust they get
-  return accepted / total
-}
 
 const inviteToTeamHelper = async (
   invitees: string[],
@@ -78,11 +37,30 @@ const inviteToTeamHelper = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const trustScore = await getInviteTrustScore(viewerId, teamId, invitees, dataLoader)
-  if (trustScore < 0.15)
-    return {error: {message: 'Cannot invite by email. Try using invite link'}, invitees: []}
+  const untrustedDomains = ['tempmail.cn', 'qq.com']
+  const filteredInvitees = invitees.filter(
+    (invitee) => !untrustedDomains.includes(getDomainFromEmail(invitee).toLowerCase())
+  )
+  const validInvitees = (
+    await Promise.all(
+      filteredInvitees.map(async (invitee) => {
+        const isValidEmail = await getMailManager().validateEmail(invitee)
+        if (!isValidEmail) {
+          const error = new Error(`Unable to send invite to ${invitee} because it is invalid`)
+          sendToSentry(error, {tags: {invitee}})
+          return null
+        }
+        return invitee
+      })
+    )
+  ).filter(isValid)
+
+  if (!validInvitees.length) {
+    return standardError(new Error('No valid emails'), {userId: viewerId})
+  }
+
   const [users, team, inviter] = await Promise.all([
-    getUsersByEmails(invitees),
+    getUsersByEmails(validInvitees),
     dataLoader.get('teams').load(teamId),
     dataLoader.get('users').load(viewerId)
   ])
@@ -96,7 +74,7 @@ const inviteToTeamHelper = async (
   const {name: teamName, createdAt, isOnboardTeam, orgId} = team
   const organization = await dataLoader.get('organizations').load(orgId)
   const {tier, name: orgName} = organization
-  const uniqueInvitees = Array.from(new Set(invitees as string[]))
+  const uniqueInvitees = Array.from(new Set(validInvitees))
   // filter out emails already on team
   const newInvitees = uniqueInvitees.filter((email) => {
     const user = users.find((user) => user.email === email)
