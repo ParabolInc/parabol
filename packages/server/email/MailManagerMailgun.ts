@@ -3,13 +3,6 @@ import Mailgun from 'mailgun.js'
 import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 
-export type MailgunValidateResult =
-  | 'deliverable'
-  | 'undeliverable'
-  | 'do_not_send'
-  | 'catch_all'
-  | 'unknown'
-
 export default class MailManagerMailgun extends MailManager {
   mailgun = new Mailgun(FormData)
   mailgunClient = this.mailgun.client({
@@ -41,7 +34,7 @@ export default class MailManagerMailgun extends MailManager {
   async validateEmail(email: string) {
     try {
       const res = await this.mailgunClient.validate.get(email)
-      return res.result as MailgunValidateResult
+      return ['deliverable', 'catch_all', 'unknown'].includes(res.result)
     } catch (e) {
       const error = e instanceof Error ? e : new Error('Mailgun failed to validate emails')
       sendToSentry(error, {tags: {type: 'Mailgun error'}})

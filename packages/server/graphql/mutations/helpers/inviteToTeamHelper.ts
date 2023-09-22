@@ -44,9 +44,9 @@ const inviteToTeamHelper = async (
   const validInvitees = (
     await Promise.all(
       filteredInvitees.map(async (invitee) => {
-        const validationResult = await getMailManager().validateEmail(invitee)
-        if (!validationResult || ['undeliverable', 'do_not_send'].includes(validationResult)) {
-          const error = new Error(`Email validation error: ${validationResult}`)
+        const isValidEmail = await getMailManager().validateEmail(invitee)
+        if (!isValidEmail) {
+          const error = new Error(`Unable to send invite to ${invitee} because it is invalid`)
           sendToSentry(error, {tags: {invitee}})
           return null
         }
