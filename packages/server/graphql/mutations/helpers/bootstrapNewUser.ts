@@ -28,7 +28,16 @@ const bootstrapNewUser = async (
   searchParams?: string
 ) => {
   const r = await getRethink()
-  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
+  const {
+    id: userId,
+    createdAt,
+    preferredName,
+    email,
+    featureFlags,
+    tier,
+    segmentId,
+    identities
+  } = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
   const [isPatient0, usersWithDomain] = await Promise.all([
@@ -77,7 +86,8 @@ const bootstrapNewUser = async (
     const teamsWithAutoJoin = teamsWithDomain.filter(
       ({autoJoin, isArchived}) => autoJoin && !isArchived
     )
-    if (teamsWithAutoJoin.length > 0) {
+    const isVerified = identities.some((identity) => identity.isEmailVerified)
+    if (isVerified && teamsWithAutoJoin.length > 0) {
       tms.push(...teamsWithAutoJoin.map(({id}) => id))
       await Promise.all(
         tms.map(async (teamId) => {
