@@ -18,6 +18,8 @@ import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 import {DataLoaderWorker} from '../../graphql'
+import getTeamsByIds from '../../../postgres/queries/getTeamsByIds'
+import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 
 const bootstrapNewUser = async (
   newUser: User,
@@ -48,11 +50,13 @@ const bootstrapNewUser = async (
     experimentalFlags.push('retrosInDisguise')
   }
 
-  await Promise.all([
+  const usersWithDomainTms = usersWithDomain.flatMap((user) => user.tms)
+  const [teamsWithDomain] = await Promise.all([
+    usersWithDomainTms.length > 0 ? getTeamsByIds(usersWithDomainTms) : [],
+    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
-    }).run(),
-    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags})
+    }).run()
   ])
 
   // Identify the user so user properties are set before any events are sent
@@ -70,23 +74,44 @@ const bootstrapNewUser = async (
 
   const tms = [] as string[]
   if (isOrganic) {
-    const orgId = generateUID()
-    const teamId = generateUID()
-    tms.push(teamId) // MUTATIVE
-    const validNewTeam = {
-      id: teamId,
-      orgId,
-      name: makeDefaultTeamName(teamId),
-      isOnboardTeam: true
+    const teamsWithAutoJoin = teamsWithDomain.filter(
+      ({autoJoin, isArchived}) => autoJoin && !isArchived
+    )
+    if (teamsWithAutoJoin.length > 0) {
+      tms.push(...teamsWithAutoJoin.map(({id}) => id))
+      await Promise.all(
+        tms.map(async (teamId) => {
+          const team = await dataLoader.get('teams').loadNonNull(teamId)
+          return Promise.all([
+            acceptTeamInvitation(team, userId, dataLoader),
+            addSeedTasks(userId, teamId),
+            r
+              .table('SuggestedAction')
+              .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
+              .run()
+          ])
+        })
+      )
+    } else {
+      const orgId = generateUID()
+      const teamId = generateUID()
+      tms.push(teamId) // MUTATIVE
+      const validNewTeam = {
+        id: teamId,
+        orgId,
+        name: makeDefaultTeamName(teamId),
+        isOnboardTeam: true
+      }
+      const orgName = `${newUser.preferredName}’s Org`
+      await createNewOrg(orgId, orgName, userId, email)
+      await Promise.all([
+        createTeamAndLeader(newUser as IUser, validNewTeam),
+        addSeedTasks(userId, teamId),
+        r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
+      ])
+      sendPromptToJoinOrg(newUser, dataLoader)
+      analytics.newOrg(userId, orgId, teamId, true)
     }
-    const orgName = `${newUser.preferredName}’s Org`
-    await createNewOrg(orgId, orgName, userId, email)
-    await Promise.all([
-      createTeamAndLeader(newUser as IUser, validNewTeam),
-      addSeedTasks(userId, teamId),
-      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
-    ])
-    analytics.newOrg(userId, orgId, teamId, true)
   } else {
     await r
       .table('SuggestedAction')
@@ -94,10 +119,6 @@ const bootstrapNewUser = async (
       .run()
   }
   analytics.accountCreated(userId, !isOrganic, isPatient0)
-
-  if (isOrganic) {
-    sendPromptToJoinOrg(newUser, dataLoader)
-  }
 
   return new AuthToken({sub: userId, tms})
 }
