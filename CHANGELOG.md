@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.121.0 2023-Sep-20
+
+### Added
+- SAML self-serve (#8802)
+- download summary as pdf (#8845)
+- **standups**: 'Your work' GitHub integration (#8724)
+
+### Fixed
+- allow to set task max-width (#8819)
+- filter tasks that are being created by different users in your work drawer (#8829)
+- remove memory leak from analytics (#8839)
+- **check-in**: fix navigating from first call to a new agenda item (#8833)
+
+
 ## 6.120.0 2023-Sep-13
 
 ### Added

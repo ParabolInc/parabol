@@ -1,6 +1,5 @@
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import {OrganizationResolvers} from '../resolverTypes'
-import {CreateOneOnOneTeamInput} from '../../private/resolverTypes'
 import {GQLContext} from '../../graphql'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getExistingOneOnOneTeam} from '../../mutations/helpers/getExistingOneOnOneTeam'
@@ -26,14 +25,11 @@ const Organization: OrganizationResolvers = {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
   oneOnOneTeam: async (
-    _: any,
-    {oneOnOneTeamInput}: {oneOnOneTeamInput: CreateOneOnOneTeamInput},
+    {id: orgId}: {id: string},
+    {email}: {email: string},
     context: GQLContext
   ) => {
     const {authToken} = context
-
-    const {email, orgId} = oneOnOneTeamInput
-
     const viewerId = getUserId(authToken)
 
     const existingUser = await getUserByEmail(email)
