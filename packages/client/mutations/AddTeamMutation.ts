@@ -22,6 +22,7 @@ graphql`
       ...NewTeamForm_teams
       ...MeetingsDashActiveMeetings
       ...Team_team
+      ...ActivityDetailsSidebar_teams
     }
   }
 `
