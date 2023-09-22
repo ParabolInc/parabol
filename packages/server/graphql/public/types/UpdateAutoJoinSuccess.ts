@@ -1,12 +1,13 @@
+import isValid from '../../isValid'
 import {UpdateAutoJoinSuccessResolvers} from '../resolverTypes'
 
 export type UpdateAutoJoinSuccessSource = {
-  teamIds: string[]
+  updatedTeamIds: string[]
 }
 
 const UpdateAutoJoinSuccess: UpdateAutoJoinSuccessResolvers = {
-  teams: async ({teamIds}, _args, {dataLoader}) => {
-    return dataLoader.get('teams').loadMany(teamIds)
+  teams: async ({updatedTeamIds}, _args, {dataLoader}) => {
+    return (await dataLoader.get('teams').loadMany(updatedTeamIds)).filter(isValid)
   }
 }
 

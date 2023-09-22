@@ -40,6 +40,11 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'A shortid for the team'
     },
+    autoJoin: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        'Whether or not new users with the same domain and a verified email should auto-join the team'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team was created'

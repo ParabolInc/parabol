@@ -4,6 +4,7 @@
 */
 UPDATE "Team" SET
   "name" = COALESCE(:name, "name"),
+  "autoJoin" = COALESCE(:autoJoin, "autoJoin"),
   "isArchived" = COALESCE(:isArchived, "isArchived"),
   "isPaid" = COALESCE(:isPaid, "isPaid"),
   "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),
