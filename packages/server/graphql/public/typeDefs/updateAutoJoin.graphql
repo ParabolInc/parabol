@@ -23,5 +23,5 @@ type UpdateAutoJoinSuccess {
   """
   The teams that were updated
   """
-  teams: [Team!]!
+  updatedTeams: [Team!]!
 }

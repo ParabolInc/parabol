@@ -6,7 +6,7 @@ export type UpdateAutoJoinSuccessSource = {
 }
 
 const UpdateAutoJoinSuccess: UpdateAutoJoinSuccessResolvers = {
-  teams: async ({updatedTeamIds}, _args, {dataLoader}) => {
+  updatedTeams: async ({updatedTeamIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('teams').loadMany(updatedTeamIds)).filter(isValid)
   }
 }

@@ -5,7 +5,7 @@ import {UpdateAutoJoinMutation as TUpdateAutoJoinMutation} from '../__generated_
 
 graphql`
   fragment UpdateAutoJoinMutation_team on UpdateAutoJoinSuccess {
-    teams {
+    updatedTeams {
       id
       autoJoin
     }
