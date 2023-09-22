@@ -5,6 +5,7 @@ import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string
+  autoJoin?: boolean
   name: string
   createdAt?: Date
   createdBy: string
@@ -21,6 +22,7 @@ interface Input {
 
 export default class Team {
   id: string
+  autoJoin: boolean
   name: string
   createdAt: Date
   createdBy: string
@@ -36,6 +38,7 @@ export default class Team {
   updatedAt: Date
   constructor(input: Input) {
     const {
+      autoJoin,
       createdAt,
       createdBy,
       id,
@@ -50,6 +53,7 @@ export default class Team {
       qualAIMeetingsCount,
       updatedAt
     } = input
+    this.autoJoin = autoJoin ?? false
     this.name = name.trim().slice(0, TEAM_NAME_LIMIT)
     this.createdBy = createdBy
     this.orgId = orgId
