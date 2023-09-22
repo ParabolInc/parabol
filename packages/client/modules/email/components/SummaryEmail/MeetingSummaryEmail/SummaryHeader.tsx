@@ -34,14 +34,23 @@ const dateLabel = {
   paddingTop: 8
 } as React.CSSProperties
 
+const teamLink = {
+  color: PALETTE.SKY_500,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontWeight: 600,
+  fontSize: '15px',
+  paddingTop: 8
+} as React.CSSProperties
+
 interface Props {
   meeting: SummaryHeader_meeting$key
   isDemo?: boolean
   corsOptions: CorsOptions
+  teamDashUrl: string
 }
 
 const SummaryHeader = (props: Props) => {
-  const {meeting: meetingRef, isDemo, corsOptions} = props
+  const {meeting: meetingRef, isDemo, corsOptions, teamDashUrl} = props
   const meeting = useFragment(
     graphql`
       fragment SummaryHeader_meeting on NewMeeting {
@@ -83,7 +92,17 @@ const SummaryHeader = (props: Props) => {
         </tr>
         <tr>
           <td align='center' style={dateLabel}>
-            {isDemo ? meetingDate : `${teamName} • ${meetingDate}`}
+            {isDemo ? (
+              meetingDate
+            ) : (
+              <>
+                <a style={teamLink} href={teamDashUrl} target='_blank' rel='noopener noreferrer'>
+                  {teamName}
+                </a>
+                {' • '}
+                {meetingDate}
+              </>
+            )}
           </td>
         </tr>
       </tbody>
