@@ -27,8 +27,6 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
       .filter((id) => id !== facilitatorUserId)
   )
 
-  console.log('GEORG passiveMembers', passiveMembers)
-
   // Facilitator only meetings don't count
   if (passiveMembers.size === 0) return undefined
 
@@ -42,7 +40,6 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
     })
     if (passiveMembers.size === 0) return 1
   }
-  console.log('GEORG passiveMembers after team health', passiveMembers)
 
   // Reflections and votes
   if (phases.find(({phaseType}) => phaseType === 'reflect')) {
@@ -61,7 +58,6 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
 
     if (passiveMembers.size === 0) return 1
   }
-  console.log('GEORG passiveMembers after reflect', passiveMembers)
 
   // Team prompt responses
   if (phases.find(({phaseType}) => phaseType === 'RESPONSES')) {
