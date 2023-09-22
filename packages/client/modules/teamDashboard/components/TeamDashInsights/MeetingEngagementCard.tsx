@@ -51,10 +51,8 @@ const MeetingEngagementCard = (props: Props) => {
       title='Meeting Engagement'
       tooltip='Reflections, groups, comments and emoji reactions created in your last meetings, relative to the number of participants'
     >
-      <div className='flex flex-col p-4'>
-        <div className='flex justify-center pb-6 text-5xl text-grape-500'>{percent}</div>
-        <div className='text-sm'>{description}</div>
-      </div>
+      <div className='flex justify-center pb-6 text-5xl text-grape-500'>{percent}</div>
+      <div className='text-sm'>{description}</div>
     </TeamInsightsCard>
   )
 }

@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import {TeamDashInsights_insights$key} from '~/__generated__/TeamDashInsights_insights.graphql'
 import MostUsedEmojisCard from './MostUsedEmojisCard'
 import MeetingEngagementCard from './MeetingEngagementCard'
+import TopRetroTemplatesCard from './TopRetroTemplatesCard'
 
 interface Props {
   teamInsightsRef: TeamDashInsights_insights$key
@@ -17,6 +18,7 @@ const TeamDashInsights = (props: Props) => {
         id
         ...MostUsedEmojisCard_insights
         ...MeetingEngagementCard_insights
+        ...TopRetroTemplatesCard_insights
       }
     `,
     teamInsightsRef
@@ -28,6 +30,7 @@ const TeamDashInsights = (props: Props) => {
       <div className='flex w-full flex-wrap'>
         <MostUsedEmojisCard teamInsightsRef={insights} />
         <MeetingEngagementCard teamInsightsRef={insights} />
+        <TopRetroTemplatesCard teamInsightsRef={insights} />
       </div>
     </div>
   )
