@@ -14,9 +14,8 @@ export default async function createNewOrg(
 ) {
   const r = await getRethink()
   const userDomain = getDomainFromEmail(leaderEmail)
-  const activeDomain = (await dataLoader.get('isCompanyDomain').load(userDomain))
-    ? userDomain
-    : undefined
+  const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(userDomain)
+  const activeDomain = isCompanyDomain ? userDomain : undefined
   const org = new Organization({
     id: orgId,
     tier: 'starter',

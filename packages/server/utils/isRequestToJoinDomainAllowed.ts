@@ -11,7 +11,8 @@ export const getEligibleOrgIdsByDomain = async (
   userId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  if (!(await dataLoader.get('isCompanyDomain').load(activeDomain))) {
+  const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(activeDomain)
+  if (!isCompanyDomain) {
     return []
   }
 

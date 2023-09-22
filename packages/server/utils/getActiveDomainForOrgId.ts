@@ -24,19 +24,6 @@ const getActiveDomainForOrgId = async (orgId: string) => {
     .orderBy('total', 'desc')
     .limit(1)
     .executeTakeFirst()
-  console.log('GEORG activeDomain', activeDomain)
-  /*
-  const countedDomains = await pg.query(
-    `SELECT count(*) as "total", "domain" from "User"
-     WHERE "id" = ANY($1::text[])
-     GROUP BY "domain"
-     ORDER BY "total" DESC`,
-    [userIds]
-  )
-  */
-
-  //const activeDomain = countedDomains.rows.find((row) => isCompanyDomain(row.domain))?.domain
-
   return activeDomain?.domain
 }
 
