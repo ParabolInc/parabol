@@ -149,6 +149,7 @@ export type AnalyticsEvent =
   | 'Snackbar Viewed'
   // Join request
   | 'Join Request Reviewed'
+  | 'AutoJoined Team'
   // Suggest Groups
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
@@ -625,6 +626,10 @@ class Analytics {
 
   taskDueDateSet = (userId: string, teamId: string, taskId: string) => {
     this.track(userId, 'Task due date set', {taskId, teamId})
+  }
+
+  autoJoined = (userId: string, teamId: string) => {
+    this.track(userId, 'AutoJoined Team', {userId, teamId})
   }
 
   identify = (options: IdentifyOptions) => {

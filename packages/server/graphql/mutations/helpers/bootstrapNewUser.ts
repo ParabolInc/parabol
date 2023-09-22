@@ -88,7 +88,8 @@ const bootstrapNewUser = async (
             r
               .table('SuggestedAction')
               .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
-              .run()
+              .run(),
+            analytics.autoJoined(userId, teamId)
           ])
         })
       )
