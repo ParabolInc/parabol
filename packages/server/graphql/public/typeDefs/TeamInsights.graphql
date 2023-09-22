@@ -3,6 +3,13 @@ type Emoji {
   count: Int!
 }
 
+type MeetingEngagement {
+  """
+  Engagement across retros, poker and standups
+  """
+  all: Float!
+}
+
 type TeamInsights {
   id: ID!
 
@@ -10,4 +17,9 @@ type TeamInsights {
   Most used emojis in the team, null if not enough signal
   """
   mostUsedEmojis: [Emoji!]
+
+  """
+  Meeting engagement, null if not enough signal
+  """
+  meetingEngagement: MeetingEngagement
 }

@@ -4,14 +4,16 @@ import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 
 const Team: TeamResolvers = {
-  insights: async ({id, orgId, mostUsedEmojis}, _args, {dataLoader}) => {
+  insights: async ({id, orgId, mostUsedEmojis, meetingEngagement}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').load(orgId)
+    console.log('GEORGIA', {id, orgId, mostUsedEmojis, meetingEngagement})
     if (!org?.featureFlags?.includes('teamInsights')) return null
-    if (!mostUsedEmojis) return null
+    if (!mostUsedEmojis && !meetingEngagement) return null
 
     return {
       id: TeamInsightsId.join(id),
-      mostUsedEmojis
+      mostUsedEmojis,
+      meetingEngagement
     } as any
   },
   viewerTeamMember: async ({id: teamId}, _args, {authToken, dataLoader}) => {
