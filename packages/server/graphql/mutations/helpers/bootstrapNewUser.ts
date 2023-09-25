@@ -29,9 +29,9 @@ const getAutoJoinTeams = async (
   dataLoader: DataLoaderWorker
 ) => {
   const orgIds = usersWithDomainTeams
-    ?.filter(({autoJoin, isArchived}) => autoJoin && !isArchived)
+    .filter(({autoJoin, isArchived}) => autoJoin && !isArchived)
     .map((team) => team.orgId)
-  if (!orgIds) return false
+  if (!orgIds.length) return false
   const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
   // a user can have the same domain but belong to a team with a different active domain
   const orgIdsWithDomain = organizations
