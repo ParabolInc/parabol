@@ -2,7 +2,7 @@ extend type Mutation {
   """
   Add the transcription bot to the Zoom meeting
   """
-  addTranscriptionBot(teamId: ID!, videoMeetingURL: String!): AddTranscriptionBotPayload!
+  addTranscriptionBot(meetingId: ID!, videoMeetingURL: String!): AddTranscriptionBotPayload!
 }
 
 """
@@ -12,7 +12,7 @@ union AddTranscriptionBotPayload = ErrorPayload | AddTranscriptionBotSuccess
 
 type AddTranscriptionBotSuccess {
   """
-  Whether the bot was successfully added
+  If the transcription bot was successfully added to the video meeting
   """
-  meetingSettings: RetrospectiveMeetingSettings!
+  success: Boolean!
 }

@@ -13,7 +13,7 @@ import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
 import FlatButton from './FlatButton'
 import StyledError from './StyledError'
-import {DiscussionThreadListEmptyState_settings$key} from '~/__generated__/DiscussionThreadListEmptyState_settings.graphql'
+import {DiscussionThreadListEmptyState_meeting$key} from '~/__generated__/DiscussionThreadListEmptyState_meeting.graphql'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -83,7 +83,7 @@ const StyledInput = styled('input')({
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
-  settingsRef?: DiscussionThreadListEmptyState_settings$key
+  meetingRef?: DiscussionThreadListEmptyState_meeting$key
   showTranscription?: boolean
 }
 
@@ -107,15 +107,15 @@ const getMessage = (
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isReadOnly, allowTasks, settingsRef, showTranscription = false} = props
-  const settings = useFragment(
+  const {isReadOnly, allowTasks, showTranscription = false, meetingRef} = props
+  const meeting = useFragment(
     graphql`
-      fragment DiscussionThreadListEmptyState_settings on RetrospectiveMeetingSettings {
-        teamId
+      fragment DiscussionThreadListEmptyState_meeting on RetrospectiveMeeting {
+        id
         videoMeetingURL
       }
     `,
-    settingsRef ?? null
+    meetingRef ?? null
   )
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -131,8 +131,9 @@ const DiscussionThreadListEmptyState = (props: Props) => {
       }
     }
   })
-  if (!settings) return null
-  const {teamId, videoMeetingURL} = settings
+  if (!meeting) return null
+  console.log('🚀 ~ meeting:', meeting)
+  const {id: meetingId, videoMeetingURL} = meeting
   const message = getMessage(allowTasks, !!videoMeetingURL, !!isReadOnly, showTranscription)
 
   const {error: fieldError, value: urlValue} = fields.url
@@ -142,7 +143,17 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     const {url} = validateField()
     if (url.error) return
     submitMutation()
-    AddTranscriptionBot(atmosphere, {videoMeetingURL: urlValue, teamId}, {onError, onCompleted})
+    AddTranscriptionBot(
+      atmosphere,
+      {videoMeetingURL: urlValue, meetingId},
+      {
+        onError,
+        onCompleted: (res) => {
+          console.log('🚀 ~ res:', res)
+          onCompleted()
+        }
+      }
+    )
   }
   const showVideoURLInput = showTranscription && !videoMeetingURL
 

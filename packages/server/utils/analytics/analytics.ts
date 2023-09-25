@@ -90,7 +90,6 @@ export type MeetingSettings = {
   hasTeamHealth?: boolean
   disableAnonymity?: boolean
   videoMeetingURL?: string | null
-  recallBotId?: string | null
 }
 
 export type WebSocketProperties = {

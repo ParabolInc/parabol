@@ -7,7 +7,6 @@ import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
-import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../postgres/getKysely'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
@@ -38,12 +37,11 @@ const getTranscription = async (recallBotId?: string | null) => {
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
   const {dataLoader, authToken} = context
-  const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
+  const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
   const r = await getRethink()
-  const [reflectionGroups, reflections, meetingSettings, sentimentScore] = await Promise.all([
+  const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'}),
     generateWholeMeetingSentimentScore(meetingId, facilitatorUserId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
@@ -69,51 +67,41 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       })
     }
   }
-  const {id: settingsId, recallBotId} = meetingSettings as MeetingSettingsRetrospective
   const [summary, transcription, usedReactjis] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     getTranscription(recallBotId),
     collectReactjis(meeting, dataLoader)
   ])
 
-  await Promise.all([
-    r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          commentCount: r
-            .table('Comment')
-            .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .filter((row: RDatum) =>
-              row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
-            )
-            .count()
-            .default(0) as unknown as number,
-          taskCount: r
-            .table('Task')
-            .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .count()
-            .default(0) as unknown as number,
-          topicCount: reflectionGroupIds.length,
-          reflectionCount: reflections.length,
-          sentimentScore,
-          summary,
-          transcription,
-          usedReactjis
-        },
-        {nonAtomic: true}
-      )
-      .run(),
-    r
-      .table('MeetingSettings')
-      .get(settingsId)
-      .update({
-        recallBotId: null,
-        videoMeetingURL: null
-      })
-      .run()
-  ])
+  await r
+    .table('NewMeeting')
+    .get(meetingId)
+    .update(
+      {
+        commentCount: r
+          .table('Comment')
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
+          .filter((row: RDatum) =>
+            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
+          )
+          .count()
+          .default(0) as unknown as number,
+        taskCount: r
+          .table('Task')
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
+          .count()
+          .default(0) as unknown as number,
+        topicCount: reflectionGroupIds.length,
+        reflectionCount: reflections.length,
+        sentimentScore,
+        summary,
+        transcription,
+        usedReactjis
+      },
+      {nonAtomic: true}
+    )
+    .run()
+
   dataLoader.get('newMeetings').clear(meetingId)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)

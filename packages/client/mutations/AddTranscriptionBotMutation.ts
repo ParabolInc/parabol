@@ -4,24 +4,20 @@ import {StandardMutation} from '../types/relayMutations'
 import {AddTranscriptionBotMutation as TAddTranscriptionBotMutation} from '../__generated__/AddTranscriptionBotMutation.graphql'
 
 graphql`
-  fragment AddTranscriptionBotMutation_settings on AddTranscriptionBotSuccess {
-    meetingSettings {
-      ... on RetrospectiveMeetingSettings {
-        videoMeetingURL
-      }
-    }
+  fragment AddTranscriptionBotMutation_meeting on AddTranscriptionBotSuccess {
+    success
   }
 `
 
 const mutation = graphql`
-  mutation AddTranscriptionBotMutation($teamId: ID!, $videoMeetingURL: String!) {
-    addTranscriptionBot(teamId: $teamId, videoMeetingURL: $videoMeetingURL) {
+  mutation AddTranscriptionBotMutation($meetingId: ID!, $videoMeetingURL: String!) {
+    addTranscriptionBot(meetingId: $meetingId, videoMeetingURL: $videoMeetingURL) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...AddTranscriptionBotMutation_settings @relay(mask: false)
+      ...AddTranscriptionBotMutation_meeting @relay(mask: false)
     }
   }
 `
