@@ -68,8 +68,21 @@ const userLoader = {
   loadMany: jest.fn()
 }
 userLoader.loadMany.mockReturnValue([])
+
+const isCompanyDomainLoader = {
+  load: jest.fn(),
+  loadMany: jest.fn()
+}
+isCompanyDomainLoader.load.mockReturnValue(true)
+
 const dataLoader = {
-  get: jest.fn((loader) => (loader === 'users' ? userLoader : null))
+  get: jest.fn((loader) => {
+    const loaders = {
+      users: userLoader,
+      isCompanyDomain: isCompanyDomainLoader
+    }
+    return loaders[loader]
+  })
 }
 
 beforeAll(async () => {
