@@ -96,7 +96,7 @@ const SummaryHeader = (props: Props) => {
               meetingDate
             ) : (
               <>
-                <a style={teamLink} href={teamDashUrl} target='_blank' rel='noopener noreferrer'>
+                <a style={teamLink} href={teamDashUrl} rel='noopener noreferrer'>
                   {teamName}
                 </a>
                 {' • '}
