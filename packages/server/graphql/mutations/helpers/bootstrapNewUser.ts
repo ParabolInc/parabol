@@ -20,6 +20,26 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import {DataLoaderWorker} from '../../graphql'
 import getTeamsByIds from '../../../postgres/queries/getTeamsByIds'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
+import isValid from '../../isValid'
+import {Team} from '../../../postgres/queries/getTeamsByIds'
+
+const getAutoJoinTeams = async (
+  usersWithDomainTeams: Team[] | never[],
+  domain: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const orgIds = usersWithDomainTeams
+    ?.filter(({autoJoin, isArchived}) => autoJoin && !isArchived)
+    .map((team) => team.orgId)
+  if (!orgIds) return false
+  const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
+  // a user can have the same domain but belong to a team with a different active domain
+  const orgIdsWithDomain = organizations
+    .filter((org) => org.activeDomain === domain)
+    .map(({id}) => id)
+  const teamsWithDomain = usersWithDomainTeams.filter(({orgId}) => orgIdsWithDomain.includes(orgId))
+  return teamsWithDomain.filter(({autoJoin, isArchived}) => autoJoin && !isArchived)
+}
 
 const bootstrapNewUser = async (
   newUser: User,
@@ -59,9 +79,9 @@ const bootstrapNewUser = async (
     experimentalFlags.push('retrosInDisguise')
   }
 
-  const usersWithDomainTms = usersWithDomain.flatMap((user) => user.tms)
-  const [teamsWithDomain] = await Promise.all([
-    usersWithDomainTms.length > 0 ? getTeamsByIds(usersWithDomainTms) : [],
+  const usersWithDomainTeamIds = usersWithDomain.flatMap((user) => user.tms)
+  const [usersWithDomainTeams] = await Promise.all([
+    usersWithDomainTeamIds.length > 0 ? getTeamsByIds(usersWithDomainTeamIds) : [],
     insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
@@ -83,15 +103,15 @@ const bootstrapNewUser = async (
 
   const tms = [] as string[]
   if (isOrganic) {
-    const teamsWithAutoJoin = teamsWithDomain.filter(
-      ({autoJoin, isArchived}) => autoJoin && !isArchived
-    )
     const isVerified = identities.some((identity) => identity.isEmailVerified)
-    if (isVerified && teamsWithAutoJoin.length > 0) {
+    const teamsWithAutoJoin =
+      isVerified && (await getAutoJoinTeams(usersWithDomainTeams, domain, dataLoader))
+
+    if (teamsWithAutoJoin && teamsWithAutoJoin?.length > 0) {
       tms.push(...teamsWithAutoJoin.map(({id}) => id))
       await Promise.all(
-        tms.map(async (teamId) => {
-          const team = await dataLoader.get('teams').loadNonNull(teamId)
+        teamsWithAutoJoin.map((team) => {
+          const teamId = team.id
           return Promise.all([
             acceptTeamInvitation(team, userId, dataLoader),
             addSeedTasks(userId, teamId),
