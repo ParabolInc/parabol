@@ -15,10 +15,13 @@ import {
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
+import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
+import base64url from 'base64url'
 
 declare const __PRODUCTION__: string
 
@@ -128,8 +131,14 @@ const User: UserResolvers = {
           'Please implement pagination for User.activities or increase `first` for the query'
         )
       }
+    } else if (parabolActivities!.length + allUserActivities.length > 1000) {
+      sendToSentry(new Error('User.activities exceeds 1000 activities'), {
+        userId,
+        extras: {numActivities: parabolActivities!.length + allUserActivities.length}
+      })
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
+      const IS_STANDUP = 1 << 9 // prioritize standups (see https://github.com/ParabolInc/parabol/issues/8848)
       const SEASONAL = 1 << 8 // put seasonal templates at the top
       const USED_LAST_90 = 1 << 7 // next, show all templates used within the last 90 days
       const ON_TEAM = 1 << 6 // tiebreak by putting team templates first
@@ -137,12 +146,14 @@ const User: UserResolvers = {
       const IS_FREE = 1 << 4 // then free parabol templates
       const USED_LAST_30 = 1 << 3 // tiebreak on being used in last 30
       const {hideStartingAt, teamId, orgId, lastUsedAt, isFree} = activity
+      const isStandup = activity.type === 'teamPrompt'
       const isSeasonal = !!hideStartingAt
       const isOnTeam = teamIds.includes(teamId)
       const isOnOrg = orgId !== 'aGhostOrg' && !isOnTeam
       const isUsedLast30 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('30d'))
       const isUsedLast90 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('90d'))
       let score = 0
+      if (isStandup) score += IS_STANDUP
       if (isSeasonal) score += SEASONAL
       if (isUsedLast90) score += USED_LAST_90
       if (isOnTeam) score += ON_TEAM
@@ -160,6 +171,18 @@ const User: UserResolvers = {
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
 
     return connectionFromTemplateArray(allActivities, first, after)
+  },
+  parseSAMLMetadata: async (_source, {metadata, domain}) => {
+    const baseUrl = getSignOnURL(metadata, domain)
+    if (baseUrl instanceof Error) {
+      return {error: {message: baseUrl.message}}
+    }
+    // append the new metadata to the RelayState
+    // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
+    const relayState = base64url.encode(JSON.stringify({metadata}))
+    const urlObj = new URL(baseUrl)
+    urlObj.searchParams.append('RelayState', relayState)
+    return {url: urlObj.toString()}
   }
 }
 

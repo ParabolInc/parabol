@@ -104,6 +104,7 @@ enum IntegrationProviderServiceEnum {
   gitlab
   mattermost
   jiraServer
+  gcal
 }
 
 """
@@ -1011,46 +1012,6 @@ enum TeamDrawer {
 scalar Email
 
 """
-All the available integrations available for this team member
-"""
-type TeamMemberIntegrations {
-  """
-  composite
-  """
-  id: ID!
-
-  """
-  All things associated with an Atlassian integration for a team member
-  """
-  atlassian: AtlassianIntegration
-
-  """
-  All things associated with a Jira Server integration for a team member
-  """
-  jiraServer: JiraServerIntegration!
-
-  """
-  All things associated with a GitHub integration for a team member
-  """
-  github: GitHubIntegration
-
-  """
-  All things associated with a GitLab integration for a team member
-  """
-  gitlab: GitLabIntegration!
-
-  """
-  All things associated with a Mattermost integration for a team member
-  """
-  mattermost: MattermostIntegration!
-
-  """
-  All things associated with a slack integration for a team member
-  """
-  slack: SlackIntegration
-}
-
-"""
 The atlassian auth + integration helpers for a specific team member
 """
 type AtlassianIntegration {
@@ -1493,6 +1454,18 @@ type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
 Integration Auth and shared providers available to the team member
 """
 type MattermostIntegration {
+  """
+  The OAuth2 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthWebhook
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderWebhook!]!
+}
+
+type MSTeamsIntegration {
   """
   The OAuth2 Authorization for this team member
   """
@@ -4383,11 +4356,6 @@ type ActionMeeting implements NewMeeting {
   commentCount: Int!
 
   """
-  The settings that govern the action meeting
-  """
-  settings: ActionMeetingSettings!
-
-  """
   The number of tasks generated in the meeting
   """
   taskCount: Int!
@@ -4633,11 +4601,6 @@ type RetrospectiveMeeting implements NewMeeting {
   The grouped reflections
   """
   reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
-
-  """
-  The settings that govern the retrospective meeting
-  """
-  settings: RetrospectiveMeetingSettings!
 
   """
   The number of tasks generated in the meeting
@@ -5486,11 +5449,6 @@ type PokerMeeting implements NewMeeting {
   storyCount: Int!
 
   """
-  The settings that govern the Poker meeting
-  """
-  settings: PokerMeetingSettings!
-
-  """
   A single story created in a Sprint Poker meeting
   """
   story(storyId: ID!): Task
@@ -5839,39 +5797,6 @@ type Comment implements Reactable & Threadable {
   isViewerComment: Boolean!
 }
 
-type Query {
-  viewer: User!
-  getDemoEntities(
-    """
-    the reflection bodies to entitize
-    """
-    text: String!
-  ): GetDemoEntitiesPayload!
-  massInvitation(
-    """
-    The mass invitation token
-    """
-    token: ID!
-  ): MassInvitationPayload!
-  verifiedInvitation(
-    """
-    The invitation token
-    """
-    token: ID!
-  ): VerifiedInvitationPayload!
-  SAMLIdP(
-    """
-    the email associated with a SAML login
-    """
-    email: ID!
-
-    """
-    true if the user was invited, else false
-    """
-    isInvited: Boolean
-  ): String
-}
-
 type GetDemoEntitiesPayload {
   error: StandardMutationError
   entities: [GoogleAnalyzedEntity!]
@@ -6044,7 +5969,7 @@ type Mutation {
     The name of the new team
     """
     orgName: String!
-    invitees: [String!]
+    invitees: [Email!]
   ): AddOrgPayload!
 
   """
@@ -6055,7 +5980,7 @@ type Mutation {
     The new team object
     """
     newTeam: NewTeamInput!
-    invitees: [String!]
+    invitees: [Email!]
   ): AddTeamPayload!
   archiveOrganization(
     """
@@ -6796,7 +6721,15 @@ type Mutation {
     """
     The team starting the meeting
     """
-    teamId: ID!
+    teamId: ID
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
+    """
+    One-on-one ad-hoc team input
+    """
+    oneOnOneTeamInput: CreateOneOnOneTeamInput
   ): StartCheckInPayload!
 
   """
@@ -6807,6 +6740,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartRetrospectivePayload!
 
   """
@@ -6817,6 +6754,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
   ): StartSprintPokerPayload!
 
   """
@@ -8714,6 +8655,7 @@ type StartCheckInSuccess {
   meeting: ActionMeeting!
   meetingId: ID!
   team: Team!
+  hasGcalError: Boolean!
 }
 
 """
@@ -8725,6 +8667,7 @@ type StartRetrospectiveSuccess {
   meeting: RetrospectiveMeeting!
   meetingId: ID!
   team: Team!
+  hasGcalError: Boolean!
 }
 
 """
@@ -8737,6 +8680,7 @@ type StartSprintPokerSuccess {
   meeting: PokerMeeting!
   team: Team!
   teamId: ID!
+  hasGcalError: Boolean!
 }
 
 """

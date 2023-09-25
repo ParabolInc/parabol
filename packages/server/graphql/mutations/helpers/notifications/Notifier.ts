@@ -3,6 +3,7 @@ import {NotifyResponse} from './NotificationIntegrationHelper'
 
 export type Notifier = {
   startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string): Promise<void>
+  updateMeeting?(dataLoader: DataLoaderWorker, meetingId: string, teamId: string): Promise<void>
   endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string): Promise<void>
   startTimeLimit(
     dataLoader: DataLoaderWorker,
@@ -21,4 +22,10 @@ export type Notifier = {
     stageIndex: number,
     channelId: string
   ): Promise<NotifyResponse>
+  standupResponseSubmitted(
+    dataLoader: DataLoaderWorker,
+    meetingId: string,
+    teamId: string,
+    userId: string
+  ): Promise<void>
 }

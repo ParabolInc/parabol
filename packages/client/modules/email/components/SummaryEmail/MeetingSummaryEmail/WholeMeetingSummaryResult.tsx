@@ -30,8 +30,10 @@ const textStyle = {
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   padding: '0px 48px 8px 48px',
-  fontSize: 14
-}
+  fontSize: 14,
+  whiteSpace: 'pre-line',
+  textAlign: 'left'
+} as const
 
 interface Props {
   meetingRef: WholeMeetingSummaryResult_meeting$key
@@ -41,7 +43,7 @@ const WholeMeetingSummaryResult = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment WholeMeetingSummaryResult_meeting on RetrospectiveMeeting {
+      fragment WholeMeetingSummaryResult_meeting on NewMeeting {
         __typename
         id
         summary

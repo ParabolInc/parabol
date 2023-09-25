@@ -30,4 +30,15 @@ export default class MailManagerMailgun extends MailManager {
     }
     return true
   }
+
+  async validateEmail(email: string) {
+    try {
+      const res = await this.mailgunClient.validate.get(email)
+      return ['deliverable', 'catch_all', 'unknown'].includes(res.result)
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('Mailgun failed to validate emails')
+      sendToSentry(error, {tags: {type: 'Mailgun error'}})
+      return false
+    }
+  }
 }

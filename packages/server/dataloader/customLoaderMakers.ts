@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import {sql} from 'kysely'
+import {Selectable, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
@@ -8,7 +8,9 @@ import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
+import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
+import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getApprovedOrganizationDomainsByDomainFromPG from '../postgres/queries/getApprovedOrganizationDomainsByDomainFromPG'
 import getApprovedOrganizationDomainsFromPG from '../postgres/queries/getApprovedOrganizationDomainsFromPG'
@@ -27,8 +29,9 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
-import normalizeResults from './normalizeResults'
+import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
+import normalizeResults from './normalizeResults'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -431,31 +434,20 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
 }
 
 // :TODO:(jmtaber129): Generalize this to all meeting types if needed.
-export const retroTemplateLastUsedByTeam = (parent: RootDataLoader) => {
-  return new DataLoader<string, Record<string, Date>, string>(
+export const teamMeetingTemplateByTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<string, Selectable<TeamMeetingTemplate>[], string>(
     async (teamIds) => {
-      const r = await getRethink()
-      const groups = (await (
-        r
-          .table('NewMeeting')
-          .getAll(r.args(teamIds), {index: 'teamId'})
-          .filter({meetingType: 'retrospective'})
-          .group((row) => ({teamId: row('teamId'), templateId: row('templateId')})) as any
-      )
-        .map((row: RDatum<AnyMeeting>) => row('createdAt'))
-        .reduce((timeA: Date, timeB: Date) => (timeA > timeB ? timeA : timeB))
-        .ungroup()
-        .run()) as {group: {teamId: string; templateId: string}; reduction: Date}[]
-      const lookup: Record<string, Record<string, Date>> = {}
-      groups.forEach(({group, reduction}) => {
-        if (lookup[group.teamId]) {
-          lookup[group.teamId]![group.templateId] = reduction
-        } else {
-          lookup[group.teamId] = {[group.templateId]: reduction}
-        }
+      const pg = getKysely()
+      const teamMeetingTemplates = await pg
+        .selectFrom('TeamMeetingTemplate')
+        .selectAll()
+        .where('teamId', 'in', teamIds)
+        .execute()
+      return teamIds.map((teamId) => {
+        return teamMeetingTemplates.filter(
+          (teamMeetingTemplate) => teamMeetingTemplate.teamId === teamId
+        )
       })
-
-      return teamIds.map((teamId) => lookup[teamId] || {})
     },
     {
       ...parent.dataLoaderOptions
@@ -638,6 +630,66 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
         })
       )
       return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const saml = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, SAMLSource | null, string>(
+    async (samlIds) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAML.id', 'in', samlIds)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return samlIds.map((samlId) => res.find((row) => row.id === samlId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const samlByDomain = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, SAMLSource | null, string>(
+    async (domains) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAMLDomain.domain', 'in', domains)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return domains.map((domain) => res.find((row) => row.domains.includes(domain)))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const samlByOrgId = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, SAMLSource | null, string>(
+    async (orgIds) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('SAMLDomain')
+        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+        .where('SAML.orgId', 'in', orgIds)
+        .groupBy('SAML.id')
+        .selectAll('SAML')
+        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .execute()
+      return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
     },
     {
       ...parent.dataLoaderOptions

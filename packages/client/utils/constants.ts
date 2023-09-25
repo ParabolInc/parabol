@@ -166,14 +166,16 @@ export const TeamBenefits = [
   'Custom templates',
   'Unlimited meeting history',
   'Priority customer support',
-  'AI Summaries'
+  'AI Summaries',
+  'Team Health'
 ]
 
 export const EnterpriseBenefits = [
-  'Enhanced security',
-  'Priority customer support',
-  'SAML Single Sign-On (SSO)',
-  'Uptime SLA',
+  'Single Sign-On (SSO)',
+  'Annual Billing',
+  'Domain Whitelisting',
+  'Uptime Service Level Agreement (SLA)',
+  'On-Premises Hosting Option',
   'Jira Server Integration'
 ]
 

@@ -2,13 +2,16 @@ import getRethink from '../database/rethinkDriver'
 import NotificationPromptToJoinOrg from '../database/types/NotificationPromptToJoinOrg'
 import isRequestToJoinDomainAllowed from './isRequestToJoinDomainAllowed'
 import getDomainFromEmail from './getDomainFromEmail'
+import User from '../database/types/User'
+import {DataLoaderWorker} from '../graphql/graphql'
 
-const sendPromptToJoinOrg = async (email: string, userId: string) => {
+const sendPromptToJoinOrg = async (newUser: User, dataLoader: DataLoaderWorker) => {
+  const {id: userId, email} = newUser
   const r = await getRethink()
 
   const activeDomain = getDomainFromEmail(email)
 
-  if (!(await isRequestToJoinDomainAllowed(activeDomain, userId))) {
+  if (!(await isRequestToJoinDomainAllowed(activeDomain, newUser, dataLoader))) {
     return
   }
 

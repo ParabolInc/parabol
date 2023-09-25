@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Link} from 'react-router-dom'
 import React from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -18,6 +18,7 @@ import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
+import IconLabel from '../IconLabel'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',
@@ -72,7 +73,7 @@ const ButtonContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   display: 'flex',
-  height: 32,
+  marginLeft: '16px',
   [meetingAvatarMediaQueries[0]]: {
     height: 48,
     marginLeft: 10
@@ -84,17 +85,18 @@ const ButtonContainer = styled('div')({
 
 interface Props {
   meetingRef: TeamPromptTopBar_meeting$key
-  isDesktop: boolean
 }
 
 const TeamPromptTopBar = (props: Props) => {
-  const {meetingRef, isDesktop} = props
+  const {meetingRef} = props
 
   const meeting = useFragment(
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         id
         name
+        isRightDrawerOpen
+        showWorkSidebar
         facilitatorUserId
         prevMeeting {
           id
@@ -134,74 +136,112 @@ const TeamPromptTopBar = (props: Props) => {
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
+  const onOpenWorkSidebar = () => {
+    if (meeting.isRightDrawerOpen && meeting.showWorkSidebar) {
+      // If we're selecting a discussion that's already open, just close the drawer.
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(false, 'isRightDrawerOpen')
+      })
+    } else {
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(null, 'localStageId')
+        meetingProxy.setValue(true, 'showWorkSidebar')
+        meetingProxy.setValue(true, 'isRightDrawerOpen')
+      })
+    }
+  }
+
+  const buttons = (
+    <ButtonContainer>
+      <button
+        className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 text-sm font-semibold text-sky-500 hover:text-sky-600'
+        onClick={onOpenWorkSidebar}
+      >
+        <IconLabel icon='task_alt' iconLarge />
+        <div className='text-slate-700 group-hover:text-slate-900'>Your work</div>
+      </button>
+      <TeamPromptOptions
+        meetingRef={meeting}
+        openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
+        openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
+      />
+    </ButtonContainer>
+  )
+
   return (
-    <MeetingTopBarStyles>
-      <MeetingTitleSection>
-        <TeamPromptLogoBlock />
-        <div>
-          <div className='flex w-max gap-1'>
-            {isRecurrenceEnabled && prevMeeting && (
-              <Link className='text-slate-600' to={`/meet/${prevMeeting.id}`}>
-                <KeyboardArrowLeft />
-              </Link>
-            )}
-            <div>
-              {isFacilitator ? (
-                <EditableTeamPromptHeaderTitle
-                  error={error?.message}
-                  handleSubmit={handleSubmit}
-                  initialValue={meetingName}
-                  isWrap
-                  maxLength={50}
-                  validate={validate}
-                  placeholder={'Best Meeting Ever!'}
-                />
-              ) : (
-                <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+    <>
+      <MeetingTopBarStyles>
+        <MeetingTitleSection>
+          <TeamPromptLogoBlock />
+          <div>
+            <div className='flex w-max gap-1'>
+              {isRecurrenceEnabled && prevMeeting && (
+                <Link className='text-slate-600' to={`/meet/${prevMeeting.id}`}>
+                  <KeyboardArrowLeft />
+                </Link>
               )}
-              {isRecurrenceEnabled && (
-                <HumanReadableRecurrenceRule recurrenceRule={meetingSeries.recurrenceRule} />
+              <div>
+                {isFacilitator ? (
+                  <EditableTeamPromptHeaderTitle
+                    error={error?.message}
+                    handleSubmit={handleSubmit}
+                    initialValue={meetingName}
+                    isWrap
+                    maxLength={50}
+                    validate={validate}
+                    placeholder={'Best Meeting Ever!'}
+                  />
+                ) : (
+                  <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+                )}
+                {isRecurrenceEnabled && (
+                  <div className='hidden md:block'>
+                    <HumanReadableRecurrenceRule recurrenceRule={meetingSeries.recurrenceRule} />
+                  </div>
+                )}
+              </div>
+              {isRecurrenceEnabled && nextMeeting && (
+                <Link className='text-slate-600' to={`/meet/${nextMeeting.id}`}>
+                  <KeyboardArrowRight />
+                </Link>
               )}
             </div>
-            {isRecurrenceEnabled && nextMeeting && (
-              <Link className='text-slate-600' to={`/meet/${nextMeeting.id}`}>
-                <KeyboardArrowRight />
-              </Link>
-            )}
           </div>
-        </div>
-      </MeetingTitleSection>
-      {isDesktop && (
-        <MiddleSection>
+        </MeetingTitleSection>
+        <MiddleSection className='hidden md:flex'>
           <TeamPromptMeetingStatus meetingRef={meeting} />
         </MiddleSection>
-      )}
-      <RightSection>
-        <RightSectionContainer>
-          <NewMeetingAvatarGroup meetingRef={meeting} />
-          <ButtonContainer>
-            <TeamPromptOptions
-              meetingRef={meeting}
-              openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
-              openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
-            />
-          </ButtonContainer>
-        </RightSectionContainer>
-      </RightSection>
-      {recurrenceSettingsModal(
-        <UpdateRecurrenceSettingsModal
-          meeting={meeting}
-          closeModal={toggleRecurrenceSettingsModal}
-        />
-      )}
-      {endRecurringMeetingModal(
-        <EndRecurringMeetingModal
-          meetingId={meetingId}
-          recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
-          closeModal={toggleEndRecurringMeetingModal}
-        />
-      )}
-    </MeetingTopBarStyles>
+        <RightSection>
+          <RightSectionContainer>
+            <NewMeetingAvatarGroup meetingRef={meeting} />
+            <div className='hidden md:block'>{buttons}</div>
+          </RightSectionContainer>
+        </RightSection>
+        {recurrenceSettingsModal(
+          <UpdateRecurrenceSettingsModal
+            meeting={meeting}
+            closeModal={toggleRecurrenceSettingsModal}
+          />
+        )}
+        {endRecurringMeetingModal(
+          <EndRecurringMeetingModal
+            meetingId={meetingId}
+            recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
+            closeModal={toggleEndRecurringMeetingModal}
+          />
+        )}
+      </MeetingTopBarStyles>
+      <div className='block flex justify-between border-y border-solid border-slate-300 px-4 py-2 md:hidden'>
+        <div className='my-1'>
+          <TeamPromptMeetingStatus meetingRef={meeting} />
+        </div>
+        {buttons}
+      </div>
+    </>
   )
 }
 

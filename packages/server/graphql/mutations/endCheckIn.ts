@@ -20,9 +20,11 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
+import collectReactjis from './helpers/collectReactjis'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
+import updateTeamInsights from './helpers/updateTeamInsights'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
@@ -192,6 +194,7 @@ export default {
       stage.endAt = now
     }
     const phase = getMeetingPhase(phases)
+    const usedReactjis = await collectReactjis(meeting, dataLoader)
 
     const completedCheckIn = (await r
       .table('NewMeeting')
@@ -199,7 +202,8 @@ export default {
       .update(
         {
           endedAt: now,
-          phases
+          phases,
+          usedReactjis
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
@@ -223,9 +227,12 @@ export default {
     const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
-    analytics.checkInEnd(completedCheckIn, meetingMembers)
+
+    analytics.checkInEnd(completedCheckIn, meetingMembers, team)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     checkTeamsLimit(team.orgId, dataLoader)
+    updateTeamInsights(teamId, dataLoader)
+
     const events = teamMembers.map(
       (teamMember) =>
         new TimelineEventCheckinComplete({

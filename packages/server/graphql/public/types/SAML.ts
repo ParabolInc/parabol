@@ -1,0 +1,19 @@
+import {Selectable} from 'kysely'
+import {SAML as TSAML} from '../../../postgres/pg.d'
+import {SamlResolvers} from '../resolverTypes'
+
+export interface SAMLSource extends Selectable<TSAML> {
+  domains: string[]
+}
+
+const SAML: SamlResolvers = {
+  lastUpdatedByUser: async ({lastUpdatedBy}, _args, {dataLoader}) => {
+    return dataLoader.get('users').loadNonNull(lastUpdatedBy)
+  },
+  organization: async ({orgId}, _args, {dataLoader}) => {
+    if (!orgId) return null
+    return dataLoader.get('organizations').load(orgId)
+  }
+}
+
+export default SAML

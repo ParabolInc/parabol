@@ -13,12 +13,12 @@ import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import getContentGroup from '../utils/getContentGroup'
 import makeHref from '../utils/makeHref'
+import * as amplitude from '@amplitude/analytics-browser'
 
 const query = graphql`
   query AnalyticsPageQuery {
     viewer {
       id
-      segmentId
       email
       isPatient0
     }
@@ -28,6 +28,12 @@ const query = graphql`
 declare global {
   interface Window {
     analytics: SegmentAnalytics.AnalyticsJS
+    gtag: (
+      command: 'config' | 'get' | 'set',
+      targetId: string,
+      fieldName: string,
+      callback: (field: string) => void
+    ) => void
     HubSpotConversations?: {
       widget?: {
         refresh?: () => void
@@ -83,10 +89,16 @@ if (datadogEnabled) {
   datadogRum.startSessionReplayRecording()
 }
 
-// page titles are changed in child components via useDocumentTitle, which fires after this
-// we must guarantee that this runs after useDocumentTitle
-// we can't move this into useDocumentTitle since the pathname may change without chaging the title
-const TIME_TO_RENDER_TREE = 100
+amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
+  defaultTracking: {
+    attribution: false,
+    pageViews: false,
+    sessions: false,
+    formInteractions: false,
+    fileDownloads: false
+  },
+  logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
+})
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
@@ -111,18 +123,16 @@ const AnalyticsPage = () => {
         const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
         if (!res) return
         const {viewer} = res
-        const {id, segmentId, isPatient0} = viewer
+        const {id, isPatient0} = viewer
         ReactGA.set({
           userId: id,
-          clientId: segmentId ?? getAnonymousId(),
           user_properties: {
             is_patient_0: !!isPatient0
           }
         })
       } else {
         ReactGA.set({
-          userId: null,
-          clientId: getAnonymousId()
+          userId: null
         })
       }
     }
@@ -172,11 +182,15 @@ const AnalyticsPage = () => {
     cacheEmail().catch()
   }, [isSegmentLoaded])
 
+  // page titles are changed in child components via useDocumentTitle, which fires after this
+  // we must guarantee that this runs after useDocumentTitle
+  // we can't move this into useDocumentTitle since the pathname may change without chaging the title
+  const TIME_TO_RENDER_TREE = 100
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics || typeof window.analytics.page !== 'function') return
     const prevPathname = pathnameRef.current
     pathnameRef.current = pathname
-    setTimeout(() => {
+    setTimeout(async () => {
       const title = document.title || ''
       // This is the magic. Ignore everything after hitting the pipe
       const [pageName] = title.split(' | ')
@@ -194,11 +208,39 @@ const AnalyticsPage = () => {
           translated
         },
         // See: segmentIo.ts:28 for more information on the next line
-        {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}
+        {integrations: {'Google Analytics': {clientId: await getAnonymousId()}}}
       )
-      ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
+
+  useEffect(() => {
+    ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
+  }, [pathname])
+
+  useEffect(() => {
+    setTimeout(async () => {
+      const title = document.title || ''
+      const [pageName] = title.split(' | ')
+      const translated = !!document.querySelector(
+        'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
+      )
+      amplitude.track(
+        'Loaded a Page',
+        {
+          name: pageName,
+          referrer: document.referrer,
+          title,
+          path: pathname,
+          url: href,
+          translated,
+          search: location.search
+        },
+        {
+          user_id: atmosphere.viewerId
+        }
+      )
+    }, TIME_TO_RENDER_TREE)
+  }, [pathname, location.search, atmosphere.viewerId])
 
   // We need to refresh the chat widget so it can recheck the URL
   useEffect(() => {

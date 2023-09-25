@@ -11,6 +11,7 @@ import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
+import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
@@ -94,6 +95,10 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   notifications.forEach((notification) => {
     publishNotification(notification, subOptions)
   })
+
+  if (!oldTeamPromptResponse) {
+    IntegrationNotifier.standupResponseSubmitted(dataLoader, meetingId, teamId, viewerId)
+  }
 
   analytics.responseAdded(viewerId, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
   publish(

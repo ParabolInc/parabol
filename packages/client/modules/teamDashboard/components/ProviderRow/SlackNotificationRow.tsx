@@ -25,7 +25,8 @@ const labelLookup = {
   meetingStart: 'Meeting Start',
   MEETING_STAGE_TIME_LIMIT_END: `Meeting ${MeetingLabels.TIME_LIMIT} Ended`,
   MEETING_STAGE_TIME_LIMIT_START: `Meeting ${MeetingLabels.TIME_LIMIT} Started`,
-  TOPIC_SHARED: `Topic Shared`
+  TOPIC_SHARED: `Topic Shared`,
+  STANDUP_RESPONSE_SUBMITTED: 'Standup Response Submitted'
 } as Record<SlackNotificationEventEnum, string>
 
 const Row = styled('div')({

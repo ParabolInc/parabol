@@ -14,9 +14,9 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
   const team = useFragment(
     graphql`
       fragment NewMeetingSettingsRetrospective_team on Team {
+        ...NewMeetingSettingsRetrospectiveSettings_team
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...RetroTemplatePicker_settings
-          ...NewMeetingSettingsRetrospectiveSettings_settings
         }
         organization {
           ...NewMeetingSettingsRetrospectiveSettings_organization
@@ -30,10 +30,7 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
   return (
     <>
       <RetroTemplatePicker settingsRef={retroSettings} />
-      <NewMeetingSettingsRetrospectiveSettings
-        settingsRef={retroSettings}
-        organizationRef={organization}
-      />
+      <NewMeetingSettingsRetrospectiveSettings teamRef={team} organizationRef={organization} />
     </>
   )
 }

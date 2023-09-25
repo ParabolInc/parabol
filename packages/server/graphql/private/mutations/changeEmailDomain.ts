@@ -1,5 +1,6 @@
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../../database/stricterR'
+import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import updateDomainsInOrganizationApprovedDomainToPG from '../../../postgres/queries/updateDomainsInOrganizationApprovedDomainToPG'
 import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
@@ -43,6 +44,8 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     .map(({id}) => id)
 
   // RESOLUTION
+  const pg = getKysely()
+
   const [updatedUserRes] = await Promise.all([
     updateUserEmailDomainsToPG(normalizedNewDomain, userIdsToUpdate),
     updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
@@ -58,15 +61,11 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
         email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)
       }))
       .run(),
-    r
-      .table('SAML')
-      .filter((row: RDatum) => row('domains').contains(normalizedOldDomain))
-      .update((row: RDatum) => ({
-        domains: row('domains').map((domain: RValue) =>
-          r.branch(domain.eq(normalizedOldDomain), normalizedNewDomain, domain)
-        )
-      }))
-      .run(),
+    pg
+      .updateTable('SAMLDomain')
+      .set({domain: normalizedNewDomain})
+      .where('domain', '=', normalizedOldDomain)
+      .execute(),
     r
       .table('Invoice')
       .filter((row: RDatum) =>

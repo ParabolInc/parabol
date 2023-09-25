@@ -381,7 +381,12 @@ type User {
   """
   all the teams the user is on that the viewer can see.
   """
-  teams: [Team!]!
+  teams(
+    """
+    If true, returns archived teams as well; otherwise only return active teams. Default to false.
+    """
+    includeArchived: Boolean = false
+  ): [Team!]!
 
   """
   The team member associated with this user
@@ -440,4 +445,18 @@ type User {
     """
     activityId: ID!
   ): MeetingTemplate
+
+  """
+  A query to parse/validate SAML metadata for a given domain
+  """
+  parseSAMLMetadata(
+    """
+    A blob of XML from the IdP describing how to handle authentication
+    """
+    metadata: String!
+    """
+    The name of the company, used as a slug in signon URLs.
+    """
+    domain: String!
+  ): ParseSAMLMetadataPayload!
 }

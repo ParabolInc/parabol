@@ -269,17 +269,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
             .do((items: RValue) => r.db(DESTINATION).table('TimelineEvent').insert(items))
         })
       }),
-    activeDomains: r
-      .table('Organization')
-      .getAll(r.args(orgIds))('activeDomain')
-      .coerceTo('array')
-      .do((domains: RValue) => {
-        return r({
-          SAML: (r.table('SAML').getAll(r.args(domains), {index: 'domains'}) as any)
-            .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('SAML').insert(items))
-        })
-      }),
     meetingIds: r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})('id')

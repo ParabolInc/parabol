@@ -1,4 +1,4 @@
-interface ErrorResponse {
+export interface ErrorResponse {
   ok: false
   error: string
 }
@@ -69,8 +69,9 @@ interface ConversationJoinResponse {
   }
 }
 
-interface PostMessageResponse {
+export interface PostMessageResponse {
   ok: true
+  ts: string
 }
 
 interface UpdateMessageResponse {
@@ -212,14 +213,20 @@ abstract class SlackManager {
     )
   }
 
-  postMessage(channelId: string, text: string | Array<{type: string}>, notificationText?: string) {
+  postMessage(
+    channelId: string,
+    text: string | Array<{type: string}>,
+    notificationText?: string,
+    threadTs?: string
+  ) {
     const prop = typeof text === 'string' ? 'text' : Array.isArray(text) ? 'blocks' : null
     if (!prop) throw new Error('Invalid Slack postMessage')
     const defaultPayload = {
       channel: channelId,
       unfurl_links: false,
       unfurl_media: false,
-      [prop]: text
+      [prop]: text,
+      thread_ts: threadTs
     }
     const payload =
       prop === 'text'
@@ -233,9 +240,11 @@ abstract class SlackManager {
 
   updateMessage(channelId: string, blocks: string | Array<{type: string}>, ts: string) {
     const newBlocks = typeof blocks === 'string' ? blocks : JSON.stringify(blocks)
-    return this.get<UpdateMessageResponse>(
-      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&blocks=${newBlocks}&ts=${ts}`
-    )
+    return this.post<UpdateMessageResponse>('https://slack.com/api/chat.update', {
+      channel: channelId,
+      blocks: newBlocks,
+      ts
+    })
   }
 }
 

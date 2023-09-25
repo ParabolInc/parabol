@@ -1,17 +1,13 @@
 name: Build
 
-on:
-  push:
-    paths-ignore:
-      # don't run this if docs are the only thing affected
-      - "docs/**"
+on: [push]
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 
 jobs:
   build:
-    runs-on: ubuntu-4core
+    runs-on: ubuntu-8cores
     permissions:
       contents: "read"
       id-token: "write"
@@ -82,6 +78,7 @@ jobs:
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
+          yarn pg:generate
 
       - name: Build for testing
         if: env.DOCKERIZE != 'true'
@@ -89,6 +86,8 @@ jobs:
 
       - name: Build for deploying
         if: env.DOCKERIZE == 'true'
+        env:
+          NODE_OPTIONS: "--max_old_space_size=8192"
         run: yarn build --no-deps
 
       - name: Verify source is clean
@@ -102,7 +101,6 @@ jobs:
 
       - name: Start testing server in background
         run: |
-          echo CI: ${{ env.CI }}
           yarn start &
         env:
           CI: true
@@ -115,11 +113,13 @@ jobs:
         run: yarn test:server -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/server
+          CI: true
 
       - name: Run client tests
         run: yarn test:client -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
+          CI: true
 
       - name: Store Playwright Version
         run: |

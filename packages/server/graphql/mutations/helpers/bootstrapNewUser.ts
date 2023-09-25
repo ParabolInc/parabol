@@ -9,7 +9,6 @@ import generateUID from '../../../generateUID'
 import insertUser from '../../../postgres/queries/insertUser'
 import IUser from '../../../postgres/types/IUser'
 import {analytics} from '../../../utils/analytics/analytics'
-import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
@@ -18,10 +17,14 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
+import {DataLoaderWorker} from '../../graphql'
 
-const PERCENT_ADDED_TO_RID = 0.05
-
-const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?: string) => {
+const bootstrapNewUser = async (
+  newUser: User,
+  isOrganic: boolean,
+  dataLoader: DataLoaderWorker,
+  searchParams?: string
+) => {
   const r = await getRethink()
   const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
   // email is checked by the caller
@@ -42,9 +45,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
     experimentalFlags.push('retrosInDisguise')
   } else if (usersWithDomain.length === 0) {
-    if (Math.random() < PERCENT_ADDED_TO_RID) {
-      experimentalFlags.push('retrosInDisguise')
-    }
+    experimentalFlags.push('retrosInDisguise')
   }
 
   await Promise.all([
@@ -55,17 +56,15 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   ])
 
   // Identify the user so user properties are set before any events are sent
-  segmentIo.identify({
+  analytics.identify({
     userId,
-    traits: {
-      createdAt,
-      email,
-      name: preferredName,
-      isActive: true,
-      featureFlags: experimentalFlags,
-      highestTier: tier,
-      isPatient0
-    },
+    createdAt,
+    email,
+    name: preferredName,
+    isActive: true,
+    featureFlags: experimentalFlags,
+    highestTier: tier,
+    isPatient0,
     anonymousId: segmentId
   })
 
@@ -87,15 +86,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
       addSeedTasks(userId, teamId),
       r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
     ])
-    segmentIo.track({
-      userId,
-      event: 'New Org',
-      properties: {
-        teamId,
-        orgId,
-        fromSignup: true
-      }
-    })
+    analytics.newOrg(userId, orgId, teamId, true)
   } else {
     await r
       .table('SuggestedAction')
@@ -105,7 +96,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, searchParams?
   analytics.accountCreated(userId, !isOrganic, isPatient0)
 
   if (isOrganic) {
-    sendPromptToJoinOrg(email, userId)
+    sendPromptToJoinOrg(newUser, dataLoader)
   }
 
   return new AuthToken({sub: userId, tms})

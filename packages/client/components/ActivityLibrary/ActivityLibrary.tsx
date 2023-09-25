@@ -74,7 +74,7 @@ graphql`
 const query = graphql`
   query ActivityLibraryQuery {
     viewer {
-      availableTemplates(first: 200) @connection(key: "ActivityLibrary_availableTemplates") {
+      availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
             ...ActivityLibrary_template @relay(mask: false)
@@ -83,6 +83,11 @@ const query = graphql`
       }
       featureFlags {
         retrosInDisguise
+      }
+      organizations {
+        featureFlags {
+          oneOnOne
+        }
       }
     }
   }
@@ -187,11 +192,18 @@ export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {featureFlags, availableTemplates} = viewer
+  const {featureFlags, availableTemplates, organizations} = viewer
+  const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
 
   const templates = useMemo(() => {
-    return availableTemplates.edges.map((edge) => edge.node)
+    const templatesMap = availableTemplates.edges.map((edge) => edge.node)
+    if (!hasOneOnOneFeatureFlag) {
+      return templatesMap.filter((template) => template.id !== 'oneOnOneAction')
+    }
+    return templatesMap
   }, [availableTemplates])
+
+  const availableCategoryIds = Object.keys(CATEGORY_ID_TO_NAME)
 
   const {
     query: searchQuery,
@@ -240,7 +252,7 @@ export const ActivityLibrary = (props: Props) => {
     return <Redirect to='/404' />
   }
 
-  if (!categoryId || !Object.keys(CATEGORY_ID_TO_NAME).includes(categoryId)) {
+  if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
   }
 
@@ -285,26 +297,26 @@ export const ActivityLibrary = (props: Props) => {
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
           <div className='flex gap-2 px-4 pt-6 md:flex-wrap md:pb-4 lg:mx-[15%]'>
-            {(
-              Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>
-            ).map((category) => (
-              <Link
-                className={clsx(
-                  'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
-                  category === selectedCategory && searchQuery.length === 0
-                    ? [
-                        CategoryIDToColorClass[category],
-                        'font-semibold text-white focus:text-white'
-                      ]
-                    : 'border border-slate-300 bg-white'
-                )}
-                to={`/activity-library/category/${category}`}
-                onClick={() => resetQuery()}
-                key={category}
-              >
-                {CATEGORY_ID_TO_NAME[category]}
-              </Link>
-            ))}
+            {(availableCategoryIds as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>).map(
+              (category) => (
+                <Link
+                  className={clsx(
+                    'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
+                    category === selectedCategory && searchQuery.length === 0
+                      ? [
+                          CategoryIDToColorClass[category],
+                          'font-semibold text-white focus:text-white'
+                        ]
+                      : 'border border-slate-300 bg-white'
+                  )}
+                  to={`/activity-library/category/${category}`}
+                  onClick={() => resetQuery()}
+                  key={category}
+                >
+                  {CATEGORY_ID_TO_NAME[category]}
+                </Link>
+              )
+            )}
           </div>
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation='horizontal' className='hidden' />

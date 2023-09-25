@@ -11,12 +11,17 @@ graphql`
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)
     }
+    hasGcalError
   }
 `
 
 const mutation = graphql`
-  mutation StartCheckInMutation($teamId: ID!) {
-    startCheckIn(teamId: $teamId) {
+  mutation StartCheckInMutation(
+    $teamId: ID
+    $gcalInput: CreateGcalEventInput
+    $oneOnOneTeamInput: CreateOneOnOneTeamInput
+  ) {
+    startCheckIn(teamId: $teamId, gcalInput: $gcalInput, oneOnOneTeamInput: $oneOnOneTeamInput) {
       ... on ErrorPayload {
         error {
           message
@@ -39,9 +44,17 @@ const StartCheckInMutation: StandardMutation<TStartCheckInMutation, HistoryLocal
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const {startCheckIn} = res
-      const {meeting} = startCheckIn
+      const {meeting, hasGcalError} = startCheckIn
       if (!meeting) return
       const {id: meetingId} = meeting
+      if (hasGcalError) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: `gcalError:${meetingId}`,
+          autoDismiss: 0,
+          showDismissButton: true,
+          message: `Sorry, we couldn't create your Google Calendar event`
+        })
+      }
       history.push(`/meet/${meetingId}`)
     }
   })

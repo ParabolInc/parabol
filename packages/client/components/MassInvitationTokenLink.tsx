@@ -5,7 +5,6 @@ import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
-import makeMinWidthQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
@@ -20,14 +19,9 @@ const StyledCopyShortLink = styled(CopyShortLink)({
   color: PALETTE.SKY_500,
   fontSize: 15,
   fontWeight: 600,
-  margin: '0 0 32px',
   padding: 11,
   ':hover': {
     color: PALETTE.SKY_400
-  },
-  [makeMinWidthQuery(400)]: {
-    // make sure the length doesn't change the width
-    minWidth: 280
   }
 })
 
@@ -80,8 +74,8 @@ const MassInvitationTokenLink = (props: Props) => {
     })
   }
   const displayToken = isTokenValid ? token : '············'
-  const linkLabel = `${window.__ACTION__.prblIn}/${displayToken}`
   const url = getMassInvitationUrl(displayToken)
+  const linkLabel = url.replace(/https?:\/\//, '')
   return (
     <StyledCopyShortLink
       icon='link'

@@ -65,12 +65,13 @@ const TeamDashActivityTab = (props: Props) => {
         ) : (
           <>
             <DemoMeetingCard />
-            <TutorialMeetingCard />
+            <TutorialMeetingCard type='standup' />
+            <TutorialMeetingCard type='poker' />
           </>
         )}
       </div>
       {insights && (
-        <div className='flex w-full flex-wrap pl-2 pr-4'>
+        <div className='flex w-full flex-wrap pr-4'>
           <TeamDashInsights teamInsightsRef={insights} />
         </div>
       )}

@@ -21,6 +21,7 @@ type MeetingSubscriptionPayload {
   EditReflectionPayload: EditReflectionPayload
   EndDraggingReflectionPayload: EndDraggingReflectionPayload
   EndRetrospectiveSuccess: EndRetrospectiveSuccess
+  EndTeamPromptSuccess: EndTeamPromptSuccess
   FlagReadyToAdvanceSuccess: FlagReadyToAdvanceSuccess
   GenerateGroupsSuccess: GenerateGroupsSuccess
   NewMeetingCheckInPayload: NewMeetingCheckInPayload

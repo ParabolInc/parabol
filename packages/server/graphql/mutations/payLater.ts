@@ -7,10 +7,10 @@ import getPg from '../../postgres/getPg'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import PayLaterPayload from '../types/PayLaterPayload'
+import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(PayLaterPayload),
@@ -64,10 +64,7 @@ export default {
 
     await incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())
 
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Conversion Modal Pay Later Clicked'
-    })
+    analytics.conversionModalPayLaterClicked(viewerId)
     const data = {orgId, meetingId}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'PayLaterPayload', data, subOptions)
     return {orgId, meetingId}

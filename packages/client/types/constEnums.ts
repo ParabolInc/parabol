@@ -139,6 +139,7 @@ export const enum ExternalLinks {
   INTEGRATIONS_SLACK = 'https://www.parabol.co/integrations/slack',
   INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
   INTEGRATIONS_SUPPORT_JIRA = 'https://www.parabol.co/integrations/jira',
+  INTEGRATIONS_SUPPORT_JIRA_AUTHORIZATION = 'https://www.parabol.co/support/authorization-issues-jira-integration',
   INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_TEAM_MANAGED = 'https://www.parabol.co/support/estimation-in-jira-team',
   INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_COMPANY_MANAGED = 'https://www.parabol.co/support/estimation-in-jira-company',
   INTEGRATIONS_SUPPORT_GITHUB = 'https://www.parabol.co/integrations/github',
@@ -170,7 +171,8 @@ export const enum Gutters {
 export const enum InvitationTokenError {
   NOT_FOUND = 'notFound',
   EXPIRED = 'expired',
-  ALREADY_ACCEPTED = 'accepted'
+  ALREADY_ACCEPTED = 'accepted',
+  NOT_SIGNED_IN = 'notSignedIn'
 }
 export const enum InvoiceItemType {
   ADD_USER = 'addUser',

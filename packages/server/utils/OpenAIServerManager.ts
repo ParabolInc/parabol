@@ -1,41 +1,86 @@
-import {Configuration, OpenAIApi} from 'openai'
+import OpenAI from 'openai'
 import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
 
 class OpenAIServerManager {
-  private openAIApi: OpenAIApi | null
-
+  private openAIApi
   constructor() {
     if (!process.env.OPEN_AI_API_KEY) {
       this.openAIApi = null
       return
     }
-    const configuration = new Configuration({
+    this.openAIApi = new OpenAI({
       apiKey: process.env.OPEN_AI_API_KEY,
       organization: process.env.OPEN_AI_ORG_ID
     })
-    this.openAIApi = new OpenAIApi(configuration)
+  }
+
+  async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
+    if (!this.openAIApi) return null
+    // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM
+    // can include that in the response, e.g. "James is working on AI Summaries" vs. "Someone is
+    // working on AI Summaries".
+    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the responses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
+
+    Desired format:
+    - <theme title>: <theme summary>
+    - <theme title>: <theme summary>
+    - <theme title>: <theme summary>
+
+    Responses: """
+    ${plaintextResponses.join('\nNEW_RESPONSE\n')}
+    """`
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      return (response.choices[0]?.message?.content?.trim() as string) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
   }
 
   async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
     const textStr = Array.isArray(text) ? text.join('\n') : text
-    try {
-      const location = summaryLocation ?? 'retro meeting'
-      const response = await this.openAIApi.createCompletion({
-        model: 'text-davinci-003',
-        prompt: `Below is a comma-separated list of text from a ${location}. Summarize the text for a second-grade student in one or two sentences. When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
+    const location = summaryLocation ?? 'retro meeting'
+    const prompt = `Below is a newline delimited text from a ${location}.
+    Summarize the text for the meeting facilitator in one or two sentences.
+    When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
+    Aim for brevity and clarity. If your summary exceeds 50 characters, iterate until it fits while retaining the essence. Your final response should only include the shortened summary.
 
-        Text: """
-        ${textStr}
-        """`,
+    Text: """
+    ${textStr}
+    """`
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
         temperature: 0.7,
         max_tokens: 80,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      return (response.data.choices[0]?.text?.trim() as string) ?? null
+      return (response.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
@@ -71,7 +116,7 @@ class OpenAIServerManager {
       .map(({plaintextContent}) => plaintextContent.trim().replace(/\n/g, '\t'))
       .join('\n')}`
     try {
-      const response = await this.openAIApi.createChatCompletion({
+      const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
           {
@@ -83,7 +128,7 @@ class OpenAIServerManager {
         max_tokens: 80
       })
       const question =
-        (response.data.choices[0]?.message?.content?.trim() as string).replace(
+        (response.choices[0]?.message?.content?.trim() as string).replace(
           /^[Qq]uestion:*\s*/gi,
           ''
         ) ?? null
@@ -101,14 +146,14 @@ class OpenAIServerManager {
   async generateThemes(reflectionsText: string[]) {
     if (!this.openAIApi) return null
     const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
-    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 4)
+    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 3)
     // Specify the approximate number of themes as it will often create too many themes otherwise
     const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
       ', '
-    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} or ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
+    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} to ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
 
     try {
-      const response = await this.openAIApi.createChatCompletion({
+      const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-4',
         messages: [
           {
@@ -121,7 +166,7 @@ class OpenAIServerManager {
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      const themes = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      const themes = (response.choices[0]?.message?.content?.trim() as string) ?? null
       return themes.split(', ')
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
@@ -142,7 +187,7 @@ class OpenAIServerManager {
         ', '
       )}, and the following reflection: "${reflection}", classify the reflection into the theme it fits in best. The reflection can only be added to one theme. Do not edit the reflection text. Your output should just be the theme name, and must be one of the themes I've provided.`
 
-      const response = await this.openAIApi!.createChatCompletion({
+      const response = await this.openAIApi!.chat.completions.create({
         model: 'gpt-4',
         messages: [
           {
@@ -156,7 +201,7 @@ class OpenAIServerManager {
         presence_penalty: 0
       })
 
-      const theme = (response.data.choices[0]?.message?.content?.trim() as string) ?? null
+      const theme = (response.choices[0]?.message?.content?.trim() as string) ?? null
       if (!theme || !themes.includes(theme)) {
         if (!retry) {
           return getThemeForReflection(reflection, true)
