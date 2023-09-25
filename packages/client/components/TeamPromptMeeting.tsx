@@ -37,13 +37,14 @@ const ResponsesGridContainer = styled('div')({
   }
 })
 
-const ResponsesGrid = styled('div')({
+const ResponsesGrid = styled('div')<{isSingleColumn: boolean}>(({isSingleColumn}) => ({
   flex: 1,
   display: 'flex',
   flexWrap: 'wrap',
+  flexDirection: isSingleColumn ? 'column' : 'row',
   position: 'relative',
   gap: 32
-})
+}))
 
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
@@ -167,7 +168,7 @@ const TeamPromptMeeting = (props: Props) => {
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer>
-                  <ResponsesGrid>
+                  <ResponsesGrid isSingleColumn={singleColumnStandups}>
                     {transitioningStages.map((transitioningStage) => {
                       const {child: stage, onTransitionEnd, status} = transitioningStage
                       const {key, displayIdx} = stage

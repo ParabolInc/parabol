@@ -37,7 +37,7 @@ const ResponseWrapper = styled('div')<{
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  maxWidth: isSingleColumn ? '850px' : undefined,
+  maxWidth: isSingleColumn ? '600px' : undefined,
   margin: isSingleColumn ? '0 auto' : undefined,
   [twoColumnResponseMediaQuery]: {
     width: isSingleColumn ? undefined : `calc(100% / 2 - ${ResponseCardDimensions.GAP}px)`
