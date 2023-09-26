@@ -116,6 +116,8 @@ const AddTeamDialog = (props: Props) => {
     )
   }
 
+  const isValid = selectedUsers.length && teamName
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
@@ -167,12 +169,7 @@ const AddTeamDialog = (props: Props) => {
           <SecondaryButton onClick={onClose} size='small'>
             Cancel
           </SecondaryButton>
-          <PrimaryButton
-            size='small'
-            onClick={handleAddTeam}
-            // disabled={isLoading || channelsLoading}
-            disabled={submitting}
-          >
+          <PrimaryButton size='small' onClick={handleAddTeam} disabled={submitting || !isValid}>
             Add team
           </PrimaryButton>
         </DialogActions>
