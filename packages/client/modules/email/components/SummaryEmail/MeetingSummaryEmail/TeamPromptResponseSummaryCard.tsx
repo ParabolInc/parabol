@@ -8,6 +8,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {createEditorExtensions} from '../../../../../components/promptResponse/tiptapConfig'
 
 const responseSummaryCardStyles: React.CSSProperties = {
+  display: 'inherit',
   padding: '12px',
   width: '100%'
 }
@@ -32,7 +33,7 @@ const avatarStyles: React.CSSProperties = {
 // Note: Emotion doesn't work in email, so these styles will only be present in the app.
 const StyledEditor = styled('div')`
   min-height: 40px;
-  line-height: 20px;
+  line-height: 1.25;
 
   ul,
   ol {
