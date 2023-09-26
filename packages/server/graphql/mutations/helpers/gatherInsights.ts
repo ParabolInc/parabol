@@ -8,7 +8,6 @@ const gatherInsights = async (meeting: Meeting, dataLoader: DataLoaderWorker) =>
     collectReactjis(meeting, dataLoader),
     calculateEngagement(meeting, dataLoader)
   ])
-  console.log('GEORG engagement', engagement)
   return {usedReactjis, engagement}
 }
 
