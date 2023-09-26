@@ -10,11 +10,7 @@ const getBotId = async (videoMeetingURL: string) => {
 const addRecallBot = async (meetingId: string, videoMeetingURL: string) => {
   const r = await getRethink()
   const recallBotId = (await getBotId(videoMeetingURL)) ?? undefined
-  console.log('🚀 ~ recallBotId:', recallBotId)
-
   await r.table('NewMeeting').get(meetingId).update({recallBotId, videoMeetingURL}).run()
-
-  return true
 }
 
 export default addRecallBot

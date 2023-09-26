@@ -101,7 +101,6 @@ const handleCompletedRetrospectiveStage = async (
     // create new threads
     const {discussPhaseStages} = data
     const {id: meetingId, teamId, videoMeetingURL} = meeting
-    console.log('🚀 ~ videoMeetingURL:', videoMeetingURL)
 
     const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
