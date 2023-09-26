@@ -18,7 +18,8 @@ const Team: TeamResolvers = {
           ...(template as any),
           teamId: id
         }))
-      : []
+      : null
+    mappedTopRetroTemplates?.sort((a, b) => b.count - a.count)
 
     return {
       id: TeamInsightsId.join(id),
