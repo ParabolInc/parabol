@@ -11,7 +11,6 @@ import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
 import useAtmosphere from '../hooks/useAtmosphere'
 import setPreferredTeamId from '../utils/relay/setPreferredTeamId'
-// import {useDialogState} from "~/ui/Dialog/useDialogState";
 import AddTeamDialogRoot from '~/components/AddTeamDialogRoot'
 
 const SelectTeamDropdown = lazyPreload(
