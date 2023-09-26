@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {sql} from 'kysely'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {
@@ -16,11 +17,14 @@ import {
 } from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import MeetingMemberType from '../../database/types/MeetingMember'
 import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
+import TimelineEvent from '../../database/types/TimelineEvent'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
@@ -28,6 +32,7 @@ import standardError from '../../utils/standardError'
 import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
+import getOpenAIEmbeddings from '../mutations/helpers/getOpenAIEmbeddings'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
 import AuthIdentity from './AuthIdentity'
@@ -47,8 +52,6 @@ import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
-import TimelineEvent from '../../database/types/TimelineEvent'
-import {RDatum} from '../../database/stricterR'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -498,9 +501,25 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
 
         if (searchQuery !== '') {
-          const matchedReflections = reflections.filter(({plaintextContent}) =>
-            plaintextContent.toLowerCase().includes(searchQuery)
+          const pg = getKysely()
+          const searchEmbeddings = await getOpenAIEmbeddings(searchQuery)
+          const vectors = await pg
+            .selectFrom('ReflectionEmbeddings')
+            .select([
+              'id',
+              sql<number>`1 - (vector <=> ${searchEmbeddings})`.as('cosDistance'),
+              sql<number>`vector <-> ${searchEmbeddings}`.as('l2Distance'),
+              sql<number>`vector <#> ${searchEmbeddings}`.as('innerProductDifference')
+            ])
+            .orderBy('l2Distance asc')
+            .limit(5)
+            .execute()
+          const l2Alpha = 0.6
+          const matchingReflectionIds = new Set(
+            vectors.filter((vec) => vec.l2Distance < l2Alpha).map(({id}) => id)
           )
+
+          const matchedReflections = reflections.filter(({id}) => matchingReflectionIds.has(id))
           const relatedReflections = matchedReflections.filter(
             ({reflectionGroupId: groupId}: Reflection) => groupId !== reflectionGroupId
           )

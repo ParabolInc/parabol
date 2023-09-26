@@ -19,6 +19,7 @@ import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateR
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
+import getOpenAIEmbeddings from './helpers/getOpenAIEmbeddings'
 
 export default {
   type: CreateReflectionPayload,
@@ -63,9 +64,10 @@ export default {
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
-    const [entities, sentimentScore] = await Promise.all([
+    const [entities, sentimentScore, embeddings] = await Promise.all([
       getReflectionEntities(plaintextContent),
-      tier !== 'starter' ? getReflectionSentimentScore(question, plaintextContent) : undefined
+      tier !== 'starter' ? getReflectionSentimentScore(question, plaintextContent) : undefined,
+      getOpenAIEmbeddings(plaintextContent)
     ])
     const reflectionGroupId = generateUID()
 
@@ -93,6 +95,12 @@ export default {
 
     await Promise.all([
       pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
+      embeddings
+        ? pg
+            .insertInto('ReflectionEmbeddings')
+            .values({id: reflection.id, vector: embeddings})
+            .execute()
+        : null,
       r.table('RetroReflectionGroup').insert(reflectionGroup).run(),
       r.table('RetroReflection').insert(reflection).run()
     ])
