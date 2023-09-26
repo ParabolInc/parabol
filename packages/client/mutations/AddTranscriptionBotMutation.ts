@@ -5,7 +5,9 @@ import {AddTranscriptionBotMutation as TAddTranscriptionBotMutation} from '../__
 
 graphql`
   fragment AddTranscriptionBotMutation_meeting on AddTranscriptionBotSuccess {
-    success
+    meeting {
+      videoMeetingURL
+    }
   }
 `
 

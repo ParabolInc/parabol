@@ -1,3 +1,4 @@
+import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import addRecallBot from '../../mutations/helpers/addRecallBot'
@@ -9,7 +10,7 @@ const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
@@ -19,13 +20,14 @@ const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
     return standardError(error)
   }
 
-  await addRecallBot(meetingId, videoMeetingURL, dataLoader)
+  await addRecallBot(meetingId, videoMeetingURL)
+  meeting.videoMeetingURL = videoMeetingURL
   if (!meetingId) {
     const error = new Error('Unable to add transcription bot')
     return standardError(error)
   }
 
-  return {success: true}
+  return {meetingId}
 }
 
 export default addTranscriptionBot

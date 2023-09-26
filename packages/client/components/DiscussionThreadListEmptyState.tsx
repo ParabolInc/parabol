@@ -118,6 +118,7 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     meetingRef ?? null
   )
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
+
   const atmosphere = useAtmosphere()
   const {validateField, onChange, fields} = useForm({
     url: {
@@ -132,7 +133,6 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     }
   })
   if (!meeting) return null
-  console.log('🚀 ~ meeting:', meeting)
   const {id: meetingId, videoMeetingURL} = meeting
   const message = getMessage(allowTasks, !!videoMeetingURL, !!isReadOnly, showTranscription)
 
@@ -143,19 +143,9 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     const {url} = validateField()
     if (url.error) return
     submitMutation()
-    AddTranscriptionBot(
-      atmosphere,
-      {videoMeetingURL: urlValue, meetingId},
-      {
-        onError,
-        onCompleted: (res) => {
-          console.log('🚀 ~ res:', res)
-          onCompleted()
-        }
-      }
-    )
+    AddTranscriptionBot(atmosphere, {videoMeetingURL: urlValue, meetingId}, {onError, onCompleted})
   }
-  const showVideoURLInput = showTranscription && !videoMeetingURL
+  const showVideoURLInput = showTranscription && !meeting?.videoMeetingURL
 
   return (
     <DiscussionThreadEmptyStateRoot>

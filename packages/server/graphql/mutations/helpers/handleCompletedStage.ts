@@ -102,9 +102,7 @@ const handleCompletedRetrospectiveStage = async (
     const {discussPhaseStages} = data
     const {id: meetingId, teamId, videoMeetingURL} = meeting
     console.log('🚀 ~ videoMeetingURL:', videoMeetingURL)
-    if (videoMeetingURL) {
-      addRecallBot(meetingId, videoMeetingURL, dataLoader)
-    }
+
     const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
       meetingId,
@@ -116,6 +114,9 @@ const handleCompletedRetrospectiveStage = async (
       insertDiscussions(discussions),
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
     ])
+    if (videoMeetingURL) {
+      addRecallBot(meetingId, videoMeetingURL)
+    }
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
     const {discussionId} = stage as DiscussStage

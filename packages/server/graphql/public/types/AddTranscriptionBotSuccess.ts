@@ -1,11 +1,15 @@
+import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {AddTranscriptionBotSuccessResolvers} from '../resolverTypes'
 
 export type AddTranscriptionBotSuccessSource = {
-  success: boolean
+  meetingId: string
 }
 
 const AddTranscriptionBotSuccess: AddTranscriptionBotSuccessResolvers = {
-  success: async ({success}) => success
+  meeting: async ({meetingId}, _args, {dataLoader}) => {
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    return meeting as MeetingRetrospective
+  }
 }
 
 export default AddTranscriptionBotSuccess

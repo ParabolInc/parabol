@@ -12,7 +12,7 @@ union AddTranscriptionBotPayload = ErrorPayload | AddTranscriptionBotSuccess
 
 type AddTranscriptionBotSuccess {
   """
-  If the transcription bot was successfully added to the video meeting
+  The Parabol meeting where the videoMeetingURL and recallBotId were added
   """
-  success: Boolean!
+  meeting: RetrospectiveMeeting!
 }
