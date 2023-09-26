@@ -3,7 +3,7 @@ import {OrganizationFeatureFlagsResolvers} from '../resolverTypes'
 const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   noAISummary: ({noAISummary}) => !!noAISummary,
   standupAISummary: ({standupAISummary}) => !!standupAISummary,
-  promptToJoinOrg: ({promptToJoinOrg}) => !!promptToJoinOrg,
+  noPromptToJoinOrg: ({noPromptToJoinOrg}) => !!noPromptToJoinOrg,
   AIGeneratedDiscussionPrompt: ({AIGeneratedDiscussionPrompt}) => !!AIGeneratedDiscussionPrompt,
   zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,
   shareSummary: ({shareSummary}) => !!shareSummary,

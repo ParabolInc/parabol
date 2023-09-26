@@ -21,6 +21,7 @@ export const getEligibleOrgIdsByDomain = async (
   const orgs = await r
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})
+    .filter((org: RDatum) => org('featureFlags').contains('noPromptToJoinOrg').not())
     .merge((org: RDatum) => ({
       members: r
         .table('OrganizationUser')
