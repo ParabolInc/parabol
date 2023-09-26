@@ -63,12 +63,8 @@ const StyledEditor = styled('div')`
     margin-block-end: 4px;
   }
 
-  hr.ProseMirror-selectednode {
-    border-top: 1px solid #68cef8;
-  }
-
   hr {
-    border-top: 1px solid ${PALETTE.SLATE_400};
+    border-top: 1px solid ${PALETTE.SLATE_300};
   }
 
   [data-type='mention'] {
