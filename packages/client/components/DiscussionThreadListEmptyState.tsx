@@ -145,7 +145,7 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     submitMutation()
     AddTranscriptionBot(atmosphere, {videoMeetingURL: urlValue, meetingId}, {onError, onCompleted})
   }
-  const showVideoURLInput = showTranscription && !meeting?.videoMeetingURL
+  const showVideoURLInput = showTranscription && !videoMeetingURL
 
   return (
     <DiscussionThreadEmptyStateRoot>
