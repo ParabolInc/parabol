@@ -4,12 +4,12 @@ import {useFragment} from 'react-relay'
 import {MeetingEngagementCard_insights$key} from '~/__generated__/MeetingEngagementCard_insights.graphql'
 import TeamInsightsCard from './TeamInsightsCard'
 
-// We need to tune this once we have some data on real teams
-const HIGH_ENGAGEMENT_THRESHOLD = 0.7
-const LOW_ENGAGEMENT_THRESHOLD = 0.3
+// TODO: We need to tune this once we have some data on real teams
+const HIGH_ENGAGEMENT_THRESHOLD = 0.8
+const LOW_ENGAGEMENT_THRESHOLD = 0.6
 
 const getDescription = (engagement: number) => {
-  if (engagement >= HIGH_ENGAGEMENT_THRESHOLD) {
+  if (engagement > HIGH_ENGAGEMENT_THRESHOLD) {
     return 'Great job! Your meetings have a higher engagement rate than the average team using Parabol. Keep it up!'
   }
   if (engagement <= LOW_ENGAGEMENT_THRESHOLD) {

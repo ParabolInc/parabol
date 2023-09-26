@@ -6,7 +6,6 @@ import {getUserId} from '../../../utils/authorization'
 const Team: TeamResolvers = {
   insights: async ({id, orgId, mostUsedEmojis, meetingEngagement}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').load(orgId)
-    console.log('GEORGIA', {id, orgId, mostUsedEmojis, meetingEngagement})
     if (!org?.featureFlags?.includes('teamInsights')) return null
     if (!mostUsedEmojis && !meetingEngagement) return null
 

@@ -8,7 +8,8 @@ import isValid from '../../isValid'
 
 /**
  * at the end of a meeting, calculate the engagement:
- * **retro**: meeting member who did at least 1 of facilitated, added team health response, reflection, vote, discussion, task / total meeting members
+ * **retro**: meeting member who did at least 1 of facilitated, added team health response, reflection, discussion, reaction, task / total meeting members
+ *   - **not included**: voting, grouping
  * **check-in**: ignore as every member will have a solo update phase
  * **sprint poker**: meeting members facilitated, voted or discussed / total meeting members
  * **standup**: replied or commented / all members
@@ -41,21 +42,15 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
     if (passiveMembers.size === 0) return 1
   }
 
-  // Reflections and votes
+  // Reflections and their reactions
   if (phases.find(({phaseType}) => phaseType === 'reflect')) {
-    const [reflections, reflectionGroups] = await Promise.all([
-      dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-      dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
-    ])
-    reflections.forEach(({creatorId}) => {
+    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    reflections.forEach(({creatorId, reactjis}) => {
       passiveMembers.delete(creatorId)
-    })
-    reflectionGroups.forEach(({voterIds}) => {
-      voterIds.forEach((voterId) => {
-        passiveMembers.delete(voterId)
+      reactjis.forEach(({userId}) => {
+        passiveMembers.delete(userId)
       })
     })
-
     if (passiveMembers.size === 0) return 1
   }
 
@@ -84,13 +79,21 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   const discussionIds = stages
     .map((stage) => 'discussionId' in stage && stage.discussionId)
     .filter(isValid) as string[]
-  const [comments, tasks] = await Promise.all([
-    dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
-    dataLoader.get('tasksByDiscussionId').loadMany(discussionIds)
+  const [discussions, tasks] = await Promise.all([
+    (await dataLoader.get('commentsByDiscussionId').loadMany(discussionIds)).filter(isValid),
+    (await dataLoader.get('tasksByDiscussionId').loadMany(discussionIds)).filter(isValid)
   ])
-  const threadables = [...comments.flat(), ...tasks.flat()].filter(isValid)
+  const threadables = [...discussions.flat(), ...tasks.flat()]
   threadables.forEach(({createdBy}) => {
     passiveMembers.delete(createdBy)
+  })
+
+  discussions.forEach((comments) => {
+    comments.forEach(({reactjis}) => {
+      reactjis.forEach(({userId}) => {
+        passiveMembers.delete(userId)
+      })
+    })
   })
 
   return 1 - passiveMembers.size / meetingMembers.length
