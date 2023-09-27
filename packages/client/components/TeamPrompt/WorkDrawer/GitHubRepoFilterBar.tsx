@@ -8,6 +8,8 @@ import {GitHubRepoFilterBar_teamMember$key} from '../../../__generated__/GitHubR
 import {ExpandMore} from '@mui/icons-material'
 import {PortalStatus} from '../../../hooks/usePortal'
 import clsx from 'clsx'
+import plural from '../../../utils/plural'
+import ReposSVG from '../../../../../static/images/icons/repos.svg'
 
 interface Props {
   teamMemberRef: GitHubRepoFilterBar_teamMember$key
@@ -41,7 +43,7 @@ const GitHubRepoFilterBar = (props: Props) => {
     <>
       <button
         className={clsx(
-          'mx-4 mt-4 mb-2 flex cursor-pointer items-center justify-between rounded border border-solid bg-white py-0.5 px-3 text-left transition',
+          'mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded border border-solid bg-white py-0.5 px-3 text-left transition',
           isMenuOpen
             ? 'border-sky-400 hover:border-sky-500'
             : 'border-slate-300 hover:border-slate-500'
@@ -49,13 +51,19 @@ const GitHubRepoFilterBar = (props: Props) => {
         onClick={togglePortal}
         ref={originRef}
       >
+        <img src={ReposSVG} />
         {selectedRepos.length === 0
           ? 'All repositories'
-          : `${selectedRepos.length} repositories selected`}
+          : `${selectedRepos.length} ${plural(
+              selectedRepos.length,
+              'repository',
+              'repositories'
+            )} selected`}
         <ExpandMore
           className={clsx(
-            'transition-transform',
-            [PortalStatus.Exited, PortalStatus.Exiting].includes(portalStatus) ? '' : 'rotate-180'
+            'ml-auto rounded-full transition duration-300',
+            isMenuOpen ? 'rotate-180' : '',
+            selectedRepos.length > 0 && !isMenuOpen ? 'bg-sky-500 text-white' : ''
           )}
         />
       </button>
