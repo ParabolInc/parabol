@@ -22,10 +22,6 @@ const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
 
   await addRecallBot(meetingId, videoMeetingURL)
   meeting.videoMeetingURL = videoMeetingURL
-  if (!meetingId) {
-    const error = new Error('Unable to add transcription bot')
-    return standardError(error)
-  }
 
   return {meetingId}
 }
