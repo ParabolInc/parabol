@@ -11,8 +11,8 @@ import isValid from '../../isValid'
  * **retro**: meeting member who did at least 1 of facilitated, added team health response, reflection, discussion, reaction, task / total meeting members
  *   - **not included**: voting, grouping
  * **check-in**: ignore as every member will have a solo update phase
- * **sprint poker**: meeting members facilitated, voted or discussed / total meeting members
- * **standup**: replied or commented / all members
+ * **sprint poker**: meeting members facilitated, voted discussed or reacted / total meeting members
+ * **standup**: replied, commented or reacted / all members
  */
 const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, phases, meetingType, facilitatorUserId} = meeting
@@ -57,8 +57,11 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   // Team prompt responses
   if (phases.find(({phaseType}) => phaseType === 'RESPONSES')) {
     const responses = await getTeamPromptResponsesByMeetingId(meetingId)
-    responses.forEach(({userId}) => {
+    responses.forEach(({userId, reactjis}) => {
       passiveMembers.delete(userId)
+      reactjis.forEach(({userId}) => {
+        passiveMembers.delete(userId)
+      })
     })
     if (passiveMembers.size === 0) return 1
   }
