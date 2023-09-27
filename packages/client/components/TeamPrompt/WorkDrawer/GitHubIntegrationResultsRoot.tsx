@@ -10,6 +10,7 @@ import {renderLoader} from '~/utils/relay/renderLoader'
 interface Props {
   teamId: string
   queryType: 'issue' | 'pullRequest'
+  selectedRepos: string[]
 }
 
 const GITHUB_QUERY_MAPPING = {
@@ -18,10 +19,11 @@ const GITHUB_QUERY_MAPPING = {
 }
 
 const GitHubIntegrationResultsRoot = (props: Props) => {
-  const {teamId, queryType} = props
+  const {teamId, queryType, selectedRepos} = props
+  const repoQueryString = selectedRepos.map((repo) => `repo:${repo}`).join(' ')
   const queryRef = useQueryLoaderNow<GitHubIntegrationResultsQuery>(gitHubIntegrationResultsQuery, {
     teamId: teamId,
-    searchQuery: GITHUB_QUERY_MAPPING[queryType]
+    searchQuery: `${GITHUB_QUERY_MAPPING[queryType]} ${repoQueryString}`
   })
   return (
     <ErrorBoundary>
