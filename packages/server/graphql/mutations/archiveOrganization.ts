@@ -8,11 +8,11 @@ import IUser from '../../postgres/types/IUser'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
+import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(ArchiveOrganizationPayload),
@@ -49,13 +49,7 @@ export default {
     }
 
     // RESOLUTION
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Archive Organization',
-      properties: {
-        orgId
-      }
-    })
+    analytics.archiveOrganization(viewerId, orgId)
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const teamArchiveResults = (await Promise.all(

@@ -53,7 +53,8 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     discussionTopicId: {type: GraphQLID},
     teamIds: {type: GraphQLList(GraphQLID)},
     insightTitle: {type: GraphQLString},
-    isHelpfulInsight: {type: GraphQLBoolean}
+    isHelpfulInsight: {type: GraphQLBoolean},
+    selectionLocation: {type: GraphQLString}
   })
 })
 

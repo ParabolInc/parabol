@@ -4,7 +4,11 @@ import getRethink from '../../../database/rethinkDriver'
 import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
 import {MutationResolvers} from '../resolverTypes'
 
-const autopauseUsers: MutationResolvers['autopauseUsers'] = async () => {
+const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
+  _source,
+  _args,
+  {dataLoader}
+) => {
   const r = await getRethink()
 
   // RESOLUTION
@@ -26,7 +30,7 @@ const autopauseUsers: MutationResolvers['autopauseUsers'] = async () => {
     await Promise.allSettled(
       results.map(async ({group: userId, reduction: orgIds}) => {
         try {
-          return await adjustUserCount(userId, orgIds, InvoiceItemType.AUTO_PAUSE_USER)
+          return await adjustUserCount(userId, orgIds, InvoiceItemType.AUTO_PAUSE_USER, dataLoader)
         } catch (e) {
           console.warn(`Error adjusting user count`)
         }

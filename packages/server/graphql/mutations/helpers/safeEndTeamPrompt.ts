@@ -8,20 +8,20 @@ import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
-import collectReactjis from './collectReactjis'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import updateTeamInsights from './updateTeamInsights'
 import generateStandupMeetingSummary from './generateStandupMeetingSummary'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
+import gatherInsights from './gatherInsights'
 
 const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
   const {dataLoader} = context
   const r = await getRethink()
 
-  const [summary, usedReactjis] = await Promise.all([
+  const [summary, insights] = await Promise.all([
     generateStandupMeetingSummary(meeting, dataLoader),
-    collectReactjis(meeting, dataLoader)
+    gatherInsights(meeting, dataLoader)
   ])
 
   await r
@@ -29,7 +29,7 @@ const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalCon
     .get(meeting.id)
     .update({
       summary,
-      usedReactjis
+      ...insights
     })
     .run()
 

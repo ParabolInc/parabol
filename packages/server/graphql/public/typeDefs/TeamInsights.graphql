@@ -3,6 +3,20 @@ type Emoji {
   count: Int!
 }
 
+type MeetingEngagement {
+  """
+  Engagement across retros, poker and standups
+  """
+  all: Float!
+}
+
+type TopRetroTemplate {
+  id: ID!
+  reflectTemplateId: ID!
+  reflectTemplate: ReflectTemplate!
+  count: Int!
+}
+
 type TeamInsights {
   id: ID!
 
@@ -10,4 +24,14 @@ type TeamInsights {
   Most used emojis in the team, null if not enough signal
   """
   mostUsedEmojis: [Emoji!]
+
+  """
+  Meeting engagement, null if not enough signal
+  """
+  meetingEngagement: MeetingEngagement
+
+  """
+  Most used retro templates of the past year, null if not enough signal
+  """
+  topRetroTemplates: [TopRetroTemplate!]
 }

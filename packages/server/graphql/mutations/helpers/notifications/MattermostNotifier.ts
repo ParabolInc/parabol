@@ -11,7 +11,6 @@ import {Team} from '../../../../postgres/queries/getTeamsByIds'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
-import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
@@ -24,6 +23,7 @@ import {
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {analytics} from '../../../../utils/analytics/analytics'
 
 const notifyMattermost = async (
   event: EventEnum,
@@ -41,14 +41,7 @@ const notifyMattermost = async (
       error: result
     }
   }
-  segmentIo.track({
-    userId,
-    event: 'Mattermost notification sent',
-    properties: {
-      teamId,
-      notificationEvent: event
-    }
-  })
+  analytics.mattermostNotificationSent(userId, teamId, event)
 
   return 'success'
 }

@@ -120,7 +120,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     tier: 'enterprise'
   })
 
-  const authToken = await bootstrapNewUser(tempUser, !isInvited)
+  const authToken = await bootstrapNewUser(tempUser, !isInvited, dataLoader)
   return {
     userId,
     authToken: encodeAuthToken(authToken),
