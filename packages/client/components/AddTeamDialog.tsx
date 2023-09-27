@@ -146,7 +146,7 @@ const AddTeamDialog = (props: Props) => {
           />
 
           {selectedUsers.some((user: Option) => !user.id) && (
-            <div className='mt-2 text-xs font-semibold text-slate-700'>
+            <div className='mt-3 text-xs font-semibold text-slate-700'>
               Email invitations expire in 30 days.
             </div>
           )}
