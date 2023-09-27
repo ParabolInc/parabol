@@ -19,7 +19,6 @@ import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
-import collectReactjis from './helpers/collectReactjis'
 import updateTeamInsights from './helpers/updateTeamInsights'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import generateWholeMeetingSentimentScore from './helpers/generateWholeMeetingSentimentScore'
@@ -28,6 +27,7 @@ import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
+import gatherInsights from './helpers/gatherInsights'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -67,10 +67,10 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       })
     }
   }
-  const [summary, transcription, usedReactjis] = await Promise.all([
+  const [summary, transcription, insights] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     getTranscription(recallBotId),
-    collectReactjis(meeting, dataLoader)
+    gatherInsights(meeting, dataLoader)
   ])
 
   await r
@@ -96,7 +96,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
         sentimentScore,
         summary,
         transcription,
-        usedReactjis
+        ...insights
       },
       {nonAtomic: true}
     )

@@ -108,7 +108,7 @@ const SummarySheet = (props: Props) => {
       <tbody>
         <tr>
           <td>
-            <SummaryHeader meeting={meeting} corsOptions={corsOptions} />
+            <SummaryHeader meeting={meeting} corsOptions={corsOptions} teamDashUrl={teamDashUrl} />
             <QuickStats meeting={meeting} />
             <TeamHealthSummary meeting={meeting} />
           </td>

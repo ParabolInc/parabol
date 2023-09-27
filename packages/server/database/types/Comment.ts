@@ -26,6 +26,7 @@ export default class Comment {
   reactjis: Reactji[]
   updatedAt: Date
   content: string
+  // userId of the creator
   createdBy: string
   plaintextContent: string
   discussionId: string
