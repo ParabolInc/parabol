@@ -5,27 +5,70 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.122.0 2023-Sep-27
+
+### Added
+
+- chore(ci): adding release branch to the build action (#8888)
+- feat(gcal): add Google Meet (#8818)
+- feat(Team Insights): Add most used retro templates (#8879)
+- feat(Team Insights): add meeting engagement insights (#8877)
+- feat(docker-pipeline): arm64 platform built alongside amd64 (#8229)
+- chore: add tailwind to emails (#8327)
+- chore(dokku): add one more web server (#8889)
+- feat: show sidebar by meeting summary (#8857)
+- feat(standups): Display responses in single column (feature flagged) (#8875)
+- feat: improve ai summary prompt to include markdown (#8859)
+- chore: store freemail domains in pg (#8870)
+- chore: upgrade openai (#8873)
+- feat(invitation-challenges): implement InboxReady's validate check (#8707)
+- chore: Show link to guide on Jira auth popup close (#8867)
+- feat(standups): Add slack configuration link to standup options (#8861)
+- feat(ad-hoc): allow to create team from teams dropdown (#8831)
+- feat: Add standup demo video to empty meeting view (#8862)
+- feat(al): Show standup meeting type first in all views (#8864)
+-
+
+### Fixed
+
+- chore: use google creds instead of gcal (#8895)
+- fix: add transcription during discuss phase (#8580)
+- feat(Prompt to join org): reverse feature flag (#8886)
+- fix: loom links wrap, changed layout to single column (#8884)
+- fix: emoji tooltip info is wrong in a standup discussion drawer (#8842)
+- fix(standups): 'Your tasks' -> 'Your work' (#8874)
+- fix(billing): Stop updating Enterprise Stripe subscription quantities to AU count (#8850)
+- chore(analytics): Move server side segmentIo calls to analytics.ts (#8795)
+- chore(prompt to join org): restrict to verified users (#8798)
+- chore(one-on-one): Add team exists warning (#8718)
+- chore: Add warning to getDataLoader (#8852)
+- chore(metrics): Add Amplitude client-side page view tracking (#8797)
+- chore: track download to pdf (#8854)
+
 ## 6.121.0 2023-Sep-20
 
 ### Added
+
 - SAML self-serve (#8802)
 - download summary as pdf (#8845)
 - **standups**: 'Your work' GitHub integration (#8724)
 
 ### Fixed
+
 - allow to set task max-width (#8819)
 - filter tasks that are being created by different users in your work drawer (#8829)
 - remove memory leak from analytics (#8839)
 - **check-in**: fix navigating from first call to a new agenda item (#8833)
 
-
 ## 6.120.0 2023-Sep-13
 
 ### Added
+
 - scroll to card section (#8774)
 - invite link in right drawer (#8806)
 
 ### Changed
+
 - Delete unused file (#8790)
 - update instances of GitLab logo SVG (#8783)
 - **one-on-one**: show organiation picker if can't determine org automatically (#8712)
@@ -34,6 +77,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Update dev readme with assign SU script (#8815)
 
 ### Fixed
+
 - **gcal**: handle Zoom add-on conflict (#8776)
 - prevent newly added agenda item to be accessible when agenda items phase has not been started yet (#8799)
 - make new agenda items accessible from first call phase (#8835)
