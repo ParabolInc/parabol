@@ -15,7 +15,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
-import collectReactjis from './helpers/collectReactjis'
+import gatherInsights from './helpers/gatherInsights'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
@@ -74,7 +74,7 @@ export default {
       estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
     ).size
     const discussionIds = estimateStages.map((stage) => stage.discussionId)
-    const usedReactjis = await collectReactjis(meeting, dataLoader)
+    const insights = await gatherInsights(meeting, dataLoader)
 
     const completedMeeting = (await r
       .table('NewMeeting')
@@ -89,7 +89,7 @@ export default {
             .count()
             .default(0) as unknown as number,
           storyCount,
-          usedReactjis
+          ...insights
         },
         {returnChanges: true, nonAtomic: true}
       )('changes')(0)('new_val')

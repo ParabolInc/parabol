@@ -27,7 +27,7 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
     .table('NewMeeting')
     .getAll(teamId, {index: 'teamId'})
     .filter((row: RValue) => row('createdAt').gt(insightsPeriod))
-    .pluck('endedAt', 'usedReactjis', 'meetingType', 'templateId')
+    .pluck('endedAt', 'usedReactjis', 'meetingType', 'templateId', 'engagement')
     .run()
 
   const allUsedEmojis = meetingInsights.reduce((acc, meeting) => {
@@ -44,12 +44,34 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
     .sort((a, b) => b.count - a.count)
     .slice(0, MAX_NUMBER_OF_USED_EMOJIS)
 
+  const engagement = meetingInsights.reduce(
+    (acc, meeting) => {
+      if (!meeting || !meeting.engagement || !meeting.meetingType) return acc
+      const eng = acc[meeting.meetingType] ?? {
+        engagementSum: 0,
+        count: 0
+      }
+      eng.engagementSum += meeting.engagement
+      eng.count += 1
+      acc.all!.engagementSum += meeting.engagement
+      acc.all!.count += 1
+      acc[meeting.meetingType] = eng
+      return acc
+    },
+    {all: {engagementSum: 0, count: 0}} as Record<string, {engagementSum: number; count: number}>
+  )
+
+  const meetingEngagement = Object.fromEntries(
+    Object.entries(engagement).map(([key, value]) => [key, value.engagementSum / value.count])
+  )
+
   await pg
     .updateTable('Team')
     .set({
       insightsUpdatedAt: now,
       mostUsedEmojis:
-        mostUsedEmojis.length >= MIN_NUMBER_OF_USED_EMOJIS ? JSON.stringify(mostUsedEmojis) : null
+        mostUsedEmojis.length >= MIN_NUMBER_OF_USED_EMOJIS ? JSON.stringify(mostUsedEmojis) : null,
+      meetingEngagement: meetingEngagement.all ? JSON.stringify(meetingEngagement) : null
     })
     .where('id', '=', teamId)
     .execute()
