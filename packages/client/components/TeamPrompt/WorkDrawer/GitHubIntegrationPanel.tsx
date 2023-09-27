@@ -71,7 +71,7 @@ const GitHubIntegrationPanel = (props: Props) => {
             selectedRepos={selectedRepos}
             setSelectedRepos={setSelectedRepos}
           />
-          <div className='my-4 flex w-full gap-2 px-4'>
+          <div className='mb-4 flex w-full gap-2 px-4'>
             {GITHUB_QUERY_TABS.map((tab) => (
               <div
                 key={tab.key}

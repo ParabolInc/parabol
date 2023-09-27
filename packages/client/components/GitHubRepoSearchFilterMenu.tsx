@@ -22,7 +22,9 @@ const StyledMenuItemLabel = styled(MenuItemLabel)({})
 
 const StyledMenu = styled(Menu)({
   maxWidth: '100%',
-  minWidth: '300px'
+  minWidth: '300px',
+  padding: '8px',
+  maxHeight: '100%'
 })
 
 const getValue = (item: {nameWithOwner?: string}) => {
