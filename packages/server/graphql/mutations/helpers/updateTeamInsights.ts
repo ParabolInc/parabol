@@ -102,6 +102,7 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
     })
     .where('id', '=', teamId)
     .execute()
+  dataLoader.get('teams').clear(teamId)
 }
 
 export default updateTeamInsights

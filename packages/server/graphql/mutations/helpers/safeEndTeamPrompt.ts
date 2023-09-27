@@ -37,7 +37,8 @@ const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalCon
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
-  updateTeamInsights(meeting.teamId, dataLoader)
+  // await the insights so they're send when sending the end meeting update
+  await updateTeamInsights(meeting.teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meeting.id, meeting.teamId)
   const data = {meetingId: meeting.id}

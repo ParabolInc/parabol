@@ -231,7 +231,8 @@ export default {
     analytics.checkInEnd(completedCheckIn, meetingMembers, team)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     checkTeamsLimit(team.orgId, dataLoader)
-    updateTeamInsights(teamId, dataLoader)
+    // await the insights so they're send when sending the end meeting update
+    await updateTeamInsights(teamId, dataLoader)
 
     const events = teamMembers.map(
       (teamMember) =>
