@@ -73,6 +73,15 @@ const AddTeamDialog = (props: Props) => {
   const defaultOrgId = mutualOrgsIds[0]
   const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
   const [teamName, setTeamName] = useState('')
+  const [teamNameManuallyEdited, setTeamNameManuallyEdited] = useState(false)
+
+  const MAX_TEAM_NAME_LENGTH = 50
+  const generateTeamName = (newUsers: Option[]) => {
+    return newUsers
+      .map((user) => (user.id ? user.label : user.email.split('@')[0]))
+      .join(', ')
+      .substring(0, MAX_TEAM_NAME_LENGTH)
+  }
 
   const onSelectedUsersChange = (newUsers: Option[]) => {
     setSelectedUsers(newUsers)
@@ -89,11 +98,15 @@ const AddTeamDialog = (props: Props) => {
     const mutualOrgsIds = mutualOrgs.map((org) => org.id)
     setMutualOrgsIds(mutualOrgsIds)
     setSelectedOrgId(mutualOrgsIds[0] ?? viewerOrganizations[0]?.id)
+
+    if (!teamNameManuallyEdited) {
+      setTeamName(generateTeamName(newUsers))
+    }
   }
 
   const handleAddTeam = () => {
     const newTeam = {
-      name: teamName,
+      name: teamName.substring(0, MAX_TEAM_NAME_LENGTH),
       orgId: selectedOrgId
     }
     submitMutation()
@@ -116,7 +129,7 @@ const AddTeamDialog = (props: Props) => {
     )
   }
 
-  const isValid = selectedUsers.length && teamName
+  const isValid = selectedUsers.length && teamName.trim()
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
@@ -159,12 +172,13 @@ const AddTeamDialog = (props: Props) => {
           <label className={labelStyles}>Team name</label>
           <Input
             onChange={(e) => {
+              !teamNameManuallyEdited && setTeamNameManuallyEdited(true)
               setTeamName(e.target.value)
             }}
             value={teamName}
           />
         </fieldset>
-        {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>}
+        {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error.message}</div>}
         <DialogActions>
           <SecondaryButton onClick={onClose} size='small'>
             Cancel
