@@ -39,6 +39,7 @@ interface Props {
   referrer: MeetingSummaryReferrer
   referrerUrl?: string
   teamDashUrl: string
+  meetingUrl: string
   urlAction?: 'csv'
   corsOptions: CorsOptions
 }
@@ -55,6 +56,7 @@ const SummarySheet = (props: Props) => {
     meeting: meetingRef,
     referrer,
     teamDashUrl,
+    meetingUrl,
     appOrigin,
     corsOptions
   } = props
@@ -108,7 +110,12 @@ const SummarySheet = (props: Props) => {
       <tbody>
         <tr>
           <td>
-            <SummaryHeader meeting={meeting} corsOptions={corsOptions} teamDashUrl={teamDashUrl} />
+            <SummaryHeader
+              meeting={meeting}
+              corsOptions={corsOptions}
+              teamDashUrl={teamDashUrl}
+              meetingUrl={meetingUrl}
+            />
             <QuickStats meeting={meeting} />
             <TeamHealthSummary meeting={meeting} />
           </td>
