@@ -77,7 +77,14 @@ export default {
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType})) as MeetingSettingsRetrospective
-    const {totalVotes, maxVotesPerGroup, selectedTemplateId, disableAnonymity} = meetingSettings
+    const {
+      id: meetingSettingsId,
+      totalVotes,
+      maxVotesPerGroup,
+      selectedTemplateId,
+      disableAnonymity,
+      videoMeetingURL
+    } = meetingSettings
     const meeting = new MeetingRetrospective({
       id: meetingId,
       teamId,
@@ -88,7 +95,8 @@ export default {
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
-      templateId: selectedTemplateId
+      templateId: selectedTemplateId,
+      videoMeetingURL: videoMeetingURL ?? undefined
     })
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
@@ -119,7 +127,15 @@ export default {
           new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
         )
         .run(),
-      updateTeamByTeamId(updates, teamId)
+      updateTeamByTeamId(updates, teamId),
+      videoMeetingURL &&
+        r
+          .table('MeetingSettings')
+          .get(meetingSettingsId)
+          .update({
+            videoMeetingURL: null
+          })
+          .run()
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting, template)
