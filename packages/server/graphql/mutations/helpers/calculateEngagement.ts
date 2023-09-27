@@ -1,8 +1,8 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import Meeting from '../../../database/types/Meeting'
-import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import getPhase from '../../../utils/getPhase'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 
@@ -32,9 +32,9 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   if (passiveMembers.size === 0) return undefined
 
   // Team Health
-  const teamHealthPhase = phases.find(({phaseType}) => phaseType === 'TEAM_HEALTH')
+  const teamHealthPhase = getPhase(phases, 'TEAM_HEALTH')
   if (teamHealthPhase) {
-    ;(teamHealthPhase as TeamHealthPhase).stages.forEach(({votes}) => {
+    teamHealthPhase.stages.forEach(({votes}) => {
       votes.forEach(({userId}) => {
         passiveMembers.delete(userId)
       })
@@ -43,7 +43,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   }
 
   // Reflections and their reactions
-  if (phases.find(({phaseType}) => phaseType === 'reflect')) {
+  if (getPhase(phases, 'reflect')) {
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     reflections.forEach(({creatorId, reactjis}) => {
       passiveMembers.delete(creatorId)
@@ -55,7 +55,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   }
 
   // Team prompt responses
-  if (phases.find(({phaseType}) => phaseType === 'RESPONSES')) {
+  if (getPhase(phases, 'RESPONSES')) {
     const responses = await getTeamPromptResponsesByMeetingId(meetingId)
     responses.forEach(({userId, reactjis}) => {
       passiveMembers.delete(userId)
@@ -67,7 +67,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   }
 
   // Estimates in Sprint Poker
-  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
+  const estimatePhase = getPhase(phases, 'ESTIMATE')
   if (estimatePhase) {
     ;(estimatePhase as EstimatePhase).stages.forEach(({scores}) => {
       scores.forEach(({userId}) => {
