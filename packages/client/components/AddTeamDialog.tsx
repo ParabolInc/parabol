@@ -59,8 +59,8 @@ const AddTeamDialog = (props: Props) => {
   const viewer = useFragment<AddTeamDialog_viewer$key>(AddTeamDialogViewerFragment, data.viewer)
   const {organizations: viewerOrganizations} = viewer
 
-  const labelStyles = `text-left text-sm font-semibold mb-2`
-  const fieldsetStyles = `mx-0 mb-[15px] mb-2 flex flex-col w-full p-0`
+  const labelStyles = `text-left text-sm font-semibold mb-3`
+  const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
 
   const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
   const [mutualOrgsIds, setMutualOrgsIds] = React.useState<string[]>([])
@@ -144,6 +144,12 @@ const AddTeamDialog = (props: Props) => {
             value={selectedUsers}
             onChange={onSelectedUsersChange}
           />
+
+          {selectedUsers.some((user: Option) => !user.id) && (
+            <div className='mt-2 text-xs font-semibold text-slate-700'>
+              Email invitations expire in 30 days.
+            </div>
+          )}
         </fieldset>
 
         {showOrgPicker && (
