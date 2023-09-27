@@ -10,6 +10,13 @@ type MeetingEngagement {
   all: Float!
 }
 
+type TopRetroTemplate {
+  id: ID!
+  reflectTemplateId: ID!
+  reflectTemplate: ReflectTemplate!
+  count: Int!
+}
+
 type TeamInsights {
   id: ID!
 
@@ -22,4 +29,9 @@ type TeamInsights {
   Meeting engagement, null if not enough signal
   """
   meetingEngagement: MeetingEngagement
+
+  """
+  Most used retro templates of the past year, null if not enough signal
+  """
+  topRetroTemplates: [TopRetroTemplate!]
 }
