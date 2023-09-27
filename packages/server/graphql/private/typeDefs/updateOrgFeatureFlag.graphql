@@ -5,7 +5,7 @@ enum OrganizationFeatureFlagsEnum {
   noAISummary
   AIGeneratedDiscussionPrompt
   standupAISummary
-  promptToJoinOrg
+  noPromptToJoinOrg
   suggestGroups
   zoomTranscription
   shareSummary
