@@ -187,7 +187,7 @@ const GcalModal = (props: Props) => {
         <div className='flex flex-col'>
           <div className='text-lg'>{'Schedule Your Meeting'}</div>
           <div className='text-gray-500 mt-1 text-sm font-normal'>
-            We'll include a link to the Parabol meeting in the description
+            Create a Google Calendar event with a link to the Parabol meeting in the description
           </div>
         </div>
         <StyledCloseButton onClick={closeModal}>
