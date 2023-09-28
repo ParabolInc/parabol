@@ -100,8 +100,8 @@ const handleCompletedRetrospectiveStage = async (
     const data = await addDiscussionTopics(meeting, dataLoader)
     // create new threads
     const {discussPhaseStages} = data
-    const {id: meetingId, teamId} = meeting
-    addRecallBot(teamId, dataLoader)
+    const {id: meetingId, teamId, videoMeetingURL} = meeting
+
     const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
       meetingId,
@@ -113,6 +113,9 @@ const handleCompletedRetrospectiveStage = async (
       insertDiscussions(discussions),
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
     ])
+    if (videoMeetingURL) {
+      addRecallBot(meetingId, videoMeetingURL)
+    }
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
     const {discussionId} = stage as DiscussStage

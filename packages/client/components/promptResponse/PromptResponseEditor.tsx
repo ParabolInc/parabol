@@ -68,7 +68,7 @@ const CancelButton = styled(SubmitButton)({
 const StyledEditor = styled('div')`
   .ProseMirror {
     min-height: 40px;
-    line-height: 20px;
+    line-height: 1.25;
   }
 
   .ProseMirror :is(ul, ol) {

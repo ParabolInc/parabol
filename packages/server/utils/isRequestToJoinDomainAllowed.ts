@@ -1,4 +1,3 @@
-import isCompanyDomain from './isCompanyDomain'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import isUserVerified from './isUserVerified'
@@ -12,7 +11,8 @@ export const getEligibleOrgIdsByDomain = async (
   userId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  if (!isCompanyDomain(activeDomain)) {
+  const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(activeDomain)
+  if (!isCompanyDomain) {
     return []
   }
 
@@ -21,6 +21,7 @@ export const getEligibleOrgIdsByDomain = async (
   const orgs = await r
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})
+    .filter((org: RDatum) => org('featureFlags').contains('noPromptToJoinOrg').not())
     .merge((org: RDatum) => ({
       members: r
         .table('OrganizationUser')

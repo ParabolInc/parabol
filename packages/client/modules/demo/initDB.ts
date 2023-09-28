@@ -301,7 +301,7 @@ const initDemoOrg = () => {
       zoomTranscription: false,
       suggestGroups: false,
       teamsLimit: false,
-      promptToJoinOrg: false,
+      noPromptToJoinOrg: false,
       AIGeneratedDiscussionPrompt: false
     },
     showConversionModal: false

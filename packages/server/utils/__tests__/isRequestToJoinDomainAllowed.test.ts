@@ -42,11 +42,16 @@ type TestOrganizationUser = Pick<
   'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'
 >
 
-const addOrg = async (activeDomain: string | null, members: TestOrganizationUser[]) => {
+const addOrg = async (
+  activeDomain: string | null,
+  members: TestOrganizationUser[],
+  featureFlags?: string[]
+) => {
   const orgId = generateUID()
   const org = {
     id: orgId,
-    activeDomain
+    activeDomain,
+    featureFlags: featureFlags ?? []
   }
 
   const orgUsers = members.map((member) => ({
@@ -68,8 +73,21 @@ const userLoader = {
   loadMany: jest.fn()
 }
 userLoader.loadMany.mockReturnValue([])
+
+const isCompanyDomainLoader = {
+  load: jest.fn(),
+  loadMany: jest.fn()
+}
+isCompanyDomainLoader.load.mockReturnValue(true)
+
 const dataLoader = {
-  get: jest.fn((loader) => (loader === 'users' ? userLoader : null))
+  get: jest.fn((loader) => {
+    const loaders = {
+      users: userLoader,
+      isCompanyDomain: isCompanyDomainLoader
+    }
+    return loaders[loader]
+  })
 }
 
 beforeAll(async () => {
@@ -109,6 +127,27 @@ test('Founder is billing lead', async () => {
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
+})
+
+test('Org with noPromptToJoinOrg feature flag is ignored', async () => {
+  await addOrg(
+    'parabol.co',
+    [
+      {
+        joinedAt: new Date('2023-09-06'),
+        role: 'BILLING_LEADER',
+        userId: 'user1'
+      },
+      {
+        joinedAt: new Date('2023-09-12'),
+        userId: 'user2'
+      }
+    ],
+    ['noPromptToJoinOrg']
+  )
+
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
 test('Inactive founder is ignored', async () => {
