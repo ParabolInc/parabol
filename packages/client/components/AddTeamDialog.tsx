@@ -22,6 +22,7 @@ import {Input} from '../ui/Input/Input'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import useRouter from '~/hooks/useRouter'
 import getGraphQLError from '~/utils/relay/getGraphQLError'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 interface Props {
   isOpen: boolean
@@ -84,6 +85,12 @@ const AddTeamDialog = (props: Props) => {
   }
 
   const onSelectedUsersChange = (newUsers: Option[]) => {
+    if (newUsers.length && newUsers.length > selectedUsers.length) {
+      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
+        selectionLocation: 'addTeamUserPicker'
+      })
+    }
+
     setSelectedUsers(newUsers)
     const selectedUsersOrganizationIds = new Set()
     newUsers.forEach((user) => {
