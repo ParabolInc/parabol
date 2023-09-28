@@ -31,6 +31,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 
+- fix: read SAML from PG (#8906)
 - chore: use google creds instead of gcal (#8895)
 - fix: add transcription during discuss phase (#8580)
 - feat(Prompt to join org): reverse feature flag (#8886)

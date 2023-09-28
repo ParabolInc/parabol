@@ -32,7 +32,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
 
   const [existingUser, samlURL] = await Promise.all([
     getUserByEmail(email),
-    getSAMLURLFromEmail(email, false)
+    getSAMLURLFromEmail(email, dataLoader, false)
   ])
 
   if (samlURL) {

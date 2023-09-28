@@ -24,8 +24,8 @@ const SAMLIdP = {
   },
   type: GraphQLString,
   resolve: rateLimit({perMinute: 120, perHour: 3600})(
-    async (_source: unknown, {email, isInvited}) => {
-      return getSAMLURLFromEmail(email, isInvited)
+    async (_source: unknown, {email, isInvited}, {dataLoader}) => {
+      return getSAMLURLFromEmail(email, dataLoader, isInvited)
     }
   )
 }
