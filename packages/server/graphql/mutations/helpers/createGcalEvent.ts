@@ -33,9 +33,8 @@ const createGcalEvent = async (input: Input) => {
     return standardError(new Error('Could not retrieve Google Calendar auth'), {userId: viewerId})
   }
   const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
-
-  const CLIENT_ID = process.env.GCAL_CLIENT_ID
-  const CLIENT_SECRET = process.env.GCAL_CLIENT_SECRET
+  const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
+  const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
   const REDIRECT_URI = appOrigin
 
   const startDateTime = new Date(startTimestamp * 1000).toISOString()
