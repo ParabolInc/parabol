@@ -1,26 +1,24 @@
 import Meeting from '../../../database/types/Meeting'
 import MeetingMember from '../../../database/types/MeetingMember'
-import segmentIo from '../../../utils/segmentIo'
+import TeamMember from '../../../database/types/TeamMember'
+import {analytics} from '../../../utils/analytics/analytics'
 
 const sendPokerMeetingRevoteToSegment = async (
   meeting: Meeting,
+  teamMembers: TeamMember[],
   meetingMembers: MeetingMember[]
 ) => {
   const {facilitatorUserId, meetingNumber, phases, teamId} = meeting
   const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
   presentMemberUserIds.forEach((userId) => {
     const wasFacilitator = userId === facilitatorUserId
-    segmentIo.track({
-      userId,
-      event: 'Poker Meeting Team Revoted',
-      properties: {
-        hasIcebreaker: phases[0]?.phaseType === 'checkin',
-        wasFacilitator,
-        meetingNumber,
-        teamMembersCount: meetingMembers.length,
-        teamMembersPresentCount: meetingMembers.length,
-        teamId
-      }
+    analytics.pokerMeetingTeamRevoted(userId, {
+      teamId,
+      hasIcebreaker: phases[0]?.phaseType === 'checkin',
+      wasFacilitator,
+      meetingNumber,
+      teamMembersCount: teamMembers.length,
+      teamMembersPresentCount: meetingMembers.length
     })
   })
 }

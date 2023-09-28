@@ -15,4 +15,7 @@ export interface MailManagerOptions {
 }
 export default abstract class MailManager {
   abstract sendEmail(options: MailManagerOptions): Promise<boolean>
+  async validateEmail(_email: string): Promise<boolean> {
+    return true
+  }
 }

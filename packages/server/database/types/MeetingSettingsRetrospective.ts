@@ -10,7 +10,6 @@ interface Input {
   selectedTemplateId?: string
   disableAnonymity?: boolean
   videoMeetingURL?: string
-  recallBotId?: string
 }
 
 const phaseTypes = [
@@ -28,7 +27,6 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
   selectedTemplateId: string
   disableAnonymity: boolean
   videoMeetingURL?: string | null
-  recallBotId?: string | null
 
   constructor(input: Input) {
     const {
@@ -38,8 +36,7 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
       selectedTemplateId,
       totalVotes,
       disableAnonymity,
-      videoMeetingURL,
-      recallBotId
+      videoMeetingURL
     } = input
     super({teamId, id, meetingType: 'retrospective', phaseTypes})
     this.maxVotesPerGroup =
@@ -48,6 +45,5 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
     this.selectedTemplateId = selectedTemplateId || 'workingStuckTemplate'
     this.disableAnonymity = disableAnonymity ?? false
     this.videoMeetingURL = videoMeetingURL
-    this.recallBotId = recallBotId
   }
 }

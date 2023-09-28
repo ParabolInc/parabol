@@ -181,7 +181,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, onToggleDrawer}: Props) => {
           header={
             <DiscussionHeaderWrapper>
               <PromptResponseEditor content={contentJSON} readOnly={true} />
-              <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+              <StyledReactjis key={localStageId} reactjis={reactjis} onToggle={onToggleReactji} />
             </DiscussionHeaderWrapper>
           }
         />

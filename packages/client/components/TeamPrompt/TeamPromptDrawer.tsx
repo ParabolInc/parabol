@@ -10,6 +10,7 @@ import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
 import useBreakpoint from '../../hooks/useBreakpoint'
+import findStageById from '../../utils/meetings/findStageById'
 
 const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
   ({isDesktop, isMobile, isOpen}) => ({
@@ -55,6 +56,18 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
         ...TeamPromptWorkDrawer_meeting
         id
         isRightDrawerOpen
+        localStageId
+        phases {
+          stages {
+            id
+            ... on TeamPromptResponseStage {
+              discussionId
+              teamMember {
+                id
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
@@ -73,13 +86,18 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
-  // Render the discussion thread if it can be rendered, otherwise fall back on the work sidebar.
-  // :TRICKY: Elements rendered with JSX never return null, so we need to render both possible
-  // internal drawers via function calls in order to nullish coalesce. We also have to call both
-  // every time for the React hooks to be consistent.
-  const renderedDiscussionDrawer = TeamPromptDiscussionDrawer({meetingRef: meeting, onToggleDrawer})
-  const renderedWorkDrawer = TeamPromptWorkDrawer({meetingRef: meeting, onToggleDrawer})
-  const renderedInnerDrawer = renderedDiscussionDrawer ?? renderedWorkDrawer
+  const shouldRenderDiscussionDrawer = () => {
+    const {localStageId} = meeting
+    if (!localStageId) return false
+
+    const stage = findStageById(meeting.phases, localStageId)
+    if (!stage) return false
+
+    const {discussionId, teamMember} = stage.stage
+    if (!discussionId || !teamMember) return false
+
+    return true
+  }
 
   return (
     <ResponsiveDashSidebar
@@ -89,7 +107,11 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
       <Drawer isDesktop={isDesktop} isMobile={isMobile} isOpen={isRightDrawerOpen}>
-        {renderedInnerDrawer}
+        {shouldRenderDiscussionDrawer() ? (
+          <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
+        ) : (
+          <TeamPromptWorkDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
+        )}
       </Drawer>
     </ResponsiveDashSidebar>
   )

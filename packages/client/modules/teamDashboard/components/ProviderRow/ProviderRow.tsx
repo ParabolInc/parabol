@@ -7,6 +7,7 @@ interface Props extends Omit<ProviderRowBaseProps, 'connectButton'> {
   submitting: boolean
   connectButtonText?: string
   connectButtonIcon?: React.ReactElement
+  error?: React.ReactElement | string
 }
 
 const ProviderRow = (props: Props) => {

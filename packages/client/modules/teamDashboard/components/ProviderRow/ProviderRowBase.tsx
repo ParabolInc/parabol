@@ -104,12 +104,14 @@ export interface ProviderRowBaseProps {
   children?: React.ReactElement | false
   seeHowItWorksUrl?: string
   connectButton: React.ReactElement
+  error?: React.ReactElement | string
 }
 
 const ProviderRowBase = (props: ProviderRowBaseProps) => {
   const {
     connectButton,
     connected,
+    error,
     togglePortal,
     menuRef,
     providerName,
@@ -136,6 +138,11 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
               </>
             )}
           </RowInfoCopy>
+          {!!error && (
+            <div className='text-sm text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
+              {error}
+            </div>
+          )}
         </RowInfo>
         <ProviderActions>
           {!connected && connectButton}

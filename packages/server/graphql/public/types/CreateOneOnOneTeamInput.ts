@@ -1,10 +1,11 @@
 import {GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
+import GraphQLEmailType from '../../types/GraphQLEmailType'
 
 const CreateOneOnOneTeamInput = new GraphQLInputObjectType({
   name: 'CreateOneOnOneTeamInput',
   fields: () => ({
     email: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLEmailType)
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLString)

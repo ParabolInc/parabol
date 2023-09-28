@@ -1,43 +1,74 @@
-import isCompanyDomain from './isCompanyDomain'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
+import isUserVerified from './isUserVerified'
+import User from '../database/types/User'
+import {DataLoaderWorker} from '../graphql/graphql'
+import isValid from '../graphql/isValid'
+import TeamMember from '../database/types/TeamMember'
 
 export const getEligibleOrgIdsByDomain = async (
   activeDomain: string,
-  viewerId: string,
-  limit?: number
+  userId: string,
+  dataLoader: DataLoaderWorker
 ) => {
-  const BIG_ENOUGH_LIMIT = 9999
-
-  if (!isCompanyDomain(activeDomain)) {
+  const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(activeDomain)
+  if (!isCompanyDomain) {
     return []
   }
 
   const r = await getRethink()
 
-  return r
+  const orgs = await r
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})
-    .filter((org: RDatum) => org('featureFlags').contains('promptToJoinOrg'))
-    .filter((org: RDatum) =>
-      r
+    .filter((org: RDatum) => org('featureFlags').contains('noPromptToJoinOrg').not())
+    .merge((org: RDatum) => ({
+      members: r
         .table('OrganizationUser')
         .getAll(org('id'), {index: 'orgId'})
-        .filter({inactive: false, removedAt: null})
+        .orderBy('joinedAt')
         .coerceTo('array')
-        .do((orgUsers: RDatum) =>
-          orgUsers
-            .count()
-            .gt(1)
-            .and(orgUsers.filter((ou: RDatum) => ou('userId').eq(viewerId)).isEmpty())
-        )
+    }))
+    .merge((org: RDatum) => ({
+      founder: org('members').nth(0).default(null),
+      billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false}),
+      activeMembers: org('members').filter({inactive: false, removedAt: null}).count()
+    }))
+    .filter((org: RDatum) =>
+      org('activeMembers').gt(1).and(org('members').filter({userId}).isEmpty())
     )
-    .limit(limit ?? BIG_ENOUGH_LIMIT)('id')
     .run()
+
+  const eligibleOrgs = await Promise.all(
+    orgs.map(async (org) => {
+      const {founder} = org
+      const importantMembers = org.billingLeads.slice() as TeamMember[]
+      if (!founder.inactive && !founder.removedAt && founder.role !== 'BILLING_LEADER') {
+        importantMembers.push(founder)
+      }
+
+      const users = (
+        await dataLoader.get('users').loadMany(importantMembers.map(({userId}) => userId))
+      ).filter(isValid)
+      if (
+        !users.some((user) => user.email.split('@')[1] === activeDomain && isUserVerified(user))
+      ) {
+        return null
+      }
+      return org
+    })
+  )
+  return eligibleOrgs.filter(isValid).map(({id}) => id)
 }
 
-const isRequestToJoinDomainAllowed = async (domain: string, viewerId: string) => {
-  const orgIds = await getEligibleOrgIdsByDomain(domain, viewerId, 1)
+const isRequestToJoinDomainAllowed = async (
+  domain: string,
+  user: User,
+  dataLoader: DataLoaderWorker
+) => {
+  if (!isUserVerified(user)) return false
+
+  const orgIds = await getEligibleOrgIdsByDomain(domain, user.id, dataLoader)
   return orgIds.length > 0
 }
 

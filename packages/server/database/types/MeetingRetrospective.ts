@@ -21,6 +21,8 @@ interface Input {
   transcription?: string
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]
   resetReflectionGroups?: AutogroupReflectionGroupType[]
+  recallBotId?: string
+  videoMeetingURL?: string
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
@@ -42,6 +44,8 @@ export default class MeetingRetrospective extends Meeting {
   topicCount?: number
   reflectionCount?: number
   transcription?: string
+  recallBotId?: string
+  videoMeetingURL?: string
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]
   resetReflectionGroups?: AutogroupReflectionGroupType[]
 
@@ -60,7 +64,9 @@ export default class MeetingRetrospective extends Meeting {
       disableAnonymity,
       transcription,
       autogroupReflectionGroups,
-      resetReflectionGroups
+      resetReflectionGroups,
+      recallBotId,
+      videoMeetingURL
     } = input
     super({
       id,
@@ -79,5 +85,7 @@ export default class MeetingRetrospective extends Meeting {
     this.transcription = transcription
     this.autogroupReflectionGroups = autogroupReflectionGroups
     this.resetReflectionGroups = resetReflectionGroups
+    this.recallBotId = recallBotId
+    this.videoMeetingURL = videoMeetingURL
   }
 }

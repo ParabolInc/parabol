@@ -32,8 +32,6 @@ const StyledDialogContent = styled(DialogContent)({
   }
 })
 
-const URL = 'https://www.youtube.com/embed/X_i60AMxPBU?modestbranding=1&rel=0'
-
 const VideoEmbed = styled('iframe')({
   border: 'none',
   aspectRatio: '16/9',
@@ -41,12 +39,18 @@ const VideoEmbed = styled('iframe')({
   height: '100%'
 })
 
-const MeetingsDashTutorialModal = () => {
+interface Props {
+  label: string
+  src: string
+}
+
+const MeetingsDashTutorialModal = (props: Props) => {
+  const {label, src} = props
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>Starting a Sprint Poker Meeting</StyledDialogTitle>
+      <StyledDialogTitle>{label}</StyledDialogTitle>
       <StyledDialogContent>
-        <VideoEmbed src={URL} allow='fullscreen' />
+        <VideoEmbed src={src} allow='fullscreen' />
       </StyledDialogContent>
     </StyledDialogContainer>
   )
