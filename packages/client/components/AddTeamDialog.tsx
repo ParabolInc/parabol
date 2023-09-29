@@ -85,12 +85,6 @@ const AddTeamDialog = (props: Props) => {
   }
 
   const onSelectedUsersChange = (newUsers: Option[]) => {
-    if (newUsers.length && newUsers.length > selectedUsers.length) {
-      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
-        selectionLocation: 'addTeamUserPicker'
-      })
-    }
-
     setSelectedUsers(newUsers)
     const selectedUsersOrganizationIds = new Set()
     newUsers.forEach((user) => {
@@ -109,11 +103,17 @@ const AddTeamDialog = (props: Props) => {
     if (!teamNameManuallyEdited) {
       setTeamName(generateTeamName(newUsers))
     }
+
+    if (newUsers.length && newUsers.length > selectedUsers.length) {
+      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
+        selectionLocation: 'addTeamUserPicker'
+      })
+    }
   }
 
   const handleAddTeam = () => {
     const newTeam = {
-      name: teamName.substring(0, MAX_TEAM_NAME_LENGTH),
+      name: teamName,
       orgId: selectedOrgId
     }
     submitMutation()
@@ -190,8 +190,10 @@ const AddTeamDialog = (props: Props) => {
             }}
             value={teamName}
           />
+          {error && (
+            <div className='mt-2 text-sm font-semibold text-tomato-500'>{error.message}</div>
+          )}
         </fieldset>
-        {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error.message}</div>}
         <DialogActions>
           <SecondaryButton onClick={onClose} size='small'>
             Cancel
