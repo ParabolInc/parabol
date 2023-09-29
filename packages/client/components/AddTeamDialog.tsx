@@ -49,6 +49,9 @@ const query = graphql`
   }
 `
 
+const labelStyles = `text-left text-sm font-semibold mb-3`
+const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
+
 const AddTeamDialog = (props: Props) => {
   const {isOpen, onClose, queryRef, onAddTeam} = props
   const atmosphere = useAtmosphere()
@@ -59,9 +62,6 @@ const AddTeamDialog = (props: Props) => {
   const data = usePreloadedQuery<AddTeamDialogQuery>(query, queryRef)
   const viewer = useFragment<AddTeamDialog_viewer$key>(AddTeamDialogViewerFragment, data.viewer)
   const {organizations: viewerOrganizations} = viewer
-
-  const labelStyles = `text-left text-sm font-semibold mb-3`
-  const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
 
   const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
   const [mutualOrgsIds, setMutualOrgsIds] = React.useState<string[]>([])
