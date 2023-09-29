@@ -63,8 +63,8 @@ const AddTeamDialog = (props: Props) => {
   const viewer = useFragment<AddTeamDialog_viewer$key>(AddTeamDialogViewerFragment, data.viewer)
   const {organizations: viewerOrganizations} = viewer
 
-  const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
-  const [mutualOrgsIds, setMutualOrgsIds] = React.useState<string[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<Option[]>([])
+  const [mutualOrgsIds, setMutualOrgsIds] = useState<string[]>([])
 
   const showOrgPicker = !!(
     selectedUsers.length &&
