@@ -1,7 +1,6 @@
 import React, {useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
-import PrimaryButton from './PrimaryButton'
-import SecondaryButton from './SecondaryButton'
+import FlatPrimaryButton from './FlatPrimaryButton'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
@@ -195,12 +194,13 @@ const AddTeamDialog = (props: Props) => {
           )}
         </fieldset>
         <DialogActions>
-          <SecondaryButton onClick={onClose} size='small'>
-            Cancel
-          </SecondaryButton>
-          <PrimaryButton size='small' onClick={handleAddTeam} disabled={submitting || !isValid}>
+          <FlatPrimaryButton
+            size='medium'
+            onClick={handleAddTeam}
+            disabled={submitting || !isValid}
+          >
             Add team
-          </PrimaryButton>
+          </FlatPrimaryButton>
         </DialogActions>
       </DialogContent>
     </Dialog>
