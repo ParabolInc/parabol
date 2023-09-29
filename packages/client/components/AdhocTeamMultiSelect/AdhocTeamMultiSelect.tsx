@@ -166,7 +166,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       <div {...getRootProps()}>
         <div
           ref={setAnchorEl}
-          className='align-center flex min-h-[44px] w-full flex-wrap rounded border-2 border-slate-300 bg-white px-1 py-0.5 text-sm font-semibold'
+          className='align-center flex min-h-[44px] w-full flex-wrap rounded border border-slate-500 bg-white px-1 py-0.5 text-sm'
         >
           {value.map((option, index: number) => (
             <Chip
