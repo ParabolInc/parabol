@@ -24,7 +24,12 @@ module.exports = ({noDeps}) => ({
   },
   entry: {
     chronos: [DOTENV, path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
-    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
+    web: [
+      DOTENV,
+      // each instance of web needs to generate its own index.html to use on startup
+      path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
+      path.join(SERVER_ROOT, 'server.ts')
+    ],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
     pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
