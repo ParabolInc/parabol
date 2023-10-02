@@ -451,11 +451,11 @@ type User {
   """
   parseSAMLMetadata(
     """
-    A blob of XML from the IdP describing how to handle authentication
+    URL of a blob of XML from the IdP describing how to handle authentication
     """
-    metadata: String!
+    metadataURL: String!
     """
-    The name of the company, used as a slug in signon URLs.
+    The name of the company, used as a slug in signon URLs
     """
     domain: String!
   ): ParseSAMLMetadataPayload!
