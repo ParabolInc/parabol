@@ -8,7 +8,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import {createEditorExtensions} from '../../../../../components/promptResponse/tiptapConfig'
 
 const responseSummaryCardStyles: React.CSSProperties = {
-  display: 'inherit',
   padding: '12px',
   width: '100%'
 }
