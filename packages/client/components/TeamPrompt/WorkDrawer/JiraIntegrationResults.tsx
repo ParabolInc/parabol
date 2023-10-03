@@ -32,7 +32,7 @@ const JiraIntegrationResults = (props: Props) => {
       fragment JiraIntegrationResults_search on Query
       @argumentDefinitions(
         cursor: {type: "String"}
-        count: {type: "Int", defaultValue: 2}
+        count: {type: "Int", defaultValue: 20}
         teamId: {type: "ID!"}
       )
       @refetchable(queryName: "JiraIntegrationResultsSearchPaginationQuery") {
@@ -68,7 +68,7 @@ const JiraIntegrationResults = (props: Props) => {
     query
   )
 
-  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 2)
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext} = paginationRes
 
   const jira = data.viewer.teamMember?.integrations.atlassian

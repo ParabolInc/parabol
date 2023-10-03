@@ -64,7 +64,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     })
     const nodes = mappedIssues.slice(0, first)
     const edges = nodes.map((node, index) => ({
-      cursor: `${index + (afterInt ?? 0)}`,
+      cursor: `${index + startAt}`,
       node
     }))
     const firstEdge = edges[0]
