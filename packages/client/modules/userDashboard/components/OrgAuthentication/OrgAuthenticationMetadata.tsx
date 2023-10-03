@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -10,7 +9,6 @@ import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import {PALETTE} from '../../../../styles/paletteV3'
 import getTokenFromSSO from '../../../../utils/getTokenFromSSO'
 
 graphql`
@@ -29,26 +27,6 @@ graphql`
     }
   }
 `
-
-const Section = styled('div')({
-  padding: '24px 16px 8px 28px'
-})
-
-const InputSection = styled('div')({
-  display: 'flex',
-  padding: '0 16px 8px 16px'
-})
-
-const Container = styled('div')({
-  marginBottom: '16px'
-})
-
-const ButtonSection = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  padding: '0px 16px 0px 16px',
-  backgroundColor: PALETTE.WHITE
-})
 
 interface Props {
   samlRef: OrgAuthenticationMetadata_saml$key | null
@@ -111,14 +89,14 @@ const OrgAuthenticationMetadata = (props: Props) => {
     })
   }
   return (
-    <Container>
-      <Section>
+    <>
+      <div className='px-6 pb-3'>
         <div className='flex text-base font-semibold leading-6 text-slate-700'>Metadata URL</div>
         <div className={'flex items-center text-sm text-slate-700'}>
           Paste the metadata URL from your identity provider
         </div>
-      </Section>
-      <InputSection>
+      </div>
+      <div className='px-6 pb-3'>
         <BasicInput
           name='metadataURL'
           placeholder={`https://idp.example.com/app/sso/saml/metadata`}
@@ -126,9 +104,9 @@ const OrgAuthenticationMetadata = (props: Props) => {
           onChange={(e) => setMetadataURL(e.target.value)}
           error={undefined}
         />
-      </InputSection>
+      </div>
       <div className={'px-4 text-tomato-500 empty:hidden'}>{error?.message}</div>
-      <ButtonSection>
+      <div className='flex justify-end px-6 pb-8'>
         <SecondaryButton
           size='medium'
           onClick={submitMetadataURL}
@@ -136,8 +114,8 @@ const OrgAuthenticationMetadata = (props: Props) => {
         >
           Update Metadata
         </SecondaryButton>
-      </ButtonSection>
-    </Container>
+      </div>
+    </>
   )
 }
 
