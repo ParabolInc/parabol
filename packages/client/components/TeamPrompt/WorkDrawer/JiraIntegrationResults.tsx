@@ -21,6 +21,7 @@ const JiraIntegrationResults = (props: Props) => {
     queryRef
   )
 
+  // :TODO: (jmtaber129): Implement pagination
   const queryFrag = useFragment(
     graphql`
       fragment JiraIntegrationResults_search on Query @argumentDefinitions(teamId: {type: "ID!"}) {
