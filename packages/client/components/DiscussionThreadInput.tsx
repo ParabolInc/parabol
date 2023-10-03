@@ -29,6 +29,7 @@ import {createLocalPoll} from './Poll/local/newPoll'
 import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import AddActivityButton from '~/components/AddActivityButton'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -113,9 +114,16 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       fragment DiscussionThreadInput_discussion on Discussion {
         id
         meetingId
-        teamId
         isAnonymousComment
         discussionTopicType
+        team {
+          id
+          organization {
+            featureFlags {
+              meetingInception
+            }
+          }
+        }
       }
     `,
     discussionRef
@@ -123,7 +131,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: discussionId, meetingId, isAnonymousComment, teamId, discussionTopicType} = discussion
+  const {id: discussionId, meetingId, isAnonymousComment, team, discussionTopicType} = discussion
+  const {id: teamId, organization} = team
+  const {featureFlags} = organization
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -290,9 +300,11 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
-  const isActionsContainerVisible = allowTasks || allowPolls
+  const allowAddActivity = featureFlags.meetingInception
+  const isActionsContainerVisible = allowTasks || allowPolls || allowAddActivity
   const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
+
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentContainer>
@@ -332,6 +344,15 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             <AddPollButton
               dataCy={`${dataCy}-poll`}
               onClick={addPoll}
+              disabled={isActionsContainerDisabled}
+            />
+          )}
+          {allowAddActivity && (
+            <AddActivityButton
+              dataCy={`${dataCy}-activity`}
+              onClick={() => {
+                window.open(`/activity-library/category/recommended`, '_blank', 'noreferrer')
+              }}
               disabled={isActionsContainerDisabled}
             />
           )}

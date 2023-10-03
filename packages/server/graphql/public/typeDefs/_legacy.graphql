@@ -2739,6 +2739,11 @@ type Discussion {
   meetingId: ID!
 
   """
+  Team
+  """
+  team: Team!
+
+  """
   time the thread was created
   """
   createdAt: DateTime!
