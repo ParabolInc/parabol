@@ -6,7 +6,7 @@ export async function up() {
   await client.connect()
   await client.query(`
   ALTER TABLE "SAML"
-  ADD COLUMN IF NOT EXISTS "metadataURL" VARCHAR(2056);
+  ADD COLUMN IF NOT EXISTS "metadataURL" VARCHAR(2048);
   `)
   await client.end()
 }

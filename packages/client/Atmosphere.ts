@@ -343,7 +343,6 @@ export default class Atmosphere extends Environment {
         fetchPolicy: 'store-or-network'
       }).toPromise()
     } catch (e) {
-      console.log('caught', e)
       return null
     }
     return res
