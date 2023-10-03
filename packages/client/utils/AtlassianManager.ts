@@ -641,7 +641,6 @@ export default abstract class AtlassianManager {
         }
         return
       }
-      console.log('jira res', JSON.stringify(res))
       const issues = res.issues.map((issue) => {
         const {key: issueKey, fields, renderedFields, changelog} = issue
         const {description, summary, issuetype, created} = fields
