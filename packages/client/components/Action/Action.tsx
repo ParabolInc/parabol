@@ -86,6 +86,6 @@ const Action = memo(() => {
   )
 })
 
-Action.displayName = 'Action'
+Action.displayName = 'Action!'
 
 export default Action
