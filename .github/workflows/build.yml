@@ -54,7 +54,7 @@ jobs:
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
 
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
-          echo "ACTION_VERSION=6.122.0-exotic" >> $GITHUB_ENV
+          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -95,6 +95,17 @@ jobs:
 
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
+
+      - name: Push Artifacts to Datadog
+        #if: github.ref_type == 'tag'
+        env:
+          DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
+        run: |
+
+          yarn datadog-ci sourcemaps upload ./build \
+            --service=parabol-saas-production \
+            --release-version=${{env.ACTION_VERSION}} \
+            --minified-path-prefix=https://action-files.parabol.co/production/build/
 
       - name: Check Code Quality
         run: yarn codecheck
@@ -205,11 +216,3 @@ jobs:
           environment: "production"
           sourcemaps: "./build"
           version: ${{env.ACTION_VERSION}}
-      - name: Push Artifacts to Datadog
-        #if: github.ref_type == 'tag'
-        run: |
-          yarn add @datadog/datadog-ci -W
-          yarn datadog-ci sourcemaps upload ./build \
-            --service=parabol-saas-production \
-            --release-version=${{env.ACTION_VERSION}} \
-            --minified-path-prefix=https://action-files.parabol.co/production/build/
