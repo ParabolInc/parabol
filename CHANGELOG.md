@@ -5,7 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.123.0 2023-Sep-27
+## 6.123.1 2023-Oct-04
+
+### Fixed
+
+- fix: saml urls #8918
+
+## 6.123.0 2023-Oct-04
 
 ### Added
 
