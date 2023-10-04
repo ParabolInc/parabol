@@ -105,7 +105,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
           error={undefined}
         />
       </div>
-      <div className={'px-4 text-tomato-500 empty:hidden'}>{error?.message}</div>
+      <div className={'px-6 text-tomato-500 empty:hidden'}>{error?.message}</div>
       <div className='flex justify-end px-6 pb-8'>
         <SecondaryButton
           size='medium'
