@@ -86,7 +86,7 @@ const makeTemplate = (template: Template) => ({
   parentTemplateId: null
 })
 
-const promptColors = [PALETTE.AQUA_400, PALETTE.ROSE_500, PALETTE.GRAPE_500]
+const promptColors = [PALETTE.GRAPE_500, PALETTE.AQUA_400, PALETTE.ROSE_500]
 
 type PromptInfo = {
   question: string
