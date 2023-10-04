@@ -44,6 +44,8 @@ export default abstract class Meeting {
   summary?: string
   sentimentScore?: number
   usedReactjis?: Record<string, number>
+  slackTs?: string
+  engagement?: number
 
   constructor(input: Input) {
     const {

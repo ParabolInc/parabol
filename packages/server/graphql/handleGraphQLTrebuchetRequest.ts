@@ -1,6 +1,5 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
 import tracer from 'dd-trace'
-import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {getUserId} from '../utils/authorization'
 import getGraphQLExecutor from '../utils/getGraphQLExecutor'
@@ -25,14 +24,14 @@ const handleGraphQLTrebuchetRequest = async (
         id: opId || '',
         payload: {errors: [{message: 'No payload provided'}]}
       }
-    if (PROD && !docId)
+    if (__PRODUCTION__ && !docId)
       return {
         type: 'error' as const,
         id: opId || '',
         payload: {errors: [{message: 'DocumentId not provided'}]}
       }
 
-    const isSubscription = PROD ? docId![0] === 's' : query?.startsWith('subscription')
+    const isSubscription = __PRODUCTION__ ? docId![0] === 's' : query?.startsWith('subscription')
     if (isSubscription) {
       subscribeGraphQL({docId, query, opId: opId!, variables, connectionContext})
       return

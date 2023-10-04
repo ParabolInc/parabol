@@ -77,7 +77,14 @@ export default {
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType})) as MeetingSettingsRetrospective
-    const {totalVotes, maxVotesPerGroup, selectedTemplateId, disableAnonymity} = meetingSettings
+    const {
+      id: meetingSettingsId,
+      totalVotes,
+      maxVotesPerGroup,
+      selectedTemplateId,
+      disableAnonymity,
+      videoMeetingURL
+    } = meetingSettings
     const meeting = new MeetingRetrospective({
       id: meetingId,
       teamId,
@@ -88,13 +95,14 @@ export default {
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
-      templateId: selectedTemplateId
+      templateId: selectedTemplateId,
+      videoMeetingURL: videoMeetingURL ?? undefined
     })
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     await Promise.all([
       r.table('NewMeeting').insert(meeting).run(),
-      updateMeetingTemplateLastUsedAt(selectedTemplateId)
+      updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
     ])
 
     // Disallow accidental starts (2 meetings within 2 seconds)
@@ -119,12 +127,20 @@ export default {
           new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
         )
         .run(),
-      updateTeamByTeamId(updates, teamId)
+      updateTeamByTeamId(updates, teamId),
+      videoMeetingURL &&
+        r
+          .table('MeetingSettings')
+          .get(meetingSettingsId)
+          .update({
+            videoMeetingURL: null
+          })
+          .run()
     ])
-    createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting, template)
-    const data = {teamId, meetingId}
+    const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+    const data = {teamId, meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
     return data
   }

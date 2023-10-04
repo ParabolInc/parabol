@@ -19,12 +19,13 @@ interface Props {
   name?: string
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
+  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void
   placeholder?: string
   value: string
 }
 
 const BasicTextArea = (props: Props) => {
-  const {autoFocus, disabled, error, name, onBlur, onChange, placeholder, value} = props
+  const {autoFocus, disabled, error, name, onBlur, onChange, onPaste, placeholder, value} = props
 
   return (
     <React.Fragment>
@@ -35,6 +36,7 @@ const BasicTextArea = (props: Props) => {
         placeholder={placeholder}
         onBlur={onBlur}
         onChange={onChange}
+        onPaste={onPaste}
         value={value}
       />
       {error && <StyledError>{error}</StyledError>}

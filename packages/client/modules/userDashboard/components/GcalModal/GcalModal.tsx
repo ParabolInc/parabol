@@ -2,14 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import React, {useState} from 'react'
-import {Dialog} from '../../../../ui/Dialog/Dialog'
-import {DialogContent} from '../../../../ui/Dialog/DialogContent'
-import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
-import {DialogDescription} from '../../../../ui/Dialog/DialogDescription'
+import DialogContent from '../../../../components/DialogContent'
+import DialogTitle from '../../../../components/DialogTitle'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
-import DateTimePicker from './DateTimePicker'
+import DateTimePickers from './DateTimePickers'
 import Checkbox from '../../../../components/Checkbox'
 import useForm from '../../../../hooks/useForm'
 import Legitity from '../../../../validation/Legitity'
@@ -19,6 +17,34 @@ import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import {useFragment} from 'react-relay'
 import StyledError from '../../../../components/StyledError'
+import DialogContainer from '../../../../components/DialogContainer'
+import {Close} from '@mui/icons-material'
+import PlainButton from '../../../../components/PlainButton/PlainButton'
+import VideoConferencing from './VideoConferencing'
+import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
+
+const Wrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  paddingTop: 16
+})
+
+const StyledDialogContainer = styled(DialogContainer)({
+  width: 'auto'
+})
+
+const CloseIcon = styled(Close)({
+  color: PALETTE.SLATE_600,
+  cursor: 'pointer',
+  '&:hover': {
+    opacity: 0.5
+  }
+})
+
+const StyledCloseButton = styled(PlainButton)({
+  height: 24,
+  marginLeft: 'auto'
+})
 
 const StyledInput = styled('input')({
   border: `1px solid ${PALETTE.SLATE_400}`,
@@ -47,12 +73,11 @@ const validateTitle = (title: string) => {
 interface Props {
   handleStartActivityWithGcalEvent: (CreateGcalEventInput: CreateGcalEventInput) => void
   closeModal: () => void
-  isOpen: boolean
   teamRef: GcalModal_team$key
 }
 
 const GcalModal = (props: Props) => {
-  const {handleStartActivityWithGcalEvent, closeModal, isOpen, teamRef} = props
+  const {handleStartActivityWithGcalEvent, closeModal, teamRef} = props
   const startOfNextHour = dayjs().add(1, 'hour').startOf('hour')
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
@@ -61,6 +86,7 @@ const GcalModal = (props: Props) => {
   const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
+  const [videoType, setVideoType] = useState<GcalVideoTypeEnum | null>(null)
 
   const team = useFragment(
     graphql`
@@ -81,9 +107,6 @@ const GcalModal = (props: Props) => {
   const {fields, onChange} = useForm({
     title: {
       getDefault: () => ''
-    },
-    description: {
-      getDefault: () => ''
     }
   })
   const titleErr = fields.title.error
@@ -97,15 +120,14 @@ const GcalModal = (props: Props) => {
     }
     const startTimestamp = start.unix()
     const endTimestamp = end.unix()
-    const description = fields.description.value
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const input = {
       title,
-      description,
       startTimestamp,
       endTimestamp,
       timeZone,
-      invitees
+      invitees,
+      videoType: videoType ?? undefined
     }
     handleStartActivityWithGcalEvent(input)
   }
@@ -163,16 +185,25 @@ const GcalModal = (props: Props) => {
     setInviteAll((inviteAll) => !inviteAll)
   }
 
+  const handleChangeVideoType = (option: GcalVideoTypeEnum | null) => {
+    setVideoType(option)
+  }
+
   return (
-    <Dialog isOpen={isOpen} onClose={closeModal}>
+    <StyledDialogContainer>
+      <DialogTitle>
+        <div className='flex flex-col'>
+          <div className='text-lg'>{'Schedule Your Meeting'}</div>
+          <div className='text-gray-500 mt-1 text-sm font-normal'>
+            Create a Google Calendar event with a link to the Parabol meeting in the description
+          </div>
+        </div>
+        <StyledCloseButton onClick={closeModal}>
+          <CloseIcon />
+        </StyledCloseButton>
+      </DialogTitle>
       <DialogContent>
-        <DialogTitle>Schedule Your Meeting</DialogTitle>
-        <DialogDescription>
-          {
-            'Tell us when you want to meet and we’ll create a Google Calendar invite with a Parabol link'
-          }
-        </DialogDescription>
-        <div className='space-y-1'>
+        <div className='space-y-2'>
           <div>
             <StyledInput
               autoFocus
@@ -184,16 +215,16 @@ const GcalModal = (props: Props) => {
             />
             {titleErr && <ErrorMessage>{titleErr}</ErrorMessage>}
           </div>
-          <StyledInput
-            maxLength={100}
-            name='description'
-            onChange={onChange}
-            placeholder='Enter your meeting description (optional)'
-          />
-          <div className='pt-2'>
-            <DateTimePicker startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
+          <div className='pt-1'>
+            <DateTimePickers
+              startValue={start}
+              endValue={end}
+              setStart={setStart}
+              setEnd={setEnd}
+            />
           </div>
-          <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
+          <VideoConferencing videoType={videoType} handleChangeVideoType={handleChangeVideoType} />
+          <p className='pt-2 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea
             name='rawInvitees'
             onChange={onInvitesChange}
@@ -210,13 +241,15 @@ const GcalModal = (props: Props) => {
           )}
           {inviteError && <ErrorMessage>{inviteError}</ErrorMessage>}
         </div>
-        <DialogActions>
-          <PrimaryButton size='medium' onClick={handleClick}>
-            {`Create Meeting & Gcal Invite`}
-          </PrimaryButton>
-        </DialogActions>
+        <Wrapper>
+          <DialogActions>
+            <PrimaryButton size='medium' onClick={handleClick}>
+              {`Create Meeting & Gcal Invite`}
+            </PrimaryButton>
+          </DialogActions>
+        </Wrapper>
       </DialogContent>
-    </Dialog>
+    </StyledDialogContainer>
   )
 }
 

@@ -7,7 +7,6 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import rateLimit from '../rateLimit'
 import AddOrgPayload from '../types/AddOrgPayload'
@@ -17,6 +16,7 @@ import addOrgValidation from './helpers/addOrgValidation'
 import createNewOrg from './helpers/createNewOrg'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
+import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
@@ -61,17 +61,13 @@ export default {
     const orgId = generateUID()
     const teamId = generateUID()
     const {email} = user
-    await createNewOrg(orgId, orgName, viewerId, email)
+    await createNewOrg(orgId, orgName, viewerId, email, dataLoader)
     await createTeamAndLeader(user, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
 
     const {tms} = authToken
     // MUTATIVE
     tms.push(teamId)
-    segmentIo.track({
-      userId: viewerId,
-      event: 'New Org',
-      properties: {orgId, teamId, fromSignup: false}
-    })
+    analytics.newOrg(viewerId, orgId, teamId, false)
     publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)

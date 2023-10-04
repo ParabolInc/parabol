@@ -17,13 +17,12 @@ import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
-import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
+import TeamPromptDrawer from './TeamPrompt/TeamPromptDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
 import {
   GRID_PADDING_LEFT_RIGHT_PERCENT,
   ResponsesGridBreakpoints
 } from './TeamPrompt/TeamPromptGridDimensions'
-import {TeamPromptMeetingStatus} from './TeamPrompt/TeamPromptMeetingStatus'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
@@ -38,20 +37,14 @@ const ResponsesGridContainer = styled('div')({
   }
 })
 
-const ResponsesGrid = styled('div')({
+const ResponsesGrid = styled('div')<{isSingleColumn: boolean}>(({isSingleColumn}) => ({
   flex: 1,
   display: 'flex',
   flexWrap: 'wrap',
+  flexDirection: isSingleColumn ? 'column' : 'row',
   position: 'relative',
   gap: 32
-})
-
-const BadgeContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginTop: 16
-})
+}))
 
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
@@ -70,7 +63,7 @@ const TeamPromptMeeting = (props: Props) => {
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
         ...useMeeting_meeting
         ...TeamPromptTopBar_meeting
-        ...TeamPromptDiscussionDrawer_meeting
+        ...TeamPromptDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
         ...TeamPromptMeetingStatus_meeting
         ...MeetingLockedOverlay_meeting
@@ -94,11 +87,18 @@ const TeamPromptMeeting = (props: Props) => {
             }
           }
         }
+        organization {
+          featureFlags {
+            singleColumnStandups
+          }
+        }
       }
     `,
     meetingRef
   )
-  const {phases} = meeting
+  const {phases, organization} = meeting
+  const {featureFlags} = organization
+  const {singleColumnStandups} = featureFlags
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -164,14 +164,11 @@ const TeamPromptMeeting = (props: Props) => {
               isOpen={isRightDrawerOpen && isDesktop}
               hideBottomBar={true}
             >
-              <TeamPromptTopBar meetingRef={meeting} isDesktop={isDesktop} />
-              {!isDesktop && (
-                <BadgeContainer>{<TeamPromptMeetingStatus meetingRef={meeting} />}</BadgeContainer>
-              )}
+              <TeamPromptTopBar meetingRef={meeting} />
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer>
-                  <ResponsesGrid>
+                  <ResponsesGrid isSingleColumn={singleColumnStandups}>
                     {transitioningStages.map((transitioningStage) => {
                       const {child: stage, onTransitionEnd, status} = transitioningStage
                       const {key, displayIdx} = stage
@@ -183,6 +180,7 @@ const TeamPromptMeeting = (props: Props) => {
                           onTransitionEnd={onTransitionEnd}
                           displayIdx={displayIdx}
                           stageRef={stage}
+                          isSingleColumn={singleColumnStandups}
                         />
                       )
                     })}
@@ -190,7 +188,7 @@ const TeamPromptMeeting = (props: Props) => {
                 </ResponsesGridContainer>
               </ErrorBoundary>
             </StyledMeetingHeaderAndPhase>
-            <TeamPromptDiscussionDrawer meetingRef={meeting} isDesktop={isDesktop} />
+            <TeamPromptDrawer meetingRef={meeting} isDesktop={isDesktop} />
           </MeetingContent>
         </Suspense>
       </MeetingArea>

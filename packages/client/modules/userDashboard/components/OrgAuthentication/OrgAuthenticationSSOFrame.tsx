@@ -1,6 +1,9 @@
 import styled from '@emotion/styled'
 import {Add, Check} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgAuthenticationSSOFrame_saml$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_saml.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks} from '../../../../types/constEnums'
@@ -19,10 +22,6 @@ const StyledCheckIcon = styled(Check)({
   color: PALETTE.SUCCESS_LIGHT,
   width: '24px',
   height: '24px'
-})
-
-const SSOEnabledToggleBlock = styled('div')({
-  padding: '0 16px 28px 16px'
 })
 
 const ContentWrapper = styled('div')({
@@ -59,26 +58,29 @@ const ContactLink = styled('a')({
 })
 
 interface Props {
-  disabled: boolean
+  samlRef: OrgAuthenticationSSOFrame_saml$key | null
 }
 
 const OrgAuthenticationSSOFrame = (props: Props) => {
-  const {disabled} = props
-
-  const isSSOEnabled = false
+  const {samlRef} = props
+  const saml = useFragment(
+    graphql`
+      fragment OrgAuthenticationSSOFrame_saml on SAML {
+        id
+        domains
+      }
+    `,
+    samlRef
+  )
+  const disabled = !saml
+  const domains: readonly string[] = saml?.domains ?? []
 
   return (
-    <SSOEnabledToggleBlock>
+    <div className='px-6 pb-8'>
       <ContentWrapper>
-        <IconBlock>
-          {isSSOEnabled ? (
-            <StyledCheckIcon>{'check'}</StyledCheckIcon>
-          ) : (
-            <StyledAddIcon>{'add'}</StyledAddIcon>
-          )}
-        </IconBlock>
+        <IconBlock>{disabled ? <StyledAddIcon /> : <StyledCheckIcon />}</IconBlock>
         <SSOEnabledLabelBlock>
-          <SubTitle>Enable SSO</SubTitle>
+          <SubTitle>{disabled ? 'Enable SSO' : 'SSO Enabled'}</SubTitle>
           <SSOEnabledLabel>
             <ContactLink
               href={`${ExternalLinks.CONTACT}?subject=${
@@ -90,9 +92,23 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
             </ContactLink>{' '}
             {disabled ? 'to enable SSO' : 'to update email domains'}
           </SSOEnabledLabel>
+          <div className={'flex gap-2 pt-2 pb-1 empty:hidden'}>
+            {domains.map((domain) => {
+              return (
+                <div
+                  key={domain}
+                  className={
+                    'bg w-max select-none rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-800'
+                  }
+                >
+                  {domain}
+                </div>
+              )
+            })}
+          </div>
         </SSOEnabledLabelBlock>
       </ContentWrapper>
-    </SSOEnabledToggleBlock>
+    </div>
   )
 }
 

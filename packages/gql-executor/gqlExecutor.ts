@@ -1,11 +1,11 @@
 import tracer from 'dd-trace'
-import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
 import SocketServerChannelId from '../client/shared/gqlIds/SocketServerChannelId'
 import executeGraphQL, {GQLRequest} from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
 import '../server/monkeyPatchFetch'
+import RedisInstance from '../server/utils/RedisInstance'
 import RedisStream from './RedisStream'
 
 tracer.init({
@@ -23,8 +23,8 @@ interface PubSubPromiseMessage {
 }
 
 const run = async () => {
-  const publisher = new Redis(REDIS_URL, {connectionName: 'gql_pub'})
-  const subscriber = new Redis(REDIS_URL, {connectionName: 'gql_sub'})
+  const publisher = new RedisInstance('gql_pub')
+  const subscriber = new RedisInstance('gql_sub')
   const executorChannel = GQLExecutorChannelId.join(SERVER_ID)
 
   // subscribe to direct messages

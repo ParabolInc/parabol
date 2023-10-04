@@ -32,6 +32,10 @@ type StartTeamPromptSuccess {
   The team that started the meeting
   """
   team: Team!
+  """
+  True if there was an error creating the Google Calendar event. False if there was no error or no gcalInput was provided.
+  """
+  hasGcalError: Boolean!
 }
 
 input CreateGcalEventInput {
@@ -39,10 +43,6 @@ input CreateGcalEventInput {
   The title of the event
   """
   title: String!
-  """
-  The description of the event
-  """
-  description: String!
   """
   The start timestamp of the event
   """
@@ -55,6 +55,10 @@ input CreateGcalEventInput {
   The timezone of the event
   """
   timeZone: String!
+  """
+  The type of video call to added to the gcal event. If not provided, no video call will be added
+  """
+  videoType: GcalVideoTypeEnum
   """
   The emails that will be invited to the gcal event. If not provided, the no one will be invited
   """

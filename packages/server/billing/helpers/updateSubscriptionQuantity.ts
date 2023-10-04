@@ -15,8 +15,8 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
   const org = await r.table('Organization').get(orgId).run()
 
   if (!org) throw new Error(`org not found for invoice`)
-  const {stripeSubscriptionId} = org
-  if (!stripeSubscriptionId) return
+  const {stripeSubscriptionId, tier} = org
+  if (!stripeSubscriptionId || tier === 'enterprise') return
 
   // Hold the lock for 5s max and try to acquire the lock for 10s.
   // If there are lots of changes for the same orgId, then this can result in some of the updates timing out.

@@ -18,6 +18,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   {code, invitationToken, segmentId, params},
   context
 ) => {
+  const {dataLoader} = context
   const manager = await GoogleServerManager.init(code)
   const {id} = manager
   if (!id) {
@@ -31,7 +32,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
 
   const [existingUser, samlURL] = await Promise.all([
     getUserByEmail(email),
-    getSAMLURLFromEmail(email, false)
+    getSAMLURLFromEmail(email, dataLoader, false)
   ])
 
   if (samlURL) {
@@ -97,7 +98,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     identities: [identity],
     segmentId
   })
-  context.authToken = await bootstrapNewUser(newUser, !invitationToken, params)
+  context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader, params)
   return {
     userId,
     authToken: encodeAuthToken(context.authToken),

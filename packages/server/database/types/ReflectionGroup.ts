@@ -22,6 +22,7 @@ export default class ReflectionGroup {
   promptId: string
   sortOrder: number
   updatedAt: Date
+  // userIds of the voters
   voterIds: string[]
   smartTitle: string | null
   summary: string | null

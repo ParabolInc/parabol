@@ -298,11 +298,10 @@ const initDemoOrg = () => {
       inactiveUserCount: 0
     },
     featureFlags: {
-      SAMLUI: false,
       zoomTranscription: false,
       suggestGroups: false,
       teamsLimit: false,
-      promptToJoinOrg: false,
+      noPromptToJoinOrg: false,
       AIGeneratedDiscussionPrompt: false
     },
     showConversionModal: false

@@ -10,13 +10,16 @@ import IUser from '../../postgres/types/IUser'
 import {analytics} from '../../utils/analytics/analytics'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
-import isCompanyDomain from '../../utils/isCompanyDomain'
-import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
+import {DataLoaderWorker} from '../../graphql/graphql'
 
-const maybeUpdateOrganizationActiveDomain = async (orgId: string, newUserEmail: string) => {
+const maybeUpdateOrganizationActiveDomain = async (
+  orgId: string,
+  newUserEmail: string,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   const organization = await r.table('Organization').get(orgId).run()
   const {isActiveDomainTouched, activeDomain} = organization
@@ -25,7 +28,11 @@ const maybeUpdateOrganizationActiveDomain = async (orgId: string, newUserEmail: 
 
   //don't modify if the user doesn't have a company tld or has the same tld as the active one
   const newUserDomain = getDomainFromEmail(newUserEmail)
-  if (!isCompanyDomain(newUserDomain) || newUserDomain === activeDomain) return
+  if (
+    newUserDomain === activeDomain ||
+    !(await dataLoader.get('isCompanyDomain').load(newUserDomain))
+  )
+    return
 
   // don't modify if we can't guess the domain or the domain we guess is the current domain
   const domain = await getActiveDomainForOrgId(orgId)
@@ -44,12 +51,10 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
   const r = await getRethink()
   const {id: userId, email} = user
   inactive ? analytics.accountPaused(userId) : analytics.accountUnpaused(userId)
-  segmentIo.identify({
+  analytics.identify({
     userId,
-    traits: {
-      email,
-      isActive: !inactive
-    }
+    email,
+    isActive: !inactive
   })
   return Promise.all([
     updateUser(
@@ -67,7 +72,7 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
   ])
 }
 
-const addUser = async (orgIds: string[], user: IUser) => {
+const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
   const {id: userId} = user
   const r = await getRethink()
   const {organizations, organizationUsers} = await r({
@@ -98,7 +103,7 @@ const addUser = async (orgIds: string[], user: IUser) => {
   await r.table('OrganizationUser').insert(docs).run()
   await Promise.all(
     orgIds.map((orgId) => {
-      return maybeUpdateOrganizationActiveDomain(orgId, user.email)
+      return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
     })
   )
 }
@@ -135,7 +140,8 @@ const auditEventTypeLookup = {
 export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
-  type: InvoiceItemType
+  type: InvoiceItemType,
+  dataLoader: DataLoaderWorker
 ) {
   const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
@@ -143,7 +149,7 @@ export default async function adjustUserCount(
   const user = (await getUserById(userId))!
 
   const dbAction = dbActionTypeLookup[type]
-  await dbAction(orgIds, user)
+  await dbAction(orgIds, user, dataLoader)
 
   const auditEventType = auditEventTypeLookup[type]
   await insertOrgUserAudit(orgIds, userId, auditEventType)

@@ -11,6 +11,11 @@ export const IntegrationNotifier: Notifier = {
       notifiers.map(async (notifier) => notifier.startMeeting(dataLoader, meetingId, teamId))
     )
   },
+  async updateMeeting(dataLoader, meetingId, teamId) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) => notifier.updateMeeting?.(dataLoader, meetingId, teamId))
+    )
+  },
   async endMeeting(dataLoader, meetingId, teamId) {
     await Promise.allSettled(
       notifiers.map(async (notifier) => notifier.endMeeting(dataLoader, meetingId, teamId))

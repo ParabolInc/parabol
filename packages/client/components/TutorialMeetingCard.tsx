@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import React, {useCallback} from 'react'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
-import tutorialThumb from '../../../static/images/illustrations/tutorialThumb.jpg'
+import pokerTutorialThumb from '../../../static/images/illustrations/pokerTutorialThumb.jpg'
+import standupTutorialThumb from '../../../static/images/illustrations/standupTutorialThumb.jpg'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useModal from '../hooks/useModal'
@@ -98,9 +99,27 @@ const TopLine = styled('div')({
   display: 'flex'
 })
 
-const TutorialMeetingCard = () => {
+interface Props {
+  type: 'poker' | 'standup'
+}
+
+const TUTORIAL_MAP = {
+  poker: {
+    label: 'Starting a Sprint Poker Meeting',
+    thumbnail: pokerTutorialThumb,
+    url: 'https://www.youtube.com/embed/X_i60AMxPBU?modestbranding=1&rel=0'
+  },
+  standup: {
+    label: 'Starting a Standup Meeting',
+    thumbnail: standupTutorialThumb,
+    url: 'https://www.youtube.com/embed/cN9fN1WGmXI?modestbranding=1&rel=0'
+  }
+}
+
+const TutorialMeetingCard = (props: Props) => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
+  const config = TUTORIAL_MAP[props.type]
 
   const onOpen = useCallback(() => {
     SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Opened')
@@ -117,16 +136,16 @@ const TutorialMeetingCard = () => {
         <MeetingImgWrapper>
           <MeetingImgBackground />
           <MeetingTypeLabel>Tutorial</MeetingTypeLabel>
-          <MeetingImg src={tutorialThumb} alt='' />
+          <MeetingImg src={config.thumbnail} alt='' />
         </MeetingImgWrapper>
         <MeetingInfo>
           <TopLine>
-            <Name>Starting a Sprint Poker Meeting</Name>
+            <Name>{config.label}</Name>
           </TopLine>
           <Meta>Video tutorial</Meta>
         </MeetingInfo>
       </CardWrapper>
-      {modalPortal(<MeetingsDashTutorialModal />)}
+      {modalPortal(<MeetingsDashTutorialModal label={config.label} src={config.url} />)}
     </>
   )
 }

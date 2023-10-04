@@ -8,12 +8,12 @@ import EmptyDiscussionIllustration from '../../../static/images/illustrations/di
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
-import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
+import AddTranscriptionBot from '../mutations/AddTranscriptionBotMutation'
 import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
 import FlatButton from './FlatButton'
 import StyledError from './StyledError'
-import {DiscussionThreadListEmptyState_settings$key} from '~/__generated__/DiscussionThreadListEmptyState_settings.graphql'
+import {DiscussionThreadListEmptyState_meeting$key} from '~/__generated__/DiscussionThreadListEmptyState_meeting.graphql'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -55,7 +55,10 @@ const StyledButton = styled(FlatButton)({
   fontWeight: 600,
   minWidth: 36,
   marginTop: 24,
-  width: '100%'
+  width: '100%',
+  ':hover': {
+    backgroundColor: PALETTE.SKY_600
+  }
 })
 
 const Wrapper = styled('div')({
@@ -80,7 +83,7 @@ const StyledInput = styled('input')({
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
-  settingsRef?: DiscussionThreadListEmptyState_settings$key
+  meetingRef?: DiscussionThreadListEmptyState_meeting$key
   showTranscription?: boolean
 }
 
@@ -104,21 +107,19 @@ const getMessage = (
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isReadOnly, allowTasks, settingsRef, showTranscription = false} = props
-  const settings = useFragment(
+  const {isReadOnly, allowTasks, showTranscription = false, meetingRef} = props
+  const meeting = useFragment(
     graphql`
-      fragment DiscussionThreadListEmptyState_settings on RetrospectiveMeetingSettings {
+      fragment DiscussionThreadListEmptyState_meeting on RetrospectiveMeeting {
         id
         videoMeetingURL
       }
     `,
-    settingsRef ?? null
+    meetingRef ?? null
   )
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
+
   const atmosphere = useAtmosphere()
-  const settingsId = settings?.id
-  const videoMeetingURL = settings?.videoMeetingURL
-  const message = getMessage(allowTasks, !!videoMeetingURL, !!isReadOnly, showTranscription)
   const {validateField, onChange, fields} = useForm({
     url: {
       getDefault: () => '',
@@ -131,18 +132,18 @@ const DiscussionThreadListEmptyState = (props: Props) => {
       }
     }
   })
+  const videoMeetingURL = meeting?.videoMeetingURL
+  const meetingId = meeting?.id
+  const message = getMessage(allowTasks, !!videoMeetingURL, !!isReadOnly, showTranscription)
+
   const {error: fieldError, value: urlValue} = fields.url
 
   const handleSubmit = () => {
-    if (submitting || !settingsId) return
+    if (submitting || !meetingId) return
     const {url} = validateField()
     if (url.error) return
     submitMutation()
-    SetMeetingSettingsMutation(
-      atmosphere,
-      {videoMeetingURL: urlValue, settingsId},
-      {onError, onCompleted}
-    )
+    AddTranscriptionBot(atmosphere, {videoMeetingURL: urlValue, meetingId}, {onError, onCompleted})
   }
   const showVideoURLInput = showTranscription && !videoMeetingURL
 

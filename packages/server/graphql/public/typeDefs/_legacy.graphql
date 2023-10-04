@@ -5797,39 +5797,6 @@ type Comment implements Reactable & Threadable {
   isViewerComment: Boolean!
 }
 
-type Query {
-  viewer: User!
-  getDemoEntities(
-    """
-    the reflection bodies to entitize
-    """
-    text: String!
-  ): GetDemoEntitiesPayload!
-  massInvitation(
-    """
-    The mass invitation token
-    """
-    token: ID!
-  ): MassInvitationPayload!
-  verifiedInvitation(
-    """
-    The invitation token
-    """
-    token: ID!
-  ): VerifiedInvitationPayload!
-  SAMLIdP(
-    """
-    the email associated with a SAML login
-    """
-    email: ID!
-
-    """
-    true if the user was invited, else false
-    """
-    isInvited: Boolean
-  ): String
-}
-
 type GetDemoEntitiesPayload {
   error: StandardMutationError
   entities: [GoogleAnalyzedEntity!]
@@ -6754,11 +6721,15 @@ type Mutation {
     """
     The team starting the meeting
     """
-    teamId: ID!
+    teamId: ID
     """
     The gcal input if creating a gcal event
     """
     gcalInput: CreateGcalEventInput
+    """
+    One-on-one ad-hoc team input
+    """
+    oneOnOneTeamInput: CreateOneOnOneTeamInput
   ): StartCheckInPayload!
 
   """
@@ -7369,6 +7340,11 @@ enum ReactableEnum {
   COMMENT
   REFLECTION
   RESPONSE
+}
+
+enum GcalVideoTypeEnum {
+  meet
+  zoom
 }
 
 type AddReflectTemplatePayload {
@@ -8684,6 +8660,7 @@ type StartCheckInSuccess {
   meeting: ActionMeeting!
   meetingId: ID!
   team: Team!
+  hasGcalError: Boolean!
 }
 
 """
@@ -8695,6 +8672,7 @@ type StartRetrospectiveSuccess {
   meeting: RetrospectiveMeeting!
   meetingId: ID!
   team: Team!
+  hasGcalError: Boolean!
 }
 
 """
@@ -8707,6 +8685,7 @@ type StartSprintPokerSuccess {
   meeting: PokerMeeting!
   team: Team!
   teamId: ID!
+  hasGcalError: Boolean!
 }
 
 """

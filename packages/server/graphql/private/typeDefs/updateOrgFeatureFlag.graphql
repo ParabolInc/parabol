@@ -2,17 +2,17 @@
 A flag to give an individual organization super powers
 """
 enum OrganizationFeatureFlagsEnum {
-  SAMLUI
   noAISummary
   AIGeneratedDiscussionPrompt
   standupAISummary
-  promptToJoinOrg
+  noPromptToJoinOrg
   suggestGroups
   zoomTranscription
   shareSummary
   teamsLimit
   teamInsights
   oneOnOne
+  singleColumnStandups
 }
 
 extend type Mutation {

@@ -63,7 +63,7 @@ const PagePadding = () => {
 }
 
 const MeetingSummaryEmail = (props: Props) => {
-  const {referrer, referrerUrl, meeting: meetingRef} = props
+  const {referrer, referrerUrl, meeting: meetingRef, teamDashUrl} = props
   const meeting = useFragment(
     graphql`
       fragment MeetingSummaryEmail_meeting on NewMeeting {
@@ -88,7 +88,7 @@ const MeetingSummaryEmail = (props: Props) => {
                   <td>
                     <PagePadding />
                     <ViewInBrowserHeader referrerUrl={referrerUrl} referrer={referrer} />
-                    <SummarySheet {...props} meeting={meeting} />
+                    <SummarySheet {...props} meeting={meeting} teamDashUrl={teamDashUrl} />
                     <PagePadding />
                   </td>
                 </tr>

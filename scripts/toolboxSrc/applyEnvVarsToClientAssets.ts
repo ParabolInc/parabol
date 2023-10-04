@@ -14,13 +14,13 @@ const getCDNURL = () => {
   return CDN_BASE_URL ? `${CDN_BASE_URL}/build` : '/static'
 }
 
-const rewriteServiceWorker = async () => {
-  const skeleton = await fs.promises.readFile(path.join(clientDir, 'swSkeleton.js'), 'utf-8')
+const rewriteServiceWorker = () => {
+  const skeleton = fs.readFileSync(path.join(clientDir, 'swSkeleton.js'), 'utf-8')
   const deploySpecificServiceWorker = skeleton.replaceAll('__PUBLIC_PATH__', getCDNURL())
-  await fs.promises.writeFile(path.join(clientDir, 'sw.js'), deploySpecificServiceWorker)
+  fs.writeFileSync(path.join(clientDir, 'sw.js'), deploySpecificServiceWorker)
 }
 
-const writeManifest = async () => {
+const writeManifest = () => {
   // If src is relative, then it will be relative to the manifest location, so manifest.json must be at root /
   const cdn = getCDNURL()
   const manifest = {
@@ -45,17 +45,13 @@ const writeManifest = async () => {
     theme_color: '#493272'
   }
   const manifestPath = path.join(clientDir, 'manifest.json')
-
-  await Promise.all([
-    fs.promises.writeFile(manifestPath, JSON.stringify(manifest)),
-    // move the referenced icons into the client build
-    [logo192, logo512].map((name) => {
-      return fs.promises.copyFile(path.join(serverDir, name), path.join(clientDir, name))
-    })
-  ])
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest))
+  // move the referenced icons into the client build
+  fs.copyFileSync(path.join(serverDir, logo192), path.join(clientDir, logo192))
+  fs.copyFileSync(path.join(serverDir, logo512), path.join(clientDir, logo512))
 }
 
-const rewriteIndexHTML = async () => {
+const rewriteIndexHTML = () => {
   const clientKeys = {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
     datadogClientToken: process.env.DD_CLIENTTOKEN,
@@ -73,11 +69,11 @@ const rewriteIndexHTML = async () => {
     prblIn: process.env.INVITATION_SHORTLINK,
     AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
     AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
-    AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
+    AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
+    AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY
   }
 
-  const skeleton = await fs.promises.readFile(path.join(clientDir, 'skeleton.html'), 'utf8')
-
+  const skeleton = fs.readFileSync(path.join(clientDir, 'skeleton.html'), 'utf8')
   // Hide staging & PPMIs from search engines
   const noindex =
     process.env.HOST === 'action.parabol.co' ? '' : `<meta name="robots" content="noindex"/>`
@@ -92,9 +88,16 @@ const rewriteIndexHTML = async () => {
     removeScriptTypeAttributes: true,
     removeComments: true
   })
-  await fs.promises.writeFile(path.join(clientDir, 'index.html'), minifiedHTML)
+  fs.writeFileSync(path.join(clientDir, 'index.html'), minifiedHTML)
 }
 
-export const applyEnvVarsToClientAssets = async () => {
-  return Promise.all([rewriteServiceWorker(), rewriteIndexHTML(), writeManifest()])
+export const applyEnvVarsToClientAssets = () => {
+  // When web.js starts, serveStatic generates a whitelist of all valid built assets
+  // so users cannot trigger a disk read by requesting an asset that may not exist (0days often involve disk reads)
+  // That means this script must run synchronusly and complete before web.js starts
+  rewriteServiceWorker()
+  rewriteIndexHTML()
+  writeManifest()
 }
+
+if (require.main === module) applyEnvVarsToClientAssets()

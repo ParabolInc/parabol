@@ -72,10 +72,10 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     )
     analytics.recurrenceStarted(viewerId, meetingSeries)
   }
-  createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewerId, meeting)
-  const data = {teamId, meetingId: meetingId}
+  const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+  const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return data
 }

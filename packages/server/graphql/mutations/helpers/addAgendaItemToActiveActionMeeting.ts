@@ -24,11 +24,15 @@ const addAgendaItemToActiveActionMeeting = async (
   const agendaItemPhase = getPhase(phases, 'agendaitems')
   if (!agendaItemPhase) return undefined
 
+  // If any of the stages are navigable, then the new one should be as well. Same goes if there are no stages yet, i.e. we're in first call
+  const isNewAgendaItemStageNavigable =
+    agendaItemPhase.stages.length === 0 ||
+    agendaItemPhase.stages.some((stage) => stage.isNavigableByFacilitator || stage.isNavigable)
   const {stages} = agendaItemPhase
   const newStage = new AgendaItemsStage({
     agendaItemId,
-    isNavigableByFacilitator: true,
-    isNavigable: true
+    isNavigableByFacilitator: isNewAgendaItemStageNavigable,
+    isNavigable: isNewAgendaItemStageNavigable
   })
   const {discussionId} = newStage
   stages.push(newStage)

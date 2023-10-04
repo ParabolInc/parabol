@@ -31,6 +31,7 @@ const ErrorMessage = styled(StyledError)({
 
 interface Props {
   ariaLabel: string
+  autoComplete?: string
   autoFocus?: boolean
   disabled?: boolean
   error: string | undefined
@@ -45,6 +46,7 @@ interface Props {
 const UnderlineInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
   const {
     ariaLabel,
+    autoComplete,
     autoFocus,
     disabled,
     error,
@@ -59,6 +61,7 @@ const UnderlineInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => 
     <React.Fragment>
       <Input
         aria-label={ariaLabel}
+        autoComplete={autoComplete}
         autoFocus={autoFocus}
         disabled={Boolean(disabled)}
         ref={ref}

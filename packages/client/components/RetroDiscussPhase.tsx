@@ -146,6 +146,7 @@ const RetroDiscussPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
+        ...DiscussionThreadListEmptyState_meeting
         id
         endedAt
         showTranscription
@@ -163,11 +164,6 @@ const RetroDiscussPhase = (props: Props) => {
         localStage {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
-        team {
-          meetingSettings(meetingType: retrospective) {
-            ...DiscussionThreadListEmptyState_settings
-          }
-        }
       }
     `,
     meetingRef
@@ -180,10 +176,8 @@ const RetroDiscussPhase = (props: Props) => {
     showSidebar,
     organization,
     showTranscription,
-    transcription,
-    team
+    transcription
   } = meeting
-  const {meetingSettings} = team
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
@@ -271,7 +265,7 @@ const RetroDiscussPhase = (props: Props) => {
                     <DiscussionThreadListEmptyState
                       allowTasks={true}
                       isReadOnly={allowedThreadables.length === 0}
-                      settingsRef={meetingSettings}
+                      meetingRef={meeting}
                       showTranscription={showTranscription}
                     />
                   }
