@@ -9,6 +9,7 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
@@ -38,7 +39,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedName = samlName.trim().toLowerCase()
   const body = querystring.parse(queryString)
   const relayState = getRelayState(body)
-  const {isInvited, metadata: newMetadata} = relayState
+  const {isInvited, metadataURL: newMetadataURL} = relayState
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
 
@@ -49,6 +50,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       }
     }
   const {domains, metadata: existingMetadata} = doc
+  const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
+  if (newMetadata instanceof Error) {
+    return {error: {message: newMetadata.message}}
+  }
   const metadata = newMetadata || existingMetadata
   if (!metadata) {
     return {error: {message: 'No metadata found! Please contact customer service'}}
@@ -98,7 +103,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     }
     await pg
       .updateTable('SAML')
-      .set({metadata: newMetadata, url})
+      .set({metadata: newMetadata, metadataURL: newMetadataURL, url})
       .where('id', '=', normalizedName)
       .execute()
   }

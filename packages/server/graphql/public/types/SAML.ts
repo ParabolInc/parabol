@@ -10,6 +10,11 @@ const SAML: SamlResolvers = {
   lastUpdatedByUser: async ({lastUpdatedBy}, _args, {dataLoader}) => {
     return dataLoader.get('users').loadNonNull(lastUpdatedBy)
   },
+  metadataURL: ({metadataURL, metadata}) => {
+    if (metadataURL) return metadataURL
+    if (metadata) return 'Unknown'
+    return null
+  },
   organization: async ({orgId}, _args, {dataLoader}) => {
     if (!orgId) return null
     return dataLoader.get('organizations').load(orgId)

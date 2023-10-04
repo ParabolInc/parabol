@@ -1,3 +1,4 @@
+import * as Tooltip from '@radix-ui/react-tooltip'
 import React from 'react'
 import {BrowserRouter as Router} from 'react-router-dom'
 import Action from './components/Action/Action'
@@ -8,7 +9,9 @@ export default function Root() {
   return (
     <AtmosphereProvider>
       <Router>
-        <Action />
+        <Tooltip.Provider>
+          <Action />
+        </Tooltip.Provider>
       </Router>
     </AtmosphereProvider>
   )

@@ -2,7 +2,7 @@ import GQLTrebuchetClient, {
   GQLHTTPClient,
   OperationPayload
 } from '@mattkrick/graphql-trebuchet-client'
-import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
+import getTrebuchet, {SSETrebuchet, SocketTrebuchet} from '@mattkrick/trebuchet-client'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
 import {Disposable} from 'react-relay'
@@ -12,7 +12,6 @@ import {
   ConcreteRequest,
   Environment,
   FetchFunction,
-  fetchQuery,
   GraphQLResponse,
   GraphQLTaggedNode,
   Network,
@@ -25,17 +24,18 @@ import {
   Store,
   SubscribeFunction,
   UploadableMap,
-  Variables
+  Variables,
+  fetchQuery
 } from 'relay-runtime'
 import {Sink} from 'relay-runtime/lib/network/RelayObservable'
 import StrictEventEmitter from 'strict-event-emitter-types'
+import {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
-import {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
