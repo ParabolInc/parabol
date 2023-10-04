@@ -2,7 +2,6 @@ import tracer from 'dd-trace'
 import {GraphQLSchema, parse} from 'graphql'
 import {CompiledQuery} from 'graphql-jit'
 import getRethink from '../database/rethinkDriver'
-import PROD from '../PROD'
 import {MutationResolvers, QueryResolvers, Resolver} from './public/resolverTypes'
 import {tracedCompileQuery} from './traceGraphQL'
 
@@ -45,7 +44,7 @@ export default class CompiledQueryCache {
     if (compiledQuery) return compiledQuery
     const r = await getRethink()
     let queryString = await r.table('QueryMap').get(docId)('query').default(null).run()
-    if (!queryString && !PROD) {
+    if (!queryString && !__PRODUCTION__) {
       // try/catch block required for building the toolbox
       try {
         const queryMap = require('../../../queryMap.json')
