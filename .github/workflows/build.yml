@@ -96,18 +96,6 @@ jobs:
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
 
-      - name: Push Artifacts to Datadog
-        #if: github.ref_type == 'tag'
-        env:
-          DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
-        run: |
-          echo "$DATADOG_API_KEY"
-          yarn add @datadog/datadog-ci -W
-          yarn datadog-ci sourcemaps upload ./build \
-            --service=parabol-saas-production \
-            --release-version=${{env.ACTION_VERSION}} \
-            --minified-path-prefix=https://action-files.parabol.co/production/build/
-
       - name: Check Code Quality
         run: yarn codecheck
 
@@ -207,7 +195,7 @@ jobs:
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{ env.GITHUB_REF_NAME_NORMALIZED }}"
       - name: Push Artifacts to Sentry
-        #if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag'
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: "${{secrets.SENTRY_AUTH_TOKEN}}"
@@ -217,3 +205,14 @@ jobs:
           environment: "production"
           sourcemaps: "./build"
           version: ${{env.ACTION_VERSION}}
+      - name: Push Artifacts to Datadog
+        if: github.ref_type == 'tag'
+        env:
+          DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
+        run: |
+          echo "$DATADOG_API_KEY"
+          yarn add @datadog/datadog-ci -W
+          yarn datadog-ci sourcemaps upload ./build \
+            --service=parabol-saas-production \
+            --release-version=${{env.ACTION_VERSION}} \
+            --minified-path-prefix=https://action-files.parabol.co/production/build/
