@@ -14,6 +14,7 @@ import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
+import standardError from '../../../utils/standardError'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -58,9 +59,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
   } catch (e) {
-    const message =
-      e instanceof Error ? e.message : typeof e === 'string' ? e : 'parseLoginResponse failed'
-    return {error: {message}}
+    if (e instanceof Error) {
+      return standardError(e)
+    }
+    const message = typeof e === 'string' ? e : 'parseLoginResponse failed'
+    return standardError(new Error(message))
   }
   if (!loginResponse) {
     return {error: {message: 'Error with query from identity provider'}}
@@ -94,7 +97,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     // Revalidate it & persist to DB
     const url = getSignOnURL(metadata, normalizedName)
     if (url instanceof Error) {
-      return {error: {message: url.message}}
+      return standardError(url)
     }
     await pg
       .updateTable('SAML')
