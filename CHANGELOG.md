@@ -5,46 +5,64 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.123.0 2023-Sep-27
+
+### Added
+
+- Google Calendar: add Google Meet (#8818)
+- Added meeting link to a meeting summary (#8892)
+- Add support for multi-replica deploys (#8837)
+
+### Fixed
+
+- Remove display: inherit from standup response card in the meeting summary (#8910)
+
+### Changed
+
+- **CI**: adding release branch to the build action (#8888)
+- Google Calendar: change gcal creds to google creds (#8896)
+- Google Calendar: update gcal modal description (#8897)
+
 ## 6.122.0 2023-Sep-27
 
 ### Added
 
-- chore(ci): adding release branch to the build action (#8888)
-- feat(gcal): add Google Meet (#8818)
-- feat(Team Insights): Add most used retro templates (#8879)
-- feat(Team Insights): add meeting engagement insights (#8877)
-- feat(docker-pipeline): arm64 platform built alongside amd64 (#8229)
-- chore: add tailwind to emails (#8327)
-- chore(dokku): add one more web server (#8889)
-- feat: show sidebar by meeting summary (#8857)
-- feat(standups): Display responses in single column (feature flagged) (#8875)
-- feat: improve ai summary prompt to include markdown (#8859)
-- chore: store freemail domains in pg (#8870)
-- chore: upgrade openai (#8873)
-- feat(invitation-challenges): implement InboxReady's validate check (#8707)
-- chore: Show link to guide on Jira auth popup close (#8867)
-- feat(standups): Add slack configuration link to standup options (#8861)
-- feat(ad-hoc): allow to create team from teams dropdown (#8831)
-- feat: Add standup demo video to empty meeting view (#8862)
-- feat(al): Show standup meeting type first in all views (#8864)
+- **ci**: adding release branch to the build action (#8888)
+- **gcal**: add Google Meet (#8818)
+- **Team Insights**: Add most used retro templates (#8879)
+- **Team Insights**: add meeting engagement insights (#8877)
+- **docker-pipeline**: arm64 platform built alongside amd64 (#8229)
+- add tailwind to emails (#8327)
+- **dokku**: add one more web server (#8889)
+- show sidebar by meeting summary (#8857)
+- **standups**: Display responses in single column (feature flagged) (#8875)
+- improve ai summary prompt to include markdown (#8859)
+- store freemail domains in pg (#8870)
+- upgrade openai (#8873)
+- **invitation-challenges**: implement InboxReady's validate check (#8707)
+- Show link to guide on Jira auth popup close (#8867)
+- **standups**: Add slack configuration link to standup options (#8861)
+- **ad-hoc**: allow to create team from teams dropdown (#8831)
+- Add standup demo video to empty meeting view (#8862)
+- **al**: Show standup meeting type first in all views (#8864)
 -
 
 ### Fixed
 
-- fix: read SAML from PG (#8906)
-- chore: use google creds instead of gcal (#8895)
-- fix: add transcription during discuss phase (#8580)
-- feat(Prompt to join org): reverse feature flag (#8886)
-- fix: loom links wrap, changed layout to single column (#8884)
-- fix: emoji tooltip info is wrong in a standup discussion drawer (#8842)
-- fix(standups): 'Your tasks' -> 'Your work' (#8874)
-- fix(billing): Stop updating Enterprise Stripe subscription quantities to AU count (#8850)
-- chore(analytics): Move server side segmentIo calls to analytics.ts (#8795)
-- chore(prompt to join org): restrict to verified users (#8798)
-- chore(one-on-one): Add team exists warning (#8718)
-- chore: Add warning to getDataLoader (#8852)
-- chore(metrics): Add Amplitude client-side page view tracking (#8797)
-- chore: track download to pdf (#8854)
+- read SAML from PG (#8906)
+- use google creds instead of gcal (#8895)
+- add transcription during discuss phase (#8580)
+- **Prompt to join org**: reverse feature flag (#8886)
+- loom links wrap, changed layout to single column (#8884)
+- emoji tooltip info is wrong in a standup discussion drawer (#8842)
+- **standups**: 'Your tasks' -> 'Your work' (#8874)
+- **billing**: Stop updating Enterprise Stripe subscription quantities to AU count (#8850)
+- **analytics**: Move server side segmentIo calls to analytics.ts (#8795)
+- **prompt to join org**: restrict to verified users (#8798)
+- **one-on-one**: Add team exists warning (#8718)
+- Add warning to getDataLoader (#8852)
+- **metrics**: Add Amplitude client-side page view tracking (#8797)
+- track download to pdf (#8854)
 
 ## 6.121.0 2023-Sep-20
 
