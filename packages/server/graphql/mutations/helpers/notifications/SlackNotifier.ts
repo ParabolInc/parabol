@@ -11,12 +11,11 @@ import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoade
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
-import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
-import {makeButtons, makeSection, makeSections, makeHeader} from './makeSlackBlocks'
+import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
 import SlackAuth from '../../../../database/types/SlackAuth'
@@ -25,6 +24,7 @@ import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/Sl
 import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
 import User from '../../../../postgres/types/IUser'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
+import {analytics} from '../../../../utils/analytics/analytics'
 
 type SlackNotification = {
   title: string
@@ -82,21 +82,13 @@ const notifySlack = async (
   slackMessage: string | Array<{type: string}>,
   notificationText?: string,
   ts?: string,
-  segmentProperties?: object
+  reflectionGroupId?: string
 ): Promise<PostMessageResponse | ErrorResponse> => {
   const {channelId, auth} = notificationChannel
   const {botAccessToken, userId} = auth
   const manager = new SlackServerManager(botAccessToken!)
   const res = await manager.postMessage(channelId!, slackMessage, notificationText, ts)
-  segmentIo.track({
-    userId,
-    event: 'Slack notification sent',
-    properties: {
-      teamId,
-      notificationEvent: event,
-      ...segmentProperties
-    }
-  })
+  analytics.slackNotificationSent(userId, teamId, event, reflectionGroupId)
 
   return res
 }
@@ -620,9 +612,7 @@ export const SlackNotifier: Notifier = {
       slackBlocks,
       undefined,
       undefined,
-      {
-        reflectionGroupId
-      }
+      reflectionGroupId
     )
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)

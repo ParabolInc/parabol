@@ -1,3 +1,4 @@
+import base64url from 'base64url'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {isNotNull} from 'parabol-client/utils/predicates'
@@ -14,14 +15,13 @@ import {
   isUserBillingLeader
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
-import isCompanyDomain from '../../../utils/isCompanyDomain'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
-import base64url from 'base64url'
+import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 
 declare const __PRODUCTION__: string
 
@@ -51,9 +51,15 @@ const User: UserResolvers = {
         return false
     }
   },
-  company: async ({email}, _args, {authToken}) => {
+  company: async ({email}, _args, {authToken, dataLoader}) => {
     const domain = getDomainFromEmail(email)
-    if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
+    if (
+      !domain ||
+      !isSuperUser(authToken) ||
+      !(await dataLoader.get('isCompanyDomain').load(domain))
+    ) {
+      return null
+    }
     return {id: domain}
   },
   domains: async ({id: userId}, _args, {dataLoader}) => {
@@ -138,6 +144,7 @@ const User: UserResolvers = {
       })
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
+      const IS_STANDUP = 1 << 9 // prioritize standups (see https://github.com/ParabolInc/parabol/issues/8848)
       const SEASONAL = 1 << 8 // put seasonal templates at the top
       const USED_LAST_90 = 1 << 7 // next, show all templates used within the last 90 days
       const ON_TEAM = 1 << 6 // tiebreak by putting team templates first
@@ -145,12 +152,14 @@ const User: UserResolvers = {
       const IS_FREE = 1 << 4 // then free parabol templates
       const USED_LAST_30 = 1 << 3 // tiebreak on being used in last 30
       const {hideStartingAt, teamId, orgId, lastUsedAt, isFree} = activity
+      const isStandup = activity.type === 'teamPrompt'
       const isSeasonal = !!hideStartingAt
       const isOnTeam = teamIds.includes(teamId)
       const isOnOrg = orgId !== 'aGhostOrg' && !isOnTeam
       const isUsedLast30 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('30d'))
       const isUsedLast90 = lastUsedAt && lastUsedAt > new Date(Date.now() - ms('90d'))
       let score = 0
+      if (isStandup) score += IS_STANDUP
       if (isSeasonal) score += SEASONAL
       if (isUsedLast90) score += USED_LAST_90
       if (isOnTeam) score += ON_TEAM
@@ -169,14 +178,16 @@ const User: UserResolvers = {
 
     return connectionFromTemplateArray(allActivities, first, after)
   },
-  parseSAMLMetadata: async (_source, {metadata, domain}) => {
+  parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
+    const metadata = await getSSOMetadataFromURL(metadataURL)
+    if (metadata instanceof Error) return {error: {message: metadata.message}}
     const baseUrl = getSignOnURL(metadata, domain)
     if (baseUrl instanceof Error) {
       return {error: {message: baseUrl.message}}
     }
-    // append the new metadata to the RelayState
+    // append the new metadataURL to the RelayState
     // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
-    const relayState = base64url.encode(JSON.stringify({metadata}))
+    const relayState = base64url.encode(JSON.stringify({metadataURL}))
     const urlObj = new URL(baseUrl)
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}

@@ -7,9 +7,9 @@ import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingT
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isSuperUser, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(
@@ -40,13 +40,7 @@ export default {
     }
 
     // RESOLUTION
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Archive Team',
-      properties: {
-        teamId
-      }
-    })
+    analytics.archiveTeam(viewerId, teamId)
     const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId, dataLoader)
 
     if (!team) {

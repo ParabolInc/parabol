@@ -12,7 +12,6 @@ import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
@@ -20,6 +19,7 @@ import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import getOpenAIEmbeddings from './helpers/getOpenAIEmbeddings'
+import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: CreateReflectionPayload,
@@ -120,14 +120,7 @@ export default {
         })
         .run()
     }
-    segmentIo.track({
-      event: 'Reflection Added',
-      userId: viewerId,
-      properties: {
-        teamId,
-        meetingId
-      }
-    })
+    analytics.reflectionAdded(viewerId, teamId, meetingId)
     const data = {
       meetingId,
       reflectionId: reflection.id,

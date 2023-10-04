@@ -1,7 +1,7 @@
 import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
@@ -38,6 +38,7 @@ import {SelectValue} from '../../ui/Select/SelectValue'
 import {SelectContent} from '../../ui/Select/SelectContent'
 import {SelectGroup} from '../../ui/Select/SelectGroup'
 import {SelectItem} from '../../ui/Select/SelectItem'
+import OneOnOneTeamStatus from './OneOnOneTeamStatus'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -70,6 +71,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
           gcal
+          adHocTeams
         }
         ...AdhocTeamMultiSelect_viewer
         organizations {
@@ -139,25 +141,34 @@ const ActivityDetailsSidebar = (props: Props) => {
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
-
-  const [selectedUsers, setSelectedUsers] = React.useState<Option[]>([])
-  const selectedUser = selectedUsers[0]
   const {organizations: viewerOrganizations} = viewer
+  const [selectedUser, setSelectedUser] = React.useState<Option>()
+  const [mutualOrgsIds, setMutualOrgsIds] = React.useState<string[]>([])
 
-  const selectedUserOrganizationIds = new Set(selectedUser?.organizationIds ?? [])
-  const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
+  const showOrgPicker = selectedUser && (mutualOrgsIds.length > 1 || !mutualOrgsIds.length)
 
-  const firstMutualOrgId = mutualOrgs[0]?.id
-  const defaultOrgId = firstMutualOrgId ?? selectedTeam.orgId
+  const defaultOrgId = mutualOrgsIds[0] ?? selectedTeam.orgId
   const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
 
-  useEffect(() => {
-    setSelectedOrgId(defaultOrgId)
-  }, [selectedUser])
+  const onUserSelected = (newUsers: Option[]) => {
+    const user = newUsers[0]
+    setSelectedUser(user)
+    if (user) {
+      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
+        selectionLocation: 'oneOnOneUserPicker'
+      })
+    }
+    const selectedUserOrganizationIds = new Set(user?.organizationIds ?? [])
+    const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
+    const mutualOrgsIds = mutualOrgs.map((org) => org.id)
+    setMutualOrgsIds(mutualOrgsIds)
+    setSelectedOrgId(mutualOrgsIds[0] ?? selectedTeam.orgId)
+    onError(new Error(''))
+  }
 
-  const oneOnOneTeamInput = selectedUsers[0]
+  const oneOnOneTeamInput = selectedUser
     ? {
-        email: selectedUsers[0].email,
+        email: selectedUser.email,
         orgId: selectedOrgId
       }
     : null
@@ -179,11 +190,23 @@ const ActivityDetailsSidebar = (props: Props) => {
         {history, onError, onCompleted}
       )
     } else if (type === 'action') {
-      StartCheckInMutation(
-        atmosphere,
-        {teamId: !oneOnOneTeamInput ? selectedTeam.id : null, oneOnOneTeamInput, gcalInput},
-        {history, onError, onCompleted}
-      )
+      const variables =
+        selectedTemplate.id !== 'oneOnOneAction'
+          ? {
+              teamId: selectedTeam.id,
+              gcalInput
+            }
+          : {
+              oneOnOneTeamInput,
+              gcalInput
+            }
+
+      if (selectedTemplate.id === 'oneOnOneAction' && !oneOnOneTeamInput) {
+        onError(new Error('Please select a teammate'))
+        return
+      }
+
+      StartCheckInMutation(atmosphere, variables, {history, onError, onCompleted})
     } else {
       SelectTemplateMutation(
         atmosphere,
@@ -267,14 +290,12 @@ const ActivityDetailsSidebar = (props: Props) => {
               <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
               <AdhocTeamMultiSelect
                 viewerRef={viewer}
-                onChange={(newUsers: Option[]) => {
-                  setSelectedUsers(newUsers)
-                }}
-                value={selectedUsers}
+                onChange={onUserSelected}
+                value={selectedUser ? [selectedUser] : []}
                 multiple={false}
               />
 
-              {selectedUser && mutualOrgs.length !== 1 && (
+              {showOrgPicker && (
                 <>
                   <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
                   <Select onValueChange={(orgId) => setSelectedOrgId(orgId)} value={selectedOrgId}>
@@ -283,11 +304,15 @@ const ActivityDetailsSidebar = (props: Props) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {(mutualOrgs.length ? mutualOrgs : viewerOrganizations).map((org) => (
-                          <SelectItem value={org.id} key={org.id}>
-                            {org.name}
-                          </SelectItem>
-                        ))}
+                        {viewerOrganizations
+                          .filter((org) =>
+                            mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true
+                          )
+                          .map((org) => (
+                            <SelectItem value={org.id} key={org.id}>
+                              {org.name}
+                            </SelectItem>
+                          ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -304,6 +329,7 @@ const ActivityDetailsSidebar = (props: Props) => {
               selectedTeamRef={selectedTeam}
               teamsRef={availableTeams}
               customPortal={teamScopePopover}
+              allowAddTeam={viewer.featureFlags.adHocTeams}
             />
           )}
 
@@ -346,14 +372,26 @@ const ActivityDetailsSidebar = (props: Props) => {
                 />
               )}
               <div className='flex grow flex-col justify-end gap-2'>
+                {oneOnOneTeamInput && (
+                  <OneOnOneTeamStatus
+                    email={oneOnOneTeamInput.email}
+                    orgId={oneOnOneTeamInput.orgId}
+                    name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
+                  />
+                )}
                 {error && <StyledError>{error.message}</StyledError>}
-                <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-                <ScheduleMeetingButton
-                  handleStartActivity={handleStartActivity}
-                  mutationProps={mutationProps}
-                  teamRef={selectedTeam}
-                  viewerRef={viewer}
-                />
+                {selectedTemplate.id !== 'oneOnOneAction' && (
+                  <>
+                    <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+                    {/* TODO: scheduling meeting does not work with one-on-one https://github.com/ParabolInc/parabol/issues/8820  */}
+                    <ScheduleMeetingButton
+                      handleStartActivity={handleStartActivity}
+                      mutationProps={mutationProps}
+                      teamRef={selectedTeam}
+                      viewerRef={viewer}
+                    />
+                  </>
+                )}
                 <FlatPrimaryButton
                   onClick={() => handleStartActivity()}
                   waiting={submitting}

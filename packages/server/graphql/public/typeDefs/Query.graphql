@@ -1,0 +1,32 @@
+type Query {
+  viewer: User!
+  getDemoEntities(
+    """
+    the reflection bodies to entitize
+    """
+    text: String!
+  ): GetDemoEntitiesPayload!
+  massInvitation(
+    """
+    The mass invitation token
+    """
+    token: ID!
+  ): MassInvitationPayload!
+  verifiedInvitation(
+    """
+    The invitation token
+    """
+    token: ID!
+  ): VerifiedInvitationPayload!
+  SAMLIdP(
+    """
+    the email associated with a SAML login
+    """
+    email: ID!
+
+    """
+    true if the user was invited, else false
+    """
+    isInvited: Boolean
+  ): String
+}

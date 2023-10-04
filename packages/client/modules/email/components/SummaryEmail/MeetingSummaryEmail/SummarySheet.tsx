@@ -26,6 +26,8 @@ import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import {TableChart} from '@mui/icons-material'
 import {Link} from 'react-router-dom'
+import SendClientSegmentEventMutation from '../../../../../mutations/SendClientSegmentEventMutation'
+import useAtmosphere from '../../../../../hooks/useAtmosphere'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
 
@@ -37,6 +39,7 @@ interface Props {
   referrer: MeetingSummaryReferrer
   referrerUrl?: string
   teamDashUrl: string
+  meetingUrl: string
   urlAction?: 'csv'
   corsOptions: CorsOptions
 }
@@ -53,9 +56,11 @@ const SummarySheet = (props: Props) => {
     meeting: meetingRef,
     referrer,
     teamDashUrl,
+    meetingUrl,
     appOrigin,
     corsOptions
   } = props
+  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment SummarySheet_meeting on NewMeeting {
@@ -89,6 +94,7 @@ const SummarySheet = (props: Props) => {
   const isDemo = !!props.isDemo
 
   const downloadPDF = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Download PDF Clicked', {meetingId})
     window.print()
   }
 
@@ -104,7 +110,12 @@ const SummarySheet = (props: Props) => {
       <tbody>
         <tr>
           <td>
-            <SummaryHeader meeting={meeting} corsOptions={corsOptions} />
+            <SummaryHeader
+              meeting={meeting}
+              corsOptions={corsOptions}
+              teamDashUrl={teamDashUrl}
+              meetingUrl={meetingUrl}
+            />
             <QuickStats meeting={meeting} />
             <TeamHealthSummary meeting={meeting} />
           </td>

@@ -9,11 +9,13 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
+import standardError from '../../../utils/standardError'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -38,7 +40,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedName = samlName.trim().toLowerCase()
   const body = querystring.parse(queryString)
   const relayState = getRelayState(body)
-  const {isInvited, metadata: newMetadata} = relayState
+  const {isInvited, metadataURL: newMetadataURL} = relayState
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
 
@@ -49,6 +51,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       }
     }
   const {domains, metadata: existingMetadata} = doc
+  const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
+  if (newMetadata instanceof Error) {
+    return {error: {message: newMetadata.message}}
+  }
   const metadata = newMetadata || existingMetadata
   if (!metadata) {
     return {error: {message: 'No metadata found! Please contact customer service'}}
@@ -58,9 +64,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
   } catch (e) {
-    const message =
-      e instanceof Error ? e.message : typeof e === 'string' ? e : 'parseLoginResponse failed'
-    return {error: {message}}
+    if (e instanceof Error) {
+      return standardError(e)
+    }
+    const message = typeof e === 'string' ? e : 'parseLoginResponse failed'
+    return standardError(new Error(message))
   }
   if (!loginResponse) {
     return {error: {message: 'Error with query from identity provider'}}
@@ -94,11 +102,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     // Revalidate it & persist to DB
     const url = getSignOnURL(metadata, normalizedName)
     if (url instanceof Error) {
-      return {error: {message: url.message}}
+      return standardError(url)
     }
     await pg
       .updateTable('SAML')
-      .set({metadata: newMetadata, url})
+      .set({metadata: newMetadata, metadataURL: newMetadataURL, url})
       .where('id', '=', normalizedName)
       .execute()
   }
@@ -120,7 +128,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     tier: 'enterprise'
   })
 
-  const authToken = await bootstrapNewUser(tempUser, !isInvited)
+  const authToken = await bootstrapNewUser(tempUser, !isInvited, dataLoader)
   return {
     userId,
     authToken: encodeAuthToken(authToken),

@@ -50,7 +50,7 @@ jobs:
           GITHUB_REF_NAME_NORMALIZED=$(echo ${{github.ref_name}} | tr / -)
           echo "GITHUB_REF_NAME_NORMALIZED=${GITHUB_REF_NAME_NORMALIZED}" >> $GITHUB_ENV
 
-          DOCKERIZE=${{ github.ref_type == 'tag' || contains(fromJSON('["master", "staging", "production"]'), github.ref_name) || startsWith(github.event.head_commit.message, 'dockerize')}}
+          DOCKERIZE=${{ github.ref_type == 'tag' || contains(fromJSON('["master", "release", "staging", "production"]'), github.ref_name) || startsWith(github.event.head_commit.message, 'dockerize')}}
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
 
       - name: Setup Node
@@ -149,6 +149,10 @@ jobs:
           name: test-results
           path: test-results/
           retention-days: 7
+
+      - name: Cleanup Predeploy for Docker Image
+        if: env.DOCKERIZE == 'true'
+        run: rm build/index.html build/sw.js build/manifest.json
 
       - name: Set up Docker Buildx
         if: env.DOCKERIZE == 'true'

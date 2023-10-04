@@ -3,7 +3,7 @@ import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntity
 import getRethink from '../../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../../database/types/NotificationTaskInvolves'
 import Task from '../../../database/types/Task'
-import segmentIo from '../../../utils/segmentIo'
+import {analytics} from '../../../utils/analytics/analytics'
 
 const publishChangeNotifications = async (
   task: Task,
@@ -45,14 +45,7 @@ const publishChangeNotifications = async (
     )
 
   mentions.forEach((mentionedUserId) => {
-    segmentIo.track({
-      userId: changeUserId,
-      event: 'Mentioned on Task',
-      properties: {
-        mentionedUserId,
-        teamId: task.teamId
-      }
-    })
+    analytics.mentionedOnTask(changeUserId, mentionedUserId, task.teamId)
   })
   // add in the assignee changes
   if (oldTask.userId && oldTask.userId !== task.userId) {

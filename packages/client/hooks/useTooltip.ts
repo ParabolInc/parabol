@@ -1,3 +1,7 @@
+/*
+ * DEPRECATED! Please use client/ui/Tooltip
+ */
+
 import {useEffect, useRef} from 'react'
 import {Duration} from '../types/constEnums'
 import useCoords, {MenuPosition} from './useCoords'

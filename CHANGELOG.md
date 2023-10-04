@@ -5,13 +5,95 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.123.1 2023-Oct-04
+
+### Fixed
+
+- fix: saml urls #8918
+
+## 6.123.0 2023-Oct-04
+
+### Added
+
+- Google Calendar: add Google Meet (#8818)
+- Added meeting link to a meeting summary (#8892)
+- Add support for multi-replica deploys (#8837)
+
+### Fixed
+
+- Remove display: inherit from standup response card in the meeting summary (#8910)
+
+### Changed
+
+- **CI**: adding release branch to the build action (#8888)
+- Google Calendar: change gcal creds to google creds (#8896)
+- Google Calendar: update gcal modal description (#8897)
+
+## 6.122.0 2023-Sep-27
+
+### Added
+
+- **ci**: adding release branch to the build action (#8888)
+- **gcal**: add Google Meet (#8818)
+- **Team Insights**: Add most used retro templates (#8879)
+- **Team Insights**: add meeting engagement insights (#8877)
+- **docker-pipeline**: arm64 platform built alongside amd64 (#8229)
+- add tailwind to emails (#8327)
+- **dokku**: add one more web server (#8889)
+- show sidebar by meeting summary (#8857)
+- **standups**: Display responses in single column (feature flagged) (#8875)
+- improve ai summary prompt to include markdown (#8859)
+- store freemail domains in pg (#8870)
+- upgrade openai (#8873)
+- **invitation-challenges**: implement InboxReady's validate check (#8707)
+- Show link to guide on Jira auth popup close (#8867)
+- **standups**: Add slack configuration link to standup options (#8861)
+- **ad-hoc**: allow to create team from teams dropdown (#8831)
+- Add standup demo video to empty meeting view (#8862)
+- **al**: Show standup meeting type first in all views (#8864)
+-
+
+### Fixed
+
+- read SAML from PG (#8906)
+- use google creds instead of gcal (#8895)
+- add transcription during discuss phase (#8580)
+- **Prompt to join org**: reverse feature flag (#8886)
+- loom links wrap, changed layout to single column (#8884)
+- emoji tooltip info is wrong in a standup discussion drawer (#8842)
+- **standups**: 'Your tasks' -> 'Your work' (#8874)
+- **billing**: Stop updating Enterprise Stripe subscription quantities to AU count (#8850)
+- **analytics**: Move server side segmentIo calls to analytics.ts (#8795)
+- **prompt to join org**: restrict to verified users (#8798)
+- **one-on-one**: Add team exists warning (#8718)
+- Add warning to getDataLoader (#8852)
+- **metrics**: Add Amplitude client-side page view tracking (#8797)
+- track download to pdf (#8854)
+
+## 6.121.0 2023-Sep-20
+
+### Added
+
+- SAML self-serve (#8802)
+- download summary as pdf (#8845)
+- **standups**: 'Your work' GitHub integration (#8724)
+
+### Fixed
+
+- allow to set task max-width (#8819)
+- filter tasks that are being created by different users in your work drawer (#8829)
+- remove memory leak from analytics (#8839)
+- **check-in**: fix navigating from first call to a new agenda item (#8833)
+
 ## 6.120.0 2023-Sep-13
 
 ### Added
+
 - scroll to card section (#8774)
 - invite link in right drawer (#8806)
 
 ### Changed
+
 - Delete unused file (#8790)
 - update instances of GitLab logo SVG (#8783)
 - **one-on-one**: show organiation picker if can't determine org automatically (#8712)
@@ -20,6 +102,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Update dev readme with assign SU script (#8815)
 
 ### Fixed
+
 - **gcal**: handle Zoom add-on conflict (#8776)
 - prevent newly added agenda item to be accessible when agenda items phase has not been started yet (#8799)
 - make new agenda items accessible from first call phase (#8835)

@@ -26,16 +26,15 @@ const createGcalEvent = async (input: Input) => {
   if (!featureFlags.includes('gcal')) {
     return standardError(new Error('Does not have gcal feature flag'), {userId: viewerId})
   }
-  const {startTimestamp, endTimestamp, title, timeZone, invitees} = gcalInput
+  const {startTimestamp, endTimestamp, title, timeZone, invitees, videoType} = gcalInput
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
   if (!gcalAuth) {
     return standardError(new Error('Could not retrieve Google Calendar auth'), {userId: viewerId})
   }
   const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
-
-  const CLIENT_ID = process.env.GCAL_CLIENT_ID
-  const CLIENT_SECRET = process.env.GCAL_CLIENT_SECRET
+  const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
+  const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
   const REDIRECT_URI = appOrigin
 
   const startDateTime = new Date(startTimestamp * 1000).toISOString()
@@ -50,6 +49,18 @@ const createGcalEvent = async (input: Input) => {
   const description = `Here's the link to your Parabol meeting: ${meetingUrl}
 
 ` // add a newline to separate the link from the rest of the description
+
+  const conferenceData =
+    videoType === 'meet'
+      ? {
+          createRequest: {
+            requestId: meetingId,
+            conferenceSolutionKey: {
+              type: 'hangoutsMeet'
+            }
+          }
+        }
+      : undefined
 
   const event = {
     summary: title,
@@ -69,13 +80,15 @@ const createGcalEvent = async (input: Input) => {
         {method: 'email', minutes: emailRemindMinsBeforeMeeting},
         {method: 'popup', minutes: popupRemindMinsBeforeMeeting}
       ]
-    }
+    },
+    conferenceData
   }
 
   try {
     await calendar.events.insert({
       calendarId: 'primary',
-      requestBody: event
+      requestBody: event,
+      conferenceDataVersion: 1
     })
   } catch (err) {
     const error = err instanceof Error ? err : new Error('Unable to create event in gcal')

@@ -8,7 +8,6 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
@@ -18,6 +17,7 @@ import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
+import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -90,15 +90,7 @@ export default {
       const {tms} = authToken
       // MUTATIVE
       tms.push(teamId)
-      segmentIo.track({
-        userId: viewerId,
-        event: 'New Team',
-        properties: {
-          orgId,
-          teamId,
-          teamNumber: orgTeams.length + 1
-        }
-      })
+      analytics.newTeam(viewerId, orgId, teamId, orgTeams.length + 1)
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {

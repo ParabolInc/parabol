@@ -61,7 +61,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
   const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, segmentId})
   // MUTATIVE
-  context.authToken = await bootstrapNewUser(newUser, isOrganic, params)
+  context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader, params)
   return {
     userId: newUser.id,
     authToken: encodeAuthToken(context.authToken),

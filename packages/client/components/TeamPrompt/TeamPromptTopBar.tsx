@@ -162,7 +162,7 @@ const TeamPromptTopBar = (props: Props) => {
         onClick={onOpenWorkSidebar}
       >
         <IconLabel icon='task_alt' iconLarge />
-        <div className='text-slate-700 group-hover:text-slate-900'>Your tasks</div>
+        <div className='text-slate-700 group-hover:text-slate-900'>Your work</div>
       </button>
       <TeamPromptOptions
         meetingRef={meeting}

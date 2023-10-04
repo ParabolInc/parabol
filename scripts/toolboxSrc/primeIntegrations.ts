@@ -29,8 +29,8 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       scope: 'global',
       teamId: 'aGhostTeam',
       serverBaseUrl: 'https://www.googleapis.com/calendar/v3',
-      clientId: process.env.GCAL_CLIENT_ID,
-      clientSecret: process.env.GCAL_CLIENT_SECRET
+      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET
     }
   ] as const
 

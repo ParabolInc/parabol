@@ -13,7 +13,10 @@ const NewMeetingSummaryRoot = () => {
   const {
     params: {urlAction, meetingId = 'demoMeeting'}
   } = match
-  const queryRef = useQueryLoaderNow<NewMeetingSummaryQuery>(newMeetingSummaryQuery, {meetingId})
+  const queryRef = useQueryLoaderNow<NewMeetingSummaryQuery>(newMeetingSummaryQuery, {
+    meetingId,
+    first: 5
+  })
   return (
     <Suspense fallback={renderLoader({size: LoaderSize.WHOLE_PAGE})}>
       {queryRef && <NewMeetingSummary queryRef={queryRef} urlAction={urlAction} />}

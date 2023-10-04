@@ -138,6 +138,11 @@ type Organization {
   orgUserCount: OrgUserCount!
 
   """
+  Returns one on one team if exists
+  """
+  oneOnOneTeam(email: Email!): Team
+
+  """
   The leaders of the org
   """
   billingLeaders: [User!]!
@@ -176,11 +181,12 @@ type OrganizationFeatureFlags {
   noAISummary: Boolean!
   AIGeneratedDiscussionPrompt: Boolean!
   standupAISummary: Boolean!
-  promptToJoinOrg: Boolean!
+  noPromptToJoinOrg: Boolean!
   suggestGroups: Boolean!
   zoomTranscription: Boolean!
   shareSummary: Boolean!
   teamsLimit: Boolean!
   teamInsights: Boolean!
   oneOnOne: Boolean!
+  singleColumnStandups: Boolean!
 }

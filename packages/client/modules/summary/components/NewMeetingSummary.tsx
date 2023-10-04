@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import DashSidebar from '../../../components/Dashboard/DashSidebar'
+import DashTopBar from '../../../components/DashTopBar'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
-import {PALETTE} from '../../../styles/paletteV3'
+import useSidebar from '../../../hooks/useSidebar'
 import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
@@ -19,8 +21,10 @@ interface Props {
 }
 
 const query = graphql`
-  query NewMeetingSummaryQuery($meetingId: ID!) {
+  query NewMeetingSummaryQuery($meetingId: ID!, $first: Int!, $after: DateTime) {
+    ...DashTopBar_query
     viewer {
+      ...DashSidebar_viewer
       newMeeting(meetingId: $meetingId) {
         ...MeetingSummaryEmail_meeting
         ...MeetingLockedOverlay_meeting
@@ -56,24 +60,36 @@ const NewMeetingSummary = (props: Props) => {
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`
+  const {isOpen, toggle} = useSidebar()
   const emailCSVUrl = isDemoRoute()
     ? `/retrospective-demo-summary/csv`
     : `/new-summary/${meetingId}/csv`
+
   return (
-    <div style={{backgroundColor: PALETTE.SLATE_200, minHeight: '100vh'}}>
-      <MeetingSummaryEmail
-        appOrigin={window.location.origin}
-        urlAction={urlAction}
-        isDemo={teamId === demoTeamId}
-        meeting={newMeeting}
-        referrer='meeting'
-        meetingUrl={meetingUrl}
-        teamDashUrl={teamDashUrl}
-        emailCSVUrl={emailCSVUrl}
-        corsOptions={APP_CORS_OPTIONS}
-      />
-      <MeetingLockedOverlay meetingRef={newMeeting} />
-    </div>
+    <>
+      <div className='hidden print:hidden lg:block'>
+        <DashTopBar queryRef={data} toggle={toggle} />
+      </div>
+      <div className='flex min-h-screen bg-slate-200'>
+        <div className='hidden print:hidden lg:block'>
+          <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+        </div>
+        <div className='w-full'>
+          <MeetingSummaryEmail
+            appOrigin={window.location.origin}
+            urlAction={urlAction}
+            isDemo={teamId === demoTeamId}
+            meeting={newMeeting}
+            referrer='meeting'
+            meetingUrl={meetingUrl}
+            teamDashUrl={teamDashUrl}
+            emailCSVUrl={emailCSVUrl}
+            corsOptions={APP_CORS_OPTIONS}
+          />
+        </div>
+        <MeetingLockedOverlay meetingRef={newMeeting} />
+      </div>
+    </>
   )
 }
 
