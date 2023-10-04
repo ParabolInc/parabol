@@ -53,13 +53,15 @@ jobs:
           DOCKERIZE=${{ github.ref_type == 'tag' || contains(fromJSON('["master", "release", "staging", "production"]'), github.ref_name) || startsWith(github.event.head_commit.message, 'dockerize')}}
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
 
+          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+          echo "ACTION_VERSION=6.122.0-exotic" >> $GITHUB_ENV
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
           # Caching yarn dir & running yarn install is too slow
           # Instead, we aggressively cache node_modules below to avoid calling install
-
       - name: Get cached node modules
         id: cache
         uses: actions/cache@v3
@@ -176,11 +178,6 @@ jobs:
           registry: ${{ secrets.GCP_DOCKER_REGISTRY }}
           username: "oauth2accesstoken"
           password: "${{ steps.auth.outputs.access_token }}"
-      #
-      # Multi-platform build. Uncomment to be able t build multi-platform images.
-      #
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v2
       - name: Build and push
         if: env.DOCKERIZE == 'true'
         uses: docker/build-push-action@v4
@@ -196,4 +193,21 @@ jobs:
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{ env.GITHUB_REF_NAME_NORMALIZED }}"
-          # platforms: linux/amd64,linux/arm64 # Uncomment to be able to build multi-platform images.
+      - name: Push Artifacts to Sentry
+        #if: github.ref_type == 'tag'
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: "${{secrets.SENTRY_AUTH_TOKEN}}"
+          SENTRY_ORG: "parabol"
+          SENTRY_PROJECT: "action-production"
+        with:
+          environment: "production"
+          sourcemaps: "./build"
+          version: ${{env.ACTION_VERSION}}
+      - name: Push Artifacts to Datadog
+        #if: github.ref_type == 'tag'
+        run: |
+          yarn datadog-ci sourcemaps upload ./build \
+            --service=parabol-saas-production \
+            --release-version=${{env.ACTION_VERSION}} \
+            --minified-path-prefix=https://action-files.parabol.co/production/build/
