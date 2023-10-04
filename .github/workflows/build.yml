@@ -208,6 +208,7 @@ jobs:
       - name: Push Artifacts to Datadog
         #if: github.ref_type == 'tag'
         run: |
+          yarn add @datadog/datadog-ci -W
           yarn datadog-ci sourcemaps upload ./build \
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
