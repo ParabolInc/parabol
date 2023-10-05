@@ -8,6 +8,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-8cores
+    env:
+      CI: true
     permissions:
       contents: "read"
       id-token: "write"
@@ -103,7 +105,6 @@ jobs:
         run: |
           yarn start &
         env:
-          CI: true
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Wait for testing server to be healthy
@@ -113,13 +114,11 @@ jobs:
         run: yarn test:server -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/server
-          CI: true
 
       - name: Run client tests
         run: yarn test:client -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
-          CI: true
 
       - name: Store Playwright Version
         run: |
