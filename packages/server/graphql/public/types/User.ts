@@ -178,10 +178,10 @@ const User: UserResolvers = {
 
     return connectionFromTemplateArray(allActivities, first, after)
   },
-  parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
+  parseSAMLMetadata: async (_source, {metadataURL, samlName}) => {
     const metadata = await getSSOMetadataFromURL(metadataURL)
     if (metadata instanceof Error) return {error: {message: metadata.message}}
-    const baseUrl = getSignOnURL(metadata, domain)
+    const baseUrl = getSignOnURL(metadata, samlName)
     if (baseUrl instanceof Error) {
       return {error: {message: baseUrl.message}}
     }
