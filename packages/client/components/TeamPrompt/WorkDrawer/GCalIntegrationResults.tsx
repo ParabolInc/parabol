@@ -20,6 +20,8 @@ const GCalIntegrationResults = (props: Props) => {
             integrations {
               gcal {
                 events(startDate: $startDate, endDate: $endDate) {
+                  startDate
+                  endDate
                   ...GCalEventCard_event
                 }
               }
@@ -38,26 +40,45 @@ const GCalIntegrationResults = (props: Props) => {
     gcalResults?.reverse()
   }
 
+  const gcalEventsByDay = gcalResults?.reduce((eventsByDate, event) => {
+    const eventDate = event.startDate ?? event.endDate
+    const parsedEventDate = eventDate ? new Date(eventDate) : new Date()
+    const eventDay = new Date(parsedEventDate.setHours(0, 0, 0, 0)).toJSON()
+    const eventsForDay = eventsByDate[eventDay]
+    if (eventsForDay) {
+      eventsForDay.push(event)
+    } else {
+      eventsByDate[eventDay] = [event]
+    }
+    return eventsByDate
+  }, {} as {[day: string]: typeof gcalResults})
+
   return (
     <>
-      <div className='mt-4 flex flex h-full flex-col gap-y-2 overflow-auto px-4'>
-        {gcalResults && gcalResults.length > 0 ? (
-          gcalResults?.map((result, idx) => {
-            if (!result) {
-              return null
-            }
-            return <GCalEventCard key={idx} eventRef={result} />
+      <div className='mt-4 flex h-full flex-col gap-y-4 overflow-auto px-4'>
+        {gcalEventsByDay && Object.keys(gcalEventsByDay).length > 0 ? (
+          Object.entries(gcalEventsByDay).map(([dayString, events]) => {
+            const date = new Date(dayString)
+            return (
+              <div key={dayString} className='flex flex-col gap-y-2'>
+                <div className='text-sm text-slate-600'>
+                  {date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+                {events.map((event, idx) => (
+                  <GCalEventCard key={idx} eventRef={event} />
+                ))}
+              </div>
+            )
           })
         ) : (
           <div className='-mt-14 flex h-full flex-col items-center justify-center'>
             <img className='w-20' src={halloweenRetrospectiveTemplate} />
             <div className='mt-7 w-2/3 text-center'>
-              oops
-              {/* {errors?.[0]?.message
-                ? errors?.[0]?.message
-                : `Looks like you don’t have any ${
-                    queryType === 'issue' ? 'issues' : 'pull requests'
-                  } to display.`} */}
+              Looks like you don’t have any events to display
             </div>
           </div>
         )}

@@ -75,7 +75,7 @@ const GCalPanel = (props: Props) => {
     <>
       {teamMember?.integrations.gcal?.auth?.providerId ? (
         <>
-          <div className='my-4 flex w-full gap-2 px-4'>
+          <div className='mt-4 flex w-full gap-2 px-4'>
             {GCAL_QUERY_TABS.map((tab) => (
               <div
                 key={tab.key}
