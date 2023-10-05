@@ -48,9 +48,6 @@ const query = graphql`
   }
 `
 
-const labelStyles = `text-left text-sm font-semibold mb-3`
-const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
-
 const AddTeamDialog = (props: Props) => {
   const {isOpen, onClose, queryRef, onAddTeam} = props
   const atmosphere = useAtmosphere()
@@ -67,7 +64,8 @@ const AddTeamDialog = (props: Props) => {
 
   const showOrgPicker = !!(
     selectedUsers.length &&
-    (mutualOrgsIds.length > 1 || !mutualOrgsIds.length)
+    (mutualOrgsIds.length > 1 || !mutualOrgsIds.length) &&
+    viewerOrganizations.length > 1
   )
 
   const defaultOrgId = mutualOrgsIds[0]
@@ -137,6 +135,9 @@ const AddTeamDialog = (props: Props) => {
 
   const isValid = selectedUsers.length && teamName.trim()
 
+  const labelStyles = `text-left text-sm font-semibold mb-3`
+  const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
@@ -184,7 +185,9 @@ const AddTeamDialog = (props: Props) => {
           <label className={labelStyles}>Team name</label>
           <Input
             onChange={(e) => {
-              !teamNameManuallyEdited && setTeamNameManuallyEdited(true)
+              if (!teamNameManuallyEdited) {
+                setTeamNameManuallyEdited(true)
+              }
               setTeamName(e.target.value)
             }}
             value={teamName}
