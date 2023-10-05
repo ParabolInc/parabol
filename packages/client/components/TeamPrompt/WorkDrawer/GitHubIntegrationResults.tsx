@@ -64,7 +64,6 @@ const GitHubIntegrationResults = (props: Props) => {
                 }
               }
             }
-            ...useGetRepoContributions_teamMember
           }
         }
       }
