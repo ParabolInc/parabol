@@ -1,7 +1,7 @@
 import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
@@ -132,12 +132,24 @@ const ActivityDetailsSidebar = (props: Props) => {
       : // it is a team-scoped template, templateTeam  must exist
         [templateTeam!]
 
+  const availableTeamsRef = useRef(availableTeams)
+
+  useEffect(() => {
+    availableTeamsRef.current = availableTeams
+  }, [availableTeams])
+
   const [selectedTeam, setSelectedTeam] = useState(
     () =>
       availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
       sortByTier(availableTeams)[0]!
   )
+
+  const onSelectTeam = (teamId: string) => {
+    const currentAvailableTeams = availableTeamsRef.current
+    const newTeam = currentAvailableTeams.find((team) => team.id === teamId)
+    newTeam && setSelectedTeam(newTeam)
+  }
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
@@ -322,10 +334,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           ) : (
             <NewMeetingTeamPicker
               positionOverride={MenuPosition.UPPER_LEFT}
-              onSelectTeam={(teamId) => {
-                const newTeam = availableTeams.find((team) => team.id === teamId)
-                newTeam && setSelectedTeam(newTeam)
-              }}
+              onSelectTeam={onSelectTeam}
               selectedTeamRef={selectedTeam}
               teamsRef={availableTeams}
               customPortal={teamScopePopover}
