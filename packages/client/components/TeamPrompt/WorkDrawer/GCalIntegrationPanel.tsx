@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {GCalIntegrationPanel_meeting$key} from '../../../__generated__/GCalIntegrationPanel_meeting.graphql'
@@ -7,6 +7,22 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import GcalClientManager from '../../../utils/GcalClientManager'
 import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
+import clsx from 'clsx'
+
+const GCAL_QUERY_TABS = [
+  {
+    key: 'past7d',
+    label: 'Past 7 days'
+  },
+  {
+    key: 'today',
+    label: 'Today'
+  },
+  {
+    key: 'upcoming',
+    label: 'Upcoming'
+  }
+] as const
 
 interface Props {
   meetingRef: GCalIntegrationPanel_meeting$key
@@ -40,6 +56,8 @@ const GCalPanel = (props: Props) => {
 
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
+  const [eventRangeKey, setEventRangeKey] = useState<'past7d' | 'today' | 'upcoming'>('past7d')
+
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
@@ -57,7 +75,23 @@ const GCalPanel = (props: Props) => {
     <>
       {teamMember?.integrations.gcal?.auth?.providerId ? (
         <>
-          <GCalIntegrationResultsRoot teamId={teamMember.teamId} />
+          <div className='my-4 flex w-full gap-2 px-4'>
+            {GCAL_QUERY_TABS.map((tab) => (
+              <div
+                key={tab.key}
+                className={clsx(
+                  'w-1/2 cursor-pointer rounded-full py-3 px-3 text-center text-sm leading-3 text-slate-800',
+                  tab.key === eventRangeKey
+                    ? 'bg-grape-700 font-semibold text-white focus:text-white'
+                    : 'border border-slate-300 bg-white'
+                )}
+                onClick={() => setEventRangeKey(tab.key)}
+              >
+                {tab.label}
+              </div>
+            ))}
+          </div>
+          <GCalIntegrationResultsRoot teamId={teamMember.teamId} eventRangeKey={eventRangeKey} />
         </>
       ) : (
         <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>

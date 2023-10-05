@@ -6,20 +6,45 @@ import gcalIntegrationResultsQuery, {
 import ErrorBoundary from '../../ErrorBoundary'
 import GCalIntegrationResults from './GCalIntegrationResults'
 import {renderLoader} from '~/utils/relay/renderLoader'
+import ms from 'ms'
 
 interface Props {
   teamId: string
+  eventRangeKey: 'past7d' | 'today' | 'upcoming'
 }
 
+const TODAY_MIDNIGHT = new Date().setHours(0, 0, 0, 0)
+
+const GCAL_QUERY_MAPPING = {
+  past7d: {
+    startDate: new Date(TODAY_MIDNIGHT - ms('7d')).toJSON(),
+    endDate: new Date(TODAY_MIDNIGHT).toJSON(),
+    order: 'DESC'
+  },
+  today: {
+    startDate: new Date(TODAY_MIDNIGHT).toJSON(),
+    endDate: new Date(TODAY_MIDNIGHT + ms('1d')).toJSON(),
+    order: 'ASC'
+  },
+  upcoming: {
+    startDate: new Date(TODAY_MIDNIGHT + ms('1d')).toJSON(),
+    endDate: new Date(TODAY_MIDNIGHT + ms('8d')).toJSON(),
+    order: 'ASC'
+  }
+} as const
+
 const GCalIntegrationResultsRoot = (props: Props) => {
-  const {teamId} = props
+  const {teamId, eventRangeKey} = props
+  const eventRange = GCAL_QUERY_MAPPING[eventRangeKey]
   const queryRef = useQueryLoaderNow<GCalIntegrationResultsQuery>(gcalIntegrationResultsQuery, {
-    teamId: teamId
+    teamId: teamId,
+    startDate: eventRange.startDate,
+    endDate: eventRange.endDate
   })
   return (
     <ErrorBoundary>
       <Suspense fallback={renderLoader()}>
-        {queryRef && <GCalIntegrationResults queryRef={queryRef} />}
+        {queryRef && <GCalIntegrationResults queryRef={queryRef} order={eventRange.order} />}
       </Suspense>
     </ErrorBoundary>
   )

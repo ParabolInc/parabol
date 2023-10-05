@@ -12,19 +12,20 @@ import relativeDate from '../../../utils/date/relativeDate'
 
 interface Props {
   queryRef: PreloadedQuery<GCalIntegrationResultsQuery>
+  order: 'DESC' | 'ASC'
 }
 
 const GCalIntegrationResults = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef, order} = props
   const query = usePreloadedQuery(
     graphql`
-      query GCalIntegrationResultsQuery($teamId: ID!) {
+      query GCalIntegrationResultsQuery($teamId: ID!, $startDate: DateTime!, $endDate: DateTime!) {
         # ...GCalIntegrationResults_search @arguments(teamId: $teamId)
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               gcal {
-                pastEvents {
+                events(startDate: $startDate, endDate: $endDate) {
                   summary
                   status
                   startDate
@@ -40,44 +41,13 @@ const GCalIntegrationResults = (props: Props) => {
     queryRef
   )
 
-  // const paginationRes = usePaginationFragment<
-  //   GCalIntegrationResultsSearchPaginationQuery,
-  //   GCalIntegrationResults_search$key
-  // >(
-  //   graphql`
-  //     fragment GCalIntegrationResults_search on Query
-  //     @argumentDefinitions(
-  //       # cursor: {type: "String"}
-  //       # count: {type: "Int", defaultValue: 25}
-  //       teamId: {type: "ID!"}
-  //     )
-  //     @refetchable(queryName: "GCalIntegrationResultsSearchPaginationQuery") {
-  //       viewer {
-  //         teamMember(teamId: $teamId) {
-  //           integrations {
-  //             gcal {
-  //               pastEvents {
-  //                 summary
-  //                 status
-  //                 startDate
-  //                 endDate
-  //                 link
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   `,
-  //   query
-  // )
-
-  // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
-  // const {data, hasNext} = paginationRes
-
   const gcal = query.viewer.teamMember?.integrations.gcal
 
-  const gcalResults = gcal?.pastEvents
+  // const gcalResults = gcal?.events
+  const gcalResults = gcal?.events ? [...gcal?.events] : null
+  if (order === 'DESC') {
+    gcalResults?.reverse()
+  }
 
   return (
     <>

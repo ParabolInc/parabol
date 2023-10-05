@@ -1,7 +1,6 @@
 import {google} from 'googleapis'
 import {GcalIntegrationResolvers} from '../resolverTypes'
 import appOrigin from '../../../appOrigin'
-import ms from 'ms'
 
 export type GcalIntegrationSource = {
   teamId: string
@@ -19,7 +18,7 @@ const GcalIntegration: GcalIntegrationResolvers = {
     if (!globalProvider) return null
     return globalProvider
   },
-  pastEvents: async ({teamId, userId}, _args, {dataLoader}) => {
+  events: async ({teamId, userId}, {startDate, endDate}, {dataLoader}) => {
     const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
     if (!gcalAuth) {
       return null
@@ -42,7 +41,8 @@ const GcalIntegration: GcalIntegrationResolvers = {
       maxResults: 25,
       orderBy: 'startTime',
       singleEvents: true,
-      timeMin: new Date(new Date().getTime() - ms('14d')).toISOString()
+      timeMin: startDate.toISOString(),
+      timeMax: endDate.toISOString()
     })
 
     const calendarEventBody = calendarEventResponse.data

@@ -12,5 +12,8 @@ type GcalIntegration {
   """
   cloudProvider: IntegrationProviderOAuth2
 
-  pastEvents: [GcalIntegrationEvent!]
+  """
+  Events for specific time periods
+  """
+  events(startDate: DateTime!, endDate: DateTime!): [GcalIntegrationEvent!]
 }
