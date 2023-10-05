@@ -58,16 +58,18 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
         ...issue,
         teamId,
         userId,
-        descriptionHTML: updatedDescription,
-        updatedAt: new Date(issue.lastUpdated)
+        descriptionHTML: updatedDescription
       }
     })
+
     const nodes = mappedIssues.slice(0, first)
     const edges = nodes.map((node, index) => ({
       cursor: `${index + startAt}`,
       node
     }))
+
     const firstEdge = edges[0]
+
     return {
       error: error ? {message: error.message} : undefined,
       edges,
