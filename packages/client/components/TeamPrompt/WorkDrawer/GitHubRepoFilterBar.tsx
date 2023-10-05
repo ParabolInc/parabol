@@ -1,5 +1,6 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import {FilterList} from '@mui/icons-material'
 import useMenu from '../../../hooks/useMenu'
 import {MenuPosition} from '../../../hooks/useCoords'
 import GitHubRepoSearchFilterMenu from '../../GitHubRepoSearchFilterMenu'
@@ -9,7 +10,6 @@ import {ExpandMore} from '@mui/icons-material'
 import {PortalStatus} from '../../../hooks/usePortal'
 import clsx from 'clsx'
 import plural from '../../../utils/plural'
-import ReposSVG from '../../../../../static/images/icons/repos.svg'
 
 interface Props {
   teamMemberRef: GitHubRepoFilterBar_teamMember$key
@@ -51,7 +51,7 @@ const GitHubRepoFilterBar = (props: Props) => {
         onClick={togglePortal}
         ref={originRef}
       >
-        <img src={ReposSVG} />
+        <FilterList />
         {selectedRepos.length === 0
           ? 'All repositories'
           : `${selectedRepos.length} ${plural(
