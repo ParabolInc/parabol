@@ -51,7 +51,7 @@ const GitHubRepoFilterBar = (props: Props) => {
         onClick={togglePortal}
         ref={originRef}
       >
-        <FilterList />
+        <FilterList className='h-5 w-5 text-slate-600' />
         {selectedRepos.length === 0
           ? 'All repositories'
           : `${selectedRepos.length} ${plural(
