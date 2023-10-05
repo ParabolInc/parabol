@@ -21,7 +21,8 @@ const ErrorAlertWrapper = styled('div')({
   alignItems: 'center',
   fontSize: 14,
   marginBottom: 16,
-  padding: '8px 16px'
+  padding: '8px 16px',
+  overflowX: 'auto'
 })
 
 const SpacedIcon = styled(Warning)({
