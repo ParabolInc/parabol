@@ -12,9 +12,9 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import getTokenFromSSO from '../../../../utils/getTokenFromSSO'
 
 graphql`
-  query OrgAuthenticationMetadataQuery($metadataURL: String!, $samlName: String!) {
+  query OrgAuthenticationMetadataQuery($metadataURL: String!, $domain: String!) {
     viewer {
-      parseSAMLMetadata(metadataURL: $metadataURL, samlName: $samlName) {
+      parseSAMLMetadata(metadataURL: $metadataURL, domain: $domain) {
         ... on ErrorPayload {
           error {
             message
@@ -50,14 +50,14 @@ const OrgAuthenticationMetadata = (props: Props) => {
   const submitMetadataURL = async () => {
     if (submitting) return
     submitMutation()
-    const samlName = saml?.id
-    if (!samlName) {
-      onError(new Error('SAML ID not provided. Please contact customer support'))
+    const domain = saml?.id
+    if (!domain) {
+      onError(new Error('Domain not provided. Please contact customer support'))
     }
     // Get the Sign-on URL, which includes metadataURL in the RelayState
     const res = await atmosphere.fetchQuery<OrgAuthenticationMetadataQuery>(
       orgAuthenticationMetadataQuery,
-      {metadataURL, samlName}
+      {metadataURL, domain}
     )
     if (!res) {
       onError(new Error('Could not reach server. Please try again'))
