@@ -2,13 +2,8 @@ import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
-// import {GCalIntegrationResultsSearchPaginationQuery} from '../../../__generated__/GCalIntegrationResultsSearchPaginationQuery.graphql'
-// import {GCalIntegrationResults_search$key} from '../../../__generated__/GCalIntegrationResults_search.graphql'
-// import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-// import Ellipsis from '../../Ellipsis/Ellipsis'
-import clsx from 'clsx'
-import relativeDate from '../../../utils/date/relativeDate'
+import GCalEventCard from './GCalEventCard'
 
 interface Props {
   queryRef: PreloadedQuery<GCalIntegrationResultsQuery>
@@ -20,17 +15,12 @@ const GCalIntegrationResults = (props: Props) => {
   const query = usePreloadedQuery(
     graphql`
       query GCalIntegrationResultsQuery($teamId: ID!, $startDate: DateTime!, $endDate: DateTime!) {
-        # ...GCalIntegrationResults_search @arguments(teamId: $teamId)
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               gcal {
                 events(startDate: $startDate, endDate: $endDate) {
-                  summary
-                  status
-                  startDate
-                  endDate
-                  link
+                  ...GCalEventCard_event
                 }
               }
             }
@@ -43,7 +33,6 @@ const GCalIntegrationResults = (props: Props) => {
 
   const gcal = query.viewer.teamMember?.integrations.gcal
 
-  // const gcalResults = gcal?.events
   const gcalResults = gcal?.events ? [...gcal?.events] : null
   if (order === 'DESC') {
     gcalResults?.reverse()
@@ -57,30 +46,7 @@ const GCalIntegrationResults = (props: Props) => {
             if (!result) {
               return null
             }
-            return (
-              <a
-                key={idx}
-                href={result.link ?? undefined}
-                target='_blank'
-                className={clsx(
-                  'group',
-                  result.status === 'accepted' && 'font-semibold text-white'
-                )}
-                rel='noreferrer'
-              >
-                <div
-                  className={clsx(
-                    'rounded border border-solid border-slate-300 p-4 hover:border-slate-600',
-                    result.status === 'accepted' && 'bg-sky-500 font-semibold text-white'
-                  )}
-                >
-                  <div className='my-2 group-hover:underline'>{result.summary}</div>
-                  <div className='text-sm'>
-                    {result.startDate && relativeDate(result.startDate)}
-                  </div>
-                </div>
-              </a>
-            )
+            return <GCalEventCard key={idx} eventRef={result} />
           })
         ) : (
           <div className='-mt-14 flex h-full flex-col items-center justify-center'>
@@ -95,12 +61,6 @@ const GCalIntegrationResults = (props: Props) => {
             </div>
           </div>
         )}
-        {/* {lastItem}
-        {hasNext && (
-          <div className='mx-auto mb-4 -mt-4 h-8 text-2xl' key={'loadingNext'}>
-            <Ellipsis />
-          </div>
-        )} */}
       </div>
     </>
   )
