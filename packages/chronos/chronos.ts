@@ -130,7 +130,6 @@ const chronos = () => {
     }
   })
 
-  console.log('GEORG CI', process.env.CI)
   console.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID}. Ready for Chronos           🌾🌾🌾`)
 }
 
