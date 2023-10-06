@@ -32,6 +32,7 @@ import getRedis from '../utils/getRedis'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeResults from './normalizeResults'
+import {Team} from '../postgres/queries/getTeamsByIds'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -690,6 +691,27 @@ export const samlByOrgId = (parent: RootDataLoader) => {
         .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
         .execute()
       return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, Team[], string>(
+    async (orgIds) => {
+      const pg = getKysely()
+
+      const teams = (await pg
+        .selectFrom('Team')
+        .where('orgId', 'in', orgIds)
+        .where('autoJoin', '=', true)
+        .where('isArchived', '!=', true)
+        .selectAll()
+        .execute()) as unknown as Team[]
+
+      return orgIds.map((orgId) => teams.filter((team) => team.orgId === orgId))
     },
     {
       ...parent.dataLoaderOptions
