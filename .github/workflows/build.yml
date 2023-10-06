@@ -209,10 +209,10 @@ jobs:
         if: github.ref_type == 'tag'
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
+          CDN_BUILD_URL: "https://action-files.parabol.co/production/build/"
         run: |
-          echo "$DATADOG_API_KEY"
           yarn add @datadog/datadog-ci -W
           yarn datadog-ci sourcemaps upload ./build \
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
-            --minified-path-prefix=https://action-files.parabol.co/production/build/
+            --minified-path-prefix=${{env.CDN_BUILD_URL}}
