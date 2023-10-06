@@ -20,6 +20,11 @@ import standardError from '../../../utils/standardError'
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
 
+const CLAIM_SPEC = {
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'email',
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'displayname'
+}
+
 const getRelayState = (body: querystring.ParsedUrlQuery) => {
   let relayState = {} as SSORelayState
   try {
@@ -76,13 +81,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
 
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
-  const caseInsensitiveAttributes = {} as Record<string, string | undefined>
-  Object.keys(attributes).forEach((key) => {
-    const lowercaseKey = key.toLowerCase()
-    const value = attributes[key]
-    caseInsensitiveAttributes[lowercaseKey] = String(value)
-  })
-  const {email: inputEmail, emailaddress, displayname} = caseInsensitiveAttributes
+  const normalizedAttributes = Object.fromEntries(
+    Object.entries(attributes).map(([key, value]) => {
+      const normalizedKey = CLAIM_SPEC[key as keyof typeof CLAIM_SPEC] ?? key.toLowerCase()
+      return [normalizedKey, String(value)]
+    })
+  )
+  const {email: inputEmail, emailaddress, displayname} = normalizedAttributes
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
