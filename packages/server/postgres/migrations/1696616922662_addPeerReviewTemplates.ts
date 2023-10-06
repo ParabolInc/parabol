@@ -14,6 +14,7 @@ interface Prompt {
 interface Template {
   name: string
   type: 'feedback'
+  illustration: string
   prompts: Prompt[]
 }
 
@@ -21,6 +22,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   {
     name: '360 Review: Open-ended Feedback',
     type: 'feedback',
+    illustration: 'heardSeenRespectedHSRTemplate.png',
     prompts: [
       {
         question: 'Trust',
@@ -50,6 +52,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   {
     name: '360 Review: Feedback on Progression',
     type: 'feedback',
+    illustration: 'mountainClimberTemplate.png',
     prompts: [
       {
         question: 'Roles & Skills',
@@ -76,6 +79,7 @@ const NEW_TEMPLATE_CONFIGS: Template[] = [
   {
     name: '360 Review: Feedback on Development',
     type: 'feedback',
+    illustration: 'hopesAndFearsTemplate.png',
     prompts: [
       {
         question: 'Remarkable',
@@ -142,7 +146,7 @@ const makeTemplate = (template: Template) => ({
   updatedAt: createdAt,
   isStarter: false,
   isFree: true,
-  illustrationUrl: getTemplateIllustrationUrl('surprisedWorriedInspiredTemplate.png'),
+  illustrationUrl: getTemplateIllustrationUrl(template.illustration),
   mainCategory: template.type,
   lastUsedAt: null,
   parentTemplateId: null
