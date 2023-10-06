@@ -8,8 +8,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-8cores
-    env:
-      CI: true
     permissions:
       contents: "read"
       id-token: "write"
