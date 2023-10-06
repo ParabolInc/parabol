@@ -102,8 +102,6 @@ jobs:
       - name: Start testing server in background
         run: |
           yarn start &
-        env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Wait for testing server to be healthy
         run: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
