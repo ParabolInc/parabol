@@ -8,6 +8,7 @@ import GitHubClientManager from '../../../utils/GitHubClientManager'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
+import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
   {
@@ -37,6 +38,7 @@ const GitHubIntegrationPanel = (props: Props) => {
                 isActive
               }
             }
+            ...GitHubRepoFilterBar_teamMember
           }
         }
       }
@@ -47,6 +49,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const [githubType, setGithubType] = useState<'issue' | 'pullRequest'>('issue')
+  const [selectedRepos, setSelectedRepos] = useState<string[]>([])
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
@@ -63,7 +66,12 @@ const GitHubIntegrationPanel = (props: Props) => {
     <>
       {teamMember?.integrations.github?.isActive ? (
         <>
-          <div className='my-4 flex w-full gap-2 px-4'>
+          <GitHubRepoFilterBar
+            teamMemberRef={teamMember}
+            selectedRepos={selectedRepos}
+            setSelectedRepos={setSelectedRepos}
+          />
+          <div className='mb-4 flex w-full gap-2 px-4'>
             {GITHUB_QUERY_TABS.map((tab) => (
               <div
                 key={tab.key}
@@ -79,7 +87,11 @@ const GitHubIntegrationPanel = (props: Props) => {
               </div>
             ))}
           </div>
-          <GitHubIntegrationResultsRoot teamId={teamMember.teamId} queryType={githubType} />
+          <GitHubIntegrationResultsRoot
+            teamId={teamMember.teamId}
+            queryType={githubType}
+            selectedRepos={selectedRepos}
+          />
         </>
       ) : (
         <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
