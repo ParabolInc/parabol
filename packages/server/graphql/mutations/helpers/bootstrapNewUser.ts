@@ -40,9 +40,10 @@ const bootstrapNewUser = async (
   } = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
-  const [isPatient0, usersWithDomain] = await Promise.all([
+  const [isPatient0, usersWithDomain, organizations] = await Promise.all([
     isPatientZero(domain),
-    isCompanyDomain(domain) ? getUsersbyDomain(domain) : []
+    isCompanyDomain(domain) ? getUsersbyDomain(domain) : [],
+    dataLoader.get('organizationsByActiveDomain').load(domain)
   ])
 
   const joinEvent = new TimelineEventJoinedParabol({userId})
@@ -59,7 +60,11 @@ const bootstrapNewUser = async (
     experimentalFlags.push('retrosInDisguise')
   }
 
-  await Promise.all([
+  const isVerified = identities.some((identity) => identity.isEmailVerified)
+  const orgIds = organizations.map(({id}) => id)
+
+  const [teamsWithAutoJoinRes] = await Promise.all([
+    isVerified ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
     insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
@@ -79,13 +84,7 @@ const bootstrapNewUser = async (
     anonymousId: segmentId
   })
 
-  const isVerified = identities.some((identity) => identity.isEmailVerified)
-  const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-  const orgIds = organizations.map(({id}) => id)
-
-  const teamsWithAutoJoin = isVerified
-    ? (await dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds)).filter(isValid).flat()
-    : []
+  const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
   const tms = [] as string[]
 
   if (teamsWithAutoJoin.length > 0) {
