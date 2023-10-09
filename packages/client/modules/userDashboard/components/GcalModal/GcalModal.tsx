@@ -20,6 +20,8 @@ import StyledError from '../../../../components/StyledError'
 import DialogContainer from '../../../../components/DialogContainer'
 import {Close} from '@mui/icons-material'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
+import VideoConferencing from './VideoConferencing'
+import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -84,6 +86,7 @@ const GcalModal = (props: Props) => {
   const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
+  const [videoType, setVideoType] = useState<GcalVideoTypeEnum | null>(null)
 
   const team = useFragment(
     graphql`
@@ -123,7 +126,8 @@ const GcalModal = (props: Props) => {
       startTimestamp,
       endTimestamp,
       timeZone,
-      invitees
+      invitees,
+      videoType: videoType ?? undefined
     }
     handleStartActivityWithGcalEvent(input)
   }
@@ -181,13 +185,17 @@ const GcalModal = (props: Props) => {
     setInviteAll((inviteAll) => !inviteAll)
   }
 
+  const handleChangeVideoType = (option: GcalVideoTypeEnum | null) => {
+    setVideoType(option)
+  }
+
   return (
     <StyledDialogContainer>
       <DialogTitle>
         <div className='flex flex-col'>
           <div className='text-lg'>{'Schedule Your Meeting'}</div>
           <div className='text-gray-500 mt-1 text-sm font-normal'>
-            We'll include a link to the Parabol meeting in the description
+            Create a Google Calendar event with a link to the Parabol meeting in the description
           </div>
         </div>
         <StyledCloseButton onClick={closeModal}>
@@ -215,7 +223,8 @@ const GcalModal = (props: Props) => {
               setEnd={setEnd}
             />
           </div>
-          <p className='pt-3 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
+          <VideoConferencing videoType={videoType} handleChangeVideoType={handleChangeVideoType} />
+          <p className='pt-2 text-xs leading-4'>{'Invite others to your Google Calendar event'}</p>
           <BasicTextArea
             name='rawInvitees'
             onChange={onInvitesChange}

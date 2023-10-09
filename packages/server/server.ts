@@ -2,7 +2,6 @@ import tracer from 'dd-trace'
 import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import ICSHandler from './ICSHandler'
-import PROD from './PROD'
 import PWAHandler from './PWAHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
@@ -31,13 +30,13 @@ tracer.init({
 })
 tracer.use('ioredis').use('http').use('pg')
 
-if (!PROD) {
+if (!__PRODUCTION__) {
   process.on('SIGINT', async () => {
     r.getPoolMaster()?.drain()
   })
 }
 
-const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
+const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
 uws
   .App()
   .get('/favicon.ico', PWAHandler)

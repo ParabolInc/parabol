@@ -12,11 +12,9 @@ import {analytics} from '../../../utils/analytics/analytics'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
-import isPatientZero from './isPatientZero'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
-import isCompanyDomain from '../../../utils/isCompanyDomain'
 import {DataLoaderWorker} from '../../graphql'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import isValid from '../../isValid'
@@ -40,11 +38,12 @@ const bootstrapNewUser = async (
   } = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
-  const [isPatient0, usersWithDomain, organizations] = await Promise.all([
-    isPatientZero(domain),
-    isCompanyDomain(domain) ? getUsersbyDomain(domain) : [],
+  const [isCompanyDomain, organizations] = await Promise.all([
+    dataLoader.get('isCompanyDomain').load(domain),
     dataLoader.get('organizationsByActiveDomain').load(domain)
   ])
+  const usersWithDomain = isCompanyDomain ? await getUsersbyDomain(domain) : []
+  const isPatient0 = !!domain && isCompanyDomain && usersWithDomain.length === 0
 
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
@@ -114,7 +113,7 @@ const bootstrapNewUser = async (
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`
-    await createNewOrg(orgId, orgName, userId, email)
+    await createNewOrg(orgId, orgName, userId, email, dataLoader)
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam),
       addSeedTasks(userId, teamId),

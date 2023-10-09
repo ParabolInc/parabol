@@ -8,21 +8,23 @@ import {PALETTE} from '~/styles/paletteV3'
 import {createEditorExtensions} from '../../../../../components/promptResponse/tiptapConfig'
 
 const responseSummaryCardStyles: React.CSSProperties = {
-  margin: '12px',
-  width: '251px'
+  padding: '12px',
+  width: '100%'
 }
 
-const promptResponseStyles = {
+const promptResponseStyles: React.CSSProperties = {
   minHeight: '40px',
   lineHeight: '20px',
   border: 'solid',
   borderWidth: '1px',
   borderColor: PALETTE.SLATE_300,
   borderRadius: '4px',
-  padding: '12px 16px 12px 16px'
+  padding: '12px 16px 12px 16px',
+  overflow: 'auto',
+  wordWrap: 'break-word'
 }
 
-const avatarStyles = {
+const avatarStyles: React.CSSProperties = {
   borderRadius: '100%',
   minWidth: 48
 }
@@ -30,17 +32,18 @@ const avatarStyles = {
 // Note: Emotion doesn't work in email, so these styles will only be present in the app.
 const StyledEditor = styled('div')`
   min-height: 40px;
-  line-height: 20px;
+  line-height: 1.25;
 
-  :is(ul, ol) {
+  ul,
+  ol {
     list-style-position: outside;
     padding-inline-start: 16px;
     margin-block-start: 4px;
     margin-block-end: 4px;
   }
 
-  :is(ol) {
-    margin-inline-start: 2px;
+  ol {
+    margin-inline-start: 4px;
   }
 
   p.is-editor-empty:first-of-type::before {
@@ -53,6 +56,15 @@ const StyledEditor = styled('div')`
 
   p:empty::after {
     content: '\\00A0';
+  }
+
+  p {
+    margin-block-start: 4px;
+    margin-block-end: 4px;
+  }
+
+  hr {
+    border-top: 1px solid ${PALETTE.SLATE_300};
   }
 
   [data-type='mention'] {

@@ -101,7 +101,7 @@ export default {
 
       const viewer = await getUserByEmail(email)
       const userId = viewer?.id ?? null
-      const ssoURL = await getSAMLURLFromEmail(email, true)
+      const ssoURL = await getSAMLURLFromEmail(email, dataLoader, true)
       const isGoogle = await getIsGoogleProvider(viewer, email)
       return {
         ssoURL,

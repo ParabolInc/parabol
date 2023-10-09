@@ -8,7 +8,7 @@ import {useFragment} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 import {CorsOptions} from '../../../../../types/cors'
 
-const meetingSummaryLabel = {
+const meetingSummaryLabel: React.CSSProperties = {
   color: PALETTE.SLATE_600,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   textTransform: 'uppercase',
@@ -16,32 +16,47 @@ const meetingSummaryLabel = {
   fontWeight: 600,
   paddingTop: 8,
   textAlign: 'center'
-} as React.CSSProperties
+}
 
-const teamNameLabel = {
+const teamNameLabel: React.CSSProperties = {
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 36,
   fontWeight: 600,
   paddingTop: 16
-} as React.CSSProperties
+}
 
-const dateLabel = {
+const dateLabel: React.CSSProperties = {
   color: PALETTE.SLATE_600,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '15px',
   fontWeight: 400,
   paddingTop: 8
-} as React.CSSProperties
+}
+
+const teamLink: React.CSSProperties = {
+  color: PALETTE.SKY_500,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontWeight: 600,
+  fontSize: '15px',
+  paddingTop: 8
+}
+
+const meetingLink: React.CSSProperties = {
+  textDecoration: 'underline',
+  color: 'inherit'
+}
 
 interface Props {
   meeting: SummaryHeader_meeting$key
   isDemo?: boolean
   corsOptions: CorsOptions
+  teamDashUrl: string
+  meetingUrl: string
 }
 
 const SummaryHeader = (props: Props) => {
-  const {meeting: meetingRef, isDemo, corsOptions} = props
+  const {meeting: meetingRef, isDemo, corsOptions, teamDashUrl, meetingUrl} = props
   const meeting = useFragment(
     graphql`
       fragment SummaryHeader_meeting on NewMeeting {
@@ -78,12 +93,24 @@ const SummaryHeader = (props: Props) => {
         </tr>
         <tr>
           <td align='center' style={teamNameLabel}>
-            {meetingName}
+            <a href={meetingUrl} style={meetingLink} rel='noopener noreferrer'>
+              {meetingName}
+            </a>
           </td>
         </tr>
         <tr>
           <td align='center' style={dateLabel}>
-            {isDemo ? meetingDate : `${teamName} • ${meetingDate}`}
+            {isDemo ? (
+              meetingDate
+            ) : (
+              <>
+                <a style={teamLink} href={teamDashUrl} rel='noopener noreferrer'>
+                  {teamName}
+                </a>
+                {' • '}
+                {meetingDate}
+              </>
+            )}
           </td>
         </tr>
       </tbody>

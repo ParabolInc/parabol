@@ -199,6 +199,10 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
         return meetingMember || null
       }
+    },
+    videoMeetingURL: {
+      type: GraphQLString,
+      description: 'The Zoom meeting URL for the meeting'
     }
   })
 })

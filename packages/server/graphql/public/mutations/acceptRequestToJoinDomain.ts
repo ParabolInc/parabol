@@ -104,7 +104,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
 
     if (!organizationUser) {
       try {
-        await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
+        await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
       } catch (e) {
         console.log(e)
       }

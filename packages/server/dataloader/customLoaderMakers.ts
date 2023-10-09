@@ -718,3 +718,24 @@ export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
     }
   )
 }
+
+/**
+ * Assuming the input is a domain, is it also a company domain?
+ */
+export const isCompanyDomain = (parent: RootDataLoader) => {
+  return new DataLoader<string, boolean, string>(
+    async (domains) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('FreemailDomain')
+        .where('domain', 'in', domains)
+        .select('domain')
+        .execute()
+      const freemailDomains = new Set(res.map(({domain}) => domain))
+      return domains.map((domain) => !freemailDomains.has(domain))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}

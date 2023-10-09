@@ -18,7 +18,7 @@ module.exports = {
     {
       name: 'Web Server',
       script: 'dist/web.js',
-      instances: 1,
+      instances: 2,
       increment_var: 'SERVER_ID',
       autorestart: true,
       watch: false,
