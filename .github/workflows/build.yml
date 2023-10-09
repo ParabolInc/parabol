@@ -11,26 +11,6 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-    services:
-      postgres:
-        image: postgres:12.15-alpine
-        # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
-        env:
-          POSTGRES_PASSWORD: "temppassword"
-          POSTGRES_USER: "tempuser"
-          POSTGRES_DB: "tempdb"
-        ports:
-          - 5432:5432
-      rethinkdb:
-        image: rethinkdb:2.4.2
-        ports:
-          - 8080:8080
-          - 28015:28015
-          - 29015:29015
-      redis:
-        image: redis:6.2.6
-        ports:
-          - 6379:6379
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -71,6 +51,9 @@ jobs:
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
+
+      - name: Install DBs
+        run: docker compose -f docker/dev.yml up postgres -d
 
       - name: Build the DBs
         run: |

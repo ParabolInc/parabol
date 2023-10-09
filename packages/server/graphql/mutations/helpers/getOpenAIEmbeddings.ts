@@ -7,7 +7,7 @@ export const getOpenAIEmbeddings = async (plaintextContent: string) => {
     {openAIApiKey: 'X'},
     {baseURL: 'http://localhost:3002/v1'}
   )
-  const splitter = new RecursiveCharacterTextSplitter()
+  const splitter = new RecursiveCharacterTextSplitter({chunkSize: 1000, chunkOverlap: 200})
   const splitText = await splitter.splitText(plaintextContent)
   const start = performance.now()
   const contentEmbedding = await embeddings.embedDocuments(splitText)

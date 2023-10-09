@@ -25,6 +25,9 @@ services:
     networks:
       - parabol-network
   postgres:
+    depends_on:
+      - db
+      - redis
     build:
       context: "../packages/server/postgres"
     restart: unless-stopped
