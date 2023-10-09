@@ -11,6 +11,27 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
+    services:
+      postgres:
+        # Image is pinned to v15, OK since it's just for testing
+        image: ankane/pgvector
+        # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
+        env:
+          POSTGRES_PASSWORD: "temppassword"
+          POSTGRES_USER: "tempuser"
+          POSTGRES_DB: "tempdb"
+        ports:
+          - 5432:5432
+      rethinkdb:
+        image: rethinkdb:2.4.2
+        ports:
+          - 8080:8080
+          - 28015:28015
+          - 29015:29015
+      redis:
+        image: redis:6.2.6
+        ports:
+          - 6379:6379
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -52,13 +73,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Install DBs
-        run: |
-          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
-          docker compose -f ./docker/dev.yml up postgres -d
-
       - name: Build the DBs
         run: |
+          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
