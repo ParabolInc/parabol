@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react'
 import AddTeamDialog from './AddTeamDialog'
-import {renderLoader} from '../utils/relay/renderLoader'
+import {Loader} from '../utils/relay/renderLoader'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import addTeamDialogQuery, {AddTeamDialogQuery} from '../__generated__/AddTeamDialogQuery.graphql'
 
@@ -15,7 +15,7 @@ const AddTeamDialogRoot = (props: Props) => {
   const queryRef = useQueryLoaderNow<AddTeamDialogQuery>(addTeamDialogQuery, {}, 'network-only')
 
   return (
-    <Suspense fallback={renderLoader()}>
+    <Suspense fallback={<Loader />}>
       {queryRef && (
         <AddTeamDialog onAddTeam={onAddTeam} isOpen={true} onClose={onClose} queryRef={queryRef} />
       )}

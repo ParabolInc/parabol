@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
-import {renderLoader} from '../../../utils/relay/renderLoader'
+import {Loader} from '../../../utils/relay/renderLoader'
 import taskFooterUserAssigneeMenuQuery, {
   TaskFooterUserAssigneeMenuQuery
 } from '../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
@@ -40,7 +40,7 @@ const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
     {teamId}
   )
   return (
-    <Suspense fallback={renderLoader()}>
+    <Suspense fallback={<Loader />}>
       {queryRef && (
         <TaskFooterUserAssigneeMenu
           queryRef={queryRef}
