@@ -166,7 +166,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       <div {...getRootProps()}>
         <div
           ref={setAnchorEl}
-          className='align-center flex min-h-[44px] w-full flex-wrap rounded border-2 border-slate-300 bg-white px-1 py-0.5 text-sm font-semibold'
+          className='align-center flex min-h-[44px] w-full flex-wrap rounded border border-slate-500 bg-white px-1 py-0.5 text-sm'
         >
           {value.map((option, index: number) => (
             <Chip
@@ -184,7 +184,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
             className='m-0 box-border min-h-[36px] w-0 min-w-[30px] flex-grow border-0 bg-white pl-1 text-black outline-none'
           />
         </div>
-        <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>
+        {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>}
       </div>
       {groupedOptions.length > 0 ? (
         <ul

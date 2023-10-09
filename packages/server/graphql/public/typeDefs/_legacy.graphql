@@ -7342,6 +7342,11 @@ enum ReactableEnum {
   RESPONSE
 }
 
+enum GcalVideoTypeEnum {
+  meet
+  zoom
+}
+
 type AddReflectTemplatePayload {
   error: StandardMutationError
   reflectTemplate: ReflectTemplate

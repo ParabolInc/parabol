@@ -24,10 +24,6 @@ const StyledCheckIcon = styled(Check)({
   height: '24px'
 })
 
-const SSOEnabledToggleBlock = styled('div')({
-  padding: '0 16px 28px 16px'
-})
-
 const ContentWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'row',
@@ -80,7 +76,7 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
   const domains: readonly string[] = saml?.domains ?? []
 
   return (
-    <SSOEnabledToggleBlock>
+    <div className='px-6 pb-8'>
       <ContentWrapper>
         <IconBlock>{disabled ? <StyledAddIcon /> : <StyledCheckIcon />}</IconBlock>
         <SSOEnabledLabelBlock>
@@ -112,7 +108,7 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
           </div>
         </SSOEnabledLabelBlock>
       </ContentWrapper>
-    </SSOEnabledToggleBlock>
+    </div>
   )
 }
 

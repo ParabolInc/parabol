@@ -1,7 +1,6 @@
 import {identify, Identify, init, track} from '@amplitude/analytics-node'
-import {AnalyticsEvent, IdentifyOptions} from '../analytics'
-import PROD from '../../../PROD'
 import {CacheWorker, DataLoaderBase} from '../../../graphql/DataLoaderCache'
+import {AnalyticsEvent, IdentifyOptions} from '../analytics'
 
 const {AMPLITUDE_WRITE_KEY} = process.env
 
@@ -13,7 +12,7 @@ export class AmplitudeAnalytics {
     // used as a failsafe for PPMIs
     if (!AMPLITUDE_WRITE_KEY) return
     init(AMPLITUDE_WRITE_KEY, {
-      flushQueueSize: PROD ? 20 : 1,
+      flushQueueSize: __PRODUCTION__ ? 20 : 1,
       optOut: !AMPLITUDE_WRITE_KEY
     })
   }

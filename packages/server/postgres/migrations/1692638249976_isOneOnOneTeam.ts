@@ -6,7 +6,7 @@ export async function up() {
   await client.connect()
   await client.query(`
     ALTER TABLE "Team"
-    ADD COLUMN "isOneOnOneTeam" BOOLEAN NOT NULL DEFAULT FALSE;
+    ADD COLUMN IF NOT EXISTS "isOneOnOneTeam" BOOLEAN NOT NULL DEFAULT FALSE;
   `)
   await client.end()
 }
@@ -16,7 +16,7 @@ export async function down() {
   await client.connect()
   await client.query(`
     ALTER TABLE "Team"
-    DROP COLUMN "isOneOnOneTeam";
+    DROP COLUMN IF EXISTS "isOneOnOneTeam";
   `)
   await client.end()
 }
