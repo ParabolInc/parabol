@@ -1,7 +1,7 @@
 import React, {Suspense} from 'react'
 
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import {renderLoader} from '../../../utils/relay/renderLoader'
+import {Loader} from '../../../utils/relay/renderLoader'
 import {CreateNewActivity} from './CreateNewActivity'
 
 import createNewActivityQuery, {
@@ -12,7 +12,7 @@ const CreateNewActivityRoute = () => {
   const queryRef = useQueryLoaderNow<CreateNewActivityQuery>(createNewActivityQuery)
 
   return (
-    <Suspense fallback={renderLoader()}>
+    <Suspense fallback={<Loader />}>
       {queryRef && <CreateNewActivity queryRef={queryRef} />}
     </Suspense>
   )
