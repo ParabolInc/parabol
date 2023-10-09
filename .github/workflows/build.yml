@@ -53,11 +53,12 @@ jobs:
         run: yarn install --immutable
 
       - name: Install DBs
-        run: docker compose -f docker/dev.yml up postgres -d
+        run: |
+          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
+          docker compose -f ./docker/dev.yml up postgres -d
 
       - name: Build the DBs
         run: |
-          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
