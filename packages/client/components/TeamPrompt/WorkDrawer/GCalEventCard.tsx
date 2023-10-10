@@ -14,10 +14,13 @@ interface Props {
 }
 
 const formatTime = (time: Date, excludeAmPm?: boolean | null) => {
-  return time
-    .toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
-    .replace(/ (PM|AM)/, excludeAmPm ? '' : '$1')
-    .toLowerCase()
+  return (
+    time
+      .toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
+      // 'XX:YY AM' -> 'XX:YYam'
+      .replace(/ (PM|AM)/, excludeAmPm ? '' : '$1')
+      .toLowerCase()
+  )
 }
 
 const getDayDifference = (startDate: Date, endDate: Date) => {
