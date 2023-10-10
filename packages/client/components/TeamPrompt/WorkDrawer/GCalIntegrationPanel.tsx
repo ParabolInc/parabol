@@ -8,6 +8,7 @@ import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import GcalClientManager from '../../../utils/GcalClientManager'
 import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
 import clsx from 'clsx'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 
 const GCAL_QUERY_TABS = [
   {
@@ -33,6 +34,8 @@ const GCalPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GCalIntegrationPanel_meeting on TeamPromptMeeting {
+        id
+        teamId
         viewerMeetingMember {
           teamMember {
             teamId
@@ -73,6 +76,19 @@ const GCalPanel = (props: Props) => {
     }
     const {clientId, id: providerId} = gcal.cloudProvider
     GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamMember.teamId, mutationProps)
+
+    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Integration Connected', {
+      teamId: meeting.teamId,
+      meetingId: meeting.id,
+      integrationLabel: 'Google Calendar'
+    })
+  }
+
+  const trackTabNavigated = (label: string) => {
+    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Tag Navigated', {
+      integrationLabel: 'Google Calendar',
+      buttonLabel: label
+    })
   }
 
   return (
@@ -89,7 +105,10 @@ const GCalPanel = (props: Props) => {
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'
                     : 'border border-slate-300 bg-white'
                 )}
-                onClick={() => setEventRangeKey(tab.key)}
+                onClick={() => {
+                  trackTabNavigated(tab.label)
+                  setEventRangeKey(tab.key)
+                }}
               >
                 {tab.label}
               </div>

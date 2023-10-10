@@ -8571,6 +8571,8 @@ input SegmentEventTrackOptions {
   reflectionId: ID
   viewerId: ID
   reflectionsCount: Int
+  integrationLabel: String
+  buttonLabel: String
 }
 
 type SelectTemplatePayload {

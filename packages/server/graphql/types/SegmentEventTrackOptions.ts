@@ -54,7 +54,9 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     teamIds: {type: GraphQLList(GraphQLID)},
     insightTitle: {type: GraphQLString},
     isHelpfulInsight: {type: GraphQLBoolean},
-    selectionLocation: {type: GraphQLString}
+    selectionLocation: {type: GraphQLString},
+    integrationLabel: {type: GraphQLString},
+    buttonLabel: {type: GraphQLString}
   })
 })
 
