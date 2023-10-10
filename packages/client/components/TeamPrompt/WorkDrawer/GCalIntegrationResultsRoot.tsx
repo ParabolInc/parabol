@@ -5,7 +5,7 @@ import gcalIntegrationResultsQuery, {
 } from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
 import ErrorBoundary from '../../ErrorBoundary'
 import GCalIntegrationResults from './GCalIntegrationResults'
-import {renderLoader} from '~/utils/relay/renderLoader'
+import {Loader} from '~/utils/relay/renderLoader'
 import ms from 'ms'
 
 interface Props {
@@ -43,7 +43,7 @@ const GCalIntegrationResultsRoot = (props: Props) => {
   })
   return (
     <ErrorBoundary>
-      <Suspense fallback={renderLoader()}>
+      <Suspense fallback={<Loader />}>
         {queryRef && <GCalIntegrationResults queryRef={queryRef} order={eventRange.order} />}
       </Suspense>
     </ErrorBoundary>
