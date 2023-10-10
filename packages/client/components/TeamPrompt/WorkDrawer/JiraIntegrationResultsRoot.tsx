@@ -5,7 +5,7 @@ import jiraIntegrationResultsQuery, {
 } from '../../../__generated__/JiraIntegrationResultsQuery.graphql'
 import ErrorBoundary from '../../ErrorBoundary'
 import JiraIntegrationResults from './JiraIntegrationResults'
-import {renderLoader} from '~/utils/relay/renderLoader'
+import {Loader} from '~/utils/relay/renderLoader'
 
 interface Props {
   teamId: string
@@ -18,7 +18,7 @@ const JiraIntegrationResultsRoot = (props: Props) => {
   })
   return (
     <ErrorBoundary>
-      <Suspense fallback={renderLoader()}>
+      <Suspense fallback={<Loader />}>
         {queryRef && <JiraIntegrationResults queryRef={queryRef} />}
       </Suspense>
     </ErrorBoundary>
