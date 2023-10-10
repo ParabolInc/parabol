@@ -68,7 +68,7 @@ class RecallAIServerManager {
       const error =
         err instanceof Error
           ? err
-          : new Error(`Unable to create Recall bot with meeting URL: ${videoMeetingURL}`)
+          : new Error(`Unable to create Recall bot with video meeting URL: ${videoMeetingURL}`)
       sendToSentry(error)
       return null
     }
