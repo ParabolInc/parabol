@@ -122,15 +122,12 @@ const TaskColumn = (props: Props) => {
             <StatusLabelBlock userCanAdd={userCanAdd}>
               <StatusLabel>{label}</StatusLabel>
               {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
+              {status === DONE && (
+                <a onClick={togglePortal} className='ml-auto cursor-pointer text-sm text-slate-600'>
+                  Archive all
+                </a>
+              )}
             </StatusLabelBlock>
-            {status === DONE && (
-              <a
-                onClick={togglePortal}
-                className='float-right cursor-pointer text-sm text-slate-600'
-              >
-                Archive all
-              </a>
-            )}
             {modalPortal(
               <ArchiveAllDoneTasksModal
                 closeModal={togglePortal}

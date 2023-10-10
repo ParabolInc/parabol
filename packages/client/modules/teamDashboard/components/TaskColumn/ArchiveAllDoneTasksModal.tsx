@@ -14,8 +14,8 @@ const ModalBoundary = styled('div')({
   justifyContent: 'space-between',
   background: '#FFFFFF',
   borderRadius: 8,
-  height: 374,
-  width: 700
+  height: 200,
+  width: 600
 })
 
 type Props = {
@@ -45,7 +45,7 @@ const UserAvatarInput = (props: Props) => {
         <DialogTitle className='text-slate-700'>{'Archive all'}</DialogTitle>
         <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
       </div>
-      <div>
+      <div className='text-base text-slate-700'>
         This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?
       </div>
       <div className='flex w-full justify-end'>
