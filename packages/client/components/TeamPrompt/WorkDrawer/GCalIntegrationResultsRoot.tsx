@@ -28,7 +28,7 @@ const GCAL_QUERY_MAPPING = {
   },
   upcoming: {
     startDate: new Date(TODAY_MIDNIGHT + ms('1d')).toJSON(),
-    endDate: new Date(TODAY_MIDNIGHT + ms('8d')).toJSON(),
+    endDate: new Date(TODAY_MIDNIGHT + ms('6d')).toJSON(),
     order: 'ASC'
   }
 } as const
