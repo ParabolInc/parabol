@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import React from 'react'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -6,17 +5,6 @@ import BatchArchiveTasksMutation from '../../../../mutations/BatchArchiveTasksMu
 import {Close} from '@mui/icons-material'
 import FlatButton from '../../../../components/FlatButton'
 import DialogTitle from '../../../../components/DialogTitle'
-
-const ModalBoundary = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  background: '#FFFFFF',
-  borderRadius: 8,
-  height: 200,
-  width: 600
-})
 
 type Props = {
   taskIds: string[]
@@ -40,12 +28,12 @@ const UserAvatarInput = (props: Props) => {
   }
 
   return (
-    <ModalBoundary>
+    <div className='flex h-52 w-max flex-col items-center	justify-between rounded-lg bg-white'>
       <div className='title-wrapper flex w-full items-center justify-between pr-6'>
         <DialogTitle className='text-slate-700'>{'Archive all'}</DialogTitle>
         <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
       </div>
-      <div className='text-base text-slate-700'>
+      <div className='mx-8 text-base text-slate-700'>
         This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?
       </div>
       <div className='flex w-full justify-end'>
@@ -62,7 +50,7 @@ const UserAvatarInput = (props: Props) => {
           {'Confirm'}
         </FlatButton>
       </div>
-    </ModalBoundary>
+    </div>
   )
 }
 
