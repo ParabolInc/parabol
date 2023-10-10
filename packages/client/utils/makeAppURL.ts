@@ -5,6 +5,7 @@ interface Options {
     utm_campaign: string
     openNotifs?: string
     responseId?: string
+    redirectTo?: string
   }
 }
 

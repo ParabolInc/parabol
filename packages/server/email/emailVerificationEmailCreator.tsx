@@ -9,18 +9,22 @@ import emailTemplate from './emailTemplate'
 interface Props {
   verifiedEmailToken: string
   invitationToken: string | null | undefined
+  redirectTo?: string | null
 }
 
 const emailVerificationEmailCreator = (props: Props) => {
-  const {invitationToken, verifiedEmailToken} = props
+  const {invitationToken, verifiedEmailToken, redirectTo} = props
   const fullToken = invitationToken
     ? `${verifiedEmailToken}/${invitationToken}`
     : verifiedEmailToken
+
   const searchParams = {
     utm_source: 'verify account',
     utm_medium: 'email',
-    utm_campaign: 'invitations'
-  }
+    utm_campaign: 'invitations',
+    ...(redirectTo ? {redirectTo} : {})
+  } as const
+
   const options = {searchParams}
   const verificationURL = makeAppURL(appOrigin, `verify-email/${fullToken}`, options)
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
