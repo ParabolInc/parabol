@@ -5,11 +5,40 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.124.0 2023-Oct-10
+
+### Added
+
+- **ad-hoc**: Add create team dialog (#8846)
+- **your-work**: GitHub repo filter (#8899)
+- **SAML**: Support attributes with namespace (#8931)
+- handle redirect in email verification (#8915)
+- migration adds customer feedback RID template (#8928)
+- migration adds 360 review RID templates (#8946)
+
+### Fixed
+
+- fix check-in discussion panel layout (#8923)
+- move PRODUCTION bool to build time (#8747)
+- CI=true for build action (#8938)
+- Allow running tests on CI without real Stripe calls (#8944)
+
+### Changed
+
+- Log unexpected SAML errors to sentry (#8927)
+- **deps**: bump get-func-name from 2.0.0 to 2.0.2 (#8898)
+- **deps**: bump systeminformation from 5.9.17 to 5.21.11 (#8945)
+- **deps-dev**: bump postcss from 8.4.21 to 8.4.31 (#8930)
+- test sentry and dd uploads (#8926)
+- renderLoader should be a Loader component (#8947)
+- **SAML**: Improved error message when email attribute is missing (#8933)
+- log recall error (#8954)
+
 ## 6.123.1 2023-Oct-04
 
 ### Fixed
 
-- fix: saml urls #8918
+- saml urls #8918
 
 ## 6.123.0 2023-Oct-04
 
