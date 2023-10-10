@@ -4,6 +4,7 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import GCalEventCard from './GCalEventCard'
+import {OpenInNew} from '@mui/icons-material'
 
 interface Props {
   queryRef: PreloadedQuery<GCalIntegrationResultsQuery>
@@ -57,23 +58,33 @@ const GCalIntegrationResults = (props: Props) => {
     <>
       <div className='mt-4 flex h-full flex-col gap-y-4 overflow-auto px-4'>
         {gcalEventsByDay && Object.keys(gcalEventsByDay).length > 0 ? (
-          Object.entries(gcalEventsByDay).map(([dayString, events]) => {
-            const date = new Date(dayString)
-            return (
-              <div key={dayString} className='flex flex-col gap-y-2'>
-                <div className='text-sm font-medium text-slate-600'>
-                  {date.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+          <>
+            {Object.entries(gcalEventsByDay).map(([dayString, events]) => {
+              const date = new Date(dayString)
+              return (
+                <div key={dayString} className='flex flex-col gap-y-2'>
+                  <div className='text-sm font-medium text-slate-600'>
+                    {date.toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                  {events.map((event, idx) => (
+                    <GCalEventCard key={idx} eventRef={event} />
+                  ))}
                 </div>
-                {events.map((event, idx) => (
-                  <GCalEventCard key={idx} eventRef={event} />
-                ))}
-              </div>
-            )
-          })
+              )
+            })}
+            <a
+              href='https://calendar.google.com'
+              className='mb-4 flex items-center justify-center text-sm font-semibold text-sky-500 hover:text-sky-400'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              See more events <OpenInNew className='ml-2 text-base' />
+            </a>
+          </>
         ) : (
           <div className='-mt-14 flex h-full flex-col items-center justify-center'>
             <img className='w-20' src={halloweenRetrospectiveTemplate} />
