@@ -7,7 +7,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {GCalEventCard_event$key} from '../../../__generated__/GCalEventCard_event.graphql'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 import clsx from 'clsx'
-import {CopyAll} from '@mui/icons-material'
+import {ContentCopy} from '@mui/icons-material'
 
 interface Props {
   eventRef: GCalEventCard_event$key
@@ -89,12 +89,12 @@ const GCalEventCard = (props: Props) => {
           {dayDifference > 0 && ` (+${dayDifference}d)`}
           <CopyToClipboard text={result.summary} onCopy={handleCopy}>
             <div
-              className='hidden h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200 group-hover:block'
+              className='hidden h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 hover:text-slate-600 group-hover:block'
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={mergeRefs(originRef, copiedTooltipRef)}
             >
-              <CopyAll className='h-5 w-5 p-0.5 hover:fill-slate-600' />
+              <ContentCopy className='h-5 w-5 p-0.5' />
             </div>
           </CopyToClipboard>
         </div>
