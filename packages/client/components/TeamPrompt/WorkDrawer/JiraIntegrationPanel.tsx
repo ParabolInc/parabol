@@ -41,7 +41,7 @@ const JiraIntegrationPanel = (props: Props) => {
     if (!teamMember) {
       return onError(new Error('Could not find team member'))
     }
-    teamMember && AtlassianClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
+    AtlassianClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
   }
 
   return (
