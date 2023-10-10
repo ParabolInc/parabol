@@ -13,10 +13,10 @@ interface Props {
   eventRef: GCalEventCard_event$key
 }
 
-const formatTime = (time: Date) => {
+const formatTime = (time: Date, excludeAmPm?: boolean | null) => {
   return time
     .toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
-    .replace(/ (PM|AM)/, '$1')
+    .replace(/ (PM|AM)/, excludeAmPm ? '' : '$1')
     .toLowerCase()
 }
 
@@ -67,6 +67,16 @@ const GCalEventCard = (props: Props) => {
 
   const dayDifference = startDate && endDate ? getDayDifference(startDate, endDate) : 0
 
+  // Always show am/pm for start date unless:
+  // 1. start + end times are within 3 hours of each other.
+  // 2. AND start + end times are either both in the AM or both in the PM.
+  const shouldAlwaysShowAmPm =
+    endDate &&
+    startDate &&
+    endDate.getTime() - startDate.getTime() < 3 * 60 * 60 * 1000 &&
+    ((endDate.getHours() >= 12 && startDate.getHours() >= 12) ||
+      (endDate.getHours() < 12 && startDate.getHours() < 12))
+
   return (
     <div className='group'>
       <div
@@ -83,7 +93,7 @@ const GCalEventCard = (props: Props) => {
           </a>
         </div>
         <div className='flex justify-between text-sm text-slate-600'>
-          {startDate && `${formatTime(startDate)}`}
+          {startDate && `${formatTime(startDate, shouldAlwaysShowAmPm)}`}
           {startDate && endDate && ' - '}
           {endDate && `${formatTime(endDate)}`}
           {dayDifference > 0 && ` (+${dayDifference}d)`}
