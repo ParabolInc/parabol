@@ -93,11 +93,21 @@ const bootstrapNewUser = async (
         const teamId = team.id
         return Promise.all([
           acceptTeamInvitation(team, userId, dataLoader),
-          addSeedTasks(userId, teamId),
-          r
-            .table('SuggestedAction')
-            .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
-            .run(),
+          isOrganic
+            ? Promise.all([
+                addSeedTasks(userId, teamId),
+                r
+                  .table('SuggestedAction')
+                  .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
+                  .run()
+              ])
+            : r
+                .table('SuggestedAction')
+                .insert([
+                  new SuggestedActionTryTheDemo({userId}),
+                  new SuggestedActionCreateNewTeam({userId})
+                ])
+                .run(),
           analytics.autoJoined(userId, teamId)
         ])
       })
@@ -117,9 +127,9 @@ const bootstrapNewUser = async (
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam),
       addSeedTasks(userId, teamId),
-      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
+      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run(),
+      sendPromptToJoinOrg(newUser, dataLoader)
     ])
-    sendPromptToJoinOrg(newUser, dataLoader)
     analytics.newOrg(userId, orgId, teamId, true)
   } else {
     await r
