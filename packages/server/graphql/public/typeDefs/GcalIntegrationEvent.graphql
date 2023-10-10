@@ -1,6 +1,5 @@
 type GcalIntegrationEvent {
   summary: String
-  status: String
   startDate: String
   endDate: String
   link: String

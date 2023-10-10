@@ -41,18 +41,21 @@ const GCalIntegrationResults = (props: Props) => {
     gcalResults?.reverse()
   }
 
-  const gcalEventsByDay = gcalResults?.reduce((eventsByDate, event) => {
-    const eventDate = event.startDate ?? event.endDate
-    const parsedEventDate = eventDate ? new Date(eventDate) : new Date()
-    const eventDay = new Date(parsedEventDate.setHours(0, 0, 0, 0)).toJSON()
-    const eventsForDay = eventsByDate[eventDay]
-    if (eventsForDay) {
-      eventsForDay.push(event)
-    } else {
-      eventsByDate[eventDay] = [event]
-    }
-    return eventsByDate
-  }, {} as {[day: string]: typeof gcalResults})
+  const gcalEventsByDay = gcalResults?.reduce<{[day: string]: typeof gcalResults}>(
+    (eventsByDate, event) => {
+      const eventDate = event.startDate ?? event.endDate
+      const parsedEventDate = eventDate ? new Date(eventDate) : new Date()
+      const eventDay = new Date(parsedEventDate.setHours(0, 0, 0, 0)).toJSON()
+      const eventsForDay = eventsByDate[eventDay]
+      if (eventsForDay) {
+        eventsForDay.push(event)
+      } else {
+        eventsByDate[eventDay] = [event]
+      }
+      return eventsByDate
+    },
+    {}
+  )
 
   return (
     <>

@@ -36,9 +36,8 @@ const GcalIntegration: GcalIntegrationResolvers = {
     const calendar = google.calendar({version: 'v3', auth: oauth2Client})
     const calendarEventResponse = await calendar.events.list({
       calendarId: 'primary',
-      // eventTypes: ['default'],
       maxAttendees: 1,
-      maxResults: 25,
+      maxResults: 100,
       orderBy: 'startTime',
       singleEvents: true,
       timeMin: startDate.toISOString(),
@@ -53,7 +52,6 @@ const GcalIntegration: GcalIntegrationResolvers = {
 
     return events.map((rawEvent) => ({
       summary: rawEvent.summary,
-      status: rawEvent.attendees?.find((attendee) => attendee.self)?.responseStatus,
       startDate: rawEvent.start?.dateTime ?? rawEvent.start?.date,
       endDate: rawEvent.end?.dateTime ?? rawEvent.end?.date,
       link: rawEvent.htmlLink

@@ -38,7 +38,6 @@ const GCalEventCard = (props: Props) => {
     graphql`
       fragment GCalEventCard_event on GcalIntegrationEvent {
         summary
-        status
         startDate
         endDate
         link
