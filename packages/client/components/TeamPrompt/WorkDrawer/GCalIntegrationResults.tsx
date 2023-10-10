@@ -61,7 +61,7 @@ const GCalIntegrationResults = (props: Props) => {
             const date = new Date(dayString)
             return (
               <div key={dayString} className='flex flex-col gap-y-2'>
-                <div className='text-sm text-slate-600'>
+                <div className='text-sm font-medium text-slate-600'>
                   {date.toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'long',

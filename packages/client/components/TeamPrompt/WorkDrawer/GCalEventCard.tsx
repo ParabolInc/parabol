@@ -13,6 +13,21 @@ interface Props {
   eventRef: GCalEventCard_event$key
 }
 
+const formatTime = (time: Date) => {
+  return time
+    .toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
+    .replace(/ (PM|AM)/, '$1')
+    .toLowerCase()
+}
+
+const getDayDifference = (startDate: Date, endDate: Date) => {
+  const startDateCopy = new Date(startDate)
+  const endDateCopy = new Date(endDate)
+  const startDay = new Date(startDateCopy.setHours(0, 0, 0, 0))
+  const endDay = new Date(endDateCopy.setHours(0, 0, 0, 0))
+  return (endDay.getTime() - startDay.getTime()) / (1000 * 60 * 60 * 24)
+}
+
 const GCalEventCard = (props: Props) => {
   const {eventRef} = props
 
@@ -47,6 +62,11 @@ const GCalEventCard = (props: Props) => {
     }, 2000)
   }
 
+  const startDate = result.startDate ? new Date(result.startDate) : null
+  const endDate = result.endDate ? new Date(result.endDate) : null
+
+  const dayDifference = startDate && endDate ? getDayDifference(startDate, endDate) : 0
+
   return (
     <div className='group'>
       <div
@@ -63,21 +83,10 @@ const GCalEventCard = (props: Props) => {
           </a>
         </div>
         <div className='flex justify-between text-sm text-slate-600'>
-          {result.startDate &&
-            `${new Date(result.startDate).getHours()}:${new Date(result.startDate)
-              .getMinutes()
-              .toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-              })}`}
-          {result.startDate && result.endDate && ' - '}
-          {result.endDate &&
-            `${new Date(result.endDate).getHours()}:${new Date(result.endDate)
-              .getMinutes()
-              .toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false
-              })}`}
+          {startDate && `${formatTime(startDate)}`}
+          {startDate && endDate && ' - '}
+          {endDate && `${formatTime(endDate)}`}
+          {dayDifference > 0 && ` (+${dayDifference}d)`}
           <CopyToClipboard text={result.summary} onCopy={handleCopy}>
             <div
               className='h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 hover:hidden hover:bg-slate-200 group-hover:block'
