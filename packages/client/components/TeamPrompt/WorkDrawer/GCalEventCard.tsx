@@ -89,12 +89,12 @@ const GCalEventCard = (props: Props) => {
           {dayDifference > 0 && ` (+${dayDifference}d)`}
           <CopyToClipboard text={result.summary} onCopy={handleCopy}>
             <div
-              className='h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 hover:hidden hover:bg-slate-200 group-hover:block'
+              className='hidden h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200 group-hover:block'
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={mergeRefs(originRef, copiedTooltipRef)}
             >
-              <CopyAll className='h-5 w-5 p-0.5' />
+              <CopyAll className='h-5 w-5 p-0.5 hover:fill-slate-600' />
             </div>
           </CopyToClipboard>
         </div>
