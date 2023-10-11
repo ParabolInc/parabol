@@ -70,6 +70,7 @@ const TeamPromptMeeting = (props: Props) => {
         id
         isRightDrawerOpen
         endedAt
+        localStageId
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -133,7 +134,7 @@ const TeamPromptMeeting = (props: Props) => {
   const transitioningStages = useTransition(stages)
   const {safeRoute, isDesktop} = useMeeting(meeting)
   const history = useHistory()
-  const {isRightDrawerOpen, id: meetingId} = meeting
+  const {isRightDrawerOpen, id: meetingId, localStageId} = meeting
   const params = new URLSearchParams(history.location.search)
   const responseId = params.get('responseId')
   useEffect(() => {
@@ -150,9 +151,23 @@ const TeamPromptMeeting = (props: Props) => {
       const meetingProxy = store.get(meetingId)
       if (!meetingProxy) return
       meetingProxy.setValue(stage.id, 'localStageId')
+      meetingProxy.setValue(false, 'showWorkSidebar')
       meetingProxy.setValue(true, 'isRightDrawerOpen')
     })
   }, [responseId])
+
+  useEffect(() => {
+    if (localStageId || !!meeting?.endedAt) {
+      return
+    }
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      meetingProxy.setValue(true, 'showWorkSidebar')
+      meetingProxy.setValue(true, 'isRightDrawerOpen')
+    })
+  }, [])
+
   if (!safeRoute) return null
 
   return (

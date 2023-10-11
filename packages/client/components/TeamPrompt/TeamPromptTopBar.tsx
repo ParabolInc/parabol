@@ -98,6 +98,7 @@ const TeamPromptTopBar = (props: Props) => {
         isRightDrawerOpen
         showWorkSidebar
         facilitatorUserId
+        localStageId
         prevMeeting {
           id
         }
@@ -137,7 +138,7 @@ const TeamPromptTopBar = (props: Props) => {
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
   const onOpenWorkSidebar = () => {
-    if (meeting.isRightDrawerOpen && meeting.showWorkSidebar) {
+    if (meeting.isRightDrawerOpen && meeting.showWorkSidebar && !meeting.localStageId) {
       // If we're selecting a discussion that's already open, just close the drawer.
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(meetingId)
