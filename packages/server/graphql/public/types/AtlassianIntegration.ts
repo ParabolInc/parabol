@@ -38,7 +38,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     const maxResults = first + 1
     // Relay requires the cursor to be a string
     const afterInt = parseInt(after ?? '-1', 10)
-    const startAt = Number.isNaN(afterInt) ? -1 : afterInt + 1
+    const startAt = Number.isNaN(afterInt) ? 0 : afterInt + 1
     const issueRes = await manager.getIssues(
       queryString ?? null,
       isJQL,
