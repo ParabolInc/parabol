@@ -30,10 +30,10 @@ const UserAvatarInput = (props: Props) => {
   return (
     <div className='flex h-52 w-max flex-col items-center	justify-between rounded-lg bg-white'>
       <div className='title-wrapper flex w-full items-center justify-between pr-6'>
-        <DialogTitle className='text-slate-700'>{'Archive all'}</DialogTitle>
+        <DialogTitle className='px-6 pt-6 pb-4 text-slate-700'>{'Archive all'}</DialogTitle>
         <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
       </div>
-      <div className='mx-8 text-base text-slate-700'>
+      <div className='px-6 text-base text-slate-700'>
         This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?
       </div>
       <div className='flex w-full justify-end'>
