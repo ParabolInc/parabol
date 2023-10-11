@@ -9,6 +9,8 @@ import ParabolLogoSVG from '../ParabolLogoSVG'
 import GitHubSVG from '../GitHubSVG'
 import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
+import JiraSVG from '../JiraSVG'
+import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
@@ -22,6 +24,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
+        ...JiraIntegrationPanel_meeting
       }
     `,
     meetingRef
@@ -35,7 +38,8 @@ const TeamPromptWorkDrawer = (props: Props) => {
       label: 'Parabol',
       Component: ParabolTasksPanel
     },
-    {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel}
+    {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel},
+    {icon: <JiraSVG />, label: 'Jira', Component: JiraIntegrationPanel}
   ]
 
   const {Component} = baseTabs[activeIdx]!

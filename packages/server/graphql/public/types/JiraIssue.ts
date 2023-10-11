@@ -8,6 +8,9 @@ export type JiraIssueSource = {
   teamId: string
   userId: string
   description?: string
+  issuetype: {
+    iconUrl: string
+  }
 }
 
 const JiraIssue: JiraIssueResolvers = {
@@ -21,6 +24,9 @@ const JiraIssue: JiraIssueResolvers = {
   url: async ({cloudId, teamId, userId, issueKey}, _args: unknown, {dataLoader}) => {
     const cloudName = await dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId})
     return `https://${cloudName}.atlassian.net/browse/${issueKey}`
+  },
+  issueIcon: ({issuetype}) => {
+    return issuetype.iconUrl
   },
   projectKey: ({issueKey}) => JiraProjectKeyId.join(issueKey),
   project: async ({issueKey, teamId, userId, cloudId}, _args: unknown, {dataLoader}) => {
