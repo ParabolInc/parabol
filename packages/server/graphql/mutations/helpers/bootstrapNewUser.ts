@@ -63,7 +63,7 @@ const bootstrapNewUser = async (
   const orgIds = organizations.map(({id}) => id)
 
   const [teamsWithAutoJoinRes] = await Promise.all([
-    isVerified ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
+    isVerified && isCompanyDomain ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
     insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
@@ -87,7 +87,6 @@ const bootstrapNewUser = async (
   const tms = [] as string[]
 
   if (teamsWithAutoJoin.length > 0) {
-    tms.push(...teamsWithAutoJoin.map(({id}) => id))
     await Promise.all(
       teamsWithAutoJoin.map((team) => {
         const teamId = team.id
@@ -95,7 +94,6 @@ const bootstrapNewUser = async (
           acceptTeamInvitation(team, userId, dataLoader),
           isOrganic
             ? Promise.all([
-                addSeedTasks(userId, teamId),
                 r
                   .table('SuggestedAction')
                   .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
