@@ -8,6 +8,7 @@ import {GCalEventCard_event$key} from '../../../__generated__/GCalEventCard_even
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 import clsx from 'clsx'
 import {ContentCopy} from '@mui/icons-material'
+import ms from 'ms'
 
 interface Props {
   eventRef: GCalEventCard_event$key
@@ -28,7 +29,41 @@ const getDayDifference = (startDate: Date, endDate: Date) => {
   const endDateCopy = new Date(endDate)
   const startDay = new Date(startDateCopy.setHours(0, 0, 0, 0))
   const endDay = new Date(endDateCopy.setHours(0, 0, 0, 0))
-  return (endDay.getTime() - startDay.getTime()) / (1000 * 60 * 60 * 24)
+  return (endDay.getTime() - startDay.getTime()) / ms('1d')
+}
+
+const formatEventTimeRange = (startDate: Date | null, endDate: Date | null) => {
+  const dayDifference = startDate && endDate ? getDayDifference(startDate, endDate) : 0
+
+  // Always show am/pm for start date unless:
+  // 1. start + end times are within 3 hours of each other.
+  // 2. AND start + end times are either both in the AM or both in the PM.
+  const shouldAlwaysShowAmPm =
+    endDate &&
+    startDate &&
+    endDate.getTime() - startDate.getTime() < ms('3h') &&
+    ((endDate.getHours() >= 12 && startDate.getHours() >= 12) ||
+      (endDate.getHours() < 12 && startDate.getHours() < 12))
+
+  let formattedTime = ''
+
+  if (startDate) {
+    formattedTime += formatTime(startDate, shouldAlwaysShowAmPm)
+  }
+
+  if (startDate && endDate) {
+    formattedTime += ' - '
+  }
+
+  if (endDate) {
+    formattedTime += formatTime(endDate)
+  }
+
+  if (dayDifference > 0) {
+    formattedTime += ` (+${dayDifference}d)`
+  }
+
+  return formattedTime
 }
 
 const GCalEventCard = (props: Props) => {
@@ -67,18 +102,6 @@ const GCalEventCard = (props: Props) => {
   const startDate = result.startDate ? new Date(result.startDate) : null
   const endDate = result.endDate ? new Date(result.endDate) : null
 
-  const dayDifference = startDate && endDate ? getDayDifference(startDate, endDate) : 0
-
-  // Always show am/pm for start date unless:
-  // 1. start + end times are within 3 hours of each other.
-  // 2. AND start + end times are either both in the AM or both in the PM.
-  const shouldAlwaysShowAmPm =
-    endDate &&
-    startDate &&
-    endDate.getTime() - startDate.getTime() < 3 * 60 * 60 * 1000 &&
-    ((endDate.getHours() >= 12 && startDate.getHours() >= 12) ||
-      (endDate.getHours() < 12 && startDate.getHours() < 12))
-
   return (
     <div className='group'>
       <div
@@ -95,10 +118,7 @@ const GCalEventCard = (props: Props) => {
           </a>
         </div>
         <div className='flex justify-between text-sm text-slate-600'>
-          {startDate && `${formatTime(startDate, shouldAlwaysShowAmPm)}`}
-          {startDate && endDate && ' - '}
-          {endDate && `${formatTime(endDate)}`}
-          {dayDifference > 0 && ` (+${dayDifference}d)`}
+          {formatEventTimeRange(startDate, endDate)}
           <CopyToClipboard text={result.summary} onCopy={handleCopy}>
             <div
               className='hidden h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 hover:text-slate-600 group-hover:block'
