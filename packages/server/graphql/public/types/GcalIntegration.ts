@@ -25,8 +25,8 @@ const GcalIntegration: GcalIntegrationResolvers = {
     }
     const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
 
-    const CLIENT_ID = process.env.GCAL_CLIENT_ID
-    const CLIENT_SECRET = process.env.GCAL_CLIENT_SECRET
+    const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
+    const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
     const REDIRECT_URI = appOrigin
 
     const expiry_date = expiresAt ? expiresAt.getTime() : undefined
