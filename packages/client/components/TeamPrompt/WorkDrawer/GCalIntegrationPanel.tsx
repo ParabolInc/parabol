@@ -60,12 +60,16 @@ const GCalPanel = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
+  const {error, onError} = mutationProps
 
   const gcal = teamMember?.integrations.gcal
 
   const authGCal = () => {
-    if (!gcal?.cloudProvider || !teamMember) {
-      return
+    if (!gcal?.cloudProvider) {
+      return onError(new Error('Missing cloud provider for Google'))
+    }
+    if (!teamMember) {
+      return onError(new Error('Could not find team member'))
     }
     const {clientId, id: providerId} = gcal.cloudProvider
     GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamMember.teamId, mutationProps)
@@ -108,6 +112,7 @@ const GCalPanel = (props: Props) => {
           >
             Connect
           </button>
+          {error && <div className='text-tomato-500'>Error: {error.message}</div>}
         </div>
       )}
     </>
