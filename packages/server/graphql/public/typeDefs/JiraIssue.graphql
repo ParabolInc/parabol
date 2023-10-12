@@ -113,9 +113,9 @@ A connection to a list of items.
 """
 type JiraIssueConnection {
   """
-  Page info with cursors coerced to ISO8601 dates
+  Page info with cursors
   """
-  pageInfo: PageInfoDateCursor
+  pageInfo: PageInfo
 
   """
   A list of edges.
@@ -136,5 +136,5 @@ type JiraIssueEdge {
   The item at the end of the edge
   """
   node: JiraIssue!
-  cursor: DateTime
+  cursor: String
 }

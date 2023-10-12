@@ -617,7 +617,9 @@ export default abstract class AtlassianManager {
   async getIssues(
     queryString: string | null,
     isJQL: boolean,
-    projectFiltersByCloudId: {[cloudId: string]: string[]}
+    projectFiltersByCloudId: {[cloudId: string]: string[]},
+    maxResults: number,
+    startAt?: number
   ) {
     const allIssues = [] as JiraGQLFields[]
     let firstError: Error | undefined
@@ -626,7 +628,8 @@ export default abstract class AtlassianManager {
       const jql = composeJQL(queryString, isJQL, projectKeys)
       const payload = {
         jql,
-        maxResults: 100,
+        maxResults,
+        startAt,
         fields: ['summary', 'description', 'issuetype', 'created'],
         expand: ['renderedFields,changelog']
       }
