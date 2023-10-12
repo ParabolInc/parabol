@@ -24,6 +24,13 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
+        viewerMeetingMember {
+          user {
+            featureFlags {
+              gcal
+            }
+          }
+        }
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
         ...JiraIntegrationPanel_meeting
@@ -43,12 +50,16 @@ const TeamPromptWorkDrawer = (props: Props) => {
     },
     {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel},
     {icon: <JiraSVG />, label: 'Jira', Component: JiraIntegrationPanel},
-    {
-      icon: <img className='h-6 w-6' src={gcalLogo} />,
-      label: 'Google Calendar',
-      Component: GCalIntegrationPanel
-    }
-  ]
+    ...(meeting.viewerMeetingMember?.user.featureFlags.gcal
+      ? [
+          {
+            icon: <img className='h-6 w-6' src={gcalLogo} />,
+            label: 'Google Calendar',
+            Component: GCalIntegrationPanel
+          }
+        ]
+      : [])
+  ].filter((tab) => !!tab)
 
   const {Component} = baseTabs[activeIdx]!
 
