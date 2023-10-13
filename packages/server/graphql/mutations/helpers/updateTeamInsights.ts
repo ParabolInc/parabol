@@ -91,18 +91,24 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
     })
   )
 
+  const update = {
+    insightsUpdatedAt: now,
+    mostUsedEmojis: mostUsedEmojis.length >= MIN_NUMBER_OF_USED_EMOJIS ? mostUsedEmojis : null,
+    meetingEngagement: meetingEngagement.all ? meetingEngagement : null,
+    topRetroTemplates: topRetroTemplates.length > 0 ? topRetroTemplates : null
+  }
+
   await pg
     .updateTable('Team')
     .set({
-      insightsUpdatedAt: now,
-      mostUsedEmojis:
-        mostUsedEmojis.length >= MIN_NUMBER_OF_USED_EMOJIS ? JSON.stringify(mostUsedEmojis) : null,
-      meetingEngagement: meetingEngagement.all ? JSON.stringify(meetingEngagement) : null,
-      topRetroTemplates: topRetroTemplates.length > 0 ? JSON.stringify(topRetroTemplates) : null
+      insightsUpdatedAt: update.insightsUpdatedAt,
+      mostUsedEmojis: update.mostUsedEmojis ? JSON.stringify(update.mostUsedEmojis) : null,
+      meetingEngagement: update.meetingEngagement ? JSON.stringify(update.meetingEngagement) : null,
+      topRetroTemplates: update.topRetroTemplates ? JSON.stringify(update.topRetroTemplates) : null
     })
     .where('id', '=', teamId)
     .execute()
-  dataLoader.get('teams').clear(teamId)
+  dataLoader.get('teams').updateCache(teamId, update)
 }
 
 export default updateTeamInsights

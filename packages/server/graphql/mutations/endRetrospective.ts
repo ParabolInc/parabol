@@ -200,7 +200,7 @@ export default {
     ])
     // wait for removeEmptyTasks before finishRetroMeeting
     // don't await for the OpenAI response or it'll hang for a while when ending the retro
-    finishRetroMeeting(completedRetrospective, context)
+    await finishRetroMeeting(completedRetrospective, context)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
     checkTeamsLimit(team.orgId, dataLoader)
     const events = teamMembers.map(
