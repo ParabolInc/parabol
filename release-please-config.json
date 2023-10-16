@@ -1,0 +1,53 @@
+{
+  "bootstrap-sha": "12396933718e23275a48550e8665f92015b55029",
+  "release-as": "6.125.0",
+  "packages": {
+    ".": {
+      "release-type": "node"
+    }
+  },
+  "changelog-sections": [
+    {
+      "type": "feat",
+      "section": "Added",
+      "hidden": false
+    },
+    {
+      "type": "fix",
+      "section": "Fixed",
+      "hidden": false
+    },
+    {
+      "type": "chore",
+      "section": "Changed",
+      "hidden": false
+    }
+  ],
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "packages/chronos/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/client/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/gql-executor/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/integration-tests/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/server/package.json",
+      "jsonpath": "$.version"
+    }
+  ]
+}
