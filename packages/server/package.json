@@ -113,6 +113,7 @@
     "ioredis": "^5.2.3",
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^9.0.0",
+    "langchain": "^0.0.152",
     "mailcomposer": "^4.0.1",
     "mailgun.js": "^7.0.4",
     "mime-types": "^2.1.16",
