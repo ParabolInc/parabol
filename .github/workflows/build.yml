@@ -28,7 +28,7 @@ jobs:
           - 28015:28015
           - 29015:29015
       redis:
-        image: redis:6.2.6
+        image: redis:7.0-alpine
         ports:
           - 6379:6379
     steps:
