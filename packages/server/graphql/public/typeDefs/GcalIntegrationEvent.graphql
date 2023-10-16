@@ -1,6 +1,6 @@
 type GcalIntegrationEvent {
   summary: String
-  startDate: String
-  endDate: String
+  startDate: DateTime
+  endDate: DateTime
   link: String
 }

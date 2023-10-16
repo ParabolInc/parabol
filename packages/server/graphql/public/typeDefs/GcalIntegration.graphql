@@ -15,5 +15,5 @@ type GcalIntegration {
   """
   Events for specific time periods
   """
-  events(startDate: DateTime!, endDate: DateTime!): [GcalIntegrationEvent!]
+  events(startDate: DateTime!, endDate: DateTime!): [GcalIntegrationEvent!]!
 }

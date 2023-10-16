@@ -21,7 +21,7 @@ const GcalIntegration: GcalIntegrationResolvers = {
   events: async ({teamId, userId}, {startDate, endDate}, {dataLoader}) => {
     const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
     if (!gcalAuth) {
-      return null
+      return []
     }
     const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
 
@@ -47,15 +47,19 @@ const GcalIntegration: GcalIntegrationResolvers = {
     const calendarEventBody = calendarEventResponse.data
     const events = calendarEventBody.items
     if (!events) {
-      return null
+      return []
     }
 
-    return events.map((rawEvent) => ({
-      summary: rawEvent.summary,
-      startDate: rawEvent.start?.dateTime ?? rawEvent.start?.date,
-      endDate: rawEvent.end?.dateTime ?? rawEvent.end?.date,
-      link: rawEvent.htmlLink
-    }))
+    return events.map((rawEvent) => {
+      const startDateString = rawEvent.start?.dateTime ?? rawEvent.start?.date
+      const endDateString = rawEvent.end?.dateTime ?? rawEvent.end?.date
+      return {
+        summary: rawEvent.summary,
+        startDate: startDateString ? new Date(startDateString) : undefined,
+        endDate: endDateString ? new Date(endDateString) : undefined,
+        link: rawEvent.htmlLink
+      }
+    })
   }
 }
 
