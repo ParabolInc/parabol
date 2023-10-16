@@ -51,7 +51,7 @@ services:
       - parabol-network
     restart: unless-stopped
   redis:
-    image: bitnami/redis:7.0-debian-11
+    image: bitnami/redis:7.0-alpine
     restart: unless-stopped
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
