@@ -43,7 +43,7 @@
     "@types/node": "^16.11.62",
     "@types/nodemailer": "^6.4.4",
     "@types/relay-runtime": "^14.1.9",
-    "@types/sharp": "^0.30.1",
+    "@types/sharp": "^0.32.0",
     "@types/string-similarity": "^3.0.0",
     "@types/uuid": "^8.3.3",
     "babel-plugin-relay": "^12.0.0",
