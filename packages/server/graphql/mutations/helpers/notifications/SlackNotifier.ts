@@ -688,7 +688,7 @@ export const SlackNotifier: Notifier = {
       const responses = await getTeamPromptResponsesByMeetingId(notification.meetingId)
       responseId = responses.find(({userId: responseUserId}) => responseUserId === userId)?.id
       const user = await dataLoader.get('users').loadNonNull(notification.authorId)
-      title = `${user.preferredName} replied to your response in ${meeting.name}`
+      title = `*${user.preferredName}* replied to your response in *${meeting.name}*`
       const comment = await dataLoader.get('comments').load(notification.commentId)
       body = `> ${comment.plaintextContent}`
       buttonText = 'See the discussion'
@@ -696,7 +696,7 @@ export const SlackNotifier: Notifier = {
       responseId = notification.responseId
       const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
       const user = await dataLoader.get('users').loadNonNull(response.userId)
-      title = `${user.preferredName} mentioned you in their response in ${meeting.name}`
+      title = `*${user.preferredName}* mentioned you in their response in *${meeting.name}*`
       buttonText = 'See their response'
     }
 
