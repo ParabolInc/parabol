@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {TopRetroTemplatesCard_insights$key} from '~/__generated__/TopRetroTemplatesCard_insights.graphql'
+import Tooltip from '../../../../components/Tooltip'
 import TeamInsightsCard from './TeamInsightsCard'
 
 interface Props {
@@ -21,6 +22,7 @@ const TopRetroTemplatesCard = (props: Props) => {
             name
             illustrationUrl
           }
+          count
         }
       }
     `,
@@ -36,20 +38,21 @@ const TopRetroTemplatesCard = (props: Props) => {
     <TeamInsightsCard
       teamInsightsRef={insights}
       title='Top Templates'
-      tooltip='The most frequently used retrospective templates on your team'
+      tooltip='The most frequently used retrospective templates on your team for the last 12 months'
     >
       <div className='flex w-full flex-col'>
         {topRetroTemplates.map((template, index) => {
-          const {reflectTemplate} = template
+          const {reflectTemplate, count} = template
           const {name, illustrationUrl} = reflectTemplate
           return (
-            <div
+            <Tooltip
+              text={`Used ${count} times in the last 12 months`}
               className='my-2 flex items-center rounded border-2 border-grape-500 bg-fuscia-100 text-sm font-semibold text-slate-700'
               key={index}
             >
               <img className='m-1 h-10 w-10' src={illustrationUrl} />
               {name}
-            </div>
+            </Tooltip>
           )
         })}
         {topRetroTemplates.length === 1 && (
