@@ -682,12 +682,15 @@ export const SlackNotifier: Notifier = {
     let responseId: string | undefined
     let title: string | undefined
     let buttonText: string | undefined
+    let body: string | undefined
 
     if (notification.type === 'RESPONSE_REPLIED') {
       const responses = await getTeamPromptResponsesByMeetingId(notification.meetingId)
       responseId = responses.find(({userId: responseUserId}) => responseUserId === userId)?.id
       const user = await dataLoader.get('users').loadNonNull(notification.authorId)
       title = `${user.preferredName} replied to your response in ${meeting.name}`
+      const comment = await dataLoader.get('comments').load(notification.commentId)
+      body = `> ${comment.plaintextContent}`
       buttonText = 'See the discussion'
     } else {
       responseId = notification.responseId
@@ -713,6 +716,7 @@ export const SlackNotifier: Notifier = {
     const responseUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
     const blocks: Array<{type: string}> = [
       makeSection(title),
+      ...(body ? [makeSection(body)] : []),
       makeButtons([{text: buttonText, url: responseUrl, type: 'primary'}])
     ]
 
