@@ -25,8 +25,6 @@ import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResp
 import User from '../../../../postgres/types/IUser'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import {analytics} from '../../../../utils/analytics/analytics'
-import errorFilter from '../../../errorFilter'
-import {isNotNull} from '../../../../../client/utils/predicates'
 
 type SlackNotification = {
   title: string
@@ -453,35 +451,29 @@ const getDmSlackForMeeting = async (
   // 1. Auth on team
   // 2. Auth in org (auth team is in same org as meeting team)
   // 3. Any auth for user
-  const meetingTeamOrgId = (await dataLoader.get('teams').loadNonNull(meeting.teamId)).orgId
   const userSlackAuths = (await dataLoader.get('slackAuthByUserId').load(userId)).filter(
     (auth) => !!auth.botAccessToken
   )
 
-  const authTeamsLookup = Object.fromEntries(
-    (await dataLoader.get('teams').loadMany(userSlackAuths.map((auth) => auth.teamId)))
-      .filter(errorFilter)
-      .filter(isNotNull)
-      .map((team) => [team.id, team])
+  // If the user has an integration on the meeting's team, just use that.
+  const teamAuth = userSlackAuths.find((auth) => auth.teamId === meeting.teamId)
+  if (teamAuth) {
+    return teamAuth
+  }
+
+  // If the user has an integration on a team in the meeting's org, use that.
+  const meetingTeamOrgId = (await dataLoader.get('teams').loadNonNull(meeting.teamId)).orgId
+  const teamIdsInOrg = (await dataLoader.get('teamsByOrgIds').load(meetingTeamOrgId)).map(
+    (team) => team.id
   )
+  const orgAuth = userSlackAuths.find((auth) => teamIdsInOrg.includes(auth.teamId))
+  if (orgAuth) {
+    return orgAuth
+  }
 
-  return userSlackAuths.sort((a, b) => {
-    if (a.teamId === meeting.teamId) {
-      return -1
-    } else if (b.teamId === meeting.teamId) {
-      return 1
-    }
-
-    const aHasOrg = authTeamsLookup[a.teamId]?.orgId === meetingTeamOrgId
-    const bHasOrg = authTeamsLookup[b.teamId]?.orgId === meetingTeamOrgId
-    if (aHasOrg && !bHasOrg) {
-      return -1
-    } else if (!aHasOrg && bHasOrg) {
-      return 1
-    }
-
-    return 0
-  })[0]
+  // If the user does not have an integration within the meeting's org, use any integration outside
+  // the org
+  return userSlackAuths[0]
 }
 
 export const SlackNotifier: Notifier = {
