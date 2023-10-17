@@ -11,6 +11,8 @@ import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
 import JiraSVG from '../JiraSVG'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
+import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
+import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
@@ -22,9 +24,17 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
+        viewerMeetingMember {
+          user {
+            featureFlags {
+              gcal
+            }
+          }
+        }
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
         ...JiraIntegrationPanel_meeting
+        ...GCalIntegrationPanel_meeting
       }
     `,
     meetingRef
@@ -39,8 +49,17 @@ const TeamPromptWorkDrawer = (props: Props) => {
       Component: ParabolTasksPanel
     },
     {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel},
-    {icon: <JiraSVG />, label: 'Jira', Component: JiraIntegrationPanel}
-  ]
+    {icon: <JiraSVG />, label: 'Jira', Component: JiraIntegrationPanel},
+    ...(meeting.viewerMeetingMember?.user.featureFlags.gcal
+      ? [
+          {
+            icon: <img className='h-6 w-6' src={gcalLogo} />,
+            label: 'Google Calendar',
+            Component: GCalIntegrationPanel
+          }
+        ]
+      : [])
+  ].filter((tab) => !!tab)
 
   const {Component} = baseTabs[activeIdx]!
 
