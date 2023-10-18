@@ -219,7 +219,7 @@ const TeamPromptResponseCard = (props: Props) => {
 
   const responsePermalink = makeAppURL(window.location.origin, `/meet/${meetingId}/responses`, {
     searchParams: {
-      source: 'sharing',
+      utm_source: 'sharing',
       responseId: response?.id
     }
   })

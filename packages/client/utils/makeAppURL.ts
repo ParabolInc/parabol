@@ -1,13 +1,12 @@
 interface UTMParams {
   utm_source: string
-  utm_medium: string
-  utm_campaign: string
+  utm_medium?: string
+  utm_campaign?: string
 }
 
 interface Options {
   // Don't require UTMs, but if one UTM param is present, the others should be present, too.
   searchParams?: {
-    source?: string
     openNotifs?: string
     responseId?: string
     redirectTo?: string
