@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import {AuthIdentityTypeEnum as EAuthIdentityTypeEnum} from '../../../client/types/constEnums'
+import AuthIdentityMicrosoft from './AuthIdentityMicrosoft'
 import AuthIdentityGoogle from './AuthIdentityGoogle'
 import AuthIdentityLocal from './AuthIdentityLocal'
 import AuthIdentityTypeEnum from './AuthIdentityTypeEnum'
@@ -21,7 +22,8 @@ const AuthIdentity: GraphQLInterfaceType = new GraphQLInterfaceType({
   resolveType: ({type}: {type: EAuthIdentityTypeEnum}) => {
     const resolveTypeLookup = {
       [EAuthIdentityTypeEnum.LOCAL]: AuthIdentityLocal,
-      [EAuthIdentityTypeEnum.GOOGLE]: AuthIdentityGoogle
+      [EAuthIdentityTypeEnum.GOOGLE]: AuthIdentityGoogle,
+      [EAuthIdentityTypeEnum.MICROSOFT]: AuthIdentityMicrosoft
     }
     return resolveTypeLookup[type]
   }

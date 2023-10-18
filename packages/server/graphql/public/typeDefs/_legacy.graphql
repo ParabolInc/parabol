@@ -266,6 +266,7 @@ The types of authentication strategies
 enum AuthIdentityTypeEnum {
   LOCAL
   GOOGLE
+  MICROSOFT
 }
 
 """
