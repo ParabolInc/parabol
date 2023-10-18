@@ -142,30 +142,30 @@ const TeamPromptTopBar = (props: Props) => {
   const onOpenWorkSidebar = () => {
     if (meeting.isRightDrawerOpen && meeting.showWorkSidebar && !meeting.localStageId) {
       // If we're clicking on 'Your Work' when it's already open, just close the drawer.
-      SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Closed', {
-        teamId: meeting.teamId,
-        meetingId: meeting.id,
-        source: 'top bar'
-      })
-
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(false, 'isRightDrawerOpen')
+
+        SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Closed', {
+          teamId: meeting.teamId,
+          meetingId: meeting.id,
+          source: 'top bar'
+        })
       })
     } else {
-      SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Opened', {
-        teamId: meeting.teamId,
-        meetingId: meeting.id,
-        source: 'top bar'
-      })
-
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(null, 'localStageId')
         meetingProxy.setValue(true, 'showWorkSidebar')
         meetingProxy.setValue(true, 'isRightDrawerOpen')
+
+        SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Opened', {
+          teamId: meeting.teamId,
+          meetingId: meeting.id,
+          source: 'top bar'
+        })
       })
     }
   }

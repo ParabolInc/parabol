@@ -109,13 +109,13 @@ const GCalEventCard = (props: Props) => {
 
   const trackLinkClick = () => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Link Clicked', {
-      integrationLabel: 'Google Calendar'
+      service: 'gcal'
     })
   }
 
   const trackCopy = () => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Copied', {
-      integrationLabel: 'Google Calendar'
+      service: 'gcal'
     })
   }
 

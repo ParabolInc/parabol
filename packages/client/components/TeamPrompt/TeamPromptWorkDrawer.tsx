@@ -58,22 +58,23 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const baseTabs = [
     {
       icon: <ParabolLogoSVG />,
-      service: 'parabol',
+      service: 'PARABOL',
       label: 'Parabol',
       Component: ParabolTasksPanel
     },
-    {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel},
-    {icon: <JiraSVG />, label: 'Jira', Component: JiraIntegrationPanel},
+    {icon: <GitHubSVG />, service: 'github', label: 'GitHub', Component: GitHubIntegrationPanel},
+    {icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel},
     ...(meeting.viewerMeetingMember?.user.featureFlags.gcal
-      ? [
+      ? ([
           {
             icon: <img className='h-6 w-6' src={gcalLogo} />,
+            service: 'gcal',
             label: 'Google Calendar',
             Component: GCalIntegrationPanel
           }
-        ]
+        ] as const)
       : [])
-  ].filter((tab) => !!tab)
+  ] as const
 
   const {Component} = baseTabs[activeIdx]!
 
@@ -98,7 +99,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
                   SendClientSegmentEventMutation(atmosphere, 'Your Work Integration Clicked', {
                     teamId: meeting.teamId,
                     meetingId: meeting.id,
-                    integrationLabel: baseTabs[idx]?.label
+                    service: baseTabs[idx]?.service
                   })
                   setActiveIdx(idx)
                 }}

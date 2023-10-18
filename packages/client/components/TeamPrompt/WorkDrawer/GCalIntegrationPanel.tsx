@@ -80,13 +80,13 @@ const GCalPanel = (props: Props) => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
-      integrationLabel: 'Google Calendar'
+      service: 'gcal'
     })
   }
 
   const trackTabNavigated = (label: string) => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Tag Navigated', {
-      integrationLabel: 'Google Calendar',
+      service: 'gcal',
       buttonLabel: label
     })
   }

@@ -67,13 +67,13 @@ const GitHubIntegrationPanel = (props: Props) => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
-      integrationLabel: 'GitHub'
+      service: 'github'
     })
   }
 
   const trackTabNavigated = (label: string) => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Tag Navigated', {
-      integrationLabel: 'GitHub',
+      service: 'github',
       buttonLabel: label
     })
   }
@@ -89,7 +89,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               SendClientSegmentEventMutation(atmosphere, 'Your Work Filter Changed', {
                 teamId: meeting.teamId,
                 meetingId: meeting.id,
-                integrationLabel: 'GitHub'
+                service: 'github'
               })
               setSelectedRepos(repos)
             }}

@@ -53,13 +53,13 @@ const JiraObjectCard = (props: Props) => {
 
   const trackLinkClick = () => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Link Clicked', {
-      integrationLabel: 'Jira'
+      service: 'jira'
     })
   }
 
   const trackCopy = () => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Copied', {
-      integrationLabel: 'Jira'
+      service: 'jira'
     })
   }
 

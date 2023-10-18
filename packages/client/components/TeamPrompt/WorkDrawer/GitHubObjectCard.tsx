@@ -90,13 +90,13 @@ const GitHubObjectCard = (props: Props) => {
 
   const trackLinkClick = () => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Link Clicked', {
-      integrationLabel: 'GitHub'
+      service: 'github'
     })
   }
 
   const trackCopy = () => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Copied', {
-      integrationLabel: 'GitHub'
+      service: 'github'
     })
   }
 

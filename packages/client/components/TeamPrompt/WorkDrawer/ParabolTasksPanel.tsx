@@ -52,7 +52,7 @@ const ParabolTasksPanel = (props: Props) => {
 
   const trackTabNavigated = (label: string) => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Tag Navigated', {
-      integrationLabel: 'Parabol',
+      service: 'PARABOL',
       buttonLabel: label
     })
   }

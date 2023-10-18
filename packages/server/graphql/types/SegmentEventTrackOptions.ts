@@ -11,10 +11,10 @@ import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import NotificationEnum from './NotificationEnum'
 import SharingScopeEnum from './SharingScopeEnum'
 import SnackbarTypeEnum from './SnackbarTypeEnum'
-import TaskServiceEnum from './TaskServiceEnum'
 import TierEnum from './TierEnum'
 import UpgradeCTALocationEnum from './UpgradeCTALocationEnum'
 import DowngradeCTALocationEnum from './DowngradeCTALocationEnum'
+import ServiceEnum from './ServiceEnum'
 
 const SegmentEventTrackOptions = new GraphQLInputObjectType({
   name: 'SegmentEventTrackOptions',
@@ -30,7 +30,7 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     reflectionsCount: {type: GraphQLInt},
     action: {type: GraphQLString},
     searchQueryString: {type: GraphQLString},
-    service: {type: TaskServiceEnum},
+    service: {type: ServiceEnum},
     searchQueryFilters: {type: GraphQLList(GraphQLID)},
     projectId: {type: GraphQLID},
     selectedAll: {type: GraphQLBoolean},
@@ -55,7 +55,6 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     insightTitle: {type: GraphQLString},
     isHelpfulInsight: {type: GraphQLBoolean},
     selectionLocation: {type: GraphQLString},
-    integrationLabel: {type: GraphQLString},
     buttonLabel: {type: GraphQLString}
   })
 })

@@ -49,7 +49,7 @@ const JiraIntegrationPanel = (props: Props) => {
     SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
-      integrationLabel: 'Jira'
+      service: 'jira'
     })
   }
 

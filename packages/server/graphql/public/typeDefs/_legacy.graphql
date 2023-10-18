@@ -7719,6 +7719,17 @@ enum TaskServiceEnum {
   PARABOL
 }
 
+enum ServiceEnum {
+  PARABOL
+  github
+  jira
+  gitlab
+  mattermost
+  jiraServer
+  gcal
+  azureDevOps
+}
+
 """
 The part of the site that is calling the mutation
 """
@@ -8571,7 +8582,6 @@ input SegmentEventTrackOptions {
   reflectionId: ID
   viewerId: ID
   reflectionsCount: Int
-  integrationLabel: String
   buttonLabel: String
 }
 
