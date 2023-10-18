@@ -9,7 +9,9 @@ import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasks
 import TeamDrawer from './TeamDrawer'
 import TeamDashTasksTab from '../TeamDashTasksTab/TeamDashTasksTab'
 import TeamDashActivityTab from '../TeamDashActivityTab/TeamDashActivityTab'
+import TeamDashIntegrationsTab from '../TeamDashIntegrationsTab/TeamDashIntegrationsTab'
 import {Route, Switch} from 'react-router-dom'
+import getTeamIdFromPathname from '../../../../utils/getTeamIdFromPathname'
 
 const AbsoluteFab = styled(StartMeetingFAB)({
   position: 'absolute'
@@ -44,6 +46,7 @@ const TeamDashMain = (props: Props) => {
   const {viewer} = data
   const team = viewer.team!
   const {name: teamName} = team
+  const teamId = getTeamIdFromPathname()
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
 
   return (
@@ -55,6 +58,9 @@ const TeamDashMain = (props: Props) => {
         <Switch>
           <Route path='/team/:teamId/tasks'>
             <TeamDashTasksTab viewerRef={viewer} />
+          </Route>
+          <Route path='/team/:teamId/integrations'>
+            <TeamDashIntegrationsTab teamRef={teamId} />
           </Route>
           {/*Fall back to activity view if nothing is specified*/}
           <Route path='/team/:teamId'>
