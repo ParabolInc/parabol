@@ -46,10 +46,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   useEffect(() => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Opened', {
+    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Impression', {
       teamId: meeting.teamId,
-      meetingId: meeting.id,
-      source: 'impression'
+      meetingId: meeting.id
     })
   }, [])
 
