@@ -734,15 +734,14 @@ export const getVerifiedOrgIds = (parent: RootDataLoader) => {
         .filter((id): id is string => Boolean(id))
 
       const users = (await parent.get('users').loadMany(userIds)).filter(isValid)
-      const identityMap = Object.fromEntries(users.map((user) => [user.id, user]))
 
       const validOrgs = orgs.filter((org) => {
         const checkEmailDomain = (userId: string) => {
-          const userInfo = identityMap[userId]
-          if (!userInfo) return false
-          const emailDomain = userInfo.email.split('@')[1]
+          const user = users.find((user) => user.id === userId)
+          if (!user) return false
+          const emailDomain = user.email.split('@')[1]
           return (
-            userInfo.identities.some((identity) => identity.isEmailVerified) &&
+            user.identities.some((identity) => identity.isEmailVerified) &&
             emailDomain === org.activeDomain
           )
         }
