@@ -88,7 +88,7 @@ const safeEndTeamPrompt = async ({
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
     getTeamPromptResponsesByMeetingId(meetingId),
-    updateTeamInsights(meeting.teamId, dataLoader)
+    updateTeamInsights(teamId, dataLoader)
   ])
 
   const events = teamMembers.map(
