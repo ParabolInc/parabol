@@ -28,7 +28,9 @@ const GitHubIntegrationResultsRoot = (props: Props) => {
   return (
     <ErrorBoundary>
       <Suspense fallback={<Loader />}>
-        {queryRef && <GitHubIntegrationResults queryRef={queryRef} queryType={queryType} />}
+        {queryRef && (
+          <GitHubIntegrationResults queryRef={queryRef} queryType={queryType} teamId={teamId} />
+        )}
       </Suspense>
     </ErrorBoundary>
   )

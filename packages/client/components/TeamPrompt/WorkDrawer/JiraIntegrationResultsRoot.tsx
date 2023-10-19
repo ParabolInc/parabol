@@ -19,7 +19,7 @@ const JiraIntegrationResultsRoot = (props: Props) => {
   return (
     <ErrorBoundary>
       <Suspense fallback={<Loader />}>
-        {queryRef && <JiraIntegrationResults queryRef={queryRef} />}
+        {queryRef && <JiraIntegrationResults queryRef={queryRef} teamId={teamId} />}
       </Suspense>
     </ErrorBoundary>
   )
