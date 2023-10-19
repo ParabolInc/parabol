@@ -35,7 +35,7 @@ const getTranscription = async (recallBotId?: string | null) => {
   return await manager.getBotTranscript(recallBotId)
 }
 
-const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
+const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
   const {dataLoader, authToken} = context
   const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
   const r = await getRethink()
@@ -67,10 +67,9 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
       })
     }
   }
-  const [summary, transcription, insights] = await Promise.all([
+  const [summary, transcription] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
-    getTranscription(recallBotId),
-    gatherInsights(meeting, dataLoader)
+    getTranscription(recallBotId)
   ])
 
   await r
@@ -95,8 +94,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
         reflectionCount: reflections.length,
         sentimentScore,
         summary,
-        transcription,
-        ...insights
+        transcription
       },
       {nonAtomic: true}
     )
@@ -106,8 +104,6 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
-  // await the insights so they're send when sending the end meeting update
-  await updateTeamInsights(teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}
@@ -159,13 +155,15 @@ export default {
     }
     const phase = getMeetingPhase(phases)
 
+    const insights = await gatherInsights(meeting, dataLoader)
     const completedRetrospective = (await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
         {
           endedAt: now,
-          phases
+          phases,
+          ...insights
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
@@ -173,7 +171,7 @@ export default {
       .run()) as unknown as MeetingRetrospective
 
     if (!completedRetrospective) {
-      return standardError(new Error('Completed check-in meeting does not exist'), {
+      return standardError(new Error('Completed retrospective meeting does not exist'), {
         userId: viewerId
       })
     }
@@ -196,11 +194,12 @@ export default {
         .getAll(meetingId, {index: 'meetingId'})
         .filter({isActive: false})
         .delete()
-        .run()
+        .run(),
+      updateTeamInsights(teamId, dataLoader)
     ])
-    // wait for removeEmptyTasks before finishRetroMeeting
+    // wait for removeEmptyTasks before summarizeRetroMeeting
     // don't await for the OpenAI response or it'll hang for a while when ending the retro
-    await finishRetroMeeting(completedRetrospective, context)
+    summarizeRetroMeeting(completedRetrospective, context)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
     checkTeamsLimit(team.orgId, dataLoader)
     const events = teamMembers.map(
