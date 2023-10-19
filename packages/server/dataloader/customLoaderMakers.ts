@@ -705,11 +705,10 @@ type OrgWithFounderAndLeads = Organization & {
   billingLeads: OrganizationUser[]
 }
 
-export const autoJoinTeamsByValidOrgId = (parent: RootDataLoader) => {
-  return new DataLoader<string, Team[], string>(
+export const getVerifiedOrgIds = (parent: RootDataLoader) => {
+  return new DataLoader<string, string[], string>(
     async (orgIds) => {
       const r = await getRethink()
-
       const orgs: OrgWithFounderAndLeads[] = await r
         .table('Organization')
         .getAll(r.args(orgIds))
@@ -721,7 +720,7 @@ export const autoJoinTeamsByValidOrgId = (parent: RootDataLoader) => {
             .coerceTo('array')
         }))
         .merge((org: RDatum) => ({
-          founder: org('members').nth(0).default(null),
+          founder: org('members').filter({inactive: false}).nth(0).default(null),
           billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false})
         }))
         .run()
@@ -734,7 +733,6 @@ export const autoJoinTeamsByValidOrgId = (parent: RootDataLoader) => {
         .filter((id): id is string => Boolean(id))
 
       const users = (await parent.get('users').loadMany(userIds)).filter(isValid)
-
       const identityMap = Object.fromEntries(users.map((user) => [user.id, user]))
 
       const validOrgs = orgs.filter((org) => {
@@ -747,21 +745,32 @@ export const autoJoinTeamsByValidOrgId = (parent: RootDataLoader) => {
             emailDomain === org.activeDomain
           )
         }
-
         const validFounderOrBillingLead = [org.founder, ...org.billingLeads].find(
           (orgUser) => orgUser && checkEmailDomain(orgUser.userId)
         )
-
         return Boolean(validFounderOrBillingLead)
       })
 
-      const validOrgIds = validOrgs.map((org) => org.id)
+      return validOrgs.map((org) => [org.id])
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const autoJoinTeamsByValidOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, Team[], string>(
+    async (orgIds) => {
+      const verifiedOrgIds = (await parent.get('getVerifiedOrgIds').loadMany(orgIds))
+        .flat()
+        .filter(isValid)
 
       const pg = getKysely()
 
       const teams = (await pg
         .selectFrom('Team')
-        .where('orgId', 'in', validOrgIds)
+        .where('orgId', 'in', verifiedOrgIds)
         .where('autoJoin', '=', true)
         .where('isArchived', '!=', true)
         .selectAll()
