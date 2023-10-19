@@ -6,7 +6,7 @@ import {useFragment} from 'react-relay'
 import {MeetingLockedOverlay_meeting$key} from '~/__generated__/MeetingLockedOverlay_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../mutations/SendClientSideEvent'
 import {modalShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius} from '../types/constEnums'
@@ -103,7 +103,7 @@ const MeetingLockedOverlay = (props: Props) => {
   const {history} = useRouter()
   useEffect(() => {
     if (locked) {
-      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'directMeetingLinkLock',
         upgradeTier: 'team',
         meetingId
@@ -124,7 +124,7 @@ const MeetingLockedOverlay = (props: Props) => {
   }, [locked])
 
   const onClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'directMeetingLinkLock',
       upgradeTier: 'team',
       meetingId

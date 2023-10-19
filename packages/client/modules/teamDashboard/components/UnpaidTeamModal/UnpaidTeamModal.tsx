@@ -9,10 +9,10 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../mutations/SendClientSideEvent'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
-import {UpgradeCTALocationEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
+import {UpgradeCTALocationEnum} from '../../../../__generated__/SendClientSideEventMutation.graphql'
 import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 
 const StyledButton = styled(PrimaryButton)({
@@ -71,7 +71,7 @@ const UnpaidTeamModal = (props: Props) => {
 
   useEffect(() => {
     if (team?.organization.lockedAt) {
-      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'organizationLockedModal',
         orgId: team.organization.id
       })
@@ -90,7 +90,7 @@ const UnpaidTeamModal = (props: Props) => {
   const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1
 
   const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnum) => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation
     })
     history.push(`/me/organizations/${orgId}`)

@@ -12,7 +12,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import StyledError from '../../../../components/StyledError'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../mutations/SendClientSideEvent'
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
@@ -145,11 +145,11 @@ const BillingForm = (props: Props) => {
     (type: 'CardNumber' | 'ExpiryDate' | 'CVC') => (event: StripeElementChangeEvent) => {
       if (errorMsg) setErrorMsg(null)
       if (!hasStarted && !event.empty) {
-        SendClientSegmentEventMutation(atmosphere, 'Payment Details Started', {orgId})
+        SendClientSideEvent(atmosphere, 'Payment Details Started', {orgId})
         setHasStarted(true)
       }
       if (event.complete) {
-        SendClientSegmentEventMutation(atmosphere, 'Payment Details Complete', {orgId})
+        SendClientSideEvent(atmosphere, 'Payment Details Complete', {orgId})
       }
 
       const errorSetters = {

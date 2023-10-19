@@ -3,9 +3,9 @@ import {Close} from '@mui/icons-material'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../mutations/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
-import {ServiceEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
+import {ServiceEnum} from '../__generated__/SendClientSideEventMutation.graphql'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -64,7 +64,7 @@ const ScopingSearchInput = (props: Props) => {
   }, [])
 
   const trackEvent = (eventTitle: string) => {
-    SendClientSegmentEventMutation(atmosphere, eventTitle, {
+    SendClientSideEvent(atmosphere, eventTitle, {
       meetingId,
       service
     })
