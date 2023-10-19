@@ -33,6 +33,8 @@ import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeResults from './normalizeResults'
 import {Team} from '../postgres/queries/getTeamsByIds'
+import {Organization} from '../graphql/public/resolverTypes'
+import isValid from '../graphql/isValid'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -698,14 +700,68 @@ export const samlByOrgId = (parent: RootDataLoader) => {
   )
 }
 
-export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
+type OrgWithFounderAndLeads = Organization & {
+  founder: OrganizationUser | null
+  billingLeads: OrganizationUser[]
+}
+
+export const autoJoinTeamsByValidOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, Team[], string>(
     async (orgIds) => {
+      const r = await getRethink()
+
+      const orgs: OrgWithFounderAndLeads[] = await r
+        .table('Organization')
+        .getAll(r.args(orgIds))
+        .merge((org: RDatum) => ({
+          members: r
+            .table('OrganizationUser')
+            .getAll(org('id'), {index: 'orgId'})
+            .orderBy('joinedAt')
+            .coerceTo('array')
+        }))
+        .merge((org: RDatum) => ({
+          founder: org('members').nth(0).default(null),
+          billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false})
+        }))
+        .run()
+
+      const userIds = orgs
+        .flatMap((org) => [
+          org.founder ? org.founder.userId : null,
+          ...org.billingLeads.map((lead) => lead.userId)
+        ])
+        .filter((id): id is string => Boolean(id))
+
+      const users = (await parent.get('users').loadMany(userIds)).filter(isValid)
+
+      const identityMap = Object.fromEntries(users.map((user) => [user.id, user]))
+
+      const validOrgs = orgs.filter((org) => {
+        const checkEmailDomain = (userId: string) => {
+          const userInfo = identityMap[userId]
+          if (!userInfo) return false
+          const emailDomain = userInfo.email.split('@')[1]
+          return (
+            userInfo.identities.some((identity) => identity.isEmailVerified) &&
+            emailDomain === org.activeDomain
+          )
+        }
+
+        const validFounderOrBillingLead = [org.founder, ...org.billingLeads].find(
+          (orgUser) => orgUser && checkEmailDomain(orgUser.userId)
+        )
+
+        return Boolean(validFounderOrBillingLead)
+      })
+
+      const validOrgIds = validOrgs.map((org) => org.id)
+
       const pg = getKysely()
 
       const teams = (await pg
         .selectFrom('Team')
-        .where('orgId', 'in', orgIds)
+        .where('orgId', 'in', validOrgIds)
         .where('autoJoin', '=', true)
         .where('isArchived', '!=', true)
         .selectAll()

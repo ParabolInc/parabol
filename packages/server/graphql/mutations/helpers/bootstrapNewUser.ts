@@ -63,7 +63,9 @@ const bootstrapNewUser = async (
   const orgIds = organizations.map(({id}) => id)
 
   const [teamsWithAutoJoinRes] = await Promise.all([
-    isVerified && isCompanyDomain ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
+    isVerified && isCompanyDomain
+      ? dataLoader.get('autoJoinTeamsByValidOrgId').loadMany(orgIds)
+      : [],
     insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
