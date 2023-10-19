@@ -705,6 +705,7 @@ type OrgWithFounderAndLeads = Organization & {
   billingLeads: OrganizationUser[]
 }
 
+// ensure that the org has a founder or billing lead with a verified email and their email domain is the same as the org domain
 export const getVerifiedOrgIds = (parent: RootDataLoader) => {
   return new DataLoader<string, string[], string>(
     async (orgIds) => {
@@ -745,10 +746,10 @@ export const getVerifiedOrgIds = (parent: RootDataLoader) => {
             emailDomain === org.activeDomain
           )
         }
-        const validFounderOrBillingLead = [org.founder, ...org.billingLeads].find(
+        const validFounderOrBillingLead = [org.founder, ...org.billingLeads].some(
           (orgUser) => orgUser && checkEmailDomain(orgUser.userId)
         )
-        return Boolean(validFounderOrBillingLead)
+        return validFounderOrBillingLead
       })
 
       return validOrgs.map((org) => [org.id])
