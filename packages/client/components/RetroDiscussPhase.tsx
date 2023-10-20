@@ -263,18 +263,19 @@ const RetroDiscussPhase = (props: Props) => {
                     />
                   }
                   emptyState={
-                    showTranscription ?
-                    <DiscussionThreadListEmptyTranscriptState
-                    allowTasks={true}
-                    isReadOnly={allowedThreadables.length === 0}
-                    meetingRef={meeting}
-                    showTranscription={showTranscription}
-                  />
-                  :
-                    <DiscussionThreadListEmptyState
-                      allowTasks={true}
-                      isReadOnly={allowedThreadables.length === 0}
-                    />
+                    showTranscription ? (
+                      <DiscussionThreadListEmptyTranscriptState
+                        allowTasks={true}
+                        isReadOnly={allowedThreadables.length === 0}
+                        meetingRef={meeting}
+                        showTranscription={showTranscription}
+                      />
+                    ) : (
+                      <DiscussionThreadListEmptyState
+                        allowTasks={true}
+                        isReadOnly={allowedThreadables.length === 0}
+                      />
+                    )
                   }
                 />
               </ThreadColumn>

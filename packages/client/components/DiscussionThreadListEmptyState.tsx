@@ -28,7 +28,6 @@ const EmptyDiscussionImage = styled('img')({
   height: 'auto'
 })
 
-
 const Message = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 14,
@@ -37,16 +36,12 @@ const Message = styled('div')({
   margin: '24 0'
 })
 
-
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
 }
 
-const getMessage = (
-  allowTasks: boolean,
-  isReadOnly: boolean,
-) => {
+const getMessage = (allowTasks: boolean, isReadOnly: boolean) => {
   if (isReadOnly) {
     return allowTasks ? 'No comments or tasks were added here' : 'No comments were added here'
   }

@@ -34,7 +34,6 @@ const EmptyDiscussionContainer = styled('div')({
   }
 })
 
-
 const Message = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 14,
@@ -66,14 +65,12 @@ const Wrapper = styled('div')({
   flex: 1
 })
 
-
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
   meetingRef?: DiscussionThreadListEmptyTranscriptState_meeting$key
   showTranscription?: boolean
 }
-
 
 const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
   const {showTranscription = false, meetingRef} = props
@@ -119,38 +116,39 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>
-        <div className='flex justify-center w-full'>
-          <div className='w-16 h-16 mb-4'>
+        <div className='flex w-full justify-center'>
+          <div className='mb-4 h-16 w-16'>
             <ZoomSVG />
           </div>
         </div>
       </EmptyDiscussionContainer>
       <Message>
-          {!!videoMeetingURL
-              ? 'Your Zoom meeting is being transcribed and the content will be available here once the meeting has ended.'
-              : <>
-                  Paste your <strong>Zoom meeting URL</strong> below and we’ll transcribe your meeting.
-                </>
-          }
-        </Message>
+        {!!videoMeetingURL ? (
+          'Your Zoom meeting is being transcribed and the content will be available here once the meeting has ended.'
+        ) : (
+          <>
+            Paste your <strong>Zoom meeting URL</strong> below and we’ll transcribe your meeting.
+          </>
+        )}
+      </Message>
 
       {showVideoURLInput && (
         <Wrapper>
-    <input
-      className="appearance-none rounded border border-slate-400 text-slate-600 text-sm mt-4 p-3 w-full bg-transparent outline-none"
-      autoFocus
-      placeholder='Zoom meeting URL'
-      onChange={onChange}
-      name='url'
-      value={urlValue}
-    />
+          <input
+            className='mt-4 w-full appearance-none rounded border border-slate-400 bg-transparent p-3 text-sm text-slate-600 outline-none'
+            autoFocus
+            placeholder='Zoom meeting URL'
+            onChange={onChange}
+            name='url'
+            value={urlValue}
+          />
 
-<div className="flex flex-col items-center w-full">
-  <StyledButton onClick={handleSubmit} size='medium'>
-    Submit
-  </StyledButton>
-  {fieldError && <StyledError>{fieldError}</StyledError>}
-</div>
+          <div className='flex w-full flex-col items-center'>
+            <StyledButton onClick={handleSubmit} size='medium'>
+              Submit
+            </StyledButton>
+            {fieldError && <StyledError>{fieldError}</StyledError>}
+          </div>
         </Wrapper>
       )}
     </DiscussionThreadEmptyStateRoot>
