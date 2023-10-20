@@ -153,7 +153,7 @@ const RetroDiscussPhase = (props: Props) => {
         showTranscription
         transcription {
           speaker
-          text
+          words
         }
         organization {
           ...DiscussPhaseSqueeze_organization
