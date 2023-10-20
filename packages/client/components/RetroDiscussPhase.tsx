@@ -151,7 +151,10 @@ const RetroDiscussPhase = (props: Props) => {
         id
         endedAt
         showTranscription
-        transcription
+        transcription {
+          speaker
+          text
+        }
         organization {
           ...DiscussPhaseSqueeze_organization
           ...RetroDiscussionThreadHeader_organization

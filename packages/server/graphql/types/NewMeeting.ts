@@ -201,10 +201,6 @@ export const newMeetingFields = () => ({
       const viewerId = getUserId(authToken)
       return isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
     }
-  },
-  transcription: {
-    type: GraphQLString,
-    description: 'The transcription of the meeting'
   }
 })
 
