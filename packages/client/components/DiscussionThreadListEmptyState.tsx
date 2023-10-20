@@ -3,7 +3,6 @@ import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'
-import {DiscussionThreadListEmptyState_meeting$key} from '~/__generated__/DiscussionThreadListEmptyState_meeting.graphql'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -42,8 +41,6 @@ const Message = styled('div')({
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
-  meetingRef?: DiscussionThreadListEmptyState_meeting$key
-  showTranscription?: boolean
 }
 
 const getMessage = (

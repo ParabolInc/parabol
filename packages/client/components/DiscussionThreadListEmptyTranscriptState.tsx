@@ -12,7 +12,7 @@ import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
 import FlatButton from './FlatButton'
 import StyledError from './StyledError'
-import {DiscussionThreadListEmptyState_meeting$key} from '~/__generated__/DiscussionThreadListEmptyState_meeting.graphql'
+import {DiscussionThreadListEmptyTranscriptState_meeting$key} from '~/__generated__/DiscussionThreadListEmptyTranscriptState_meeting.graphql'
 import {ZoomSVG} from './ZoomSVG'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
@@ -33,12 +33,6 @@ const EmptyDiscussionContainer = styled('div')({
     width: 260
   }
 })
-
-const EmptyDiscussionImage = styled('img')({
-  width: '80%',
-  height: 'auto'
-})
-
 
 
 const Message = styled('div')({
@@ -87,7 +81,7 @@ const StyledInput = styled('input')({
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
-  meetingRef?: DiscussionThreadListEmptyState_meeting$key
+  meetingRef?: DiscussionThreadListEmptyTranscriptState_meeting$key
   showTranscription?: boolean
 }
 
@@ -96,7 +90,7 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
   const {showTranscription = false, meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment DiscussionThreadListEmptyState_meeting on RetrospectiveMeeting {
+      fragment DiscussionThreadListEmptyTranscriptState_meeting on RetrospectiveMeeting {
         id
         videoMeetingURL
       }
