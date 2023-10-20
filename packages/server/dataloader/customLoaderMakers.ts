@@ -751,7 +751,9 @@ export const getVerifiedOrgIds = (parent: RootDataLoader) => {
         return validFounderOrBillingLead
       })
 
-      return validOrgs.map((org) => [org.id])
+      return orgIds.map((orgId) =>
+        validOrgs.find((validOrg) => validOrg.id === orgId) ? [orgId] : []
+      )
     },
     {
       ...parent.dataLoaderOptions
