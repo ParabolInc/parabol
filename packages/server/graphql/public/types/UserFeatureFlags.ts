@@ -10,7 +10,7 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
   gcal: ({gcal}) => !!gcal,
   adHocTeams: ({adHocTeams}) => !!adHocTeams,
-  noTemplatelimit: ({noTemplatelimit}) => !!noTemplatelimit
+  noTemplateLimit: ({noTemplateLimit}) => !!noTemplateLimit
 }
 
 export default UserFeatureFlags
