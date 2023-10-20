@@ -127,7 +127,7 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
       </EmptyDiscussionContainer>
       <Message>
           {!!videoMeetingURL
-              ? 'Your Zoom meeting is being transcribed and the content will be available once the meeting has ended.'
+              ? 'Your Zoom meeting is being transcribed and the content will be available here once the meeting has ended.'
               : <>
                   Paste your <strong>Zoom meeting URL</strong> below and we’ll transcribe your meeting.
                 </>
