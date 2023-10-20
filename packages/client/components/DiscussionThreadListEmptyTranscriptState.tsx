@@ -52,6 +52,7 @@ const StyledButton = styled(FlatButton)({
   minWidth: 36,
   marginTop: 24,
   width: '50%',
+  marginBottom: 8,
   ':hover': {
     backgroundColor: PALETTE.SKY_600
   }
@@ -66,18 +67,6 @@ const Wrapper = styled('div')({
 })
 
 
-const StyledInput = styled('input')({
-  appearance: 'none',
-  borderRadius: 4,
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  marginTop: 16,
-  padding: 12,
-  outline: 0,
-  backgroundColor: 'transparent',
-  width: '100%'
-})
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
@@ -124,16 +113,17 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
     submitMutation()
     AddTranscriptionBot(atmosphere, {videoMeetingURL: urlValue, meetingId}, {onError, onCompleted})
   }
+
   const showVideoURLInput = showTranscription && !videoMeetingURL
 
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>
-<div className='flex justify-center w-full'>
-  <div className='w-16 h-16 mb-4'>
-<ZoomSVG />
-  </div>
-</div>
+        <div className='flex justify-center w-full'>
+          <div className='w-16 h-16 mb-4'>
+            <ZoomSVG />
+          </div>
+        </div>
       </EmptyDiscussionContainer>
       <Message>
           {!!videoMeetingURL
@@ -146,17 +136,21 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
 
       {showVideoURLInput && (
         <Wrapper>
-          <StyledInput
-            autoFocus
-            placeholder='Zoom meeting URL'
-            onChange={onChange}
-            name='url'
-            value={urlValue}
-          />
-          <StyledButton onClick={handleSubmit} size='medium'>
-            Submit
-          </StyledButton>
-          {fieldError && <StyledError>{fieldError}</StyledError>}
+    <input
+      className="appearance-none rounded border border-slate-400 text-slate-600 text-sm mt-4 p-3 w-full bg-transparent outline-none"
+      autoFocus
+      placeholder='Zoom meeting URL'
+      onChange={onChange}
+      name='url'
+      value={urlValue}
+    />
+
+<div className="flex flex-col items-center w-full">
+  <StyledButton onClick={handleSubmit} size='medium'>
+    Submit
+  </StyledButton>
+  {fieldError && <StyledError>{fieldError}</StyledError>}
+</div>
         </Wrapper>
       )}
     </DiscussionThreadEmptyStateRoot>

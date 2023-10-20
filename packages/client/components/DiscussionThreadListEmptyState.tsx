@@ -59,7 +59,6 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   const {isReadOnly, allowTasks} = props
   const message = getMessage(allowTasks, !!isReadOnly)
 
-
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>
