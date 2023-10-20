@@ -37,6 +37,10 @@ graphql`
           id
         }
       }
+      transcription {
+        speaker
+        words
+      }
       phases {
         phaseType
         ... on DiscussPhase {

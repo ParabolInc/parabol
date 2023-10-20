@@ -271,7 +271,6 @@ const RetroDiscussPhase = (props: Props) => {
                         allowTasks={true}
                         isReadOnly={allowedThreadables.length === 0}
                         meetingRef={meeting}
-                        showTranscription={showTranscription}
                       />
                     ) : (
                       <DiscussionThreadListEmptyState
