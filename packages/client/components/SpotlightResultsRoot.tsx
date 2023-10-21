@@ -28,7 +28,7 @@ const SpotlightResultsRoot = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, spotlightGroup, spotlightSearchQuery} = meeting
+  const {id: meetingId, spotlightGroup} = meeting
   const spotlightGroupId = spotlightGroup?.id
   const groupIdRef = useRef('')
   const nextGroupId = spotlightGroupId ?? ''
@@ -37,7 +37,7 @@ const SpotlightResultsRoot = (props: Props) => {
   }
   const variables = {
     reflectionGroupId: groupIdRef.current,
-    searchQuery: spotlightSearchQuery ?? '',
+    searchQuery: '',
     meetingId
   }
   const queryRef = useQueryLoaderNow<SpotlightResultsQuery>(

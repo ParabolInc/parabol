@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "lib": ["esnext", "webworker"],
+    "target": "esnext",
+    "module": "ESNext"
+  }
+}

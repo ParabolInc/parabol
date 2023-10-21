@@ -89,6 +89,7 @@ extend type RetroReflection {
   remoteDrag: RemoteReflectionDrag
   ignoreDragStarts: [ID!]
   isEditing: Boolean
+  spotlightSalientWord: String
 }
 
 extend type ReflectPrompt {

@@ -8,10 +8,9 @@
     },
     "outDir": "lib",
     "lib": ["esnext", "dom"],
-    "types": ["node"]
+    "types": ["node"],
+    "module": "ESNext"
   },
-  "files": [
-    "client.tsx",
-  ],
+  "files": ["client.tsx"],
   "exclude": ["serviceWorker", "**/node_modules"]
 }

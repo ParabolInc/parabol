@@ -1,19 +1,19 @@
 /// <reference types="@types/segment-analytics" />
 
+import * as amplitude from '@amplitude/analytics-browser'
 import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import ReactGA from 'react-ga4'
+import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
-import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import getContentGroup from '../utils/getContentGroup'
 import makeHref from '../utils/makeHref'
-import * as amplitude from '@amplitude/analytics-browser'
 
 const query = graphql`
   query AnalyticsPageQuery {
@@ -89,16 +89,18 @@ if (datadogEnabled) {
   datadogRum.startSessionReplayRecording()
 }
 
-amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
-  defaultTracking: {
-    attribution: false,
-    pageViews: false,
-    sessions: false,
-    formInteractions: false,
-    fileDownloads: false
-  },
-  logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
-})
+if (window.__ACTION__.AMPLITUDE_WRITE_KEY) {
+  amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
+    defaultTracking: {
+      attribution: false,
+      pageViews: false,
+      sessions: false,
+      formInteractions: false,
+      fileDownloads: false
+    },
+    logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
+  })
+}
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
