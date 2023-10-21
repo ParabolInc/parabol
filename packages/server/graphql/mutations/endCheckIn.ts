@@ -221,7 +221,8 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId)
+      removeEmptyTasks(meetingId),
+      updateTeamInsights(teamId, dataLoader)
     ])
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await summarizeCheckInMeeting(completedCheckIn, dataLoader)
@@ -231,8 +232,6 @@ export default {
     analytics.checkInEnd(completedCheckIn, meetingMembers, team)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     checkTeamsLimit(team.orgId, dataLoader)
-    // await the insights so they're send when sending the end meeting update
-    await updateTeamInsights(teamId, dataLoader)
 
     const events = teamMembers.map(
       (teamMember) =>
