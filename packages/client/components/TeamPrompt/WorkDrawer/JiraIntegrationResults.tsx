@@ -97,7 +97,7 @@ const JiraIntegrationResults = (props: Props) => {
               to={`/team/${teamId}/settings/integrations`}
               className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
             >
-              Configure Jira
+              Review your Jira configuration
             </Link>
           </div>
         )}

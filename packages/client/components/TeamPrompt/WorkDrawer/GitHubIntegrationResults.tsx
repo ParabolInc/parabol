@@ -105,7 +105,7 @@ const GitHubIntegrationResults = (props: Props) => {
               to={`/team/${teamId}/settings/integrations`}
               className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
             >
-              Configure GitHub
+              Review your GitHub configuration
             </Link>
           </div>
         )}
