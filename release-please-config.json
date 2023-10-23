@@ -1,6 +1,4 @@
 {
-  "bootstrap-sha": "12396933718e23275a48550e8665f92015b55029",
-  "release-as": "6.125.0",
   "extra-label": "release",
   "packages": {
     ".": {
