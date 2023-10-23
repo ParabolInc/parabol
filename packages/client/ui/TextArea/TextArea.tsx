@@ -12,7 +12,6 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
       const textarea = internalRef.current
       if (textarea) {
         const length = textarea.value.length
-        textarea.focus()
         textarea.setSelectionRange(length, length)
       }
     }, [])

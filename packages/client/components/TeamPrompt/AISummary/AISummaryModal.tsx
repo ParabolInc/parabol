@@ -55,12 +55,17 @@ const AISummaryModal = (props: Props) => {
   const responseStages = phase.stages || []
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const [selectedStages, setSelectedStages] = useState<string[]>([])
+
   const generatePrompt = () => {
     return `Create a summary of the following Standup responses:\n\n${responseStages
       .filter((stage) => selectedStages.includes(stage.id) && stage.response?.plaintextContent)
-      .map((stage) => `${stage.teamMember.preferredName}: ${stage.response?.plaintextContent}`)
+      .map(
+        (stage) =>
+          `Team Member: ${stage.teamMember.preferredName}.\n${stage.response?.plaintextContent}`
+      )
       .join('\n\n')}`
   }
+
   const [aiPrompt, setAIPrompt] = useState('')
   const [aiGeneratedResponse, setAIGeneratedResponse] = useState('')
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
@@ -118,18 +123,18 @@ const AISummaryModal = (props: Props) => {
       <DialogContent className='z-10'>
         <DialogTitle className='mb-4'>Create AI Summary</DialogTitle>
 
-        <div className='mx-0 mb-2 flex w-full flex-col p-0'>
+        <div className='mx-0 mb-2 flex max-h-48 w-full flex-col overflow-y-auto p-0'>
           <label className='text-left text-sm font-semibold'>Select Standup Responses</label>
           <ul className='list-decimal pl-0'>
             {responseStages
               .filter((stage) => stage.response?.plaintextContent)
               .map((stage) => (
-                <li key={stage.id} className='mb-3 flex items-center pl-0'>
-                  <Checkbox
-                    active={selectedStages.includes(stage.id)}
-                    onClick={() => toggleStageSelection(stage.id)}
-                    className='mr-3'
-                  />
+                <li
+                  key={stage.id}
+                  onClick={() => toggleStageSelection(stage.id)}
+                  className='mb-3 flex items-center pl-0 hover:cursor-pointer'
+                >
+                  <Checkbox active={selectedStages.includes(stage.id)} className='mr-3' />
                   <img
                     src={stage.teamMember.picture}
                     alt={stage.teamMember.preferredName}
@@ -145,7 +150,12 @@ const AISummaryModal = (props: Props) => {
 
         <div className='mx-0 mb-2 flex w-full flex-col p-0'>
           <label className='mb-1 text-left text-sm font-semibold'>AI Prompt</label>
-          <TextArea value={aiPrompt} onChange={(e) => setAIPrompt(e.target.value)} />
+          <TextArea
+            className='h-48'
+            autoFocus
+            value={aiPrompt}
+            onChange={(e) => setAIPrompt(e.target.value)}
+          />
         </div>
 
         <div className='mx-0 mt-8 mb-4 flex w-full flex-col p-0'>
@@ -154,7 +164,8 @@ const AISummaryModal = (props: Props) => {
             <TextArea
               value={aiGeneratedResponse}
               onChange={(e) => setAIGeneratedResponse(e.target.value)}
-              className='mr-4 flex-grow'
+              className='mr-4 h-48 flex-grow'
+              placeholder='Your AI generated summary will appear here'
             />
             <button
               onClick={handleCopy}
