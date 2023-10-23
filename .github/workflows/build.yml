@@ -42,15 +42,16 @@ jobs:
           echo IS_RELEASE=$IS_RELEASE
           echo IS_MANUAL_BUILD=$IS_MANUAL_BUILD
 
+          DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
+          DOCKERIZE=false
           if [ $IS_RELEASE = true ]; then
-            echo IS_RELEASE_TRUE
             echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}" >> $GITHUB_ENV
             DOCKERIZE=true
           elif [ $IS_MANUAL_BUILD = true ]; then
-            echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV}}" >> $GITHUB_ENV
             DOCKERIZE=true
           fi
 
+          echo DOCKER_REPOSITORY_FOR_REF=$DOCKER_REPOSITORY_FOR_REF
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
           echo DOCKERIZE=$DOCKERIZE
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
