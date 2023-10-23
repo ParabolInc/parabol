@@ -1,14 +1,14 @@
-import {RValue} from '../../../database/stricterR'
 import getRethink from '../../../database/rethinkDriver'
+import {RValue} from '../../../database/stricterR'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import {toEpochSeconds} from '../../../utils/epochTime'
 import SlackServerManager from '../../../utils/SlackServerManager'
+import {toEpochSeconds} from '../../../utils/epochTime'
+import {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
 import {makeSection} from '../../mutations/helpers/notifications/makeSlackBlocks'
 import {QueryResolvers} from '../resolverTypes'
 import authCountByDomain from './helpers/authCountByDomain'
-import isValid from '../../isValid'
-import {DataLoaderWorker} from '../../graphql'
 
 interface TypeField {
   type: 'mrkdwn'
@@ -36,7 +36,8 @@ const filterCounts = async (domainCount: DomainCount[], dataLoader: DataLoaderWo
   const companyCounts = await Promise.all(
     domainCount.map(async (count) => {
       const {domain, total} = count
-      if (total <= 1 || !(await dataLoader.get('isCompanyDomain').load(domain))) return null
+      if (total <= 1 || !domain || !(await dataLoader.get('isCompanyDomain').load(domain)))
+        return null
       return count
     })
   )

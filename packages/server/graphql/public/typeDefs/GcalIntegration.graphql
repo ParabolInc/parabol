@@ -11,4 +11,9 @@ type GcalIntegration {
   The cloud provider the team member may choose to integrate with. Nullable based on env vars
   """
   cloudProvider: IntegrationProviderOAuth2
+
+  """
+  Events for specific time periods
+  """
+  events(startDate: DateTime!, endDate: DateTime!): [GcalIntegrationEvent!]!
 }
