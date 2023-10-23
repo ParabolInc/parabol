@@ -49,16 +49,28 @@ const AISummaryModal = (props: Props) => {
 
   const phase = getPhaseByTypename(meeting.phases, 'TeamPromptResponsesPhase')
   const responseStages = phase.stages || []
-  const defaultPrompt = `Create a summary of the following Standup responses:\n\n${responseStages
-    .filter((stage) => stage.response?.plaintextContent)
-    .map((stage) => `${stage.teamMember.preferredName}: ${stage.response?.plaintextContent}`)
-    .join('\n\n')}`
-
-  const [aiPrompt, setAIPrompt] = useState(defaultPrompt)
+  const [selectedStages, setSelectedStages] = useState<string[]>([])
+  const generatePrompt = () => {
+    return `Create a summary of the following Standup responses:\n\n${responseStages
+      .filter((stage) => selectedStages.includes(stage.id) && stage.response?.plaintextContent)
+      .map((stage) => `${stage.teamMember.preferredName}: ${stage.response?.plaintextContent}`)
+      .join('\n\n')}`
+  }
+  const [aiPrompt, setAIPrompt] = useState(generatePrompt())
 
   useEffect(() => {
-    setAIPrompt(defaultPrompt)
-  }, [responseStages])
+    setAIPrompt(generatePrompt())
+  }, [responseStages, selectedStages])
+
+  const toggleStageSelection = (stageId: string) => {
+    setSelectedStages((prev) => {
+      if (prev.includes(stageId)) {
+        return prev.filter((id) => id !== stageId)
+      } else {
+        return [...prev, stageId]
+      }
+    })
+  }
 
   const onClose = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -78,7 +90,11 @@ const AISummaryModal = (props: Props) => {
           <ul className='list-decimal pl-0'>
             {responseStages.map((stage) => (
               <li key={stage.id} className='mb-3 flex items-center pl-0'>
-                <Checkbox active className='mr-3' />
+                <Checkbox
+                  active={selectedStages.includes(stage.id)}
+                  onClick={() => toggleStageSelection(stage.id)}
+                  className='mr-3'
+                />
                 <img
                   src={stage.teamMember.picture}
                   alt={stage.teamMember.preferredName}
