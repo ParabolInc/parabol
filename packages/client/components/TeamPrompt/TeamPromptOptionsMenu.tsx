@@ -67,6 +67,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
         team {
           id
         }
+        organization {
+          featureFlags {
+            noAISummary
+          }
+        }
         meetingSeries {
           id
           recurrenceRule
@@ -81,11 +86,12 @@ const TeamPromptOptionsMenu = (props: Props) => {
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, team} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team, organization} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
 
+  const noAIFlag = organization.featureFlags?.noAISummary
   const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   const hasActiveMeetings = !!meetingSeries?.activeMeetings?.length
@@ -167,17 +173,19 @@ const TeamPromptOptionsMenu = (props: Props) => {
           })
         }}
       />
-      <MenuItem
-        key='end'
-        isDisabled={isEnded}
-        label={
-          <OptionMenuItem>
-            <BoltIcon />
-            <span>{'Create AI Summary'}</span>
-          </OptionMenuItem>
-        }
-        onClick={handleClickAISummary}
-      />
+      {!noAIFlag && (
+        <MenuItem
+          key='end'
+          isDisabled={isEnded}
+          label={
+            <OptionMenuItem>
+              <BoltIcon />
+              <span>{'Create AI Summary'}</span>
+            </OptionMenuItem>
+          }
+          onClick={handleClickAISummary}
+        />
+      )}
       <MenuItem
         key='end'
         isDisabled={isEnded}

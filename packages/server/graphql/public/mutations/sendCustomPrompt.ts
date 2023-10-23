@@ -8,11 +8,8 @@ const sendCustomPrompt: MutationResolvers['sendCustomPrompt'] = async (
   {prompt},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const viewerId = getUserId(authToken)
-  const now = new Date()
-
   const manager = new OpenAIServerManager()
-  const response = await manager.getSummary(prompt)
+  const response = await manager.getCustomResponse(prompt)
 
   if (!response) {
     const error = new Error('No response from OpenAI')
