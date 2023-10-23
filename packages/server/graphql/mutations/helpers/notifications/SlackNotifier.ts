@@ -4,12 +4,12 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
-import getRethink from '../../../../database/rethinkDriver'
+import getRethink, {RethinkSchema} from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
-import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import SlackServerManager from '../../../../utils/SlackServerManager'
@@ -241,6 +241,40 @@ const addStandupResponsesToThread = async (
     return error
   }
   return 'success'
+}
+
+const getSlackMessageForNotification = async (
+  dataLoader: DataLoaderWorker,
+  notification: RethinkSchema['Notification']['type'],
+  meeting: AnyMeeting,
+  userId: string
+) => {
+  if (notification.type === 'RESPONSE_REPLIED') {
+    const responses = await getTeamPromptResponsesByMeetingId(notification.meetingId)
+    const responseId = responses.find(({userId: responseUserId}) => responseUserId === userId)?.id
+    if (!responseId) {
+      return null
+    }
+    const user = await dataLoader.get('users').loadNonNull(notification.authorId)
+    const comment = await dataLoader.get('comments').load(notification.commentId)
+    return {
+      responseId,
+      title: `*${user.preferredName}* replied to your response in *${meeting.name}*`,
+      body: `> ${comment.plaintextContent}`,
+      buttonText: 'See the discussion'
+    }
+  } else if (notification.type === 'RESPONSE_MENTIONED') {
+    const responseId = notification.responseId
+    const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
+    const user = await dataLoader.get('users').loadNonNull(response.userId)
+    return {
+      responseId,
+      title: `*${user.preferredName}* mentioned you in their response in *${meeting.name}*`,
+      buttonText: 'See their response'
+    }
+  }
+
+  return null
 }
 
 export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNotificationAuth> = (
@@ -671,26 +705,17 @@ export const SlackNotifier: Notifier = {
       return
     }
 
-    let responseId: string | undefined
-    let title: string | undefined
-    let buttonText: string | undefined
-    let body: string | undefined
-
-    if (notification.type === 'RESPONSE_REPLIED') {
-      const responses = await getTeamPromptResponsesByMeetingId(notification.meetingId)
-      responseId = responses.find(({userId: responseUserId}) => responseUserId === userId)?.id
-      const user = await dataLoader.get('users').loadNonNull(notification.authorId)
-      title = `*${user.preferredName}* replied to your response in *${meeting.name}*`
-      const comment = await dataLoader.get('comments').load(notification.commentId)
-      body = `> ${comment.plaintextContent}`
-      buttonText = 'See the discussion'
-    } else {
-      responseId = notification.responseId
-      const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
-      const user = await dataLoader.get('users').loadNonNull(response.userId)
-      title = `*${user.preferredName}* mentioned you in their response in *${meeting.name}*`
-      buttonText = 'See their response'
+    const slackMessageFields = await getSlackMessageForNotification(
+      dataLoader,
+      notification,
+      meeting,
+      userId
+    )
+    if (!slackMessageFields) {
+      return
     }
+
+    const {responseId, title, buttonText, body} = slackMessageFields
 
     if (!responseId) {
       return
