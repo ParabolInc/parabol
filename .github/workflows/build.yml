@@ -36,11 +36,8 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
           IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') }}
           IS_MANUAL_BUILD=${{ startsWith(github.event.head_commit.message, 'dockerize') }}
-          echo IS_RELEASE=$IS_RELEASE
-          echo IS_MANUAL_BUILD=$IS_MANUAL_BUILD
 
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           DOCKERIZE=false
@@ -51,14 +48,12 @@ jobs:
             DOCKERIZE=true
           fi
 
-          echo DOCKER_REPOSITORY_FOR_REF=$DOCKER_REPOSITORY_FOR_REF
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-          echo DOCKERIZE=$DOCKERIZE
-          echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
-          echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
-
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
+          echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
+          echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
 
       - name: Setup Node
         uses: actions/setup-node@v3
