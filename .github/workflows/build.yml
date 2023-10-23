@@ -4,7 +4,6 @@ on: [push]
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
-
 jobs:
   build:
     runs-on: ubuntu-8cores
@@ -45,15 +44,14 @@ jobs:
 
           if [ $IS_RELEASE = true ]; then
             echo IS_RELEASE_TRUE
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
-          else
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
+            echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}" >> $GITHUB_ENV
+            DOCKERIZE=true
+          elif [ $IS_MANUAL_BUILD = true ]; then
+            echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV}}" >> $GITHUB_ENV
+            DOCKERIZE=true
           fi
-          echo DOCKER_REPOSITORY_FOR_REF=$DOCKER_REPOSITORY_FOR_REF
 
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-
-          DOCKERIZE=$IS_RELEASE || $IS_MANUAL_BUILD
           echo DOCKERIZE=$DOCKERIZE
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
           echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
