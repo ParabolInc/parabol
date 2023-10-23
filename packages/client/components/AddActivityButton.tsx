@@ -31,10 +31,10 @@ interface Props {
 }
 
 const AddActivityButton = (props: Props) => {
-  const {onClick, dataCy, disabled} = props
+  const {onClick, disabled} = props
 
   return (
-    <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
+    <StyledPlainButton onClick={onClick} disabled={disabled}>
       <Icon />
       <div className='text-inherit'>Add an activity</div>
     </StyledPlainButton>

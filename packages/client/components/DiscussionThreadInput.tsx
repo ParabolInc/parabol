@@ -143,7 +143,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
-  const allowPolls = !__PRODUCTION__ // TODO: change to "allowedThreadables.includes('poll')" once feature is done
+  const allowPolls = false // TODO: change to "allowedThreadables.includes('poll')" once feature is done
   useInitialLocalState(discussionId, 'isAnonymousComment', false)
   useInitialLocalState(discussionId, 'replyingToCommentId', '')
   useBeforeUnload(() => {
