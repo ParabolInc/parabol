@@ -1,13 +1,8 @@
-import {getUserId} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
-const sendCustomPrompt: MutationResolvers['sendCustomPrompt'] = async (
-  _source,
-  {prompt},
-  {authToken, dataLoader, socketId: mutatorId}
-) => {
+const sendCustomPrompt: MutationResolvers['sendCustomPrompt'] = async (_source, {prompt}) => {
   const manager = new OpenAIServerManager()
   const response = await manager.getCustomResponse(prompt)
 
