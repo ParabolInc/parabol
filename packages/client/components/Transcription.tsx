@@ -20,8 +20,8 @@ const Transcription = (props: Props) => {
     <div className='flex h-full flex-col overflow-auto px-6 py-2 text-sm'>
       {validTranscriptionBlocks.map((block, idx) => (
         <div key={idx} className='my-2'>
-          <div className='font-semibold italic text-slate-600'>{block.speaker}</div>
-          <div className='mt-1 text-slate-800'>{block.words}</div>
+          <div className='font-semibold text-slate-700'>{block.speaker}</div>
+          <div className='text-slate-800'>{block.words}</div>
         </div>
       ))}
     </div>
