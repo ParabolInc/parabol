@@ -8,7 +8,7 @@ interface Input {
 }
 
 export default class NotificationPaymentRejected extends Notification {
-  type: 'PAYMENT_REJECTED'
+  readonly type = 'PAYMENT_REJECTED'
   orgId: string
   last4: string
   brand: string
@@ -16,7 +16,6 @@ export default class NotificationPaymentRejected extends Notification {
   constructor(input: Input) {
     const {orgId, last4, brand, userId} = input
     super({userId, type: 'PAYMENT_REJECTED'})
-    this.type = 'PAYMENT_REJECTED'
     this.orgId = orgId
     this.last4 = last4
     this.brand = brand

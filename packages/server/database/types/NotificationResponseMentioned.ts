@@ -7,14 +7,13 @@ interface Input {
 }
 
 export default class NotificationResponseMentioned extends Notification {
-  type: 'RESPONSE_MENTIONED'
+  readonly type = 'RESPONSE_MENTIONED'
   responseId: string
   meetingId: string
 
   constructor(input: Input) {
     const {responseId, meetingId, userId} = input
     super({userId, type: 'RESPONSE_MENTIONED'})
-    this.type = 'RESPONSE_MENTIONED'
     this.responseId = responseId
     this.meetingId = meetingId
   }

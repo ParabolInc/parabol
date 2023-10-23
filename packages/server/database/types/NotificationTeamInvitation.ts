@@ -7,13 +7,12 @@ interface Input {
 }
 
 export default class NotificationTeamInvitation extends Notification {
-  type: 'TEAM_INVITATION'
+  readonly type = 'TEAM_INVITATION'
   invitationId: string
   teamId: string
   constructor(input: Input) {
     const {invitationId, teamId, userId} = input
     super({userId, type: 'TEAM_INVITATION'})
-    this.type = 'TEAM_INVITATION'
     this.invitationId = invitationId
     this.teamId = teamId
   }

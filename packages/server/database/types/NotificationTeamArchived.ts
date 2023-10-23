@@ -7,13 +7,12 @@ interface Input {
 }
 
 export default class NotificationTeamArchived extends Notification {
-  type: 'TEAM_ARCHIVED'
+  readonly type = 'TEAM_ARCHIVED'
   archivorUserId: string
   teamId: string
   constructor(input: Input) {
     const {archivorUserId, teamId, userId} = input
     super({userId, type: 'TEAM_ARCHIVED'})
-    this.type = 'TEAM_ARCHIVED'
     this.archivorUserId = archivorUserId
     this.teamId = teamId
   }
