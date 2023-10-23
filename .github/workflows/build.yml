@@ -4,7 +4,6 @@ on: [push]
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
-
 jobs:
   build:
     runs-on: ubuntu-8cores
@@ -37,29 +36,24 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
           IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') }}
           IS_MANUAL_BUILD=${{ startsWith(github.event.head_commit.message, 'dockerize') }}
-          echo IS_RELEASE=$IS_RELEASE
-          echo IS_MANUAL_BUILD=$IS_MANUAL_BUILD
 
+          DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
+          DOCKERIZE=false
           if [ $IS_RELEASE = true ]; then
-            echo IS_RELEASE_TRUE
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
-          else
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
+            echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}" >> $GITHUB_ENV
+            DOCKERIZE=true
+          elif [ $IS_MANUAL_BUILD = true ]; then
+            DOCKERIZE=true
           fi
-          echo DOCKER_REPOSITORY_FOR_REF=$DOCKER_REPOSITORY_FOR_REF
-
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-
-          DOCKERIZE=$IS_RELEASE || $IS_MANUAL_BUILD
-          echo DOCKERIZE=$DOCKERIZE
-          echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
-          echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
 
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
+          echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
+          echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -185,6 +179,7 @@ jobs:
         with:
           network: host
           allow: network.host
+          provenance: false
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .
           build-args: |
