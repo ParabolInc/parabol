@@ -10,20 +10,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### ⚠ BREAKING CHANGES
 
-* bump major version since release-as is not working
-
-### Fixed
-
-* bump versions for dependencies ([#9032](https://github.com/ParabolInc/parabol/issues/9032)) ([c6989e7](https://github.com/ParabolInc/parabol/commit/c6989e71f7171be371c3999f330208e42fc2229a))
-* release-please subdeps ([4d00d68](https://github.com/ParabolInc/parabol/commit/4d00d6802401553bef1a1c72e6f98ef1f6a87a01))
-* release-please typo ([f206357](https://github.com/ParabolInc/parabol/commit/f20635737c11ff1dd45545d2e640566410dffe93))
-* remove bootstrap and manifest ([bb55b58](https://github.com/ParabolInc/parabol/commit/bb55b584090a3084d96bdc21e5a617e2155cca48))
-* remove docker provenance ([#9029](https://github.com/ParabolInc/parabol/issues/9029)) ([3c0320f](https://github.com/ParabolInc/parabol/commit/3c0320f57907081491ca86d7c985b6800601ec40))
-
-
-### Changed
-
-* bump major version since release-as is not working ([e753896](https://github.com/ParabolInc/parabol/commit/e753896f8d438746c886487bc11fcb6296972ab3))
+* None, but we moved to the new infra
 
 ## [6.125.0](https://github.com/ParabolInc/parabol/compare/v6.124.0...v6.125.0) (2023-10-23)
 
