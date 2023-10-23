@@ -35,7 +35,7 @@
     {
       "type": "json",
       "path": "packages/chronos/package.json",
-      "jsonpath": "$.dependencies.['parabol-server'].version"
+      "jsonpath": "$.dependencies['parabol-server'].version"
     },
     {
       "type": "json",
@@ -50,12 +50,12 @@
     {
       "type": "json",
       "path": "packages/gql-executor/package.json",
-      "jsonpath": "$.dependencies.['parabol-client'].version"
+      "jsonpath": "$.dependencies['parabol-client'].version"
     },
     {
       "type": "json",
       "path": "packages/gql-executor/package.json",
-      "jsonpath": "$.dependencies.['parabol-server'].version"
+      "jsonpath": "$.dependencies['parabol-server'].version"
     },
     {
       "type": "json",
@@ -70,7 +70,7 @@
     {
       "type": "json",
       "path": "packages/server/package.json",
-      "jsonpath": "$.dependencies.['parabol-client'].version"
+      "jsonpath": "$.dependencies['parabol-client'].version"
     }
   ]
 }
