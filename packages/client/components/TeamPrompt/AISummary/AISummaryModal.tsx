@@ -4,18 +4,13 @@ import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
-import {useFragment} from 'react-relay'
-import {Select} from '../../../ui/Select/Select'
-import {SelectItem} from '../../../ui/Select/SelectItem'
-import {SelectTrigger} from '../../../ui/Select/SelectTrigger'
-import {SelectGroup} from '../../../ui/Select/SelectGroup'
-import {SelectValue} from '../../../ui/Select/SelectValue'
-import {SelectContent} from '../../../ui/Select/SelectContent'
-import {DialogDescription} from '../../../ui/Dialog/DialogDescription'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {TextArea} from '../../../ui/TextArea/TextArea'
 import Checkbox from '../../Checkbox'
 import {AISummaryModal_meeting$key} from '~/__generated__/AISummaryModal_meeting.graphql'
+import getPhaseByTypename from '../../../utils/getPhaseByTypename'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 
 type Props = {
   isOpen: boolean
@@ -24,9 +19,11 @@ type Props = {
 
 const AISummaryModal = (props: Props) => {
   const {isOpen, meetingRef} = props
+  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment AISummaryModal_meeting on TeamPromptMeeting {
+        id
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -50,8 +47,8 @@ const AISummaryModal = (props: Props) => {
     meetingRef
   )
 
-  const responseStages =
-    meeting?.phases?.find((phase) => phase.__typename === 'TeamPromptResponsesPhase')?.stages || []
+  const phase = getPhaseByTypename(meeting.phases, 'TeamPromptResponsesPhase')
+  const responseStages = phase.stages || []
   const defaultPrompt = `Create a summary of the following Standup responses:\n\n${responseStages
     .filter((stage) => stage.response?.plaintextContent)
     .map((stage) => `${stage.teamMember.preferredName}: ${stage.response?.plaintextContent}`)
@@ -63,8 +60,13 @@ const AISummaryModal = (props: Props) => {
     setAIPrompt(defaultPrompt)
   }, [responseStages])
 
-  console.log('🚀 ~ meeting:', meeting)
-  const onClose = () => {}
+  const onClose = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meeting.id)
+      if (!meetingProxy) return
+      meetingProxy.setValue(false, 'showAISummaryModal')
+    })
+  }
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
