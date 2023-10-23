@@ -44,9 +44,7 @@ const Message = styled('div')({
 
 const StyledButton = styled(FlatButton)({
   background: PALETTE.SKY_500,
-  borderColor: PALETTE.SLATE_400,
   color: PALETTE.WHITE,
-  fontSize: 12,
   fontWeight: 600,
   minWidth: 36,
   marginTop: 24,
