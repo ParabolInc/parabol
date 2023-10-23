@@ -11,3 +11,4 @@ jobs:
         with:
           command: manifest
           default-branch: release
+          release-type: node
