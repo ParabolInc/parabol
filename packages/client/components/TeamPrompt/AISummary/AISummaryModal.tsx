@@ -14,6 +14,8 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import SendCustomPromptMutation from '../../../mutations/SendCustomPromptMutation'
 import useMutationProps from '../../../hooks/useMutationProps'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import {MenuPosition} from '../../../hooks/useCoords'
+import useTooltip from '../../../hooks/useTooltip'
 
 type Props = {
   isOpen: boolean
@@ -61,10 +63,21 @@ const AISummaryModal = (props: Props) => {
   }
   const [aiPrompt, setAIPrompt] = useState('')
   const [aiGeneratedResponse, setAIGeneratedResponse] = useState('')
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
+    MenuPosition.LOWER_CENTER
+  )
 
   useEffect(() => {
     setAIPrompt(generatePrompt())
   }, [responseStages, selectedStages])
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(aiGeneratedResponse)
+    openTooltip()
+    setTimeout(() => {
+      closeTooltip()
+    }, 2000)
+  }
 
   const toggleStageSelection = (stageId: string) => {
     setSelectedStages((prev) => {
@@ -143,8 +156,11 @@ const AISummaryModal = (props: Props) => {
               onChange={(e) => setAIGeneratedResponse(e.target.value)}
               className='mr-4 flex-grow'
             />
-            <button className='rounded bg-slate-500 px-4 py-1 text-white hover:cursor-pointer hover:bg-slate-600'>
-              Copy
+            <button
+              onClick={handleCopy}
+              className='rounded bg-slate-500 px-4 py-1 text-white hover:cursor-pointer hover:bg-slate-600'
+            >
+              <span ref={originRef}>Copy</span>
             </button>
           </div>
         </div>
@@ -156,6 +172,7 @@ const AISummaryModal = (props: Props) => {
           </FlatPrimaryButton>
         </DialogActions>
       </DialogContent>
+      {tooltipPortal('Copied!')}
     </Dialog>
   )
 }

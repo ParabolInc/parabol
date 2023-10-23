@@ -33,6 +33,11 @@ const FlagIcon = styled(Flag)({
   marginRight: 8
 })
 
+const BoltIcon = styled(Bolt)({
+  color: PALETTE.SLATE_600,
+  marginRight: 8
+})
+
 const OptionMenuItem = styled('div')({
   ...MenuItemLabelStyle,
   width: '240px'
@@ -167,7 +172,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         isDisabled={isEnded}
         label={
           <OptionMenuItem>
-            <Bolt />
+            <BoltIcon />
             <span>{'Create AI Summary'}</span>
           </OptionMenuItem>
         }
