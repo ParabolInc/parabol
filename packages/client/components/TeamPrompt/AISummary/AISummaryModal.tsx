@@ -15,10 +15,11 @@ import {DialogDescription} from '../../../ui/Dialog/DialogDescription'
 import graphql from 'babel-plugin-relay/macro'
 import {TextArea} from '../../../ui/TextArea/TextArea'
 import Checkbox from '../../Checkbox'
+import {AISummaryModal_meeting$key} from '~/__generated__/AISummaryModal_meeting.graphql'
 
 type Props = {
   isOpen: boolean
-  meetingRef: any
+  meetingRef: AISummaryModal_meeting$key
 }
 
 const AISummaryModal = (props: Props) => {
@@ -52,8 +53,9 @@ const AISummaryModal = (props: Props) => {
   const responseStages =
     meeting?.phases?.find((phase) => phase.__typename === 'TeamPromptResponsesPhase')?.stages || []
   const defaultPrompt = `Create a summary of the following Standup responses:\n\n${responseStages
-    .map((stage) => stage.response?.plaintextContent)
-    .join('\n')}`
+    .filter((stage) => stage.response?.plaintextContent)
+    .map((stage) => `${stage.teamMember.preferredName}: ${stage.response?.plaintextContent}`)
+    .join('\n\n')}`
 
   const [aiPrompt, setAIPrompt] = useState(defaultPrompt)
 
@@ -69,8 +71,8 @@ const AISummaryModal = (props: Props) => {
       <DialogContent className='z-10'>
         <DialogTitle className='mb-4'>Create AI Summary</DialogTitle>
 
-        <fieldset className='mx-0 mb-2 flex w-full flex-col p-0'>
-          <label className='mb-3 text-left text-sm font-semibold'>Select Standup Responses</label>
+        <div className='mx-0 mb-2 flex w-full flex-col p-0'>
+          <label className='mb-1 text-left text-sm font-semibold'>Select Standup Responses</label>
           <ul className='list-decimal pl-0'>
             {responseStages.map((stage) => (
               <li key={stage.id} className='mb-3 flex items-center pl-0'>
@@ -86,12 +88,12 @@ const AISummaryModal = (props: Props) => {
               </li>
             ))}
           </ul>
-        </fieldset>
+        </div>
 
-        <fieldset className='mx-0 mb-6 flex w-full flex-col p-0'>
+        <div className='mx-0 mb-2 flex w-full flex-col p-0'>
           <label className='mb-3 text-left text-sm font-semibold'>AI Prompt</label>
           <TextArea value={aiPrompt} onChange={(e) => setAIPrompt(e.target.value)} />
-        </fieldset>
+        </div>
 
         <DialogActions>
           <FlatPrimaryButton
