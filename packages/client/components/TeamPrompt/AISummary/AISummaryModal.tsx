@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react'
-import {Link} from '@mui/icons-material'
 import FlatPrimaryButton from '../../FlatPrimaryButton'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
@@ -12,7 +11,9 @@ import Checkbox from '../../Checkbox'
 import {AISummaryModal_meeting$key} from '~/__generated__/AISummaryModal_meeting.graphql'
 import getPhaseByTypename from '../../../utils/getPhaseByTypename'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import CopyLink from '../../CopyLink'
+import SendCustomPromptMutation from '../../../mutations/SendCustomPromptMutation'
+import useMutationProps from '../../../hooks/useMutationProps'
+import Ellipsis from '../../Ellipsis/Ellipsis'
 
 type Props = {
   isOpen: boolean
@@ -48,9 +49,9 @@ const AISummaryModal = (props: Props) => {
     `,
     meetingRef
   )
-
   const phase = getPhaseByTypename(meeting.phases, 'TeamPromptResponsesPhase')
   const responseStages = phase.stages || []
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const [selectedStages, setSelectedStages] = useState<string[]>([])
   const generatePrompt = () => {
     return `Create a summary of the following Standup responses:\n\n${responseStages
@@ -58,7 +59,8 @@ const AISummaryModal = (props: Props) => {
       .map((stage) => `${stage.teamMember.preferredName}: ${stage.response?.plaintextContent}`)
       .join('\n\n')}`
   }
-  const [aiPrompt, setAIPrompt] = useState(generatePrompt())
+  const [aiPrompt, setAIPrompt] = useState('')
+  const [aiGeneratedResponse, setAIGeneratedResponse] = useState('')
 
   useEffect(() => {
     setAIPrompt(generatePrompt())
@@ -82,13 +84,20 @@ const AISummaryModal = (props: Props) => {
     })
   }
 
-  const [aiGeneratedResponse, setAIGeneratedResponse] = useState(
-    'This is the AI generated summary.\nThis is the AI generated summary.This is the AI generated summary.\nThis is the AI generated summary.'
-  )
-
   const handleGenerateSummary = () => {
-    const generatedResponse = 'This is the AI generated summary.'
-    setAIGeneratedResponse(generatedResponse)
+    submitMutation()
+    SendCustomPromptMutation(
+      atmosphere,
+      {prompt: aiPrompt},
+      {
+        onError,
+        onCompleted: (res) => {
+          const {sendCustomPrompt} = res
+          setAIGeneratedResponse(sendCustomPrompt.response)
+          onCompleted(res)
+        }
+      }
+    )
   }
 
   return (
@@ -141,12 +150,9 @@ const AISummaryModal = (props: Props) => {
         </div>
 
         <DialogActions>
-          <FlatPrimaryButton
-            size='medium'
-            onClick={handleGenerateSummary}
-            // disabled={submitting || !isValid}
-          >
-            Generate Summary
+          <FlatPrimaryButton size='medium' onClick={handleGenerateSummary} disabled={submitting}>
+            {`${submitting ? `Generating` : `Generate`} Summary`}
+            {submitting && <Ellipsis />}
           </FlatPrimaryButton>
         </DialogActions>
       </DialogContent>

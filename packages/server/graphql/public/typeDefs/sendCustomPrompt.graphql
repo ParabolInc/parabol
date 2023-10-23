@@ -1,0 +1,23 @@
+extend type Mutation {
+  """
+  Send a custom prompt to OpenAI
+  """
+  sendCustomPrompt(
+    """
+    The prompt that will be sent to OpenAI
+    """
+    prompt: String!
+  ): SendCustomPromptPayload!
+}
+
+"""
+Return value for sendCustomPrompt, which could be an error
+"""
+union SendCustomPromptPayload = ErrorPayload | SendCustomPromptSuccess
+
+type SendCustomPromptSuccess {
+  """
+  The response from OpenAI
+  """
+  response: String!
+}

@@ -53,6 +53,31 @@ class OpenAIServerManager {
     }
   }
 
+  async getCustomResponse(userPrompt: string) {
+    if (!this.openAIApi) return null
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: userPrompt
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      return (response.choices[0]?.message?.content?.trim() as string) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getCustomResponse')
+      sendToSentry(error)
+      return null
+    }
+  }
+
   async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
     const textStr = Array.isArray(text) ? text.join('\n') : text
