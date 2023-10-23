@@ -79,13 +79,30 @@ class RecallAIServerManager {
         enhanced_diarization: 'true',
         id: botId
       })
-      const transcript: TranscriptBlock[] = data.map((block) => {
+
+      const transcript: TranscriptBlock[] = []
+      let currentBlock: TranscriptBlock | null = null
+
+      data.forEach((block) => {
         const {speaker, words} = block
-        return {
-          speaker,
-          words: words.map((word) => word.text).join(' ')
+        const currentWords = words.map((word) => word.text).join(' ')
+        if (currentBlock && currentBlock.speaker === speaker) {
+          currentBlock.words += '. ' + currentWords
+        } else {
+          if (currentBlock) {
+            transcript.push(currentBlock)
+          }
+          currentBlock = {
+            speaker,
+            words: currentWords
+          }
         }
       })
+
+      if (currentBlock) {
+        transcript.push(currentBlock)
+      }
+
       return transcript
     } catch (err) {
       const error =
