@@ -185,6 +185,7 @@ jobs:
         with:
           network: host
           allow: network.host
+          provenance: false
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .
           build-args: |
