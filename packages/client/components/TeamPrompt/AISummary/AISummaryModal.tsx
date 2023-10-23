@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {Link} from '@mui/icons-material'
 import FlatPrimaryButton from '../../FlatPrimaryButton'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
@@ -11,6 +12,7 @@ import Checkbox from '../../Checkbox'
 import {AISummaryModal_meeting$key} from '~/__generated__/AISummaryModal_meeting.graphql'
 import getPhaseByTypename from '../../../utils/getPhaseByTypename'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import CopyLink from '../../CopyLink'
 
 type Props = {
   isOpen: boolean
@@ -80,43 +82,68 @@ const AISummaryModal = (props: Props) => {
     })
   }
 
+  const [aiGeneratedResponse, setAIGeneratedResponse] = useState(
+    'This is the AI generated summary.\nThis is the AI generated summary.This is the AI generated summary.\nThis is the AI generated summary.'
+  )
+
+  const handleGenerateSummary = () => {
+    const generatedResponse = 'This is the AI generated summary.'
+    setAIGeneratedResponse(generatedResponse)
+  }
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
         <DialogTitle className='mb-4'>Create AI Summary</DialogTitle>
 
         <div className='mx-0 mb-2 flex w-full flex-col p-0'>
-          <label className='mb-1 text-left text-sm font-semibold'>Select Standup Responses</label>
+          <label className='text-left text-sm font-semibold'>Select Standup Responses</label>
           <ul className='list-decimal pl-0'>
-            {responseStages.map((stage) => (
-              <li key={stage.id} className='mb-3 flex items-center pl-0'>
-                <Checkbox
-                  active={selectedStages.includes(stage.id)}
-                  onClick={() => toggleStageSelection(stage.id)}
-                  className='mr-3'
-                />
-                <img
-                  src={stage.teamMember.picture}
-                  alt={stage.teamMember.preferredName}
-                  className='mr-3 h-8 w-8 rounded-full'
-                />
-                <label htmlFor={stage.id} className='cursor-pointer'>
-                  {stage.teamMember.preferredName}
-                </label>
-              </li>
-            ))}
+            {responseStages
+              .filter((stage) => stage.response?.plaintextContent)
+              .map((stage) => (
+                <li key={stage.id} className='mb-3 flex items-center pl-0'>
+                  <Checkbox
+                    active={selectedStages.includes(stage.id)}
+                    onClick={() => toggleStageSelection(stage.id)}
+                    className='mr-3'
+                  />
+                  <img
+                    src={stage.teamMember.picture}
+                    alt={stage.teamMember.preferredName}
+                    className='mr-3 h-8 w-8 rounded-full'
+                  />
+                  <label htmlFor={stage.id} className='cursor-pointer'>
+                    {stage.teamMember.preferredName}
+                  </label>
+                </li>
+              ))}
           </ul>
         </div>
 
         <div className='mx-0 mb-2 flex w-full flex-col p-0'>
-          <label className='mb-3 text-left text-sm font-semibold'>AI Prompt</label>
+          <label className='mb-1 text-left text-sm font-semibold'>AI Prompt</label>
           <TextArea value={aiPrompt} onChange={(e) => setAIPrompt(e.target.value)} />
+        </div>
+
+        <div className='mx-0 mt-8 mb-4 flex w-full flex-col p-0'>
+          <label className='mb-1 text-left text-sm font-semibold'>AI Generated Summary</label>
+          <div className='flex items-center justify-between'>
+            <TextArea
+              value={aiGeneratedResponse}
+              onChange={(e) => setAIGeneratedResponse(e.target.value)}
+              className='mr-4 flex-grow'
+            />
+            <button className='rounded bg-slate-500 px-4 py-1 text-white hover:cursor-pointer hover:bg-slate-600'>
+              Copy
+            </button>
+          </div>
         </div>
 
         <DialogActions>
           <FlatPrimaryButton
             size='medium'
-            // onClick={handleAddTeam}
+            onClick={handleGenerateSummary}
             // disabled={submitting || !isValid}
           >
             Generate Summary
