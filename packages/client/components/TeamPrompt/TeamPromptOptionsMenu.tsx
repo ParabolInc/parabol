@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import {Flag, Link as MuiLink, OpenInNew, Replay} from '@mui/icons-material'
+import {Flag, Link as MuiLink, OpenInNew, Replay, Bolt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {Link} from 'react-router-dom'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -90,6 +90,14 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
 
+  const handleClickAISummary = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      meetingProxy.setValue(true, 'showAISummaryModal')
+    })
+  }
+
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
       {hasRecurrenceEnabled && (
@@ -153,6 +161,17 @@ const TeamPromptOptionsMenu = (props: Props) => {
             meetingId: meetingId
           })
         }}
+      />
+      <MenuItem
+        key='end'
+        isDisabled={isEnded}
+        label={
+          <OptionMenuItem>
+            <Bolt />
+            <span>{'Create AI Summary'}</span>
+          </OptionMenuItem>
+        }
+        onClick={handleClickAISummary}
       />
       <MenuItem
         key='end'

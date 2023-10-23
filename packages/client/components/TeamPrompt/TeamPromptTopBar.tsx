@@ -20,6 +20,7 @@ import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import IconLabel from '../IconLabel'
 import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import AISummaryModal from './AISummary/AISummaryModal'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',
@@ -101,6 +102,7 @@ const TeamPromptTopBar = (props: Props) => {
         showWorkSidebar
         facilitatorUserId
         localStageId
+        showAISummaryModal
         prevMeeting {
           id
         }
@@ -112,6 +114,7 @@ const TeamPromptTopBar = (props: Props) => {
           cancelledAt
           recurrenceRule
         }
+        ...AISummaryModal_meeting
         ...TeamPromptOptions_meeting
         ...NewMeetingAvatarGroup_meeting
         ...TeamPromptMeetingStatus_meeting
@@ -133,7 +136,8 @@ const TeamPromptTopBar = (props: Props) => {
     facilitatorUserId,
     meetingSeries,
     prevMeeting,
-    nextMeeting
+    nextMeeting,
+    showAISummaryModal
   } = meeting
   const isFacilitator = viewerId === facilitatorUserId
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
@@ -249,6 +253,7 @@ const TeamPromptTopBar = (props: Props) => {
             closeModal={toggleEndRecurringMeetingModal}
           />
         )}
+        <AISummaryModal isOpen={showAISummaryModal} meetingRef={meeting} />
       </MeetingTopBarStyles>
       <div className='block flex justify-between border-y border-solid border-slate-300 px-4 py-2 md:hidden'>
         <div className='my-1'>
