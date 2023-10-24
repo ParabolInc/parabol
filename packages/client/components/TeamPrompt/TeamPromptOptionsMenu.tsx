@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import {Flag, Link as MuiLink, OpenInNew, Replay} from '@mui/icons-material'
+import {Flag, Link as MuiLink, OpenInNew, Replay, Bolt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {Link} from 'react-router-dom'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -29,6 +29,11 @@ const ReplayIcon = styled(Replay)({
 })
 
 const FlagIcon = styled(Flag)({
+  color: PALETTE.SLATE_600,
+  marginRight: 8
+})
+
+const BoltIcon = styled(Bolt)({
   color: PALETTE.SLATE_600,
   marginRight: 8
 })
@@ -62,6 +67,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
         team {
           id
         }
+        organization {
+          featureFlags {
+            noAISummary
+          }
+        }
         meetingSeries {
           id
           recurrenceRule
@@ -76,11 +86,12 @@ const TeamPromptOptionsMenu = (props: Props) => {
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, team} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team, organization} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
 
+  const noAIFlag = organization.featureFlags?.noAISummary
   const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   const hasActiveMeetings = !!meetingSeries?.activeMeetings?.length
@@ -89,6 +100,14 @@ const TeamPromptOptionsMenu = (props: Props) => {
   // it is somewhat arbitrary and might change in the future
   const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
+
+  const handleClickAISummary = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      meetingProxy.setValue(true, 'showAISummaryModal')
+    })
+  }
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
@@ -154,6 +173,19 @@ const TeamPromptOptionsMenu = (props: Props) => {
           })
         }}
       />
+      {!noAIFlag && (
+        <MenuItem
+          key='end'
+          isDisabled={isEnded}
+          label={
+            <OptionMenuItem>
+              <BoltIcon />
+              <span>{'Create AI Summary'}</span>
+            </OptionMenuItem>
+          }
+          onClick={handleClickAISummary}
+        />
+      )}
       <MenuItem
         key='end'
         isDisabled={isEnded}

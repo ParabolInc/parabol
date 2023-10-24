@@ -45,6 +45,7 @@ extend type TeamPromptMeeting {
   localStageId: String
   isRightDrawerOpen: Boolean!
   showWorkSidebar: Boolean!
+  showAISummaryModal: Boolean!
 }
 
 extend type Team {
