@@ -42,18 +42,20 @@ jobs:
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           DOCKERIZE=false
           if [ $IS_RELEASE = true ]; then
-            echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}" >> $GITHUB_ENV
             DOCKERIZE=true
+            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}
           elif [ $IS_MANUAL_BUILD = true ]; then
             DOCKERIZE=true
+            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           fi
 
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
 
+          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
           echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
           echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
+          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
 
       - name: Setup Node
         uses: actions/setup-node@v3
