@@ -16,7 +16,7 @@ interface Input {
   isStarter?: boolean
   isFree?: boolean
   mainCategory: string
-  illustrationUrl: string
+  illustrationUrl?: string | null
 }
 
 export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
@@ -34,7 +34,7 @@ export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
   isStarter: boolean
   isFree: boolean
   mainCategory: string
-  illustrationUrl: string
+  illustrationUrl: string | null
   hideStartingAt: Date | null
   hideEndingAt: Date | null
 
@@ -67,7 +67,7 @@ export default class MeetingTemplate implements Insertable<MeetingTemplateDB> {
     this.isStarter = isStarter || false
     this.isFree = isFree || false
     this.mainCategory = mainCategory
-    this.illustrationUrl = illustrationUrl
+    this.illustrationUrl = illustrationUrl || null
     this.hideStartingAt = null
     this.hideEndingAt = null
   }

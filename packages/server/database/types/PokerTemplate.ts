@@ -7,7 +7,7 @@ interface Input {
   orgId: string
   parentTemplateId?: string
   lastUsedAt?: Date | null
-  illustrationUrl: string
+  illustrationUrl?: string | null
   mainCategory: string
 }
 

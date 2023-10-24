@@ -10,7 +10,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
-import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
+import {getIllustrationUrlForActivity} from '../public/types/helpers/getIllustrationUrlForActivity'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -83,7 +83,8 @@ const addPokerTemplate = {
         orgId: viewerTeam.orgId,
         parentTemplateId,
         mainCategory: parentTemplate.mainCategory,
-        illustrationUrl: parentTemplate.illustrationUrl
+        illustrationUrl:
+          parentTemplate.illustrationUrl ?? getIllustrationUrlForActivity(parentTemplateId)
       })
 
       const dimensions = await dataLoader
@@ -114,8 +115,7 @@ const addPokerTemplate = {
         name: '*New Template',
         teamId,
         orgId,
-        mainCategory: 'estimation',
-        illustrationUrl: getTemplateIllustrationUrl('estimatedEffortTemplate.png')
+        mainCategory: 'estimation'
       })
       const templateId = newTemplate.id
       const newDimension = new TemplateDimension({

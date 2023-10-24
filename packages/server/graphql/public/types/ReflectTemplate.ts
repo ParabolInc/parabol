@@ -4,6 +4,7 @@ import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {ReflectTemplateResolvers} from '../resolverTypes'
+import {getIllustrationUrlForActivity} from './helpers/getIllustrationUrlForActivity'
 
 const POPULAR_RETROS = [
   'workingStuckTemplate',
@@ -30,6 +31,12 @@ const getLastUsedAtForTeams = async (
 
 const ReflectTemplate: ReflectTemplateResolvers = {
   __isTypeOf: ({type}) => type === 'retrospective',
+  illustrationUrl: async ({id: templateId, illustrationUrl}) => {
+    if (illustrationUrl) {
+      return illustrationUrl
+    }
+    return getIllustrationUrlForActivity(templateId)
+  },
   prompts: async ({id: templateId}, _args, {dataLoader}) => {
     const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
     return prompts

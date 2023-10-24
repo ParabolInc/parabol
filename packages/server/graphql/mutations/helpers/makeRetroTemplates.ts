@@ -1,6 +1,5 @@
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../../database/types/RetrospectivePrompt'
-import getTemplateIllustrationUrl from './getTemplateIllustrationUrl'
 
 interface TemplatePrompt {
   description: string
@@ -21,7 +20,6 @@ const makeRetroTemplates = (teamId: string, orgId: string, templateObj: Template
       name: templateName,
       teamId,
       orgId,
-      illustrationUrl: getTemplateIllustrationUrl('gladSadMadTemplate.png'),
       mainCategory: 'retrospective'
     })
 

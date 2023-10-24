@@ -12,6 +12,7 @@ import {GQLContext} from '../graphql'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
+import {getIllustrationUrlForActivity} from '../public/types/helpers/getIllustrationUrlForActivity'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -83,7 +84,8 @@ const addReflectTemplate = {
         teamId,
         orgId: viewerTeam.orgId,
         parentTemplateId,
-        illustrationUrl: parentTemplate.illustrationUrl,
+        illustrationUrl:
+          parentTemplate.illustrationUrl ?? getIllustrationUrlForActivity(parentTemplateId),
         mainCategory: parentTemplate.mainCategory
       })
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(parentTemplate.id)
