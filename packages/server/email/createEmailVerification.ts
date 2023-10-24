@@ -12,14 +12,19 @@ type SignUpWithPasswordMutationVariables = {
   password: string
   invitationToken?: string | null
   segmentId?: string | null
+  redirectTo?: string | null
 }
 
 const createEmailVerification = async (props: SignUpWithPasswordMutationVariables) => {
-  const {password, invitationToken, segmentId} = props
+  const {password, invitationToken, segmentId, redirectTo} = props
   const email = props.email.toLowerCase().trim()
   const tokenBuffer = crypto.randomBytes(48)
   const verifiedEmailToken = base64url.encode(tokenBuffer)
-  const {subject, body, html} = emailVerificationEmailCreator({verifiedEmailToken, invitationToken})
+  const {subject, body, html} = emailVerificationEmailCreator({
+    verifiedEmailToken,
+    invitationToken,
+    redirectTo
+  })
   const success = await getMailManager().sendEmail({
     to: email,
     subject,

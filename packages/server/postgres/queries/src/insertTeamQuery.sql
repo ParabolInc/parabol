@@ -3,6 +3,7 @@
 */
 INSERT INTO "Team" (
   "id",
+  "autoJoin",
   "name",
   "createdAt",
   "createdBy",
@@ -16,6 +17,7 @@ INSERT INTO "Team" (
   "updatedAt"
 ) VALUES (
   :id,
+  :autoJoin,
   :name,
   :createdAt,
   :createdBy,

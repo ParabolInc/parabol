@@ -30,7 +30,6 @@ const Organization: OrganizationResolvers = {
     context: GQLContext
   ) => {
     const {authToken} = context
-
     const viewerId = getUserId(authToken)
 
     const existingUser = await getUserByEmail(email)

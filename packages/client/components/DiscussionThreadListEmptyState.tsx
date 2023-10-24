@@ -132,14 +132,14 @@ const DiscussionThreadListEmptyState = (props: Props) => {
       }
     }
   })
-  if (!meeting) return null
-  const {id: meetingId, videoMeetingURL} = meeting
+  const videoMeetingURL = meeting?.videoMeetingURL
+  const meetingId = meeting?.id
   const message = getMessage(allowTasks, !!videoMeetingURL, !!isReadOnly, showTranscription)
 
   const {error: fieldError, value: urlValue} = fields.url
 
   const handleSubmit = () => {
-    if (submitting) return
+    if (submitting || !meetingId) return
     const {url} = validateField()
     if (url.error) return
     submitMutation()

@@ -5,7 +5,7 @@ import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {TaskServiceEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
+import {ServiceEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -38,7 +38,7 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
-  service: TaskServiceEnum
+  service: ServiceEnum
   defaultInput?: string
 }
 

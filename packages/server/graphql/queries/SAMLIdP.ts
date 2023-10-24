@@ -8,7 +8,7 @@ export interface SSOParams {
 
 export interface SSORelayState {
   isInvited?: boolean
-  metadata?: string
+  metadataURL?: string
 }
 
 const SAMLIdP = {

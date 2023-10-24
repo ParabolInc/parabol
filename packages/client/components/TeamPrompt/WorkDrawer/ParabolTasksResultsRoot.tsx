@@ -6,7 +6,7 @@ import parabolTasksResultsQuery, {
 } from '../../../__generated__/ParabolTasksResultsQuery.graphql'
 import ErrorBoundary from '../../ErrorBoundary'
 import ParabolTasksResults from './ParabolTasksResults'
-import {renderLoader} from '~/utils/relay/renderLoader'
+import {Loader} from '~/utils/relay/renderLoader'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 
 interface Props {
@@ -21,7 +21,7 @@ const ParabolTasksResultsRoot = (props: Props) => {
   })
   return (
     <ErrorBoundary>
-      <Suspense fallback={renderLoader()}>
+      <Suspense fallback={<Loader />}>
         {queryRef && <ParabolTasksResults queryRef={queryRef} selectedStatus={selectedStatus} />}
       </Suspense>
     </ErrorBoundary>

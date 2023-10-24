@@ -19,6 +19,7 @@ import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import IconLabel from '../IconLabel'
+import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',
@@ -95,9 +96,11 @@ const TeamPromptTopBar = (props: Props) => {
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         id
         name
+        teamId
         isRightDrawerOpen
         showWorkSidebar
         facilitatorUserId
+        localStageId
         prevMeeting {
           id
         }
@@ -137,12 +140,18 @@ const TeamPromptTopBar = (props: Props) => {
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
   const onOpenWorkSidebar = () => {
-    if (meeting.isRightDrawerOpen && meeting.showWorkSidebar) {
-      // If we're selecting a discussion that's already open, just close the drawer.
+    if (meeting.isRightDrawerOpen && meeting.showWorkSidebar && !meeting.localStageId) {
+      // If we're clicking on 'Your Work' when it's already open, just close the drawer.
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(false, 'isRightDrawerOpen')
+
+        SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Closed', {
+          teamId: meeting.teamId,
+          meetingId: meeting.id,
+          source: 'top bar'
+        })
       })
     } else {
       commitLocalUpdate(atmosphere, (store) => {
@@ -151,6 +160,12 @@ const TeamPromptTopBar = (props: Props) => {
         meetingProxy.setValue(null, 'localStageId')
         meetingProxy.setValue(true, 'showWorkSidebar')
         meetingProxy.setValue(true, 'isRightDrawerOpen')
+
+        SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Opened', {
+          teamId: meeting.teamId,
+          meetingId: meeting.id,
+          source: 'top bar'
+        })
       })
     }
   }

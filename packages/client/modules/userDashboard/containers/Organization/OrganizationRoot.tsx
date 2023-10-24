@@ -1,7 +1,7 @@
 import React, {Suspense} from 'react'
 import {RouteComponentProps} from 'react-router'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
-import {renderLoader} from '../../../../utils/relay/renderLoader'
+import {Loader} from '../../../../utils/relay/renderLoader'
 import organizationQuery, {
   OrganizationQuery
 } from '../../../../__generated__/OrganizationQuery.graphql'
@@ -16,9 +16,7 @@ const OrganizationRoot = (props: Props) => {
   } = match
   const queryRef = useQueryLoaderNow<OrganizationQuery>(organizationQuery, {orgId})
   return (
-    <Suspense fallback={renderLoader({Loader: <div />})}>
-      {queryRef && <Organization queryRef={queryRef} />}
-    </Suspense>
+    <Suspense fallback={<Loader />}>{queryRef && <Organization queryRef={queryRef} />}</Suspense>
   )
 }
 

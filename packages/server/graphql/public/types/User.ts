@@ -1,3 +1,4 @@
+import base64url from 'base64url'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {isNotNull} from 'parabol-client/utils/predicates'
@@ -20,7 +21,7 @@ import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
-import base64url from 'base64url'
+import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 
 declare const __PRODUCTION__: string
 
@@ -177,14 +178,16 @@ const User: UserResolvers = {
 
     return connectionFromTemplateArray(allActivities, first, after)
   },
-  parseSAMLMetadata: async (_source, {metadata, domain}) => {
+  parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
+    const metadata = await getSSOMetadataFromURL(metadataURL)
+    if (metadata instanceof Error) return {error: {message: metadata.message}}
     const baseUrl = getSignOnURL(metadata, domain)
     if (baseUrl instanceof Error) {
       return {error: {message: baseUrl.message}}
     }
-    // append the new metadata to the RelayState
+    // append the new metadataURL to the RelayState
     // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
-    const relayState = base64url.encode(JSON.stringify({metadata}))
+    const relayState = base64url.encode(JSON.stringify({metadataURL}))
     const urlObj = new URL(baseUrl)
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}

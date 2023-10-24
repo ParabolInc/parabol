@@ -175,7 +175,7 @@ jobs:
           POSTGRES_DB: "parabol-saas"
           POSTGRES_HOST: "localhost"
           POSTGRES_PORT: "5432"
-      - image: redis:6.2.6-alpine
+      - image: redis:7.0-alpine
         environment:
           TERM: xterm
     environment:

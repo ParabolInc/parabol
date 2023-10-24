@@ -13,6 +13,7 @@ enum UserFlagEnum {
   retrosInDisguise
   gcal
   adHocTeams
+  noTemplateLimit
 }
 
 """
@@ -30,6 +31,7 @@ type UserFeatureFlags {
   retrosInDisguise: Boolean!
   gcal: Boolean!
   adHocTeams: Boolean!
+  noTemplateLimit: Boolean!
 }
 
 extend type Mutation {

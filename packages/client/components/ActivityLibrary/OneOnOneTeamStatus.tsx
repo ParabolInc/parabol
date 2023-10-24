@@ -1,7 +1,7 @@
 import React, {Suspense} from 'react'
 import {OneOnOneTeamStatusComponentQuery} from '../../__generated__/OneOnOneTeamStatusComponentQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
-import {renderLoader} from '../../utils/relay/renderLoader'
+import {Loader} from '../../utils/relay/renderLoader'
 import {LoaderSize} from '../../types/constEnums'
 import OneOnOneTeamStatusComponent, {
   oneOnOneTeamStatusComponentQuery
@@ -19,7 +19,7 @@ const OneOnOneTeamStatus = ({email, orgId, name}: Props) => {
     {email, orgId}
   )
   return (
-    <Suspense fallback={renderLoader({size: LoaderSize.MENU})}>
+    <Suspense fallback={<Loader size={LoaderSize.MENU} />}>
       {queryRef && <OneOnOneTeamStatusComponent queryRef={queryRef} name={name} />}
     </Suspense>
   )

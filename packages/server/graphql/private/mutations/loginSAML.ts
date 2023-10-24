@@ -9,14 +9,21 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
+import standardError from '../../../utils/standardError'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
+
+const CLAIM_SPEC = {
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'email',
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'displayname'
+}
 
 const getRelayState = (body: querystring.ParsedUrlQuery) => {
   let relayState = {} as SSORelayState
@@ -38,7 +45,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedName = samlName.trim().toLowerCase()
   const body = querystring.parse(queryString)
   const relayState = getRelayState(body)
-  const {isInvited, metadata: newMetadata} = relayState
+  const {isInvited, metadataURL: newMetadataURL} = relayState
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
 
@@ -49,6 +56,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       }
     }
   const {domains, metadata: existingMetadata} = doc
+  const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
+  if (newMetadata instanceof Error) {
+    return standardError(newMetadata)
+  }
   const metadata = newMetadata || existingMetadata
   if (!metadata) {
     return {error: {message: 'No metadata found! Please contact customer service'}}
@@ -58,9 +69,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   try {
     loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
   } catch (e) {
-    const message =
-      e instanceof Error ? e.message : typeof e === 'string' ? e : 'parseLoginResponse failed'
-    return {error: {message}}
+    if (e instanceof Error) {
+      return standardError(e)
+    }
+    const message = typeof e === 'string' ? e : 'parseLoginResponse failed'
+    return standardError(new Error(message))
   }
   if (!loginResponse) {
     return {error: {message: 'Error with query from identity provider'}}
@@ -68,17 +81,23 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
 
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
-  const caseInsensitiveAttributes = {} as Record<string, string | undefined>
-  Object.keys(attributes).forEach((key) => {
-    const lowercaseKey = key.toLowerCase()
-    const value = attributes[key]
-    caseInsensitiveAttributes[lowercaseKey] = String(value)
-  })
-  const {email: inputEmail, emailaddress, displayname} = caseInsensitiveAttributes
+  const normalizedAttributes = Object.fromEntries(
+    Object.entries(attributes).map(([key, value]) => {
+      const normalizedKey = CLAIM_SPEC[key as keyof typeof CLAIM_SPEC] ?? key.toLowerCase()
+      return [normalizedKey, String(value)]
+    })
+  )
+  const {email: inputEmail, emailaddress, displayname} = normalizedAttributes
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
-    return {error: {message: 'Email attribute was not included in SAML response'}}
+    return {
+      error: {
+        message: `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(
+          attributes
+        ).join(', ')}`
+      }
+    }
   }
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     return {error: {message: 'Email is too long'}}
@@ -94,11 +113,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     // Revalidate it & persist to DB
     const url = getSignOnURL(metadata, normalizedName)
     if (url instanceof Error) {
-      return {error: {message: url.message}}
+      return standardError(url)
     }
     await pg
       .updateTable('SAML')
-      .set({metadata: newMetadata, url})
+      .set({metadata: newMetadata, metadataURL: newMetadataURL, url})
       .where('id', '=', normalizedName)
       .execute()
   }
