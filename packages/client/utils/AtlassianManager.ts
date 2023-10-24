@@ -145,7 +145,7 @@ type JiraPageOfChangelogs = any
 type JiraVersionedRepresentations = any
 type JiraIncludedFields = any
 
-interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
+interface JiraIssueBean<F = {description: any; summary: string; created: string}, R = unknown> {
   expand: string
   id: string
   self: string
@@ -164,7 +164,7 @@ interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
 }
 
 export type JiraIssueRaw = JiraIssueBean<
-  {description: string; summary: string; issuetype: {id: string}},
+  {description: string; summary: string; issuetype: {id: string; iconUrl: string}; created: string},
   {description: string}
 >
 
@@ -198,6 +198,7 @@ export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 export interface JiraGQLFields {
   issuetype: {
     id: string
+    iconUrl: string
   }
   project?: {
     simplified: boolean
@@ -207,8 +208,16 @@ export interface JiraGQLFields {
   descriptionHTML: string
   issueKey: string
   summary: string
+  lastUpdated: string
 }
-interface JiraSearchResponse<T = {summary: string; description: string; issuetype: {id: string}}> {
+interface JiraSearchResponse<
+  T = {
+    summary: string
+    description: string
+    issuetype: {id: string; iconUrl: string}
+    created: string
+  }
+> {
   expand: string
   startAt: number
   maxResults: number
@@ -221,6 +230,11 @@ interface JiraSearchResponse<T = {summary: string; description: string; issuetyp
     fields: T
     renderedFields: {
       description: string
+    }
+    changelog: {
+      histories: {
+        created: string
+      }[]
     }
   }[]
 }
@@ -581,8 +595,8 @@ export default abstract class AtlassianManager {
   ) {
     const reqFields = extraFieldIds.includes('*all')
       ? '*all'
-      : ['summary', 'description', 'issuetype', ...extraFieldIds].join(',')
-    const expand = ['renderedFields', 'editmeta', 'names', ...extraExpand].join(',')
+      : ['summary', 'description', 'issuetype', 'created', ...extraFieldIds].join(',')
+    const expand = ['renderedFields', 'changelog', 'editmeta', 'names', ...extraExpand].join(',')
     const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
@@ -594,7 +608,8 @@ export default abstract class AtlassianManager {
         descriptionHTML: issueRes.renderedFields.description,
         cloudId,
         issueKey,
-        id: JiraIssueId.join(cloudId, issueKey)
+        id: JiraIssueId.join(cloudId, issueKey),
+        lastUpdated: issueRes.changelog.histories[0]?.created ?? issueRes.fields.created
       }
     }
   }
@@ -602,7 +617,9 @@ export default abstract class AtlassianManager {
   async getIssues(
     queryString: string | null,
     isJQL: boolean,
-    projectFiltersByCloudId: {[cloudId: string]: string[]}
+    projectFiltersByCloudId: {[cloudId: string]: string[]},
+    maxResults: number,
+    startAt?: number
   ) {
     const allIssues = [] as JiraGQLFields[]
     let firstError: Error | undefined
@@ -611,9 +628,10 @@ export default abstract class AtlassianManager {
       const jql = composeJQL(queryString, isJQL, projectKeys)
       const payload = {
         jql,
-        maxResults: 100,
-        fields: ['summary', 'description', 'issuetype'],
-        expand: ['renderedFields']
+        maxResults,
+        startAt,
+        fields: ['summary', 'description', 'issuetype', 'created'],
+        expand: ['renderedFields,changelog']
       }
 
       const res = await this.post<JiraSearchResponse>(url, payload)
@@ -627,8 +645,8 @@ export default abstract class AtlassianManager {
         return
       }
       const issues = res.issues.map((issue) => {
-        const {key: issueKey, fields, renderedFields} = issue
-        const {description, summary, issuetype} = fields
+        const {key: issueKey, fields, renderedFields, changelog} = issue
+        const {description, summary, issuetype, created} = fields
         const {description: descriptionHTML} = renderedFields
         return {
           issuetype,
@@ -636,7 +654,8 @@ export default abstract class AtlassianManager {
           description,
           descriptionHTML,
           cloudId,
-          issueKey
+          issueKey,
+          lastUpdated: changelog.histories[0]?.created ?? created
         }
       })
       allIssues.push(...issues)

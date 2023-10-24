@@ -15,21 +15,17 @@ import generateStandupMeetingSummary from './generateStandupMeetingSummary'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import gatherInsights from './gatherInsights'
 
-const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
+const summarizeTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
   const {dataLoader} = context
   const r = await getRethink()
 
-  const [summary, insights] = await Promise.all([
-    generateStandupMeetingSummary(meeting, dataLoader),
-    gatherInsights(meeting, dataLoader)
-  ])
+  const summary = await generateStandupMeetingSummary(meeting, dataLoader)
 
   await r
     .table('NewMeeting')
     .get(meeting.id)
     .update({
-      summary,
-      ...insights
+      summary
     })
     .run()
 
@@ -37,7 +33,6 @@ const finishTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalCon
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
   updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
-  updateTeamInsights(meeting.teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meeting.id, meeting.teamId)
   const data = {meetingId: meeting.id}
@@ -68,12 +63,14 @@ const safeEndTeamPrompt = async ({
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
   // RESOLUTION
+  const insights = await gatherInsights(meeting, dataLoader)
   const completedTeamPrompt = (await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
       {
-        endedAt: now
+        endedAt: now,
+        ...insights
       },
       {returnChanges: true}
     )('changes')(0)('new_val')
@@ -90,7 +87,8 @@ const safeEndTeamPrompt = async ({
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    getTeamPromptResponsesByMeetingId(meetingId)
+    getTeamPromptResponsesByMeetingId(meetingId),
+    updateTeamInsights(teamId, dataLoader)
   ])
 
   const events = teamMembers.map(
@@ -104,7 +102,7 @@ const safeEndTeamPrompt = async ({
   )
   const timelineEventId = events[0]!.id
   await r.table('TimelineEvent').insert(events).run()
-  finishTeamPrompt(meeting, context)
+  summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
   checkTeamsLimit(team.orgId, dataLoader)
   dataLoader.get('newMeetings').clear(meetingId)

@@ -8,6 +8,11 @@ type Team {
   id: ID!
 
   """
+  Whether or not new users with the same domain and a verified email should auto-join the team
+  """
+  autoJoin: Boolean!
+
+  """
   The datetime the team was created
   """
   createdAt: DateTime!

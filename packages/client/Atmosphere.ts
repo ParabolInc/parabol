@@ -270,6 +270,8 @@ export default class Atmosphere extends Environment {
           'Cannot establish connection. Behind a firewall? Reach out for support: love@parabol.co'
       })
       console.error('Cannot connect!')
+      // this may be reached if the auth token was deemed invalid by the server
+      this.setAuthToken(null)
       return
     }
     this.transport = new GQLTrebuchetClient(trebuchet)

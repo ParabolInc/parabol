@@ -4,7 +4,6 @@ on: [push]
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
-
 jobs:
   build:
     runs-on: ubuntu-8cores
@@ -13,7 +12,7 @@ jobs:
       id-token: "write"
     services:
       postgres:
-        image: postgres:12.15-alpine
+        image: postgres:15.4
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
@@ -28,7 +27,7 @@ jobs:
           - 28015:28015
           - 29015:29015
       redis:
-        image: redis:6.2.6
+        image: redis:7.0-alpine
         ports:
           - 6379:6379
     steps:
@@ -37,24 +36,26 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
+          IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') }}
+          IS_MANUAL_BUILD=${{ startsWith(github.event.head_commit.message, 'dockerize') }}
 
-          if [ ${{github.ref_type}} = "tag" ]; then
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL }}
-          else
+          DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
+          DOCKERIZE=false
+          if [ $IS_RELEASE = true ]; then
+            DOCKERIZE=true
+            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}
+          elif [ $IS_MANUAL_BUILD = true ]; then
+            DOCKERIZE=true
             DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           fi
 
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-
-          GITHUB_REF_NAME_NORMALIZED=$(echo ${{github.ref_name}} | tr / -)
-          echo "GITHUB_REF_NAME_NORMALIZED=${GITHUB_REF_NAME_NORMALIZED}" >> $GITHUB_ENV
-
-          DOCKERIZE=${{ github.ref_type == 'tag' || contains(fromJSON('["master", "release", "staging", "production"]'), github.ref_name) || startsWith(github.event.head_commit.message, 'dockerize')}}
-          echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
-
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+
+          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+          echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
+          echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
+          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -180,6 +181,7 @@ jobs:
         with:
           network: host
           allow: network.host
+          provenance: false
           file: ${{ env.PARABOL_DOCKERFILE }}
           context: .
           build-args: |
@@ -188,9 +190,9 @@ jobs:
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
-            "${{ env.DOCKER_REPOSITORY_FOR_REF }}:${{ env.GITHUB_REF_NAME_NORMALIZED }}"
+            "${{ env.DOCKER_REPOSITORY_FOR_REF }}:v${{ env.ACTION_VERSION }}"
       - name: Push Artifacts to Sentry
-        if: github.ref_type == 'tag'
+        if: env.IS_RELEASE == 'true'
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: "${{secrets.SENTRY_AUTH_TOKEN}}"
@@ -201,12 +203,11 @@ jobs:
           sourcemaps: "./build"
           version: ${{env.ACTION_VERSION}}
       - name: Push Artifacts to Datadog
-        if: github.ref_type == 'tag'
+        if: env.IS_RELEASE == 'true'
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
           CDN_BUILD_URL: "https://action-files.parabol.co/production/build/"
         run: |
-          yarn add @datadog/datadog-ci -W
           yarn datadog-ci sourcemaps upload ./build \
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \

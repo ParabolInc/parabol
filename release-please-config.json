@@ -1,0 +1,74 @@
+{
+  "extra-label": "release",
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "pull-request-title-pattern": "chore${scope}: release v${version}",
+      "include-component-in-tag": false
+    }
+  },
+  "changelog-sections": [
+    {
+      "type": "feat",
+      "section": "Added",
+      "hidden": false
+    },
+    {
+      "type": "fix",
+      "section": "Fixed",
+      "hidden": false
+    },
+    {
+      "type": "chore",
+      "section": "Changed",
+      "hidden": false
+    }
+  ],
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "packages/chronos/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/chronos/package.json",
+      "jsonpath": "$.dependencies['parabol-server']"
+    },
+    {
+      "type": "json",
+      "path": "packages/client/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/gql-executor/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/gql-executor/package.json",
+      "jsonpath": "$.dependencies['parabol-client']"
+    },
+    {
+      "type": "json",
+      "path": "packages/gql-executor/package.json",
+      "jsonpath": "$.dependencies['parabol-server']"
+    },
+    {
+      "type": "json",
+      "path": "packages/integration-tests/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/server/package.json",
+      "jsonpath": "$.version"
+    },
+    {
+      "type": "json",
+      "path": "packages/server/package.json",
+      "jsonpath": "$.dependencies['parabol-client']"
+    }
+  ]
+}

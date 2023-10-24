@@ -11,7 +11,6 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
-          "VerifyDomainSuccess": "./types/VerifyDomainSuccess#VerifyDomainSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
@@ -25,6 +24,7 @@
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "ProcessRecurrenceSuccess": "./types/ProcessRecurrenceSuccess#ProcessRecurrenceSuccessSource",
           "RemoveAuthIdentitySuccess": "./types/RemoveAuthIdentitySuccess#RemoveAuthIdentitySuccessSource",
+          "SAML": "./types/SAML#SAMLSource",
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
@@ -32,7 +32,7 @@
           "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
           "UpgradeToTeamTierSuccess": "./mutations/upgradeToTeamTier#UpgradeToTeamTierSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
-          "SAML": "./types/SAML#SAMLSource"
+          "VerifyDomainSuccess": "./types/VerifyDomainSuccess#VerifyDomainSuccessSource"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],
@@ -93,6 +93,7 @@
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
+          "SAML": "./types/SAML#SAMLSource",
           "RetrospectiveMeetingSettings": "../../database/types/MeetingSettingsRetrospective#default",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
@@ -100,7 +101,6 @@
           "ShareTopicSuccess": "./types/ShareTopicSuccess#ShareTopicSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
-          "SAML": "./types/SAML#SAMLSource",
           "Task": "../../database/types/Task#default",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
@@ -114,6 +114,7 @@
           "TemplateDimension": "../../database/types/TemplateDimension#default",
           "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
           "ToggleSummaryEmailSuccess": "./types/ToggleSummaryEmailSuccess#ToggleSummaryEmailSuccessSource",
+          "UpdateAutoJoinSuccess": "./types/UpdateAutoJoinSuccess#UpdateAutoJoinSuccessSource",
           "TopRetroTemplate": "./types/TopRetroTemplate#TopRetroTemplateSource",
           "UpdateCreditCardSuccess": "./types/UpdateCreditCardSuccess#UpdateCreditCardSuccessSource",
           "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
