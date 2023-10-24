@@ -50,6 +50,7 @@ jobs:
 
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
 
+          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
           echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
           echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV

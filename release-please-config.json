@@ -3,7 +3,7 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "pull-request-title-pattern": "chore${scope}: release ${version}",
+      "pull-request-title-pattern": "chore${scope}: release v${version}",
       "include-component-in-tag": false
     }
   },
