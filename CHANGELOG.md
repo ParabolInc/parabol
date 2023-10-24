@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.0.1](https://github.com/ParabolInc/parabol/compare/v7.0.0...v7.0.1) (2023-10-24)
+
+
+### Fixed
+
+* await last migration ([#9037](https://github.com/ParabolInc/parabol/issues/9037)) ([8a3003d](https://github.com/ParabolInc/parabol/commit/8a3003d9cbaeb2c7c0c70f22e28a2bd8fc87b2f3))
+
+
+### Changed
+
+* **release:** release v7.0.0 ([576c946](https://github.com/ParabolInc/parabol/commit/576c946f23c6067ae158bd4a8be559271c19237a))
+* **release:** release v7.0.0 (manual override) ([a197466](https://github.com/ParabolInc/parabol/commit/a1974661b35054b266fcebfd7d4a1002b3f34993))
+* **release:** release v7.0.0 (manual push) ([41db960](https://github.com/ParabolInc/parabol/commit/41db960f5331d275be97fb30a772bde7d549e578))
+
 ## [7.0.0](https://github.com/ParabolInc/parabol/compare/v6.125.0...v7.0.0) (2023-10-23)
 
 
