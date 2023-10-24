@@ -1,13 +1,10 @@
 /* eslint-env jest */
 import {MasterPool, r} from 'rethinkdb-ts'
 import getRedis from '../../utils/getRedis'
-import sleep from 'parabol-client/utils/sleep'
 import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
 import isUserVerified from '../../utils/isUserVerified'
-import {getEligibleOrgIdsByDomain} from '../isRequestToJoinDomainAllowed'
 import generateUID from '../../generateUID'
-import {getVerifiedOrgIds} from '../customLoaderMakers'
 import {getVerifiedOrgIds} from '../customLoaderMakers'
 jest.mock('../../database/rethinkDriver')
 jest.mock('../../utils/isUserVerified')
