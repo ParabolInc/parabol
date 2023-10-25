@@ -12,7 +12,6 @@ import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import {SlackNotifier} from '../../mutations/helpers/notifications/SlackNotifier'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
@@ -94,7 +93,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   }
 
   notifications.forEach((notification) => {
-    SlackNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
+    IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
     publishNotification(notification, subOptions)
   })
 
