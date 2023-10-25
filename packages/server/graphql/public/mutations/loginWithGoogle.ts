@@ -90,7 +90,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     id: sub,
     isEmailVerified: email_verified !== 'false'
   })
-  const isEnterprise = (process.env.IS_ENTERPRISE === 'true') ? 'enterprise' : undefined;
+  const isEnterprise = process.env.IS_ENTERPRISE === 'true' ? 'enterprise' : undefined
   const newUser = new User({
     id: userId,
     preferredName,
