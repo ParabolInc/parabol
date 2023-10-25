@@ -32,15 +32,14 @@ const mutation = graphql`
 
 const BatchArchiveTasksMutation: StandardMutation<TBatchArchiveTasksMutation> = (
   atmosphere,
-  {taskIds},
+  variables,
   {onError, onCompleted}
 ) => {
   return commitMutation<TBatchArchiveTasksMutation>(atmosphere, {
     mutation,
-    variables: {
-      taskIds
-    },
+    variables,
     updater: (store) => {
+      const {taskIds} = variables
       const payload = store.getRootField('batchArchiveTasks')
       if (!payload) return
       const error = payload.getLinkedRecord('error')
@@ -53,7 +52,8 @@ const BatchArchiveTasksMutation: StandardMutation<TBatchArchiveTasksMutation> = 
           }
         })
       }
-      const tasks = payload.getLinkedRecords('tasks')!
+      const tasks = payload.getLinkedRecords('tasks')
+      if (!tasks) return
       tasks.forEach((task) => {
         handleUpsertTasks(task as any, store)
         handleRemoveTasks(task as any, store)

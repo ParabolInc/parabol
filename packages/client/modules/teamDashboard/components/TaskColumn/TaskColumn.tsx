@@ -29,7 +29,8 @@ const ColumnHeader = styled('div')({
   display: 'flex !important',
   lineHeight: '24px',
   padding: 12,
-  position: 'relative'
+  position: 'relative',
+  minWidth: '256px'
 })
 
 const ColumnBody = styled('div')({
