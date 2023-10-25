@@ -141,7 +141,7 @@ const backupUserQueryIR: any = {
           'featureFlags',
           'lastSeenAtURLs',
           'identities',
-          'segmentId',
+          'pseudoId',
           'newFeatureId',
           'overLimitCopy',
           'isRemoved',
@@ -154,7 +154,7 @@ const backupUserQueryIR: any = {
   ],
   usedParamSet: {users: true},
   statement: {
-    body: 'INSERT INTO "User" (\n    "id",\n    "email",\n    "createdAt",\n    "updatedAt",\n    "inactive",\n    "lastSeenAt",\n    "preferredName",\n    "tier",\n    "picture",\n    "tms",\n    "featureFlags",\n    "lastSeenAtURLs",\n    "identities",\n    "segmentId",\n    "newFeatureId",\n    "overLimitCopy",\n    "isRemoved",\n    "reasonRemoved",\n    "rol",\n    "payLaterClickCount"\n  ) VALUES :users\n  ON CONFLICT (id) DO UPDATE SET\n    "email" = EXCLUDED."email",\n    "createdAt" = EXCLUDED."createdAt",\n    "updatedAt" = EXCLUDED."updatedAt",\n    "inactive" = EXCLUDED."inactive",\n    "lastSeenAt" = EXCLUDED."lastSeenAt",\n    "preferredName" = EXCLUDED."preferredName",\n    "tier" = EXCLUDED."tier",\n    "picture" = EXCLUDED."picture",\n    "tms" = EXCLUDED."tms",\n    "featureFlags" = EXCLUDED."featureFlags",\n    "lastSeenAtURLs" = EXCLUDED."lastSeenAtURLs",\n    "identities" = EXCLUDED."identities",\n    "segmentId" = EXCLUDED."segmentId",\n    "newFeatureId" = EXCLUDED."newFeatureId",\n    "overLimitCopy" = EXCLUDED."overLimitCopy",\n    "isRemoved" = EXCLUDED."isRemoved",\n    "reasonRemoved" = EXCLUDED."reasonRemoved",\n    "rol" = EXCLUDED."rol",\n    "payLaterClickCount" = EXCLUDED."payLaterClickCount"',
+    body: 'INSERT INTO "User" (\n    "id",\n    "email",\n    "createdAt",\n    "updatedAt",\n    "inactive",\n    "lastSeenAt",\n    "preferredName",\n    "tier",\n    "picture",\n    "tms",\n    "featureFlags",\n    "lastSeenAtURLs",\n    "identities",\n    "pseudoId",\n    "newFeatureId",\n    "overLimitCopy",\n    "isRemoved",\n    "reasonRemoved",\n    "rol",\n    "payLaterClickCount"\n  ) VALUES :users\n  ON CONFLICT (id) DO UPDATE SET\n    "email" = EXCLUDED."email",\n    "createdAt" = EXCLUDED."createdAt",\n    "updatedAt" = EXCLUDED."updatedAt",\n    "inactive" = EXCLUDED."inactive",\n    "lastSeenAt" = EXCLUDED."lastSeenAt",\n    "preferredName" = EXCLUDED."preferredName",\n    "tier" = EXCLUDED."tier",\n    "picture" = EXCLUDED."picture",\n    "tms" = EXCLUDED."tms",\n    "featureFlags" = EXCLUDED."featureFlags",\n    "lastSeenAtURLs" = EXCLUDED."lastSeenAtURLs",\n    "identities" = EXCLUDED."identities",\n    "pseudoId" = EXCLUDED."pseudoId",\n    "newFeatureId" = EXCLUDED."newFeatureId",\n    "overLimitCopy" = EXCLUDED."overLimitCopy",\n    "isRemoved" = EXCLUDED."isRemoved",\n    "reasonRemoved" = EXCLUDED."reasonRemoved",\n    "rol" = EXCLUDED."rol",\n    "payLaterClickCount" = EXCLUDED."payLaterClickCount"',
     loc: {a: 363, b: 1554, line: 26, col: 2}
   }
 }
@@ -238,7 +238,7 @@ const updateUserQueryIR: any = {
       codeRefs: {used: [{a: 350, b: 356, line: 11, col: 22}]}
     },
     {
-      name: 'segmentId',
+      name: 'pseudoId',
       transform: {type: 'scalar'},
       codeRefs: {used: [{a: 397, b: 405, line: 12, col: 26}]}
     },
@@ -280,7 +280,7 @@ const updateUserQueryIR: any = {
     preferredName: true,
     tier: true,
     picture: true,
-    segmentId: true,
+    pseudoId: true,
     isRemoved: true,
     isWatched: true,
     reasonRemoved: true,
@@ -290,7 +290,7 @@ const updateUserQueryIR: any = {
     ids: true
   },
   statement: {
-    body: 'UPDATE "User" SET\n  email = COALESCE(:email, "email"),\n  inactive = COALESCE(:inactive, "inactive"),\n  "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),\n  "preferredName" = COALESCE(:preferredName, "preferredName"),\n  tier = COALESCE(:tier, "tier"),\n  picture = COALESCE(:picture, "picture"),\n  "segmentId" = COALESCE(:segmentId, "segmentId"),\n  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),\n  "isWatched" = COALESCE(:isWatched, "isWatched"),\n  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),\n  "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),\n  "identities" = COALESCE(:identities, "identities"),\n  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy")\nWHERE id IN :ids',
+    body: 'UPDATE "User" SET\n  email = COALESCE(:email, "email"),\n  inactive = COALESCE(:inactive, "inactive"),\n  "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),\n  "preferredName" = COALESCE(:preferredName, "preferredName"),\n  tier = COALESCE(:tier, "tier"),\n  picture = COALESCE(:picture, "picture"),\n  "pseudoId" = COALESCE(:pseudoId, "pseudoId"),\n  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),\n  "isWatched" = COALESCE(:isWatched, "isWatched"),\n  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),\n  "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),\n  "identities" = COALESCE(:identities, "identities"),\n  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy")\nWHERE id IN :ids',
     loc: {a: 52, b: 778, line: 5, col: 0}
   }
 }
@@ -427,8 +427,8 @@ const insertAtlassianAuthsQueryIR: any = {
 }
 export const insertAtlassianAuthsQuery = new PreparedQuery(insertAtlassianAuthsQueryIR)
 
-const backfillSegmentIdQueryIR: any = {
-  name: 'backfillSegmentIdQuery',
+const backfillPseudoIdQueryIR: any = {
+  name: 'backfillPseudoIdQuery',
   params: [
     {
       name: 'users',
@@ -436,12 +436,12 @@ const backfillSegmentIdQueryIR: any = {
         defined: {a: 43, b: 47, line: 3, col: 9},
         used: [{a: 143, b: 147, line: 7, col: 14}]
       },
-      transform: {type: 'pick_array_spread', keys: ['segmentId', 'id']}
+      transform: {type: 'pick_array_spread', keys: ['pseudoId', 'id']}
     }
   ],
   usedParamSet: {users: true},
   statement: {
-    body: 'UPDATE "User" AS u SET\n  "segmentId" = c."segmentId"\nFROM (VALUES :users) AS c("segmentId", "id") \nWHERE c."id" = u."id"',
+    body: 'UPDATE "User" AS u SET\n  "pseudoId" = c."pseudoId"\nFROM (VALUES :users) AS c("pseudoId", "id") \nWHERE c."id" = u."id"',
     loc: {a: 76, b: 195, line: 5, col: 0}
   }
 }
@@ -450,12 +450,12 @@ const backfillSegmentIdQueryIR: any = {
  * Query generated from SQL:
  * ```
  * UPDATE "User" AS u SET
- *   "segmentId" = c."segmentId"
- * FROM (VALUES :users) AS c("segmentId", "id")
+ *   "pseudoId" = c."pseudoId"
+ * FROM (VALUES :users) AS c("pseudoId", "id")
  * WHERE c."id" = u."id"
  * ```
  */
-export const backfillSegmentIdQuery = new PreparedQuery(backfillSegmentIdQueryIR)
+export const backfillPseudoIdQuery = new PreparedQuery(backfillPseudoIdQueryIR)
 
 const updateUserTiersQueryIR: any = {
   name: 'updateUserTiersQuery',
