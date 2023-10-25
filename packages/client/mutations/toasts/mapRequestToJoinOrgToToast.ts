@@ -3,7 +3,7 @@ import {Snack} from '../../components/Snackbar'
 import {mapRequestToJoinOrgToToast_notification$data} from '../../__generated__/mapRequestToJoinOrgToToast_notification.graphql'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
+import SendClientSideEvent from '../SendClientSideEvent'
 
 graphql`
   fragment mapRequestToJoinOrgToToast_notification on NotifyRequestToJoinOrg {
@@ -27,7 +27,7 @@ const mapRequestToJoinOrgToToast = (
     key: makeNotificationToastKey(notificationId),
     message: `${email} is requesting to join your organization`,
     onShow: () => {
-      SendClientSegmentEventMutation(atmosphere, 'Snackbar Viewed', {
+      SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
         snackbarType: 'requestToJoinOrg'
       })
     },
@@ -42,7 +42,7 @@ const mapRequestToJoinOrgToToast = (
     secondaryAction: {
       label: 'Deny',
       callback: () => {
-        SendClientSegmentEventMutation(atmosphere, 'Join Request Reviewed', {
+        SendClientSideEvent(atmosphere, 'Join Request Reviewed', {
           action: 'deny'
         })
       }

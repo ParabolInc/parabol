@@ -5,7 +5,7 @@ import {PromptToJoinOrgNotification_notification$key} from '~/__generated__/Prom
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../mutations/SendClientSideEvent'
 import RequestToJoinDomainMutation from '../mutations/RequestToJoinDomainMutation'
 
 interface Props {
@@ -29,7 +29,7 @@ const PromptToJoinOrgNotification = (props: Props) => {
   const {activeDomain, type} = notification
 
   useEffect(() => {
-    SendClientSegmentEventMutation(atmosphere, 'Notification Viewed', {
+    SendClientSideEvent(atmosphere, 'Notification Viewed', {
       notificationType: type
     })
   }, [])

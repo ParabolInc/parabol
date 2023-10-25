@@ -1,7 +1,7 @@
 import {AcceptTeamInvitationMutationReply$data} from '~/__generated__/AcceptTeamInvitationMutationReply.graphql'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import getValidRedirectParam from '../../utils/getValidRedirectParam'
-import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
+import SendClientSideEvent from '../SendClientSideEvent'
 
 interface OnNextMeetingId extends OnNextHistoryContext {
   meetingId?: string | null
@@ -11,7 +11,7 @@ const handleAuthenticationRedirect: OnNextHandler<
   AcceptTeamInvitationMutationReply$data | undefined,
   OnNextMeetingId
 > = (acceptTeamInvitation, {meetingId: locallyRequestedMeetingId, history, atmosphere}) => {
-  SendClientSegmentEventMutation(atmosphere, 'User Login')
+  SendClientSideEvent(atmosphere, 'User Login')
   const redirectTo = getValidRedirectParam()
   if (redirectTo) {
     history.push(redirectTo)

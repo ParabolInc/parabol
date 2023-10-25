@@ -4,7 +4,7 @@ import {Threshold} from '../../types/constEnums'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import makeDateString from '../../utils/makeDateString'
 import {mapTeamsLimitReminderToToast_notification$data} from '../../__generated__/mapTeamsLimitReminderToToast_notification.graphql'
-import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
+import SendClientSideEvent from '../SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
@@ -30,20 +30,20 @@ const mapTeamsLimitReminderToToast = (
       Threshold.MAX_STARTER_TIER_TEAMS
     } free teams. Your free access will end on ${makeDateString(scheduledLockAt)}`,
     onShow: () => {
-      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'teamsLimitReminderSnackbar',
         orgId
       })
     },
     onManualDismiss: () => {
-      SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
+      SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
         snackbarType: 'teamsLimitReminder'
       })
     },
     action: {
       label: 'Upgrade',
       callback: () => {
-        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+        SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamsLimitReminderSnackbar'
         })
         history.push(`/me/organizations/${orgId}`)

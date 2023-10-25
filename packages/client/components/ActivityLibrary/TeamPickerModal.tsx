@@ -12,7 +12,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
 import AddReflectTemplateMutation from '../../mutations/AddReflectTemplateMutation'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../mutations/SendClientSideEvent'
 import sortByTier from '../../utils/sortByTier'
 import {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
@@ -107,7 +107,7 @@ const TeamPickerModal = (props: Props) => {
   }
 
   const handleUpgrade = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'cloneTemplateAL',
       meetingType: type
     })
