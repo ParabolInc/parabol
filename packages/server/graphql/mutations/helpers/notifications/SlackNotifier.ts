@@ -255,21 +255,21 @@ const getSlackMessageForNotification = async (
     if (!responseId) {
       return null
     }
-    const user = await dataLoader.get('users').loadNonNull(notification.authorId)
+    const author = await dataLoader.get('users').loadNonNull(notification.authorId)
     const comment = await dataLoader.get('comments').load(notification.commentId)
     return {
       responseId,
-      title: `*${user.preferredName}* replied to your response in *${meeting.name}*`,
+      title: `*${author.preferredName}* replied to your response in *${meeting.name}*`,
       body: `> ${comment.plaintextContent}`,
       buttonText: 'See the discussion'
     }
   } else if (notification.type === 'RESPONSE_MENTIONED') {
     const responseId = notification.responseId
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
-    const user = await dataLoader.get('users').loadNonNull(response.userId)
+    const author = await dataLoader.get('users').loadNonNull(response.userId)
     return {
       responseId,
-      title: `*${user.preferredName}* mentioned you in their response in *${meeting.name}*`,
+      title: `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`,
       buttonText: 'See their response'
     }
   }
