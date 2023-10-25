@@ -16,9 +16,10 @@ export default async function createNewOrg(
   const userDomain = getDomainFromEmail(leaderEmail)
   const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(userDomain)
   const activeDomain = isCompanyDomain ? userDomain : undefined
+  const isEnterprise = (process.env.IS_ENTERPRISE === 'true') ? 'enterprise' : 'starter';
   const org = new Organization({
     id: orgId,
-    tier: 'starter',
+    tier: isEnterprise,
     name: orgName,
     activeDomain
   })
