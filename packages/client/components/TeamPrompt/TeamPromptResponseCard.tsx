@@ -24,7 +24,7 @@ import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 import {TeamPromptResponseEmojis} from './TeamPromptResponseEmojis'
 import makeAppURL from '../../utils/makeAppURL'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../mutations/SendClientSideEvent'
 import {mergeRefs} from '../../utils/react/mergeRefs'
 import useTooltip from '../../hooks/useTooltip'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -237,7 +237,7 @@ const TeamPromptResponseCard = (props: Props) => {
 
   const handleCopy = () => {
     openCopiedTooltip()
-    SendClientSegmentEventMutation(atmosphere, 'Copied Standup Response Link', {
+    SendClientSideEvent(atmosphere, 'Copied Standup Response Link', {
       teamId: teamId,
       meetingId: meetingId
     })
