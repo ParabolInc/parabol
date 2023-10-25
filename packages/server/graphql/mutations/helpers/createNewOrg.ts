@@ -18,7 +18,6 @@ export default async function createNewOrg(
   const activeDomain = isCompanyDomain ? userDomain : undefined
   const org = new Organization({
     id: orgId,
-    tier: 'starter',
     name: orgName,
     activeDomain
   })
