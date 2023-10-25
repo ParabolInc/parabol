@@ -191,6 +191,23 @@ jobs:
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
             "${{ env.DOCKER_REPOSITORY_FOR_REF }}:v${{ env.ACTION_VERSION }}"
+
+      - name: Bump version in GitLab
+        if: env.IS_RELEASE == 'true'
+        run: |
+          curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/files/version%2Eyaml" \
+            --request PUT \
+            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}' \
+            --form "branch=main" \
+            --form "commit_message=release v${{ env.ACTION_VERSION }}" \
+            --form "content=
+          # Change it to use a valid docker tag, which are the same of the Github tags. Ex: v6.110.0
+          applicationVersion: &applicationVersion v${{ env.ACTION_VERSION }}
+
+          global:
+            image:
+              tag: *applicationVersion"
+
       - name: Push Artifacts to Sentry
         if: env.IS_RELEASE == 'true'
         uses: getsentry/action-release@v1
