@@ -64,6 +64,21 @@ jobs:
           # Caching yarn dir & running yarn install is too slow
           # Instead, we aggressively cache node_modules below to avoid calling install
 
+      - name: Bump version in GitLab
+        run: |
+          curl  "https://gitlab.com/api/v4/projects/${{ env.GITLAB_PROJECT_ID }}/repository/files/version%2Eyaml" \
+            --request PUT \
+            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}' \
+            --form "branch=main" \
+            --form "commit_message=release v${{ env.ACTION_VERSION }}" \
+            --form "content=
+          # Change it to use a valid docker tag, which are the same of the Github tags. Ex: v6.110.0
+          applicationVersion: &applicationVersion v${{ env.ACTION_VERSION }}
+
+          global:
+            image:
+              tag: *applicationVersion"
+
       - name: Get cached node modules
         id: cache
         uses: actions/cache@v3
