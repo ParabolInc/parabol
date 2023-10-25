@@ -66,7 +66,7 @@ jobs:
 
       - name: Bump version in GitLab
         run: |
-          curl  "https://gitlab.com/api/v4/projects/${{ env.GITLAB_PROJECT_ID }}/repository/files/version%2Eyaml" \
+          curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/files/version%2Eyaml" \
             --request PUT \
             --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}' \
             --form "branch=main" \
