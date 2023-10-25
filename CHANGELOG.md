@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.1.1](https://github.com/ParabolInc/parabol/compare/v7.1.0...v7.1.1) (2023-10-25)
+
+
+### Changed
+
+* Link to correct CHANGELOG ([#9044](https://github.com/ParabolInc/parabol/issues/9044)) ([f0ffa0b](https://github.com/ParabolInc/parabol/commit/f0ffa0b600072325e29c338e0959c6ace4942e88))
+
+## [7.1.0](https://github.com/ParabolInc/parabol/compare/v7.0.1...v7.1.0) (2023-10-25)
+
+
+### Added
+
+* upgrade PG to v15.4 for local dev ([#8965](https://github.com/ParabolInc/parabol/issues/8965)) ([a6ba7a7](https://github.com/ParabolInc/parabol/commit/a6ba7a7ee0b2dc2d008fcb4302f47f62386d46c4))
+
+
+### Changed
+
+* add dd-ci to package.json ([#9041](https://github.com/ParabolInc/parabol/issues/9041)) ([7cfccd6](https://github.com/ParabolInc/parabol/commit/7cfccd6a76425b2435d5ba6c304e686805a29146))
+
 ## [7.0.1](https://github.com/ParabolInc/parabol/compare/v7.0.0...v7.0.1) (2023-10-24)
 
 
