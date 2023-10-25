@@ -6,6 +6,7 @@ interface Input {
 }
 
 export default class NotificationPromoteToBillingLeader extends Notification {
+  readonly type = 'PROMOTE_TO_BILLING_LEADER'
   orgId: string
 
   constructor(input: Input) {
