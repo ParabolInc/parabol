@@ -13,7 +13,7 @@ export async function up() {
   await connectRethinkDB()
   await r
     .table('EmailVerification')
-    .replace(row => row.without('segmentId').merge({ 'pseudoId': row('segmentId') }))
+    .replace((row) => row.without('segmentId').merge({pseudoId: row('segmentId')}))
     .run()
 }
 
@@ -21,6 +21,6 @@ export async function down() {
   await connectRethinkDB()
   await r
     .table('EmailVerification')
-    .replace(row => row.without('pseudoId').merge({ 'segmentId': row('pseudoId') }))
+    .replace((row) => row.without('pseudoId').merge({segmentId: row('pseudoId')}))
     .run()
 }
