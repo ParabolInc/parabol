@@ -90,13 +90,15 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     id: sub,
     isEmailVerified: email_verified !== 'false'
   })
+  const isEnterprise = (process.env.IS_ENTERPRISE === 'true') ? 'enterprise' : undefined;
   const newUser = new User({
     id: userId,
     preferredName,
     picture,
     email,
     identities: [identity],
-    segmentId
+    segmentId,
+    tier: isEnterprise
   })
   context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader, params)
   return {
