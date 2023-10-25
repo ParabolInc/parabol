@@ -11,7 +11,7 @@ extend type Mutation {
     """
     optional segment id created before they were a user
     """
-    segmentId: ID
+    pseudoId: ID
 
     """
     if present, the user is also joining a team

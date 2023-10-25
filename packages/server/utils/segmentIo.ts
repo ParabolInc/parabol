@@ -24,7 +24,7 @@ segmentIo.track = async (options: any, dataloader?: CacheWorker<DataLoaderBase>)
     // if it's new, dispose of it. if it's old, the GQL lifecycle will do that for us when it's ready
     localDataloader.dispose()
   }
-  const {email, segmentId} = user ?? {}
+  const {email, pseudoId} = user ?? {}
   const properties = {...inProps, email}
   return (segmentIo as any)._track({
     userId,
@@ -47,7 +47,7 @@ segmentIo.track = async (options: any, dataloader?: CacheWorker<DataLoaderBase>)
      * additional Segment context, as seen here:
      */
     integrations: {
-      'Google Analytics': {clientId: segmentId || userId}
+      'Google Analytics': {clientId: pseudoId || userId}
     },
     properties
   })

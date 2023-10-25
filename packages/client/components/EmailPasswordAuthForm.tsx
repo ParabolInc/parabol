@@ -217,7 +217,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         {onError, onCompleted, history}
       )
     } else {
-      const segmentId = await getAnonymousId()
+      const pseudoId = await getAnonymousId()
       SignUpWithPasswordMutation(
         atmosphere,
         {
@@ -225,7 +225,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           password,
           invitationToken: invitationToken || '',
           isInvitation: !!invitationToken,
-          segmentId,
+          pseudoId,
           params: location.search
         },
         {

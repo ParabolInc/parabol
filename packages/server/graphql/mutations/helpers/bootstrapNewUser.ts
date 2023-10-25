@@ -24,7 +24,7 @@ const bootstrapNewUser = async (
   searchParams?: string
 ) => {
   const r = await getRethink()
-  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
+  const {id: userId, createdAt, preferredName, email, featureFlags, tier, pseudoId} = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
   const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(domain)
@@ -62,7 +62,7 @@ const bootstrapNewUser = async (
     featureFlags: experimentalFlags,
     highestTier: tier,
     isPatient0,
-    anonymousId: segmentId
+    anonymousId: pseudoId
   })
 
   const tms = [] as string[]
