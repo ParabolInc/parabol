@@ -13,13 +13,11 @@ const createNewLocalUser = (props: Props) => {
   const {email, hashedPassword, segmentId, isEmailVerified} = props
   const nickname = email.split('@')[0]!
   const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
-  const isEnterprise = process.env.IS_ENTERPRISE === 'true' ? 'enterprise' : undefined
   const newUser = new User({
     preferredName,
     email,
     identities: [],
-    segmentId,
-    tier: isEnterprise
+    segmentId
   })
   const {id: userId} = newUser
   const identityId = `${userId}:${AuthIdentityTypeEnum.LOCAL}`

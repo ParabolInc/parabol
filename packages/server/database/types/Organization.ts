@@ -1,4 +1,5 @@
 import generateUID from '../../generateUID'
+import {defaultTier} from '../../utils/defaultTier'
 import CreditCard from './CreditCard'
 import {TierEnum} from './Invoice'
 
@@ -10,7 +11,7 @@ interface Input {
   createdAt?: Date
   name: string
   picture?: string
-  tier: TierEnum
+  tier?: TierEnum
   updatedAt?: Date
   showConversionModal?: boolean
   payLaterClickCount?: number
@@ -59,7 +60,7 @@ export default class Organization {
     this.updatedAt = updatedAt || new Date()
     this.creditCard = creditCard
     this.name = name
-    this.tier = tier
+    this.tier = tier ?? defaultTier
     this.picture = picture
     this.showConversionModal = showConversionModal === null ? undefined : showConversionModal
     this.payLaterClickCount = payLaterClickCount || 0
