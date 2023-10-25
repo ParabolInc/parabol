@@ -26,7 +26,6 @@ const Icon = styled(Add)({
 
 interface Props {
   onClick: () => void
-  dataCy: string
   disabled?: boolean
 }
 

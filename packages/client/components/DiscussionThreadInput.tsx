@@ -349,7 +349,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           )}
           {allowAddActivity && (
             <AddActivityButton
-              dataCy={`${dataCy}-activity`}
               onClick={() => {
                 window.open(`/activity-library/category/recommended`, '_blank', 'noreferrer')
               }}
