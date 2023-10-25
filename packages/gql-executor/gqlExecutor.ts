@@ -9,9 +9,10 @@ import RedisInstance from '../server/utils/RedisInstance'
 import RedisStream from './RedisStream'
 
 tracer.init({
-  service: `GQLExecutor ${process.env.SERVER_ID}`,
+  service: `gql`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
+  plugins: false,
+  version: process.env.npm_package_version
 })
 tracer.use('ioredis').use('http').use('pg')
 

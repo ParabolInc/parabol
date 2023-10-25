@@ -24,9 +24,10 @@ import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 
 tracer.init({
-  service: `Web ${process.env.SERVER_ID}`,
+  service: `web`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
+  plugins: false,
+  version: process.env.npm_package_version
 })
 tracer.use('ioredis').use('http').use('pg')
 
