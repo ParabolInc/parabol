@@ -2,15 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment, useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {useRouteMatch} from 'react-router'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {
-  DashNavList_viewer$key,
-  DashNavList_viewer$data
-} from '../../__generated__/DashNavList_viewer.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
+import {
+  DashNavList_organization$key,
+  DashNavList_organization$data
+} from '../../__generated__/DashNavList_organization.graphql'
 
 const DashNavListStyles = styled('div')({
   paddingRight: 8,
@@ -43,25 +42,25 @@ const DashHR = styled('div')({
 
 interface Props {
   className?: string
-  viewer: DashNavList_viewer$key | null
+  organizationsRef: DashNavList_organization$key | null
   onClick?: () => void
 }
 
-type Team = DashNavList_viewer$data['teams'][0]
+type Team = DashNavList_organization$data[0]['teams'][0]
 
 const DashNavList = (props: Props) => {
-  const {className, onClick, viewer: viewerRef} = props
-  const viewer = useFragment(
+  const {className, onClick, organizationsRef} = props
+  const organizations = useFragment(
     graphql`
-      fragment DashNavList_viewer on User {
+      fragment DashNavList_organization on Organization @relay(plural: true) {
         teams {
           ...DashNavListTeam @relay(mask: false)
         }
       }
     `,
-    viewerRef
+    organizationsRef
   )
-  const teams = viewer?.teams
+  const teams = organizations?.flatMap((org) => org.teams)
 
   const teamsByOrgKey = useMemo(() => {
     if (!teams) return null
@@ -90,9 +89,6 @@ const DashNavList = (props: Props) => {
     return team.isPaid && !team.organization.lockedAt ? 'group' : 'warning'
   }
 
-  const teamRouteMatch = useRouteMatch<{teamSubPage: string}>('/team/:teamId/:teamSubPage')
-  const {teamSubPage = ''} = teamRouteMatch?.params || {}
-
   return (
     <DashNavListStyles>
       {isSingleOrg
@@ -102,7 +98,7 @@ const DashNavList = (props: Props) => {
               onClick={onClick}
               key={team.id}
               icon={showWarningIcon(team)}
-              href={`/team/${team.id}/${teamSubPage}`}
+              href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
               label={team.name}
             />
           ))
@@ -118,8 +114,10 @@ const DashNavList = (props: Props) => {
                     onClick={onClick}
                     key={team.id}
                     icon={showWarningIcon(team)}
-                    href={`/team/${team.id}/${teamSubPage}`}
-                    label={team.name}
+                    href={
+                      team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`
+                    }
+                    label={`${team.name}${team.isViewerOnTeam ? '' : '🔒'}`}
                   />
                 ))}
                 {idx !== teamsByOrgKey.length - 1 && <DashHR />}
@@ -135,6 +133,7 @@ graphql`
     id
     isPaid
     name
+    isViewerOnTeam
     organization {
       id
       name

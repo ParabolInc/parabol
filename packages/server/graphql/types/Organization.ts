@@ -7,7 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCountByOrgIds'
 import {resolveForBillingLeaders} from '../resolvers'
@@ -71,13 +71,10 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the viewer is on in the organization',
-      resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
+      resolve: async ({id: orgId}, _args: unknown, {dataLoader}) => {
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-        return isBillingLeader || isSuperUser(authToken)
-          ? allTeamsOnOrg
-          : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+        const uniqueTeamIds = [...new Set(allTeamsOnOrg.map((team) => team.id))]
+        return allTeamsOnOrg.filter((team) => uniqueTeamIds.includes(team.id))
       }
     },
     tier: {

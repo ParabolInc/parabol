@@ -4,6 +4,7 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import ErrorBoundary from '~/components/ErrorBoundary'
+import RequestToJoinComponent from '../../../../components/RequestToJoinComponent'
 import useRouter from '../../../../hooks/useRouter'
 import {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
 import Team from '../../components/Team/Team'
@@ -73,6 +74,7 @@ const TeamContainer = (props: Props) => {
           <Switch>
             {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
             <Route path={`${match.path}/settings`} component={TeamSettings} />
+            <Route exact path={`${match.path}/requestToJoin`} component={RequestToJoinComponent} />
             <Route
               path={`${match.path}/archive`}
               render={(p) => (
