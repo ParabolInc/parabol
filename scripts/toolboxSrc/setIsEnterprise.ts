@@ -3,14 +3,16 @@ import getPg from '../../packages/server/postgres/getPg'
 import {defaultTier} from '../../packages/server/utils/defaultTier'
 
 export default async function setIsEnterprise() {
+  if (defaultTier !== 'enterprise') {
+    throw new Error('Environment variable IS_ENTERPRISE is not set to true. Exiting without updating tiers.')
+  }
+  
   const r = await getRethink()
 
   console.log(
     'Updating tier to "enterprise" for Organization and OrganizationUser tables in RethinkDB'
   )
-  if (defaultTier !== 'enterprise') {
-    throw new Error('Please set Env Var IS_ENTERPRISE=true and try again')
-  }
+  
   type RethinkTableKey = 'Organization' | 'OrganizationUser'
 
   const tablesToUpdate: RethinkTableKey[] = ['Organization', 'OrganizationUser']
