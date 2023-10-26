@@ -705,9 +705,9 @@ type OrgWithFounderAndLeads = Organization & {
   billingLeads: OrganizationUser[]
 }
 
-// ensure that the org has a founder or billing lead with a verified email and their email domain is the same as the org domain
-export const getVerifiedOrgIds = (parent: RootDataLoader) => {
-  return new DataLoader<string, string[], string>(
+// Check if the org has a founder or billing lead with a verified email and their email domain is the same as the org domain
+export const isOrgVerified = (parent: RootDataLoader) => {
+  return new DataLoader<string, boolean, string>(
     async (orgIds) => {
       const r = await getRethink()
       const orgs: OrgWithFounderAndLeads[] = await r
@@ -721,7 +721,7 @@ export const getVerifiedOrgIds = (parent: RootDataLoader) => {
             .coerceTo('array')
         }))
         .merge((org: RDatum) => ({
-          founder: org('members').filter({inactive: false}).nth(0).default(null),
+          founder: org('members').nth(0).default(null),
           billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false})
         }))
         .run()
@@ -735,25 +735,23 @@ export const getVerifiedOrgIds = (parent: RootDataLoader) => {
 
       const users = (await parent.get('users').loadMany(userIds)).filter(isValid)
 
-      const validOrgs = orgs.filter((org) => {
-        const checkEmailDomain = (userId: string) => {
-          const user = users.find((user) => user.id === userId)
-          if (!user) return false
-          const emailDomain = user.email.split('@')[1]
-          return (
-            user.identities.some((identity) => identity.isEmailVerified) &&
-            emailDomain === org.activeDomain
+      return orgIds.map((orgId) => {
+        const isValid = orgs.some((org) => {
+          if (org.id !== orgId) return false
+          const checkEmailDomain = (userId: string) => {
+            const user = users.find((user) => user.id === userId)
+            if (!user) return false
+            return (
+              user.identities.some((identity) => identity.isEmailVerified) &&
+              user.domain === org.activeDomain
+            )
+          }
+          return [org.founder, ...org.billingLeads].some(
+            (orgUser) => orgUser && !orgUser.inactive && checkEmailDomain(orgUser.userId)
           )
-        }
-        const validFounderOrBillingLead = [org.founder, ...org.billingLeads].some(
-          (orgUser) => orgUser && checkEmailDomain(orgUser.userId)
-        )
-        return validFounderOrBillingLead
+        })
+        return isValid
       })
-
-      return orgIds.map((orgId) =>
-        validOrgs.find((validOrg) => validOrg.id === orgId) ? [orgId] : []
-      )
     },
     {
       ...parent.dataLoaderOptions
@@ -761,12 +759,11 @@ export const getVerifiedOrgIds = (parent: RootDataLoader) => {
   )
 }
 
-export const autoJoinTeamsByValidOrgId = (parent: RootDataLoader) => {
+export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, Team[], string>(
     async (orgIds) => {
-      const verifiedOrgIds = (await parent.get('getVerifiedOrgIds').loadMany(orgIds))
-        .flat()
-        .filter(isValid)
+      const verificationResults = await parent.get('isOrgVerified').loadMany(orgIds)
+      const verifiedOrgIds = orgIds.filter((_, index) => verificationResults[index])
 
       const pg = getKysely()
 
