@@ -5,7 +5,7 @@ import {useHistory} from 'react-router'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {BezierCurve} from '../../../types/constEnums'
 import {MeetingTypeEnum} from '../../../__generated__/TeamInvitationQuery.graphql'
 

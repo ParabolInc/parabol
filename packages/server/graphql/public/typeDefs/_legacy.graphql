@@ -6649,11 +6649,6 @@ type Mutation {
   resetRetroMeetingToGroupStage(meetingId: ID!): ResetRetroMeetingToGroupStagePayload!
 
   """
-  track an event in segment, like when errors are hit
-  """
-  segmentEventTrack(event: String!, options: SegmentEventTrackOptions): Boolean
-
-  """
   Set the selected template for the upcoming retro meeting
   """
   selectTemplate(selectedTemplateId: ID!, teamId: ID!): SelectTemplatePayload
@@ -8574,20 +8569,6 @@ type ResetPasswordPayload {
 type ResetRetroMeetingToGroupStagePayload {
   error: StandardMutationError
   meeting: NewMeeting
-}
-
-input SegmentEventTrackOptions {
-  teamId: ID
-  orgId: ID
-  phase: NewMeetingPhaseTypeEnum
-  eventId: Int
-  actionType: String
-  spotlightSearchQuery: String
-  meetingId: ID
-  reflectionId: ID
-  viewerId: ID
-  reflectionsCount: Int
-  buttonLabel: String
 }
 
 type SelectTemplatePayload {

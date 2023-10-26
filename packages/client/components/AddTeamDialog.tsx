@@ -21,7 +21,7 @@ import {Input} from '../ui/Input/Input'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import useRouter from '~/hooks/useRouter'
 import getGraphQLError from '~/utils/relay/getGraphQLError'
-import SendClientSideEvent from '~/mutations/SendClientSideEvent'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 
 interface Props {
   isOpen: boolean

@@ -18,7 +18,7 @@ import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarter
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import SendClientSideEvent from '../../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
 import {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
 

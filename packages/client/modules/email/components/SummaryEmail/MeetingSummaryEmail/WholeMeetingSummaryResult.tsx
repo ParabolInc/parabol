@@ -5,7 +5,7 @@ import {WholeMeetingSummaryResult_meeting$key} from 'parabol-client/__generated_
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import {AIExplainer} from '../../../../../types/constEnums'
 import EmailBorderBottom from './EmailBorderBottom'
 

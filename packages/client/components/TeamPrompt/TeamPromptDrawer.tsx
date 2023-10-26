@@ -11,7 +11,7 @@ import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import findStageById from '../../utils/meetings/findStageById'
-import SendClientSideEvent from '../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
   ({isDesktop, isMobile, isOpen}) => ({

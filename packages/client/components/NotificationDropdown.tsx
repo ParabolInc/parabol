@@ -12,7 +12,7 @@ import {
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {MenuProps} from '../hooks/useMenu'
 import useSegmentTrack from '../hooks/useSegmentTrack'
-import SendClientSideEvent from '../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {NotificationDropdownPaginationQuery} from '../__generated__/NotificationDropdownPaginationQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'

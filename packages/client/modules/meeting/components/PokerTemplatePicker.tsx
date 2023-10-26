@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import lazyPreload from '../../../utils/lazyPreload'
 import {PokerTemplatePicker_settings$key} from '../../../__generated__/PokerTemplatePicker_settings.graphql'
 

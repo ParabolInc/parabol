@@ -8,7 +8,7 @@ import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
-import SendClientSideEvent from './SendClientSideEvent'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {
