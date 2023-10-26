@@ -42,7 +42,7 @@ const DashHR = styled('div')({
 
 const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>(
   ({isViewerOnTeam}) => ({
-    color: isViewerOnTeam ? 'inherit' : PALETTE.SLATE_600
+    color: isViewerOnTeam ? PALETTE.SLATE_700 : PALETTE.SLATE_600
   })
 )
 
