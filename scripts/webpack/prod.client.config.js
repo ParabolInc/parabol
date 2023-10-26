@@ -116,7 +116,7 @@ module.exports = ({isDeploy, isStats}) => ({
       swDest: 'swSkeleton.js',
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/],
       modifyURLPrefix: {
-        '': 'https:__PUBLIC_PATH__/'
+        '': '__PUBLIC_PATH__/'
       }
     }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
