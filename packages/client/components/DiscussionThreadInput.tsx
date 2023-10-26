@@ -30,6 +30,7 @@ import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import AddActivityButton from '~/components/AddActivityButton'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -351,6 +352,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             <AddActivityButton
               onClick={() => {
                 window.open(`/activity-library/category/recommended`, '_blank', 'noreferrer')
+                SendClientSegmentEventMutation(atmosphere, 'Add Activity Button Clicked')
               }}
               disabled={isActionsContainerDisabled}
             />
