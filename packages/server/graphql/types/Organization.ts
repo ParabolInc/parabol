@@ -68,10 +68,10 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         return getActiveTeamCountByOrgIds(orgId)
       }
     },
-    teams: {
+    allTeams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description:
-        'all the teams the viewer is on in the organization. if publicTeams flag is set, return all teams',
+        'All the teams in the organization. If the viewer is not a billing lead, super user, or has publicTeams flag, return the teams they are a member of.',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
         const [user, allTeamsOnOrg] = await Promise.all([
@@ -79,10 +79,11 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
           dataLoader.get('teamsByOrgIds').load(orgId)
         ])
         const hasPublicTeamsFlag = user.featureFlags.includes('publicTeams')
-        if (hasPublicTeamsFlag) {
+        const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
+        if (isBillingLeader || isSuperUser(authToken) || hasPublicTeamsFlag) {
           const uniqueTeamIds = [...new Set(allTeamsOnOrg.map((team) => team.id))]
-          const isViewerOnOrg = uniqueTeamIds.some((teamId) => user.tms.includes(teamId))
-          if (!isViewerOnOrg) return []
+          const isViewerInOrg = uniqueTeamIds.some((teamId) => user.tms.includes(teamId))
+          if (!isViewerInOrg && !isSuperUser(authToken)) return []
           const uniqueTeams = allTeamsOnOrg.filter((team) => uniqueTeamIds.includes(team.id))
 
           const viewerTeams = uniqueTeams.filter((team) => authToken.tms.includes(team.id))
@@ -90,11 +91,16 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
           const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
           return [...viewerTeams, ...sortedOtherTeams]
         } else {
-          const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-          return isBillingLeader || isSuperUser(authToken)
-            ? allTeamsOnOrg
-            : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+          return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
         }
+      }
+    },
+    viewerTeams: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
+      description: 'all the teams the viewer is on in the organization',
+      resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
+        const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
+        return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       }
     },
     tier: {

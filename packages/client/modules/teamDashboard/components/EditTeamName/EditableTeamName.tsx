@@ -29,7 +29,7 @@ const EditableTeamName = (props: Props) => {
         teamId: id
         teamName: name
         organization {
-          teams {
+          viewerTeams {
             id
             name
           }
@@ -39,7 +39,7 @@ const EditableTeamName = (props: Props) => {
     teamRef
   )
   const {teamName, teamId, organization} = team
-  const {teams} = organization
+  const {viewerTeams: teams} = organization
 
   const handleSubmit = (rawName: string) => {
     if (submitting) return

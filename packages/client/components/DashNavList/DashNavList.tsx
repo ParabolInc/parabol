@@ -52,21 +52,35 @@ interface Props {
   onClick?: () => void
 }
 
-type Team = DashNavList_organization$data[0]['teams'][0]
+type Team = DashNavList_organization$data[0]['allTeams'][0]
 
 const DashNavList = (props: Props) => {
   const {className, onClick, organizationsRef} = props
   const organizations = useFragment(
     graphql`
       fragment DashNavList_organization on Organization @relay(plural: true) {
-        teams {
+        allTeams {
           ...DashNavListTeam @relay(mask: false)
+        }
+        viewerTeams {
+          ...DashNavListTeam @relay(mask: false)
+        }
+        viewerOrganizationUser {
+          user {
+            featureFlags {
+              publicTeams
+            }
+          }
         }
       }
     `,
     organizationsRef
   )
-  const teams = organizations?.flatMap((org) => org.teams)
+  const hasPublicTeamsFlag =
+    organizations?.[0]?.viewerOrganizationUser?.user?.featureFlags?.publicTeams
+  const teams = organizations?.flatMap((org) =>
+    hasPublicTeamsFlag ? org.allTeams : org.viewerTeams
+  )
 
   const teamsByOrgKey = useMemo(() => {
     if (!teams) return null
