@@ -158,11 +158,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         return !!teamMember.isLead
       }
     },
-    isViewerOnTeam: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the viewer is on the team, else false',
-      resolve: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId)
-    },
     meetingSettings: {
       type: new GraphQLNonNull(TeamMeetingSettings),
       args: {
