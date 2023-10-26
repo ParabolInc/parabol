@@ -81,6 +81,8 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         const hasPublicTeamsFlag = user.featureFlags.includes('publicTeams')
         if (hasPublicTeamsFlag) {
           const uniqueTeamIds = [...new Set(allTeamsOnOrg.map((team) => team.id))]
+          const isViewerOnOrg = uniqueTeamIds.some((teamId) => user.tms.includes(teamId))
+          if (!isViewerOnOrg) return []
           const uniqueTeams = allTeamsOnOrg.filter((team) => uniqueTeamIds.includes(team.id))
 
           const viewerTeams = uniqueTeams.filter((team) => authToken.tms.includes(team.id))
