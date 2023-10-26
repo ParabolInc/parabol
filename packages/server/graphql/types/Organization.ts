@@ -68,31 +68,25 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         return getActiveTeamCountByOrgIds(orgId)
       }
     },
-    // teams: {
-    //   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
-    //   description: 'all the teams the viewer is on in the organization',
-    //   resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
-    //     const viewerId = getUserId(authToken)
-    //     const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-    //     const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-    //     return isBillingLeader || isSuperUser(authToken)
-    //       ? allTeamsOnOrg
-    //       : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
-    //   }
-    // },
-
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description:
         'all the teams the viewer is on in the organization. if publicTeams flag is set, return all teams',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
-        const user = await dataLoader.get('users').loadNonNull(viewerId)
+        const [user, allTeamsOnOrg] = await Promise.all([
+          dataLoader.get('users').loadNonNull(viewerId),
+          dataLoader.get('teamsByOrgIds').load(orgId)
+        ])
         const hasPublicTeamsFlag = user.featureFlags.includes('publicTeams')
-        const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
         if (hasPublicTeamsFlag) {
           const uniqueTeamIds = [...new Set(allTeamsOnOrg.map((team) => team.id))]
-          return allTeamsOnOrg.filter((team) => uniqueTeamIds.includes(team.id))
+          const uniqueTeams = allTeamsOnOrg.filter((team) => uniqueTeamIds.includes(team.id))
+
+          const viewerTeams = uniqueTeams.filter((team) => authToken.tms.includes(team.id))
+          const otherTeams = uniqueTeams.filter((team) => !authToken.tms.includes(team.id))
+          const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
+          return [...viewerTeams, ...sortedOtherTeams]
         } else {
           const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
           return isBillingLeader || isSuperUser(authToken)

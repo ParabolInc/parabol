@@ -11,7 +11,8 @@ import {
   PlaylistAddCheck,
   Timeline,
   Warning,
-  WorkOutline
+  WorkOutline,
+  GroupAdd
 } from '@mui/icons-material'
 import React from 'react'
 import {useHistory, useRouteMatch} from 'react-router'
@@ -66,6 +67,7 @@ const iconLookup = {
   add: <Add />,
   exit_to_app: <ExitToApp />,
   group: <Group />,
+  groupAdd: <GroupAdd />,
   groups: <Groups />,
   warning: <Warning />,
   work: <WorkOutline />,

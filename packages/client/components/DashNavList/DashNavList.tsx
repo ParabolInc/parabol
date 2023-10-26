@@ -40,6 +40,12 @@ const DashHR = styled('div')({
   width: 'calc(100% + 8px)'
 })
 
+const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>(
+  ({isViewerOnTeam}) => ({
+    color: isViewerOnTeam ? 'inherit' : PALETTE.SLATE_600
+  })
+)
+
 interface Props {
   className?: string
   organizationsRef: DashNavList_organization$key | null
@@ -82,22 +88,28 @@ const DashNavList = (props: Props) => {
     return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
   }
 
-  // const team = Object.values(teamsByOrgKey)
   const isSingleOrg = teamsByOrgKey.length === 1
 
-  const showWarningIcon = (team: Team) => {
-    return team.isPaid && !team.organization.lockedAt ? 'group' : 'warning'
+  const getIcon = (team: Team) => {
+    if (team.organization.lockedAt || !team.isPaid) {
+      return 'warning'
+    }
+    if (!team.isViewerOnTeam) {
+      return 'groupAdd'
+    }
+    return 'group'
   }
 
   return (
     <DashNavListStyles>
       {isSingleOrg
         ? teams.map((team) => (
-            <LeftDashNavItem
+            <StyledLeftDashNavItem
               className={className}
               onClick={onClick}
+              isViewerOnTeam={team.isViewerOnTeam}
               key={team.id}
-              icon={showWarningIcon(team)}
+              icon={getIcon(team)}
               href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
               label={team.name}
             />
@@ -109,15 +121,16 @@ const DashNavList = (props: Props) => {
               <Fragment key={key}>
                 <OrgName>{name}</OrgName>
                 {teams.map((team) => (
-                  <LeftDashNavItem
+                  <StyledLeftDashNavItem
                     className={className}
+                    isViewerOnTeam={team.isViewerOnTeam}
                     onClick={onClick}
                     key={team.id}
-                    icon={showWarningIcon(team)}
+                    icon={getIcon(team)}
                     href={
                       team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`
                     }
-                    label={`${team.name}${team.isViewerOnTeam ? '' : '🔒'}`}
+                    label={team.name}
                   />
                 ))}
                 {idx !== teamsByOrgKey.length - 1 && <DashHR />}
