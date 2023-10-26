@@ -17,6 +17,7 @@ import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
+import RequestToJoinComponent from './RequestToJoin'
 
 const InsightsRoot = lazy(
   () => import(/* webpackChunkName: 'Insights' */ '../components/InsightsRoot')
@@ -155,6 +156,7 @@ const Dashboard = (props: Props) => {
               )}
             />
             <Route path='/me' component={UserDashboard} />
+            <Route exact path='/team/:teamId/requestToJoin' component={RequestToJoinComponent} />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
             <Route path='/usage' component={InsightsRoot} />
