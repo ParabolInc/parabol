@@ -7,7 +7,7 @@ interface Input {
   email: string
   expiration?: Date
   hashedPassword?: string
-  segmentId?: string | null
+  pseudoId?: string | null
   invitationToken?: string | null
 }
 
@@ -18,15 +18,15 @@ export default class EmailVerification {
   email: string
   expiration: Date
   hashedPassword?: string
-  segmentId?: string
+  pseudoId?: string
   constructor(input: Input) {
-    const {id, invitationToken, token, email, expiration, hashedPassword, segmentId} = input
+    const {id, invitationToken, token, email, expiration, hashedPassword, pseudoId} = input
     this.id = id || generateUID()
     this.invitationToken = invitationToken || undefined
     this.token = token
     this.email = email
     this.expiration = expiration || new Date(Date.now() + Threshold.EMAIL_VERIFICATION_LIFESPAN)
     this.hashedPassword = hashedPassword
-    this.segmentId = segmentId || undefined
+    this.pseudoId = pseudoId || undefined
   }
 }

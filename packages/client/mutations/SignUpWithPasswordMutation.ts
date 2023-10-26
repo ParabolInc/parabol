@@ -11,7 +11,7 @@ const mutation = graphql`
     $email: ID!
     $password: String!
     $invitationToken: ID!
-    $segmentId: ID
+    $pseudoId: ID
     $isInvitation: Boolean!
     $params: String!
   ) {
@@ -19,7 +19,7 @@ const mutation = graphql`
       email: $email
       password: $password
       invitationToken: $invitationToken
-      segmentId: $segmentId
+      pseudoId: $pseudoId
       params: $params
     ) {
       error {
