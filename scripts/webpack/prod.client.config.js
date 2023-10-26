@@ -114,7 +114,10 @@ module.exports = ({isDeploy, isStats}) => ({
     new InjectManifest({
       swSrc: path.join(PROJECT_ROOT, 'packages/client/serviceWorker/sw.ts'),
       swDest: 'swSkeleton.js',
-      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
+      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/],
+      modifyURLPrefix: {
+        '': 'https:__PUBLIC_PATH__/'
+      }
     }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
