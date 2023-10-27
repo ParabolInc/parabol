@@ -25,6 +25,14 @@ const mutation = graphql`
       error {
         message
       }
+      user {
+        featureFlags {
+          signUpDestinationTeam
+        }
+        teams {
+          id
+        }
+      }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
@@ -42,14 +50,23 @@ const SignUpWithPasswordMutation: StandardMutation<
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, signUpWithPassword} = res
-      const {error: uiError} = signUpWithPassword
+      const {error: uiError, user} = signUpWithPassword
       onCompleted({signUpWithPassword}, errors)
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(signUpWithPassword)
         const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken
         atmosphere.setAuthToken(authToken)
-        handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
+
+        const defaultRedirectPath = user?.featureFlags.signUpDestinationTeam
+          ? `/team/${user?.teams?.[0]?.id}`
+          : '/meetings'
+
+        handleAuthenticationRedirect(acceptTeamInvitation, {
+          atmosphere,
+          history,
+          defaultRedirectPath
+        })
       }
     }
   })

@@ -45,6 +45,11 @@ const bootstrapNewUser = async (
     experimentalFlags.push('retrosInDisguise')
   }
 
+  // Add signUpDestinationTeam feature flag to 50% of new accounts
+  if (Math.random() < 0.5) {
+    experimentalFlags.push('signUpDestinationTeam')
+  }
+
   await Promise.all([
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
