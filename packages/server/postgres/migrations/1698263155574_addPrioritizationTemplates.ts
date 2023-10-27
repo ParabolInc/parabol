@@ -58,7 +58,9 @@ const MOSCOW_SCALE_CONFIG: TemplateScale = {
     {label: 'M', color: PALETTE.TOMATO_500},
     {label: 'S', color: PALETTE.TERRA_300},
     {label: 'C', color: PALETTE.GOLD_300},
-    {label: 'W', color: PALETTE.GRASS_300}
+    {label: 'W', color: PALETTE.GRASS_300},
+    {label: '?', color: PALETTE.ROSE_500},
+    {label: 'Pass', color: PALETTE.GRAPE_500}
   ]
 }
 
