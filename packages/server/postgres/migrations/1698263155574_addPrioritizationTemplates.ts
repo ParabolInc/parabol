@@ -46,56 +46,6 @@ const getTemplateIllustrationUrl = (filename: string) => {
   throw new Error('Mssing Env: FILE_STORE_PROVIDER')
 }
 
-// MeetingTemplate fields
-// "id",
-// "createdAt",
-// "isActive",
-// "name",
-// "teamId",
-// "updatedAt",
-// "scope",
-// "orgId",
-// "parentTemplateId",
-// "lastUsedAt",
-// "type",
-// "isStarter",
-// "isFree",
-// "illustrationUrl",
-// "hideStartingAt",
-// "hideEndingAt",
-// "mainCategory"
-
-// {
-//   "createdAt": Thu Oct 26 2023 20:21:08 GMT+00:00 ,
-//   "id": "rxCt74471C" ,
-//   "name": "Test Scale Fields" ,
-//   "sortOrder": 0.9999999999999996 ,
-//   "teamId": "pAlPfYEr73" ,
-//   "updatedAt": Thu Oct 26 2023 20:21:20 GMT+00:00 ,
-//   "values": [
-//   {
-//   "color": "#FD6157" ,
-//   "label": "11"
-//   } ,
-//   {
-//   "color": "#FE975D" ,
-//   "label": "22"
-//   } ,
-//   {
-//   "color": "#FFCC63" ,
-//   "label": "33"
-//   } ,
-//   {
-//   "color": "#DB70DB" ,
-//   "label": "?"
-//   } ,
-//   {
-//   "color": "#A06BD6" ,
-//   "label": "Pass"
-//   }
-//   ]
-//   }
-
 const MOSCOW_SCALE_CONFIG: TemplateScale = {
   createdAt,
   id: 'moscowScale',
@@ -173,18 +123,6 @@ const makeTemplate = (template: Template) => ({
 })
 
 const templates = NEW_TEMPLATE_CONFIGS.map((templateConfig) => makeTemplate(templateConfig))
-
-// {
-//   "createdAt": Thu Oct 26 2023 20:21:00 GMT+00:00 ,
-//   "description": "" ,
-//   "id": "rxCsyZUU9y" ,
-//   "name": "Test Dimension Fields" ,
-//   "scaleId": "rxCt74471C" ,
-//   "sortOrder": 1.0000000000000002 ,
-//   "teamId": "pAlPfYEr73" ,
-//   "templateId": "rxCsl0b9wk" ,
-//   "updatedAt": Thu Oct 26 2023 20:21:28 GMT+00:00
-//   }
 
 type DimensionInfo = {
   id: string
