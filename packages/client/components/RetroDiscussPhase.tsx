@@ -151,7 +151,10 @@ const RetroDiscussPhase = (props: Props) => {
         id
         endedAt
         showTranscription
-        transcription
+        transcription {
+          speaker
+          words
+        }
         organization {
           ...DiscussPhaseSqueeze_organization
           ...RetroDiscussionThreadHeader_organization
@@ -268,7 +271,6 @@ const RetroDiscussPhase = (props: Props) => {
                         allowTasks={true}
                         isReadOnly={allowedThreadables.length === 0}
                         meetingRef={meeting}
-                        showTranscription={showTranscription}
                       />
                     ) : (
                       <DiscussionThreadListEmptyState

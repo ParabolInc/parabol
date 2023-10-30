@@ -44,7 +44,9 @@ const Message = styled('div')({
 
 const StyledButton = styled(FlatButton)({
   background: PALETTE.SKY_500,
+  borderColor: PALETTE.SLATE_400,
   color: PALETTE.WHITE,
+  fontSize: 12,
   fontWeight: 600,
   minWidth: 36,
   marginTop: 24,
@@ -55,23 +57,14 @@ const StyledButton = styled(FlatButton)({
   }
 })
 
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center',
-  flexWrap: 'wrap',
-  flex: 1
-})
-
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
   meetingRef?: DiscussionThreadListEmptyTranscriptState_meeting$key
-  showTranscription?: boolean
 }
 
 const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
-  const {showTranscription = false, meetingRef} = props
+  const {meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment DiscussionThreadListEmptyTranscriptState_meeting on RetrospectiveMeeting {
@@ -109,7 +102,7 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
     AddTranscriptionBot(atmosphere, {videoMeetingURL: urlValue, meetingId}, {onError, onCompleted})
   }
 
-  const showVideoURLInput = showTranscription && !videoMeetingURL
+  const showVideoURLInput = !videoMeetingURL
 
   return (
     <DiscussionThreadEmptyStateRoot>
@@ -121,17 +114,22 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
         </div>
       </EmptyDiscussionContainer>
       <Message>
-        {!!videoMeetingURL ? (
-          'Your Zoom meeting is being transcribed and the content will be available here once the meeting has ended.'
-        ) : (
+        {showVideoURLInput ? (
           <>
             Paste your <strong>Zoom meeting URL</strong> below and we’ll transcribe your meeting.
           </>
+        ) : (
+          `Your Zoom transcription will begin once the 'Parabol Notetaker' bot joins the call, and it will be available once the meeting has ended.`
         )}
       </Message>
-
       {showVideoURLInput && (
-        <Wrapper>
+        <form
+          className='flex flex-1 flex-wrap items-center justify-center'
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit()
+          }}
+        >
           <input
             className='mt-4 w-full appearance-none rounded border border-slate-400 bg-transparent p-3 text-sm text-slate-600 outline-none'
             autoFocus
@@ -140,14 +138,13 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
             name='url'
             value={urlValue}
           />
-
           <div className='flex w-full flex-col items-center'>
-            <StyledButton onClick={handleSubmit} size='medium'>
+            <StyledButton type='submit' size='medium'>
               Submit
             </StyledButton>
             {fieldError && <StyledError>{fieldError}</StyledError>}
           </div>
-        </Wrapper>
+        </form>
       )}
     </DiscussionThreadEmptyStateRoot>
   )
