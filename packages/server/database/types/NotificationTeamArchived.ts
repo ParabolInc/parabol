@@ -7,6 +7,7 @@ interface Input {
 }
 
 export default class NotificationTeamArchived extends Notification {
+  readonly type = 'TEAM_ARCHIVED'
   archivorUserId: string
   teamId: string
   constructor(input: Input) {

@@ -18,7 +18,7 @@ import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarter
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../mutations/SendClientSideEvent'
 import {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
 import {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
 
@@ -175,7 +175,7 @@ const DowngradeModal = (props: Props) => {
 
   const handleConfirm = () => {
     setHasConfirmedDowngrade(true)
-    SendClientSegmentEventMutation(atmosphere, 'Downgrade Continue Clicked', {
+    SendClientSideEvent(atmosphere, 'Downgrade Continue Clicked', {
       orgId
     })
   }

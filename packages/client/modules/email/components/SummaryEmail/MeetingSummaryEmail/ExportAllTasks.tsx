@@ -18,7 +18,7 @@ import GitHubSVG from '../../../../../components/GitHubSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
 import GitLabSVG from '../../../../../components/GitLabSVG'
 import clsx from 'clsx'
-import SendClientSegmentEventMutation from '../../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../../mutations/SendClientSideEvent'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')
@@ -142,7 +142,7 @@ const ExportAllTasks = (props: Props) => {
       })
       onError(errors[0]!.reason)
     } else {
-      SendClientSegmentEventMutation(atmosphere, 'Bulk Tasks Published', {
+      SendClientSideEvent(atmosphere, 'Bulk Tasks Published', {
         teamId,
         meetingId,
         meetingType,

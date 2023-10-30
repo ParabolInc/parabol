@@ -8,6 +8,7 @@ interface Input {
 }
 
 export default class NotificationResponseReplied extends Notification {
+  readonly type = 'RESPONSE_REPLIED'
   meetingId: string
   authorId: string
   commentId: string

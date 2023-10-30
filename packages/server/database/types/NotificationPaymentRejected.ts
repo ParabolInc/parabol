@@ -8,6 +8,7 @@ interface Input {
 }
 
 export default class NotificationPaymentRejected extends Notification {
+  readonly type = 'PAYMENT_REJECTED'
   orgId: string
   last4: string
   brand: string

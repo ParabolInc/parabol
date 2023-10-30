@@ -6,7 +6,7 @@ import {useHistory} from 'react-router'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
 import {PALETTE} from '../../../styles/paletteV3'
 import {
   ReflectTemplateListTeam_teamTemplates$key,
@@ -93,7 +93,7 @@ const ReflectTemplateListTeam = (props: Props) => {
   if (teamTemplates.length === 0) {
     if (tier === 'starter') {
       const goToBilling = () => {
-        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+        SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',
           meetingType: 'retrospective'
         })

@@ -10,6 +10,7 @@ interface Input {
 }
 
 export default class NotificationRequestToJoinOrg extends Notification {
+  readonly type = 'REQUEST_TO_JOIN_ORG'
   domainJoinRequestId: number
   email: string
   name: string

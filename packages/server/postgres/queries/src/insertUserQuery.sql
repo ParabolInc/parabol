@@ -14,7 +14,7 @@ INSERT INTO "User" (
   "tms",
   "featureFlags",
   "lastSeenAtURLs",
-  "segmentId",
+  "pseudoId",
   "identities",
   "isPatient0"
 ) VALUES (
@@ -30,7 +30,7 @@ INSERT INTO "User" (
   :tms,
   :featureFlags,
   :lastSeenAtURLs,
-  :segmentId,
+  :pseudoId,
   :identities,
   :isPatient0
 );

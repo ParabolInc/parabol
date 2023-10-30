@@ -17,7 +17,6 @@ import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
-import {SegmentAnalytics} from './segment/SegmentAnalytics'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
@@ -148,6 +147,7 @@ export type AnalyticsEvent =
   | 'Snackbar Viewed'
   // Join request
   | 'Join Request Reviewed'
+  | 'AutoJoined Team'
   // Suggest Groups
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
@@ -177,11 +177,9 @@ export type AnalyticsEvent =
  */
 class Analytics {
   private amplitudeAnalytics: AmplitudeAnalytics
-  private segmentAnalytics: SegmentAnalytics
 
   constructor() {
     this.amplitudeAnalytics = new AmplitudeAnalytics()
-    this.segmentAnalytics = new SegmentAnalytics()
   }
 
   // meeting
@@ -626,16 +624,18 @@ class Analytics {
     this.track(userId, 'Task due date set', {taskId, teamId})
   }
 
+  autoJoined = (userId: string, teamId: string) => {
+    this.track(userId, 'AutoJoined Team', {userId, teamId})
+  }
+
   identify = (options: IdentifyOptions) => {
     this.amplitudeAnalytics.identify(options)
-    this.segmentAnalytics.identify(options)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) => {
     // in a perfect world we would pass in the existing dataloader since the user object is already cached in it
     const dataloader = getDataLoader()
     this.amplitudeAnalytics.track(userId, event, dataloader, properties)
-    this.segmentAnalytics.track(userId, event, dataloader, properties)
     dataloader.dispose()
   }
 }

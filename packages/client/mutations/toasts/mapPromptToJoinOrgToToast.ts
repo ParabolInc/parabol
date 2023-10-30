@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapPromptToJoinOrgToToast_notification$data} from '../../__generated__/mapPromptToJoinOrgToToast_notification.graphql'
-import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
+import SendClientSideEvent from '../SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import RequestToJoinDomainMutation from '../RequestToJoinDomainMutation'
 
@@ -25,7 +25,7 @@ const mapPromptToJoinOrgToToast = (
     key: makeNotificationToastKey(notificationId),
     message: `Your teammates at ${activeDomain} are loving Parabol! Do you want to join them?`,
     onShow: () => {
-      SendClientSegmentEventMutation(atmosphere, 'Snackbar Viewed', {
+      SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
         snackbarType: 'promptToJoinOrg'
       })
     },
@@ -33,7 +33,7 @@ const mapPromptToJoinOrgToToast = (
       label: 'Request to Join',
       callback: () => {
         RequestToJoinDomainMutation(atmosphere, {})
-        SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
+        SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
           snackbarType: 'promptToJoinOrg'
         })
       }
