@@ -30,6 +30,9 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       fieldName
+      AddTranscriptionBotSuccess {
+        ...AddTranscriptionBotMutation_meeting
+      }
       AutogroupSuccess {
         ...AutogroupMutation_meeting @relay(mask: false)
       }
