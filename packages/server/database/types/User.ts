@@ -18,7 +18,7 @@ interface Input {
   identities?: AuthIdentity[]
   isWatched?: boolean
   createdAt?: Date
-  segmentId?: string | null
+  pseudoId?: string | null
   sendSummaryEmail?: boolean
   tier?: TierEnum
   tms?: string[]
@@ -43,7 +43,7 @@ export default class User {
   isRemoved?: boolean
   isWatched?: boolean
   createdAt: Date
-  segmentId?: string
+  pseudoId?: string
   sendSummaryEmail?: boolean
   tier: TierEnum
   tms: string[]
@@ -65,7 +65,7 @@ export default class User {
       inactive,
       isWatched,
       preferredName,
-      segmentId,
+      pseudoId,
       sendSummaryEmail,
       tier
     } = input
@@ -90,7 +90,7 @@ export default class User {
     this.lastSeenAt = lastSeenAt ?? new Date()
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
-    this.segmentId = segmentId ?? undefined
+    this.pseudoId = pseudoId ?? undefined
     this.sendSummaryEmail = sendSummaryEmail ?? true
     this.tier = tier ?? defaultTier
   }

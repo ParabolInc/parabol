@@ -36,7 +36,7 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') }}
+          IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') && (github.ref_name == 'master' || startsWith(github.ref_name, 'hotfix')) }}
           IS_MANUAL_BUILD=${{ startsWith(github.event.head_commit.message, 'dockerize') }}
 
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
@@ -195,12 +195,14 @@ jobs:
       - name: Bump version in GitLab
         if: env.IS_RELEASE == 'true'
         run: |
-          curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/files/version%2Eyaml" \
-            --request PUT \
+          curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/commits" \
+            --request POST \
             --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}' \
             --form "branch=main" \
             --form "commit_message=release v${{ env.ACTION_VERSION }}" \
-            --form "content=
+            --form "actions[][action]=update" \
+            --form "actions[][file_path]=version.yaml" \
+            --form "actions[][content]=
           # Change it to use a valid docker tag, which are the same of the Github tags. Ex: v6.110.0
           applicationVersion: &applicationVersion v${{ env.ACTION_VERSION }}
 
