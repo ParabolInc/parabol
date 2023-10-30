@@ -17,7 +17,11 @@ union BatchArchiveTasksPayload = ErrorPayload | BatchArchiveTasksSuccess
 
 type BatchArchiveTasksSuccess {
   """
+  the id of achived tasks
+  """
+  archivedTaskIds: [ID!]
+  """
   the archived tasks
   """
-  tasks: [Task!]
+  archivedTasks: [Task!]
 }

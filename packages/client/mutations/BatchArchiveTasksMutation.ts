@@ -1,15 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import ITask from '../../server/database/types/Task'
 import {BatchArchiveTasksMutation as TBatchArchiveTasksMutation} from '../__generated__/BatchArchiveTasksMutation.graphql'
+import {BatchArchiveTasksMutation_tasks$data} from '~/__generated__/BatchArchiveTasksMutation_tasks.graphql'
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 
 graphql`
   fragment BatchArchiveTasksMutation_tasks on BatchArchiveTasksSuccess {
-    tasks {
+    archivedTasks {
       id
       content
       tags
@@ -29,6 +30,21 @@ const mutation = graphql`
     }
   }
 `
+
+export const batchArchiveTasksTaskUpdater: SharedUpdater<BatchArchiveTasksMutation_tasks$data> = (
+  payload,
+  {store}
+) => {
+  const archivedTasks = payload.getLinkedRecords('archivedTasks')
+  archivedTasks.forEach((archivedTask) => {
+    const content = archivedTask.getValue('content')
+    const {entityMap} = JSON.parse(content)
+    const nextTags = getTagsFromEntityMap(entityMap)
+    archivedTask.setValue(nextTags, 'tags')
+    handleUpsertTasks(archivedTask as any, store)
+    handleRemoveTasks(archivedTask as any, store)
+  })
+}
 
 const BatchArchiveTasksMutation: StandardMutation<TBatchArchiveTasksMutation> = (
   atmosphere,
@@ -52,25 +68,14 @@ const BatchArchiveTasksMutation: StandardMutation<TBatchArchiveTasksMutation> = 
           }
         })
       }
-      const tasks = payload.getLinkedRecords('tasks')
-      if (!tasks) return
-      tasks.forEach((task) => {
-        handleUpsertTasks(task as any, store)
-        handleRemoveTasks(task as any, store)
-      })
+      const context = {atmosphere, store: store as any}
+      batchArchiveTasksTaskUpdater(payload as any, context)
     },
     optimisticUpdater: (store) => {
       const payload = store.getRootField('batchArchiveTasks')
       if (!payload) return
-      const archivedTasks = payload.getLinkedRecords('tasks')
-      archivedTasks.forEach((archivedTask) => {
-        const content = archivedTask.getValue('content')
-        const {entityMap} = JSON.parse(content)
-        const nextTags = getTagsFromEntityMap(entityMap)
-        archivedTask.setValue(nextTags, 'tags')
-        handleUpsertTasks(archivedTask as any, store)
-        handleRemoveTasks(archivedTask as any, store)
-      })
+      const context = {atmosphere, store: store as any}
+      batchArchiveTasksTaskUpdater(payload as any, context)
     },
     onCompleted,
     onError

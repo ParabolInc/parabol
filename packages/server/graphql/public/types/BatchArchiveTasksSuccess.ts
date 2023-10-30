@@ -2,12 +2,12 @@ import isValid from '../../isValid'
 import {BatchArchiveTasksSuccessResolvers} from '../resolverTypes'
 
 export type BatchArchiveTasksSuccessSource = {
-  taskIds: string[]
+  archivedTaskIds: string[]
 }
 
 const BatchArchiveTasksSuccess: BatchArchiveTasksSuccessResolvers = {
-  tasks: async ({taskIds}, _args, {dataLoader}) => {
-    const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
+  archivedTasks: async ({archivedTaskIds}, _args, {dataLoader}) => {
+    const tasks = (await dataLoader.get('tasks').loadMany(archivedTaskIds)).filter(isValid)
     return tasks
   }
 }
