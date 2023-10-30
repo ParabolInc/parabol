@@ -6,9 +6,9 @@ extend type AtlassianIntegration {
     first: Int = 100
 
     """
-    the datetime cursor
+    the index cursor
     """
-    after: DateTime
+    after: String
 
     """
     A string of text to search for, or JQL if isJQL is true

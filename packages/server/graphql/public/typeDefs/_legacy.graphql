@@ -2739,6 +2739,11 @@ type Discussion {
   meetingId: ID!
 
   """
+  Team
+  """
+  team: Team!
+
+  """
   time the thread was created
   """
   createdAt: DateTime!
@@ -7719,6 +7724,17 @@ enum TaskServiceEnum {
   PARABOL
 }
 
+enum ServiceEnum {
+  PARABOL
+  github
+  jira
+  gitlab
+  mattermost
+  jiraServer
+  gcal
+  azureDevOps
+}
+
 """
 The part of the site that is calling the mutation
 """
@@ -8571,6 +8587,7 @@ input SegmentEventTrackOptions {
   reflectionId: ID
   viewerId: ID
   reflectionsCount: Int
+  buttonLabel: String
 }
 
 type SelectTemplatePayload {

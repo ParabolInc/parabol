@@ -5,7 +5,7 @@ import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../mutations/SendClientSideEvent'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
@@ -101,7 +101,7 @@ const JiraFieldMenu = (props: Props) => {
         'noreferrer'
       )
     }
-    SendClientSegmentEventMutation(atmosphere, 'Jira Missing Field Doc Link Clicked', {
+    SendClientSideEvent(atmosphere, 'Jira Missing Field Doc Link Clicked', {
       meetingId,
       teamId,
       taskId,

@@ -1,19 +1,15 @@
-import React, {ReactNode} from 'react'
+import React from 'react'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
 
 interface LoaderOptions {
-  Loader?: ReactNode
   size?: number
   loadingDelay?: number
   menuLoadingWidth?: number
 }
 
-export const renderLoader = (options: LoaderOptions = {}) => {
-  if (options.Loader) {
-    return options.Loader
-  }
+export const Loader = (props: LoaderOptions = {}) => {
+  const {menuLoadingWidth, loadingDelay, size} = props
 
-  const {menuLoadingWidth, loadingDelay, size} = options
   return (
     <LoadingComponent
       delay={loadingDelay}

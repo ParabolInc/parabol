@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as RadixSelect from '@radix-ui/react-select'
 import {KeyboardArrowDown} from '@mui/icons-material'
 import {twMerge} from 'tailwind-merge'
-import {renderLoader} from '../../utils/relay/renderLoader'
+import {Loader} from '../../utils/relay/renderLoader'
 
 interface SelectTriggerProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Trigger> {
   isLoading?: boolean
@@ -19,7 +19,7 @@ export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerPr
       {...props}
     >
       {children}
-      {isLoading && <div className='w-full pt-1'>{renderLoader()}</div>}
+      {isLoading && <div className='w-full pt-1'>{<Loader />}</div>}
       <RadixSelect.Icon asChild>
         <KeyboardArrowDown className='h-5 w-5' />
       </RadixSelect.Icon>

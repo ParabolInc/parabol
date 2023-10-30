@@ -67,12 +67,21 @@ const onFetch = async (event: FetchEvent) => {
   if (isCacheable) {
     const cachedRes = await caches.match(request.url)
     // all our assets are hashed, so if the hash matches, it's valid
-    if (cachedRes) return cachedRes
-    const networkRes = await fetch(request)
-    const cache = await caches.open(DYNAMIC_CACHE)
-    // cloning here because I'm not sure if we must clone before reading the body
-    cache.put(request.url, networkRes.clone()).catch(console.error)
-    return networkRes
+    // let's skip opaque responses because we don't know whether they're valid
+    if (cachedRes && cachedRes.type !== 'opaque') {
+      return cachedRes
+    }
+    try {
+      const networkRes = await fetch(request)
+      const cache = await caches.open(DYNAMIC_CACHE)
+      // cloning here because I'm not sure if we must clone before reading the body
+      cache.put(request.url, networkRes.clone()).catch(console.error)
+      return networkRes
+    } catch (e) {
+      // if we have an opaque cached response, it's better than nothing
+      if (cachedRes) return cachedRes
+      throw e
+    }
     // } else if (request.destination === 'document') {
     //   // dynamic because index.html isn't hashed (and the server returns an html with keys)
     //   const dynamicCache = await caches.open(DYNAMIC_CACHE)

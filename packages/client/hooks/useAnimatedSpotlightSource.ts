@@ -2,7 +2,7 @@ import {Times} from 'parabol-client/types/constEnums'
 import {MutableRefObject, useLayoutEffect, useRef} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {PortalStatus} from '~/hooks/usePortal'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/mutations/SendClientSideEvent'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import {Elevation} from '~/styles/elevation'
 import {BezierCurve, ElementWidth} from '~/types/constEnums'
@@ -53,7 +53,7 @@ const useAnimatedSpotlightSource = (
     dragIdRef.current = clientTempId()
     // execute mutation after cloning as the mutation will cause reflection height to change
     startDrag(reflectionId, dragIdRef.current)
-    SendClientSegmentEventMutation(atmosphere, 'Opened Spotlight', {
+    SendClientSideEvent(atmosphere, 'Opened Spotlight', {
       reflectionId
     })
     const dragInterval = setInterval(() => {

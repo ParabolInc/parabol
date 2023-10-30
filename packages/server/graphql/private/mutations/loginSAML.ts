@@ -58,7 +58,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const {domains, metadata: existingMetadata} = doc
   const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
   if (newMetadata instanceof Error) {
-    return {error: {message: newMetadata.message}}
+    return standardError(newMetadata)
   }
   const metadata = newMetadata || existingMetadata
   if (!metadata) {
@@ -91,7 +91,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
-    return {error: {message: 'Email attribute was not included in SAML response'}}
+    return {
+      error: {
+        message: `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(
+          attributes
+        ).join(', ')}`
+      }
+    }
   }
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     return {error: {message: 'Email is too long'}}

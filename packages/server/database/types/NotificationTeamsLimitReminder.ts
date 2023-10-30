@@ -9,6 +9,7 @@ interface Input {
 }
 
 export default class NotificationTeamsLimitReminder extends Notification {
+  readonly type = 'TEAMS_LIMIT_REMINDER'
   orgId: string
   orgName: string
   orgPicture?: string

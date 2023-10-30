@@ -10,7 +10,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../mutations/SendClientSideEvent'
 import {PALETTE} from '../../styles/paletteV3'
 import makeAppURL from '../../utils/makeAppURL'
 import Menu from '../Menu'
@@ -107,7 +107,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
             const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
             await navigator.clipboard.writeText(copyUrl)
 
-            SendClientSegmentEventMutation(atmosphere, 'Copied Meeting Series Link', {
+            SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
               teamId: team?.id,
               meetingId: meetingId
             })
@@ -148,7 +148,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
           </Link>
         }
         onClick={() => {
-          SendClientSegmentEventMutation(atmosphere, 'Configure Slack Standup Clicked', {
+          SendClientSideEvent(atmosphere, 'Configure Slack Standup Clicked', {
             teamId: team?.id,
             meetingId: meetingId
           })

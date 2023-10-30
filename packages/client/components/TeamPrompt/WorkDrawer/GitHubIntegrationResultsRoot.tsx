@@ -5,7 +5,7 @@ import gitHubIntegrationResultsQuery, {
 } from '../../../__generated__/GitHubIntegrationResultsQuery.graphql'
 import ErrorBoundary from '../../ErrorBoundary'
 import GitHubIntegrationResults from './GitHubIntegrationResults'
-import {renderLoader} from '~/utils/relay/renderLoader'
+import {Loader} from '~/utils/relay/renderLoader'
 
 interface Props {
   teamId: string
@@ -27,8 +27,10 @@ const GitHubIntegrationResultsRoot = (props: Props) => {
   })
   return (
     <ErrorBoundary>
-      <Suspense fallback={renderLoader()}>
-        {queryRef && <GitHubIntegrationResults queryRef={queryRef} queryType={queryType} />}
+      <Suspense fallback={<Loader />}>
+        {queryRef && (
+          <GitHubIntegrationResults queryRef={queryRef} queryType={queryType} teamId={teamId} />
+        )}
       </Suspense>
     </ErrorBoundary>
   )

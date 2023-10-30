@@ -12,7 +12,7 @@ services:
     networks:
       - parabol-network
   postgres:
-    image: postgres:12.15
+    image: postgres:15.4
     restart: always
     env_file: .env
     ports:
@@ -24,7 +24,7 @@ services:
     networks:
       - parabol-network
   redis:
-    image: redis:6
+    image: redis:7.0-alpine
     ports:
       - "6379:6379"
     volumes:

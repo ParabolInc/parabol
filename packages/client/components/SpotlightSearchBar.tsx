@@ -3,7 +3,7 @@ import {Search as SearchIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/mutations/SendClientSideEvent'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
@@ -82,7 +82,7 @@ const SpotlightSearchBar = (props: Props) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSpotlightSearch(atmosphere, meetingId, e.currentTarget.value)
     if (!hasSearchedRef.current) {
-      SendClientSegmentEventMutation(atmosphere, 'Searched in Spotlight', {
+      SendClientSideEvent(atmosphere, 'Searched in Spotlight', {
         reflectionId: spotlightReflectionId,
         meetingId
       })

@@ -9,6 +9,7 @@ import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import getOAuthPopupFeatures from '../../../../utils/getOAuthPopupFeatures'
 import getTokenFromSSO from '../../../../utils/getTokenFromSSO'
 
 graphql`
@@ -54,6 +55,14 @@ const OrgAuthenticationMetadata = (props: Props) => {
     if (!domain) {
       onError(new Error('Domain not provided. Please contact customer support'))
     }
+
+    // Open popup before the first async call to prevent popup blockers
+    const optimisticPopup = window.open(
+      '',
+      'SSO',
+      getOAuthPopupFeatures({width: 385, height: 550, top: 64})
+    )
+
     // Get the Sign-on URL, which includes metadataURL in the RelayState
     const res = await atmosphere.fetchQuery<OrgAuthenticationMetadataQuery>(
       orgAuthenticationMetadataQuery,
@@ -61,6 +70,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
     )
     if (!res) {
       onError(new Error('Could not reach server. Please try again'))
+      optimisticPopup?.close()
       return
     }
     const {viewer} = res
@@ -68,6 +78,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
     const {error} = parseSAMLMetadata
     if (error) {
       onError(new Error(error.message))
+      optimisticPopup?.close()
       return
     }
     const url = parseSAMLMetadata.url!

@@ -5,19 +5,19 @@ import User from '../database/types/User'
 interface Props {
   email: string
   hashedPassword: string
-  segmentId?: string | null
+  pseudoId?: string | null
   isEmailVerified: boolean
 }
 
 const createNewLocalUser = (props: Props) => {
-  const {email, hashedPassword, segmentId, isEmailVerified} = props
+  const {email, hashedPassword, pseudoId, isEmailVerified} = props
   const nickname = email.split('@')[0]!
   const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
   const newUser = new User({
     preferredName,
     email,
     identities: [],
-    segmentId
+    pseudoId
   })
   const {id: userId} = newUser
   const identityId = `${userId}:${AuthIdentityTypeEnum.LOCAL}`
