@@ -5,7 +5,7 @@ import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
 import isUserVerified from '../../utils/isUserVerified'
 import generateUID from '../../generateUID'
-import {getVerifiedOrgIds} from '../customLoaderMakers'
+import {isOrgVerified} from '../customLoaderMakers'
 jest.mock('../../database/rethinkDriver')
 jest.mock('../../utils/isUserVerified')
 
@@ -101,7 +101,7 @@ const addOrg = async (
   return orgId
 }
 
-const getVerifiedOrgIdsLoader = getVerifiedOrgIds(dataLoader)
+const isOrgVerifiedLoader = isOrgVerified(dataLoader)
 
 beforeAll(async () => {
   const conn = await r.connectPool(testConfig)
@@ -117,7 +117,7 @@ beforeAll(async () => {
 afterEach(async () => {
   await r.table('Organization').delete().run()
   await r.table('OrganizationUser').delete().run()
-  getVerifiedOrgIdsLoader.clearAll()
+  isOrgVerifiedLoader.clearAll()
 })
 
 afterAll(async () => {
@@ -134,8 +134,8 @@ test('Founder is billing lead', async () => {
     }
   ])
 
-  const orgIds = await getVerifiedOrgIdsLoader.load('parabol.co')
-  expect(orgIds).toIncludeSameMembers(['parabol.co'])
+  const isVerified = await isOrgVerifiedLoader.load('parabol.co')
+  expect(isVerified).toBe(true)
 })
 
 test('Inactive founder is ignored', async () => {
@@ -152,8 +152,8 @@ test('Inactive founder is ignored', async () => {
     }
   ])
 
-  const orgIds = await getVerifiedOrgIdsLoader.load('parabol.co')
-  expect(orgIds).toIncludeSameMembers([])
+  const isVerified = await isOrgVerifiedLoader.load('parabol.co')
+  expect(isVerified).toBe(false)
 })
 
 test('Non-founder billing lead is checked', async () => {
@@ -175,8 +175,8 @@ test('Non-founder billing lead is checked', async () => {
     }
   ])
 
-  const orgIds = await getVerifiedOrgIdsLoader.load('parabol.co')
-  expect(orgIds).toIncludeSameMembers(['parabol.co'])
+  const isVerified = await isOrgVerifiedLoader.load('parabol.co')
+  expect(isVerified).toBe(true)
 })
 
 test('Founder is checked even when not billing lead', async () => {
@@ -191,15 +191,15 @@ test('Founder is checked even when not billing lead', async () => {
     }
   ])
 
-  const orgIds = await getVerifiedOrgIdsLoader.load('parabol.co')
-  expect(orgIds).toIncludeSameMembers(['parabol.co'])
+  const isVerified = await isOrgVerifiedLoader.load('parabol.co')
+  expect(isVerified).toBe(true)
 })
 
 test('Empty org does not throw', async () => {
   await addOrg('parabol.co', [])
 
-  const orgIds = await getVerifiedOrgIdsLoader.load('parabol.co')
-  expect(orgIds).toIncludeSameMembers([])
+  const isVerified = await isOrgVerifiedLoader.load('parabol.co')
+  expect(isVerified).toBe(false)
 })
 
 test('Orgs with verified emails from different domains do not qualify', async () => {
@@ -211,6 +211,6 @@ test('Orgs with verified emails from different domains do not qualify', async ()
     }
   ])
 
-  const orgIds = await getVerifiedOrgIdsLoader.load('parabol.co')
-  expect(orgIds).toIncludeSameMembers([])
+  const isVerified = await isOrgVerifiedLoader.load('parabol.co')
+  expect(isVerified).toBe(false)
 })
