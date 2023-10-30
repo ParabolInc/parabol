@@ -16,6 +16,8 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import {DataLoaderWorker} from '../../graphql'
+import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
+import isValid from '../../isValid'
 
 const bootstrapNewUser = async (
   newUser: User,
@@ -24,10 +26,22 @@ const bootstrapNewUser = async (
   searchParams?: string
 ) => {
   const r = await getRethink()
-  const {id: userId, createdAt, preferredName, email, featureFlags, tier, pseudoId} = newUser
+  const {
+    id: userId,
+    createdAt,
+    preferredName,
+    email,
+    featureFlags,
+    tier,
+    pseudoId,
+    identities
+  } = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
-  const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(domain)
+  const [isCompanyDomain, organizations] = await Promise.all([
+    dataLoader.get('isCompanyDomain').load(domain),
+    dataLoader.get('organizationsByActiveDomain').load(domain)
+  ])
   const usersWithDomain = isCompanyDomain ? await getUsersbyDomain(domain) : []
   const isPatient0 = !!domain && isCompanyDomain && usersWithDomain.length === 0
 
@@ -45,11 +59,15 @@ const bootstrapNewUser = async (
     experimentalFlags.push('retrosInDisguise')
   }
 
-  await Promise.all([
+  const isVerified = identities.some((identity) => identity.isEmailVerified)
+  const orgIds = organizations.map(({id}) => id)
+
+  const [teamsWithAutoJoinRes] = await Promise.all([
+    isVerified && isCompanyDomain ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
+    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
-    }).run(),
-    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags})
+    }).run()
   ])
 
   // Identify the user so user properties are set before any events are sent
@@ -65,8 +83,34 @@ const bootstrapNewUser = async (
     anonymousId: pseudoId
   })
 
+  const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
   const tms = [] as string[]
-  if (isOrganic) {
+
+  if (teamsWithAutoJoin.length > 0) {
+    await Promise.all(
+      teamsWithAutoJoin.map((team) => {
+        const teamId = team.id
+        return Promise.all([
+          acceptTeamInvitation(team, userId, dataLoader),
+          isOrganic
+            ? Promise.all([
+                r
+                  .table('SuggestedAction')
+                  .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
+                  .run()
+              ])
+            : r
+                .table('SuggestedAction')
+                .insert([
+                  new SuggestedActionTryTheDemo({userId}),
+                  new SuggestedActionCreateNewTeam({userId})
+                ])
+                .run(),
+          analytics.autoJoined(userId, teamId)
+        ])
+      })
+    )
+  } else if (isOrganic) {
     const orgId = generateUID()
     const teamId = generateUID()
     tms.push(teamId) // MUTATIVE
@@ -81,7 +125,8 @@ const bootstrapNewUser = async (
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam),
       addSeedTasks(userId, teamId),
-      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
+      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run(),
+      sendPromptToJoinOrg(newUser, dataLoader)
     ])
     analytics.newOrg(userId, orgId, teamId, true)
   } else {
@@ -90,11 +135,8 @@ const bootstrapNewUser = async (
       .insert([new SuggestedActionTryTheDemo({userId}), new SuggestedActionCreateNewTeam({userId})])
       .run()
   }
-  analytics.accountCreated(userId, !isOrganic, isPatient0)
 
-  if (isOrganic) {
-    sendPromptToJoinOrg(newUser, dataLoader)
-  }
+  analytics.accountCreated(userId, !isOrganic, isPatient0)
 
   return new AuthToken({sub: userId, tms})
 }
