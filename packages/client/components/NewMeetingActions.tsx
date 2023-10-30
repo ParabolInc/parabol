@@ -4,7 +4,7 @@ import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../mutations/SendClientSideEvent'
 import {Breakpoint, Threshold} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
@@ -93,7 +93,7 @@ const NewMeetingActions = (props: Props) => {
 
   useEffect(() => {
     if (isLocked) {
-      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'startNewMeetingOrganizationLockedError',
         orgId
       })

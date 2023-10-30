@@ -7,6 +7,7 @@ interface Input {
 }
 
 export default class NotificationTeamInvitation extends Notification {
+  readonly type = 'TEAM_INVITATION'
   invitationId: string
   teamId: string
   constructor(input: Input) {

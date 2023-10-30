@@ -8,6 +8,7 @@ type Subscription {
 
 type MeetingSubscriptionPayload {
   fieldName: String!
+  AddTranscriptionBotSuccess: AddTranscriptionBotSuccess
   AutogroupSuccess: AutogroupSuccess
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess

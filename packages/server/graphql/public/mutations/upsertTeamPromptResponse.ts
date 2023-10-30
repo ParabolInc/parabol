@@ -93,6 +93,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   }
 
   notifications.forEach((notification) => {
+    IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
     publishNotification(notification, subOptions)
   })
 

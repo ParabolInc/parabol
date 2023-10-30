@@ -13,7 +13,7 @@ import JiraSVG from '../JiraSVG'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../mutations/SendClientSideEvent'
 import useAtmosphere from '../../hooks/useAtmosphere'
 
 interface Props {
@@ -46,7 +46,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   useEffect(() => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Impression', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Impression', {
       teamId: meeting.teamId,
       meetingId: meeting.id
     })
@@ -95,7 +95,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
               <Tab
                 key={tab.label}
                 onClick={() => {
-                  SendClientSegmentEventMutation(atmosphere, 'Your Work Integration Clicked', {
+                  SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
                     teamId: meeting.teamId,
                     meetingId: meeting.id,
                     service: baseTabs[idx]?.service

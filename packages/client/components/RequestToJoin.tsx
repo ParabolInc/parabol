@@ -4,7 +4,7 @@ import {useRouteMatch} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../mutations/SendClientSideEvent'
 import {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
 import PrimaryButton from './PrimaryButton'
 
@@ -17,9 +17,7 @@ const RequestToJoinComponent = () => {
 
   const handleRequestJoin = () => {
     if (!teamId) return
-    SendClientSegmentEventMutation(atmosphere, 'Sent request to join from public teams', {
-      teamId
-    })
+    SendClientSideEvent(atmosphere, 'Sent request to join from public teams', {teamId})
     PushInvitationMutation(
       atmosphere,
       {teamId},

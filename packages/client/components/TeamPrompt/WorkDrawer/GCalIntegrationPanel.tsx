@@ -8,7 +8,7 @@ import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import GcalClientManager from '../../../utils/GcalClientManager'
 import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
 import clsx from 'clsx'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
 
 const GCAL_QUERY_TABS = [
   {
@@ -77,7 +77,7 @@ const GCalPanel = (props: Props) => {
     const {clientId, id: providerId} = gcal.cloudProvider
     GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamMember.teamId, mutationProps)
 
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'gcal'
@@ -85,7 +85,7 @@ const GCalPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
       service: 'gcal',
       buttonLabel: label
     })

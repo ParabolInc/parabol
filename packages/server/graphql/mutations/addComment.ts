@@ -20,6 +20,7 @@ import {GQLContext} from '../graphql'
 import publishNotification from '../public/mutations/helpers/publishNotification'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 
 type AddCommentMutationVariables = {
   comment: {
@@ -135,6 +136,11 @@ const addComment = {
 
         await r.table('Notification').insert(notification).run()
 
+        IntegrationNotifier.sendNotificationToUser?.(
+          dataLoader,
+          notification.id,
+          notification.userId
+        )
         publishNotification(notification, subOptions)
       }
     }

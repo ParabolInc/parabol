@@ -1,7 +1,5 @@
 import {useEffect, useRef} from 'react'
-import SendClientSegmentEventMutation, {
-  SendClientSegmentEventOptions
-} from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent, {SendClientSegmentEventOptions} from '../mutations/SendClientSideEvent'
 import useAtmosphere from './useAtmosphere'
 
 // certain users keep sending this non-stop. not sure why.
@@ -11,7 +9,7 @@ const useSegmentTrack = (event: string, options: SendClientSegmentEventOptions) 
   const initialOptionsRef = useRef(options)
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    SendClientSegmentEventMutation(atmosphere, event, {
+    SendClientSideEvent(atmosphere, event, {
       ...initialOptionsRef.current,
       eventId: ++eventId
     })
