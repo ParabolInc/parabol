@@ -65,22 +65,18 @@ const DashNavList = (props: Props) => {
         viewerTeams {
           ...DashNavListTeam @relay(mask: false)
         }
-        viewerOrganizationUser {
-          user {
-            featureFlags {
-              publicTeams
-            }
-          }
+        featureFlags {
+          publicTeams
         }
       }
     `,
     organizationsRef
   )
-  const hasPublicTeamsFlag =
-    organizations?.[0]?.viewerOrganizationUser?.user?.featureFlags?.publicTeams
-  const teams = organizations?.flatMap((org) =>
-    hasPublicTeamsFlag ? org.allTeams : org.viewerTeams
-  )
+  const teams = organizations?.flatMap((org) => {
+    // if the user is a billing leader, allTeams will return all teams even if they don't have the publicTeams flag
+    const hasPublicTeamsFlag = org.featureFlags.publicTeams
+    return hasPublicTeamsFlag ? org.allTeams : org.viewerTeams
+  })
 
   const teamsByOrgKey = useMemo(() => {
     if (!teams) return null

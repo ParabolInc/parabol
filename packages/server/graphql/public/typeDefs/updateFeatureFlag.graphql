@@ -14,7 +14,6 @@ enum UserFlagEnum {
   gcal
   adHocTeams
   noTemplateLimit
-  publicTeams
 }
 
 """
@@ -33,7 +32,6 @@ type UserFeatureFlags {
   gcal: Boolean!
   adHocTeams: Boolean!
   noTemplateLimit: Boolean!
-  publicTeams: Boolean!
 }
 
 extend type Mutation {

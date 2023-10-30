@@ -11,8 +11,7 @@ const UserFlagEnum = new GraphQLEnumType({
     checkoutFlow: {},
     gcal: {},
     adHocTeams: {},
-    noTemplateLimit: {},
-    publicTeams: {}
+    noTemplateLimit: {}
   }
 })
 
