@@ -5,7 +5,7 @@ import activityDetailsQuery, {
 } from '~/__generated__/ActivityDetailsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useRouter from '../../../hooks/useRouter'
-import {renderLoader} from '../../../utils/relay/renderLoader'
+import {Loader} from '../../../utils/relay/renderLoader'
 import ActivityDetails from './ActivityDetails'
 
 const ActivityDetailsRoute = () => {
@@ -18,9 +18,7 @@ const ActivityDetailsRoute = () => {
   if (!activityId) return <Redirect to='/activity-library' />
 
   return (
-    <Suspense fallback={renderLoader()}>
-      {queryRef && <ActivityDetails queryRef={queryRef} />}
-    </Suspense>
+    <Suspense fallback={<Loader />}>{queryRef && <ActivityDetails queryRef={queryRef} />}</Suspense>
   )
 }
 

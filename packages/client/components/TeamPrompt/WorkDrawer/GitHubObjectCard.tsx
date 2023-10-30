@@ -15,6 +15,8 @@ import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
   OPEN: githubIssueOpen,
@@ -73,6 +75,8 @@ const GitHubObjectCard = (props: Props) => {
     resultRef
   )
 
+  const atmosphere = useAtmosphere()
+
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -84,8 +88,21 @@ const GitHubObjectCard = (props: Props) => {
     originRef: copiedTooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
 
+  const trackLinkClick = () => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Link Clicked', {
+      service: 'github'
+    })
+  }
+
+  const trackCopy = () => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Copied', {
+      service: 'github'
+    })
+  }
+
   const handleCopy = () => {
     openCopiedTooltip()
+    trackCopy()
     setTimeout(() => {
       closeCopiedTooltip()
     }, 2000)
@@ -112,13 +129,25 @@ const GitHubObjectCard = (props: Props) => {
     <div className='rounded border border-solid border-slate-300 p-4 hover:border-slate-600'>
       <div className='flex gap-2 text-xs text-slate-600'>
         {statusImg && <img src={statusImg} />}
-        <a href={url} target='_blank' className='font-medium hover:underline' rel='noreferrer'>
+        <a
+          href={url}
+          target='_blank'
+          className='font-medium hover:underline'
+          rel='noreferrer'
+          onClick={trackLinkClick}
+        >
           #{number}
         </a>
         <div>Updated {relativeDate(updatedAt)}</div>
       </div>
       <div className='my-2 text-sm'>
-        <a href={url} target='_blank' className='hover:underline' rel='noreferrer'>
+        <a
+          href={url}
+          target='_blank'
+          className='hover:underline'
+          rel='noreferrer'
+          onClick={trackLinkClick}
+        >
           {title}
         </a>
       </div>
@@ -132,6 +161,7 @@ const GitHubObjectCard = (props: Props) => {
             target='_blank'
             className='text-xs text-slate-600 hover:underline'
             rel='noreferrer'
+            onClick={trackLinkClick}
           >
             {repoName}
           </a>

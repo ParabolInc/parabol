@@ -33,7 +33,7 @@ const bootstrapNewUser = async (
     email,
     featureFlags,
     tier,
-    segmentId,
+    pseudoId,
     identities
   } = newUser
   // email is checked by the caller
@@ -80,7 +80,7 @@ const bootstrapNewUser = async (
     featureFlags: experimentalFlags,
     highestTier: tier,
     isPatient0,
-    anonymousId: segmentId
+    anonymousId: pseudoId
   })
 
   const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)

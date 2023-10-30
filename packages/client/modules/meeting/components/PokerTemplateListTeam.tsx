@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
 import {PALETTE} from '../../../styles/paletteV3'
 import {PokerTemplateListTeam_team$key} from '../../../__generated__/PokerTemplateListTeam_team.graphql'
 import {PokerTemplateListTeam_teamTemplates$key} from '../../../__generated__/PokerTemplateListTeam_teamTemplates.graphql'
@@ -74,7 +74,7 @@ const PokerTemplateListTeam = (props: Props) => {
   if (teamTemplates.length === 0) {
     if (tier === 'starter') {
       const goToBilling = () => {
-        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+        SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',
           meetingType: 'poker'
         })

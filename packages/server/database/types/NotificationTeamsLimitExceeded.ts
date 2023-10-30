@@ -8,6 +8,7 @@ interface Input {
 }
 
 export default class NotificationTeamsLimitExceeded extends Notification {
+  readonly type = 'TEAMS_LIMIT_EXCEEDED'
   orgId: string
   orgName: string
   orgPicture?: string

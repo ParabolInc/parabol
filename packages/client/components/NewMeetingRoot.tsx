@@ -9,7 +9,7 @@ import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import {renderLoader} from '../utils/relay/renderLoader'
+import {Loader} from '../utils/relay/renderLoader'
 import NewMeeting from './NewMeeting'
 
 const NewMeetingRoot = () => {
@@ -43,7 +43,7 @@ const NewMeetingRoot = () => {
   }, [])
 
   return modalPortal(
-    <Suspense fallback={renderLoader()}>
+    <Suspense fallback={<Loader />}>
       {queryRef && <NewMeeting teamId={teamId} queryRef={queryRef} onClose={closePortal} />}
     </Suspense>
   )

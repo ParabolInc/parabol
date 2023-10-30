@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/mutations/SendClientSideEvent'
 import {DraggableReflectionCard_meeting$data} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
@@ -268,7 +268,7 @@ const useDragAndDrop = (
       const event = isReflectionInSpotlightResults
         ? `Spotlight result to ${targetType === 'REFLECTION_GROUP' ? 'source' : 'result'}`
         : `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
-      SendClientSegmentEventMutation(atmosphere, event, {
+      SendClientSideEvent(atmosphere, event, {
         reflectionId,
         meetingId,
         spotlightSearchQuery

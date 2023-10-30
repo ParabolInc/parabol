@@ -107,10 +107,10 @@ export default {
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
-      dataLoader.get('meetingTemplates').loadNonNull(templateId)
+      dataLoader.get('meetingTemplates').loadNonNull(templateId),
+      updateTeamInsights(teamId, dataLoader)
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
-    updateTeamInsights(teamId, dataLoader)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     if (!isKill) {

@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
 import lazyPreload from '../../../utils/lazyPreload'
 import {RetroTemplatePicker_settings$key} from '../../../__generated__/RetroTemplatePicker_settings.graphql'
 
@@ -46,7 +46,7 @@ const RetroTemplatePicker = (props: Props) => {
 
   const handleClick = () => {
     togglePortal()
-    SendClientSegmentEventMutation(atmosphere, 'Opened Template Picker', {
+    SendClientSideEvent(atmosphere, 'Opened Template Picker', {
       meetingType: 'retrospective',
       scope
     })

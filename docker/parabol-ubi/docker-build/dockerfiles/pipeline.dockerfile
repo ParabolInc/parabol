@@ -10,7 +10,7 @@ EXPOSE ${PORT}
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Final image - copies in parabol build and applies all security configurations to container if enabled
-FROM redhat/ubi8:8.6
+FROM redhat/ubi9:9.2
 
 ARG _SECURITY_ENABLED="true"
 

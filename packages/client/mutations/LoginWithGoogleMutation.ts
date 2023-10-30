@@ -10,13 +10,13 @@ const mutation = graphql`
   mutation LoginWithGoogleMutation(
     $code: ID!
     $invitationToken: ID!
-    $segmentId: ID
+    $pseudoId: ID
     $isInvitation: Boolean!
     $params: String!
   ) {
     loginWithGoogle(
       code: $code
-      segmentId: $segmentId
+      pseudoId: $pseudoId
       invitationToken: $invitationToken
       params: $params
     ) {

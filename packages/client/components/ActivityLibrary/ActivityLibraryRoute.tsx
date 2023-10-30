@@ -3,16 +3,14 @@ import activityLibraryQuery, {
   ActivityLibraryQuery
 } from '~/__generated__/ActivityLibraryQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
-import {renderLoader} from '../../utils/relay/renderLoader'
+import {Loader} from '../../utils/relay/renderLoader'
 import {ActivityLibrary} from './ActivityLibrary'
 
 const ActivityLibraryRoute = () => {
   const queryRef = useQueryLoaderNow<ActivityLibraryQuery>(activityLibraryQuery)
 
   return (
-    <Suspense fallback={renderLoader()}>
-      {queryRef && <ActivityLibrary queryRef={queryRef} />}
-    </Suspense>
+    <Suspense fallback={<Loader />}>{queryRef && <ActivityLibrary queryRef={queryRef} />}</Suspense>
   )
 }
 

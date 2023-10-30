@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../mutations/SendClientSideEvent'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
@@ -107,7 +107,7 @@ const DemoMeetingCard = () => {
   const atmospehere = useAtmosphere()
 
   const onOpen = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Demo Meeting Card Clicked')
+    SendClientSideEvent(atmospehere, 'Demo Meeting Card Clicked')
   }, [])
 
   return (

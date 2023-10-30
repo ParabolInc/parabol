@@ -302,7 +302,8 @@ const initDemoOrg = () => {
       suggestGroups: false,
       teamsLimit: false,
       noPromptToJoinOrg: false,
-      AIGeneratedDiscussionPrompt: false
+      AIGeneratedDiscussionPrompt: false,
+      meetingInception: false
     },
     showConversionModal: false
   } as const
@@ -481,6 +482,10 @@ export class DemoDiscussion {
   id: string
   thread = new DemoDiscussionThread()
   commentCount = 0
+  team = {
+    id: demoTeamId,
+    organization: initDemoOrg()
+  }
   constructor(reflectionGroupId: string) {
     this.createdAt = new Date().toJSON()
     this.id = `discussion:${reflectionGroupId}`
