@@ -5,14 +5,16 @@ import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegratio
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import GCalEventCard from './GCalEventCard'
 import {OpenInNew} from '@mui/icons-material'
+import {Link} from 'react-router-dom'
 
 interface Props {
   queryRef: PreloadedQuery<GCalIntegrationResultsQuery>
   order: 'DESC' | 'ASC'
+  teamId: string
 }
 
 const GCalIntegrationResults = (props: Props) => {
-  const {queryRef, order} = props
+  const {queryRef, order, teamId} = props
   const query = usePreloadedQuery(
     graphql`
       query GCalIntegrationResultsQuery($teamId: ID!, $startDate: DateTime!, $endDate: DateTime!) {
@@ -94,6 +96,12 @@ const GCalIntegrationResults = (props: Props) => {
             <div className='mt-7 w-2/3 text-center'>
               Looks like you don’t have any events to display
             </div>
+            <Link
+              to={`/team/${teamId}/settings/integrations`}
+              className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+            >
+              Review your Google Calendar configuration
+            </Link>
           </div>
         )}
       </div>

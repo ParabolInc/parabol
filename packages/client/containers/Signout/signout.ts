@@ -1,10 +1,10 @@
 import Atmosphere from '../../Atmosphere'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../mutations/SendClientSideEvent'
 import {LocalStorageKey} from '../../types/constEnums'
 
 const signout = (atmosphere: Atmosphere, history: any) => {
   window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
-  SendClientSegmentEventMutation(atmosphere, 'User Logout')
+  SendClientSideEvent(atmosphere, 'User Logout')
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: 'logOut',
     message: 'You’ve been logged out successfully.',

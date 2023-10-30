@@ -8,13 +8,15 @@ import halloweenRetrospectiveTemplate from '../../../../../static/images/illustr
 import JiraObjectCard from './JiraObjectCard'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import {Link} from 'react-router-dom'
 
 interface Props {
   queryRef: PreloadedQuery<JiraIntegrationResultsQuery>
+  teamId: string
 }
 
 const JiraIntegrationResults = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef, teamId} = props
   const query = usePreloadedQuery(
     graphql`
       query JiraIntegrationResultsQuery($teamId: ID!) {
@@ -91,6 +93,12 @@ const JiraIntegrationResults = (props: Props) => {
             <div className='mt-7 w-2/3 text-center'>
               {error?.message ? error.message : `Looks like you don’t have any issues to display.`}
             </div>
+            <Link
+              to={`/team/${teamId}/settings/integrations`}
+              className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+            >
+              Review your Jira configuration
+            </Link>
           </div>
         )}
         {lastItem}

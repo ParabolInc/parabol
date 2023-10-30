@@ -12,12 +12,15 @@ const connectRethinkDB = async () => {
 export async function up() {
   await connectRethinkDB()
   await r
-    .table('ReflectPrompt')
-    .get('sWOTAnalysisTemplate:stengthsPrompt')
-    .update({question: 'Strengths'})
+    .table('EmailVerification')
+    .replace((row) => row.without('segmentId').merge({pseudoId: row('segmentId')}))
     .run()
 }
 
 export async function down() {
-  // noop
+  await connectRethinkDB()
+  await r
+    .table('EmailVerification')
+    .replace((row) => row.without('pseudoId').merge({segmentId: row('pseudoId')}))
+    .run()
 }

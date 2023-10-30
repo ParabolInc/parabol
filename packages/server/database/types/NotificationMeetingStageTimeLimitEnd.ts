@@ -6,6 +6,7 @@ interface Input {
 }
 
 export default class NotificationMeetingStageTimeLimitEnd extends Notification {
+  readonly type = 'MEETING_STAGE_TIME_LIMIT_END'
   meetingId: string
   constructor(input: Input) {
     const {meetingId, userId} = input

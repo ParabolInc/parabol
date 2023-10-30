@@ -119,7 +119,7 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
             Paste your <strong>Zoom meeting URL</strong> below and we’ll transcribe your meeting.
           </>
         ) : (
-          'Your Zoom meeting is being transcribed and the content will be available here once the meeting has ended.'
+          `Your Zoom transcription will begin once the 'Parabol Notetaker' bot joins the call, and it will be available once the meeting has ended.`
         )}
       </Message>
       {showVideoURLInput && (
