@@ -38,7 +38,7 @@ if (!__PRODUCTION__) {
 }
 
 process.on('SIGTERM', () => {
-  const RECONNECT_WINDOW = 60 // seconds
+  const RECONNECT_WINDOW = 60_000 // ms
   Object.values(activeClients.store).forEach((connectionContext) => {
     const disconnectIn = ~~(Math.random() * RECONNECT_WINDOW)
     setTimeout(() => {
