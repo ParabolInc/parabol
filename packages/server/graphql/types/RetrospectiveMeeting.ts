@@ -22,6 +22,7 @@ import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import Task from './Task'
 import AutogroupReflectionGroup from './AutogroupReflectionGroup'
+import TranscriptBlock from './TranscriptBlock'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
@@ -176,7 +177,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       description: 'the total number of votes allowed for each participant'
     },
     transcription: {
-      type: GraphQLString,
+      type: GraphQLList(TranscriptBlock),
       description: 'The transcription of the meeting'
     },
     votesRemaining: {

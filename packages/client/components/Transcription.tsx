@@ -1,35 +1,30 @@
-import styled from '@emotion/styled'
 import React from 'react'
-import {PALETTE} from '../styles/paletteV3'
+import {RetroDiscussPhase_meeting$data} from '../__generated__/RetroDiscussPhase_meeting.graphql'
 
-const Wrapper = styled('div')({
-  padding: '12px 24px',
-  margin: 'auto',
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: 0,
-  overflow: 'auto'
-})
-
-const Message = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  lineHeight: '20px',
-  margin: '24 0'
-})
+export type TranscriptBlock = {
+  speaker: string
+  words: string
+}
 
 interface Props {
-  transcription: string | null
+  transcription: NonNullable<RetroDiscussPhase_meeting$data['transcription']>
 }
 
 const Transcription = (props: Props) => {
   const {transcription} = props
 
+  const validTranscriptionBlocks = transcription.filter(
+    (block): block is TranscriptBlock => block !== null
+  )
   return (
-    <Wrapper>
-      <Message>{transcription}</Message>
-    </Wrapper>
+    <div className='flex h-full flex-col overflow-auto px-6 py-2 text-sm'>
+      {validTranscriptionBlocks.map((block, idx) => (
+        <div key={idx} className='my-2'>
+          <div className='font-semibold text-slate-700'>{block.speaker}</div>
+          <div className='text-slate-800'>{block.words}</div>
+        </div>
+      ))}
+    </div>
   )
 }
 
