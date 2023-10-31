@@ -5,7 +5,7 @@ import {PromptToJoinOrgNotification_notification$key} from '~/__generated__/Prom
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSideEvent from '../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import RequestToJoinDomainMutation from '../mutations/RequestToJoinDomainMutation'
 
 interface Props {

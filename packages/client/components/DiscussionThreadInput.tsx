@@ -30,7 +30,7 @@ import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import AddActivityButton from '~/components/AddActivityButton'
-import SendClientSideEvent from '../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',

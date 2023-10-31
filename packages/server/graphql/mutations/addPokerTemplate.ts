@@ -9,8 +9,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
-import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
 import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
+import {analytics} from '../../utils/analytics/analytics'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -102,7 +102,7 @@ const addPokerTemplate = {
         r.table('TemplateDimension').insert(newTemplateDimensions).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
+      analytics.templateMetrics(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -131,7 +131,7 @@ const addPokerTemplate = {
         r.table('TemplateDimension').insert(newDimension).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
+      analytics.templateMetrics(viewerId, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplatePayload', data, subOptions)

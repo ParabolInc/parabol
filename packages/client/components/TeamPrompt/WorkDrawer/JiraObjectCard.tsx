@@ -10,7 +10,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {JiraObjectCard_result$key} from '../../../__generated__/JiraObjectCard_result.graphql'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   resultRef: JiraObjectCard_result$key

@@ -6,7 +6,7 @@ import {useHistory} from 'react-router'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {PALETTE} from '../../../styles/paletteV3'
 import {
   ReflectTemplateListTeam_teamTemplates$key,
