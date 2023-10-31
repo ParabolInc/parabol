@@ -1,7 +1,7 @@
 {
   "name": "parabol-server",
   "description": "An open-source app for building smarter, more agile teams.",
-  "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
+  "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
   "version": "7.3.0",
   "repository": {
