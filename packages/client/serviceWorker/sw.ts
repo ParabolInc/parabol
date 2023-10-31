@@ -31,7 +31,7 @@ const onInstall = async (_event: ExtendableEvent) => {
   // if this is their first service worker, fetch it all
   if (!oldStaticCacheName) {
     console.log('Installing service worker')
-    return newCache.addAll(urls)
+    return newCache.addAll(urls).catch(console.error)
   }
 
   // if they already have some assets, forward them over to the new cache & fetch the rest
@@ -45,7 +45,7 @@ const onInstall = async (_event: ExtendableEvent) => {
       newCache.put(urls[idx], res)
     })
   )
-  return newCache.addAll(newUrls)
+  return newCache.addAll(urls).catch(console.error)
 }
 
 const onActivate = async (_event: ExtendableEvent) => {
