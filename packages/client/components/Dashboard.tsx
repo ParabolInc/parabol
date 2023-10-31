@@ -156,7 +156,13 @@ const Dashboard = (props: Props) => {
               )}
             />
             <Route path='/me' component={UserDashboard} />
-            <Route exact path='/team/:teamId/requestToJoin' component={RequestToJoinComponent} />
+            <Route
+              exact
+              path='/team/:teamId/requestToJoin'
+              render={(routeProps) => (
+                <RequestToJoinComponent key={routeProps.match.params.teamId} {...routeProps} />
+              )}
+            />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
             <Route path='/usage' component={InsightsRoot} />
