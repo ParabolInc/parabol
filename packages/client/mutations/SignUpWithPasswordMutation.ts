@@ -58,14 +58,14 @@ const SignUpWithPasswordMutation: StandardMutation<
         const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken
         atmosphere.setAuthToken(authToken)
 
-        const defaultRedirectPath = user?.featureFlags.signUpDestinationTeam
+        const redirectPath = user?.featureFlags.signUpDestinationTeam
           ? `/team/${user?.teams?.[0]?.id}`
           : '/meetings'
 
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,
           history,
-          defaultRedirectPath
+          redirectPath
         })
       }
     }

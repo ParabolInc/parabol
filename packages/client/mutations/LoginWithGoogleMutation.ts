@@ -59,7 +59,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
         handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken ?? loginWithGoogle.authToken
         atmosphere.setAuthToken(authToken)
-        const defaultRedirectPath =
+        const redirectPath =
           isNewUser && user?.featureFlags.signUpDestinationTeam
             ? `/team/${user?.teams?.[0]?.id}`
             : '/meetings'
@@ -67,7 +67,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,
           history,
-          defaultRedirectPath
+          redirectPath
         })
       }
     }
