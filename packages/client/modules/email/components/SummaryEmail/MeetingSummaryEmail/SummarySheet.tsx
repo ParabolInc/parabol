@@ -26,7 +26,7 @@ import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import {TableChart} from '@mui/icons-material'
 import {Link} from 'react-router-dom'
-import SendClientSideEvent from '../../../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))

@@ -8,7 +8,7 @@ import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 import GcalClientManager from '../../../utils/GcalClientManager'
 import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
 import clsx from 'clsx'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const GCAL_QUERY_TABS = [
   {

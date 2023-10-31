@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import SendClientSideEvent from '~/mutations/SendClientSideEvent'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {DraggableReflectionCard_meeting$data} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'

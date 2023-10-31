@@ -9,10 +9,10 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
-import SendClientSideEvent from '../../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
-import {UpgradeCTALocationEnum} from '../../../../__generated__/SendClientSideEventMutation.graphql'
+import {UpgradeCTALocationEnumType} from 'parabol-server/graphql/types/UpgradeCTALocationEnum'
 import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 
 const StyledButton = styled(PrimaryButton)({
@@ -89,7 +89,7 @@ const UnpaidTeamModal = (props: Props) => {
   const email = firstBillingLeader?.email ?? 'Unknown'
   const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1
 
-  const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnum) => {
+  const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnumType) => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation
     })

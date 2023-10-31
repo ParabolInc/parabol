@@ -1,5 +1,5 @@
 import Atmosphere from '../../Atmosphere'
-import SendClientSideEvent from '../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import {LocalStorageKey} from '../../types/constEnums'
 
 const signout = (atmosphere: Atmosphere, history: any) => {
