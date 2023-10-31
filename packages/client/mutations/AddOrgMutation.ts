@@ -30,7 +30,7 @@ graphql`
     team {
       id
       name
-      isViewerOnTeam
+      ...PublicTeamsFrag_team
       ...MeetingsDashActiveMeetings
       ...Team_team
     }
