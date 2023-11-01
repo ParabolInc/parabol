@@ -35,7 +35,6 @@ interface Window {
     google: string
     googleAnalytics: string
     publicPath: string
-    segment: string
     sentry: string
     slack: string
     stripe: string

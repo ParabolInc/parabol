@@ -6,7 +6,7 @@ import {toEpochSeconds} from '../utils/epochTime'
 import publishWebhookGQL from '../utils/publishWebhookGQL'
 import uWSAsyncHandler from './uWSAsyncHandler'
 
-const {SEGMENT_FN_KEY, SERVER_SECRET} = process.env
+const {SERVER_SECRET} = process.env
 
 interface IntranetPayload {
   query: string
@@ -33,12 +33,12 @@ const webhookGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: Htt
   }
 
   // verify timestamp
-  const segmentSig = crypto
-    .createHmac('sha256', SEGMENT_FN_KEY!)
-    .update(crypto.createHmac('sha256', SERVER_SECRET!).update(timestampStr).digest('base64'))
+  const hmacDigest = crypto
+    .createHmac('sha256', SERVER_SECRET!)
+    .update(timestampStr)
     .digest('base64')
 
-  if (segmentSig !== signature) {
+  if (hmacDigest !== signature) {
     console.log('bad sig')
     res.writeStatus('401').end()
     return
