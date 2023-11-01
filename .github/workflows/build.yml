@@ -34,6 +34,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Get changed files
+        id: files
+        uses: jitterbit/get-changed-files@v1
+
+      - name: Check migration conflicts
+        run: |
+          git checkout master
+          NEWEST_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1 | cut -d_ -f1)
+          echo $NEWEST_MIGRATION
+          for changed_file in ${{ steps.files.outputs.added }}; do
+            echo "Do something with this ${changed_file}."
+            if [ ${changedfile} == packages/server/postgres/migrations/* ]; then
+              CUR_MIGRATION=$(echo ${changedfile} | cut -d_ -f1)
+              if [ "$CUR_MIGRATION -le "$NEWEST_MIGRATION ]; then
+                echo Migration predates the newest migration on master. Please rename $CUR_MIGRATION
+                exit 1
+              fi
+              echo done 1
+            fi
+          done
+
       - name: Setup environment variables
         run: |
           IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') && (github.ref_name == 'master' || startsWith(github.ref_name, 'hotfix')) }}
