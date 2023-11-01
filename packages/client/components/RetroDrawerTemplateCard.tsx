@@ -5,10 +5,11 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {ActivityLibraryCard} from './ActivityLibrary/ActivityLibraryCard'
 import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
+import {RetroDrawerTemplateCard_template$key} from '~/__generated__/RetroDrawerTemplateCard_template.graphql'
 import {CategoryID, CATEGORY_THEMES} from '././ActivityLibrary/Categories'
 
 interface Props {
-  templateRef: any
+  templateRef: RetroDrawerTemplateCard_template$key
 }
 
 const RetroDrawerTemplateCard = (props: Props) => {
@@ -17,16 +18,9 @@ const RetroDrawerTemplateCard = (props: Props) => {
     graphql`
       fragment RetroDrawerTemplateCard_template on MeetingTemplate {
         ...ActivityLibraryCardDescription_template
-        id
-        teamId
-        team {
-          name
-        }
         name
-        type
         category
         illustrationUrl
-        isRecommended
         isFree
       }
     `,
@@ -37,7 +31,6 @@ const RetroDrawerTemplateCard = (props: Props) => {
     <div className='px-4 py-2'>
       <ActivityLibraryCard
         className='group aspect-[256/160] flex-1 hover:cursor-pointer'
-        key={template.id}
         theme={CATEGORY_THEMES[template.category as CategoryID]}
         title={template.name}
         badge={
