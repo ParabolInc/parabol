@@ -31,13 +31,13 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Checkout master
         uses: actions/checkout@v3
         with:
           ref: master
+
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Check migration conflicts
         run: |
