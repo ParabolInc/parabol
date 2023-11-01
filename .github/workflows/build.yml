@@ -10,7 +10,6 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-    services:
       postgres:
         image: postgres:15.4
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
@@ -46,14 +45,17 @@ jobs:
           MAX_NEW_MIGRATION=$(echo $NEW_MIGRATIONS | tail -n 1)
           MAX_NEW_MIGRATION_DATE=$(echo $MAX_NEW_MIGRATION | cut -d_ -f1)
           echo $MAX_NEW_MIGRATION_DATE
+          echo $NEW_MIGRATIONS
 
           git checkout master
           OLD_MIGRATIONS=$(ls packages/server/postgres/migrations)
+
+          echo $OLD_MIGRATIONS
           OLD_MIGRATIONS_COUNT=$(echo $OLD_MIGRATIONS | wc -l)
           echo $OLD_MIGRATIONS_COUNT $NEW_MIGRATIONS_COUNT
           if [ $OLD_MIGRATIONS_COUNT == $NEW_MIGRATIONS_COUNT ]; then
             echo No new migrations found
-            exit 0
+            exit 1
           elif [[ 'OLD_MIGRATIONS_COUNT + 1' -lt 'NEW_MIGRATIONS_COUNT' ]]; then
             # Necessary since we only check the newest migration, not each one
             echo Please only PR 1 Migration at a time
