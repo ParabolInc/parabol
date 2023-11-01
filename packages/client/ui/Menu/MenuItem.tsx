@@ -14,7 +14,7 @@ export const MenuItem: React.FC<MenuItemProps> = (props: MenuItemProps) => {
 
   return (
     <DropdownMenu.Item
-      className={`flex w-full items-center rounded-md px-6 py-3 text-sm text-slate-700 outline-none hover:bg-slate-100 focus:bg-slate-100 ${
+      className={`flex w-full items-center rounded-md px-4 py-3 text-sm text-slate-700 outline-none hover:bg-slate-100 focus:bg-slate-100 ${
         isDisabled ? 'cursor-not-allowed ' : 'cursor-pointer'
       }`}
       onSelect={() => !isDisabled && onClick(value)}
