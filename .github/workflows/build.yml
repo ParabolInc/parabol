@@ -40,20 +40,16 @@ jobs:
 
       - name: Check migration conflicts
         run: |
+          CUR_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1 | cut -d_ -f1)
           git checkout master
           NEWEST_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1 | cut -d_ -f1)
+          echo $CUR_MIGRATION
           echo $NEWEST_MIGRATION
-          for changed_file in ${{ steps.files.outputs.added }}; do
-            echo "Do something with this ${changed_file}."
-            if [ ${changedfile} == packages/server/postgres/migrations/* ]; then
-              CUR_MIGRATION=$(echo ${changedfile} | cut -d_ -f1)
-              if [ "$CUR_MIGRATION -le "$NEWEST_MIGRATION ]; then
-                echo Migration predates the newest migration on master. Please rename $CUR_MIGRATION
-                exit 1
-              fi
-              echo done 1
-            fi
-          done
+          if [ "$CUR_MIGRATION -le "$NEWEST_MIGRATION ]; then
+            echo Migration predates the newest migration on master. Please rename $CUR_MIGRATION
+            exit 1
+          fi
+          echo done 1
 
       - name: Setup environment variables
         run: |
