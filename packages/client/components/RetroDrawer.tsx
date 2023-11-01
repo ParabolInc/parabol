@@ -1,17 +1,18 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {usePreloadedQuery} from 'react-relay'
-import {DiscussionThreadEnum} from '../types/constEnums'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroDrawerTemplateCard from './RetroDrawerTemplateCard'
 import {Drawer} from './TeamPrompt/TeamPromptDrawer'
 import {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
+import useBreakpoint from '../hooks/useBreakpoint'
 
 interface Props {
   setShowDrawer: (showDrawer: boolean) => void
   showDrawer: boolean
-  queryRef: any
+  queryRef: PreloadedQuery<RetroDrawerQuery>
 }
 
 const RetroDrawer = (props: Props) => {
@@ -34,7 +35,10 @@ const RetroDrawer = (props: Props) => {
     `,
     queryRef
   )
+
   const templates = data.viewer.availableTemplates.edges
+  const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer)
@@ -44,10 +48,15 @@ const RetroDrawer = (props: Props) => {
     <ResponsiveDashSidebar
       isOpen={showDrawer}
       isRightDrawer
-      onToggle={() => {}}
+      onToggle={toggleDrawer}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
-      <Drawer className='overflow-scroll' isDesktop={true} isMobile={false} isOpen={showDrawer}>
+      <Drawer
+        className='overflow-scroll'
+        isDesktop={isDesktop}
+        isMobile={isMobile}
+        isOpen={showDrawer}
+      >
         <div className='pt-4'>
           <div className='flex justify-between px-4'>
             <div className='pb-4 text-base font-semibold'>Templates</div>
