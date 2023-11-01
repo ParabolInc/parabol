@@ -6,6 +6,7 @@ import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 import isValid from '../../isValid'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import Task from '../../../database/types/Task'
 
 const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
   _source,
@@ -18,22 +19,34 @@ const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
 
   // VALIDATION
   const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
-  const validTasks = tasks.filter(async ({createdBy, teamId}) => {
+  const validTasksByTeamId = {} as {[teamId: string]: Task[]}
+
+  for (const task of tasks) {
+    const {createdBy, teamId} = task
+    const tasks = validTasksByTeamId[teamId] || []
+
     if (createdBy === viewerId) {
       // if viewer is the task owner, they can archive
-      return true
+      tasks.push(task)
+    } else {
+      const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+      if (teamMembers.some(({userId}) => userId === viewerId)) {
+        // or if viewer is in the team of the task, they can also archive
+        tasks.push(task)
+      }
     }
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    // or if viewer is in the team of the task, they can also archive
-    return teamMembers.some(({userId}) => userId === viewerId)
-  })
-  const teamIds = validTasks.map(({teamId}) => teamId)
+    validTasksByTeamId[teamId] = tasks
+  }
+
+  const validTasks = Object.values(validTasksByTeamId).flat()
+  const teamIds = Object.keys(validTasksByTeamId)
   const archivedTaskIds = validTasks.map(({id}) => id)
 
   // RESOLUTION
   archiveTasksForDB(validTasks)
 
   teamIds.forEach((teamId) => {
+    const archivedTaskIds = validTasksByTeamId[teamId]?.map(({id}) => id)
     publish(
       SubscriptionChannel.TEAM,
       teamId,
