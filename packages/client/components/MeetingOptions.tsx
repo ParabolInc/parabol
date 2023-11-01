@@ -4,6 +4,8 @@ import {Menu} from '../ui/Menu/Menu'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
+import useTooltip from '../hooks/useTooltip'
+import {MenuPosition} from '../hooks/useCoords'
 
 type Props = {
   setShowDrawer: (showDrawer: boolean) => void
@@ -13,6 +15,9 @@ type Props = {
 
 const MeetingOptions = (props: Props) => {
   const {setShowDrawer, showDrawer, hasReflections} = props
+  const {openTooltip, tooltipPortal, originRef, closeTooltip} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
 
   const handleClick = () => {
     setShowDrawer(!showDrawer)
@@ -27,13 +32,16 @@ const MeetingOptions = (props: Props) => {
         </OptionsButton>
       }
     >
-      <MenuItem
-        value='template'
-        label='Change template'
-        onClick={handleClick}
-        isDisabled={hasReflections}
-        icon={<SwapHorizIcon />}
-      />
+      <div ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
+        <MenuItem
+          value='template'
+          label='Change template'
+          onClick={handleClick}
+          isDisabled={hasReflections}
+          icon={<SwapHorizIcon />}
+        />
+      </div>
+      {tooltipPortal('You can only change the template before reflections have been added.')}
     </Menu>
   )
 }
