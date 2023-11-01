@@ -6,13 +6,15 @@ import RetroDrawer from './RetroDrawer'
 type Props = {
   showDrawer: boolean
   setShowDrawer: (showDrawer: boolean) => void
+  meetingId: string
 }
 
 const RetroDrawerRoot = (props: Props) => {
-  const {showDrawer, setShowDrawer} = props
+  const {showDrawer, setShowDrawer, meetingId} = props
   const queryRef = useQueryLoaderNow<RetroDrawerQuery>(retroDrawerQuery, {
     first: 200,
-    type: 'retrospective'
+    type: 'retrospective',
+    meetingId
   })
   return (
     <Suspense fallback={''}>

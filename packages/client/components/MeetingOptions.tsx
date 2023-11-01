@@ -8,17 +8,16 @@ import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
 type Props = {
   setShowDrawer: (showDrawer: boolean) => void
   showDrawer: boolean
-  isReflectPhase?: boolean
+  hasReflections: boolean
 }
 
 const MeetingOptions = (props: Props) => {
-  const {setShowDrawer, showDrawer, isReflectPhase} = props
+  const {setShowDrawer, showDrawer, hasReflections} = props
 
   const handleClick = () => {
     setShowDrawer(!showDrawer)
   }
 
-  if (!isReflectPhase) return null
   return (
     <Menu
       trigger={
@@ -32,6 +31,7 @@ const MeetingOptions = (props: Props) => {
         value='template'
         label='Change template'
         onClick={handleClick}
+        isDisabled={hasReflections}
         icon={<SwapHorizIcon />}
       />
     </Menu>

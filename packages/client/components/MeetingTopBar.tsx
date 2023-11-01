@@ -9,7 +9,6 @@ import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
 import PlainButton from './PlainButton/PlainButton'
 import SidebarToggle from './SidebarToggle'
-import MeetingOptions from './MeetingOptions'
 import RetroDrawerRoot from './RetroDrawerRoot'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
@@ -150,7 +149,7 @@ interface Props {
   isRightDrawerOpen?: boolean
   toggleSidebar: () => void
   toggleDrawer?: () => void
-  isReflectPhase?: boolean
+  meetingId?: string
 }
 
 const MeetingTopBar = (props: Props) => {
@@ -162,7 +161,7 @@ const MeetingTopBar = (props: Props) => {
     isRightDrawerOpen,
     toggleDrawer,
     toggleSidebar,
-    isReflectPhase = false
+    meetingId
   } = props
   const showButton = isDemoRoute() && !hasToken()
   const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
@@ -183,11 +182,13 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
-        <MeetingOptions
-          isReflectPhase={isReflectPhase}
-          showDrawer={showDrawer}
-          setShowDrawer={setShowDrawer}
-        />
+        {meetingId && (
+          <RetroDrawerRoot
+            meetingId={meetingId}
+            setShowDrawer={setShowDrawer}
+            showDrawer={showDrawer}
+          />
+        )}
         {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
             <Badge>
@@ -199,7 +200,6 @@ const MeetingTopBar = (props: Props) => {
           </ButtonContainer>
         )}
       </IconGroupBlock>
-      <RetroDrawerRoot setShowDrawer={setShowDrawer} showDrawer={showDrawer} />
     </MeetingTopBarStyles>
   )
 }
