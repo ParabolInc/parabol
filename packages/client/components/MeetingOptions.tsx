@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import React from 'react'
 import IconLabel from './IconLabel'
 import {Menu} from '../ui/Menu/Menu'
@@ -6,7 +5,18 @@ import {MenuItem} from '../ui/Menu/MenuItem'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
 
-const MeetingOptions = () => {
+type Props = {
+  setShowDrawer: (showDrawer: boolean) => void
+  showDrawer: boolean
+}
+
+const MeetingOptions = (props: Props) => {
+  const {setShowDrawer, showDrawer} = props
+
+  const handleClick = () => {
+    setShowDrawer(!showDrawer)
+  }
+
   return (
     <Menu
       trigger={
@@ -19,7 +29,7 @@ const MeetingOptions = () => {
       <MenuItem
         value='template'
         label='Change template'
-        onClick={() => {}}
+        onClick={handleClick}
         icon={<SwapHorizIcon />}
       />
     </Menu>

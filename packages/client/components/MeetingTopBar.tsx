@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Comment} from '@mui/icons-material'
-import React, {ReactElement, ReactNode} from 'react'
+import React, {ReactElement, ReactNode, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import hasToken from '../utils/hasToken'
@@ -10,6 +10,7 @@ import DemoCreateAccountButton from './DemoCreateAccountButton'
 import PlainButton from './PlainButton/PlainButton'
 import SidebarToggle from './SidebarToggle'
 import MeetingOptions from './MeetingOptions'
+import RetroDrawer from './RetroDrawer'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
@@ -163,6 +164,8 @@ const MeetingTopBar = (props: Props) => {
   } = props
   const showButton = isDemoRoute() && !hasToken()
   const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
+  const [showDrawer, setShowDrawer] = useState(false)
+
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
@@ -178,7 +181,7 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
-        <MeetingOptions />
+        <MeetingOptions showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
         {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
             <Badge>
@@ -190,6 +193,7 @@ const MeetingTopBar = (props: Props) => {
           </ButtonContainer>
         )}
       </IconGroupBlock>
+      <RetroDrawer setShowDrawer={setShowDrawer} showDrawer={showDrawer} />
     </MeetingTopBarStyles>
   )
 }
