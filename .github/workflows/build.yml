@@ -34,9 +34,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get changed files
-        id: files
-        uses: jitterbit/get-changed-files@v1
+      - name: Checkout master
+        uses: actions/checkout@v3
+        with:
+          ref: my-branch
 
       - name: Check migration conflicts
         run: |
