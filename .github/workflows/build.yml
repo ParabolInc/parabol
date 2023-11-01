@@ -37,7 +37,7 @@ jobs:
       - name: Checkout master
         uses: actions/checkout@v3
         with:
-          ref: my-branch
+          ref: master
 
       - name: Check migration conflicts
         run: |
