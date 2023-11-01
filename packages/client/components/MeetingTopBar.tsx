@@ -10,7 +10,7 @@ import DemoCreateAccountButton from './DemoCreateAccountButton'
 import PlainButton from './PlainButton/PlainButton'
 import SidebarToggle from './SidebarToggle'
 import MeetingOptions from './MeetingOptions'
-import RetroDrawer from './RetroDrawer'
+import RetroDrawerRoot from './RetroDrawerRoot'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
@@ -193,7 +193,7 @@ const MeetingTopBar = (props: Props) => {
           </ButtonContainer>
         )}
       </IconGroupBlock>
-      <RetroDrawer setShowDrawer={setShowDrawer} showDrawer={showDrawer} />
+      <RetroDrawerRoot setShowDrawer={setShowDrawer} showDrawer={showDrawer} />
     </MeetingTopBarStyles>
   )
 }
