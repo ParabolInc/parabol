@@ -6,7 +6,7 @@ import {DiscussionThreadEnum} from '../types/constEnums'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroDrawerTemplateCard from './RetroDrawerTemplateCard'
 import {Drawer} from './TeamPrompt/TeamPromptDrawer'
-import retroDrawerQuery, {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
+import {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 
 interface Props {
   setShowDrawer: (showDrawer: boolean) => void
@@ -18,9 +18,10 @@ const RetroDrawer = (props: Props) => {
   const {queryRef, showDrawer, setShowDrawer} = props
   const data = usePreloadedQuery<RetroDrawerQuery>(
     graphql`
-      query RetroDrawerQuery($first: Int!) {
+      query RetroDrawerQuery($first: Int!, $type: MeetingTypeEnum!) {
         viewer {
-          availableTemplates(first: $first) @connection(key: "RetroDrawer_availableTemplates") {
+          availableTemplates(first: $first, type: $type)
+            @connection(key: "RetroDrawer_availableTemplates") {
             edges {
               node {
                 ...RetroDrawerTemplateCard_template
@@ -46,7 +47,7 @@ const RetroDrawer = (props: Props) => {
       onToggle={() => {}}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
-      <Drawer isDesktop={true} isMobile={false} isOpen={showDrawer}>
+      <Drawer className='overflow-scroll' isDesktop={true} isMobile={false} isOpen={showDrawer}>
         <div className='pt-4'>
           <div className='flex justify-between px-4'>
             <div className='pb-4 text-base font-semibold'>Templates</div>

@@ -2,7 +2,7 @@ import {ActivityBadge} from './ActivityLibrary/ActivityBadge'
 import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment, usePreloadedQuery} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {ActivityLibraryCard} from './ActivityLibrary/ActivityLibraryCard'
 import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {CategoryID, CATEGORY_THEMES} from '././ActivityLibrary/Categories'
@@ -36,7 +36,7 @@ const RetroDrawerTemplateCard = (props: Props) => {
   return (
     <div className='px-4 py-2'>
       <ActivityLibraryCard
-        className='group aspect-[256/160] flex-1'
+        className='group aspect-[256/160] flex-1 hover:cursor-pointer'
         key={template.id}
         theme={CATEGORY_THEMES[template.category as CategoryID]}
         title={template.name}

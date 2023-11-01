@@ -10,7 +10,10 @@ type Props = {
 
 const RetroDrawerRoot = (props: Props) => {
   const {showDrawer, setShowDrawer} = props
-  const queryRef = useQueryLoaderNow<RetroDrawerQuery>(retroDrawerQuery, {first: 200})
+  const queryRef = useQueryLoaderNow<RetroDrawerQuery>(retroDrawerQuery, {
+    first: 200,
+    type: 'retrospective'
+  })
   return (
     <Suspense fallback={''}>
       {queryRef && (
