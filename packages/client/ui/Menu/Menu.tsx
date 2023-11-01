@@ -13,7 +13,7 @@ export const Menu: React.FC<MenuProps> = ({trigger, children}) => {
         <DropdownMenu.Content
           align='end'
           className='border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none'
-          sideOffset={6}
+          sideOffset={10}
         >
           {children}
         </DropdownMenu.Content>
