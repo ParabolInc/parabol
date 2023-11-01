@@ -150,6 +150,7 @@ interface Props {
   isRightDrawerOpen?: boolean
   toggleSidebar: () => void
   toggleDrawer?: () => void
+  isReflectPhase?: boolean
 }
 
 const MeetingTopBar = (props: Props) => {
@@ -160,7 +161,8 @@ const MeetingTopBar = (props: Props) => {
     isMeetingSidebarCollapsed,
     isRightDrawerOpen,
     toggleDrawer,
-    toggleSidebar
+    toggleSidebar,
+    isReflectPhase = false
   } = props
   const showButton = isDemoRoute() && !hasToken()
   const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
@@ -181,7 +183,11 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
-        <MeetingOptions showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
+        <MeetingOptions
+          isReflectPhase={isReflectPhase}
+          showDrawer={showDrawer}
+          setShowDrawer={setShowDrawer}
+        />
         {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
             <Badge>

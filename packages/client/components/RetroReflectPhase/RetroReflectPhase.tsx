@@ -59,6 +59,7 @@ const RetroReflectPhase = (props: Props) => {
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
+          isReflectPhase
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}

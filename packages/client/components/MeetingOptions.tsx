@@ -8,15 +8,17 @@ import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
 type Props = {
   setShowDrawer: (showDrawer: boolean) => void
   showDrawer: boolean
+  isReflectPhase?: boolean
 }
 
 const MeetingOptions = (props: Props) => {
-  const {setShowDrawer, showDrawer} = props
+  const {setShowDrawer, showDrawer, isReflectPhase} = props
 
   const handleClick = () => {
     setShowDrawer(!showDrawer)
   }
 
+  if (!isReflectPhase) return null
   return (
     <Menu
       trigger={
