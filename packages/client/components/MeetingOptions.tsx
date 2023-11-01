@@ -23,6 +23,16 @@ const MeetingOptions = (props: Props) => {
     setShowDrawer(!showDrawer)
   }
 
+  const handleMouseEnter = () => {
+    if (hasReflections) {
+      openTooltip()
+    }
+  }
+
+  const handleMouseLeave = () => {
+    closeTooltip()
+  }
+
   return (
     <Menu
       trigger={
@@ -32,7 +42,7 @@ const MeetingOptions = (props: Props) => {
         </OptionsButton>
       }
     >
-      <div ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
+      <div ref={originRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <MenuItem
           value='template'
           label='Change template'
