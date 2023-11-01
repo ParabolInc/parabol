@@ -204,7 +204,6 @@ export const enum LocalStorageKey {
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
-  PSEUDO_ID = 'pseudoId',
   ERROR_PRONE_AT = 'errorProneAt'
 }
 
