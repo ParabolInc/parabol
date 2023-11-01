@@ -41,16 +41,29 @@ jobs:
 
       - name: Check migration conflicts
         run: |
-          CUR_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1 | cut -d_ -f1)
+          NEW_MIGRATIONS=$(ls packages/server/postgres/migrations)
+          NEW_MIGRATIONS_COUNT=$(echo $NEW_MIGRATIONS | wc -l)
+          MAX_NEW_MIGRATION=$(echo $NEW_MIGRATIONS | tail -n 1)
+          MAX_NEW_MIGRATION_DATE=$(echo $MAX_NEW_MIGRATION | cut -d_ -f1)
+
           git checkout master
-          NEWEST_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1 | cut -d_ -f1)
-          echo $CUR_MIGRATION
-          echo $NEWEST_MIGRATION
-          if [ "$CUR_MIGRATION -le "$NEWEST_MIGRATION ]; then
-            echo Migration predates the newest migration on master. Please rename $CUR_MIGRATION
+          OLD_MIGRATIONS=$(ls packages/server/postgres/migrations)
+          OLD_MIGRATIONS_COUNT=$(echo $OLD_MIGRATIONS | wc -l)
+          if [ $OLD_MIGRATIONS_COUNT == $NEW_MIGRATIONS_COUNT ]; then
+            exit 0
+          elif [[ 'OLD_MIGRATIONS_COUNT + 1' -lt 'NEW_MIGRATIONS_COUNT' ]]; then
+            # Necessary since we only check the newest migration, not each one
+            echo Please only PR 1 Migration at a time
             exit 1
           fi
-          echo done 1
+
+          MAX_OLD_MIGRATION=$(echo $OLD_MIGRATIONS | tail -n 1)
+          MAX_OLD_MIGRATION_DATE=$(echo $MAX_OLD_MIGRATION | cut -d_ -f1)
+
+          if [ $MAX_NEW_MIGRATION_DATE -le $MAX_OLD_MIGRATION_DATE ]; then
+            echo Please rename $MAX_NEW_MIGRATION to come after $MAX_OLD_MIGRATION
+            exit 1
+          fi
 
       - name: Setup environment variables
         run: |
