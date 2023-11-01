@@ -9,6 +9,7 @@ import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
 import PlainButton from './PlainButton/PlainButton'
 import SidebarToggle from './SidebarToggle'
+import MeetingOptions from './MeetingOptions'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
@@ -177,6 +178,7 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
+        <MeetingOptions />
         {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
             <Badge>
