@@ -3,7 +3,7 @@ import MeetingMember from '../../../database/types/MeetingMember'
 import TeamMember from '../../../database/types/TeamMember'
 import {analytics} from '../../../utils/analytics/analytics'
 
-const sendPokerMeetingRevoteToSegment = async (
+const sendPokerMeetingRevoteEvent = async (
   meeting: Meeting,
   teamMembers: TeamMember[],
   meetingMembers: MeetingMember[]
@@ -23,4 +23,4 @@ const sendPokerMeetingRevoteToSegment = async (
   })
 }
 
-export default sendPokerMeetingRevoteToSegment
+export default sendPokerMeetingRevoteEvent

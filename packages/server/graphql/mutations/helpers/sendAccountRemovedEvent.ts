@@ -1,7 +1,7 @@
 import ServerAuthToken from '../../../database/types/ServerAuthToken'
 import {analytics} from '../../../utils/analytics/analytics'
 
-const sendAccountRemovedToSegment = async (
+const sendAccountRemovedEvent = async (
   userIdToDelete: string,
   email: string,
   validReason: string
@@ -29,4 +29,4 @@ const sendAccountRemovedToSegment = async (
   analytics.accountRemoved(userIdToDelete, validReason)
 }
 
-export default sendAccountRemovedToSegment
+export default sendAccountRemovedEvent
