@@ -3,6 +3,7 @@ import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
+import activeClients from './activeClients'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
@@ -14,6 +15,7 @@ import listenHandler from './listenHandler'
 import './monkeyPatchFetch'
 import selfHostedHandler from './selfHostedHandler'
 import handleClose from './socketHandlers/handleClose'
+import handleDisconnect from './socketHandlers/handleDisconnect'
 import handleMessage from './socketHandlers/handleMessage'
 import handleOpen from './socketHandlers/handleOpen'
 import handleUpgrade from './socketHandlers/handleUpgrade'
@@ -34,6 +36,16 @@ if (!__PRODUCTION__) {
     r.getPoolMaster()?.drain()
   })
 }
+
+process.on('SIGTERM', () => {
+  const RECONNECT_WINDOW = 60_000 // ms
+  Object.values(activeClients.store).forEach((connectionContext) => {
+    const disconnectIn = ~~(Math.random() * RECONNECT_WINDOW)
+    setTimeout(() => {
+      handleDisconnect(connectionContext)
+    }, disconnectIn)
+  })
+})
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
 uws
