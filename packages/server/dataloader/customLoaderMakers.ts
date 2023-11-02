@@ -742,9 +742,7 @@ export const isOrgVerified = (parent: RootDataLoader) => {
           const checkEmailDomain = (userId: string) => {
             const user = users.find((user) => user.id === userId)
             if (!user) return false
-            return (
-              isUserVerified(user) && user.domain === org.activeDomain
-            )
+            return isUserVerified(user) && user.domain === org.activeDomain
           }
           return [org.founder, ...org.billingLeads].some(
             (orgUser) => orgUser && !orgUser.inactive && checkEmailDomain(orgUser.userId)
