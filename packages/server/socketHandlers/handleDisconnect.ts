@@ -1,6 +1,6 @@
-import closeTransport from '../socketHelpers/closeTransport'
+import activeClients from '../activeClients'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
-import sseClients from '../sseClients'
+import closeTransport from '../socketHelpers/closeTransport'
 import {getUserId} from '../utils/authorization'
 import publishInternalGQL from '../utils/publishInternalGQL'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
@@ -30,9 +30,7 @@ const handleDisconnect = (connectionContext: ConnectionContext, options: Options
     const userId = getUserId(authToken)
     publishInternalGQL({authToken, ip, query: disconnectQuery, socketId, variables: {userId}})
   }
-  if (connectionContext.id.startsWith('sse')) {
-    sseClients.delete(connectionContext.id)
-  }
+  activeClients.delete(connectionContext.id)
   closeTransport(socket, exitCode, reason)
 }
 
