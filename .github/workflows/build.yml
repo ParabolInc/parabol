@@ -46,6 +46,9 @@ jobs:
 
           git checkout master
           OLD_MIGRATIONS_COUNT=$(ls packages/server/postgres/migrations | wc -l)
+          MAX_OLD_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1)
+
+          git checkout ${{ github.ref_name }}
 
           if [ $OLD_MIGRATIONS_COUNT == $NEW_MIGRATIONS_COUNT ]; then
             echo No new migrations found
@@ -57,8 +60,6 @@ jobs:
           fi
 
           echo New Migration found. Validating name...
-
-          MAX_OLD_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1)
 
           if [ $MAX_OLD_MIGRATION == $MAX_NEW_MIGRATION ]; then
             echo The new migration predates $MAX_OLD_MIGRATION. Please rename it
