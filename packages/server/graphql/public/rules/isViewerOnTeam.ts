@@ -6,7 +6,7 @@ import {GQLContext} from '../../graphql'
 type GetTeamId = (source: any, args: any, context: GQLContext) => Promise<string | Error>
 
 const isViewerOnTeam = (getTeamId: GetTeamId) =>
-  rule(`isViewerOnTeam-${getTeamId}`, {cache: 'contextual'})(
+  rule(`isViewerOnTeam-${getTeamId.name || getTeamId}`, {cache: 'strict'})(
     async (source, args, context: GQLContext) => {
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
