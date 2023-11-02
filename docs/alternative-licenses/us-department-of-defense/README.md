@@ -1,8 +1,6 @@
 # Parabol Hardened Container for Platform One Iron Bank
 
 [![Slack Status](https://slackin.parabol.co/badge.svg)](https://slackin.parabol.co/)
-[![CircleCI](https://circleci.com/gh/ParabolInc/parabol.svg?style=svg)](https://circleci.com/gh/ParabolInc/parabol)
-[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/parabol-inc/parabol-multiplayer-web-app)
 
 ## Overview
 

@@ -1,4 +1,5 @@
 import {WebSocketBehavior} from 'uWebSockets.js'
+import activeClients from '../activeClients'
 import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
@@ -20,6 +21,7 @@ const handleOpen: WebSocketBehavior<SocketUserData>['open'] = async (socket) => 
     authToken,
     ip
   ))
+  activeClients.set(connectionContext)
   // messages will start coming in before handleConnect completes & sit in the readyQueue
   const nextAuthToken = await handleConnect(connectionContext)
   sendEncodedMessage(connectionContext, {version: APP_VERSION, authToken: nextAuthToken})

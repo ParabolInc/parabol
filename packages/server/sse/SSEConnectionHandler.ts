@@ -1,13 +1,13 @@
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import activeClients from '../activeClients'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import handleConnect from '../socketHandlers/handleConnect'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
-import closeTransport from '../socketHelpers/closeTransport'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
+import closeTransport from '../socketHelpers/closeTransport'
 import keepAlive from '../socketHelpers/keepAlive'
 import {sendEncodedMessage} from '../socketHelpers/sendEncodedMessage'
-import sseClients from '../sseClients'
 import {isAuthenticated} from '../utils/authorization'
 import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import getQueryToken from '../utils/getQueryToken'
@@ -41,7 +41,7 @@ const SSEConnectionHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
     return
   }
 
-  sseClients.set(connectionContext)
+  activeClients.set(connectionContext)
   const nextAuthToken = await handleConnect(connectionContext)
   if (res.done) return
   res.tryEnd(`retry: 1000\n`, 1e8)
