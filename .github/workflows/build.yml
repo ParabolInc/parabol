@@ -10,6 +10,26 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
+    services:
+      postgres:
+        image: postgres:15.4
+        # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
+        env:
+          POSTGRES_PASSWORD: "temppassword"
+          POSTGRES_USER: "tempuser"
+          POSTGRES_DB: "tempdb"
+        ports:
+          - 5432:5432
+      rethinkdb:
+        image: rethinkdb:2.4.2
+        ports:
+          - 8080:8080
+          - 28015:28015
+          - 29015:29015
+      redis:
+        image: redis:7.0-alpine
+        ports:
+          - 6379:6379
     steps:
       - name: Checkout master
         uses: actions/checkout@v3
