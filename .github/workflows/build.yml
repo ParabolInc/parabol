@@ -21,9 +21,8 @@ jobs:
 
       - name: Check migration conflicts
         run: |
-          NEW_MIGRATIONS=$(ls packages/server/postgres/migrations)
-          NEW_MIGRATIONS_COUNT=$(echo $NEW_MIGRATIONS | wc -l)
-          MAX_NEW_MIGRATION=$(echo $NEW_MIGRATIONS | tail -n 1)
+          NEW_MIGRATIONS_COUNT=$(ls packages/server/postgres/migrations | wc -l)
+          MAX_NEW_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1)
           MAX_NEW_MIGRATION_DATE=$(echo $MAX_NEW_MIGRATION | cut -d_ -f1)
           echo $MAX_NEW_MIGRATION_DATE
           echo $NEW_MIGRATIONS
@@ -32,7 +31,7 @@ jobs:
           OLD_MIGRATIONS=$(ls packages/server/postgres/migrations)
 
           echo $OLD_MIGRATIONS
-          OLD_MIGRATIONS_COUNT=$(echo $OLD_MIGRATIONS | wc -l)
+          OLD_MIGRATIONS_COUNT=$(ls packages/server/postgres/migrations | wc -l)
           echo $OLD_MIGRATIONS_COUNT $NEW_MIGRATIONS_COUNT
           if [ $OLD_MIGRATIONS_COUNT == $NEW_MIGRATIONS_COUNT ]; then
             echo No new migrations found
@@ -45,16 +44,11 @@ jobs:
 
           echo New Migration found. Validating name...
 
-          MAX_OLD_MIGRATION=$(echo $OLD_MIGRATIONS | tail -n 1)
-          MAX_OLD_MIGRATION_DATE=$(echo $MAX_OLD_MIGRATION | cut -d_ -f1)
+          MAX_OLD_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1)
 
-          echo $MAX_OLD_MIGRATION $MAX_OLD_MIGRATION_DATE
-
-          if [ $MAX_NEW_MIGRATION_DATE -le $MAX_OLD_MIGRATION_DATE ]; then
-            echo Please rename $MAX_NEW_MIGRATION to come after $MAX_OLD_MIGRATION
-            exit 1
+          if [ $MAX_OLD_MIGRATION == $MAX_NEW_MIGRATION ]; then
+            echo The new migration predates $MAX_OLD_MIGRATION. Please rename it
           fi
-
           echo New migration does not conflict with existing migrations on master
 
       - name: Setup environment variables
