@@ -74,17 +74,13 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         'All the teams in the organization. If the viewer is not a billing lead, super user, or they do not have the publicTeams flag, return the teams they are a member of.',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
-        const [user, allTeamsOnOrg, organization] = await Promise.all([
-          dataLoader.get('users').loadNonNull(viewerId),
+        const [allTeamsOnOrg, organization] = await Promise.all([
           dataLoader.get('teamsByOrgIds').load(orgId),
           dataLoader.get('organizations').load(orgId)
         ])
         const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
         const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
         if (isBillingLeader || isSuperUser(authToken) || hasPublicTeamsFlag) {
-          const teamIds = allTeamsOnOrg.map((team) => team.id)
-          const isViewerInOrg = teamIds.some((teamId) => user.tms.includes(teamId))
-          if (!isViewerInOrg && !isSuperUser(authToken)) return []
           const viewerTeams = allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
           const otherTeams = allTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
           const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
