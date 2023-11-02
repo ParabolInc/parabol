@@ -69,7 +69,6 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          git status
           IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') && (github.ref_name == 'master' || startsWith(github.ref_name, 'hotfix')) }}
           IS_MANUAL_BUILD=${{ startsWith(github.event.head_commit.message, 'dockerize') }}
 
