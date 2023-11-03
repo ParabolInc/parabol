@@ -100,15 +100,7 @@ const DashNavList = (props: Props) => {
 
   const isSingleOrg = teamsByOrgKey.length === 1
 
-  const getIcon = (team: Team) => {
-    if (team.organization.lockedAt || !team.isPaid) {
-      return 'warning'
-    }
-    if (!team.isViewerOnTeam) {
-      return 'groupAdd'
-    }
-    return 'group'
-  }
+  const getIcon = (team: Team) => (team.organization.lockedAt || !team.isPaid ? 'warning' : 'group')
 
   return (
     <DashNavListStyles>
