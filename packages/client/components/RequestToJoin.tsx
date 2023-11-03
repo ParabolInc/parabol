@@ -1,11 +1,11 @@
 import {Lock, MailOutline} from '@mui/icons-material'
 import React, {useState} from 'react'
 import {useRouteMatch} from 'react-router'
+import {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
-import SendClientSideEvent from '../mutations/SendClientSideEvent'
-import {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import PrimaryButton from './PrimaryButton'
 
 const RequestToJoinComponent = () => {
