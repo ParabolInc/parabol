@@ -6,7 +6,7 @@ import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   meetingRef: JiraIntegrationPanel_meeting$key
@@ -46,7 +46,7 @@ const JiraIntegrationPanel = (props: Props) => {
     }
     AtlassianClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
 
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'jira'

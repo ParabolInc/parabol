@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/browser'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
@@ -30,7 +30,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     const {error, isOldBrowserErr} = this.state
     if (!error || isOldBrowserErr) return
     const {atmosphere} = this.props
-    SendClientSegmentEventMutation(atmosphere, 'Fatal Error')
+    SendClientSideEvent(atmosphere, 'Fatal Error')
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {

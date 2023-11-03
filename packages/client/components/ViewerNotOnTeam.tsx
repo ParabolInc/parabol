@@ -3,6 +3,7 @@ import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
@@ -43,6 +44,7 @@ const ViewerNotOnTeam = (props: Props) => {
   } = viewer
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
+  const {onError, onCompleted} = useMutationProps()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
   useEffect(
     () => {
@@ -54,7 +56,8 @@ const ViewerNotOnTeam = (props: Props) => {
           {history, meetingId}
         )
         return
-      } else if (teamId) PushInvitationMutation(atmosphere, {meetingId, teamId})
+      } else if (teamId)
+        PushInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
       return undefined
     },
     [

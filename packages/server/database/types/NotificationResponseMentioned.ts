@@ -7,6 +7,7 @@ interface Input {
 }
 
 export default class NotificationResponseMentioned extends Notification {
+  readonly type = 'RESPONSE_MENTIONED'
   responseId: string
   meetingId: string
 

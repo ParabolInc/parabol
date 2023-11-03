@@ -8,6 +8,7 @@ type Subscription {
 
 type MeetingSubscriptionPayload {
   fieldName: String!
+  AddTranscriptionBotSuccess: AddTranscriptionBotSuccess
   AutogroupSuccess: AutogroupSuccess
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess
@@ -125,6 +126,7 @@ type TeamSubscriptionPayload {
   AddSlackAuthPayload: AddSlackAuthPayload
   AddTeamPayload: AddTeamPayload
   ArchiveTeamPayload: ArchiveTeamPayload
+  BatchArchiveTasksSuccess: BatchArchiveTasksSuccess
   DenyPushInvitationPayload: DenyPushInvitationPayload
   DowngradeToStarterPayload: DowngradeToStarterPayload
   EndCheckInSuccess: EndCheckInSuccess

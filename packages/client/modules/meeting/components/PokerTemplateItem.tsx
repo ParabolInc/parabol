@@ -4,7 +4,7 @@ import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -88,7 +88,7 @@ const PokerTemplateItem = (props: Props) => {
   }
   useEffect(() => {
     if (!isActive) return
-    SendClientSegmentEventMutation(atmosphere, 'Viewed Template', {
+    SendClientSideEvent(atmosphere, 'Viewed Template', {
       meetingType: 'poker',
       scope,
       templateName,

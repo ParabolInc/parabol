@@ -9,6 +9,7 @@ interface Input {
 }
 
 export default class NotificationDiscussionMentioned extends Notification {
+  readonly type = 'DISCUSSION_MENTIONED'
   meetingId: string
   authorId: string
   commentId: string

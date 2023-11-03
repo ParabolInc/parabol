@@ -6,7 +6,7 @@ import {useHistory} from 'react-router'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateListOrgQuery} from '../../../__generated__/ReflectTemplateListOrgQuery.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
@@ -93,7 +93,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   if (edges.length === 0) {
     if (tier === 'starter') {
       const goToBilling = () => {
-        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+        SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'orgTemplate',
           meetingType: 'retrospective'
         })

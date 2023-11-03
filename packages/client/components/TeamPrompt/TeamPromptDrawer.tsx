@@ -11,7 +11,7 @@ import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import findStageById from '../../utils/meetings/findStageById'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
   ({isDesktop, isMobile, isOpen}) => ({
@@ -99,7 +99,7 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
       const isRightDrawerOpen = meetingProxy.getValue('isRightDrawerOpen')
 
       if (!shouldRenderDiscussionDrawer()) {
-        SendClientSegmentEventMutation(
+        SendClientSideEvent(
           atmosphere,
           isRightDrawerOpen ? 'Your Work Drawer Closed' : 'Your Work Drawer Opened',
           {

@@ -19,7 +19,7 @@ import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import IconLabel from '../IconLabel'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',
@@ -147,7 +147,7 @@ const TeamPromptTopBar = (props: Props) => {
         if (!meetingProxy) return
         meetingProxy.setValue(false, 'isRightDrawerOpen')
 
-        SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Closed', {
+        SendClientSideEvent(atmosphere, 'Your Work Drawer Closed', {
           teamId: meeting.teamId,
           meetingId: meeting.id,
           source: 'top bar'
@@ -161,7 +161,7 @@ const TeamPromptTopBar = (props: Props) => {
         meetingProxy.setValue(true, 'showWorkSidebar')
         meetingProxy.setValue(true, 'isRightDrawerOpen')
 
-        SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Opened', {
+        SendClientSideEvent(atmosphere, 'Your Work Drawer Opened', {
           teamId: meeting.teamId,
           meetingId: meeting.id,
           source: 'top bar'

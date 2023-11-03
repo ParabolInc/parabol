@@ -9,7 +9,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
   {
@@ -64,7 +64,7 @@ const GitHubIntegrationPanel = (props: Props) => {
     }
     teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
 
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'github'
@@ -72,7 +72,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
       service: 'github',
       buttonLabel: label
     })
@@ -86,7 +86,7 @@ const GitHubIntegrationPanel = (props: Props) => {
             teamMemberRef={teamMember}
             selectedRepos={selectedRepos}
             setSelectedRepos={(repos) => {
-              SendClientSegmentEventMutation(atmosphere, 'Your Work Filter Changed', {
+              SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
                 teamId: meeting.teamId,
                 meetingId: meeting.id,
                 service: 'github'

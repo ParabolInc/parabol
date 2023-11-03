@@ -14,7 +14,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
@@ -166,7 +166,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     const user = newUsers[0]
     setSelectedUser(user)
     if (user) {
-      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
+      SendClientSideEvent(atmosphere, 'Teammate Selected', {
         selectionLocation: 'oneOnOneUserPicker'
       })
     }
@@ -277,7 +277,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   )
 
   const handleUpgrade = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'publicTemplate',
       meetingType: type
     })

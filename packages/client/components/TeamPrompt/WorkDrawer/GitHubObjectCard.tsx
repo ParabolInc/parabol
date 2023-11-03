@@ -16,7 +16,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
   OPEN: githubIssueOpen,
@@ -89,13 +89,13 @@ const GitHubObjectCard = (props: Props) => {
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
 
   const trackLinkClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Link Clicked', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Link Clicked', {
       service: 'github'
     })
   }
 
   const trackCopy = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Copied', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Copied', {
       service: 'github'
     })
   }

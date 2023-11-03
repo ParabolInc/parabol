@@ -12,7 +12,7 @@ import {
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {MenuProps} from '../hooks/useMenu'
 import useSegmentTrack from '../hooks/useSegmentTrack'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {NotificationDropdownPaginationQuery} from '../__generated__/NotificationDropdownPaginationQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -88,7 +88,7 @@ const NotificationDropdown = (props: Props) => {
         }
         const onClickFn = () => {
           SetNotificationStatusMutation(atmosphere, {notificationId, status: 'CLICKED'}, {})
-          SendClientSegmentEventMutation(atmosphere, 'Notification Clicked', {
+          SendClientSideEvent(atmosphere, 'Notification Clicked', {
             notificationType: type
           })
         }

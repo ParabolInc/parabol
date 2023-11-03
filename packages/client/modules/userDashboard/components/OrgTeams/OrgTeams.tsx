@@ -23,7 +23,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         isBillingLeader
-        teams {
+        allTeams {
           id
           ...OrgTeamsRow_team
         }
@@ -31,7 +31,7 @@ const OrgTeams = (props: Props) => {
     `,
     organizationRef
   )
-  const {teams, isBillingLeader} = organization
+  const {allTeams, isBillingLeader} = organization
   if (!isBillingLeader) return null
   return (
     <>
@@ -43,7 +43,7 @@ const OrgTeams = (props: Props) => {
             <div className='flex items-center font-bold'>Lead</div>
           </div>
         </Row>
-        {teams.map((team) => (
+        {allTeams.map((team) => (
           <OrgTeamsRow key={team.id} teamRef={team} />
         ))}
       </StyledPanel>

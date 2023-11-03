@@ -1,7 +1,8 @@
 on:
   push:
     branches:
-      - release
+      - master
+      - hotfix-*
 name: release-please
 jobs:
   release-please:
@@ -10,5 +11,5 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         with:
           command: manifest
-          default-branch: release
+          default-branch: ${{ github.ref_name}}
           release-type: node
