@@ -220,6 +220,7 @@ export const enum AuthenticationError {
   EXCEEDED_RESET_THRESHOLD = 'exceededResetThreshold',
   USER_NOT_FOUND = 'userNotFound',
   USER_EXISTS_GOOGLE = 'userExistsGoogle',
+  USER_EXISTS_MICROSOFT = 'userExistsMicrosoft',
   USER_EXISTS_SAML = 'userExistsSaml'
 }
 
