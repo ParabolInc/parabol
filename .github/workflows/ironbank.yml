@@ -20,6 +20,7 @@ jobs:
       - name: Setup environment variables
         run: |
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}
+          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
