@@ -20,6 +20,7 @@ const MeetingOptions = (props: Props) => {
   )
 
   const handleClick = () => {
+    if (hasReflections) return
     setShowDrawer(!showDrawer)
   }
 
@@ -43,12 +44,8 @@ const MeetingOptions = (props: Props) => {
       }
     >
       <div ref={originRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <MenuItem
-          value='template'
-          onClick={handleClick}
-          isDisabled={hasReflections}
-          icon={<SwapHorizIcon />}
-        >
+        <MenuItem onClick={handleClick} isDisabled={hasReflections}>
+          <div className='mr-3 flex text-slate-700'>{<SwapHorizIcon />}</div>
           Change template
         </MenuItem>
       </div>
