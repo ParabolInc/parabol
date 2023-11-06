@@ -4,15 +4,23 @@ on:
   workflow_dispatch:
     inputs:
       version_number:
-        description: 'Version number of the Parabol image to process'
+        description: "Version number of the Parabol image to process"
         required: true
 
 jobs:
   pull-and-upload:
     runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Setup environment variables
+        run: |
+          DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}
+          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
@@ -40,8 +48,8 @@ jobs:
 
       - name: Copy files from container
         run: |
-          docker cp temp-container:/parabol/dist ./dist
-          docker cp temp-container:/parabol/build ./build
+          docker cp temp-container:/home/node/parabol/dist ./dist
+          docker cp temp-container:/home/node/parabol/build ./build
 
       - name: Zip the files
         run: zip -r ${{ github.event.inputs.version_number }}.zip dist build
