@@ -4,12 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       version_number:
-        description: 'Version number of the Parabol image to process'
+        description: "Version number of the Parabol image to process"
         required: true
 
 jobs:
   pull-and-upload:
     runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
