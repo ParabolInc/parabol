@@ -45,11 +45,12 @@ const MeetingOptions = (props: Props) => {
       <div ref={originRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <MenuItem
           value='template'
-          label='Change template'
           onClick={handleClick}
           isDisabled={hasReflections}
           icon={<SwapHorizIcon />}
-        />
+        >
+          Change template
+        </MenuItem>
       </div>
       {tooltipPortal('You can only change the template before reflections have been added.')}
     </Menu>

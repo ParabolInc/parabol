@@ -1,23 +1,25 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import React from 'react'
+import {twMerge} from 'tailwind-merge'
 
 interface MenuProps {
   trigger: React.ReactNode
+  children: React.ReactNode
 }
 
-export const Menu: React.FC<MenuProps> = ({trigger, children}) => {
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(({trigger, children}, ref) => {
+  const contentClass = twMerge(
+    'border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none'
+  )
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          align='end'
-          className='border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none'
-          sideOffset={10}
-        >
+        <DropdownMenu.Content align='end' className={contentClass} sideOffset={10} ref={ref}>
           {children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
   )
-}
+})
