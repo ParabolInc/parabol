@@ -13,6 +13,11 @@ type Team {
   autoJoin: Boolean!
 
   """
+  Whether the viewer belongs to the team
+  """
+  isViewerOnTeam: Boolean!
+
+  """
   The datetime the team was created
   """
   createdAt: DateTime!

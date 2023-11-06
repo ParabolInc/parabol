@@ -1,7 +1,7 @@
 import {TeamResolvers} from '../resolverTypes'
 import TeamInsightsId from 'parabol-client/shared/gqlIds/TeamInsightsId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 
 const Team: TeamResolvers = {
   insights: async (
@@ -34,7 +34,8 @@ const Team: TeamResolvers = {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     return teamMember
-  }
+  },
+  isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId)
 }
 
 export default Team

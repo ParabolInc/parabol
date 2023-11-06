@@ -5,12 +5,16 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface OnNextMeetingId extends OnNextHistoryContext {
   meetingId?: string | null
+  redirectPath?: string
 }
 
 const handleAuthenticationRedirect: OnNextHandler<
   AcceptTeamInvitationMutationReply$data | undefined,
   OnNextMeetingId
-> = (acceptTeamInvitation, {meetingId: locallyRequestedMeetingId, history, atmosphere}) => {
+> = (
+  acceptTeamInvitation,
+  {meetingId: locallyRequestedMeetingId, history, atmosphere, redirectPath = '/meetings'}
+) => {
   SendClientSideEvent(atmosphere, 'User Login')
   const redirectTo = getValidRedirectParam()
   if (redirectTo) {
@@ -18,7 +22,7 @@ const handleAuthenticationRedirect: OnNextHandler<
     return
   }
   if (!acceptTeamInvitation?.team) {
-    history.push('/meetings')
+    history.push(redirectPath)
     return
   }
   const {meetingId: invitedMeetingId, team} = acceptTeamInvitation

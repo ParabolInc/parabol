@@ -11,6 +11,7 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   teamsLimit: ({teamsLimit}) => !!teamsLimit,
   teamInsights: ({teamInsights}) => !!teamInsights,
   oneOnOne: ({oneOnOne}) => !!oneOnOne,
+  publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
   meetingInception: ({meetingInception}) => !!meetingInception
 }

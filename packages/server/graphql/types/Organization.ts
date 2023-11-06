@@ -68,16 +68,34 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         return getActiveTeamCountByOrgIds(orgId)
       }
     },
-    teams: {
+    allTeams: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
+      description:
+        'All the teams in the organization. If the viewer is not a billing lead, super user, or they do not have the publicTeams flag, return the teams they are a member of.',
+      resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        const [allTeamsOnOrg, organization] = await Promise.all([
+          dataLoader.get('teamsByOrgIds').load(orgId),
+          dataLoader.get('organizations').load(orgId)
+        ])
+        const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
+        const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
+        if (isBillingLeader || isSuperUser(authToken) || hasPublicTeamsFlag) {
+          const viewerTeams = allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+          const otherTeams = allTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
+          const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
+          return [...viewerTeams, ...sortedOtherTeams]
+        } else {
+          return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+        }
+      }
+    },
+    viewerTeams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the viewer is on in the organization',
-      resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
+      resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-        return isBillingLeader || isSuperUser(authToken)
-          ? allTeamsOnOrg
-          : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+        return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       }
     },
     tier: {
