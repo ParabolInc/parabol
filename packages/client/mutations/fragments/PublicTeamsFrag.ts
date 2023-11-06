@@ -10,6 +10,9 @@ graphql`
       allTeams {
         id
       }
+      viewerTeams {
+        id
+      }
     }
   }
 `
