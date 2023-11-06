@@ -61,7 +61,7 @@ const DialogSubTitle = styled('div')({
   fontWeight: 400,
   lineHeight: 1.5,
   paddingTop: 16,
-  paddingBottom: 24
+  paddingBottom: 8
 })
 
 const GenericAuthentication = (props: Props) => {
@@ -111,9 +111,10 @@ const GenericAuthentication = (props: Props) => {
       {isMicrosoftAuthEnabled && (
         <MicrosoftOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
       )}
-      {isGoogleAuthEnabled && (isInternalAuthEnabled || isSSOAuthEnabled) && (
-        <HorizontalSeparator margin='1rem 0 0' text='or' />
-      )}
+      {(isGoogleAuthEnabled || isMicrosoftAuthEnabled) &&
+        (isInternalAuthEnabled || isSSOAuthEnabled) && (
+          <HorizontalSeparator margin='1rem 0 0' text='or' />
+        )}
       {(isInternalAuthEnabled || isSSOAuthEnabled) && (
         <EmailPasswordAuthForm
           email={email || ''}

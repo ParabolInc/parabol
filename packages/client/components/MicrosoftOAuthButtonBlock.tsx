@@ -4,9 +4,11 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
-import MicrosoftOAuthButton from './GoogleOAuthButton'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
+import logo from '../styles/theme/images/graphics/microsoft.svg'
+import RaisedButton from './RaisedButton'
+import clsx from 'clsx'
 
 interface Props {
   invitationToken?: string
@@ -45,11 +47,21 @@ const MicrosoftOAuthButtonBlock = (props: Props) => {
     )
   }
   return (
-    <React.Fragment>
-      <MicrosoftOAuthButton label={label} onClick={openOAuth} waiting={submitting} />
+    <>
+      <RaisedButton
+        onClick={openOAuth}
+        waiting={submitting}
+        className={clsx(
+          'mt-4 h-10 w-60 justify-start px-4 disabled:opacity-100',
+          submitting ? 'bg-[#EBEBEB] text-[#8D8D8D]' : 'text=[#757575] bg-white'
+        )}
+      >
+        <img src={logo} className={clsx('mx-4 h-[18px] w-[18px]', submitting && 'saturate-0')} />
+        <div>{label}</div>
+      </RaisedButton>
       {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}
       {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
-    </React.Fragment>
+    </>
   )
 }
 
