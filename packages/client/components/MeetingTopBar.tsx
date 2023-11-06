@@ -166,6 +166,7 @@ const MeetingTopBar = (props: Props) => {
   const showButton = isDemoRoute() && !hasToken()
   const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
   const [showDrawer, setShowDrawer] = useState(false)
+  const isOptionsVisible = !!meetingId && !isDemoRoute
 
   return (
     <MeetingTopBarStyles>
@@ -182,7 +183,7 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
-        {meetingId && (
+        {isOptionsVisible && (
           <RetroDrawerRoot
             meetingId={meetingId}
             setShowDrawer={setShowDrawer}
