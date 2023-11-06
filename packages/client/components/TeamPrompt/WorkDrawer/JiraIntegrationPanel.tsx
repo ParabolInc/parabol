@@ -6,7 +6,7 @@ import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   meetingRef: JiraIntegrationPanel_meeting$key

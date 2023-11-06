@@ -2,15 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment, useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {useRouteMatch} from 'react-router'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {
-  DashNavList_viewer$key,
-  DashNavList_viewer$data
-} from '../../__generated__/DashNavList_viewer.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
+import {
+  DashNavList_organization$key,
+  DashNavList_organization$data
+} from '../../__generated__/DashNavList_organization.graphql'
 
 const DashNavListStyles = styled('div')({
   paddingRight: 8,
@@ -41,27 +40,43 @@ const DashHR = styled('div')({
   width: 'calc(100% + 8px)'
 })
 
+const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>(
+  ({isViewerOnTeam}) => ({
+    color: isViewerOnTeam ? PALETTE.SLATE_700 : PALETTE.SLATE_600
+  })
+)
+
 interface Props {
   className?: string
-  viewer: DashNavList_viewer$key | null
+  organizationsRef: DashNavList_organization$key | null
   onClick?: () => void
 }
 
-type Team = DashNavList_viewer$data['teams'][0]
+type Team = DashNavList_organization$data[0]['allTeams'][0]
 
 const DashNavList = (props: Props) => {
-  const {className, onClick, viewer: viewerRef} = props
-  const viewer = useFragment(
+  const {className, onClick, organizationsRef} = props
+  const organizations = useFragment(
     graphql`
-      fragment DashNavList_viewer on User {
-        teams {
+      fragment DashNavList_organization on Organization @relay(plural: true) {
+        allTeams {
           ...DashNavListTeam @relay(mask: false)
+        }
+        viewerTeams {
+          ...DashNavListTeam @relay(mask: false)
+        }
+        featureFlags {
+          publicTeams
         }
       }
     `,
-    viewerRef
+    organizationsRef
   )
-  const teams = viewer?.teams
+  const teams = organizations?.flatMap((org) => {
+    // if the user is a billing leader, allTeams will return all teams even if they don't have the publicTeams flag
+    const hasPublicTeamsFlag = org.featureFlags.publicTeams
+    return hasPublicTeamsFlag ? org.allTeams : org.viewerTeams
+  })
 
   const teamsByOrgKey = useMemo(() => {
     if (!teams) return null
@@ -83,26 +98,21 @@ const DashNavList = (props: Props) => {
     return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
   }
 
-  // const team = Object.values(teamsByOrgKey)
   const isSingleOrg = teamsByOrgKey.length === 1
 
-  const showWarningIcon = (team: Team) => {
-    return team.isPaid && !team.organization.lockedAt ? 'group' : 'warning'
-  }
-
-  const teamRouteMatch = useRouteMatch<{teamSubPage: string}>('/team/:teamId/:teamSubPage')
-  const {teamSubPage = ''} = teamRouteMatch?.params || {}
+  const getIcon = (team: Team) => (team.organization.lockedAt || !team.isPaid ? 'warning' : 'group')
 
   return (
     <DashNavListStyles>
       {isSingleOrg
         ? teams.map((team) => (
-            <LeftDashNavItem
+            <StyledLeftDashNavItem
               className={className}
               onClick={onClick}
+              isViewerOnTeam={team.isViewerOnTeam}
               key={team.id}
-              icon={showWarningIcon(team)}
-              href={`/team/${team.id}/${teamSubPage}`}
+              icon={getIcon(team)}
+              href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
               label={team.name}
             />
           ))
@@ -113,12 +123,15 @@ const DashNavList = (props: Props) => {
               <Fragment key={key}>
                 <OrgName>{name}</OrgName>
                 {teams.map((team) => (
-                  <LeftDashNavItem
+                  <StyledLeftDashNavItem
                     className={className}
+                    isViewerOnTeam={team.isViewerOnTeam}
                     onClick={onClick}
                     key={team.id}
-                    icon={showWarningIcon(team)}
-                    href={`/team/${team.id}/${teamSubPage}`}
+                    icon={getIcon(team)}
+                    href={
+                      team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`
+                    }
                     label={team.name}
                   />
                 ))}
@@ -135,6 +148,7 @@ graphql`
     id
     isPaid
     name
+    isViewerOnTeam
     organization {
       id
       name

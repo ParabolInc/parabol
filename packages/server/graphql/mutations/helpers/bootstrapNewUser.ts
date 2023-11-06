@@ -59,6 +59,11 @@ const bootstrapNewUser = async (
     experimentalFlags.push('retrosInDisguise')
   }
 
+  // Add signUpDestinationTeam feature flag to 50% of new accounts
+  if (Math.random() < 0.5) {
+    experimentalFlags.push('signUpDestinationTeam')
+  }
+
   const isVerified = identities.some((identity) => identity.isEmailVerified)
   const orgIds = organizations.map(({id}) => id)
 

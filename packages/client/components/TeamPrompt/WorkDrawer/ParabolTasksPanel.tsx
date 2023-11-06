@@ -12,7 +12,7 @@ import dndNoise from '../../../utils/dndNoise'
 import AddTaskButton from '../../AddTaskButton'
 import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
 import clsx from 'clsx'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   meetingRef: ParabolTasksPanel_meeting$key

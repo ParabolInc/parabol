@@ -303,7 +303,8 @@ const initDemoOrg = () => {
       teamsLimit: false,
       noPromptToJoinOrg: false,
       AIGeneratedDiscussionPrompt: false,
-      meetingInception: false
+      meetingInception: false,
+      publicTeams: false
     },
     showConversionModal: false
   } as const

@@ -27,7 +27,7 @@ import BaseButton from '../../BaseButton'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
 import RaisedButton from '../../RaisedButton'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props

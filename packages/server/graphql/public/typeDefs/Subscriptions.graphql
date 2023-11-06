@@ -126,6 +126,7 @@ type TeamSubscriptionPayload {
   AddSlackAuthPayload: AddSlackAuthPayload
   AddTeamPayload: AddTeamPayload
   ArchiveTeamPayload: ArchiveTeamPayload
+  BatchArchiveTasksSuccess: BatchArchiveTasksSuccess
   DenyPushInvitationPayload: DenyPushInvitationPayload
   DowngradeToStarterPayload: DowngradeToStarterPayload
   EndCheckInSuccess: EndCheckInSuccess

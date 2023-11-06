@@ -13,7 +13,7 @@ import getSearchQueryFromMeeting from '../utils/getSearchQueryFromMeeting'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
-import SendClientSideEvent from './SendClientSideEvent'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {

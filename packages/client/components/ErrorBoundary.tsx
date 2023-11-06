@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/browser'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import SendClientSideEvent from '~/mutations/SendClientSideEvent'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
