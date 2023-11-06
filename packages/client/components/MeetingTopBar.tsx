@@ -166,7 +166,7 @@ const MeetingTopBar = (props: Props) => {
   const showButton = isDemoRoute() && !hasToken()
   const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
   const [showDrawer, setShowDrawer] = useState(false)
-  const isOptionsVisible = !!meetingId && !isDemoRoute
+  const isOptionsVisible = !!meetingId && !isDemoRoute()
 
   return (
     <MeetingTopBarStyles>
