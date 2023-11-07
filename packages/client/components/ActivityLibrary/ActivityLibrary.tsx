@@ -164,6 +164,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               key={template.id}
               theme={CATEGORY_THEMES[template.category as CategoryID]}
               title={template.name}
+              type={template.type}
               badge={
                 !template.isFree ? (
                   <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>

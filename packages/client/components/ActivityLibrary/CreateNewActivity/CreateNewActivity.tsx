@@ -39,19 +39,6 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   )
 }
 
-const CategoryTitle = (props: ComponentPropsWithoutRef<'div'>) => {
-  const {children, className, ...rest} = props
-
-  return (
-    <div
-      className={clsx('p-4 text-lg font-semibold leading-5 text-slate-700', className)}
-      {...rest}
-    >
-      {children}
-    </div>
-  )
-}
-
 type ActivityType = 'retrospective' | 'poker'
 
 type SupportedActivity = {
@@ -294,7 +281,7 @@ export const CreateNewActivity = (props: Props) => {
                   className='aspect-[320/190] w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
                   theme={DEFAULT_CARD_THEME}
                   title={activity.title}
-                  titleAs={CategoryTitle}
+                  type={activity.type}
                 >
                   <ActivityCardImage src={activity.image} />
                 </ActivityCard>

@@ -71,7 +71,7 @@ const ActivityDetails = (props: Props) => {
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
-  const {category, illustrationUrl, viewerLowestScope} = activity
+  const {category, illustrationUrl, viewerLowestScope, type} = activity
   const prevCategory = history.location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
     prevCategory ?? category ?? QUICK_START_CATEGORY_ID
@@ -102,6 +102,7 @@ const ActivityDetails = (props: Props) => {
                 className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
                 theme={CATEGORY_THEMES[category as CategoryID]}
                 badge={null}
+                type={type}
               >
                 <ActivityCardImage src={illustrationUrl} />
               </ActivityCard>
