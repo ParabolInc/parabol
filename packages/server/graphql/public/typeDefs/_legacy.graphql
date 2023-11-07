@@ -2188,6 +2188,11 @@ type OrganizationUser {
   Their level of access to features on the parabol site
   """
   tier: TierEnum
+
+  """
+  Whether the tier is set via trial
+  """
+  isTrial: Boolean!
 }
 
 """

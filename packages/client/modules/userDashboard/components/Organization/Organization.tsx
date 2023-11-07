@@ -90,6 +90,7 @@ const query = graphql`
         periodStart
         periodEnd
         tier
+        isTrial
       }
     }
   }
@@ -111,7 +112,7 @@ const Organization = (props: Props) => {
   const orgName = (organization && organization.name) || 'Unknown'
   useDocumentTitle(`Organization Settings | ${orgName}`, orgName)
   if (!organization) return <div />
-  const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
+  const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier, isTrial} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
   const {checkoutFlow} = userFeatureFlags
@@ -144,7 +145,7 @@ const Organization = (props: Props) => {
             ) : (
               <OrgNameBlock>{orgName}</OrgNameBlock>
             )}
-            <OrganizationDetails createdAt={createdAt} tier={tier} />
+            <OrganizationDetails createdAt={createdAt} tier={tier} isTrial={isTrial} />
           </OrgNameAndDetails>
         </AvatarAndName>
         {!onlyShowMembers && (

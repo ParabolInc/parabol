@@ -88,7 +88,8 @@ const DEFAULT_VIEWER = {
   picture: '',
   preferredName: '',
   email: '',
-  tier: 'starter'
+  tier: 'starter',
+  isTrial: false
 } as const
 
 const StandardHub = (props: Props) => {
@@ -100,11 +101,12 @@ const StandardHub = (props: Props) => {
         picture
         preferredName
         tier
+        isTrial
       }
     `,
     viewerRef
   )
-  const {email, picture, preferredName, tier} = viewer || DEFAULT_VIEWER
+  const {email, picture, preferredName, tier, isTrial} = viewer || DEFAULT_VIEWER
   const userAvatar = picture || defaultUserAvatar
   const {history} = useRouter()
   const handleUpgradeClick = () => {
@@ -124,7 +126,7 @@ const StandardHub = (props: Props) => {
           <Email>{email}</Email>
         </NameAndEmail>
       </User>
-      {tier === 'starter' ? (
+      {tier === 'starter' || isTrial ? (
         <Upgrade onClick={handleUpgradeClick}>
           <VerifiedUserIcon />
           <UpgradeCTA>{'Upgrade'}</UpgradeCTA>

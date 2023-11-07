@@ -75,6 +75,7 @@ const OrgPlans = (props: Props) => {
         ...LimitExceededWarning_organization
         id
         tier
+        isTrial
         scheduledLockAt
         lockedAt
       }
@@ -83,9 +84,11 @@ const OrgPlans = (props: Props) => {
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, scheduledLockAt, lockedAt, tier} = organization
+  const {id: orgId, scheduledLockAt, lockedAt, tier, isTrial} = organization
   const showNudge = scheduledLockAt || lockedAt
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
+
+  const trueTier = isTrial ? 'starter' : tier
 
   const plans = [
     {
@@ -97,24 +100,24 @@ const OrgPlans = (props: Props) => {
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
-      buttonStyle: getButtonStyle(tier, 'starter'),
-      buttonLabel: getButtonLabel(tier, 'starter'),
-      isActive: !hasSelectedTeamPlan && tier === 'starter'
+      buttonStyle: getButtonStyle(trueTier, 'starter'),
+      buttonLabel: getButtonLabel(trueTier, 'starter'),
+      isActive: !hasSelectedTeamPlan && trueTier === 'starter'
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
-      buttonStyle: getButtonStyle(tier, 'team'),
-      buttonLabel: getButtonLabel(tier, 'team'),
-      isActive: hasSelectedTeamPlan || tier === 'team'
+      buttonStyle: getButtonStyle(trueTier, 'team'),
+      buttonLabel: getButtonLabel(trueTier, 'team'),
+      isActive: hasSelectedTeamPlan || trueTier === 'team'
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', ...EnterpriseBenefits],
-      buttonStyle: getButtonStyle(tier, 'enterprise'),
-      buttonLabel: getButtonLabel(tier, 'enterprise'),
-      isActive: tier === 'enterprise'
+      buttonStyle: getButtonStyle(trueTier, 'enterprise'),
+      buttonLabel: getButtonLabel(trueTier, 'enterprise'),
+      isActive: trueTier === 'enterprise'
     }
   ] as const
 

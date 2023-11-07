@@ -63,6 +63,11 @@ type Organization {
   tier: TierEnum!
 
   """
+  Whether the tier is set via trial
+  """
+  isTrial: Boolean!
+
+  """
   THe datetime the current billing cycle ends
   """
   periodEnd: DateTime

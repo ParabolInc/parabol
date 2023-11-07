@@ -50,19 +50,20 @@ const OrgPlansAndBilling = (props: Props) => {
         ...PaymentDetails_organization
         ...OrgPlanDrawer_organization
         tier
+        isTrial
         isBillingLeader
       }
     `,
     organizationRef
   )
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
-  const {tier, isBillingLeader} = organization
+  const {tier, isTrial, isBillingLeader} = organization
 
   const handleSelectTeamPlan = () => {
     setHasSelectedTeamPlan(true)
   }
 
-  if (tier === 'starter') {
+  if (tier === 'starter' || isTrial) {
     return (
       <Suspense fallback={''}>
         <div className='pb-20'>

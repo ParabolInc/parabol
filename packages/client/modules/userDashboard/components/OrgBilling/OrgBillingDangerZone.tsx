@@ -60,13 +60,14 @@ const OrgBillingDangerZone = (props: Props) => {
         ...ArchiveOrganization_organization
         isBillingLeader
         tier
+        isTrial
       }
     `,
     organizationRef
   )
-  const {isBillingLeader, tier} = organization
+  const {isBillingLeader, tier, isTrial} = organization
   if (!isBillingLeader) return null
-  const isStarter = tier === 'starter'
+  const isStarter = tier === 'starter' || isTrial
   return (
     <StyledPanel isWide={isWide} label='Danger Zone'>
       <PanelRow>

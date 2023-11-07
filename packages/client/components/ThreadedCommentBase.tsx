@@ -67,6 +67,7 @@ const ThreadedCommentBase = (props: Props) => {
       fragment ThreadedCommentBase_viewer on User {
         ...ThreadedItemReply_viewer
         tier
+        isTrial
       }
     `,
     viewerRef
@@ -140,7 +141,7 @@ const ThreadedCommentBase = (props: Props) => {
     if (createdByUserNullable?.id === PARABOL_AI_USER_ID) {
       SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
         source: 'Discussion',
-        tier: viewer.tier,
+        tier: viewer.isTrial ? 'starter' : viewer.tier,
         meetingId,
         discussionTopicId
       })

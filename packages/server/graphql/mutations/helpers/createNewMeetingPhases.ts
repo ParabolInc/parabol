@@ -86,7 +86,7 @@ const createNewMeetingPhases = async (
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const asyncSideEffects = [] as Promise<any>[]
 
-  const {tier = 'starter'} = team ?? {}
+  const tier = team?.trialStartDate ? 'team' : team?.tier ?? 'starter'
   const phases = (await Promise.all(
     phaseTypes.filter(isPhaseAvailable(tier)).map(async (phaseType) => {
       const durations = stageDurations[phaseType]

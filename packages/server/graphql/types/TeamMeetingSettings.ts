@@ -29,7 +29,7 @@ export const teamMeetingSettingsFields = () => ({
       {dataLoader}: GQLContext
     ) => {
       const team = await dataLoader.get('teams').loadNonNull(teamId)
-      return phaseTypes.filter(isPhaseAvailable(team.tier))
+      return phaseTypes.filter(isPhaseAvailable(team.trialStartDate ? 'team' : team.tier))
     }
   },
   teamId: {

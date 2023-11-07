@@ -24,6 +24,15 @@ const Organization: OrganizationResolvers = {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
+  tier: ({tier, trialStartDate}) => {
+    if (tier === 'starter' && trialStartDate) {
+      return 'team'
+    }
+    return tier
+  },
+  isTrial: ({tier, trialStartDate}) => {
+    return !!trialStartDate && tier === 'starter'
+  },
   oneOnOneTeam: async (
     {id: orgId}: {id: string},
     {email}: {email: string},

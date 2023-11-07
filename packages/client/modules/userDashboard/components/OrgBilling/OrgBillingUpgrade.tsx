@@ -48,6 +48,7 @@ const OrgBillingUpgrade = (props: Props) => {
       fragment OrgBillingUpgrade_organization on Organization {
         id
         tier
+        isTrial
         orgUserCount {
           activeUserCount
         }
@@ -55,7 +56,7 @@ const OrgBillingUpgrade = (props: Props) => {
     `,
     organizationRef
   )
-  const {id: orgId, tier, orgUserCount} = organization
+  const {id: orgId, tier, isTrial, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const {togglePortal, closePortal, modalPortal} = useModal()
   const onUpgrade = () => invoiceListRefetch?.({orgId, first: 3})
@@ -70,18 +71,19 @@ const OrgBillingUpgrade = (props: Props) => {
           activeUserCount={activeUserCount}
         />
       )}
-      {tier === 'starter' && (
-        <Panel>
-          <Inner>
-            <Title>Upgrade</Title>
-            <Quotes />
-            <UpgradeBenefits />
-            <ButtonBlock>
-              <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
-            </ButtonBlock>
-          </Inner>
-        </Panel>
-      )}
+      {tier === 'starter' ||
+        (isTrial && (
+          <Panel>
+            <Inner>
+              <Title>Upgrade</Title>
+              <Quotes />
+              <UpgradeBenefits />
+              <ButtonBlock>
+                <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
+              </ButtonBlock>
+            </Inner>
+          </Panel>
+        ))}
     </>
   )
 }

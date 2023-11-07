@@ -54,7 +54,8 @@ const selectTemplate = {
       if (
         !isFree &&
         !viewer.featureFlags.includes('noTemplateLimit') &&
-        viewerTeam.tier === 'starter'
+        viewerTeam.tier === 'starter' &&
+        !viewerTeam.trialStartDate
       ) {
         return standardError(new Error('User does not have access to this premium template'), {
           userId: viewerId

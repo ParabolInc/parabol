@@ -56,7 +56,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const {tier} = team
+    const {tier, trialStartDate} = team
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already ended'), {userId: viewerId})
@@ -76,7 +76,7 @@ export default {
       ? await getReflectionEntities(plaintextContent)
       : reflection.entities
     const sentimentScore =
-      tier !== 'starter'
+      tier !== 'starter' || trialStartDate
         ? isVeryDifferent
           ? await getReflectionSentimentScore(question, plaintextContent)
           : reflection.sentimentScore

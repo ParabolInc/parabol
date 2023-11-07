@@ -31,7 +31,7 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
     ),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
-  organization.tier = 'team'
+  organization.trialStartDate = now
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 

@@ -191,6 +191,15 @@ const User: UserResolvers = {
     const urlObj = new URL(baseUrl)
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
+  },
+  tier: ({tier, trialStartDate}) => {
+    if (tier === 'starter' && trialStartDate) {
+      return 'team'
+    }
+    return tier
+  },
+  isTrial: ({tier, trialStartDate}) => {
+    return !!trialStartDate && tier === 'starter'
   }
 }
 

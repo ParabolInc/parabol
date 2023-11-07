@@ -9,7 +9,7 @@ const canAccessAISummary = async (
   meetingType: 'standup' | 'retrospective'
 ) => {
   if (featureFlags.includes('noAISummary') || !team) return false
-  const {qualAIMeetingsCount, tier, orgId} = team
+  const {qualAIMeetingsCount, tier, trialStartDate, orgId} = team
   const organization = await dataLoader.get('organizations').load(orgId)
   if (organization.featureFlags?.includes('noAISummary')) return false
   if (meetingType === 'standup') {
@@ -17,7 +17,7 @@ const canAccessAISummary = async (
     return true
   }
 
-  if (tier !== 'starter') return true
+  if (tier !== 'starter' && !trialStartDate) return true
   return qualAIMeetingsCount < Threshold.MAX_QUAL_AI_MEETINGS
 }
 

@@ -8,6 +8,7 @@ import BaseTag from './BaseTag'
 interface Props {
   className?: string
   tier: TierEnum | null
+  isTrial?: boolean
 }
 
 const StarterTag = styled(BaseTag)({
@@ -26,7 +27,8 @@ const EnterpriseTag = styled(BaseTag)({
 })
 
 const TierTag = (props: Props) => {
-  const {className, tier} = props
+  const {className, tier, isTrial} = props
+  if (isTrial) return <StarterTag className={className}>{'Free Trial'}</StarterTag>
   if (tier === 'starter') return <StarterTag className={className}>{TierLabel.STARTER}</StarterTag>
   if (tier === 'team') return <TeamTag className={className}>{TierLabel.TEAM}</TeamTag>
   if (tier === 'enterprise')

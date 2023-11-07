@@ -19,12 +19,13 @@ const resolveSelectedTemplate =
       dataLoader.get('meetingTemplates').load(selectedTemplateId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
-    const {tier} = team
+    const {tier, trialStartDate} = team
     if (template) {
       if (
         template.isFree ||
         template.scope !== 'PUBLIC' ||
         tier !== 'starter' ||
+        trialStartDate ||
         viewer.featureFlags.includes('noTemplateLimit')
       ) {
         return template

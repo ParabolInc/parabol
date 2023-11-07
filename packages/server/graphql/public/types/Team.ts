@@ -35,7 +35,16 @@ const Team: TeamResolvers = {
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     return teamMember
   },
-  isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId)
+  isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),
+  tier: ({tier, trialStartDate}) => {
+    if (tier === 'starter' && trialStartDate) {
+      return 'team'
+    }
+    return tier
+  },
+  isTrial: ({tier, trialStartDate}) => {
+    return !!trialStartDate && tier === 'starter'
+  }
 }
 
 export default Team

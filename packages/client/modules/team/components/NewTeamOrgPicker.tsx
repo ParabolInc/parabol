@@ -50,6 +50,7 @@ const NewTeamOrgPicker = (props: Props) => {
         id
         name
         tier
+        isTrial
       }
     `,
     organizationsRef
@@ -85,7 +86,7 @@ const NewTeamOrgPicker = (props: Props) => {
         defaultText={
           <MenuToggleInner>
             <MenuToggleLabel>{defaultText}</MenuToggleLabel>
-            {org && org.tier !== 'starter' && <TierTag tier={org.tier} />}
+            {org && org.tier !== 'starter' && <TierTag tier={org.tier} isTrial={org.isTrial} />}
           </MenuToggleInner>
         }
       />

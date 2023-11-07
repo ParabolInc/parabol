@@ -47,6 +47,7 @@ const query = graphql`
         id
         name
         tier
+        isTrial
         orgId
         teamMembers(sortBy: "preferredName") {
           teamMemberId: id
@@ -67,7 +68,7 @@ const TeamSettings = (props: Props) => {
   const {viewer} = data
   const {history} = useRouter()
   const {team} = viewer
-  const {name: teamName, orgId, teamMembers, tier} = team!
+  const {name: teamName, orgId, teamMembers, tier, isTrial} = team!
   useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
@@ -78,10 +79,14 @@ const TeamSettings = (props: Props) => {
   return (
     <TeamSettingsLayout>
       <PanelsLayout>
-        {tier === 'starter' && (
+        {(tier === 'starter' || isTrial) && (
           <Panel>
             <StyledRow>
-              <div>{'This team is currently on a starter plan.'}</div>
+              <div>
+                {isTrial
+                  ? `This team is currently on a ${TierLabel.TEAM} free trial`
+                  : 'This team is currently on a starter plan.'}
+              </div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
                 {`Upgrade Team to ${TierLabel.TEAM}`}
               </PrimaryButton>

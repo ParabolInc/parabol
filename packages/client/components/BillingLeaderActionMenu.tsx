@@ -37,6 +37,7 @@ const BillingLeaderActionMenu = (props: Props) => {
       fragment BillingLeaderActionMenu_organization on Organization {
         id
         tier
+        isTrial
       }
     `,
     organizationRef
@@ -54,7 +55,7 @@ const BillingLeaderActionMenu = (props: Props) => {
     organizationUserRef
   )
   const atmosphere = useAtmosphere()
-  const {id: orgId, tier} = organization
+  const {id: orgId, tier, isTrial} = organization
   const {viewerId} = atmosphere
   const {newUserUntil, role, user} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
@@ -84,7 +85,7 @@ const BillingLeaderActionMenu = (props: Props) => {
         {viewerId !== userId && (
           <MenuItem
             label={
-              tier === 'team' && new Date(newUserUntil) > new Date()
+              tier === 'team' && !isTrial && new Date(newUserUntil) > new Date()
                 ? 'Refund and Remove'
                 : 'Remove from Organization'
             }

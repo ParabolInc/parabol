@@ -72,14 +72,15 @@ const OrgPlansAndBillingHeading = (props: Props) => {
         id
         name
         tier
+        isTrial
         showDrawer
       }
     `,
     organizationRef
   )
   const atmosphere = useAtmosphere()
-  const {id: orgId, name, tier} = organization
-  const tierName = upperFirst(tier)
+  const {id: orgId, name, tier, isTrial} = organization
+  const tierName = upperFirst(isTrial ? 'starter' : tier)
 
   const handleClick = () => {
     commitLocalUpdate(atmosphere, (store) => {

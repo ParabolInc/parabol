@@ -409,6 +409,11 @@ type User {
   tier: TierEnum!
 
   """
+  Whether the tier is set via trial
+  """
+  isTrial: Boolean!
+
+  """
   all the teams the user is a part of that the viewer can see
   """
   tms: [ID!]!

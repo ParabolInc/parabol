@@ -17,7 +17,6 @@ import GraphQLURLType from './GraphQLURLType'
 import OrganizationUser, {OrganizationUserConnection} from './OrganizationUser'
 import OrgUserCount from './OrgUserCount'
 import Team from './Team'
-import TierEnum from './TierEnum'
 import User from './User'
 
 const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
@@ -97,10 +96,6 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
         return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       }
-    },
-    tier: {
-      type: new GraphQLNonNull(TierEnum),
-      description: 'The level of access to features on the parabol site'
     },
     periodEnd: {
       type: GraphQLISO8601Type,

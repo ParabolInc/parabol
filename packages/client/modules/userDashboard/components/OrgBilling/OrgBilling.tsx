@@ -41,16 +41,17 @@ const OrgBilling = (props: Props) => {
         ...OrgBillingDangerZone_organization
         id
         tier
+        isTrial
       }
     `,
     organizationRef
   )
-  const {tier} = organization
+  const {tier, isTrial} = organization
 
   return (
     <div>
       <OrgBillingUpgrade organization={organization} invoiceListRefetch={refetch} />
-      {tier === 'team' && (
+      {tier === 'team' && !isTrial && (
         <>
           <OrgBillingCreditCardInfoOld organization={organization} />
           <OrgBillingInvoices queryRef={queryData} />
