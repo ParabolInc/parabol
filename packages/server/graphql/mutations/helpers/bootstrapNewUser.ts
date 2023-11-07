@@ -49,6 +49,7 @@ const bootstrapNewUser = async (
 
   const experimentalFlags = [...featureFlags]
 
+  // Retros in disguise
   const domainUserHasRidFlag = usersWithDomain.some((user) =>
     user.featureFlags.includes('retrosInDisguise')
   )
@@ -62,6 +63,16 @@ const bootstrapNewUser = async (
   // Add signUpDestinationTeam feature flag to 50% of new accounts
   if (Math.random() < 0.5) {
     experimentalFlags.push('signUpDestinationTeam')
+  }
+
+  // No template limit
+  const domainUserHasNoTemplateLimitFlag = usersWithDomain.some((user) =>
+    user.featureFlags.includes('noTemplateLimit')
+  )
+  if (domainUserHasNoTemplateLimitFlag) {
+    experimentalFlags.push('noTemplateLimit')
+  } else if (Math.random() < 0.5) {
+    experimentalFlags.push('noTemplateLimit')
   }
 
   const isVerified = identities.some((identity) => identity.isEmailVerified)
