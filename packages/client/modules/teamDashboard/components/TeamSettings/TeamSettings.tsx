@@ -95,7 +95,19 @@ const TeamSettings = (props: Props) => {
             </PanelRow>
           </Panel>
         ) : (
-          <div>You need to be team lead to make changes here, contact <a href={`mailto:${contact.email}`}>{contact.preferredName}</a>.</div>
+          <Panel className='mt-8'>
+            <StyledRow>
+              <div>
+                This team is currently on a <b className='capitalize'>{tier} plan</b>. Only Team
+                Leads can <b>Uprade plans</b> and <b>Delete a team</b>.<br />
+                The <b>Team Lead</b> for {teamName} is{' '}
+                <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
+                  {contact.preferredName}
+                </a>
+                .
+              </div>
+            </StyledRow>
+          </Panel>
         )}
       </PanelsLayout>
     </TeamSettingsLayout>
