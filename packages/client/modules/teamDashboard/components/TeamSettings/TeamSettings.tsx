@@ -84,7 +84,7 @@ const TeamSettings = (props: Props) => {
             <StyledRow>
               <div>
                 {isTrial
-                  ? `This team is currently on a ${TierLabel.TEAM} free trial`
+                  ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
                   : 'This team is currently on a starter plan.'}
               </div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
