@@ -8,7 +8,7 @@ export const ActivityLibraryCard = (props: ActivityCardProps) => {
   return (
     <ActivityCard
       className={clsx(
-        'group/card transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-md motion-reduce:transition-none',
+        'transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-md',
         className
       )}
       {...rest}

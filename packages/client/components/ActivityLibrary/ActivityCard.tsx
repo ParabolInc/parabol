@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import React, {ComponentPropsWithoutRef, PropsWithChildren} from 'react'
+import {upperFirst} from '../../utils/upperFirst'
 
 export interface CardTheme {
   primary: string
@@ -46,22 +47,41 @@ export interface ActivityCardProps {
   title?: string
   badge?: React.ReactNode
   children?: React.ReactNode
+  type?: string
+}
+
+const meetingTypeColors = {
+  retrospective: 'text-grape-500',
+  standup: 'text-aqua-400',
+  estimation: 'text-tomato-500',
+  feedback: 'text-jade-400'
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, theme, title, titleAs, badge, children} = props
+  const {className, theme, title, titleAs, badge, children, type = 'retrospective'} = props
   const Title = titleAs ?? ActivityCardTitle
 
+  const typeColorClass = type ? meetingTypeColors[type] : 'text-slate-800'
+
   return (
-    <div className={clsx('flex flex-col overflow-hidden rounded-lg', theme.secondary, className)}>
-      <div className='flex flex-shrink-0'>
-        <Title>{title}</Title>
-        <div className={clsx('ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full', theme.primary)} />
+    <div>
+      <div className={clsx('flex flex-col overflow-hidden rounded-lg', theme.secondary, className)}>
+        {children}
+        {/* <div className='flex flex-shrink-0 group-hover/card:hidden'> */}
+        <div className='flex flex-shrink-0'>
+          {/* <div className={clsx('mt-auto h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} /> */}
+          <div className={clsx('mt-auto h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} />
+          <div className='ml-auto'>{badge}</div>
+        </div>
       </div>
-      {children}
-      <div className='flex flex-shrink-0 group-hover/card:hidden'>
-        <div className={clsx('mt-auto h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} />
-        <div className='ml-auto'>{badge}</div>
+      <div className='flex flex-shrink-0'>
+        {/* <div className='pt-2 text-3xl leading-5 text-slate-800 sm:text-base'>{title}</div> */}
+        <div className='pt-3 pb-1 text-lg leading-5 text-slate-800'>{title}</div>
+        {/* <div className={'ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full'} /> */}
+      </div>
+      <div className='flex flex-shrink-0 italic'>
+        <div className={clsx('font-semibold italic', typeColorClass)}>{upperFirst(type)}</div>
+        <div className={'ml-auto h-10 w-8 flex-shrink-0 rounded-bl-full'} />
       </div>
     </div>
   )
