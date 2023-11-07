@@ -95,6 +95,7 @@ const bootstrapNewUser = async (
     await Promise.all(
       teamsWithAutoJoin.map((team) => {
         const teamId = team.id
+        tms.push(teamId)
         return Promise.all([
           acceptTeamInvitation(team, userId, dataLoader),
           isOrganic
