@@ -71,19 +71,18 @@ const OrgBillingUpgrade = (props: Props) => {
           activeUserCount={activeUserCount}
         />
       )}
-      {tier === 'starter' ||
-        (isTrial && (
-          <Panel>
-            <Inner>
-              <Title>Upgrade</Title>
-              <Quotes />
-              <UpgradeBenefits />
-              <ButtonBlock>
-                <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
-              </ButtonBlock>
-            </Inner>
-          </Panel>
-        ))}
+      {(tier === 'starter' || isTrial) && (
+        <Panel>
+          <Inner>
+            <Title>Upgrade</Title>
+            <Quotes />
+            <UpgradeBenefits />
+            <ButtonBlock>
+              <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
+            </ButtonBlock>
+          </Inner>
+        </Panel>
+      )}
     </>
   )
 }

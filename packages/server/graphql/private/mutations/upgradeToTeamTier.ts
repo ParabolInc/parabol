@@ -76,13 +76,15 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
           tierLimitExceededAt: null,
           scheduledLockAt: null,
           lockedAt: null,
-          updatedAt: now
+          updatedAt: now,
+          trialStartDate: null
         })
     }).run(),
     updateTeamByOrgId(
       {
         isPaid: true,
-        tier: 'team'
+        tier: 'team',
+        trialStartDate: null
       },
       orgId
     ),
