@@ -26,6 +26,7 @@ export default class OrganizationUser {
   role: OrgUserRole | null
   userId: string
   tier: TierEnum | null
+  trialStartDate?: Date | null
 
   constructor(input: Input) {
     const {

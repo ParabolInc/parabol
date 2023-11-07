@@ -7,6 +7,7 @@ UPDATE "Team" SET
   "isPaid" = COALESCE(:isPaid, "isPaid"),
   "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),
   "tier" = COALESCE(:tier, "tier"),
-  "orgId" = COALESCE(:orgId, "orgId")
+  "orgId" = COALESCE(:orgId, "orgId"),
+  "trialStartDate" = COALESCE(:trialStartDate, "trialStartDate")
 WHERE "orgId" = :orgId
 RETURNING "id";

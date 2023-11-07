@@ -1,0 +1,23 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  startTrial(
+    """
+    Describe the first arg here
+    """
+    orgId: ID!
+  ): StartTrialPayload!
+}
+
+"""
+Return value for startTrial, which could be an error
+"""
+union StartTrialPayload = ErrorPayload | StartTrialSuccess
+
+type StartTrialSuccess {
+  """
+  Describe the first return field here
+  """
+  success: Boolean!
+}

@@ -31,6 +31,7 @@ export default class Team {
   lastMeetingType: MeetingTypeEnum
   lockMessageHTML?: string | null
   tier: TierEnum
+  trialStartDate?: Date | null
   orgId: string
   isOnboardTeam: boolean
   isOneOnOneTeam?: boolean
