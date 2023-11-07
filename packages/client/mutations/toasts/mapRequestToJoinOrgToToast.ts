@@ -3,7 +3,7 @@ import {Snack} from '../../components/Snackbar'
 import {mapRequestToJoinOrgToToast_notification$data} from '../../__generated__/mapRequestToJoinOrgToToast_notification.graphql'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import SendClientSideEvent from '../SendClientSideEvent'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 graphql`
   fragment mapRequestToJoinOrgToToast_notification on NotifyRequestToJoinOrg {

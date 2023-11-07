@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'react-relay'
 import {useTemplateDescription_template$key} from '../__generated__/useTemplateDescription_template.graphql'
-import {TierEnum} from '../__generated__/SendClientSideEventMutation.graphql'
+import {TierEnum} from '../__generated__/NewMeetingQuery.graphql'
 import relativeDate from './date/relativeDate'
 
 const useTemplateDescription = (

@@ -9,7 +9,7 @@ import {mergeRefs} from '../../../utils/react/mergeRefs'
 import clsx from 'clsx'
 import {ContentCopy} from '@mui/icons-material'
 import ms from 'ms'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 
 interface Props {

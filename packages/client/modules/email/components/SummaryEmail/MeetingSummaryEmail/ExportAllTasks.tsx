@@ -18,7 +18,7 @@ import GitHubSVG from '../../../../../components/GitHubSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
 import GitLabSVG from '../../../../../components/GitLabSVG'
 import clsx from 'clsx'
-import SendClientSideEvent from '../../../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')

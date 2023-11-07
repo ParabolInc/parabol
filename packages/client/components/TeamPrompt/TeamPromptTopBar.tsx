@@ -19,7 +19,7 @@ import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import IconLabel from '../IconLabel'
-import SendClientSideEvent from '../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
   marginRight: '8px',

@@ -5,6 +5,88 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.5.0](https://github.com/ParabolInc/parabol/compare/v7.4.2...v7.5.0) (2023-11-02)
+
+
+### Added
+
+* More templates are free now ([#9090](https://github.com/ParabolInc/parabol/issues/9090)) ([7d7c39c](https://github.com/ParabolInc/parabol/commit/7d7c39c10ae016794b2e4c1c8f302467409fc5b9))
+
+## [7.4.2](https://github.com/ParabolInc/parabol/compare/v7.4.1...v7.4.2) (2023-11-02)
+
+
+### Fixed
+
+* gracefully handle reconnects when servers upgrade ([#9080](https://github.com/ParabolInc/parabol/issues/9080)) ([55b780a](https://github.com/ParabolInc/parabol/commit/55b780a9200336d53d88a0eb2e0971cdb16715d3))
+
+## [7.4.1](https://github.com/ParabolInc/parabol/compare/v7.4.0...v7.4.1) (2023-11-02)
+
+
+### Fixed
+
+* restore missing pm2.config.js ([#9099](https://github.com/ParabolInc/parabol/issues/9099)) ([596fda7](https://github.com/ParabolInc/parabol/commit/596fda7e96ab873d6f553ab3228cb14b28974f5c))
+
+
+### Changed
+
+* remove dokku artifacts ([#9095](https://github.com/ParabolInc/parabol/issues/9095)) ([c208222](https://github.com/ParabolInc/parabol/commit/c208222f4b53b07769b9d6441b02c2664cfeb732))
+
+## [7.4.0](https://github.com/ParabolInc/parabol/compare/v7.3.1...v7.4.0) (2023-11-01)
+
+
+### Added
+
+* adds MoSCoW and RICE prioritization templates ([#9072](https://github.com/ParabolInc/parabol/issues/9072)) ([941ffe1](https://github.com/ParabolInc/parabol/commit/941ffe1a417564a6eafa2d0919ca1758d51f5aa1))
+
+
+### Fixed
+
+* e-mail love@parabol.com replaced by love@parabol.co ([#9084](https://github.com/ParabolInc/parabol/issues/9084)) ([25cb311](https://github.com/ParabolInc/parabol/commit/25cb311754919a8c483423f7a4fbe93e6db8253b))
+
+
+### Changed
+
+* **metrics:** Disable client side Segment metrics ([#9067](https://github.com/ParabolInc/parabol/issues/9067)) ([ceb073e](https://github.com/ParabolInc/parabol/commit/ceb073ef1636450d4c3842e3416a13393fda8855))
+
+## [7.3.1](https://github.com/ParabolInc/parabol/compare/v7.3.0...v7.3.1) (2023-10-31)
+
+
+### Fixed
+
+* do not fail installing service worker on fetch fail ([#9082](https://github.com/ParabolInc/parabol/issues/9082)) ([aad4f05](https://github.com/ParabolInc/parabol/commit/aad4f050232f67456e68472b7ee269eb7aab73b3))
+
+## [7.3.0](https://github.com/ParabolInc/parabol/compare/v7.2.1...v7.3.0) (2023-10-30)
+
+
+### Added
+
+* autoJoin verified users to team ([#8883](https://github.com/ParabolInc/parabol/issues/8883)) ([af68684](https://github.com/ParabolInc/parabol/commit/af6868486b7bd6772a5b06b91037e2a889eda9cc))
+* **zoom-transcription:** split transcript into speaker & words ([#8995](https://github.com/ParabolInc/parabol/issues/8995)) ([f43f6f1](https://github.com/ParabolInc/parabol/commit/f43f6f182b7f5b61dbc1891215f207ace1434e16))
+* **zoom-transcription:** UI improvements ([#8993](https://github.com/ParabolInc/parabol/issues/8993)) ([c478e09](https://github.com/ParabolInc/parabol/commit/c478e099a31131f90ebadaa24e16522c2fc324c2))
+
+
+### Changed
+
+* **auto-join:** verify org founder or billing leads ([#8989](https://github.com/ParabolInc/parabol/issues/8989)) ([6d7e26e](https://github.com/ParabolInc/parabol/commit/6d7e26e0487da49636e63212c16d67c54c3152b1))
+* **circleci:** deleted the CircleCI script ([#9070](https://github.com/ParabolInc/parabol/issues/9070)) ([3ee3a09](https://github.com/ParabolInc/parabol/commit/3ee3a09eff38563aea58b79db6aeaa25649bfcb1))
+* Delete unused GitHub webhook code ([#8999](https://github.com/ParabolInc/parabol/issues/8999)) ([f2d26de](https://github.com/ParabolInc/parabol/commit/f2d26de8fae71f00fca7fe946312e15ce4cd23e6))
+* remove unused filesToCache logic ([#9000](https://github.com/ParabolInc/parabol/issues/9000)) ([ebffc43](https://github.com/ParabolInc/parabol/commit/ebffc43b765650298bb628915984a74b3d2d1126))
+* **Snyk:** Security upgrade redhat/ubi8 from 8.6 to 9.2 ([#9054](https://github.com/ParabolInc/parabol/issues/9054)) ([e5f7e7e](https://github.com/ParabolInc/parabol/commit/e5f7e7ecc8ee28deef468df8c9c5b8ae2454e5b7))
+
+## [7.2.1](https://github.com/ParabolInc/parabol/compare/v7.2.0...v7.2.1) (2023-10-27)
+
+
+### Fixed
+
+* Fix service worker static cache base url ([#9058](https://github.com/ParabolInc/parabol/issues/9058)) ([7c8b576](https://github.com/ParabolInc/parabol/commit/7c8b576337c8e6d5dedd23ca84b65d13d2e2f1d0))
+* PR title ([#9066](https://github.com/ParabolInc/parabol/issues/9066)) ([019a0f7](https://github.com/ParabolInc/parabol/commit/019a0f770ab8ad8db041ff8d7189959ea37175f5))
+
+
+### Changed
+
+* **metrics:** rename column `segmentId` to `pseudoId` ([#9053](https://github.com/ParabolInc/parabol/issues/9053)) ([a826bb7](https://github.com/ParabolInc/parabol/commit/a826bb74feb89390b8585561e78254c4a6b0fd98))
+* remove release branch ([#9064](https://github.com/ParabolInc/parabol/issues/9064)) ([252f0db](https://github.com/ParabolInc/parabol/commit/252f0db3b87f7408c556663f4edffa9eedb0a95f))
+
 ## [7.2.0](https://github.com/ParabolInc/parabol/compare/v7.1.1...v7.2.0) (2023-10-26)
 
 

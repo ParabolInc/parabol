@@ -11,8 +11,8 @@ import {
 } from '~/__generated__/NotificationDropdown_query.graphql'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {MenuProps} from '../hooks/useMenu'
-import useSegmentTrack from '../hooks/useSegmentTrack'
-import SendClientSideEvent from '../mutations/SendClientSideEvent'
+import useClientSideTrack from '../hooks/useClientSideTrack'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {NotificationDropdownPaginationQuery} from '../__generated__/NotificationDropdownPaginationQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -75,7 +75,7 @@ const NotificationDropdown = (props: Props) => {
     rootMargin: '8px'
   })
   const atmosphere = useAtmosphere()
-  useSegmentTrack('Notification Menu Opened', {})
+  useClientSideTrack('Notification Menu Opened', {})
   return (
     <Menu ariaLabel={'Select a notification'} {...menuProps}>
       {!hasNotifications && (

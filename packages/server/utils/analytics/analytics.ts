@@ -18,6 +18,7 @@ import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
+import TemplateScale from '../../database/types/TemplateScale'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
@@ -113,6 +114,11 @@ export type AnalyticsEvent =
   | 'Meeting Timer Stopped'
   | 'Meeting Timer Updated'
   | 'Poker Meeting Team Revoted'
+  | 'Template Created'
+  | 'Template Cloned'
+  | 'Template Shared'
+  | 'Scale Created'
+  | 'Scale Cloned'
   // team
   | 'Team Name Changed'
   | 'Integration Added'
@@ -147,6 +153,7 @@ export type AnalyticsEvent =
   | 'Snackbar Viewed'
   // Join request
   | 'Join Request Reviewed'
+  | 'AutoJoined Team'
   // Suggest Groups
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
@@ -356,6 +363,31 @@ class Analytics {
     eventProperties: PokerMeetingTeamRevotedProperties
   ) => {
     this.track(userId, 'Poker Meeting Team Revoted', eventProperties)
+  }
+
+  templateMetrics = (
+    userId: string,
+    template: MeetingTemplate,
+    eventName: 'Template Created' | 'Template Cloned' | 'Template Shared'
+  ) => {
+    this.track(userId, eventName, {
+      meetingTemplateId: template.id,
+      meetingTemplateType: template.type,
+      meetingTemplateScope: template.scope,
+      teamId: template.teamId
+    })
+  }
+
+  scaleMetrics = (
+    userId: string,
+    scale: TemplateScale,
+    eventName: 'Scale Created' | 'Scale Cloned'
+  ) => {
+    this.track(userId, eventName, {
+      scaleId: scale.id,
+      scaleName: scale.name,
+      teamId: scale.teamId
+    })
   }
 
   // team
@@ -589,8 +621,14 @@ class Analytics {
     this.track(userId, 'New Org', {orgId, teamId, fromSignup})
   }
 
-  newTeam = (userId: string, orgId: string, teamId: string, teamNumber: number) => {
-    this.track(userId, 'New Team', {orgId, teamId, teamNumber})
+  newTeam = (
+    userId: string,
+    orgId: string,
+    teamId: string,
+    teamNumber: number,
+    isOneOnOneTeam = false
+  ) => {
+    this.track(userId, 'New Team', {orgId, teamId, teamNumber, isOneOnOneTeam})
   }
 
   pollAdded = (userId: string, teamId: string, meetingId: string) => {
@@ -621,6 +659,10 @@ class Analytics {
 
   taskDueDateSet = (userId: string, teamId: string, taskId: string) => {
     this.track(userId, 'Task due date set', {taskId, teamId})
+  }
+
+  autoJoined = (userId: string, teamId: string) => {
+    this.track(userId, 'AutoJoined Team', {userId, teamId})
   }
 
   identify = (options: IdentifyOptions) => {

@@ -5,14 +5,14 @@ import {useFragment} from 'react-relay'
 import TypeAheadLabel from '~/components/TypeAheadLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateItem_template$key} from '../../../__generated__/ReflectTemplateItem_template.graphql'
-import {TierEnum} from '../../../__generated__/SendClientSideEventMutation.graphql'
+import {TierEnum} from '../../../__generated__/NewMeetingQuery.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,

@@ -13,7 +13,7 @@ import JiraSVG from '../JiraSVG'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
-import SendClientSideEvent from '../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import useAtmosphere from '../../hooks/useAtmosphere'
 
 interface Props {

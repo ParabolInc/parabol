@@ -16,7 +16,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
   OPEN: githubIssueOpen,

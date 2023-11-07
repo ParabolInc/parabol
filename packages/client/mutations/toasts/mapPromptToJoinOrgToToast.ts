@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapPromptToJoinOrgToToast_notification$data} from '../../__generated__/mapPromptToJoinOrgToToast_notification.graphql'
-import SendClientSideEvent from '../SendClientSideEvent'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import RequestToJoinDomainMutation from '../RequestToJoinDomainMutation'
 

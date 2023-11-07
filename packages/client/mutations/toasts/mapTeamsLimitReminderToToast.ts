@@ -4,7 +4,7 @@ import {Threshold} from '../../types/constEnums'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import makeDateString from '../../utils/makeDateString'
 import {mapTeamsLimitReminderToToast_notification$data} from '../../__generated__/mapTeamsLimitReminderToToast_notification.graphql'
-import SendClientSideEvent from '../SendClientSideEvent'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`

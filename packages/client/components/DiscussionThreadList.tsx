@@ -7,6 +7,7 @@ import {DiscussionThreadList_discussion$key} from '~/__generated__/DiscussionThr
 import {DiscussionThreadList_threadables$key} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import {DiscussionThreadList_viewer$key} from '~/__generated__/DiscussionThreadList_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
+import {RetroDiscussPhase_meeting$data} from '../__generated__/RetroDiscussPhase_meeting.graphql'
 import CommentingStatusText from './CommentingStatusText'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
@@ -58,7 +59,7 @@ interface Props {
   dataCy: string
   header?: ReactNode
   emptyState?: ReactNode
-  transcription?: string | null
+  transcription?: RetroDiscussPhase_meeting$data['transcription']
   showTranscription?: boolean
 }
 

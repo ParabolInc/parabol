@@ -9441,11 +9441,6 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/segment-analytics@^0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/segment-analytics/-/segment-analytics-0.0.31.tgz#1f2936afe4f33e2ffb4e9d9c922b99567ffd524b"
-  integrity sha512-R6/78NeRPuIZTa2epCfLySnGN4HL2KSIUGQzty0RLujFHspfShJsQ3XkNKtFs7D5V+vNBAl7+UDyArGtkjuH0A==
-
 "@types/send@*":
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/@types/send/-/send-0.17.1.tgz#ed4932b8a2a805f1fe362a70f4e62d0ac994e301"

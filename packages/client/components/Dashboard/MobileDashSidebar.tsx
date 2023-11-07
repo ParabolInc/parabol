@@ -88,12 +88,12 @@ const MobileDashSidebar = (props: Props) => {
     graphql`
       fragment MobileDashSidebar_viewer on User {
         ...StandardHub_viewer
-        ...DashNavList_viewer
         featureFlags {
           checkoutFlow
           retrosInDisguise
         }
         organizations {
+          ...DashNavList_organization
           id
           name
           isBillingLeader
@@ -191,7 +191,7 @@ const MobileDashSidebar = (props: Props) => {
           </NavItemsWrap>
           <DashHR />
           <NavMain>
-            <DashNavList onClick={handleMenuClick} viewer={viewer} />
+            <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
           </NavMain>
           <DashHR />
           <Footer>

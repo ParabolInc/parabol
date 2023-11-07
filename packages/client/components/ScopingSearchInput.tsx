@@ -3,9 +3,9 @@ import {Close} from '@mui/icons-material'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSideEvent from '../mutations/SendClientSideEvent'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
-import {ServiceEnum} from '../__generated__/SendClientSideEventMutation.graphql'
+import {ServiceEnumType} from 'parabol-server/graphql/types/ServiceEnum'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -38,7 +38,7 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
-  service: ServiceEnum
+  service: ServiceEnumType
   defaultInput?: string
 }
 
