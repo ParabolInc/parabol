@@ -14,6 +14,7 @@
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
+          "EndTrialSuccess": "./types/EndTrialSuccess#EndTrialSuccessSource",
           "File": "../public/types/File#TFile",
           "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
           "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
