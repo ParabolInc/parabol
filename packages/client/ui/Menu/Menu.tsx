@@ -4,22 +4,26 @@ import {twMerge} from 'tailwind-merge'
 
 interface MenuProps {
   trigger: React.ReactNode
+  className?: string
   children: React.ReactNode
 }
 
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(({trigger, children}, ref) => {
-  const contentClass = twMerge(
-    'border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none'
-  )
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
+  ({trigger, className, children}, ref) => {
+    const contentClass = twMerge(
+      'border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none',
+      className
+    )
 
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content align='end' className={contentClass} sideOffset={10} ref={ref}>
-          {children}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
-  )
-})
+    return (
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content align='end' className={contentClass} sideOffset={10} ref={ref}>
+            {children}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    )
+  }
+)

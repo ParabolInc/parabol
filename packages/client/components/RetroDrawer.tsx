@@ -1,6 +1,6 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
@@ -59,6 +59,12 @@ const RetroDrawer = (props: Props) => {
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer)
   }
+
+  useEffect(() => {
+    if (hasReflections && showDrawer) {
+      setShowDrawer(false)
+    }
+  }, [hasReflections])
 
   if (!phaseType || phaseType !== 'reflect') return null
   return (
