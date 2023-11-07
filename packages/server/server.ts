@@ -8,7 +8,6 @@ import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
-import webhookGraphQLHandler from './graphql/webhookGraphQLHandler'
 import './initSentry'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
@@ -61,7 +60,6 @@ uws
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
-  .post('/webhooks/graphql', webhookGraphQLHandler)
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetGraphQLHandler)
   .post('/saml/:domain', SAMLHandler)

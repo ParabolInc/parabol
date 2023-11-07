@@ -77,12 +77,12 @@ const DashSidebar = (props: Props) => {
     graphql`
       fragment DashSidebar_viewer on User {
         ...StandardHub_viewer
-        ...DashNavList_viewer
         featureFlags {
           checkoutFlow
           retrosInDisguise
         }
         organizations {
+          ...DashNavList_organization
           id
           name
           isBillingLeader
@@ -153,7 +153,7 @@ const DashSidebar = (props: Props) => {
           </NavItemsWrap>
           <DashHR />
           <NavMain>
-            <NavList viewer={viewer} />
+            <NavList organizationsRef={organizations} />
           </NavMain>
           <DashHR />
           <NavItemsWrap>

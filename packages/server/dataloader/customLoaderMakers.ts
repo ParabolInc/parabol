@@ -29,6 +29,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
+import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeResults from './normalizeResults'
@@ -741,10 +742,7 @@ export const isOrgVerified = (parent: RootDataLoader) => {
           const checkEmailDomain = (userId: string) => {
             const user = users.find((user) => user.id === userId)
             if (!user) return false
-            return (
-              user.identities.some((identity) => identity.isEmailVerified) &&
-              user.domain === org.activeDomain
-            )
+            return isUserVerified(user) && user.domain === org.activeDomain
           }
           return [org.founder, ...org.billingLeads].some(
             (orgUser) => orgUser && !orgUser.inactive && checkEmailDomain(orgUser.userId)

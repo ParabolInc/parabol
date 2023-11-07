@@ -13,7 +13,6 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "build:segmentFn": "sucrase segmentFns -d segmentFns --transforms typescript",
     "format": "yarn typecheck && yarn lint && yarn prettier",
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",

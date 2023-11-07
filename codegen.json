@@ -50,6 +50,7 @@
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",
           "AutogroupSuccess": "./types/AutogroupSuccess#AutogroupSuccessSource",
+          "BatchArchiveTasksSuccess": "./types/BatchArchiveTasksSuccess#BatchArchiveTasksSuccessSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateGcalEventInput": "./types/CreateGcalEventInput#default",
