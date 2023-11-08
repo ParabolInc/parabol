@@ -2,12 +2,12 @@ name: Test
 on:
   push:
     branches-ignore:
-      - 'release-please--**'
+      - "release-please--**"
 env:
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 jobs:
   test:
-    runs-on: ubuntu-8cores
+    runs-on: ubuntu-latest
     permissions:
       contents: "read"
       id-token: "write"
@@ -41,6 +41,8 @@ jobs:
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
           echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
 
+          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -96,11 +98,6 @@ jobs:
         run: yarn test:client -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
-
-      - name: Store Playwright Version
-        run: |
-          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
 
       - name: Cache Playwright Browsers
         id: cache-playwright-browsers
