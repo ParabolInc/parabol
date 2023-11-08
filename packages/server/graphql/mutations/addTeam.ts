@@ -75,8 +75,7 @@ export default {
       }
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').load(orgId)
-        const {tier, trialStartDate} = organization
-        if (getFeatureTier({tier, trialStartDate}) === 'starter') {
+        if (getFeatureTier(organization) === 'starter') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
       }

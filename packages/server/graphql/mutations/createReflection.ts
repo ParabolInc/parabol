@@ -54,7 +54,6 @@ export default {
       return {error: {message: 'Meeting already ended'}}
     }
     const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const {tier, trialStartDate} = team
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
@@ -66,7 +65,7 @@ export default {
     const plaintextContent = extractTextFromDraftString(normalizedContent)
     const [entities, sentimentScore] = await Promise.all([
       getReflectionEntities(plaintextContent),
-      getFeatureTier({tier, trialStartDate}) !== 'starter'
+      getFeatureTier(team) !== 'starter'
         ? getReflectionSentimentScore(question, plaintextContent)
         : undefined
     ])

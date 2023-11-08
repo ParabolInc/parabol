@@ -32,7 +32,6 @@ const addAIGeneratedContentToThreads = async (
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  const {tier, trialStartDate} = team
   const commentPromises = stages.map(async ({discussionId, reflectionGroupId}, idx) => {
     const group = groups.find((group) => group.id === reflectionGroupId)
     if (!group?.summary && !group?.discussionPromptQuestion) return
@@ -41,7 +40,7 @@ const addAIGeneratedContentToThreads = async (
     if (group.summary) {
       const topicSummaryExplainerText =
         idx === 0
-          ? getFeatureTier({tier, trialStartDate}) === 'starter'
+          ? getFeatureTier(team) === 'starter'
             ? AIExplainer.STARTER
             : AIExplainer.PREMIUM_REFLECTIONS
           : undefined
