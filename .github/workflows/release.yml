@@ -7,6 +7,7 @@ on:
     types: [closed]
 jobs:
   release:
+    if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'release-please--**') }}
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
@@ -17,6 +18,7 @@ jobs:
       - name: debug
         run: |
           echo ${{ github.event.pull_request.merged }} ${{ github.head_ref}}
+          echo ${{ github.event.pull_request.head.sha }}
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v1"
@@ -29,7 +31,7 @@ jobs:
       - name: "Tag image with production version"
         run: |-
           gcloud container images add-tag \
-          ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}} \
+          ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
       - name: Bump version in GitLab
         run: |
