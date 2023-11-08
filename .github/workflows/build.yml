@@ -1,8 +1,12 @@
 name: Build
 on:
+  pull_request:
+    types: [opened]
+    branches:
+      - "release-please--**"
   push:
     branches:
-      - 'release-please--**'
+      - "release-please--**"
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
