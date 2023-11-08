@@ -88,7 +88,7 @@ const OrgPlans = (props: Props) => {
   const showNudge = scheduledLockAt || lockedAt
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
-  const trueTier = isTrial ? 'starter' : tier
+  const planTier = isTrial ? 'starter' : tier
 
   const plans = [
     {
@@ -100,24 +100,24 @@ const OrgPlans = (props: Props) => {
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
-      buttonStyle: getButtonStyle(trueTier, 'starter'),
-      buttonLabel: getButtonLabel(trueTier, 'starter'),
-      isActive: !hasSelectedTeamPlan && trueTier === 'starter'
+      buttonStyle: getButtonStyle(planTier, 'starter'),
+      buttonLabel: getButtonLabel(planTier, 'starter'),
+      isActive: !hasSelectedTeamPlan && planTier === 'starter'
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
-      buttonStyle: getButtonStyle(trueTier, 'team'),
-      buttonLabel: getButtonLabel(trueTier, 'team'),
-      isActive: hasSelectedTeamPlan || trueTier === 'team'
+      buttonStyle: getButtonStyle(planTier, 'team'),
+      buttonLabel: getButtonLabel(planTier, 'team'),
+      isActive: hasSelectedTeamPlan || planTier === 'team'
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', ...EnterpriseBenefits],
-      buttonStyle: getButtonStyle(trueTier, 'enterprise'),
-      buttonLabel: getButtonLabel(trueTier, 'enterprise'),
-      isActive: trueTier === 'enterprise'
+      buttonStyle: getButtonStyle(planTier, 'enterprise'),
+      buttonLabel: getButtonLabel(planTier, 'enterprise'),
+      isActive: planTier === 'enterprise'
     }
   ] as const
 
