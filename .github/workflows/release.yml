@@ -15,10 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: debug
+      - name: Setup environment variables
         run: |
-          echo ${{ github.event.pull_request.merged }} ${{ github.head_ref}}
-          echo ${{ github.event.pull_request.head.sha }}
+          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v1"
