@@ -31,7 +31,7 @@ jobs:
         uses: "google-github-actions/setup-gcloud@v1"
       - name: "Tag image with production version"
         run: |-
-          gcloud container images add-tag \
+          gcloud container images add-tag -q \
           ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
       - name: Bump version in GitLab
