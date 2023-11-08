@@ -20,9 +20,7 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
   await Promise.all([
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
-        periodEnd: now,
         trialStartDate: null,
-        stripeSubscriptionId: null,
         updatedAt: now
       })
     }).run(),
@@ -34,8 +32,7 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 
-  const data = {organization, trialStartDate: initialTrialStartDate}
-  return data
+  return {organization, trialStartDate: initialTrialStartDate}
 }
 
 export default endTrial
