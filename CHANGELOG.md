@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.6.2](https://github.com/ParabolInc/parabol/compare/v7.6.1...v7.6.2) (2023-11-08)
+
+
+### Changed
+
+* update deployment docs ([#9145](https://github.com/ParabolInc/parabol/issues/9145)) ([9983ff2](https://github.com/ParabolInc/parabol/commit/9983ff2eb7c525959773c0b5b9a4933cc5e7561d))
+
 ## [7.6.1](https://github.com/ParabolInc/parabol/compare/v7.6.0...v7.6.1) (2023-11-08)
 
 
