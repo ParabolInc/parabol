@@ -5,56 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## [7.6.6](https://github.com/ParabolInc/parabol/compare/v7.6.5...v7.6.6) (2023-11-08)
+## [7.6.7](https://github.com/ParabolInc/parabol/compare/v7.6.6...v7.6.7) (2023-11-08)
 
 
 ### Fixed
 
-* release, remove glob ([#9155](https://github.com/ParabolInc/parabol/issues/9155)) ([1cc2e95](https://github.com/ParabolInc/parabol/commit/1cc2e953d25a728b91b0cdf51f48b3cba0571b33))
-
-## [7.6.5](https://github.com/ParabolInc/parabol/compare/v7.6.4...v7.6.5) (2023-11-08)
-
-
-### Fixed
-
-* fix sha from base to head ([#9153](https://github.com/ParabolInc/parabol/issues/9153)) ([40696be](https://github.com/ParabolInc/parabol/commit/40696be96b3f35cd176e29d78059b372e66590de))
-
-## [7.6.4](https://github.com/ParabolInc/parabol/compare/v7.6.3...v7.6.4) (2023-11-08)
-
-
-### Fixed
-
-* CI debugging, fix release step ([#9150](https://github.com/ParabolInc/parabol/issues/9150)) ([aadf29e](https://github.com/ParabolInc/parabol/commit/aadf29e30fb93f53b47d3725af472bafb812dfdf))
-
-## [7.6.3](https://github.com/ParabolInc/parabol/compare/v7.6.2...v7.6.3) (2023-11-08)
-
-
-### Fixed
-
-* target PR head instead of base ([#9148](https://github.com/ParabolInc/parabol/issues/9148)) ([27efe7a](https://github.com/ParabolInc/parabol/commit/27efe7ab9ad222bd44c6fcc8a5d75a4c2b71ed70))
-
-## [7.6.2](https://github.com/ParabolInc/parabol/compare/v7.6.1...v7.6.2) (2023-11-08)
-
-
-### Changed
-
-* update deployment docs ([#9145](https://github.com/ParabolInc/parabol/issues/9145)) ([9983ff2](https://github.com/ParabolInc/parabol/commit/9983ff2eb7c525959773c0b5b9a4933cc5e7561d))
-
-## [7.6.1](https://github.com/ParabolInc/parabol/compare/v7.6.0...v7.6.1) (2023-11-08)
-
-
-### Fixed
-
-* maybe a pull_request can be bot triggered ([#9140](https://github.com/ParabolInc/parabol/issues/9140)) ([efadf37](https://github.com/ParabolInc/parabol/commit/efadf3702f2528b2b0b4c866eebe139f7b708f6b))
-* remove predeploy step in CI ([#9142](https://github.com/ParabolInc/parabol/issues/9142)) ([1f20105](https://github.com/ParabolInc/parabol/commit/1f20105ed5ed5fe464b01b2d847f0619d3a5c45a))
-* use app instead of pat ([#9143](https://github.com/ParabolInc/parabol/issues/9143)) ([3442136](https://github.com/ParabolInc/parabol/commit/3442136d233fe7221f3d082f9441c83384309c43))
-* use PAT for release-please ([#9141](https://github.com/ParabolInc/parabol/issues/9141)) ([8ebe50b](https://github.com/ParabolInc/parabol/commit/8ebe50b291ed548419f77add90403078bda86a02))
-
-
-### Changed
-
-* cancel previous in-progress workflows ([#9144](https://github.com/ParabolInc/parabol/issues/9144)) ([b855622](https://github.com/ParabolInc/parabol/commit/b855622db130726e9a5e59ff1979bb2d8d7c95b8))
 * test, build, release. first pass ([#9138](https://github.com/ParabolInc/parabol/issues/9138)) ([99f9099](https://github.com/ParabolInc/parabol/commit/99f9099ecdff6e8906f1a17285acb8bb8d591fee))
+
 
 ## [7.6.0](https://github.com/ParabolInc/parabol/compare/v7.5.0...v7.6.0) (2023-11-07)
 
