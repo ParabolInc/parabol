@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.6.3](https://github.com/ParabolInc/parabol/compare/v7.6.2...v7.6.3) (2023-11-08)
+
+
+### Fixed
+
+* target PR head instead of base ([#9148](https://github.com/ParabolInc/parabol/issues/9148)) ([27efe7a](https://github.com/ParabolInc/parabol/commit/27efe7ab9ad222bd44c6fcc8a5d75a4c2b71ed70))
+
 ## [7.6.2](https://github.com/ParabolInc/parabol/compare/v7.6.1...v7.6.2) (2023-11-08)
 
 
