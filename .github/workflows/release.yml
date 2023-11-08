@@ -2,12 +2,13 @@ name: Release
 on:
   pull_request:
     branches:
-      - 'release-please--**'
-    types: [ closed ]
+      - master
+      - hotfix-*
+    types: [closed]
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release-please--**')
     permissions:
       contents: "read"
       id-token: "write"
@@ -21,9 +22,9 @@ jobs:
           token_format: "access_token"
           workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
           service_account: ${{ secrets.GCP_SA_EMAIL }}
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-      - name: 'Tag image with production version'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+      - name: "Tag image with production version"
         run: |-
           gcloud container images add-tag \
           ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}} \
