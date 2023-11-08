@@ -81,9 +81,6 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=8192"
         run: yarn build --no-deps
 
-      - name: Cleanup Predeploy for Docker Image
-        run: rm build/index.html build/sw.js build/manifest.json
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
