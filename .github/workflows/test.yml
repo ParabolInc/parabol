@@ -38,6 +38,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: package.json
+          # Caching yarn dir & running yarn install is too slow
+          # Instead, we aggressively cache node_modules below to avoid calling install
+
       - name: Setup environment variables
         run: |
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
@@ -46,12 +53,6 @@ jobs:
 
           PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
           echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: package.json
-          # Caching yarn dir & running yarn install is too slow
-          # Instead, we aggressively cache node_modules below to avoid calling install
 
       - name: Get cached node modules
         id: cache
