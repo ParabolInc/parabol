@@ -2,6 +2,7 @@ import {TeamResolvers} from '../resolverTypes'
 import TeamInsightsId from 'parabol-client/shared/gqlIds/TeamInsightsId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const Team: TeamResolvers = {
   insights: async (
@@ -37,10 +38,7 @@ const Team: TeamResolvers = {
   },
   isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),
   tier: ({tier, trialStartDate}) => {
-    if (tier === 'starter' && trialStartDate) {
-      return 'team'
-    }
-    return tier
+    return getFeatureTier({tier, trialStartDate})
   },
   isTrial: ({tier, trialStartDate}) => {
     return !!trialStartDate && tier === 'starter'

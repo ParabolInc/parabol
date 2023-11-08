@@ -5,6 +5,7 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getExistingOneOnOneTeam} from '../../mutations/helpers/getExistingOneOnOneTeam'
 import {mapToTeam} from '../../../postgres/queries/getTeamsByIds'
 import {IGetTeamsByIdsQueryResult} from '../../../postgres/queries/generated/getTeamsByIdsQuery'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const Organization: OrganizationResolvers = {
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {
@@ -25,10 +26,7 @@ const Organization: OrganizationResolvers = {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
   tier: ({tier, trialStartDate}) => {
-    if (tier === 'starter' && trialStartDate) {
-      return 'team'
-    }
-    return tier
+    return getFeatureTier({tier, trialStartDate})
   },
   isTrial: ({tier, trialStartDate}) => {
     return !!trialStartDate && tier === 'starter'

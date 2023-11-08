@@ -22,6 +22,7 @@ import connectionFromTemplateArray from '../../queries/helpers/connectionFromTem
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 declare const __PRODUCTION__: string
 
@@ -193,10 +194,7 @@ const User: UserResolvers = {
     return {url: urlObj.toString()}
   },
   tier: ({tier, trialStartDate}) => {
-    if (tier === 'starter' && trialStartDate) {
-      return 'team'
-    }
-    return tier
+    return getFeatureTier({tier, trialStartDate})
   },
   isTrial: ({tier, trialStartDate}) => {
     return !!trialStartDate && tier === 'starter'

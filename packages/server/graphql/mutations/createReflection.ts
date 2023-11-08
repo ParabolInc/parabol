@@ -19,6 +19,7 @@ import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 export default {
   type: CreateReflectionPayload,
@@ -65,7 +66,7 @@ export default {
     const plaintextContent = extractTextFromDraftString(normalizedContent)
     const [entities, sentimentScore] = await Promise.all([
       getReflectionEntities(plaintextContent),
-      tier !== 'starter' || !!trialStartDate
+      getFeatureTier({tier, trialStartDate}) !== 'starter'
         ? getReflectionSentimentScore(question, plaintextContent)
         : undefined
     ])

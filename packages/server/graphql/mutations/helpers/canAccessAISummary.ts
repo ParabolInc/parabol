@@ -1,6 +1,7 @@
 import {Threshold} from 'parabol-client/types/constEnums'
 import {Team} from '../../../postgres/queries/getTeamsByIds'
 import {DataLoaderWorker} from '../../graphql'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const canAccessAISummary = async (
   team: Team,
@@ -17,7 +18,7 @@ const canAccessAISummary = async (
     return true
   }
 
-  if (tier !== 'starter' && !trialStartDate) return true
+  if (getFeatureTier({tier, trialStartDate}) !== 'starter') return true
   return qualAIMeetingsCount < Threshold.MAX_QUAL_AI_MEETINGS
 }
 

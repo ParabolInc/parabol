@@ -11,6 +11,7 @@ import Team from './Team'
 import TeamPromptMeetingSettings from './TeamPromptMeetingSettings'
 import isPhaseAvailable from '../../utils/isPhaseAvailable'
 import {GQLContext} from '../graphql'
+import {getFeatureTier} from './helpers/getFeatureTier'
 
 export const teamMeetingSettingsFields = () => ({
   id: {
@@ -29,7 +30,7 @@ export const teamMeetingSettingsFields = () => ({
       {dataLoader}: GQLContext
     ) => {
       const team = await dataLoader.get('teams').loadNonNull(teamId)
-      return phaseTypes.filter(isPhaseAvailable(team.trialStartDate ? 'team' : team.tier))
+      return phaseTypes.filter(isPhaseAvailable(getFeatureTier(team)))
     }
   },
   teamId: {

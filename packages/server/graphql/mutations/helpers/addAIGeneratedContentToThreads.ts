@@ -5,6 +5,7 @@ import Comment from '../../../database/types/Comment'
 import DiscussStage from '../../../database/types/DiscussStage'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const buildCommentContentBlock = (title: string, content: string, explainerText?: string) => {
   const explainerBlock = explainerText ? `<i>${explainerText}</i><br>` : ''
@@ -40,7 +41,7 @@ const addAIGeneratedContentToThreads = async (
     if (group.summary) {
       const topicSummaryExplainerText =
         idx === 0
-          ? tier === 'starter' && !trialStartDate
+          ? getFeatureTier({tier, trialStartDate}) === 'starter'
             ? AIExplainer.STARTER
             : AIExplainer.PREMIUM_REFLECTIONS
           : undefined

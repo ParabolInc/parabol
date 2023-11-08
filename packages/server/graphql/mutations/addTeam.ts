@@ -18,6 +18,7 @@ import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -75,7 +76,7 @@ export default {
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').load(orgId)
         const {tier, trialStartDate} = organization
-        if (tier === 'starter' && !trialStartDate) {
+        if (getFeatureTier({tier, trialStartDate}) === 'starter') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
       }

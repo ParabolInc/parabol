@@ -28,6 +28,7 @@ import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -86,7 +87,7 @@ const createNewMeetingPhases = async (
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const asyncSideEffects = [] as Promise<any>[]
 
-  const tier = team?.trialStartDate ? 'team' : team?.tier ?? 'starter'
+  const tier = team ? getFeatureTier(team) : 'starter'
   const phases = (await Promise.all(
     phaseTypes.filter(isPhaseAvailable(tier)).map(async (phaseType) => {
       const durations = stageDurations[phaseType]
