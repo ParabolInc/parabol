@@ -7,7 +7,7 @@ env:
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-4cores
     permissions:
       contents: "read"
       id-token: "write"
@@ -87,7 +87,7 @@ jobs:
           yarn start &
 
       - name: Wait for testing server to be healthy
-        run: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
+        run: curl -4 --retry 30 --retry-connrefused --retry-delay 2 http://localhost:3000/graphql
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit
