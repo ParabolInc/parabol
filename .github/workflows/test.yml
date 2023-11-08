@@ -10,7 +10,7 @@ env:
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 jobs:
   test:
-    runs-on: ubuntu-4core
+    runs-on: ubuntu-8cores
     permissions:
       contents: "read"
       id-token: "write"
