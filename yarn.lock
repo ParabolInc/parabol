@@ -9441,11 +9441,6 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/segment-analytics@^0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/segment-analytics/-/segment-analytics-0.0.31.tgz#1f2936afe4f33e2ffb4e9d9c922b99567ffd524b"
-  integrity sha512-R6/78NeRPuIZTa2epCfLySnGN4HL2KSIUGQzty0RLujFHspfShJsQ3XkNKtFs7D5V+vNBAl7+UDyArGtkjuH0A==
-
 "@types/send@*":
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/@types/send/-/send-0.17.1.tgz#ed4932b8a2a805f1fe362a70f4e62d0ac994e301"
@@ -10530,18 +10525,19 @@ axios@0.21.4, axios@^0.21.0, axios@^0.21.4:
   dependencies:
     follow-redirects "^1.14.0"
 
-axios@^0.27.2:
-  version "0.27.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
-  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
-  dependencies:
-    follow-redirects "^1.14.9"
-    form-data "^4.0.0"
-
 axios@^1.0.0:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.3.2.tgz#7ac517f0fa3ec46e0e636223fd973713a09c72b3"
   integrity sha512-1M3O703bYqYuPhbHeya5bnhpYVsDDRyQSabNja04mZtboLNSuZ4YrltestrLXfHgmzua4TpUqRiVKbiQuo2epw==
+  dependencies:
+    follow-redirects "^1.15.0"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.3.3:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.0.tgz#f1e5292f26b2fd5c2e66876adc5b06cdbd7d2102"
+  integrity sha512-EZ1DYihju9pwVB+jg67ogm+Tmqc6JmhamRN6I4Zt8DfZu5lbcQGw3ozH9lFejSJgs/ibaef3A9PMXPLeefFGJg==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -13912,7 +13908,7 @@ follow-redirects@^1.0.0, follow-redirects@^1.14.0:
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
   integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
 
-follow-redirects@^1.14.9, follow-redirects@^1.15.0:
+follow-redirects@^1.15.0:
   version "1.15.2"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
@@ -17276,15 +17272,14 @@ mailcomposer@^4.0.1:
     buildmail "4.0.1"
     libmime "3.0.0"
 
-mailgun.js@^7.0.4:
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/mailgun.js/-/mailgun.js-7.0.4.tgz#cfa5d7eea65bc54d11ab57c6b1ead742cb7f27d1"
-  integrity sha512-D2KTfcgqB+tNtMzDjTotgrfMOGeOSi++/jPnlPxUXmPcQB1GJ21+uQvOZQtmIFbEIzzSSULfbwoMKROz92jFyA==
+mailgun.js@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/mailgun.js/-/mailgun.js-9.3.0.tgz#2fc86acfa2e8ade457b65e03aac1cfb802062a5e"
+  integrity sha512-iRqCglCdi+Q5anFpeRKHiytT/i34E14p/WtTE57VSeq5bATK+zQ8UnpFgPRaqGGTJqyGjqcO9m5YDRRB4/qirw==
   dependencies:
-    axios "^0.27.2"
+    axios "^1.3.3"
     base-64 "^1.0.0"
     url-join "^4.0.1"
-    webpack-merge "^5.4.0"
 
 make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
@@ -23660,7 +23655,7 @@ webpack-hot-middleware@^2.22.2:
     querystring "^0.2.0"
     strip-ansi "^6.0.0"
 
-webpack-merge@^5.4.0, webpack-merge@^5.7.3:
+webpack-merge@^5.7.3:
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/webpack-merge/-/webpack-merge-5.8.0.tgz#2b39dbf22af87776ad744c390223731d30a68f61"
   integrity sha512-/SaI7xY0831XwP6kzuwhKWVKDP9t1QY1h65lAFLbZqMPIuYcD9QAW4u9STIbU9kaJbPBB/geU/gLr1wDjOhQ+Q==

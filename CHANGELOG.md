@@ -5,6 +5,34 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.6.0](https://github.com/ParabolInc/parabol/compare/v7.5.0...v7.6.0) (2023-11-07)
+
+
+### Added
+
+* **chore:** Add an option to archive all done tasks ([#8958](https://github.com/ParabolInc/parabol/issues/8958)) ([b06f241](https://github.com/ParabolInc/parabol/commit/b06f241e391fc1ae867f7c178660ddeaaf7fb510))
+* create ironbank s3 artifacts manual GH ([#9124](https://github.com/ParabolInc/parabol/issues/9124)) ([2df02b2](https://github.com/ParabolInc/parabol/commit/2df02b28becb1dcf83a50888c35366a2f8a10691))
+* public teams ([#9057](https://github.com/ParabolInc/parabol/issues/9057)) ([b8c703c](https://github.com/ParabolInc/parabol/commit/b8c703cf38ee2e499703f92778a49f712d2d6f4c))
+
+
+### Fixed
+
+* autoJoin needs refresh ([#9128](https://github.com/ParabolInc/parabol/issues/9128)) ([678308f](https://github.com/ParabolInc/parabol/commit/678308f2c18da890008e3262519036676ff6affa))
+* reference to SendClientSideEvent ([#9119](https://github.com/ParabolInc/parabol/issues/9119)) ([1607fb6](https://github.com/ParabolInc/parabol/commit/1607fb697c048051973e7c7913ca43d77e5aa0a6))
+* unable to create org ([#9125](https://github.com/ParabolInc/parabol/issues/9125)) ([27a9efb](https://github.com/ParabolInc/parabol/commit/27a9efbbfd680febbe8f06203dab8e53e5e1fb56))
+
+
+### Changed
+
+* Add getVerifiedOrgIds tests ([#9036](https://github.com/ParabolInc/parabol/issues/9036)) ([ad6c4ef](https://github.com/ParabolInc/parabol/commit/ad6c4ef64e4a943069b62ed8f58cebd73110d3f6))
+* don't lock org in case of failed payment ([#9055](https://github.com/ParabolInc/parabol/issues/9055)) ([78437d1](https://github.com/ParabolInc/parabol/commit/78437d151228db8c46140bb6fac068c6147fd107))
+* **github-templates:** Release Test issue template now shows how to check e-mail verifications using debug mail provider. ([#9121](https://github.com/ParabolInc/parabol/issues/9121)) ([46e27d1](https://github.com/ParabolInc/parabol/commit/46e27d1b4ead5ab92a386d45409e8d1cfb572651))
+* ironbank github action, update permissions, add proper cp path ([4e4c3ab](https://github.com/ParabolInc/parabol/commit/4e4c3ab6e322ed8eab74019c099a36e4f6cec987))
+* ironbank github action, update permissions, add proper cp path ([#9126](https://github.com/ParabolInc/parabol/issues/9126)) ([4e4c3ab](https://github.com/ParabolInc/parabol/commit/4e4c3ab6e322ed8eab74019c099a36e4f6cec987))
+* **metrics:** Segment dependency cleanup ([#9092](https://github.com/ParabolInc/parabol/issues/9092)) ([c23494f](https://github.com/ParabolInc/parabol/commit/c23494fb8f18a59dc2ce87dde2c04438c572abdc))
+* **Snyk:** Security upgrade mailgun.js from 7.0.4 to 9.3.0 ([#9073](https://github.com/ParabolInc/parabol/issues/9073)) ([5969b41](https://github.com/ParabolInc/parabol/commit/5969b41030df45827d6f44794b604eedc4d7f1eb))
+* update sign up redirect destination ([#9071](https://github.com/ParabolInc/parabol/issues/9071)) ([b361515](https://github.com/ParabolInc/parabol/commit/b361515d23ae490b3b5398eb7cec32511d6d8aed))
+
 ## [7.5.0](https://github.com/ParabolInc/parabol/compare/v7.4.2...v7.5.0) (2023-11-02)
 
 
