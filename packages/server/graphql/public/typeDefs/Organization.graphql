@@ -68,6 +68,11 @@ type Organization {
   isTrial: Boolean!
 
   """
+  When the trial started, iff there is a trial active
+  """
+  trialStartDate: DateTime
+
+  """
   THe datetime the current billing cycle ends
   """
   periodEnd: DateTime

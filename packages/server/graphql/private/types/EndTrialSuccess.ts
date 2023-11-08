@@ -1,7 +1,9 @@
+import Organization from '../../../database/types/Organization'
 import {EndTrialSuccessResolvers} from '../resolverTypes'
 
 export type EndTrialSuccessSource = {
-  success: boolean
+  organization: Organization
+  trialStartDate: Date
 }
 
 const EndTrialSuccess: EndTrialSuccessResolvers = {}

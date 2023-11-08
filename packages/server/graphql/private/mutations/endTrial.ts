@@ -1,19 +1,23 @@
 import getRethink from '../../../database/rethinkDriver'
-import Organization from '../../../database/types/Organization'
 import getKysely from '../../../postgres/getKysely'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {MutationResolvers} from '../resolverTypes'
 
-const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}) => {
+const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLoader}) => {
   const now = new Date()
   const r = await getRethink()
   const pg = getKysely()
 
+  const organization = await dataLoader.get('organizations').load(orgId)
+
+  // VALIDATION
+  if (!organization.trialStartDate) {
+    throw new Error('No trial active for org')
+  }
+
+  // RESOLUTION
   await Promise.all([
-    r.table('Organization').get(orgId).run() as unknown as Organization,
-    pg.updateTable('SAML').set({metadata: null}).where('orgId', '=', orgId).execute(),
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
         periodEnd: now,
@@ -22,21 +26,15 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}) => {
         updatedAt: now
       })
     }).run(),
-    updateTeamByOrgId(
-      {
-        trialStartDate: null,
-        isPaid: true
-      },
-      orgId
-    )
+    pg.updateTable('Team').set({trialStartDate: null}).where('orgId', '=', orgId).execute()
   ])
+
+  const initialTrialStartDate = organization.trialStartDate
+  organization.trialStartDate = null
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 
-  // VALIDATION
-
-  // RESOLUTION
-  const data = {success: true}
+  const data = {organization, trialStartDate: initialTrialStartDate}
   return data
 }
 

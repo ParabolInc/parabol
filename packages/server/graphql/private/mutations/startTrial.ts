@@ -1,6 +1,6 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import getKysely from '../../../postgres/getKysely'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
@@ -8,11 +8,19 @@ import {MutationResolvers} from '../resolverTypes'
 
 const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {dataLoader}) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   const organization = await dataLoader.get('organizations').load(orgId)
 
   // VALIDATION
+  if (organization.tier !== 'starter') {
+    throw new Error('Cannot start trial for organization on paid tier')
+  }
+  if (organization.trialStartDate) {
+    throw new Error(`Trial already started for org. Start date: ${organization.trialStartDate}`)
+  }
 
+  // RESOLUTION
   await Promise.all([
     r({
       updatedOrg: r.table('Organization').get(orgId).update({
@@ -23,12 +31,7 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
         updatedAt: now
       })
     }).run(),
-    updateTeamByOrgId(
-      {
-        trialStartDate: now
-      },
-      orgId
-    ),
+    pg.updateTable('Team').set({trialStartDate: now}).where('orgId', '=', orgId).execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
   organization.trialStartDate = now
@@ -37,9 +40,7 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
 
   await hideConversionModal(orgId, dataLoader)
 
-  // RESOLUTION
-  const data = {success: true}
-  return data
+  return {organization}
 }
 
 export default startTrial

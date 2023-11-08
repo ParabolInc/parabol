@@ -1,13 +1,10 @@
+import Organization from '../../../database/types/Organization'
 import {StartTrialSuccessResolvers} from '../resolverTypes'
 
 export type StartTrialSuccessSource = {
-  success: boolean
+  organization: Organization
 }
 
-const StartTrialSuccess: StartTrialSuccessResolvers = {
-  success: async (_source, _args, _context) => {
-    return true
-  }
-}
+const StartTrialSuccess: StartTrialSuccessResolvers = {}
 
 export default StartTrialSuccess

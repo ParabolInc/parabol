@@ -1,10 +1,10 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  Ends the trial for an org iff there is an active trial.
   """
   endTrial(
     """
-    Describe the first arg here
+    ID of the org on which to end the trial
     """
     orgId: ID!
   ): EndTrialPayload!
@@ -17,7 +17,12 @@ union EndTrialPayload = ErrorPayload | EndTrialSuccess
 
 type EndTrialSuccess {
   """
-  Describe the first return field here
+  The updated organization
   """
-  success: Boolean!
+  organization: Organization!
+
+  """
+  The start time of the ended trial
+  """
+  trialStartDate: DateTime
 }

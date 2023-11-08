@@ -123,13 +123,15 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
           tierLimitExceededAt: null,
           scheduledLockAt: null,
           lockedAt: null,
-          updatedAt: now
+          updatedAt: now,
+          trialStartDate: null
         })
     }).run(),
     updateTeamByOrgId(
       {
         isPaid: true,
-        tier: 'enterprise'
+        tier: 'enterprise',
+        trialStartDate: null
       },
       orgId
     ),
