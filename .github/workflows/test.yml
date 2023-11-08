@@ -3,11 +3,14 @@ on:
   push:
     branches-ignore:
       - "release-please--**"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 jobs:
   test:
-    runs-on: ubuntu-4cores
+    runs-on: ubuntu-4core
     permissions:
       contents: "read"
       id-token: "write"
