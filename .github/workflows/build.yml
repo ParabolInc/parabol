@@ -1,6 +1,8 @@
 name: Build
-
-on: [push]
+on:
+  push:
+    branches:
+      - 'release-please--**'
 env:
   PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
@@ -36,26 +38,12 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          IS_RELEASE=${{ startsWith(github.event.head_commit.message, 'chore(release): release') && (github.ref_name == 'master' || startsWith(github.ref_name, 'hotfix')) }}
-          IS_MANUAL_BUILD=${{ startsWith(github.event.head_commit.message, 'dockerize') }}
+          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
 
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
-          DOCKERIZE=false
-          if [ $IS_RELEASE = true ]; then
-            DOCKERIZE=true
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}
-          elif [ $IS_MANUAL_BUILD = true ]; then
-            DOCKERIZE=true
-            DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
-          fi
-
-          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
-
-          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
-          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
-          echo "IS_RELEASE=${IS_RELEASE}" >> $GITHUB_ENV
-          echo "DOCKERIZE=${DOCKERIZE}" >> $GITHUB_ENV
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
+          echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}" >> $GITHUB_ENV
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -84,77 +72,15 @@ jobs:
           yarn pg:build
           yarn pg:generate
 
-      - name: Build for testing
-        if: env.DOCKERIZE != 'true'
-        run: yarn build
-
-      - name: Build for deploying
-        if: env.DOCKERIZE == 'true'
+      - name: Build for release
         env:
           NODE_OPTIONS: "--max_old_space_size=8192"
         run: yarn build --no-deps
 
-      - name: Verify source is clean
-        run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
-
-      - name: Check Code Quality
-        run: yarn codecheck
-
-      - name: Run Predeploy for Testing
-        run: yarn predeploy
-
-      - name: Start testing server in background
-        run: |
-          yarn start &
-
-      - name: Wait for testing server to be healthy
-        run: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
-
-      - name: Run server tests
-        run: yarn test:server -- --reporters=default --reporters=jest-junit
-        env:
-          JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/server
-
-      - name: Run client tests
-        run: yarn test:client -- --reporters=default --reporters=jest-junit
-        env:
-          JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
-
-      - name: Store Playwright Version
-        run: |
-          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
-
-      - name: Cache Playwright Browsers
-        id: cache-playwright-browsers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
-
-      - name: Setup Playwright
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-
-      - name: Run Playwright Tests
-        run: yarn workspace integration-tests test --reporter list,junit
-        env:
-          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
-
-      - name: Store Artifacts from Failed Tests
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 7
-
       - name: Cleanup Predeploy for Docker Image
-        if: env.DOCKERIZE == 'true'
         run: rm build/index.html build/sw.js build/manifest.json
 
       - name: Set up Docker Buildx
-        if: env.DOCKERIZE == 'true'
         uses: docker/setup-buildx-action@v2
         with:
           buildkitd-flags: "--allow-insecure-entitlement network.host"
@@ -162,7 +88,6 @@ jobs:
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        if: env.DOCKERIZE == 'true'
         uses: "google-github-actions/auth@v1"
         with:
           token_format: "access_token"
@@ -170,13 +95,11 @@ jobs:
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       - uses: "docker/login-action@v2"
-        if: env.DOCKERIZE == 'true'
         with:
           registry: ${{ secrets.GCP_DOCKER_REGISTRY }}
           username: "oauth2accesstoken"
           password: "${{ steps.auth.outputs.access_token }}"
-      - name: Build and push
-        if: env.DOCKERIZE == 'true'
+      - name: Push build to dev
         uses: docker/build-push-action@v4
         with:
           network: host
@@ -190,28 +113,8 @@ jobs:
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
-            "${{ env.DOCKER_REPOSITORY_FOR_REF }}:v${{ env.ACTION_VERSION }}"
-
-      - name: Bump version in GitLab
-        if: env.IS_RELEASE == 'true'
-        run: |
-          curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/commits" \
-            --request POST \
-            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}' \
-            --form "branch=main" \
-            --form "commit_message=release v${{ env.ACTION_VERSION }}" \
-            --form "actions[][action]=update" \
-            --form "actions[][file_path]=version.yaml" \
-            --form "actions[][content]=
-          # Change it to use a valid docker tag, which are the same of the Github tags. Ex: v6.110.0
-          applicationVersion: &applicationVersion v${{ env.ACTION_VERSION }}
-
-          global:
-            image:
-              tag: *applicationVersion"
 
       - name: Push Artifacts to Sentry
-        if: env.IS_RELEASE == 'true'
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: "${{secrets.SENTRY_AUTH_TOKEN}}"
@@ -222,7 +125,6 @@ jobs:
           sourcemaps: "./build"
           version: ${{env.ACTION_VERSION}}
       - name: Push Artifacts to Datadog
-        if: env.IS_RELEASE == 'true'
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
           CDN_BUILD_URL: "https://action-files.parabol.co/production/build/"

@@ -1,0 +1,127 @@
+name: Test
+on:
+  push:
+    branches-ignore:
+      - 'release-please--**'
+env:
+  PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
+jobs:
+  test:
+    runs-on: ubuntu-8cores
+    permissions:
+      contents: "read"
+      id-token: "write"
+    services:
+      postgres:
+        image: postgres:15.4
+        # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
+        env:
+          POSTGRES_PASSWORD: "temppassword"
+          POSTGRES_USER: "tempuser"
+          POSTGRES_DB: "tempdb"
+        ports:
+          - 5432:5432
+      rethinkdb:
+        image: rethinkdb:2.4.2
+        ports:
+          - 8080:8080
+          - 28015:28015
+          - 29015:29015
+      redis:
+        image: redis:7.0-alpine
+        ports:
+          - 6379:6379
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup environment variables
+        run: |
+          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: package.json
+          # Caching yarn dir & running yarn install is too slow
+          # Instead, we aggressively cache node_modules below to avoid calling install
+
+      - name: Get cached node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Install node_modules
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Build the DBs
+        run: |
+          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
+          yarn db:migrate
+          yarn pg:migrate up
+          yarn pg:build
+          yarn pg:generate
+
+      - name: Build for testing
+        run: yarn build
+
+      - name: Verify source is clean
+        run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
+
+      - name: Check Code Quality
+        run: yarn codecheck
+
+      - name: Run Predeploy for Testing
+        run: yarn predeploy
+
+      - name: Start testing server in background
+        run: |
+          yarn start &
+
+      - name: Wait for testing server to be healthy
+        run: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
+
+      - name: Run server tests
+        run: yarn test:server -- --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/server
+
+      - name: Run client tests
+        run: yarn test:client -- --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
+
+      - name: Store Playwright Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers
+        id: cache-playwright-browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Setup Playwright
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright Tests
+        run: yarn workspace integration-tests test --reporter list,junit
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
+
+      - name: Store Artifacts from Failed Tests
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
