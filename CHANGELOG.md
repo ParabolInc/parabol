@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.6.7](https://github.com/ParabolInc/parabol/compare/v7.6.6...v7.6.7) (2023-11-08)
+
+
+### Fixed
+
+* add quiet flag to gcloud ([#9159](https://github.com/ParabolInc/parabol/issues/9159)) ([99df00b](https://github.com/ParabolInc/parabol/commit/99df00bfc20e8bed74fea4dc5c228676edede7b7))
+* add version back in ([#9157](https://github.com/ParabolInc/parabol/issues/9157)) ([b48c07b](https://github.com/ParabolInc/parabol/commit/b48c07b2bdc7f5fac921d217370cf8f7a790dee9))
+
 ## [7.6.6](https://github.com/ParabolInc/parabol/compare/v7.6.5...v7.6.6) (2023-11-08)
 
 
