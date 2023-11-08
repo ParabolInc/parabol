@@ -2,7 +2,10 @@ name: Test
 on:
   push:
     branches-ignore:
-      - 'release-please--**'
+      - "release-please--**"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
 jobs:
@@ -35,18 +38,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup environment variables
-        run: |
-          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
-          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
-          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
-
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
           # Caching yarn dir & running yarn install is too slow
           # Instead, we aggressively cache node_modules below to avoid calling install
+
+      - name: Setup environment variables
+        run: |
+          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+          echo ACTION_VERSION=$ACTION_VERSION >> $GITHUB_ENV
+          echo ACTION_VERSION=$ACTION_VERSION
+
+          NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
+          echo NODE_VERSION=$NODE_VERSION >> $GITHUB_ENV
+          echo NODE_VERSION=$NODE_VERSION
+
+          PLAYWRIGHT_VERSION=$(yarn list @playwright/test | grep @playwright | sed 's/.*@//')
+          echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
+          echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
 
       - name: Get cached node modules
         id: cache
@@ -85,7 +96,7 @@ jobs:
           yarn start &
 
       - name: Wait for testing server to be healthy
-        run: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
+        run: curl -4 --retry 30 --retry-connrefused --retry-delay 2 http://localhost:3000/graphql
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit
@@ -96,11 +107,6 @@ jobs:
         run: yarn test:client -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
-
-      - name: Store Playwright Version
-        run: |
-          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
 
       - name: Cache Playwright Browsers
         id: cache-playwright-browsers
