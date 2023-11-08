@@ -1,9 +1,5 @@
 name: Build
 on:
-  pull_request:
-    types: [opened]
-    branches:
-      - "release-please--**"
   push:
     branches:
       - "release-please--**"
