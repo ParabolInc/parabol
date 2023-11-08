@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.6.1](https://github.com/ParabolInc/parabol/compare/v7.6.0...v7.6.1) (2023-11-08)
+
+
+### Fixed
+
+* maybe a pull_request can be bot triggered ([#9140](https://github.com/ParabolInc/parabol/issues/9140)) ([efadf37](https://github.com/ParabolInc/parabol/commit/efadf3702f2528b2b0b4c866eebe139f7b708f6b))
+* remove predeploy step in CI ([#9142](https://github.com/ParabolInc/parabol/issues/9142)) ([1f20105](https://github.com/ParabolInc/parabol/commit/1f20105ed5ed5fe464b01b2d847f0619d3a5c45a))
+* use app instead of pat ([#9143](https://github.com/ParabolInc/parabol/issues/9143)) ([3442136](https://github.com/ParabolInc/parabol/commit/3442136d233fe7221f3d082f9441c83384309c43))
+* use PAT for release-please ([#9141](https://github.com/ParabolInc/parabol/issues/9141)) ([8ebe50b](https://github.com/ParabolInc/parabol/commit/8ebe50b291ed548419f77add90403078bda86a02))
+
+
+### Changed
+
+* cancel previous in-progress workflows ([#9144](https://github.com/ParabolInc/parabol/issues/9144)) ([b855622](https://github.com/ParabolInc/parabol/commit/b855622db130726e9a5e59ff1979bb2d8d7c95b8))
+* test, build, release. first pass ([#9138](https://github.com/ParabolInc/parabol/issues/9138)) ([99f9099](https://github.com/ParabolInc/parabol/commit/99f9099ecdff6e8906f1a17285acb8bb8d591fee))
+
 ## [7.6.0](https://github.com/ParabolInc/parabol/compare/v7.5.0...v7.6.0) (2023-11-07)
 
 
