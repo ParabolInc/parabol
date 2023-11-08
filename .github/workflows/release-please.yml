@@ -13,3 +13,4 @@ jobs:
           command: manifest
           default-branch: ${{ github.ref_name}}
           release-type: node
+          token: ${{ secrets.RELEASE_TOKEN}}
