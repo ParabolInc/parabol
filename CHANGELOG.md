@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.6.5](https://github.com/ParabolInc/parabol/compare/v7.6.4...v7.6.5) (2023-11-08)
+
+
+### Fixed
+
+* fix sha from base to head ([#9153](https://github.com/ParabolInc/parabol/issues/9153)) ([40696be](https://github.com/ParabolInc/parabol/commit/40696be96b3f35cd176e29d78059b372e66590de))
+
 ## [7.6.4](https://github.com/ParabolInc/parabol/compare/v7.6.3...v7.6.4) (2023-11-08)
 
 
