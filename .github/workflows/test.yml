@@ -52,12 +52,14 @@ jobs:
           echo ACTION_VERSION=$ACTION_VERSION
 
           NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
-          echo NODE_VERSION=$NODE_VERISON >> $GITHUB_ENV
           echo NODE_VERSION=$NODE_VERISON
+          echo NODE_VERSION=$NODE_VERISON >> $GITHUB_ENV
 
           PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
+
+          echo $GITHUB_ENV
 
       - name: Get cached node modules
         id: cache
