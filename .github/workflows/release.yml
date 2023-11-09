@@ -35,6 +35,9 @@ jobs:
           ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
       - name: Push to Staging Server
+        env:
+          STAGING_JOB: staging-release
+          PRODUCTION_JOB: prod-release
         run: |
           COMMIT_ID=$(curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/commits" \
             --request POST \
@@ -55,17 +58,20 @@ jobs:
           PIPELINE_ID=$(echo $PIPELINES | jq ".[] | select(.sha == \"$COMMIT_ID\")" | jq .id)
           JOBS=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines/$PIPELINE_ID/jobs" \
             --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
-          JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "staging-release")' | jq .id)
+          JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.STAGING_JOB }}")' | jq .id)
           curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/$JOB_ID/play" \
             --request POST \
             --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}'
+          PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
           echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
+          echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
           sleep 90
       - name: Open PR to Push to Prod
         run: |
+          BACKLINK="Production Job Id: $PROD_JOB_ID\nStaging Job Id: $JOB_ID"
           TEMPLATE=$(tail -n +12 .github/ISSUE_TEMPLATE/release_test.md)
           CHANGES=$(perl -0777ne 'print "$1\n" and exit if m/\n##\s[^\n]*\n+(.*?\n)##?\s|$/gs;' CHANGELOG.md)
-          BODY="${TEMPLATE}\n\n\n${CHANGES}"
+          BODY="${BACKLINK}\n\n${TEMPLATE}\n\n\n${CHANGES}"
           gh pr create \
             --assignee ${{ github.actor }}
             --base production
