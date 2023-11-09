@@ -128,7 +128,6 @@ const OutcomeCard = memo((props: Props) => {
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
   }`
-  // force commit
   return (
     <RootCard
       isTaskHovered={isTaskHovered}
