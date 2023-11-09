@@ -72,7 +72,7 @@ export default class Team {
     this.isOnboardTeam = isOnboardTeam ?? false
     this.isOneOnOneTeam = isOneOnOneTeam ?? false
     this.giveKudosWithEmoji = giveKudosWithEmoji ?? true
-    this.kudosEmoji = kudosEmoji ?? '❤️'
+    this.kudosEmoji = kudosEmoji ?? 'heart'
     this.isPaid = isPaid ?? true
     this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
   }

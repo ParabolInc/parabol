@@ -9,7 +9,7 @@ export async function up() {
     BEGIN
       ALTER TABLE "Team"
         ADD COLUMN IF NOT EXISTS "giveKudosWithEmoji" BOOLEAN NOT NULL DEFAULT TRUE,
-        ADD COLUMN IF NOT EXISTS "kudosEmoji" TEXT NOT NULL DEFAULT '❤️';
+        ADD COLUMN IF NOT EXISTS "kudosEmoji" TEXT NOT NULL DEFAULT 'heart';
     END
     $$;
   `)
