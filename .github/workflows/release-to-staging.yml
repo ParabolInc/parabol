@@ -1,4 +1,4 @@
-name: Release
+name: Release to Staging
 on:
   pull_request:
     branches:
@@ -19,7 +19,6 @@ jobs:
         run: |
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
-
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v1"

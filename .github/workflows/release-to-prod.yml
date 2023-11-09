@@ -1,11 +1,11 @@
-name: Release
+name: Release to Production
 on:
   pull_request:
     branches:
       - production
     types: [closed]
 jobs:
-  release-to-prod:
+  release:
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     permissions:
@@ -14,7 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Push to Production Server
         run: |
           JOB_ID=$(echo ${{ github.event.pull_request.body}} | perl -ne 'print "$1\n" and exit if m/^Production Job Id:\s(\w+)/;')
@@ -23,7 +22,6 @@ jobs:
             --request POST \
             --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}'
           sleep 90
-
       - name: Poll Production Release
         uses: artiz/poll-endpoint@1.0.2
         with:
