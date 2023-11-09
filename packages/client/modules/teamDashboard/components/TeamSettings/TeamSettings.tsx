@@ -54,6 +54,7 @@ const query = graphql`
           isLead
           isSelf
           preferredName
+          email
         }
       }
     }
@@ -72,6 +73,8 @@ const TeamSettings = (props: Props) => {
   // if kicked out, the component might reload before the redirect occurs
   if (!viewerTeamMember) return null
   const {isLead: viewerIsLead} = viewerTeamMember
+  const lead = teamMembers.find((m) => m.isLead)
+  const contact = lead ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
   return (
     <TeamSettingsLayout>
       <PanelsLayout>
@@ -85,11 +88,25 @@ const TeamSettings = (props: Props) => {
             </StyledRow>
           </Panel>
         )}
-        {viewerIsLead && (
+        {viewerIsLead ? (
           <Panel label='Danger Zone'>
             <PanelRow>
               <ArchiveTeam team={team!} />
             </PanelRow>
+          </Panel>
+        ) : (
+          <Panel className='mt-8'>
+            <StyledRow>
+              <div>
+                This team is currently on a <b className='capitalize'>{tier} plan</b>. Only Team
+                Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
+                The <b>Team Lead</b> for {teamName} is{' '}
+                <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
+                  {contact.preferredName}
+                </a>
+                .
+              </div>
+            </StyledRow>
           </Panel>
         )}
       </PanelsLayout>
