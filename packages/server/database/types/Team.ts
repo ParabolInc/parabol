@@ -17,6 +17,8 @@ interface Input {
   qualAIMeetingsCount?: number
   isOnboardTeam?: boolean
   isOneOnOneTeam?: boolean
+  giveKudosWithEmoji?: boolean
+  kudosEmoji?: string
   updatedAt?: Date
 }
 
@@ -34,6 +36,8 @@ export default class Team {
   orgId: string
   isOnboardTeam: boolean
   isOneOnOneTeam?: boolean
+  giveKudosWithEmoji: boolean
+  kudosEmoji: string
   qualAIMeetingsCount: number
   updatedAt: Date
   constructor(input: Input) {
@@ -45,6 +49,8 @@ export default class Team {
       isArchived,
       isOnboardTeam,
       isOneOnOneTeam,
+      giveKudosWithEmoji,
+      kudosEmoji,
       lastMeetingType,
       isPaid,
       name,
@@ -65,6 +71,8 @@ export default class Team {
     this.isArchived = isArchived ?? false
     this.isOnboardTeam = isOnboardTeam ?? false
     this.isOneOnOneTeam = isOneOnOneTeam ?? false
+    this.giveKudosWithEmoji = giveKudosWithEmoji ?? true
+    this.kudosEmoji = kudosEmoji ?? '❤️'
     this.isPaid = isPaid ?? true
     this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
   }
