@@ -44,7 +44,7 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
       )}
     >
       <img
-        className='absolute  z-0 h-full w-full object-cover'
+        className='absolute z-0 h-full w-full object-cover'
         src={backgroundSrc}
         alt='Background'
       />
@@ -87,7 +87,6 @@ export const ActivityCard = (props: ActivityCardProps) => {
       </div>
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
-          {' '}
           <div className='text-sm leading-5 text-slate-800 sm:text-base'>{title}</div>{' '}
           <div className={clsx('font-semibold italic', color)}>{upperFirst(category)}</div>
         </div>

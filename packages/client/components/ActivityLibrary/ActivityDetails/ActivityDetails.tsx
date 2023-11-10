@@ -99,7 +99,7 @@ const ActivityDetails = (props: Props) => {
               )}
             >
               <ActivityCard
-                className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
+                className='ml-14 mb-8 max-h-[200px] w-80 xl:ml-0 xl:mb-0'
                 theme={CATEGORY_THEMES[category as CategoryID]}
                 badge={null}
                 type={type}
