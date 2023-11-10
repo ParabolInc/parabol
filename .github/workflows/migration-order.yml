@@ -33,7 +33,9 @@ jobs:
         run: |
           for file in ${{ steps.new-migrations.outputs.added_files }}; do
             if [[ "$file" < "${{ env.MAX_OLD_MIGRATION }}" ]]; then
-                echo "Migration $file predates ${{ env.MAX_OLD_MIGRATION}}. Please rename it"
-                exit 1
+              echo "Migration $file predates ${{ env.MAX_OLD_MIGRATION}}. Please rename it"
+              exit 1
+            el
+              echo "Migration $file does not conflict with existing migrations on master"
             fi
           done
