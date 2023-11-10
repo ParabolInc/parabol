@@ -33,7 +33,7 @@ jobs:
         run: |
           for file in ${{ steps.new-migrations.outputs.added_files }}; do
             echo "Testing $file"
-            if [[ "$file" < "${{ env.MAX_OLD_MIGRATION }}" ]]; then
+            if [[ "$(basename $file)" < "${{ env.MAX_OLD_MIGRATION }}" ]]; then
               echo "Migration $file predates ${{ env.MAX_OLD_MIGRATION}}. Please rename it"
               exit 1
             else
