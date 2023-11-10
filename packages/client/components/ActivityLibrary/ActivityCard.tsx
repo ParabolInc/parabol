@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import React, {PropsWithChildren} from 'react'
+import backgroundSrc from '../../../../static/images/illustrations/retro-background.png'
 import {upperFirst} from '../../utils/upperFirst'
 import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
 import {CATEGORY_TEXT_COLORS, MEETING_TYPE_TO_CATEGORY} from './Categories'
@@ -9,19 +10,27 @@ export interface CardTheme {
   secondary: string
 }
 
-export const ActivityCardImage = (
-  props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>
-) => {
+export const ActivityCardImage = (props: PropsWithChildren<{src: string; className?: string}>) => {
   const {className, src} = props
 
   return (
     <div
       className={clsx(
-        'my-1 flex flex-1 items-center justify-center overflow-hidden px-4',
+        'relative flex items-center justify-center overflow-hidden',
+        'h-full w-full',
         className
       )}
     >
-      <img className={'h-full w-full object-contain'} src={src} />
+      <img
+        className='absolute  z-0 h-full w-full object-cover'
+        src={backgroundSrc}
+        alt='Background'
+      />
+      <img
+        className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
+        src={src}
+        alt='Top Image'
+      />
     </div>
   )
 }
@@ -41,27 +50,25 @@ export const ActivityCard = (props: ActivityCardProps) => {
   const color = category && CATEGORY_TEXT_COLORS[category].primary
 
   return (
-    <div>
+    <div className='flex w-full flex-col'>
       <div
         className={clsx(
-          'relative flex flex-col overflow-hidden rounded-lg p-8',
+          'relative flex h-full min-w-0 flex-col overflow-hidden rounded-lg',
           theme.secondary,
           className
         )}
       >
-        {children}
-        <div className='absolute bottom-0 right-0'>{badge}</div>
+        <div className='flex-1'>
+          {children}
+          <div className='absolute bottom-0 right-0'>{badge}</div>
+        </div>
       </div>
       {title && category && (
-        <>
-          <div className='flex flex-shrink-0'>
-            <div className='pt-3 pb-1 text-lg leading-5 text-slate-800'>{title}</div>
-          </div>
-          <div className='flex flex-shrink-0 italic'>
-            <div className={clsx('font-semibold italic', color)}>{upperFirst(category)}</div>
-            <div className={'ml-auto h-10 w-8 flex-shrink-0 rounded-bl-full'} />
-          </div>
-        </>
+        <div className='mt-2 px-2 pb-2'>
+          {' '}
+          <div className='text-sm leading-5 text-slate-800 sm:text-base'>{title}</div>{' '}
+          <div className={clsx('font-semibold italic', color)}>{upperFirst(category)}</div>
+        </div>
       )}
     </div>
   )
