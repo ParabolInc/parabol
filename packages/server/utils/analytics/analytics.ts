@@ -160,6 +160,8 @@ export type AnalyticsEvent =
   | 'Reset Groups Clicked'
   // Conversion Tracking
   | 'Conversion Modal Pay Later Clicked'
+  // kudos
+  | 'Kudos sent'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
   // Lowercase words are for backwards compatibility
@@ -663,6 +665,13 @@ class Analytics {
 
   autoJoined = (userId: string, teamId: string) => {
     this.track(userId, 'AutoJoined Team', {userId, teamId})
+  }
+
+  kudosSent = (userId: string, teamId: string) => {
+    this.track(userId, 'Kudos sent', {
+      userId,
+      teamId
+    })
   }
 
   identify = (options: IdentifyOptions) => {

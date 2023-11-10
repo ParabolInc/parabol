@@ -37,6 +37,14 @@ const mutation = graphql`
           message
         }
       }
+      ... on AddReactjiToReactableSuccess {
+        addedKudos {
+          emoji
+          receiverUser {
+            preferredName
+          }
+        }
+      }
       ...AddReactjiToReactableMutation_meeting @relay(mask: false)
     }
   }
@@ -104,7 +112,19 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
         }
       }
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      const {isRemove} = variables
+      const addedKudos = res.addReactjiToReactable.addedKudos
+      // TODO: emoji is hardcoded for v1
+      if (!isRemove && addedKudos) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'youGaveKudos',
+          message: `You gave kudos to ${addedKudos.receiverUser.preferredName} ❤️`,
+          autoDismiss: 5
+        })
+      }
+      onCompleted(res, errors)
+    },
     onError
   })
 }

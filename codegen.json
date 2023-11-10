@@ -129,6 +129,7 @@
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
+          "AddReactjiToReactableSuccess": "./types/AddReactjiToReactableSuccess#AddReactjiToReactableSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
         }
