@@ -38,8 +38,7 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
   return (
     <div
       className={clsx(
-        'relative flex items-center justify-center overflow-hidden',
-        'h-full w-full',
+        'relative flex h-full w-full items-center justify-center overflow-hidden',
         className
       )}
     >
@@ -51,7 +50,7 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
       <img
         className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
         src={src}
-        alt='Top Image'
+        alt='Card Illustration'
       />
     </div>
   )
