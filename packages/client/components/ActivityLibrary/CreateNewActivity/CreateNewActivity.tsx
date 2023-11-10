@@ -283,7 +283,10 @@ export const CreateNewActivity = (props: Props) => {
                   title={activity.title}
                   type={activity.type}
                 >
-                  <ActivityCardImage src={activity.image} />
+                  <ActivityCardImage
+                    src={activity.image}
+                    category={activity.type === 'retrospective' ? 'retrospective' : 'estimation'}
+                  />
                 </ActivityCard>
                 <div className='flex gap-x-3 p-3'>
                   {activity.includedCategories.map((badge) => (

@@ -104,7 +104,7 @@ const ActivityDetails = (props: Props) => {
                 badge={null}
                 type={type}
               >
-                <ActivityCardImage src={illustrationUrl} />
+                <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
               </ActivityCard>
               <div className='pb-20'>
                 <div className='mb-10 space-y-2 pl-14'>

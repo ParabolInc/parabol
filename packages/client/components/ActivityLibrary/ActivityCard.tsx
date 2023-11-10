@@ -1,17 +1,39 @@
 import clsx from 'clsx'
 import React, {PropsWithChildren} from 'react'
-import backgroundSrc from '../../../../static/images/illustrations/retro-background.png'
+import retroBackgroundSrc from '../../../../static/images/illustrations/retro-background.png'
+import standupBackgroundSrc from '../../../../static/images/illustrations/standup-background.png'
+import feedbackBackgroundSrc from '../../../../static/images/illustrations/feedback-background.png'
+import estimationBackgroundSrc from '../../../../static/images/illustrations/estimation-background.png'
+import strategyBackgroundSrc from '../../../../static/images/illustrations/strategy-background.png'
+import customBackgroundSrc from '../../../../static/images/illustrations/custom-background.png'
 import {upperFirst} from '../../utils/upperFirst'
 import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
-import {CATEGORY_TEXT_COLORS, MEETING_TYPE_TO_CATEGORY} from './Categories'
+import {CategoryID, CATEGORY_TEXT_COLORS, MEETING_TYPE_TO_CATEGORY} from './Categories'
 
 export interface CardTheme {
   primary: string
   secondary: string
 }
 
-export const ActivityCardImage = (props: PropsWithChildren<{src: string; className?: string}>) => {
-  const {className, src} = props
+const backgroundImgMap = {
+  retrospective: retroBackgroundSrc,
+  standup: standupBackgroundSrc,
+  feedback: feedbackBackgroundSrc,
+  estimation: estimationBackgroundSrc,
+  strategy: strategyBackgroundSrc,
+  premortem: customBackgroundSrc, // TODO: replace with premortem image
+  postmortem: customBackgroundSrc // TODO: replace with postmortem image
+} as const
+
+type ActivityCardImageProps = {
+  className?: string
+  src: string
+  category: CategoryID
+}
+
+export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProps>) => {
+  const {className, src, category} = props
+  const backgroundSrc = backgroundImgMap[category] ?? retroBackgroundSrc
 
   return (
     <div
