@@ -3,9 +3,6 @@ on:
   pull_request:
     paths:
       - packages/server/postgres/migrations/*.ts
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   migration-order:
     runs-on: ubuntu-latest
