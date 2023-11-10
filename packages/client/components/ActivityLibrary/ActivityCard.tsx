@@ -87,7 +87,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       </div>
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
-          <div className='text-sm leading-5 text-slate-800 sm:text-base'>{title}</div>{' '}
+          <div className='truncate text-sm leading-5 text-slate-800 sm:text-base'>{title}</div>
           <div className={clsx('font-semibold italic', color)}>{upperFirst(category)}</div>
         </div>
       )}
