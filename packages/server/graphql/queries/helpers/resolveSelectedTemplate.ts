@@ -2,22 +2,40 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import {GQLContext} from '../../graphql'
+import {getUserId} from '../../../utils/authorization'
+import isValid from '../../isValid'
 
 const resolveSelectedTemplate =
   (fallbackTemplateId: string) =>
   async (
     source: MeetingSettingsPoker | MeetingSettingsRetrospective,
     _args: unknown,
-    {dataLoader}: GQLContext
+    {authToken, dataLoader}: GQLContext
   ) => {
+    const viewerId = getUserId(authToken)
     const {id: settingsId, selectedTemplateId, teamId} = source
-    const [team, template] = await Promise.all([
+    const [team, template, viewer] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('meetingTemplates').load(selectedTemplateId)
+      dataLoader.get('meetingTemplates').load(selectedTemplateId),
+      dataLoader.get('users').loadNonNull(viewerId)
     ])
     const {tier} = team
-    if (template?.isFree || template?.scope !== 'PUBLIC' || tier !== 'starter') {
-      return template
+    if (template) {
+      if (
+        template.isFree ||
+        template.scope !== 'PUBLIC' ||
+        tier !== 'starter' ||
+        viewer.featureFlags.includes('noTemplateLimit')
+      ) {
+        return template
+      }
+      // if anyone on the team has the noTemplateLimit flag, they might have selected a non-starter template
+      const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+      const userIds = teamMembers.map(({userId}) => userId)
+      const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
+      if (users.some(({featureFlags}) => featureFlags.includes('noTemplateLimit'))) {
+        return template
+      }
     }
     // there may be holes in our template deletion or reselection logic, so doing this to be safe
     source.selectedTemplateId = fallbackTemplateId
