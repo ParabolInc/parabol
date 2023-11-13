@@ -10,16 +10,19 @@ interface MenuProps {
 
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   ({trigger, className, children}, ref) => {
-    const contentClass = twMerge(
-      'border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none',
-      className
-    )
-
     return (
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
         <DropdownMenu.Portal>
-          <DropdownMenu.Content align='end' className={contentClass} sideOffset={10} ref={ref}>
+          <DropdownMenu.Content
+            align='end'
+            className={twMerge(
+              'border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none',
+              className
+            )}
+            sideOffset={10}
+            ref={ref}
+          >
             {children}
           </DropdownMenu.Content>
         </DropdownMenu.Portal>

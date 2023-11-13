@@ -52,7 +52,7 @@ const MeetingOptions = (props: Props) => {
           </TooltipTrigger>
         </div>
         <TooltipContent>
-          {'You can only change the template before reflections have been added.'}
+          {'You can only change the template if no reflections have been added.'}
         </TooltipContent>
       </Tooltip>
     </Menu>
