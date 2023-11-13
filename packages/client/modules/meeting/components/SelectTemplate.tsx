@@ -10,7 +10,7 @@ import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {BezierCurve} from '../../../types/constEnums'
 import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
 import {SelectTemplate_template$key} from '../../../__generated__/SelectTemplate_template.graphql'
@@ -54,11 +54,12 @@ interface Props {
   template: SelectTemplate_template$key
   teamId: string
   tier?: TierEnum
+  noTemplateLimit?: boolean
   orgId?: string
 }
 
 const SelectTemplate = (props: Props) => {
-  const {template: templateRef, closePortal, teamId, tier, orgId} = props
+  const {template: templateRef, closePortal, teamId, tier, noTemplateLimit, orgId} = props
   const template = useFragment(
     graphql`
       fragment SelectTemplate_template on MeetingTemplate {
@@ -84,13 +85,13 @@ const SelectTemplate = (props: Props) => {
     closePortal()
   }
   const goToBilling = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'publicTemplate',
       meetingType: type
     })
     history.push(`/me/organizations/${orgId}`)
   }
-  const showUpgradeCTA = !isFree && tier === 'starter' && scope === 'PUBLIC'
+  const showUpgradeCTA = !isFree && tier === 'starter' && scope === 'PUBLIC' && !noTemplateLimit
   if (showUpgradeCTA) {
     return (
       <ButtonBlock>

@@ -8,7 +8,7 @@ import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
-import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {
@@ -249,7 +249,7 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         ? (store.getSource().get(meetingId) as any)?.meetingType
         : undefined
       if (data.createTaskIntegration && !data?.createTaskIntegration?.error) {
-        SendClientSegmentEventMutation(atmosphere, 'Task Published', {
+        SendClientSideEvent(atmosphere, 'Task Published', {
           taskId: data.createTaskIntegration.task?.id,
           teamId: data.createTaskIntegration.task?.teamId,
           inMeeting: !!meetingId,

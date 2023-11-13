@@ -9,7 +9,7 @@ UPDATE "User" SET
   "preferredName" = COALESCE(:preferredName, "preferredName"),
   tier = COALESCE(:tier, "tier"),
   picture = COALESCE(:picture, "picture"),
-  "segmentId" = COALESCE(:segmentId, "segmentId"),
+  "pseudoId" = COALESCE(:pseudoId, "pseudoId"),
   "isRemoved" = COALESCE(:isRemoved, "isRemoved"),
   "sendSummaryEmail" = COALESCE(:sendSummaryEmail, "sendSummaryEmail"),
   "isWatched" = COALESCE(:isWatched, "isWatched"),

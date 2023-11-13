@@ -27,7 +27,7 @@ import BaseButton from '../../BaseButton'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
 import RaisedButton from '../../RaisedButton'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
@@ -243,7 +243,7 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   const handleUpgrade = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'createNewTemplateAL',
       meetingType: selectedActivity.type
     })
@@ -287,7 +287,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none focus:ring-2 focus:ring-offset-8'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none'
                 value={activity.type}
               >
                 <ActivityCard

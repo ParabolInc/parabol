@@ -16,7 +16,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Threshold} from '../../../../types/constEnums'
 import linkify from '../../../../utils/linkify'
@@ -117,7 +117,7 @@ const NewTeamForm = (props: Props) => {
         id
         lockedAt
         name
-        teams {
+        allTeams {
           name
           ...NewTeamForm_teams @relay(mask: false)
         }
@@ -134,7 +134,7 @@ const NewTeamForm = (props: Props) => {
   const [inviteAll, setInviteAll] = useState(false)
   const disableFields = !!lockedSelectedOrg && !isNewOrg
   const selectedOrg = organizations.find((org) => org.id === orgId)
-  const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap(({teamMembers}) =>
+  const selectedOrgTeamMemberEmails = selectedOrg?.allTeams.flatMap(({teamMembers}) =>
     teamMembers.filter(({isSelf}) => !isSelf).map(({email}) => email)
   )
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
@@ -153,7 +153,7 @@ const NewTeamForm = (props: Props) => {
     let teamNames: string[] = []
     if (!isNewOrg) {
       if (selectedOrg) {
-        teamNames = selectedOrg.teams.map((team) => team.name)
+        teamNames = selectedOrg.allTeams.map((team) => team.name)
       }
     }
     return teamNameValidation(teamName, teamNames)
@@ -208,7 +208,7 @@ const NewTeamForm = (props: Props) => {
   }
 
   const goToBilling = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'createTeam',
       orgId,
       upgradeTier: 'team'

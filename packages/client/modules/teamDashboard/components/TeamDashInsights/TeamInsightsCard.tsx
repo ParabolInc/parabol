@@ -5,7 +5,7 @@ import Tooltip from '../../../../components/Tooltip'
 import {Info as InfoIcon} from '@mui/icons-material'
 import {ThumbUp, ThumbDown} from '@mui/icons-material'
 import FlatButton from '../../../../components/FlatButton'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {TeamInsightsCard_insights$key} from '../../../../__generated__/TeamInsightsCard_insights.graphql'
 import TeamInsightsId from '../../../../shared/gqlIds/TeamInsightsId'
@@ -38,7 +38,7 @@ const TeamInsightsCard = (props: Props) => {
   const {viewerId} = atmosphere
 
   const trackClick = (isHelpfulInsight: boolean) => {
-    SendClientSegmentEventMutation(atmosphere, 'Insight Card Feedback Clicked', {
+    SendClientSideEvent(atmosphere, 'Insight Card Feedback Clicked', {
       viewerId,
       teamId,
       insightTitle: title,

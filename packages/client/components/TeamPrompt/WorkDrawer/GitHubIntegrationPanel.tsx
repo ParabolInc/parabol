@@ -8,6 +8,8 @@ import GitHubClientManager from '../../../utils/GitHubClientManager'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
+import GitHubRepoFilterBar from './GitHubRepoFilterBar'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
   {
@@ -29,6 +31,8 @@ const GitHubIntegrationPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitHubIntegrationPanel_meeting on TeamPromptMeeting {
+        teamId
+        id
         viewerMeetingMember {
           teamMember {
             teamId
@@ -37,6 +41,7 @@ const GitHubIntegrationPanel = (props: Props) => {
                 isActive
               }
             }
+            ...GitHubRepoFilterBar_teamMember
           }
         }
       }
@@ -47,6 +52,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const [githubType, setGithubType] = useState<'issue' | 'pullRequest'>('issue')
+  const [selectedRepos, setSelectedRepos] = useState<string[]>([])
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
@@ -57,13 +63,38 @@ const GitHubIntegrationPanel = (props: Props) => {
       return onError(new Error('Could not find team member'))
     }
     teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
+
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+      teamId: meeting.teamId,
+      meetingId: meeting.id,
+      service: 'github'
+    })
+  }
+
+  const trackTabNavigated = (label: string) => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
+      service: 'github',
+      buttonLabel: label
+    })
   }
 
   return (
     <>
       {teamMember?.integrations.github?.isActive ? (
         <>
-          <div className='my-4 flex w-full gap-2 px-4'>
+          <GitHubRepoFilterBar
+            teamMemberRef={teamMember}
+            selectedRepos={selectedRepos}
+            setSelectedRepos={(repos) => {
+              SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
+                teamId: meeting.teamId,
+                meetingId: meeting.id,
+                service: 'github'
+              })
+              setSelectedRepos(repos)
+            }}
+          />
+          <div className='mb-4 flex w-full gap-2 px-4'>
             {GITHUB_QUERY_TABS.map((tab) => (
               <div
                 key={tab.key}
@@ -73,13 +104,20 @@ const GitHubIntegrationPanel = (props: Props) => {
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'
                     : 'border border-slate-300 bg-white'
                 )}
-                onClick={() => setGithubType(tab.key)}
+                onClick={() => {
+                  trackTabNavigated(tab.label)
+                  setGithubType(tab.key)
+                }}
               >
                 {tab.label}
               </div>
             ))}
           </div>
-          <GitHubIntegrationResultsRoot teamId={teamMember.teamId} queryType={githubType} />
+          <GitHubIntegrationResultsRoot
+            teamId={teamMember.teamId}
+            queryType={githubType}
+            selectedRepos={selectedRepos}
+          />
         </>
       ) : (
         <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>

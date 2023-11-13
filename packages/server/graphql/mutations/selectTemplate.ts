@@ -30,9 +30,10 @@ const selectTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const template = (await dataLoader
-      .get('meetingTemplates')
-      .load(selectedTemplateId)) as MeetingTemplate
+    const [template, viewer] = await Promise.all([
+      dataLoader.get('meetingTemplates').load(selectedTemplateId) as Promise<MeetingTemplate>,
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
 
     if (!template || !template.isActive) {
       console.log('no template', selectedTemplateId, template)
@@ -50,7 +51,11 @@ const selectTemplate = {
         return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
       }
     } else if (scope === 'PUBLIC') {
-      if (!isFree && viewerTeam.tier === 'starter') {
+      if (
+        !isFree &&
+        !viewer.featureFlags.includes('noTemplateLimit') &&
+        viewerTeam.tier === 'starter'
+      ) {
         return standardError(new Error('User does not have access to this premium template'), {
           userId: viewerId
         })

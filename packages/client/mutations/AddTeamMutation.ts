@@ -19,9 +19,11 @@ graphql`
     team {
       id
       name
+      ...PublicTeamsFrag_team
       ...NewTeamForm_teams
       ...MeetingsDashActiveMeetings
       ...Team_team
+      ...ActivityDetailsSidebar_teams
     }
   }
 `
@@ -71,10 +73,13 @@ export const addTeamMutationNotificationUpdater: SharedUpdater<
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-const AddTeamMutation: StandardMutation<TAddTeamMutation, HistoryLocalHandler> = (
+type ExtendedHistoryLocalHandler = HistoryLocalHandler & {
+  showTeamCreatedToast?: boolean
+}
+const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedHistoryLocalHandler> = (
   atmosphere,
   variables,
-  {history, onError, onCompleted}
+  {history, onError, onCompleted, showTeamCreatedToast = true}
 ) => {
   return commitMutation<TAddTeamMutation>(atmosphere, {
     mutation,
@@ -91,7 +96,9 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, HistoryLocalHandler> =
       if (!error) {
         const {authToken} = addTeam
         atmosphere.setAuthToken(authToken)
-        popTeamCreatedToast(addTeam, {atmosphere, history})
+        if (showTeamCreatedToast) {
+          popTeamCreatedToast(addTeam, {atmosphere, history})
+        }
       }
     },
     onError

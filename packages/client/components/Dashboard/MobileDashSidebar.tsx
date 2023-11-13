@@ -5,7 +5,13 @@ import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
-import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE, TEAMS_PAGE} from '../../utils/constants'
+import {
+  AUTHENTICATION_PAGE,
+  BILLING_PAGE,
+  MEMBERS_PAGE,
+  ORG_SETTINGS_PAGE,
+  TEAMS_PAGE
+} from '../../utils/constants'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
@@ -88,12 +94,12 @@ const MobileDashSidebar = (props: Props) => {
     graphql`
       fragment MobileDashSidebar_viewer on User {
         ...StandardHub_viewer
-        ...DashNavList_viewer
         featureFlags {
           checkoutFlow
           retrosInDisguise
         }
         organizations {
+          ...DashNavList_organization
           id
           name
           isBillingLeader
@@ -149,6 +155,12 @@ const MobileDashSidebar = (props: Props) => {
                 href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                 label={'Organization Settings'}
               />
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'key'}
+                href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
+                label={'Authentication'}
+              />
             </NavItemsWrap>
           </Nav>
         </NavBlock>
@@ -191,7 +203,7 @@ const MobileDashSidebar = (props: Props) => {
           </NavItemsWrap>
           <DashHR />
           <NavMain>
-            <DashNavList onClick={handleMenuClick} viewer={viewer} />
+            <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
           </NavMain>
           <DashHR />
           <Footer>

@@ -37,6 +37,10 @@ graphql`
           id
         }
       }
+      transcription {
+        speaker
+        words
+      }
       phases {
         phaseType
         ... on DiscussPhase {
@@ -52,6 +56,9 @@ graphql`
       id
       activeMeetings {
         id
+      }
+      insights {
+        ...TeamDashInsights_insights
       }
     }
     timelineEvent {

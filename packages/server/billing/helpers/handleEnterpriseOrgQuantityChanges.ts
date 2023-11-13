@@ -3,7 +3,7 @@ import Organization from '../../database/types/Organization'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 
-const sendEnterpriseOverageToSegment = async (organization: Organization) => {
+const sendEnterpriseOverageEvent = async (organization: Organization) => {
   const r = await getRethink()
   const manager = getStripeManager()
   const {id: orgId, stripeSubscriptionId} = organization
@@ -37,7 +37,7 @@ const handleEnterpriseOrgQuantityChanges = async (paidOrgs: Organization[]) => {
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')
   if (enterpriseOrgs.length === 0) return
   for (const org of enterpriseOrgs) {
-    sendEnterpriseOverageToSegment(org).catch()
+    sendEnterpriseOverageEvent(org).catch()
   }
 }
 

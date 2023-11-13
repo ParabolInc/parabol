@@ -4,7 +4,7 @@ import {useEffect} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import {RouterProps, useHistory} from 'react-router'
 import Atmosphere from '../Atmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {TierEnum} from './../__generated__/NewTeamOrgPicker_organizations.graphql'
 import {useUsageSnackNagQuery} from './../__generated__/useUsageSnackNagQuery.graphql'
 import useAtmosphere from './useAtmosphere'
@@ -41,11 +41,11 @@ const emitNag = (atmosphere: Atmosphere, history: RouterProps['history']) => {
       callback: () => {
         atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'usage')
         history.push(`/usage`)
-        SendClientSegmentEventMutation(atmosphere, 'Clicked usage snackbar CTA')
+        SendClientSideEvent(atmosphere, 'Clicked usage snackbar CTA')
       }
     }
   })
-  SendClientSegmentEventMutation(atmosphere, 'Sent usage snackbar')
+  SendClientSideEvent(atmosphere, 'Sent usage snackbar')
 }
 
 const useUsageSnackNag = (insights: boolean) => {

@@ -4,12 +4,12 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
-import getRethink from '../../../../database/rethinkDriver'
+import getRethink, {RethinkSchema} from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
-import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import SlackServerManager from '../../../../utils/SlackServerManager'
@@ -243,6 +243,40 @@ const addStandupResponsesToThread = async (
   return 'success'
 }
 
+const getSlackMessageForNotification = async (
+  dataLoader: DataLoaderWorker,
+  notification: RethinkSchema['Notification']['type'],
+  meeting: AnyMeeting,
+  userId: string
+) => {
+  if (notification.type === 'RESPONSE_REPLIED') {
+    const responses = await getTeamPromptResponsesByMeetingId(notification.meetingId)
+    const responseId = responses.find(({userId: responseUserId}) => responseUserId === userId)?.id
+    if (!responseId) {
+      return null
+    }
+    const author = await dataLoader.get('users').loadNonNull(notification.authorId)
+    const comment = await dataLoader.get('comments').load(notification.commentId)
+    return {
+      responseId,
+      title: `*${author.preferredName}* replied to your response in *${meeting.name}*`,
+      body: `> ${comment.plaintextContent}`,
+      buttonText: 'See the discussion'
+    }
+  } else if (notification.type === 'RESPONSE_MENTIONED') {
+    const responseId = notification.responseId
+    const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
+    const author = await dataLoader.get('users').loadNonNull(response.userId)
+    return {
+      responseId,
+      title: `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`,
+      buttonText: 'See their response'
+    }
+  }
+
+  return null
+}
+
 export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNotificationAuth> = (
   notificationChannel
 ) => ({
@@ -442,6 +476,40 @@ async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, 
   }
 }
 
+const getDmSlackForMeeting = async (
+  dataLoader: DataLoaderWorker,
+  meeting: Meeting,
+  userId: string
+) => {
+  // Order of slack auth is:
+  // 1. Auth on team
+  // 2. Auth in org (auth team is in same org as meeting team)
+  // 3. Any auth for user
+  const userSlackAuths = (await dataLoader.get('slackAuthByUserId').load(userId)).filter(
+    (auth) => !!auth.botAccessToken
+  )
+
+  // If the user has an integration on the meeting's team, just use that.
+  const teamAuth = userSlackAuths.find((auth) => auth.teamId === meeting.teamId)
+  if (teamAuth) {
+    return teamAuth
+  }
+
+  // If the user has an integration on a team in the meeting's org, use that.
+  const meetingTeamOrgId = (await dataLoader.get('teams').loadNonNull(meeting.teamId)).orgId
+  const teamIdsInOrg = (await dataLoader.get('teamsByOrgIds').load(meetingTeamOrgId)).map(
+    (team) => team.id
+  )
+  const orgAuth = userSlackAuths.find((auth) => teamIdsInOrg.includes(auth.teamId))
+  if (orgAuth) {
+    return orgAuth
+  }
+
+  // If the user does not have an integration within the meeting's org, use any integration outside
+  // the org
+  return userSlackAuths[0]
+}
+
 export const SlackNotifier: Notifier = {
   async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
@@ -618,5 +686,59 @@ export const SlackNotifier: Notifier = {
       return handleError(res, team.id, notificationChannel)
     }
     return 'success'
+  },
+
+  async sendNotificationToUser(
+    dataLoader: DataLoaderWorker,
+    notificationId: string,
+    userId: string
+  ) {
+    const notification = await dataLoader.get('notifications').load(notificationId)
+    if (notification.type !== 'RESPONSE_MENTIONED' && notification.type !== 'RESPONSE_REPLIED') {
+      return
+    }
+
+    const meeting = await dataLoader.get('newMeetings').load(notification.meetingId)
+
+    const userSlackAuth = await getDmSlackForMeeting(dataLoader, meeting, userId)
+    if (!userSlackAuth) {
+      return
+    }
+
+    const slackMessageFields = await getSlackMessageForNotification(
+      dataLoader,
+      notification,
+      meeting,
+      userId
+    )
+    if (!slackMessageFields) {
+      return
+    }
+
+    const {responseId, title, buttonText, body} = slackMessageFields
+
+    if (!responseId) {
+      return
+    }
+
+    const options = {
+      searchParams: {
+        utm_source: 'slack standup notification',
+        utm_medium: 'product',
+        utm_campaign: 'notifications',
+        responseId
+      }
+    }
+
+    const responseUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
+    const blocks: Array<{type: string}> = [
+      makeSection(title),
+      ...(body ? [makeSection(body)] : []),
+      makeButtons([{text: buttonText, url: responseUrl, type: 'primary'}])
+    ]
+
+    const {botAccessToken} = userSlackAuth
+    const manager = new SlackServerManager(botAccessToken!)
+    manager.postMessage(userSlackAuth.slackUserId, blocks, title)
   }
 }

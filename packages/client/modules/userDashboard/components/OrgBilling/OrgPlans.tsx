@@ -6,12 +6,12 @@ import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
 import {ElementWidth, Threshold} from '../../../../types/constEnums'
-import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
+import {TierEnum} from '../../../../__generated__/NewMeetingQuery.graphql'
 import OrgStats from './OrgStats'
 import useModal from '../../../../hooks/useModal'
 import DowngradeModal from './DowngradeModal'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 import {Breakpoint} from '~/types/constEnums'
@@ -122,7 +122,7 @@ const OrgPlans = (props: Props) => {
     label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan',
     planTier: TierEnum
   ) => {
-    SendClientSegmentEventMutation(atmosphere, 'Plan Tier Selected', {
+    SendClientSideEvent(atmosphere, 'Plan Tier Selected', {
       orgId,
       tier: planTier
     })
@@ -132,7 +132,7 @@ const OrgPlans = (props: Props) => {
       handleSelectTeamPlan()
     } else if (label === 'Downgrade') {
       openPortal()
-      SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
+      SendClientSideEvent(atmosphere, 'Downgrade Clicked', {
         orgId,
         tier: planTier
       })

@@ -27,11 +27,12 @@ const onInstall = async (_event: ExtendableEvent) => {
   const cacheNames = await caches.keys()
   const oldStaticCacheName = cacheNames.find((cacheName) => cacheName.startsWith('parabol-static'))
   const newCache = await caches.open(STATIC_CACHE)
+  const fetchCachedFiles = async (urls: string[]) => Promise.all(urls.map((url) => newCache.add(url)))
 
   // if this is their first service worker, fetch it all
   if (!oldStaticCacheName) {
     console.log('Installing service worker')
-    return newCache.addAll(urls)
+    return fetchCachedFiles(urls).catch(console.error)
   }
 
   // if they already have some assets, forward them over to the new cache & fetch the rest
@@ -45,7 +46,7 @@ const onInstall = async (_event: ExtendableEvent) => {
       newCache.put(urls[idx], res)
     })
   )
-  return newCache.addAll(newUrls)
+  return fetchCachedFiles(newUrls).catch(console.error)
 }
 
 const onActivate = async (_event: ExtendableEvent) => {
@@ -67,12 +68,21 @@ const onFetch = async (event: FetchEvent) => {
   if (isCacheable) {
     const cachedRes = await caches.match(request.url)
     // all our assets are hashed, so if the hash matches, it's valid
-    if (cachedRes) return cachedRes
-    const networkRes = await fetch(request)
-    const cache = await caches.open(DYNAMIC_CACHE)
-    // cloning here because I'm not sure if we must clone before reading the body
-    cache.put(request.url, networkRes.clone()).catch(console.error)
-    return networkRes
+    // let's skip opaque responses because we don't know whether they're valid
+    if (cachedRes && cachedRes.type !== 'opaque') {
+      return cachedRes
+    }
+    try {
+      const networkRes = await fetch(request)
+      const cache = await caches.open(DYNAMIC_CACHE)
+      // cloning here because I'm not sure if we must clone before reading the body
+      cache.put(request.url, networkRes.clone()).catch(console.error)
+      return networkRes
+    } catch (e) {
+      // if we have an opaque cached response, it's better than nothing
+      if (cachedRes) return cachedRes
+      throw e
+    }
     // } else if (request.destination === 'document') {
     //   // dynamic because index.html isn't hashed (and the server returns an html with keys)
     //   const dynamicCache = await caches.open(DYNAMIC_CACHE)

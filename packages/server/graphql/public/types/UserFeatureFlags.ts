@@ -9,7 +9,9 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   checkoutFlow: ({checkoutFlow}) => !!checkoutFlow,
   retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
   gcal: ({gcal}) => !!gcal,
-  adHocTeams: ({adHocTeams}) => !!adHocTeams
+  adHocTeams: ({adHocTeams}) => !!adHocTeams,
+  noTemplateLimit: ({noTemplateLimit}) => !!noTemplateLimit,
+  signUpDestinationTeam: ({signUpDestinationTeam}) => !!signUpDestinationTeam
 }
 
 export default UserFeatureFlags

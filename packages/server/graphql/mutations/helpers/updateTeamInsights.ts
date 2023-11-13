@@ -7,6 +7,7 @@ import {DataLoaderWorker} from '../../graphql'
 const TEAM_INSIGHTS_PERIOD = ms('90 days')
 // let's accumulate the data over a longer period
 const TOP_RETRO_TEMPLATES_PERIOD = ms('1 year')
+const TOP_RETRO_TEMPLATES_COUNT = 3
 const MAX_NUMBER_OF_USED_EMOJIS = 3
 const MIN_NUMBER_OF_USED_EMOJIS = 2
 const MIN_EMOJI_COUNT = 5
@@ -43,7 +44,7 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
     )
       .group('templateId')
       .count()
-      .run()
+      .run() as Promise<{group: string; reduction: number}[]>
   ])
 
   // emojis
@@ -90,18 +91,27 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
       count: reduction
     })
   )
+  topRetroTemplates.sort((a, b) => b.count - a.count)
+
+  const update = {
+    insightsUpdatedAt: now,
+    mostUsedEmojis: mostUsedEmojis.length >= MIN_NUMBER_OF_USED_EMOJIS ? mostUsedEmojis : null,
+    meetingEngagement: meetingEngagement.all ? meetingEngagement : null,
+    topRetroTemplates:
+      topRetroTemplates.length > 0 ? topRetroTemplates.slice(0, TOP_RETRO_TEMPLATES_COUNT) : null
+  }
 
   await pg
     .updateTable('Team')
     .set({
-      insightsUpdatedAt: now,
-      mostUsedEmojis:
-        mostUsedEmojis.length >= MIN_NUMBER_OF_USED_EMOJIS ? JSON.stringify(mostUsedEmojis) : null,
-      meetingEngagement: meetingEngagement.all ? JSON.stringify(meetingEngagement) : null,
-      topRetroTemplates: topRetroTemplates.length > 0 ? JSON.stringify(topRetroTemplates) : null
+      insightsUpdatedAt: update.insightsUpdatedAt,
+      mostUsedEmojis: update.mostUsedEmojis ? JSON.stringify(update.mostUsedEmojis) : null,
+      meetingEngagement: update.meetingEngagement ? JSON.stringify(update.meetingEngagement) : null,
+      topRetroTemplates: update.topRetroTemplates ? JSON.stringify(update.topRetroTemplates) : null
     })
     .where('id', '=', teamId)
     .execute()
+  dataLoader.get('teams').updateCache(teamId, update)
 }
 
 export default updateTeamInsights

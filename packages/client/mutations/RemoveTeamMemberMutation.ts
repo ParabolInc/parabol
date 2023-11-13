@@ -36,6 +36,7 @@ graphql`
 graphql`
   fragment RemoveTeamMemberMutation_teamTeam on Team {
     id
+    isViewerOnTeam
     activeMeetings {
       facilitatorStageId
       facilitatorUserId

@@ -22,8 +22,7 @@ const staticPaths = {
   [path.join(PROJECT_ROOT, 'static')]: !__PRODUCTION__,
   [path.join(PROJECT_ROOT, 'dev', 'dll')]: !__PRODUCTION__
 }
-const filesToCache = ['sw.js', 'favicon.ico', 'manifest.json']
-const staticServer = new StaticServer({staticPaths, filesToCache})
+const staticServer = new StaticServer({staticPaths})
 
 const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boolean) => {
   const meta = staticServer.getMeta(fileName)

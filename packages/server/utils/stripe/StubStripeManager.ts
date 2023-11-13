@@ -6,19 +6,28 @@ import StripeManager from './StripeManager'
 export default function StubStripeManager() {
   return new Proxy<StripeManager>(new StripeManager(), {
     get: (target, propKey: keyof typeof target) => {
-      if (propKey === 'createEnterpriseSubscription') {
-        return async (customerId: string, orgId: string, quantity: number, plan?: string) => {
-          return {
-            customerId,
-            orgId,
-            quantity,
-            plan,
-            current_period_start: toEpochSeconds(new Date()),
-            current_period_end: toEpochSeconds(new Date()) + 10_000
-          } as unknown as Stripe.Subscription
-        }
+      switch (propKey) {
+        case 'createCustomer':
+          return async (_orgId: string, _email: string, _source?: string) => {
+            return {
+              id: 'stub-customer-id'
+            }
+          }
+        case 'createEnterpriseSubscription':
+          return async (customerId: string, orgId: string, quantity: number, plan?: string) => {
+            return {
+              customerId,
+              orgId,
+              quantity,
+              plan,
+              current_period_start: toEpochSeconds(new Date()),
+              current_period_end: toEpochSeconds(new Date()) + 10_000
+            } as unknown as Stripe.Subscription
+          }
+        default:
+          console.warn('StubStripeManager forwarding to real StripeManager', propKey)
+          return target[propKey]
       }
-      return target[propKey]
     }
   })
 }

@@ -2739,6 +2739,11 @@ type Discussion {
   meetingId: ID!
 
   """
+  Team
+  """
+  team: Team!
+
+  """
   time the thread was created
   """
   createdAt: DateTime!
@@ -6644,11 +6649,6 @@ type Mutation {
   resetRetroMeetingToGroupStage(meetingId: ID!): ResetRetroMeetingToGroupStagePayload!
 
   """
-  track an event in segment, like when errors are hit
-  """
-  segmentEventTrack(event: String!, options: SegmentEventTrackOptions): Boolean
-
-  """
   Set the selected template for the upcoming retro meeting
   """
   selectTemplate(selectedTemplateId: ID!, teamId: ID!): SelectTemplatePayload
@@ -7719,6 +7719,17 @@ enum TaskServiceEnum {
   PARABOL
 }
 
+enum ServiceEnum {
+  PARABOL
+  github
+  jira
+  gitlab
+  mattermost
+  jiraServer
+  gcal
+  azureDevOps
+}
+
 """
 The part of the site that is calling the mutation
 """
@@ -8558,19 +8569,6 @@ type ResetPasswordPayload {
 type ResetRetroMeetingToGroupStagePayload {
   error: StandardMutationError
   meeting: NewMeeting
-}
-
-input SegmentEventTrackOptions {
-  teamId: ID
-  orgId: ID
-  phase: NewMeetingPhaseTypeEnum
-  eventId: Int
-  actionType: String
-  spotlightSearchQuery: String
-  meetingId: ID
-  reflectionId: ID
-  viewerId: ID
-  reflectionsCount: Int
 }
 
 type SelectTemplatePayload {

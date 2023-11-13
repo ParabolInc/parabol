@@ -13,7 +13,7 @@ import getSearchQueryFromMeeting from '../utils/getSearchQueryFromMeeting'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
-import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
@@ -294,7 +294,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       const searchQuery = getSearchQueryFromMeeting(meeting, service)
       if (!searchQuery) return
       const {searchQueryString, searchQueryFilters} = searchQuery
-      SendClientSegmentEventMutation(atmosphere, 'Updated Poker Scope', {
+      SendClientSideEvent(atmosphere, 'Updated Poker Scope', {
         meetingId,
         service,
         action,

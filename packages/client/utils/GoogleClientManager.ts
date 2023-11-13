@@ -50,7 +50,7 @@ class GoogleClientManager extends GoogleManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       window.clearInterval(closeCheckerId)
-      const segmentId = await getAnonymousId()
+      const pseudoId = await getAnonymousId()
       window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       const handleComplete: typeof onCompleted = (...args) => {
         popup && popup.close()
@@ -60,7 +60,7 @@ class GoogleClientManager extends GoogleManager {
         atmosphere,
         {
           code,
-          segmentId,
+          pseudoId,
           invitationToken: invitationToken || '',
           isInvitation: !!invitationToken,
           params: pageParams

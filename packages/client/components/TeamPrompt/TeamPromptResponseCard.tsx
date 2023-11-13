@@ -4,6 +4,7 @@ import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import CopyToClipboard from 'react-copy-to-clipboard'
 import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
@@ -22,6 +23,12 @@ import {ResponseCardDimensions, ResponsesGridBreakpoints} from './TeamPromptGrid
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 import {TeamPromptResponseEmojis} from './TeamPromptResponseEmojis'
+import makeAppURL from '../../utils/makeAppURL'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import {mergeRefs} from '../../utils/react/mergeRefs'
+import useTooltip from '../../hooks/useTooltip'
+import {MenuPosition} from '../../hooks/useCoords'
+import {Link} from '@mui/icons-material'
 
 const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
 const threeColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.THREE_RESPONSE_COLUMNS}px)`
@@ -210,6 +217,35 @@ const TeamPromptResponseCard = (props: Props) => {
 
   const ref = useAnimatedCard(displayIdx, status)
 
+  const responsePermalink = makeAppURL(window.location.origin, `/meet/${meetingId}/responses`, {
+    searchParams: {
+      utm_source: 'sharing',
+      responseId: response?.id
+    }
+  })
+
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
+
+  const {
+    tooltipPortal: copiedTooltipPortal,
+    openTooltip: openCopiedTooltip,
+    closeTooltip: closeCopiedTooltip,
+    originRef: copiedTooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+
+  const handleCopy = () => {
+    openCopiedTooltip()
+    SendClientSideEvent(atmosphere, 'Copied Standup Response Link', {
+      teamId: teamId,
+      meetingId: meetingId
+    })
+    setTimeout(() => {
+      closeCopiedTooltip()
+    }, 2000)
+  }
+
   return (
     <ResponseWrapper
       ref={ref}
@@ -228,6 +264,18 @@ const TeamPromptResponseCard = (props: Props) => {
             />
           )}
         </TeamMemberName>
+        {response && (
+          <CopyToClipboard text={responsePermalink} onCopy={handleCopy}>
+            <div
+              className='ml-auto h-7 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-300 hover:text-slate-600'
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={mergeRefs(originRef, copiedTooltipRef)}
+            >
+              <Link className='h-7 w-7 cursor-pointer p-0.5' />
+            </div>
+          </CopyToClipboard>
+        )}
       </ResponseHeader>
       <ResponseCard
         isEmpty={isEmptyResponse}
@@ -264,6 +312,8 @@ const TeamPromptResponseCard = (props: Props) => {
           </>
         )}
       </ResponseCard>
+      {tooltipPortal('Copy permalink')}
+      {copiedTooltipPortal('Copied!')}
     </ResponseWrapper>
   )
 }

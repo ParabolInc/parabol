@@ -13,7 +13,7 @@ const createEmailVerficationForExistingUser = async (
   dataLoader: DataLoaderWorker
 ) => {
   const user = await dataLoader.get('users').loadNonNull(userId)
-  const {email, segmentId, identities} = user
+  const {email, pseudoId, identities} = user
   // Typescript isn't discriminating on the type, manually casted
   const localIdentity = identities.find(
     (identity) => identity.type === 'LOCAL'
@@ -39,7 +39,7 @@ const createEmailVerficationForExistingUser = async (
     email,
     token: verifiedEmailToken,
     hashedPassword,
-    segmentId,
+    pseudoId,
     invitationToken
   })
   await r.table('EmailVerification').insert(emailVerification).run()

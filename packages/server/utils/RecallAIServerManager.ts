@@ -1,17 +1,11 @@
 import api from 'api'
 import axios from 'axios'
 import {ExternalLinks} from '../../client/types/constEnums'
+import appOrigin from '../appOrigin'
+import {TranscriptBlock} from '../database/types/MeetingRetrospective'
+import sendToSentry from './sendToSentry'
 
 const sdk = api('@recallai/v1.6#536jnqlf7d6blh')
-
-type TranscriptBlock = {
-  speaker: string
-  words: TranscriptWord[]
-}
-
-type TranscriptWord = {
-  text: string
-}
 
 const getBase64Image = async () => {
   try {
@@ -30,6 +24,13 @@ const getBase64Image = async () => {
   }
 }
 
+type TranscriptResponse = {
+  speaker: string
+  words: {
+    text: string
+  }[]
+}
+
 class RecallAIServerManager {
   constructor() {
     sdk.auth(`Token ${process.env.RECALL_AI_KEY}`)
@@ -40,13 +41,11 @@ class RecallAIServerManager {
       const base64Image = await getBase64Image()
       if (!base64Image) return null
 
-      const PROTOCOL = process.env.GRAPHQL_PROTOCOL || 'http'
-      const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
       const {data} = await sdk.bot_create({
         bot_name: 'Parabol Notetaker',
         real_time_transcription: {
           partial_results: false,
-          destination_url: `${PROTOCOL}://${HOST}` // this is required by the API but it's not doing anything and can be any URL. TODO: speak with recall.ai about this & fix
+          destination_url: appOrigin // this is required by the API but it's not doing anything and can be any URL. TODO: speak with recall.ai about this & fix
         },
         transcription_options: {provider: 'assembly_ai'},
         chat: {
@@ -65,25 +64,50 @@ class RecallAIServerManager {
       const {id: botId} = data
       return botId as string
     } catch (err) {
-      console.error(err)
+      const error =
+        err instanceof Error
+          ? err
+          : new Error(`Unable to create Recall bot with video meeting URL: ${videoMeetingURL}`)
+      sendToSentry(error)
       return null
     }
   }
 
-  async getBotTranscript(botId: string) {
+  async getBotTranscript(botId: string): Promise<TranscriptBlock[] | undefined> {
     try {
-      const {data} = await sdk.bot_transcript_list({
+      const {data}: {data: TranscriptResponse[]} = await sdk.bot_transcript_list({
         enhanced_diarization: 'true',
         id: botId
       })
-      const transcript = data.map((block: TranscriptBlock) => {
+
+      const transcript: TranscriptBlock[] = []
+      let currentBlock: TranscriptBlock | null = null
+
+      data.forEach((block) => {
         const {speaker, words} = block
-        const text = words.map((word) => word.text).join(' ')
-        return `${speaker}: ${text}`
+        const currentWords = words.map((word) => word.text).join(' ')
+        if (currentBlock && currentBlock.speaker === speaker) {
+          currentBlock.words += '. ' + currentWords
+        } else {
+          if (currentBlock) {
+            transcript.push(currentBlock)
+          }
+          currentBlock = {
+            speaker,
+            words: currentWords
+          }
+        }
       })
-      return transcript.join('\n') as string
+
+      if (currentBlock) {
+        transcript.push(currentBlock)
+      }
+
+      return transcript
     } catch (err) {
-      console.error(err)
+      const error =
+        err instanceof Error ? err : new Error(`Unable to get bot transcript with botId: ${botId}`)
+      sendToSentry(error)
       return
     }
   }

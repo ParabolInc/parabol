@@ -2,7 +2,7 @@ import React, {Suspense} from 'react'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useRouter from '../../../hooks/useRouter'
 import {LoaderSize} from '../../../types/constEnums'
-import {renderLoader} from '../../../utils/relay/renderLoader'
+import {Loader} from '../../../utils/relay/renderLoader'
 import newMeetingSummaryQuery, {
   NewMeetingSummaryQuery
 } from '../../../__generated__/NewMeetingSummaryQuery.graphql'
@@ -18,7 +18,7 @@ const NewMeetingSummaryRoot = () => {
     first: 5
   })
   return (
-    <Suspense fallback={renderLoader({size: LoaderSize.WHOLE_PAGE})}>
+    <Suspense fallback={<Loader size={LoaderSize.WHOLE_PAGE} />}>
       {queryRef && <NewMeetingSummary queryRef={queryRef} urlAction={urlAction} />}
     </Suspense>
   )

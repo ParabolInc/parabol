@@ -63,6 +63,11 @@ type JiraIssue implements TaskIntegration {
   issueType: ID!
 
   """
+  The icon used to represent the type of issue
+  """
+  issueIcon: String!
+
+  """
   The key of the project, which is the prefix to the issueKey
   """
   projectKey: ID!
@@ -96,6 +101,11 @@ type JiraIssue implements TaskIntegration {
   The description converted into raw HTML
   """
   descriptionHTML: String!
+
+  """
+  The last time this issue was updated
+  """
+  lastUpdated: DateTime!
 }
 
 """
@@ -103,9 +113,9 @@ A connection to a list of items.
 """
 type JiraIssueConnection {
   """
-  Page info with cursors coerced to ISO8601 dates
+  Page info with cursors
   """
-  pageInfo: PageInfoDateCursor
+  pageInfo: PageInfo
 
   """
   A list of edges.
@@ -126,5 +136,5 @@ type JiraIssueEdge {
   The item at the end of the edge
   """
   node: JiraIssue!
-  cursor: DateTime
+  cursor: String
 }

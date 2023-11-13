@@ -35,7 +35,6 @@ interface Window {
     atlassian: string
     github: string
     google: string
-    segment: string
     sentry: string
     slack: string
     oauth2Redirect: string

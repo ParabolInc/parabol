@@ -8,14 +8,16 @@ import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import GitHubObjectCard from './GitHubObjectCard'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import {Link} from 'react-router-dom'
 
 interface Props {
   queryRef: PreloadedQuery<GitHubIntegrationResultsQuery>
   queryType: 'issue' | 'pullRequest'
+  teamId: string
 }
 
 const GitHubIntegrationResults = (props: Props) => {
-  const {queryRef, queryType} = props
+  const {queryRef, queryType, teamId} = props
   const query = usePreloadedQuery(
     graphql`
       query GitHubIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
@@ -99,6 +101,12 @@ const GitHubIntegrationResults = (props: Props) => {
                     queryType === 'issue' ? 'issues' : 'pull requests'
                   } to display.`}
             </div>
+            <Link
+              to={`/team/${teamId}/settings/integrations`}
+              className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+            >
+              Review your GitHub configuration
+            </Link>
           </div>
         )}
         {lastItem}
