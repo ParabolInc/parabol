@@ -67,6 +67,7 @@
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
+          "Kudos": "../../postgres/types/Kudos#Kudos",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "NewMeetingPhase": "../../database/types/GenericMeetingPhase #default as GenericMeetingPhaseDB",
