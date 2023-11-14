@@ -1,7 +1,7 @@
 import generateUID from '../../generateUID'
 import {TierEnum} from './Invoice'
 
-export type OrgUserRole = 'BILLING_LEADER'
+export type OrgUserRole = 'BILLING_LEADER' | 'ORG_ADMIN'
 interface Input {
   orgId: string
   userId: string
