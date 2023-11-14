@@ -81,6 +81,7 @@ const ReactjiCount = (props: Props) => {
   const name = reactjiObj.name
 
   const {unicode, shortName} = getReactji(name)
+  console.log('name', name, unicode, shortName)
   const onClick = () => {
     onToggle(name)
   }

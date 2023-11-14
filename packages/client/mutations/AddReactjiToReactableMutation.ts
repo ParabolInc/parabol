@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import {StandardMutation} from '../types/relayMutations'
 import {AddReactjiToReactableMutation as TAddReactjiToReactableMutation} from '../__generated__/AddReactjiToReactableMutation.graphql'
+import getReactji from '~/utils/getReactji'
 
 graphql`
   fragment AddReactjiToReactableMutation_meeting on AddReactjiToReactableSuccess {
@@ -115,11 +116,11 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
     onCompleted: (res, errors) => {
       const {isRemove} = variables
       const addedKudos = res.addReactjiToReactable.addedKudos
-      // TODO: emoji is hardcoded for v1
       if (!isRemove && addedKudos) {
+        const {unicode} = getReactji(addedKudos.emoji)
         atmosphere.eventEmitter.emit('addSnackbar', {
           key: 'youGaveKudos',
-          message: `You gave kudos to ${addedKudos.receiverUser.preferredName} ❤️`,
+          message: `You gave kudos to ${addedKudos.receiverUser.preferredName} ${unicode}`,
           autoDismiss: 5
         })
       }
