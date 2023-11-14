@@ -172,21 +172,24 @@ const AnalyticsPage = () => {
       const translated = !!document.querySelector(
         'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
       )
-      amplitude.track(
-        'Loaded a Page',
-        {
-          name: pageName,
-          referrer: document.referrer,
-          title,
-          path: pathname,
-          url: href,
-          translated,
-          search: location.search
-        },
-        {
-          user_id: atmosphere.viewerId
-        }
-      )
+      const user_id = atmosphere.viewerId
+      if (!!user_id) {
+        amplitude.track(
+          'Loaded a Page',
+          {
+            name: pageName,
+            referrer: document.referrer,
+            title,
+            path: pathname,
+            url: href,
+            translated,
+            search: location.search
+          },
+          {
+            user_id
+          }
+        )
+      }
     }, TIME_TO_RENDER_TREE)
   }, [pathname, location.search, atmosphere.viewerId])
 
