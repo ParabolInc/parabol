@@ -4,11 +4,12 @@ import {AddReactjiToReactableSuccessResolvers} from '../../public/resolverTypes'
 export type AddReactjiToReactableSuccessSource = {
   reactableId: string
   reactableType: ReactableEnumType
-  addedKudosId: number
+  addedKudosId?: number | null
 }
 const AddReactjiToReactableSuccess: AddReactjiToReactableSuccessResolvers = {
   reactable: async ({reactableId, reactableType}, _args: unknown, {dataLoader}) => {
-    return dataLoader.get('reactables').load({id: reactableId, type: reactableType})
+    // TODO: refactor to return specific type
+    return (await dataLoader.get('reactables').load({id: reactableId, type: reactableType})) as any
   },
   addedKudos: async ({addedKudosId}, _args: unknown, {dataLoader}) => {
     if (!addedKudosId) return null
