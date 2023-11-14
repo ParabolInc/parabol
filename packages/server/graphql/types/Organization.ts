@@ -86,7 +86,9 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
           const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
           return [...viewerTeams, ...sortedOtherTeams]
         } else {
-          return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+          return allTeamsOnOrg
+            .filter((team) => authToken.tms.includes(team.id))
+            .sort((a, b) => a.name.localeCompare(b.name))
         }
       }
     },
@@ -95,7 +97,9 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'all the teams the viewer is on in the organization',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+        return allTeamsOnOrg
+          .filter((team) => authToken.tms.includes(team.id))
+          .sort((a, b) => a.name.localeCompare(b.name))
       }
     },
     tier: {
