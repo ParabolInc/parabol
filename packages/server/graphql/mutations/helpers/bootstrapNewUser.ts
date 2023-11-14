@@ -18,6 +18,7 @@ import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import {DataLoaderWorker} from '../../graphql'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import isValid from '../../isValid'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 
 const bootstrapNewUser = async (
   newUser: User,
@@ -76,10 +77,12 @@ const bootstrapNewUser = async (
   }
 
   const isVerified = identities.some((identity) => identity.isEmailVerified)
+  const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
+  const isQualifiedForAutoJoin = (isVerified || hasSAMLURL) && isCompanyDomain
   const orgIds = organizations.map(({id}) => id)
 
   const [teamsWithAutoJoinRes] = await Promise.all([
-    isVerified && isCompanyDomain ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
+    isQualifiedForAutoJoin ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
     insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
