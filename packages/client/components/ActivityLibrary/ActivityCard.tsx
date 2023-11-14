@@ -5,7 +5,8 @@ import standupBackgroundSrc from '../../../../static/images/illustrations/standu
 import feedbackBackgroundSrc from '../../../../static/images/illustrations/feedback-background.png'
 import estimationBackgroundSrc from '../../../../static/images/illustrations/estimation-background.png'
 import strategyBackgroundSrc from '../../../../static/images/illustrations/strategy-background.png'
-import customBackgroundSrc from '../../../../static/images/illustrations/custom-background.png'
+import premortemBackgroundSrc from '../../../../static/images/illustrations/premortem-background.png'
+import postmortemBackgroundSrc from '../../../../static/images/illustrations/postmortem-background.png'
 import {upperFirst} from '../../utils/upperFirst'
 import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
 import {CategoryID, CATEGORY_TEXT_COLORS, MEETING_TYPE_TO_CATEGORY} from './Categories'
@@ -21,8 +22,8 @@ const backgroundImgMap = {
   feedback: feedbackBackgroundSrc,
   estimation: estimationBackgroundSrc,
   strategy: strategyBackgroundSrc,
-  premortem: customBackgroundSrc, // TODO: replace with premortem image
-  postmortem: customBackgroundSrc // TODO: replace with postmortem image
+  premortem: premortemBackgroundSrc,
+  postmortem: postmortemBackgroundSrc
 } as const
 
 type ActivityCardImageProps = {
