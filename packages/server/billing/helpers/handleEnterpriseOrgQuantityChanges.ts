@@ -1,4 +1,5 @@
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import Organization from '../../database/types/Organization'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
@@ -25,7 +26,8 @@ const sendEnterpriseOverageEvent = async (organization: Organization) => {
     const billingLeaderOrgUser = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, role: 'BILLING_LEADER'})
+      .filter({removedAt: null})
+      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
       .nth(0)
       .run()
     const {id: userId} = billingLeaderOrgUser

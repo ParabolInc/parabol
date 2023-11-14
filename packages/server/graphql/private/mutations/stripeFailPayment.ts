@@ -7,6 +7,7 @@ import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
+import {RDatum} from '../../../database/stricterR'
 
 export type StripeFailPaymentPayloadSource =
   | {
@@ -79,7 +80,10 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   const billingLeaderUserIds = (await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null, role: 'BILLING_LEADER'})('userId')
+    .filter({removedAt: null})
+    .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))(
+      'userId'
+    )
     .run()) as string[]
 
   const {default_source} = customer

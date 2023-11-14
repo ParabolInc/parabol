@@ -6,6 +6,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
+import {RDatum} from '../../../database/stricterR'
 
 const addNotifications = async (orgId: string, userId: string) => {
   const r = await getRethink()
@@ -34,7 +35,13 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     })
   }
 
-  if (role && role !== 'BILLING_LEADER') {
+  if (role === 'ORG_ADMIN' && !isSuperUser(authToken)) {
+    return standardError(new Error('Must be super user to promote user to admin'), {
+      userId: viewerId
+    })
+  }
+
+  if (role && role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN') {
     return standardError(new Error('Invalid role'), {userId: viewerId})
   }
   // if someone is leaving, make sure there is someone else to take their place
@@ -42,7 +49,8 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     const leaderCount = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, role: 'BILLING_LEADER'})
+      .filter({removedAt: null})
+      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
       .count()
       .run()
     if (leaderCount === 1) {
@@ -69,9 +77,12 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   }
   await r.table('OrganizationUser').get(organizationUserId).update({role}).run()
 
-  const modificationType = role === 'BILLING_LEADER' ? 'add' : 'remove'
-  analytics.billingLeaderModified(userId, viewerId, orgId, modificationType)
+  if (role !== 'ORG_ADMIN') {
+    const modificationType = role === 'BILLING_LEADER' ? 'add' : 'remove'
+    analytics.billingLeaderModified(userId, viewerId, orgId, modificationType)
+  }
 
+  // Don't add notification when promoting to org admin.
   const notificationIdsAdded =
     role === 'BILLING_LEADER' ? await addNotifications(orgId, userId) : []
 

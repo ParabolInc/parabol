@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../../../../components/Avatar/Avatar'
 import React from 'react'
-import {BillingLeader_user$key} from '../../../../__generated__/BillingLeader_user.graphql'
+import {BillingLeader_orgUser$key} from '../../../../__generated__/BillingLeader_orgUser.graphql'
 import {BillingLeader_organization$key} from '../../../../__generated__/BillingLeader_organization.graphql'
 import Row from '../../../../components/Row/Row'
 import {ElementWidth} from '../../../../types/constEnums'
@@ -21,6 +21,7 @@ import useTooltip from '../../../../hooks/useTooltip'
 import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
 import useModal from '../../../../hooks/useModal'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
+import BaseTag from '../../../../components/Tag/BaseTag'
 
 const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
   padding: '12px 16px',
@@ -53,7 +54,7 @@ const BillingLeaderActionMenu = lazyPreload(
 )
 
 type Props = {
-  billingLeaderRef: BillingLeader_user$key
+  billingLeaderRef: BillingLeader_orgUser$key
   isFirstRow: boolean
   billingLeaderCount: number
   organizationRef: BillingLeader_organization$key
@@ -64,10 +65,13 @@ const BillingLeader = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const billingLeader = useFragment(
     graphql`
-      fragment BillingLeader_user on User {
-        id
-        preferredName
-        picture
+      fragment BillingLeader_orgUser on OrganizationUser {
+        role
+        user {
+          id
+          preferredName
+          picture
+        }
       }
     `,
     billingLeaderRef
@@ -90,8 +94,10 @@ const BillingLeader = (props: Props) => {
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
   const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
   const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
-  const {id: userId, preferredName, picture} = billingLeader
+  const {user: billingLeaderUser} = billingLeader
+  const {id: userId, preferredName, picture} = billingLeaderUser
   const isViewerLastBillingLeader = isViewerBillingLeader && billingLeaderCount === 1
+  const canViewMenu = !isViewerLastBillingLeader && billingLeader.role !== 'ORG_ADMIN'
 
   const handleClick = () => {
     togglePortal()
@@ -99,7 +105,7 @@ const BillingLeader = (props: Props) => {
   }
 
   const handleMouseOver = () => {
-    if (isViewerLastBillingLeader) {
+    if (!canViewMenu) {
       openTooltip()
     }
   }
@@ -112,6 +118,9 @@ const BillingLeader = (props: Props) => {
           <RowInfoHeading>{preferredName}</RowInfoHeading>
         </RowInfoHeader>
       </RowInfo>
+      {billingLeader.role === 'ORG_ADMIN' && (
+        <BaseTag className='bg-gold-500 text-white'>Org Admin</BaseTag>
+      )}
       <RowActions>
         <ActionsBlock>
           <MenuToggleBlock>
@@ -123,16 +132,20 @@ const BillingLeader = (props: Props) => {
                   onMouseOver={handleMouseOver}
                   onMouseLeave={closeTooltip}
                   ref={originRef}
-                  disabled={isViewerLastBillingLeader}
+                  disabled={!canViewMenu}
                 >
                   <IconLabel icon='more_vert' />
                 </StyledButton>
                 {tooltipPortal(
-                  <div>
-                    {'You need to promote another Billing Leader'}
-                    <br />
-                    {'before you can remove this role.'}
-                  </div>
+                  isViewerLastBillingLeader ? (
+                    <div>
+                      {'You need to promote another Billing Leader'}
+                      <br />
+                      {'before you can remove this role.'}
+                    </div>
+                  ) : (
+                    <div>Contact support to remove the Org Admin role</div>
+                  )
                 )}
               </MenuToggleBlock>
             )}

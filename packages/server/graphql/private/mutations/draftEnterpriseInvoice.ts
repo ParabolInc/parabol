@@ -31,17 +31,20 @@ const getBillingLeaderUser = async (
     if (!organizationUser) {
       throw new Error('Email not associated with a user on that org')
     }
-    await r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null, orgId})
-      .update({role: 'BILLING_LEADER'})
-      .run()
+    if (organizationUser.role !== 'ORG_ADMIN') {
+      await r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null, orgId})
+        .update({role: 'BILLING_LEADER'})
+        .run()
+    }
     return user
   }
   const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
   const billingLeaders = organizationUsers.filter(
-    (organizationUser) => organizationUser.role === 'BILLING_LEADER'
+    (organizationUser) =>
+      organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
   )
 
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
