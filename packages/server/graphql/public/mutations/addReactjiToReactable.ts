@@ -24,6 +24,8 @@ import {AnyMeeting} from '../../../postgres/types/Meeting'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {MutationResolvers} from '../resolverTypes'
+import NotificationKudosReceived from '../../../database/types/NotificationKudosReceived'
+import publishNotification from './helpers/publishNotification'
 
 const rethinkTableLookup = {
   COMMENT: 'Comment',
@@ -194,6 +196,22 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
         .returning('id')
         .executeTakeFirst()
     )?.id
+
+    const senderUser = await dataLoader.get('users').loadNonNull(viewerId)
+
+    const notificationsToInsert = new NotificationKudosReceived({
+      userId: reactableCreatorId,
+      senderUserId: viewerId,
+      meetingId,
+      meetingName: meeting.name,
+      emoji: team.kudosEmoji,
+      name: senderUser.preferredName,
+      picture: senderUser.picture
+    })
+
+    await r.table('Notification').insert(notificationsToInsert).run()
+
+    publishNotification(notificationsToInsert, subOptions)
 
     analytics.kudosSent(viewerId, teamId)
   }
