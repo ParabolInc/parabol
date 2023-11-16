@@ -114,7 +114,6 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     const groupedReactjis = getGroupedReactjis(reactjis, viewerId, reactableId)
     const nextReactjiId = `${reactableId}:${reactji}`
     const isReactjiPresent = !!groupedReactjis.find((agg) => agg.id === nextReactjiId)
-    // console.log('is present', isReactjiPresent, reactji, groupedReactjis)
     if (!isReactjiPresent && groupedReactjis.length >= Threshold.MAX_REACTJIS) {
       return {error: {message: `Reactji limit reached`}}
     }
