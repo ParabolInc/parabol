@@ -26,8 +26,8 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         'relative flex h-full w-full items-center justify-center overflow-hidden',
         className
       )}
+      style={{backgroundImage: `url(${backgroundSrc})`, backgroundSize: 'cover'}}
     >
-      <img className='absolute h-full w-full object-cover' src={backgroundSrc} alt='Background' />
       <img
         className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
         src={src}
@@ -66,7 +66,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       </div>
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
-          <div className='truncate text-sm leading-5 text-slate-800 sm:text-base'>{title}</div>
+          <div className='truncate pb-1 text-lg leading-5 text-slate-800'>{title}</div>
           <div className={clsx('font-semibold italic', `text-${theme.primary}`)}>
             {upperFirst(category)}
           </div>
