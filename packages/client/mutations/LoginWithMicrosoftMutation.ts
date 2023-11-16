@@ -10,13 +10,13 @@ const mutation = graphql`
   mutation LoginWithMicrosoftMutation(
     $code: ID!
     $invitationToken: ID!
-    $segmentId: ID
+    $pseudoId: ID
     $isInvitation: Boolean!
     $params: String!
   ) {
     loginWithMicrosoft(
       code: $code
-      segmentId: $segmentId
+      pseudoId: $pseudoId
       invitationToken: $invitationToken
       params: $params
     ) {
@@ -32,11 +32,10 @@ const mutation = graphql`
     }
   }
 `
-const LoginWithMicrosoftMutation: StandardMutation<TLoginWithMicrosoftMutation, HistoryLocalHandler> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted, history}
-) => {
+const LoginWithMicrosoftMutation: StandardMutation<
+  TLoginWithMicrosoftMutation,
+  HistoryLocalHandler
+> = (atmosphere, variables, {onError, onCompleted, history}) => {
   return commitMutation<TLoginWithMicrosoftMutation>(atmosphere, {
     mutation,
     variables: {...variables, isInvitation: !!variables.invitationToken},

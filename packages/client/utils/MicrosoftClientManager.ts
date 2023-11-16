@@ -29,7 +29,9 @@ class MicrosoftClientManager extends MicrosoftManager {
       prompt: 'select_account',
       login_hint: loginHint ?? ''
     })
-    const uri = `https://login.microsoftonline.com/${window.__ACTION__.microsoftTenantId}/oauth2/v2.0/authorize?${params.toString()}`
+    const uri = `https://login.microsoftonline.com/${
+      window.__ACTION__.microsoftTenantId
+    }/oauth2/v2.0/authorize?${params.toString()}`
     submitMutation()
     const popup = window.open(
       uri,
@@ -50,7 +52,7 @@ class MicrosoftClientManager extends MicrosoftManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       window.clearInterval(closeCheckerId)
-      const segmentId = await getAnonymousId()
+      const pseudoId = await getAnonymousId()
       window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       const handleComplete: typeof onCompleted = (...args) => {
         popup && popup.close()
@@ -60,7 +62,7 @@ class MicrosoftClientManager extends MicrosoftManager {
         atmosphere,
         {
           code,
-          segmentId,
+          pseudoId,
           invitationToken: invitationToken || '',
           isInvitation: !!invitationToken,
           params: pageParams

@@ -55,9 +55,7 @@ export default class MicrosoftServerManager extends MicrosoftManager {
       },
       body: stringify(queryParams)
     })
-    console.log('GEORG tokenRes', tokenRes)
     const tokenJson = (await tokenRes.json()) as OAuth2Response
-    // TODO: refactor to use authorizeOAuth2
     if ('error' in tokenJson) {
       const errorMessage = (tokenJson.error as string) || `Received null OAuth2 Error from ${uri}`
       sendToSentry(new Error(errorMessage))

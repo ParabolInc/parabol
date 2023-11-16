@@ -15,7 +15,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
   _source,
-  {code, invitationToken, segmentId, params},
+  {code, invitationToken, pseudoId, params},
   context
 ) => {
   const {dataLoader} = context
@@ -97,7 +97,7 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
     preferredName,
     email,
     identities: [identity],
-    segmentId
+    pseudoId
   })
   context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader, params)
   return {
