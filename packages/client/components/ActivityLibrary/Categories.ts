@@ -1,4 +1,11 @@
 import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import retroBackgroundSrc from '../../../../static/images/illustrations/retro-background.png'
+import standupBackgroundSrc from '../../../../static/images/illustrations/standup-background.png'
+import feedbackBackgroundSrc from '../../../../static/images/illustrations/feedback-background.png'
+import estimationBackgroundSrc from '../../../../static/images/illustrations/estimation-background.png'
+import strategyBackgroundSrc from '../../../../static/images/illustrations/strategy-background.png'
+import premortemBackgroundSrc from '../../../../static/images/illustrations/premortem-background.png'
+import postmortemBackgroundSrc from '../../../../static/images/illustrations/postmortem-background.png'
 import {CardTheme} from './ActivityCard'
 
 export const MAIN_CATEGORIES = [
@@ -15,13 +22,13 @@ export type CategoryID = typeof MAIN_CATEGORIES[number]
 export const DEFAULT_CARD_THEME: CardTheme = {primary: 'bg-slate-500', secondary: 'bg-slate-200'}
 
 export const CATEGORY_THEMES: Record<CategoryID, CardTheme> = {
-  standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
-  estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
-  retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]'},
-  feedback: {primary: 'bg-jade-400', secondary: 'bg-jade-100'},
-  strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100'},
-  premortem: {primary: 'bg-gold-500', secondary: 'bg-gold-100'},
-  postmortem: {primary: 'bg-grass-500', secondary: 'bg-grass-100'}
+  standup: {primary: 'aqua-400', secondary: 'aqua-100'},
+  estimation: {primary: 'tomato-500', secondary: 'tomato-100'},
+  retrospective: {primary: 'grape-500', secondary: '[#F2E1F7]'},
+  feedback: {primary: 'jade-400', secondary: 'jade-100'},
+  strategy: {primary: 'rose-500', secondary: 'rose-100'},
+  premortem: {primary: 'gold-500', secondary: 'gold-100'},
+  postmortem: {primary: 'grass-500', secondary: 'grass-100'}
 }
 
 export const QUICK_START_CATEGORY_ID = 'recommended'
@@ -44,12 +51,12 @@ export const MEETING_TYPE_TO_CATEGORY: Record<MeetingTypeEnum, CategoryID> = {
   teamPrompt: 'standup'
 }
 
-export const CATEGORY_TEXT_COLORS: Record<CategoryID, CardTheme> = {
-  standup: {primary: 'text-aqua-400', secondary: 'text-aqua-100'},
-  estimation: {primary: 'text-tomato-500', secondary: 'text-tomato-100'},
-  retrospective: {primary: 'text-grape-500', secondary: 'text-[#F2E1F7]'},
-  feedback: {primary: 'text-jade-400', secondary: 'text-jade-100'},
-  strategy: {primary: 'text-rose-500', secondary: 'text-rose-100'},
-  premortem: {primary: 'text-gold-500', secondary: 'text-gold-100'},
-  postmortem: {primary: 'text-grass-500', secondary: 'text-grass-100'}
-}
+export const backgroundImgMap = {
+  retrospective: retroBackgroundSrc,
+  standup: standupBackgroundSrc,
+  feedback: feedbackBackgroundSrc,
+  estimation: estimationBackgroundSrc,
+  strategy: strategyBackgroundSrc,
+  premortem: premortemBackgroundSrc,
+  postmortem: postmortemBackgroundSrc
+} as const
