@@ -78,17 +78,15 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
           dataLoader.get('teamsByOrgIds').load(orgId),
           dataLoader.get('organizations').load(orgId)
         ])
+        const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
         const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
         const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
         if (isBillingLeader || isSuperUser(authToken) || hasPublicTeamsFlag) {
-          const viewerTeams = allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
-          const otherTeams = allTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
-          const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
-          return [...viewerTeams, ...sortedOtherTeams]
+          const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+          const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
+          return [...viewerTeams, ...otherTeams]
         } else {
-          return allTeamsOnOrg
-            .filter((team) => authToken.tms.includes(team.id))
-            .sort((a, b) => a.name.localeCompare(b.name))
+          return sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
         }
       }
     },
