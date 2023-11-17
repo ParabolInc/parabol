@@ -1,9 +1,9 @@
 {
   "name": "parabol-server",
   "description": "An open-source app for building smarter, more agile teams.",
-  "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
+  "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.124.0",
+  "version": "7.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,7 +13,6 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "build:segmentFn": "sucrase segmentFns -d segmentFns --transforms typescript",
     "format": "yarn typecheck && yarn lint && yarn prettier",
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
@@ -114,7 +113,7 @@
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^9.0.0",
     "mailcomposer": "^4.0.1",
-    "mailgun.js": "^7.0.4",
+    "mailgun.js": "^9.3.0",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "nest-graphql-endpoint": "mattkrick/nest-graphql-endpoint#add-options",
@@ -124,7 +123,7 @@
     "oauth-1.0a": "^2.2.6",
     "openai": "^4.9.0",
     "oy-vey": "^0.11.0",
-    "parabol-client": "^6.124.0",
+    "parabol-client": "7.7.0",
     "pg": "^8.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

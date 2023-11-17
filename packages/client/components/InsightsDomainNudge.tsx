@@ -4,7 +4,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
@@ -83,7 +83,7 @@ const InsightsDomainNudge = (props: Props) => {
           upgradeTier: 'team'
         } as const)
       : ({CTAType, domainId} as const)
-    SendClientSegmentEventMutation(atmosphere, event, variables)
+    SendClientSideEvent(atmosphere, event, variables)
     if (toBeLockedOrg) {
       history.push(`/me/organizations/${biggestOrganizationId}/billing`)
     } else if (suggestTeam) {

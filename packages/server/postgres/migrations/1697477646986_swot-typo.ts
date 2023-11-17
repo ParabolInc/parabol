@@ -11,7 +11,8 @@ const connectRethinkDB = async () => {
 
 export async function up() {
   await connectRethinkDB()
-  r.table('ReflectPrompt')
+  await r
+    .table('ReflectPrompt')
     .get('sWOTAnalysisTemplate:stengthsPrompt')
     .update({question: 'Strengths'})
     .run()

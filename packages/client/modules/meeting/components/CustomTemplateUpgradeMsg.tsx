@@ -5,7 +5,7 @@ import {useHistory} from 'react-router'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {BezierCurve} from '../../../types/constEnums'
 import {MeetingTypeEnum} from '../../../__generated__/TeamInvitationQuery.graphql'
 
@@ -79,7 +79,7 @@ const CustomTempateUpgradeMsg = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   const handleClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'createNewTemplate',
       meetingType
     })

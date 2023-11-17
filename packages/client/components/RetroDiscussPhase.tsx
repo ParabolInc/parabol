@@ -14,6 +14,7 @@ import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
+import DiscussionThreadListEmptyTranscriptState from './DiscussionThreadListEmptyTranscriptState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
@@ -146,11 +147,14 @@ const RetroDiscussPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
-        ...DiscussionThreadListEmptyState_meeting
+        ...DiscussionThreadListEmptyTranscriptState_meeting
         id
         endedAt
         showTranscription
-        transcription
+        transcription {
+          speaker
+          words
+        }
         organization {
           ...DiscussPhaseSqueeze_organization
           ...RetroDiscussionThreadHeader_organization
@@ -262,12 +266,18 @@ const RetroDiscussPhase = (props: Props) => {
                     />
                   }
                   emptyState={
-                    <DiscussionThreadListEmptyState
-                      allowTasks={true}
-                      isReadOnly={allowedThreadables.length === 0}
-                      meetingRef={meeting}
-                      showTranscription={showTranscription}
-                    />
+                    showTranscription ? (
+                      <DiscussionThreadListEmptyTranscriptState
+                        allowTasks={true}
+                        isReadOnly={allowedThreadables.length === 0}
+                        meetingRef={meeting}
+                      />
+                    ) : (
+                      <DiscussionThreadListEmptyState
+                        allowTasks={true}
+                        isReadOnly={allowedThreadables.length === 0}
+                      />
+                    )
                   }
                 />
               </ThreadColumn>

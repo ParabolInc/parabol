@@ -35,12 +35,13 @@ reviewers:
     - developers
 
 files:
-  '**/migrations/**':
+  "**/migrations/**":
     - data
-  '**/analytics/**':
+  "**/analytics/**":
     - data
 options:
   ignore_draft: true
   ignored_keywords:
     - WIP
+    - chore(release)
   number_of_reviewers: 1

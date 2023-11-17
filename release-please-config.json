@@ -1,11 +1,9 @@
 {
-  "bootstrap-sha": "12396933718e23275a48550e8665f92015b55029",
-  "release-as": "6.125.0",
   "extra-label": "release",
   "packages": {
     ".": {
       "release-type": "node",
-      "pull-request-title-pattern": "chore${scope}: release ${version}",
+      "pull-request-title-pattern": "chore(release): release v${version}",
       "include-component-in-tag": false
     }
   },
@@ -35,7 +33,7 @@
     {
       "type": "json",
       "path": "packages/chronos/package.json",
-      "jsonpath": "$.dependencies.parabol-server.version"
+      "jsonpath": "$.dependencies['parabol-server']"
     },
     {
       "type": "json",
@@ -50,12 +48,12 @@
     {
       "type": "json",
       "path": "packages/gql-executor/package.json",
-      "jsonpath": "$.dependencies.parabol-client.version"
+      "jsonpath": "$.dependencies['parabol-client']"
     },
     {
       "type": "json",
       "path": "packages/gql-executor/package.json",
-      "jsonpath": "$.dependencies.parabol-server.version"
+      "jsonpath": "$.dependencies['parabol-server']"
     },
     {
       "type": "json",
@@ -70,7 +68,7 @@
     {
       "type": "json",
       "path": "packages/server/package.json",
-      "jsonpath": "$.dependencies.parabol-client.version"
+      "jsonpath": "$.dependencies['parabol-client']"
     }
   ]
 }

@@ -6,6 +6,11 @@ export type AutogroupReflectionGroupType = {
   reflectionIds: string[]
 }
 
+export type TranscriptBlock = {
+  speaker: string
+  words: string
+}
+
 interface Input {
   id?: string
   teamId: string
@@ -18,7 +23,7 @@ interface Input {
   totalVotes: number
   maxVotesPerGroup: number
   disableAnonymity: boolean
-  transcription?: string
+  transcription?: TranscriptBlock[]
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]
   resetReflectionGroups?: AutogroupReflectionGroupType[]
   recallBotId?: string
@@ -43,7 +48,7 @@ export default class MeetingRetrospective extends Meeting {
   templateId: string
   topicCount?: number
   reflectionCount?: number
-  transcription?: string
+  transcription?: TranscriptBlock[]
   recallBotId?: string
   videoMeetingURL?: string
   autogroupReflectionGroups?: AutogroupReflectionGroupType[]

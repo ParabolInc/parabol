@@ -11,7 +11,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
-import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
+import {analytics} from '../../utils/analytics/analytics'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -40,18 +40,19 @@ const addReflectTemplate = {
     }
 
     // VALIDATION
-    const allTemplates = await dataLoader
-      .get('meetingTemplatesByType')
-      .load({meetingType: 'retrospective', teamId})
+    const [allTemplates, viewerTeam, viewer] = await Promise.all([
+      dataLoader.get('meetingTemplatesByType').load({meetingType: 'retrospective', teamId}),
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
 
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       return standardError(new Error('Too many templates'), {userId: viewerId})
     }
-    const viewerTeam = await dataLoader.get('teams').load(teamId)
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (viewerTeam.tier === 'starter') {
+    if (viewerTeam.tier === 'starter' && !viewer.featureFlags.includes('noTemplateLimit')) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data
@@ -102,7 +103,7 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
+      analytics.templateMetrics(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -131,7 +132,7 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
+      analytics.templateMetrics(viewerId, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePayload', data, subOptions)

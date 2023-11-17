@@ -9,7 +9,7 @@ import {mergeRefs} from '../../../utils/react/mergeRefs'
 import clsx from 'clsx'
 import {ContentCopy} from '@mui/icons-material'
 import ms from 'ms'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 
 interface Props {
@@ -108,13 +108,13 @@ const GCalEventCard = (props: Props) => {
   const endDate = result.endDate ? new Date(result.endDate) : null
 
   const trackLinkClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Link Clicked', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Link Clicked', {
       service: 'gcal'
     })
   }
 
   const trackCopy = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Card Copied', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Copied', {
       service: 'gcal'
     })
   }

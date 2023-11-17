@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import useSegmentTrack from '../../hooks/useSegmentTrack'
+import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -11,7 +11,7 @@ interface Props {}
 
 const UpdatesHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('Help Menu Open', {phase: 'updates'})
+  useClientSideTrack('Help Menu Open', {phase: 'updates'})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup.updates}</HelpMenuHeader>

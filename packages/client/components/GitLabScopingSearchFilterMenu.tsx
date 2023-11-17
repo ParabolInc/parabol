@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import getNonNullEdges from '~/utils/getNonNullEdges'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -141,7 +141,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
               : [...selectedProjectsIds, projectId]
             gitlabSearchQuery.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
           })
-          SendClientSegmentEventMutation(atmosphere, 'Selected Poker Scope Project Filter', {
+          SendClientSideEvent(atmosphere, 'Selected Poker Scope Project Filter', {
             meetingId,
             projectId,
             service: 'gitlab'

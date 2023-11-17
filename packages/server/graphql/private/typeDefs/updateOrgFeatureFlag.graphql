@@ -13,6 +13,8 @@ enum OrganizationFeatureFlagsEnum {
   teamInsights
   oneOnOne
   singleColumnStandups
+  publicTeams
+  meetingInception
 }
 
 extend type Mutation {

@@ -19,6 +19,7 @@ graphql`
     team {
       id
       name
+      ...PublicTeamsFrag_team
       ...NewTeamForm_teams
       ...MeetingsDashActiveMeetings
       ...Team_team

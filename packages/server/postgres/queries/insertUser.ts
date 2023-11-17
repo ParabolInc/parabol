@@ -12,9 +12,9 @@ type Diff<T, U> = T extends U ? never : T
 type RequiredExceptFor<T, TOptional extends keyof T> = Pick<T, Diff<keyof T, TOptional>> &
   Partial<T>
 
-type InsertUserQueryParamsWithoutSegmentId = RequiredExceptFor<InsertUserQueryParams, 'segmentId'>
+type InsertUserQueryParamsWithoutPseudoId = RequiredExceptFor<InsertUserQueryParams, 'pseudoId'>
 
-const insertUser = async (user: InsertUserQueryParamsWithoutSegmentId) => {
+const insertUser = async (user: InsertUserQueryParamsWithoutPseudoId) => {
   await catchAndLog(() => insertUserQuery.run(user as unknown as IInsertUserQueryParams, getPg()))
 }
 

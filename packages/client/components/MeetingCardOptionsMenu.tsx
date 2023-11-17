@@ -11,13 +11,13 @@ import {MenuProps} from '../hooks/useMenu'
 import EndCheckInMutation from '../mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
 import {HistoryMaybeLocalHandler, StandardMutation} from '../types/relayMutations'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import {MeetingTypeEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
+import {MeetingTypeEnum} from '../__generated__/NewMeetingQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuItemLabelStyle} from './MenuItemLabel'
@@ -117,7 +117,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
             const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
             await navigator.clipboard.writeText(copyUrl)
 
-            SendClientSegmentEventMutation(atmosphere, 'Copied Meeting Series Link', {
+            SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
               teamId: team?.id,
               meetingId: meetingId
             })
@@ -140,7 +140,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
           const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
 
-          SendClientSegmentEventMutation(atmosphere, 'Copied Invite Link', {
+          SendClientSideEvent(atmosphere, 'Copied Invite Link', {
             teamId: team?.id,
             meetingId: meetingId
           })

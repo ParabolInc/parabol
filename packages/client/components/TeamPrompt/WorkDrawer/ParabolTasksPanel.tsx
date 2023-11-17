@@ -12,7 +12,7 @@ import dndNoise from '../../../utils/dndNoise'
 import AddTaskButton from '../../AddTaskButton'
 import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
 import clsx from 'clsx'
-import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   meetingRef: ParabolTasksPanel_meeting$key
@@ -51,7 +51,7 @@ const ParabolTasksPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSegmentEventMutation(atmosphere, 'Your Work Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
       service: 'PARABOL',
       buttonLabel: label
     })

@@ -26,7 +26,7 @@ export default abstract class Notification {
   id = generateUID()
   status: NotificationStatusEnumType = 'UNREAD'
   createdAt = new Date()
-  type: NotificationEnum
+  readonly type: NotificationEnum
   userId: string
 
   constructor({type, userId}: NotificationInput) {

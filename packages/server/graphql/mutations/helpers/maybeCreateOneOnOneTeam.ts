@@ -8,8 +8,8 @@ import publish from '../../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {getExistingOneOnOneTeam} from './getExistingOneOnOneTeam'
-import segmentIo from '../../../utils/segmentIo'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
+import {analytics} from '../../../utils/analytics/analytics'
 
 type OneOnOneTeam = {
   email: string
@@ -41,16 +41,7 @@ const createNewTeamAndInvite = async (
   const {tms} = authToken
   // MUTATIVE
   tms.push(teamId)
-  segmentIo.track({
-    userId: viewerId,
-    event: 'New Team',
-    properties: {
-      orgId,
-      teamId,
-      isOneOnOneTeam: true,
-      teamNumber: orgTeams.length + 1
-    }
-  })
+  analytics.newTeam(viewerId, orgId, teamId, orgTeams.length + 1, true)
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)

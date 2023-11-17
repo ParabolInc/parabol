@@ -12,7 +12,7 @@ import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
 import useAtmosphere from '../hooks/useAtmosphere'
 import setPreferredTeamId from '../utils/relay/setPreferredTeamId'
 import AddTeamDialogRoot from '~/components/AddTeamDialogRoot'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 
 const SelectTeamDropdown = lazyPreload(
   () =>
@@ -51,7 +51,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   }
 
   const handleAddTeamClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Add Team Clicked')
+    SendClientSideEvent(atmosphere, 'Add Team Clicked')
     setAddTeamDialogOpen(true)
   }
 

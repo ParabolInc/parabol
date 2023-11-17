@@ -13,6 +13,11 @@ const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
     const raw = convertToRaw(nextContentState)
     const nextTags = getTagsFromEntityMap(raw.entityMap)
     const nextContentStr = JSON.stringify(raw)
+
+    // update cache
+    task.content = nextContentStr
+    task.tags.push('archived')
+
     return {
       content: nextContentStr,
       doneMeetingId,
