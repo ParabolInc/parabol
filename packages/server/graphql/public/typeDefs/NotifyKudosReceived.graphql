@@ -36,6 +36,11 @@ type NotifyKudosReceived implements Notification {
   meetingName: String!
 
   """
+  Meeting id
+  """
+  meetingId: String!
+
+  """
   Kudos emoji
   """
   emoji: String!

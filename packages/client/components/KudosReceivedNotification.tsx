@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Link} from 'react-router-dom'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {KudosReceivedNotification_notification$key} from '~/__generated__/KudosReceivedNotification_notification.graphql'
@@ -23,12 +24,13 @@ const KudosReceivedNotification = (props: Props) => {
         name
         picture
         meetingName
+        meetingId
         emoji
       }
     `,
     notificationRef
   )
-  const {type, name, picture, meetingName, emoji} = notification
+  const {type, name, picture, meetingName, emoji, meetingId} = notification
 
   const {unicode} = getReactji(emoji)
 
@@ -40,7 +42,14 @@ const KudosReceivedNotification = (props: Props) => {
 
   return (
     <NotificationTemplate
-      message={`${unicode} ${name} gave you kudos in ${meetingName}`}
+      message={
+        <>
+          {unicode} {name} gave you kudos in{' '}
+          <Link to={`/meet/${meetingId}`} className='font-semibold text-sky-500 underline'>
+            {meetingName}
+          </Link>
+        </>
+      }
       notification={notification}
       avatar={picture}
     />
