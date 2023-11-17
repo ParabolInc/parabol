@@ -35,7 +35,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isTeamLead(viewerId, teamId)) && !isSuperUser(authToken)) {
+    if (!(await isTeamLead(viewerId, teamId, dataLoader)) && !isSuperUser(authToken)) {
       return standardError(new Error('Not team lead'), {userId: viewerId})
     }
 

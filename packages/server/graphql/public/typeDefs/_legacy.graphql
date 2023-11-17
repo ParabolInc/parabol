@@ -916,6 +916,11 @@ type TeamMember {
   isLead: Boolean!
 
   """
+  Is user an admin of the team's org?
+  """
+  isOrgAdmin: Boolean!
+
+  """
   true if the user prefers to not vote during a poker meeting
   """
   isSpectatingPoker: Boolean!

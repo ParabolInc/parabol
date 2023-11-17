@@ -73,12 +73,13 @@ const TeamMemberAvatarMenu = lazyPreload(
 
 interface Props {
   isViewerLead: boolean
+  isViewerOrgAdmin: boolean
   manageTeamMemberId?: string | null
   teamMember: ManageTeamMember_teamMember$key
 }
 
 const ManageTeamMember = (props: Props) => {
-  const {isViewerLead, manageTeamMemberId} = props
+  const {isViewerLead, isViewerOrgAdmin, manageTeamMemberId} = props
   const teamMember = useFragment(
     graphql`
       fragment ManageTeamMember_teamMember on TeamMember {
@@ -88,6 +89,7 @@ const ManageTeamMember = (props: Props) => {
         ...RemoveTeamMemberModal_teamMember
         id
         isLead
+        isOrgAdmin
         preferredName
         picture
         userId
@@ -95,12 +97,15 @@ const ManageTeamMember = (props: Props) => {
     `,
     props.teamMember
   )
-  const {id: teamMemberId, isLead, preferredName, picture, userId} = teamMember
+  const {id: teamMemberId, isLead, isOrgAdmin, preferredName, picture, userId} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
   const isSelectedAvatar = manageTeamMemberId === teamMemberId
-  const showMenuButton = (isViewerLead && !isSelf) || (!isViewerLead && isSelf)
+  const showMenuButton =
+    (isViewerOrgAdmin && ((isSelf && !isViewerLead) || !isLead)) ||
+    (isViewerLead && !isSelf && !isOrgAdmin) ||
+    (!isViewerLead && isSelf)
   const {
     closePortal: closePromote,
     togglePortal: togglePromote,
@@ -121,7 +126,11 @@ const ManageTeamMember = (props: Props) => {
       <Avatar size={24} picture={picture} />
       <Content>
         <Name>{preferredName}</Name>
-        <TeamLeadLabel isLead={isLead}>Team Lead</TeamLeadLabel>
+        <TeamLeadLabel isLead={isLead || isOrgAdmin}>
+          {isLead && 'Team Lead'}
+          {isLead && isOrgAdmin && ', '}
+          {isOrgAdmin && 'Org Admin'}
+        </TeamLeadLabel>
       </Content>
       <StyledButton
         showMenuButton={showMenuButton}
@@ -138,6 +147,7 @@ const ManageTeamMember = (props: Props) => {
           menuProps={menuProps}
           isLead={isLead}
           isViewerLead={isViewerLead}
+          isViewerOrgAdmin={isViewerOrgAdmin}
           teamMember={teamMember}
           togglePromote={togglePromote}
           toggleRemove={toggleRemove}

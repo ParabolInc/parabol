@@ -34,10 +34,18 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
 //     .run()
 // }
 
-export const isTeamLead = async (userId: string, teamId: string) => {
+export const isTeamLead = async (userId: string, teamId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const teamMemberId = toTeamMemberId(teamId, userId)
-  return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run()
+  if (await r.table('TeamMember').get(teamMemberId)('isLead').default(false).run()) {
+    return true
+  }
+
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const organizationUser = await dataLoader
+    .get('organizationUsersByUserIdOrgId')
+    .load({userId, orgId: team.orgId})
+  return organizationUser?.role === 'ORG_ADMIN'
 }
 
 interface Options {

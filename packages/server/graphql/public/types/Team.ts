@@ -40,7 +40,14 @@ const Team: TeamResolvers = {
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },
-  billingTier: ({tier}) => tier
+  billingTier: ({tier}) => tier,
+  isOrgAdmin: async ({orgId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const organizationUser = await dataLoader
+      .get('organizationUsersByUserIdOrgId')
+      .load({userId: viewerId, orgId})
+    return organizationUser?.role === 'ORG_ADMIN'
+  }
 }
 
 export default Team
