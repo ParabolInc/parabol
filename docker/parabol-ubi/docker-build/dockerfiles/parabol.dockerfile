@@ -26,7 +26,7 @@ RUN git clone https://github.com/ParabolInc/parabol.git -b ${_PARABOL_GIT_REF} -
     chown -R node:1000 /home/node/parabol
 
 #final image - copies in parabol build and applies all security configurations to container
-FROM redhat/ubi9:9.2
+FROM redhat/ubi9:9.3
 
 ENV HOME=/home/node \
     USER=node
