@@ -6,15 +6,15 @@ import {GetTemplateSuggestionMutation as TGetTemplateSuggestionMutation} from '.
 graphql`
   fragment GetTemplateSuggestionMutation_viewer on GetTemplateSuggestionSuccess {
     suggestedTemplate {
-      id
+      ...ActivityLibrary_template @relay(mask: false)
     }
     explanation
   }
 `
 
 const mutation = graphql`
-  mutation GetTemplateSuggestionMutation($prompt: String!) {
-    getTemplateSuggestion(prompt: $prompt) {
+  mutation GetTemplateSuggestionMutation($prompt: String!, $teamId: ID!) {
+    getTemplateSuggestion(prompt: $prompt, teamId: $teamId) {
       ... on ErrorPayload {
         error {
           message

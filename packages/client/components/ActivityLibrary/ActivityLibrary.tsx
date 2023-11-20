@@ -13,10 +13,7 @@ import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import IconLabel from '../IconLabel'
-import {ActivityBadge} from './ActivityBadge'
-import {ActivityCardImage} from './ActivityCard'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
-import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
+import ActivityGrid from './ActivityGrid'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
@@ -131,7 +128,7 @@ const CategoryIDToColorClass = {
   )
 } as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
 
-type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
+export type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
 type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried'
 
@@ -140,53 +137,6 @@ const subCategoryMapping: Record<SubCategory, string> = {
   recentlyUsed: 'You used these recently',
   recentlyUsedInOrg: 'Others in your organization are using',
   neverTried: 'Try these activities'
-}
-
-interface ActivityGridProps {
-  templates: Template[]
-  selectedCategory: string
-}
-
-const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
-  return (
-    <>
-      {templates.map((template) => {
-        return (
-          <Link
-            key={template.id}
-            to={{
-              pathname: `/activity-library/details/${template.id}`,
-              state: {prevCategory: selectedCategory}
-            }}
-            className='flex focus:rounded-md focus:outline-primary'
-          >
-            <ActivityLibraryCard
-              className='group aspect-[256/160] flex-1'
-              key={template.id}
-              theme={CATEGORY_THEMES[template.category as CategoryID]}
-              title={template.name}
-              type={template.type}
-              badge={
-                !template.isFree ? (
-                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
-                ) : null
-              }
-            >
-              <ActivityCardImage
-                className='group-hover/card:hidden'
-                src={template.illustrationUrl}
-                category={template.category as CategoryID}
-              />
-              <ActivityLibraryCardDescription
-                className='hidden group-hover/card:flex'
-                templateRef={template}
-              />
-            </ActivityLibraryCard>
-          </Link>
-        )
-      })}
-    </>
-  )
 }
 
 const MAX_PER_SUBCATEGORY = 6

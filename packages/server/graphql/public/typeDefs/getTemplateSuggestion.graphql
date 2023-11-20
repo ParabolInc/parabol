@@ -7,6 +7,10 @@ extend type Mutation {
     The question the user has for the AI
     """
     prompt: String!
+    """
+    The team id of the user
+    """
+    teamId: ID!
   ): GetTemplateSuggestionPayload!
 }
 

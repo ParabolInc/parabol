@@ -2,6 +2,22 @@ import OpenAI from 'openai'
 import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
 
+type Prompt = {
+  question: string
+  description: string
+}
+
+type Template = {
+  templateId: string
+  templateName: string
+  prompts: Prompt[]
+}
+
+type AITemplateSuggestion = {
+  templateId: string
+  explanation: string
+}
+
 class OpenAIServerManager {
   private openAIApi
   constructor() {
@@ -168,6 +184,60 @@ class OpenAIServerManager {
       })
       const themes = (response.choices[0]?.message?.content?.trim() as string) ?? null
       return themes.split(', ')
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
+      console.error(error.message)
+      sendToSentry(error)
+      return null
+    }
+  }
+
+  async getTemplateSuggestion(templates: Template[], userPrompt: string) {
+    if (!this.openAIApi) return null
+    const promptText = `Based on the user's input "${userPrompt}", identify the most suitable meeting template from the list below and provide a response in the format: { templateId: "the chosen template ID", explanation: "reason for choosing this template" }. The explanation should be concise. Available templates are: ${templates
+      .map(
+        (template) =>
+          `ID: ${template.templateId}, Name: ${template.templateName}, Prompts: ${template.prompts
+            .map((prompt) => `${prompt.question} - ${prompt.description}`)
+            .join('; ')}`
+      )
+      .join('. ')}.`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4-1106-preview',
+        messages: [
+          {
+            role: 'user',
+            content: promptText
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const templateResponse = (response.choices[0]?.message?.content?.trim() as string) ?? null
+      let parsedResponse: AITemplateSuggestion | null
+      try {
+        const formattedResponse = templateResponse.replace(/([a-zA-Z0-9]+):/g, '"$1":')
+        parsedResponse = JSON.parse(formattedResponse)
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError)
+        return null
+      }
+      if (
+        parsedResponse &&
+        typeof parsedResponse === 'object' &&
+        'templateId' in parsedResponse &&
+        'explanation' in parsedResponse
+      ) {
+        return parsedResponse
+      } else {
+        console.error('AI response does not have the expected format')
+        return null
+      }
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
       console.error(error.message)
