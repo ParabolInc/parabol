@@ -85,7 +85,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           .load(teamMemberId)
         const [newestInvitationToken] = invitationTokens
         // if the token is valid, return it
-        if (newestInvitationToken?.expiration ?? new Date(0) > new Date())
+        if ((newestInvitationToken?.expiration ?? new Date(0)) > new Date())
           return newestInvitationToken
         // if the token is not valid, delete it to keep the table clean of expired things
         if (newestInvitationToken) {
