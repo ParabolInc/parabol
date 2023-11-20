@@ -25,6 +25,7 @@ import {
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
+import AISearchBar from './AISearchBar'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -323,6 +324,12 @@ export const ActivityLibrary = (props: Props) => {
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation='horizontal' className='hidden' />
       </ScrollArea.Root>
+
+      <div className='mx-auto flex p-2 text-slate-700 lg:mx-[15%]'>
+        <div className='hidden grow md:block'>
+          <AISearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+        </div>
+      </div>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
