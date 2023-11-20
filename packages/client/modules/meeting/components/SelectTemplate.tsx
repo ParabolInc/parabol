@@ -53,13 +53,13 @@ interface Props {
   closePortal: () => void
   template: SelectTemplate_template$key
   teamId: string
-  tier?: TierEnum
+  featureTier?: TierEnum
   noTemplateLimit?: boolean
   orgId?: string
 }
 
 const SelectTemplate = (props: Props) => {
-  const {template: templateRef, closePortal, teamId, tier, noTemplateLimit, orgId} = props
+  const {template: templateRef, closePortal, teamId, featureTier, noTemplateLimit, orgId} = props
   const template = useFragment(
     graphql`
       fragment SelectTemplate_template on MeetingTemplate {
@@ -91,7 +91,8 @@ const SelectTemplate = (props: Props) => {
     })
     history.push(`/me/organizations/${orgId}`)
   }
-  const showUpgradeCTA = !isFree && tier === 'starter' && scope === 'PUBLIC' && !noTemplateLimit
+  const showUpgradeCTA =
+    !isFree && featureTier === 'starter' && scope === 'PUBLIC' && !noTemplateLimit
   if (showUpgradeCTA) {
     return (
       <ButtonBlock>

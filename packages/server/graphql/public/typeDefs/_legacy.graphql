@@ -2184,15 +2184,9 @@ type OrganizationUser {
   """
   user: User!
 
-  """
-  Their level of access to features on the parabol site
-  """
-  tier: TierEnum
+  featureTier: TierEnum
 
-  """
-  Whether the tier is set via trial
-  """
-  isTrial: Boolean!
+  billingTier: TierEnum
 }
 
 """

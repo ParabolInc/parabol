@@ -292,7 +292,8 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: 'team',
+    featureTier: 'team',
+    billingTier: 'team',
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
@@ -326,7 +327,8 @@ const initDemoTeam = (
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    tier: 'team',
+    featureTier: 'team',
+    billingTier: 'team',
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),

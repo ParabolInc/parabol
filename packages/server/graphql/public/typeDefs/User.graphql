@@ -403,15 +403,9 @@ type User {
     userId: ID
   ): TeamMember
 
-  """
-  The highest tier of any org the user belongs to
-  """
-  tier: TierEnum!
+  featureTier: TierEnum!
 
-  """
-  Whether the tier is set via trial
-  """
-  isTrial: Boolean!
+  billingTier: TierEnum!
 
   """
   all the teams the user is a part of that the viewer can see

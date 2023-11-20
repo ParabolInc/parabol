@@ -118,7 +118,7 @@ const query = graphql`
       preferredTeamId
       teams {
         id
-        tier
+        featureTier
         name
         orgId
         ...NewMeetingTeamPicker_selectedTeam
@@ -334,7 +334,7 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          {selectedTeam.tier === 'starter' && !featureFlags.noTemplateLimit ? (
+          {selectedTeam.featureTier === 'starter' && !featureFlags.noTemplateLimit ? (
             <div className='mx-auto flex h-12 items-center gap-24'>
               <div className='w-96'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s

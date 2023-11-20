@@ -51,7 +51,7 @@ const query = graphql`
       team(teamId: $teamId) {
         id
         orgId
-        tier
+        featureTier
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
             templateSearchQuery
@@ -82,7 +82,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   const history = useHistory()
   const {viewer} = data
   const team = viewer.team!
-  const {id: teamId, meetingSettings, orgId, tier} = team
+  const {id: teamId, meetingSettings, orgId, featureTier} = team
   const {templateSearchQuery, organizationTemplates, activeTemplate} = meetingSettings
   const searchQuery = templateSearchQuery ?? ''
   const activeTemplateId = activeTemplate?.id ?? '-tmp'
@@ -91,7 +91,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
-    if (tier === 'starter') {
+    if (featureTier === 'starter') {
       const goToBilling = () => {
         SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'orgTemplate',

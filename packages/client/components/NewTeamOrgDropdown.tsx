@@ -23,8 +23,8 @@ const NewTeamOrgDropdown = (props: Props) => {
       fragment NewTeamOrgDropdown_organizations on Organization @relay(plural: true) {
         id
         name
-        tier
-        isTrial
+        featureTier
+        billingTier
       }
     `,
     organizationsRef
@@ -37,14 +37,16 @@ const NewTeamOrgDropdown = (props: Props) => {
     >
       <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
-        const {id, tier, isTrial, name} = anOrg
+        const {id, featureTier, billingTier, name} = anOrg
         return (
           <MenuItem
             key={id}
             label={
               <DropdownMenuItemLabel>
                 <span>{name}</span>
-                {tier !== 'starter' && <TierTag tier={tier} isTrial={isTrial} />}
+                {featureTier !== 'starter' && (
+                  <TierTag featureTier={featureTier} billingTier={billingTier} />
+                )}
               </DropdownMenuItemLabel>
             }
             onClick={() => {

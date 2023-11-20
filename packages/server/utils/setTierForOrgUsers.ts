@@ -22,7 +22,8 @@ const setTierForOrgUsers = async (orgId: string) => {
         trialStartDate: r
           .table('Organization')
           .get(orgId)
-          .getField('trialStartDate') as unknown as Date | null
+          .getField('trialStartDate')
+          .default(null) as unknown as Date | null
       },
       {nonAtomic: true}
     )

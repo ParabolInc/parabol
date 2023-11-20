@@ -61,18 +61,18 @@ const PokerTemplateListTeam = (props: Props) => {
       fragment PokerTemplateListTeam_team on Team {
         id
         orgId
-        tier
+        featureTier
       }
     `,
     teamRef
   )
-  const {id: teamId, tier, orgId} = team
+  const {id: teamId, featureTier, orgId} = team
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'poker')
   const atmosphere = useAtmosphere()
   const history = useHistory()
   if (teamTemplates.length === 0) {
-    if (tier === 'starter') {
+    if (featureTier === 'starter') {
       const goToBilling = () => {
         SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',

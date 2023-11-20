@@ -58,11 +58,18 @@ interface Props {
   template: ReflectTemplateItem_template$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
   templateSearchQuery: string
-  tier?: TierEnum
+  featureTier?: TierEnum
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, template: templateRef, templateSearchQuery, tier} = props
+  const {
+    lowestScope,
+    isActive,
+    teamId,
+    template: templateRef,
+    templateSearchQuery,
+    featureTier
+  } = props
   const template = useFragment(
     graphql`
       fragment ReflectTemplateItem_template on ReflectTemplate {
@@ -79,7 +86,7 @@ const ReflectTemplateItem = (props: Props) => {
     templateRef
   )
   const {id: templateId, name: templateName, scope, isFree} = template
-  const description = useTemplateDescription(lowestScope, template, tier)
+  const description = useTemplateDescription(lowestScope, template, featureTier)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive, true)

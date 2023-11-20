@@ -49,7 +49,7 @@ const AddNewReflectTemplate = (props: Props) => {
     graphql`
       fragment AddNewReflectTemplate_team on Team {
         id
-        tier
+        featureTier
         viewerTeamMember {
           id
           user {
@@ -63,7 +63,7 @@ const AddNewReflectTemplate = (props: Props) => {
     `,
     teamRef
   )
-  const {id: teamId, tier, viewerTeamMember} = team
+  const {id: teamId, featureTier, viewerTeamMember} = team
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -72,7 +72,7 @@ const AddNewReflectTemplate = (props: Props) => {
     }
   }, [])
   const canEditTemplates =
-    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
+    featureTier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const addNewTemplate = () => {
     if (submitting) return
     if (!canEditTemplates) {

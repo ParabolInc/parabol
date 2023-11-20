@@ -193,12 +193,10 @@ const User: UserResolvers = {
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
   },
-  tier: ({tier, trialStartDate}) => {
+  featureTier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },
-  isTrial: ({tier, trialStartDate}) => {
-    return !!trialStartDate && tier === 'starter'
-  }
+  billingTier: ({tier}) => tier
 }
 
 export default User

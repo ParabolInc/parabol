@@ -37,12 +37,10 @@ const Team: TeamResolvers = {
     return teamMember
   },
   isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),
-  tier: ({tier, trialStartDate}) => {
+  featureTier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },
-  isTrial: ({tier, trialStartDate}) => {
-    return !!trialStartDate && tier === 'starter'
-  }
+  billingTier: ({tier}) => tier
 }
 
 export default Team

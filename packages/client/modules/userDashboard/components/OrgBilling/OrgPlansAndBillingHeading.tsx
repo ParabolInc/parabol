@@ -71,16 +71,15 @@ const OrgPlansAndBillingHeading = (props: Props) => {
       fragment OrgPlansAndBillingHeading_organization on Organization {
         id
         name
-        tier
-        isTrial
+        billingTier
         showDrawer
       }
     `,
     organizationRef
   )
   const atmosphere = useAtmosphere()
-  const {id: orgId, name, tier, isTrial} = organization
-  const tierName = upperFirst(isTrial ? 'starter' : tier)
+  const {id: orgId, name, billingTier} = organization
+  const tierName = upperFirst(billingTier)
 
   const handleClick = () => {
     commitLocalUpdate(atmosphere, (store) => {

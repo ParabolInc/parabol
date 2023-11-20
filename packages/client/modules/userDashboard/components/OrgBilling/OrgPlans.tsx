@@ -74,8 +74,7 @@ const OrgPlans = (props: Props) => {
         ...DowngradeModal_organization
         ...LimitExceededWarning_organization
         id
-        tier
-        isTrial
+        billingTier
         scheduledLockAt
         lockedAt
       }
@@ -84,11 +83,9 @@ const OrgPlans = (props: Props) => {
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, scheduledLockAt, lockedAt, tier, isTrial} = organization
+  const {id: orgId, scheduledLockAt, lockedAt, billingTier} = organization
   const showNudge = scheduledLockAt || lockedAt
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
-
-  const planTier = isTrial ? 'starter' : tier
 
   const plans = [
     {
@@ -100,24 +97,24 @@ const OrgPlans = (props: Props) => {
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
-      buttonStyle: getButtonStyle(planTier, 'starter'),
-      buttonLabel: getButtonLabel(planTier, 'starter'),
-      isActive: !hasSelectedTeamPlan && planTier === 'starter'
+      buttonStyle: getButtonStyle(billingTier, 'starter'),
+      buttonLabel: getButtonLabel(billingTier, 'starter'),
+      isActive: !hasSelectedTeamPlan && billingTier === 'starter'
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
-      buttonStyle: getButtonStyle(planTier, 'team'),
-      buttonLabel: getButtonLabel(planTier, 'team'),
-      isActive: hasSelectedTeamPlan || planTier === 'team'
+      buttonStyle: getButtonStyle(billingTier, 'team'),
+      buttonLabel: getButtonLabel(billingTier, 'team'),
+      isActive: hasSelectedTeamPlan || billingTier === 'team'
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', ...EnterpriseBenefits],
-      buttonStyle: getButtonStyle(planTier, 'enterprise'),
-      buttonLabel: getButtonLabel(planTier, 'enterprise'),
-      isActive: planTier === 'enterprise'
+      buttonStyle: getButtonStyle(billingTier, 'enterprise'),
+      buttonLabel: getButtonLabel(billingTier, 'enterprise'),
+      isActive: billingTier === 'enterprise'
     }
   ] as const
 

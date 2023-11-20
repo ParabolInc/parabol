@@ -35,7 +35,7 @@ const TeamPickerModal = (props: Props) => {
     graphql`
       fragment TeamPickerModal_teams on Team @relay(plural: true) {
         id
-        tier
+        featureTier
         name
         orgId
         ...NewMeetingTeamPicker_selectedTeam
@@ -129,7 +129,7 @@ const TeamPickerModal = (props: Props) => {
           selectedTeamRef={selectedTeam}
           teamsRef={teams}
         />
-        {selectedTeam.tier === 'starter' && (
+        {selectedTeam.featureTier === 'starter' && (
           <div>
             This team is on the <b>Starter</b> plan. <b>Upgrade</b> to clone and edit templates on
             this team.
@@ -146,7 +146,7 @@ const TeamPickerModal = (props: Props) => {
           >
             Cancel
           </button>
-          {selectedTeam.tier === 'starter' ? (
+          {selectedTeam.featureTier === 'starter' ? (
             <button
               className={clsx(
                 ACTION_BUTTON_CLASSES,

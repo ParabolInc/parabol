@@ -25,7 +25,7 @@ graphql`
         inactiveUserCount
       }
       picture
-      tier
+      featureTier
     }
     team {
       id

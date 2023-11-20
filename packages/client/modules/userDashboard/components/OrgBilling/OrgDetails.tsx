@@ -26,14 +26,22 @@ const OrgDetails = (props: Props) => {
         isBillingLeader
         createdAt
         picture
-        tier
-        isTrial
+        billingTier
+        featureTier
         name
       }
     `,
     organizationRef
   )
-  const {orgId, createdAt, isBillingLeader, picture: orgAvatar, name, tier, isTrial} = organization
+  const {
+    orgId,
+    createdAt,
+    isBillingLeader,
+    picture: orgAvatar,
+    name,
+    billingTier,
+    featureTier
+  } = organization
   const pictureOrDefault = orgAvatar ?? defaultOrgAvatar
   const orgName = name ?? 'Unknown'
   const {togglePortal, modalPortal} = useModal()
@@ -57,7 +65,11 @@ const OrgDetails = (props: Props) => {
           ) : (
             <div className='text-gray-700 text-2xl leading-9'>{orgName}</div>
           )}
-          <OrganizationDetails createdAt={createdAt} tier={tier} isTrial={isTrial} />
+          <OrganizationDetails
+            createdAt={createdAt}
+            billingTier={billingTier}
+            featureTier={featureTier}
+          />
         </div>
       </div>
       <OrgBillingDangerZone organization={organization} isWide />

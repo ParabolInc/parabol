@@ -46,8 +46,8 @@ const query = graphql`
         isLead
         id
         name
-        tier
-        isTrial
+        featureTier
+        billingTier
         orgId
         teamMembers(sortBy: "preferredName") {
           teamMemberId: id
@@ -68,7 +68,7 @@ const TeamSettings = (props: Props) => {
   const {viewer} = data
   const {history} = useRouter()
   const {team} = viewer
-  const {name: teamName, orgId, teamMembers, tier, isTrial} = team!
+  const {name: teamName, orgId, teamMembers, featureTier, billingTier} = team!
   useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
@@ -79,11 +79,11 @@ const TeamSettings = (props: Props) => {
   return (
     <TeamSettingsLayout>
       <PanelsLayout>
-        {(tier === 'starter' || isTrial) && (
+        {billingTier === 'starter' && (
           <Panel>
             <StyledRow>
               <div>
-                {isTrial
+                {featureTier !== 'starter'
                   ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
                   : 'This team is currently on a starter plan.'}
               </div>
@@ -103,8 +103,8 @@ const TeamSettings = (props: Props) => {
           <Panel className='mt-8'>
             <StyledRow>
               <div>
-                This team is currently on a <b className='capitalize'>{tier} plan</b>. Only Team
-                Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
+                This team is currently on a <b className='capitalize'>{billingTier} plan</b>. Only
+                Team Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
                 The <b>Team Lead</b> for {teamName} is{' '}
                 <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
                   {contact.preferredName}

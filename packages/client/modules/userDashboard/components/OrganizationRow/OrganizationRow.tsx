@@ -99,8 +99,8 @@ const OrganizationRow = (props: Props) => {
           inactiveUserCount
         }
         picture
-        tier
-        isTrial
+        featureTier
+        billingTier
       }
     `,
     organizationRef
@@ -111,8 +111,8 @@ const OrganizationRow = (props: Props) => {
     name,
     orgUserCount: {activeUserCount, inactiveUserCount},
     picture,
-    tier,
-    isTrial
+    featureTier,
+    billingTier
   } = organization
   const orgAvatar = picture || defaultOrgAvatar
   const onRowClick = () => {
@@ -120,7 +120,7 @@ const OrganizationRow = (props: Props) => {
     history.push(`/me/organizations/${orgId}`)
   }
   const totalUsers = activeUserCount + inactiveUserCount
-  const showUpgradeCTA = tier === 'starter' || isTrial
+  const showUpgradeCTA = billingTier === 'starter'
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -133,9 +133,9 @@ const OrganizationRow = (props: Props) => {
         <StyledRowInfo>
           <RowInfoHeader>
             <Name onClick={onRowClick}>{name}</Name>
-            {tier !== 'starter' && (
+            {featureTier !== 'starter' && (
               <StyledTagBlock>
-                <TierTag tier={tier} isTrial={isTrial} />
+                <TierTag featureTier={featureTier} billingTier={billingTier} />
               </StyledTagBlock>
             )}
           </RowInfoHeader>

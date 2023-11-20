@@ -59,15 +59,14 @@ const OrgBillingDangerZone = (props: Props) => {
       fragment OrgBillingDangerZone_organization on Organization {
         ...ArchiveOrganization_organization
         isBillingLeader
-        tier
-        isTrial
+        billingTier
       }
     `,
     organizationRef
   )
-  const {isBillingLeader, tier, isTrial} = organization
+  const {isBillingLeader, billingTier} = organization
   if (!isBillingLeader) return null
-  const isStarter = tier === 'starter' || isTrial
+  const isStarter = billingTier === 'starter'
   return (
     <StyledPanel isWide={isWide} label='Danger Zone'>
       <PanelRow>

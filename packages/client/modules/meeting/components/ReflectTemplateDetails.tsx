@@ -94,7 +94,7 @@ const ReflectTemplateDetails = (props: Props) => {
         team {
           id
           orgId
-          tier
+          featureTier
           viewerTeamMember {
             user {
               id
@@ -111,11 +111,11 @@ const ReflectTemplateDetails = (props: Props) => {
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts, illustrationUrl} = activeTemplate
-  const {id: teamId, orgId, tier, viewerTeamMember} = team
+  const {id: teamId, orgId, featureTier, viewerTeamMember} = team
   const noTemplateLimit = viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = useTemplateDescription(lowestScope, activeTemplate, tier)
+  const description = useTemplateDescription(lowestScope, activeTemplate, featureTier)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -131,7 +131,7 @@ const ReflectTemplateDetails = (props: Props) => {
     gotoTeamTemplates()
   }
   const isActiveTemplate = templateId === settings.selectedTemplate.id
-  const showClone = !isOwner && tier !== 'starter'
+  const showClone = !isOwner && featureTier !== 'starter'
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
@@ -166,7 +166,7 @@ const ReflectTemplateDetails = (props: Props) => {
           closePortal={closePortal}
           template={activeTemplate}
           teamId={teamId}
-          tier={tier}
+          featureTier={featureTier}
           noTemplateLimit={noTemplateLimit}
           orgId={orgId}
         />

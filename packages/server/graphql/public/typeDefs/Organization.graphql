@@ -57,15 +57,9 @@ type Organization {
   """
   teams: [Team!]!
 
-  """
-  The level of access to features on the parabol site
-  """
-  tier: TierEnum!
+  featureTier: TierEnum!
 
-  """
-  Whether the tier is set via trial
-  """
-  isTrial: Boolean!
+  billingTier: TierEnum!
 
   """
   When the trial started, iff there is a trial active

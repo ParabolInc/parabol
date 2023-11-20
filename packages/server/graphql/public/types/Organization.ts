@@ -25,12 +25,10 @@ const Organization: OrganizationResolvers = {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
-  tier: ({tier, trialStartDate}) => {
+  featureTier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },
-  isTrial: ({tier, trialStartDate}) => {
-    return !!trialStartDate && tier === 'starter'
-  },
+  billingTier: ({tier}) => tier,
   oneOnOneTeam: async (
     {id: orgId}: {id: string},
     {email}: {email: string},

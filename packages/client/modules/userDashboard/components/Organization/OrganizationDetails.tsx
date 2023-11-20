@@ -19,19 +19,19 @@ const OrgDetails = styled('div')({
 
 interface Props {
   createdAt: string
-  tier: TierEnum
-  isTrial?: boolean
+  featureTier: TierEnum
+  billingTier: TierEnum
 }
 
 const OrganizationDetails = (props: Props) => {
-  const {createdAt, tier, isTrial} = props
+  const {createdAt, featureTier, billingTier} = props
   return (
     <OrgDetails>
       {'Created '}
       {makeDateString(createdAt)}
-      {tier !== 'starter' && (
+      {featureTier !== 'starter' && (
         <StyledTagBlock>
-          <TierTag tier={tier} isTrial={isTrial} />
+          <TierTag featureTier={featureTier} billingTier={billingTier} />
         </StyledTagBlock>
       )}
     </OrgDetails>
