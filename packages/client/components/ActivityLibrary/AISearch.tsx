@@ -49,14 +49,14 @@ const AISearch = () => {
     <>
       <form
         onSubmit={handleSubmit}
-        className='ml-2 flex grow items-center rounded-full bg-slate-200 px-4 py-2 outline-none outline-1 outline-offset-0 focus-within:outline-sky-500'
+        className='mx-2 flex grow items-center rounded-full bg-slate-200 px-4 py-2 outline-none outline-1 outline-offset-0 focus-within:outline-sky-500'
       >
         <input
-          className='w-full border-none bg-transparent p-2 font-sans text-sm text-slate-700 placeholder-slate-800 outline-none'
+          className='mx-1 w-full border-none bg-transparent font-sans text-sm text-slate-700 placeholder-slate-800 outline-none'
           autoFocus
           autoComplete='off'
           name='search'
-          placeholder='Ask our AI which template to use'
+          placeholder={`Ask our AI which template to use, e.g. I'd like a fun retro template`}
           type='text'
           onChange={handlePromptChange}
           value={prompt}
@@ -68,27 +68,21 @@ const AISearch = () => {
           Submit ✨
         </button>
       </form>
-      {error?.message && !submitting && (
-        <div className='pt-3'>
-          <StyledError>{error.message}</StyledError>
-        </div>
-      )}
-      {submitting && (
-        <div className='mt-8'>
-          <LoadingComponent />
-        </div>
-      )}
-      {!submitting && suggestedTemplate && (
-        <>
-          <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>Our AI's Suggestion</div>
-          <div className='px-4'>
-            <div className='mt-2 text-slate-700'>{explanation}</div>
-          </div>
-          <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-            <ActivityGrid templates={[suggestedTemplate]} selectedCategory={'retrospective'} />
-          </div>
-        </>
-      )}
+      <div className='mt-8'>
+        {submitting && <LoadingComponent />}
+        {error?.message && !submitting && <StyledError>{error.message}</StyledError>}
+        {!submitting && suggestedTemplate && (
+          <>
+            <div className='ml-4 text-xl font-bold text-slate-700'>Our AI's Suggestion</div>
+            <div className='px-4 pb-3 md:pb-0'>
+              <div className='mt-2 text-slate-700'>{explanation}</div>
+            </div>
+            <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+              <ActivityGrid templates={[suggestedTemplate]} selectedCategory={'retrospective'} />
+            </div>
+          </>
+        )}
+      </div>
     </>
   )
 }

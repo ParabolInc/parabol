@@ -277,7 +277,7 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
-          <div className='mt-4 py-2'>
+          <div className='mx-auto mt-4 pt-2'>
             <AISearch />
           </div>
           {templatesToRender.length === 0 ? (
