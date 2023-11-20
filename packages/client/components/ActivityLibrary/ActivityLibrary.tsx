@@ -277,7 +277,7 @@ export const ActivityLibrary = (props: Props) => {
 
       <div className='mx-auto flex text-slate-700 lg:mx-[15%]'>
         <div className='hidden grow md:block'>
-          <AISearch searchQuery={searchQuery} onChange={onQueryChange} />
+          <AISearch />
         </div>
       </div>
 
