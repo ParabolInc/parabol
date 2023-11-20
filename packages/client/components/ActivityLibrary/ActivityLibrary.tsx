@@ -275,14 +275,11 @@ export const ActivityLibrary = (props: Props) => {
         <ScrollArea.Scrollbar orientation='horizontal' className='hidden' />
       </ScrollArea.Root>
 
-      <div className='mx-auto flex text-slate-700 lg:mx-[15%]'>
-        <div className='hidden grow md:block'>
-          <AISearch />
-        </div>
-      </div>
-
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
+          <div className='mt-6 p-2'>
+            <AISearch />
+          </div>
           {templatesToRender.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
               <img className='w-32' src={halloweenRetrospectiveTemplate} />
