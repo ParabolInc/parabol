@@ -2,6 +2,7 @@ import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLoader}) => {
@@ -13,7 +14,7 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
 
   // VALIDATION
   if (!organization.trialStartDate) {
-    throw new Error('No trial active for org')
+    return standardError(new Error('No trial active for org'))
   }
 
   // RESOLUTION

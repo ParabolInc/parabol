@@ -149,6 +149,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     orgId,
     domain: org.activeDomain,
     orgName: org.name,
+    isTrial: !!org.trialStartDate,
     oldTier: 'starter',
     newTier: 'enterprise',
     billingLeaderEmail: user.email

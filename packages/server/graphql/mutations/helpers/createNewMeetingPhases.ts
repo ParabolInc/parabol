@@ -81,13 +81,13 @@ const createNewMeetingPhases = async (
   const [meetingSettings, stageDurations, team] = await Promise.all([
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
     getPastStageDurations(teamId),
-    dataLoader.get('teams').load(teamId)
+    dataLoader.get('teams').loadNonNull(teamId)
   ])
   const {phaseTypes} = meetingSettings
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const asyncSideEffects = [] as Promise<any>[]
 
-  const tier = team ? getFeatureTier(team) : 'starter'
+  const tier = getFeatureTier(team)
   const phases = (await Promise.all(
     phaseTypes.filter(isPhaseAvailable(tier)).map(async (phaseType) => {
       const durations = stageDurations[phaseType]

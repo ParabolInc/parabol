@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import standardError from '../../../utils/standardError'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -14,10 +15,12 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
 
   // VALIDATION
   if (organization.tier !== 'starter') {
-    throw new Error('Cannot start trial for organization on paid tier')
+    return standardError(new Error('Cannot start trial for organization on paid tier'))
   }
   if (organization.trialStartDate) {
-    throw new Error(`Trial already started for org. Start date: ${organization.trialStartDate}`)
+    return standardError(
+      new Error(`Trial already started for org. Start date: ${organization.trialStartDate}`)
+    )
   }
 
   // RESOLUTION
