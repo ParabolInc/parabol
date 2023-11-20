@@ -78,15 +78,15 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
           dataLoader.get('teamsByOrgIds').load(orgId),
           dataLoader.get('organizations').load(orgId)
         ])
+        const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
         const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
         const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
         if (isBillingLeader || isSuperUser(authToken) || hasPublicTeamsFlag) {
-          const viewerTeams = allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
-          const otherTeams = allTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
-          const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
-          return [...viewerTeams, ...sortedOtherTeams]
+          const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+          const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
+          return [...viewerTeams, ...otherTeams]
         } else {
-          return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+          return sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
         }
       }
     },
@@ -95,7 +95,9 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'all the teams the viewer is on in the organization',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        return allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+        return allTeamsOnOrg
+          .filter((team) => authToken.tms.includes(team.id))
+          .sort((a, b) => a.name.localeCompare(b.name))
       }
     },
     tier: {
