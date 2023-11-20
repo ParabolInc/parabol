@@ -13,8 +13,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation GetTemplateSuggestionMutation($prompt: String!, $teamId: ID!) {
-    getTemplateSuggestion(prompt: $prompt, teamId: $teamId) {
+  mutation GetTemplateSuggestionMutation($prompt: String!) {
+    getTemplateSuggestion(prompt: $prompt) {
       ... on ErrorPayload {
         error {
           message
