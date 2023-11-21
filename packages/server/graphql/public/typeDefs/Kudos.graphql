@@ -16,9 +16,4 @@ type Kudos {
   emoji name
   """
   emoji: String!
-
-  """
-  Whether the viewer belongs to the team
-  """
-  isViewerOnTeam: Boolean!
 }
