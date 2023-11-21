@@ -13,6 +13,11 @@ type Kudos {
   receiverUser: User!
 
   """
+  Use who sent kudos
+  """
+  senderUser: User!
+
+  """
   emoji name
   """
   emoji: String!
