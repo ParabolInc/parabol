@@ -39,7 +39,8 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
   ])
   organization.trialStartDate = now
 
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await setTierForOrgUsers(orgId)
+  await setUserTierForOrgId(orgId)
 
   await hideConversionModal(orgId, dataLoader)
 

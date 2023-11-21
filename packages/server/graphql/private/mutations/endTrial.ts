@@ -31,7 +31,8 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
   const initialTrialStartDate = organization.trialStartDate
   organization.trialStartDate = null
 
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await setTierForOrgUsers(orgId)
+  await setUserTierForOrgId(orgId)
 
   return {organization, trialStartDate: initialTrialStartDate}
 }
