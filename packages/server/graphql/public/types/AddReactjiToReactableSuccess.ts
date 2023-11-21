@@ -8,8 +8,7 @@ export type AddReactjiToReactableSuccessSource = {
 }
 const AddReactjiToReactableSuccess: AddReactjiToReactableSuccessResolvers = {
   reactable: async ({reactableId, reactableType}, _args: unknown, {dataLoader}) => {
-    // TODO: refactor to return specific type
-    return (await dataLoader.get('reactables').load({id: reactableId, type: reactableType})) as any
+    return await dataLoader.get('reactables').load({id: reactableId, type: reactableType})
   },
   addedKudos: async ({addedKudosId}, _args: unknown, {dataLoader}) => {
     if (!addedKudosId) return null

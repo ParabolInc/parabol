@@ -94,6 +94,7 @@
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
+          "Reactable": "../../database/types/Reactable#Reactable",
           "SAML": "./types/SAML#SAMLSource",
           "RetrospectiveMeetingSettings": "../../database/types/MeetingSettingsRetrospective#default",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
