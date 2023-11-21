@@ -6,6 +6,9 @@ import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import updateUserTiers from '../postgres/queries/updateUserTiers'
 import {analytics} from './analytics/analytics'
 
+// This doesn't actually read any tier/trial fields on the 'OrganizationUser' object - these fields
+// come directly from 'Organization' instead. As a result, this can be run in parallel with
+// 'setTierForOrgUsers'.
 const setUserTierForUserIds = async (userIds: string[]) => {
   const r = await getRethink()
   const userTiers = (await r
