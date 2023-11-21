@@ -181,7 +181,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   ) {
     addedKudosId = (
       await pg
-        .insertInto('Kudoses')
+        .insertInto('Kudos')
         .values({
           senderUserId: viewerId,
           receiverUserId: reactableCreatorId,

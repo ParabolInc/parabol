@@ -5,14 +5,14 @@ export async function up() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
-    CREATE TABLE IF NOT EXISTS "Kudoses" (
+    CREATE TABLE IF NOT EXISTS "Kudos" (
       "id" SERIAL PRIMARY KEY,
       "senderUserId" VARCHAR(100) NOT NULL,
       "receiverUserId" VARCHAR(100) NOT NULL,
       "teamId" VARCHAR(100) NOT NULL,
-      "reactableId" TEXT,
-      "reactableType" TEXT,
-      "emoji" TEXT,
+      "reactableId" VARCHAR(100),
+      "reactableType" VARCHAR(50),
+      "emoji" VARCHAR(100),
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       FOREIGN KEY("senderUserId")
@@ -26,8 +26,8 @@ export async function up() {
         ON DELETE CASCADE
     );
 
-    DROP TRIGGER IF EXISTS "update_Kudoses_updatedAt" ON "Kudoses";
-    CREATE TRIGGER "update_Kudoses_updatedAt" BEFORE UPDATE ON "Kudoses" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
+    DROP TRIGGER IF EXISTS "update_Kudos_updatedAt" ON "Kudos";
+    CREATE TRIGGER "update_Kudos_updatedAt" BEFORE UPDATE ON "Kudos" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
   `)
   await client.end()
 }
@@ -36,7 +36,7 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
-    DROP TABLE IF EXISTS "Kudoses";
+    DROP TABLE IF EXISTS "Kudos";
   `)
   await client.end()
 }
