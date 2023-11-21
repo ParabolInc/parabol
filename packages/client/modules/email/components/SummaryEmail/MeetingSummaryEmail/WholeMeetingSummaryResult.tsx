@@ -48,7 +48,7 @@ const WholeMeetingSummaryResult = (props: Props) => {
         id
         summary
         team {
-          featureTier
+          tier
           billingTier
         }
       }
@@ -57,8 +57,7 @@ const WholeMeetingSummaryResult = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {summary: wholeMeetingSummary, team} = meeting
-  const explainerText =
-    team?.featureTier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
+  const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
       source: 'Meeting Summary',

@@ -14,7 +14,7 @@ graphql`
       company {
         tier
       }
-      featureTier
+      tier
       periodEnd
       periodStart
       updatedAt
@@ -30,7 +30,7 @@ graphql`
   fragment OldUpgradeToTeamTierMutation_team on OldUpgradeToTeamTierPayload {
     teams {
       isPaid
-      featureTier
+      tier
     }
   }
 `

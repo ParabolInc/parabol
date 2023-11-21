@@ -88,7 +88,7 @@ const DEFAULT_VIEWER = {
   picture: '',
   preferredName: '',
   email: '',
-  featureTier: 'starter',
+  tier: 'starter',
   billingTier: 'starter'
 } as const
 
@@ -100,13 +100,13 @@ const StandardHub = (props: Props) => {
         email
         picture
         preferredName
-        featureTier
+        tier
         billingTier
       }
     `,
     viewerRef
   )
-  const {email, picture, preferredName, featureTier, billingTier} = viewer || DEFAULT_VIEWER
+  const {email, picture, preferredName, tier, billingTier} = viewer || DEFAULT_VIEWER
   const userAvatar = picture || defaultUserAvatar
   const {history} = useRouter()
   const handleUpgradeClick = () => {
@@ -132,7 +132,7 @@ const StandardHub = (props: Props) => {
           <UpgradeCTA>{'Upgrade'}</UpgradeCTA>
         </Upgrade>
       ) : (
-        <Tier featureTier={featureTier as TierEnum} billingTier={billingTier as TierEnum} />
+        <Tier tier={tier as TierEnum} billingTier={billingTier as TierEnum} />
       )}
     </StandardHubRoot>
   )

@@ -49,7 +49,7 @@ const NewTeamOrgPicker = (props: Props) => {
         ...NewTeamOrgDropdown_organizations
         id
         name
-        featureTier
+        tier
         billingTier
       }
     `,
@@ -86,8 +86,8 @@ const NewTeamOrgPicker = (props: Props) => {
         defaultText={
           <MenuToggleInner>
             <MenuToggleLabel>{defaultText}</MenuToggleLabel>
-            {org && org.featureTier !== 'starter' && (
-              <TierTag featureTier={org.featureTier} billingTier={org.billingTier} />
+            {org && org.tier !== 'starter' && (
+              <TierTag tier={org.tier} billingTier={org.billingTier} />
             )}
           </MenuToggleInner>
         }

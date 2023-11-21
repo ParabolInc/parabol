@@ -7,7 +7,7 @@ import BaseTag from './BaseTag'
 
 interface Props {
   className?: string
-  featureTier: TierEnum | null
+  tier: TierEnum | null
   billingTier: TierEnum | null
 }
 
@@ -27,13 +27,11 @@ const EnterpriseTag = styled(BaseTag)({
 })
 
 const TierTag = (props: Props) => {
-  const {className, featureTier, billingTier} = props
-  if (featureTier !== billingTier)
-    return <StarterTag className={className}>{'Free Trial'}</StarterTag>
-  if (featureTier === 'starter')
-    return <StarterTag className={className}>{TierLabel.STARTER}</StarterTag>
-  if (featureTier === 'team') return <TeamTag className={className}>{TierLabel.TEAM}</TeamTag>
-  if (featureTier === 'enterprise')
+  const {className, tier, billingTier} = props
+  if (tier !== billingTier) return <StarterTag className={className}>{'Free Trial'}</StarterTag>
+  if (tier === 'starter') return <StarterTag className={className}>{TierLabel.STARTER}</StarterTag>
+  if (tier === 'team') return <TeamTag className={className}>{TierLabel.TEAM}</TeamTag>
+  if (tier === 'enterprise')
     return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
   return null
 }

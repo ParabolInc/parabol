@@ -6,7 +6,7 @@ import {DowngradeToStarterMutation as TDowngradeToStarterMutation} from '../__ge
 graphql`
   fragment DowngradeToStarterMutation_organization on DowngradeToStarterPayload {
     organization {
-      featureTier
+      tier
     }
   }
 `

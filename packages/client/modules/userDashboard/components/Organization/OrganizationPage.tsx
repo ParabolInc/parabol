@@ -36,13 +36,13 @@ const OrganizationPage = (props: Props) => {
         ...OrgBillingRoot_organization
         id
         isBillingLeader
-        featureTier
+        tier
       }
     `,
     organizationRef
   )
-  const {isBillingLeader, featureTier} = organization
-  const onlyShowMembers = !isBillingLeader && featureTier !== 'starter'
+  const {isBillingLeader, tier} = organization
+  const onlyShowMembers = !isBillingLeader && tier !== 'starter'
   const {
     params: {orgId}
   } = match

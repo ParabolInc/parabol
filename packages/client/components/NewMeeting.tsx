@@ -113,7 +113,7 @@ const query = graphql`
         id
         lastMeetingType
         name
-        featureTier
+        tier
       }
     }
   }

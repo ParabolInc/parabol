@@ -149,7 +149,7 @@ export const TemplateDetails = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment TemplateDetails_user on User {
-        featureTier
+        tier
         preferredTeamId
         teams {
           ...TeamPickerModal_teams
@@ -160,7 +160,7 @@ export const TemplateDetails = (props: Props) => {
     viewerRef
   )
 
-  const {teams, featureTier, preferredTeamId} = viewer
+  const {teams, tier, preferredTeamId} = viewer
   const history = useHistory<{prevCategory?: string; edit?: boolean}>()
   const prevCategory = history.location.state?.prevCategory
 
@@ -218,7 +218,7 @@ export const TemplateDetails = (props: Props) => {
 
   const isOwner = viewerLowestScope === 'TEAM'
 
-  const description = useTemplateDescription(viewerLowestScope, activity, featureTier, viewer)
+  const description = useTemplateDescription(viewerLowestScope, activity, tier, viewer)
 
   useEffect(() => {
     setIsEditing(!!history.location.state?.edit)

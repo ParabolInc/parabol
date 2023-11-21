@@ -25,7 +25,7 @@ const Organization: OrganizationResolvers = {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
-  featureTier: ({tier, trialStartDate}) => {
+  tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },
   billingTier: ({tier}) => tier,

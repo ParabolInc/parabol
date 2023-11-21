@@ -91,7 +91,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         id
         lastMeetingType
         name
-        featureTier
+        tier
         orgId
         organization {
           name
@@ -343,7 +343,7 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
 
-          {selectedTeam.featureTier === 'starter' &&
+          {selectedTeam.tier === 'starter' &&
           !viewer.featureFlags.noTemplateLimit &&
           !selectedTemplate.isFree ? (
             <div className='flex grow flex-col'>

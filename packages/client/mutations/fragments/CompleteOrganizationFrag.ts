@@ -20,6 +20,6 @@ graphql`
     }
     periodStart
     periodEnd
-    featureTier
+    tier
   }
 `

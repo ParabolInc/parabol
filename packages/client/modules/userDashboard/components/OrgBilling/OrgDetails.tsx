@@ -27,7 +27,7 @@ const OrgDetails = (props: Props) => {
         createdAt
         picture
         billingTier
-        featureTier
+        tier
         name
       }
     `,
@@ -40,7 +40,7 @@ const OrgDetails = (props: Props) => {
     picture: orgAvatar,
     name,
     billingTier,
-    featureTier
+    tier
   } = organization
   const pictureOrDefault = orgAvatar ?? defaultOrgAvatar
   const orgName = name ?? 'Unknown'
@@ -65,11 +65,7 @@ const OrgDetails = (props: Props) => {
           ) : (
             <div className='text-gray-700 text-2xl leading-9'>{orgName}</div>
           )}
-          <OrganizationDetails
-            createdAt={createdAt}
-            billingTier={billingTier}
-            featureTier={featureTier}
-          />
+          <OrganizationDetails createdAt={createdAt} billingTier={billingTier} tier={tier} />
         </div>
       </div>
       <OrgBillingDangerZone organization={organization} isWide />

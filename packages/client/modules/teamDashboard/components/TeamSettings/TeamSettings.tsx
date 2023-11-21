@@ -46,7 +46,7 @@ const query = graphql`
         isLead
         id
         name
-        featureTier
+        tier
         billingTier
         orgId
         teamMembers(sortBy: "preferredName") {
@@ -68,7 +68,7 @@ const TeamSettings = (props: Props) => {
   const {viewer} = data
   const {history} = useRouter()
   const {team} = viewer
-  const {name: teamName, orgId, teamMembers, featureTier, billingTier} = team!
+  const {name: teamName, orgId, teamMembers, tier, billingTier} = team!
   useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
@@ -83,7 +83,7 @@ const TeamSettings = (props: Props) => {
           <Panel>
             <StyledRow>
               <div>
-                {featureTier !== 'starter'
+                {tier !== 'starter'
                   ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
                   : 'This team is currently on a starter plan.'}
               </div>

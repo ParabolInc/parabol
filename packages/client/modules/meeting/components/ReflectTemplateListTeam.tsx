@@ -78,20 +78,20 @@ const ReflectTemplateListTeam = (props: Props) => {
       fragment ReflectTemplateListTeam_team on Team {
         id
         orgId
-        featureTier
+        tier
       }
     `,
     teamRef
   )
   const history = useHistory()
   const atmosphere = useAtmosphere()
-  const {orgId, featureTier, id: teamId} = team
+  const {orgId, tier, id: teamId} = team
   const searchQuery = templateSearchQuery ?? ''
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
   const filteredTemplates = useFilteredItems(searchQuery, teamTemplates, getValue)
   if (teamTemplates.length === 0) {
-    if (featureTier === 'starter') {
+    if (tier === 'starter') {
       const goToBilling = () => {
         SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',

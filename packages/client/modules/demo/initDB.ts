@@ -292,7 +292,7 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    featureTier: 'team',
+    tier: 'team',
     billingTier: 'team',
     orgUserCount: {
       activeUserCount: 5,
@@ -327,7 +327,7 @@ const initDemoTeam = (
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    featureTier: 'team',
+    tier: 'team',
     billingTier: 'team',
     teamId: demoTeamId,
     organization,

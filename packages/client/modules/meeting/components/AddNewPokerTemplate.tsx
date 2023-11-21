@@ -49,7 +49,7 @@ const AddNewPokerTemplate = (props: Props) => {
     graphql`
       fragment AddNewPokerTemplate_team on Team {
         id
-        featureTier
+        tier
         viewerTeamMember {
           id
           user {
@@ -63,7 +63,7 @@ const AddNewPokerTemplate = (props: Props) => {
     `,
     teamRef
   )
-  const {id: teamId, featureTier, viewerTeamMember} = team
+  const {id: teamId, tier, viewerTeamMember} = team
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -72,7 +72,7 @@ const AddNewPokerTemplate = (props: Props) => {
     }
   }, [])
   const canEditTemplates =
-    featureTier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
+    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const addNewTemplate = () => {
     if (submitting) return
     if (!canEditTemplates) {

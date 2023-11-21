@@ -45,7 +45,7 @@ const query = graphql`
       id
       team(teamId: $teamId) {
         id
-        featureTier
+        tier
         orgId
         meetingSettings(meetingType: poker) {
           ... on PokerMeetingSettings {
@@ -72,7 +72,7 @@ const PokerTemplateListOrg = (props: Props) => {
   const data = usePreloadedQuery<PokerTemplateListOrgQuery>(query, queryRef)
   const {viewer} = data
   const team = viewer.team!
-  const {id: teamId, meetingSettings, featureTier, orgId} = team
+  const {id: teamId, meetingSettings, tier, orgId} = team
   const activeTemplateId = meetingSettings.activeTemplate?.id ?? '-tmp'
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
@@ -81,7 +81,7 @@ const PokerTemplateListOrg = (props: Props) => {
   const history = useHistory()
 
   if (edges.length === 0) {
-    if (featureTier === 'starter') {
+    if (tier === 'starter') {
       const goToBilling = () => {
         SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'orgTemplate',

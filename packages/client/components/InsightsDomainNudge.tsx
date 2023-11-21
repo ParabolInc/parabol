@@ -48,7 +48,7 @@ const InsightsDomainNudge = (props: Props) => {
           id
           name
           scheduledLockAt
-          featureTier
+          tier
           orgUserCount {
             activeUserCount
           }
@@ -62,7 +62,7 @@ const InsightsDomainNudge = (props: Props) => {
   const {togglePortal, closePortal, modalPortal} = useModal()
   const {id: domainId, suggestedTier, tier, organizations} = domain
   const starterOrganizations = organizations
-    .filter((org) => org.featureTier === 'starter')
+    .filter((org) => org.tier === 'starter')
     .sort((a, b) => (a.orgUserCount > b.orgUserCount ? -1 : 1))
   const [biggestOrganization] = starterOrganizations
   if (!biggestOrganization) return null

@@ -66,7 +66,7 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
       fragment NewMeetingSettingsToggleTeamHealth_team on Team {
         ...NewMeetingSettingsUpgradeForTeamHealth_team
         id
-        featureTier
+        tier
       }
     `,
     teamRef
@@ -82,8 +82,8 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     `,
     settingsRef
   )
-  const {featureTier} = team
-  const teamHealthAvailable = isTeamHealthAvailable(featureTier)
+  const {tier} = team
+  const teamHealthAvailable = isTeamHealthAvailable(tier)
 
   const {id: settingsId, phaseTypes} = settings
   const hasTeamHealth = phaseTypes.includes('TEAM_HEALTH')

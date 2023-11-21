@@ -403,7 +403,7 @@ type User {
     userId: ID
   ): TeamMember
 
-  featureTier: TierEnum!
+  tier: TierEnum!
 
   billingTier: TierEnum!
 

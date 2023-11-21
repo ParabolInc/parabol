@@ -99,7 +99,7 @@ const OrganizationRow = (props: Props) => {
           inactiveUserCount
         }
         picture
-        featureTier
+        tier
         billingTier
       }
     `,
@@ -111,7 +111,7 @@ const OrganizationRow = (props: Props) => {
     name,
     orgUserCount: {activeUserCount, inactiveUserCount},
     picture,
-    featureTier,
+    tier,
     billingTier
   } = organization
   const orgAvatar = picture || defaultOrgAvatar
@@ -133,9 +133,9 @@ const OrganizationRow = (props: Props) => {
         <StyledRowInfo>
           <RowInfoHeader>
             <Name onClick={onRowClick}>{name}</Name>
-            {featureTier !== 'starter' && (
+            {tier !== 'starter' && (
               <StyledTagBlock>
-                <TierTag featureTier={featureTier} billingTier={billingTier} />
+                <TierTag tier={tier} billingTier={billingTier} />
               </StyledTagBlock>
             )}
           </RowInfoHeader>

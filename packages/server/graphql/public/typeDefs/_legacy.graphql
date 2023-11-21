@@ -2184,7 +2184,7 @@ type OrganizationUser {
   """
   user: User!
 
-  featureTier: TierEnum
+  tier: TierEnum
 
   billingTier: TierEnum
 }
