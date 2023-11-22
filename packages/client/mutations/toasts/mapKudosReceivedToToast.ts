@@ -9,9 +9,7 @@ import getReactji from '~/utils/getReactji'
 graphql`
   fragment mapKudosReceivedToToast_notification on NotifyKudosReceived {
     id
-    type
     name
-    picture
     meetingName
     meetingId
     emoji
