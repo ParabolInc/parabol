@@ -49,12 +49,6 @@ export interface ActivityCardProps {
   type?: MeetingTypeEnum
 }
 
-// const templates = [
-//   {name: 'Template 1', description: 'Description for template 1', color: 'text-red-500'},
-//   {name: 'Template 2', description: 'Description for template 2', color: 'text-green-500'},
-//   {name: 'Template 3', description: 'Description for template 3', color: 'text-blue-500'},
-//   {name: 'Template 4', description: 'Description for template 4', color: 'text-yellow-500'}
-// ]
 const templates = [
   {name: 'Template 1', description: 'Description for template 1', color: 'bg-tomato-500'},
   {name: 'Template 2', description: 'Description for template 2', color: 'bg-sky-500'},
@@ -66,12 +60,19 @@ export const ActivityCard = (props: ActivityCardProps) => {
   const {className, theme, title, children, type, badge} = props
   const category = type && MEETING_TYPE_TO_CATEGORY[type]
   const [showTooltip, setShowTooltip] = useState(false)
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
 
   const handleMouseEnter = () => {
-    setShowTooltip(true)
+    const timeoutId = setTimeout(() => {
+      setShowTooltip(true)
+    }, 750)
+    setHoverTimeout(timeoutId)
   }
 
   const handleMouseLeave = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout)
+    }
     setShowTooltip(false)
   }
 
