@@ -49,11 +49,17 @@ export interface ActivityCardProps {
   type?: MeetingTypeEnum
 }
 
+// const templates = [
+//   {name: 'Template 1', description: 'Description for template 1', color: 'text-red-500'},
+//   {name: 'Template 2', description: 'Description for template 2', color: 'text-green-500'},
+//   {name: 'Template 3', description: 'Description for template 3', color: 'text-blue-500'},
+//   {name: 'Template 4', description: 'Description for template 4', color: 'text-yellow-500'}
+// ]
 const templates = [
-  {name: 'Template 1', description: 'Description for template 1', color: 'text-red-500'},
-  {name: 'Template 2', description: 'Description for template 2', color: 'text-green-500'},
-  {name: 'Template 3', description: 'Description for template 3', color: 'text-blue-500'},
-  {name: 'Template 4', description: 'Description for template 4', color: 'text-yellow-500'}
+  {name: 'Template 1', description: 'Description for template 1', color: 'bg-tomato-500'},
+  {name: 'Template 2', description: 'Description for template 2', color: 'bg-sky-500'},
+  {name: 'Template 3', description: 'Description for template 3', color: 'bg-rose-500'},
+  {name: 'Template 4', description: 'Description for template 4', color: 'bg-grass-500'}
 ]
 
 export const ActivityCard = (props: ActivityCardProps) => {
