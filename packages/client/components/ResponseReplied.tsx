@@ -9,6 +9,7 @@ import useRouter from '../hooks/useRouter'
 import {cardShadow} from '../styles/elevation'
 import {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
+import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 
 const EditorWrapper = styled('div')({
   backgroundColor: '#fff',
@@ -50,7 +51,8 @@ const ResponseReplied = (props: Props) => {
   )
   const {history} = useRouter()
   const {meeting, author, comment, response} = notification
-  const {picture: authorPicture, preferredName: authorName} = author
+  const authorPicture = author ? author.picture : anonymousAvatar
+  const authorName = author ? author.preferredName : 'Anonymous'
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
