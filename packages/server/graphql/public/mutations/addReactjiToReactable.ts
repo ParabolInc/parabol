@@ -166,13 +166,11 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {meetingType, teamId} = meeting
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const organization = await dataLoader.get('organizations').load(team.orgId)
 
   const reactableCreatorId = getReactableCreatorId(reactableType, reactable, meeting)
 
   let addedKudosId = null
   if (
-    organization.featureFlags?.includes('kudos') &&
     !isRemove &&
     team.giveKudosWithEmoji &&
     reactji === team.kudosEmoji &&
