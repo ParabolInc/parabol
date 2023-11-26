@@ -11,6 +11,8 @@ import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
 import {CategoryID, CATEGORY_THEMES, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -37,6 +39,7 @@ export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
       ...ActivityDetailsSidebar_viewer
+      activityLibrarySearch
       preferredTeamId
       tier
       activity(activityId: $activityId) {
@@ -61,16 +64,24 @@ interface Props {
 }
 
 const ActivityDetails = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
-  const {activity, preferredTeamId, teams} = viewer
+  const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
   const history = useHistory<{prevCategory?: string}>()
   const [isEditing, setIsEditing] = useState(false)
 
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
+  SendClientSideEvent(atmosphere, 'Viewed Template', {
+    meetingType: activity.type,
+    scope: activity.scope,
+    templateName: activity.name,
+    isFree: activity.isFree,
+    queryString: activityLibrarySearch
+  })
   const {category, illustrationUrl, viewerLowestScope} = activity
   const prevCategory = history.location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
