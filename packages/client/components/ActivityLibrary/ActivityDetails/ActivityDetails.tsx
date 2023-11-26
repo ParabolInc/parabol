@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
@@ -75,13 +75,16 @@ const ActivityDetails = (props: Props) => {
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
-  SendClientSideEvent(atmosphere, 'Viewed Template', {
-    meetingType: activity.type,
-    scope: activity.scope,
-    templateName: activity.name,
-    isFree: activity.isFree,
-    queryString: activityLibrarySearch
-  })
+  useEffect(() => {
+    SendClientSideEvent(atmosphere, 'Viewed Template', {
+      meetingType: activity.type,
+      scope: activity.scope,
+      templateName: activity.name,
+      isFree: activity.isFree,
+      queryString: activityLibrarySearch
+    })
+  }, [])
+
   const {category, illustrationUrl, viewerLowestScope} = activity
   const prevCategory = history.location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
