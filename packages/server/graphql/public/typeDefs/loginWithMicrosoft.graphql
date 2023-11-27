@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  Sign up or login using Google
+  Sign up or login using Microsoft
   """
   loginWithMicrosoft(
     """
