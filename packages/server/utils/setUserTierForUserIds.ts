@@ -16,21 +16,16 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({removedAt: null})
     .merge((orgUser: RDatum<OrganizationUser>) => ({
-      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('starter'),
-      trialStartDate: r
-        .db('actionDevelopment')
-        .table('Organization')
-        .get(orgUser('orgId'))('trialStartDate')
-        .default(null)
+      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('starter')
     }))
-    .group('userId')
+    .group('userId')('tier')
     .ungroup()
     .map((row) => ({
       id: row('group'),
       tier: r.branch(
-        row('reduction')('tier').contains('enterprise'),
+        row('reduction').contains('enterprise'),
         'enterprise',
-        row('reduction')('tier').contains('team'),
+        row('reduction').contains('team'),
         'team',
         'starter'
       )
