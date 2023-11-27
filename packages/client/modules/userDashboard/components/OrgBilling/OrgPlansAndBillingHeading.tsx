@@ -72,14 +72,15 @@ const OrgPlansAndBillingHeading = (props: Props) => {
         id
         name
         billingTier
+        tier
         showDrawer
       }
     `,
     organizationRef
   )
   const atmosphere = useAtmosphere()
-  const {id: orgId, name, billingTier} = organization
-  const tierName = upperFirst(billingTier)
+  const {id: orgId, name, billingTier, tier} = organization
+  const tierName = upperFirst(tier)
 
   const handleClick = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -95,7 +96,9 @@ const OrgPlansAndBillingHeading = (props: Props) => {
       <Title>{'Plans & Billing'}</Title>
       <SubtitleBlock>
         <Subtitle isBold>{name}</Subtitle>
-        <Subtitle>{` is currently on the `}</Subtitle>
+        <Subtitle>{` is currently on ${
+          tier !== billingTier ? 'a Free Trial for ' : ''
+        }the `}</Subtitle>
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
       <StyledButton onClick={handleClick}>
