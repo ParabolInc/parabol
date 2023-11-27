@@ -102,7 +102,10 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     return {error: {message: `Unknown item`}}
   }
   const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-  const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+  const [viewerMeetingMember, viewer] = await Promise.all([
+    dataLoader.get('meetingMembers').load(meetingMemberId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
   if (!viewerMeetingMember) {
     return {error: {message: `Not a member of the meeting`}}
   }
@@ -214,7 +217,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const data = {reactableId, reactableType, addedKudosId}
 
   analytics.reactjiInteracted(
-    viewerId,
+    viewer,
     meetingId,
     meetingType,
     reactable,

@@ -67,7 +67,7 @@ export default {
     const {tms} = authToken
     // MUTATIVE
     tms.push(teamId)
-    analytics.newOrg(viewerId, orgId, teamId, false)
+    analytics.newOrg(user, orgId, teamId, false)
     publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)

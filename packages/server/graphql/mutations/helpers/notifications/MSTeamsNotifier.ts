@@ -15,27 +15,28 @@ import getSummaryText from './getSummaryText'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 import {analytics} from '../../../../utils/analytics/analytics'
+import IUser from '../../../../postgres/types/IUser'
 
 const notifyMSTeams = async (
   event: EventEnum,
   webhookUrl: string,
-  userId: string,
+  user: IUser,
   teamId: string,
   textOrAttachmentsArray: string | unknown[]
 ) => {
   const manager = new MSTeamsServerManager(webhookUrl)
   const result = await manager.post(textOrAttachmentsArray)
   if (result instanceof Error) {
-    sendToSentry(result, {userId, tags: {teamId, event, webhookUrl}})
+    sendToSentry(result, {userId: user.id, tags: {teamId, event, webhookUrl}})
     return {
       error: result
     }
   }
-  analytics.teamsNotificationSent(userId, teamId, event)
+  analytics.teamsNotificationSent(user, teamId, event)
 
   return 'success'
 }
-export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string}
+export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string, email: string}
 
 const createTeamPromptMeetingTitle = (meetingName: string) => `*${meetingName}* is open 💬`
 const createGenericMeetingTitle = () => `Meeting Started 👋`
@@ -78,8 +79,7 @@ const MeetingActionLookup: Record<
 export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNotificationAuth> = (
   notificationChannel
 ) => ({
-  async startMeeting(meeting, team) {
-    const {facilitatorUserId} = meeting
+  async startMeeting(meeting, team, user) {
     const {webhookUrl} = notificationChannel
 
     const searchParams = {
@@ -114,11 +114,11 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     const attachments = MakeACAttachment(adaptiveCard)
 
-    return notifyMSTeams('meetingStart', webhookUrl, facilitatorUserId, team.id, attachments)
+    return notifyMSTeams('meetingStart', webhookUrl, user, team.id, attachments)
   },
 
-  async endMeeting(meeting, team) {
-    const {facilitatorUserId, summary} = meeting
+  async endMeeting(meeting, team, user) {
+    const {summary} = meeting
     const {webhookUrl} = notificationChannel
     const searchParams = {
       utm_source: 'MS Teams meeting start',
@@ -194,13 +194,13 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     const adaptiveCard = JSON.stringify(card.toJSON())
     const attachments = MakeACAttachment(adaptiveCard)
-    return notifyMSTeams('meetingEnd', webhookUrl, facilitatorUserId, team.id, attachments)
+    return notifyMSTeams('meetingEnd', webhookUrl, user, team.id, attachments)
   },
 
-  async startTimeLimit(scheduledEndTime, meeting, team) {
+  async startTimeLimit(scheduledEndTime, meeting, team, user) {
     const {webhookUrl} = notificationChannel
 
-    const {phases, facilitatorStageId, facilitatorUserId} = meeting
+    const {phases, facilitatorStageId} = meeting
 
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
 
@@ -259,14 +259,13 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     return notifyMSTeams(
       'MEETING_STAGE_TIME_LIMIT_START',
       webhookUrl,
-      facilitatorUserId,
+      user,
       team.id,
       attachments
     )
   },
 
-  async endTimeLimit(meeting, team) {
-    const {facilitatorUserId: userId} = meeting
+  async endTimeLimit(meeting, team, user) {
     const {webhookUrl} = notificationChannel
 
     const card = new AdaptiveCards.AdaptiveCard()
@@ -307,10 +306,10 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const adaptiveCard = JSON.stringify(card.toJSON())
     const attachments = MakeACAttachment(adaptiveCard)
 
-    return notifyMSTeams('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, userId, team.id, attachments)
+    return notifyMSTeams('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, user, team.id, attachments)
   },
-  async integrationUpdated() {
-    const {webhookUrl, teamId, userId} = notificationChannel
+  async integrationUpdated(user) {
+    const {webhookUrl, teamId} = notificationChannel
 
     const card = new AdaptiveCards.AdaptiveCard()
     card.version = new AdaptiveCards.Version(1.2, 0)
@@ -331,7 +330,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     const adaptiveCard = JSON.stringify(card.toJSON())
     const attachments = MakeACAttachment(adaptiveCard)
-    return notifyMSTeams('meetingEnd', webhookUrl, userId, teamId, attachments)
+    return notifyMSTeams('meetingEnd', webhookUrl, user, teamId, attachments)
   },
 
   async standupResponseSubmitted() {
@@ -341,14 +340,18 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 })
 
 async function getMSTeams(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
-  const provider = await dataLoader
-    .get('bestTeamIntegrationProviders')
-    .load({service: 'msTeams', teamId, userId})
+  const [provider, user] = await Promise.all([
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'msTeams', teamId, userId}),
+    dataLoader.get('users').loadNonNull(userId)
+  ])
   return provider
     ? [
         MSTeamsNotificationHelper({
           ...(provider as IntegrationProviderMSTeams),
-          userId
+          userId,
+          email: user.email
         })
       ]
     : []

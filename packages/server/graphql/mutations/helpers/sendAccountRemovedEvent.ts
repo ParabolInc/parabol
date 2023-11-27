@@ -4,7 +4,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 const sendAccountRemovedEvent = async (
   userIdToDelete: string,
   email: string,
-  validReason: string
+  validReason: string,
 ) => {
   const executeGraphQL = require('../../executeGraphQL').default
   const parabolPayload = await executeGraphQL({
@@ -26,7 +26,7 @@ const sendAccountRemovedEvent = async (
   })
   parabolPayload.data.user.email = email
   parabolPayload.data.user.isRemoved = true
-  analytics.accountRemoved(userIdToDelete, validReason)
+  analytics.accountRemoved({id: userIdToDelete, email}, validReason)
 }
 
 export default sendAccountRemovedEvent

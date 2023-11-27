@@ -35,12 +35,16 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isTeamLead(viewerId, teamId, dataLoader)) && !isSuperUser(authToken)) {
+    const [teamLead, viewer] = await Promise.all([
+      isTeamLead(viewerId, teamId, dataLoader),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
+    if (!teamLead && !isSuperUser(authToken)) {
       return standardError(new Error('Not team lead'), {userId: viewerId})
     }
 
     // RESOLUTION
-    analytics.archiveTeam(viewerId, teamId)
+    analytics.archiveTeam(viewer, teamId)
     const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId, dataLoader)
 
     if (!team) {

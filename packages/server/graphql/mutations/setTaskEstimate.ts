@@ -45,9 +45,10 @@ const setTaskEstimate = {
     const {taskId, value, dimensionName, meetingId} = taskEstimate
 
     //AUTH
-    const [task, meeting] = await Promise.all([
+    const [task, meeting, user] = await Promise.all([
       dataLoader.get('tasks').load(taskId),
-      dataLoader.get('newMeetings').load(meetingId)
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
@@ -373,7 +374,7 @@ const setTaskEstimate = {
       }
     }
 
-    analytics.taskEstimateSet(viewerId, {
+    analytics.taskEstimateSet(user, {
       taskId,
       meetingId,
       dimensionName,

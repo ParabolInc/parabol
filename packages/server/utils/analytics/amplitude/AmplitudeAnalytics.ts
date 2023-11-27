@@ -1,5 +1,4 @@
 import {identify, Identify, init, track} from '@amplitude/analytics-node'
-import {CacheWorker, DataLoaderBase} from '../../../graphql/DataLoaderCache'
 import {AnalyticsEvent, IdentifyOptions} from '../analytics'
 
 const {AMPLITUDE_WRITE_KEY} = process.env
@@ -39,14 +38,12 @@ export class AmplitudeAnalytics {
 
   async track(
     userId: string,
+    email: string | undefined,
     event: AnalyticsEvent,
-    dataloader: CacheWorker<DataLoaderBase>,
     properties?: Record<string, any>
   ) {
     // used as a failsafe for PPMIs
     if (!AMPLITUDE_WRITE_KEY) return
-    const user = await dataloader.get('users').load(userId)
-    const {email} = user ?? {}
     const props = {...properties, email}
     return track(event, props, {
       user_id: userId

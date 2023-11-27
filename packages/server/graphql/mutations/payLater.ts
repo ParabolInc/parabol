@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
-import Meeting from '../../database/types/Meeting'
+//import Meeting from '../../database/types/Meeting'
 import getPg from '../../postgres/getPg'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -32,7 +32,10 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as Meeting | null
+    const [meeting, viewer] = await Promise.all([
+      r.table('NewMeeting').get(meetingId).run(),//) as Meeting | null
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!meeting) {
       return standardError(new Error('Invalid meeting'), {userId: viewerId})
     }
@@ -64,7 +67,7 @@ export default {
 
     await incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())
 
-    analytics.conversionModalPayLaterClicked(viewerId)
+    analytics.conversionModalPayLaterClicked(viewer)
     const data = {orgId, meetingId}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'PayLaterPayload', data, subOptions)
     return {orgId, meetingId}
