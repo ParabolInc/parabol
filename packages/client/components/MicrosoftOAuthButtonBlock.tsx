@@ -53,7 +53,7 @@ const MicrosoftOAuthButtonBlock = (props: Props) => {
         waiting={submitting}
         className={clsx(
           'mt-4 h-10 w-60 justify-start px-4 disabled:opacity-100',
-          submitting ? 'bg-[#EBEBEB] text-[#8D8D8D]' : 'text=[#757575] bg-white'
+          submitting ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-700'
         )}
       >
         <img src={logo} className={clsx('mx-4 h-[18px] w-[18px]', submitting && 'saturate-0')} />
