@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "engines": {
-    "node": "^18.18.2",
+    "node": "^20.9.0",
     "yarn": "^1.22.5"
   },
   "private": true,
@@ -71,7 +71,7 @@
     "git-url-parse": "12.0.0",
     "fbjs": "^3.0.0",
     "parse-url": "^8.1.0",
-    "rethinkdb-ts": "2.5.1",
+    "rethinkdb-ts": "2.6.0",
     "recursive-readdir": "^2.2.3",
     "json5": "^2.2.3"
   },
