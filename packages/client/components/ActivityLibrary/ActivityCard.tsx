@@ -2,11 +2,15 @@ import clsx from 'clsx'
 import React, {PropsWithChildren, useState} from 'react'
 import {upperFirst} from '../../utils/upperFirst'
 import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
 import {backgroundImgMap, CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
 import {twMerge} from 'tailwind-merge'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {useFragment} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 
 export interface CardTheme {
   primary: string
@@ -47,20 +51,23 @@ export interface ActivityCardProps {
   badge?: React.ReactNode
   children?: React.ReactNode
   type?: MeetingTypeEnum
+  templateRef?: ActivityCard_template$key
 }
 
-const templates = [
-  {name: 'Template 1', description: 'Description for template 1', color: 'bg-tomato-500'},
-  {name: 'Template 2', description: 'Description for template 2', color: 'bg-sky-500'},
-  {name: 'Template 3', description: 'Description for template 3', color: 'bg-rose-500'},
-  {name: 'Template 4', description: 'Description for template 4', color: 'bg-grass-500'}
-]
-
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, theme, title, children, type, badge} = props
+  const {className, theme, title, children, type, badge, templateRef} = props
   const category = type && MEETING_TYPE_TO_CATEGORY[type]
   const [showTooltip, setShowTooltip] = useState(false)
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
+
+  const template = useFragment(
+    graphql`
+      fragment ActivityCard_template on MeetingTemplate {
+        ...ActivityLibraryCardDescription_template
+      }
+    `,
+    templateRef ?? null
+  )
 
   const handleMouseEnter = () => {
     const timeoutId = setTimeout(() => {
@@ -78,7 +85,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
 
   return (
     <div
-      className='flex w-full flex-col'
+      className='flex w-full  flex-col'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -102,23 +109,17 @@ export const ActivityCard = (props: ActivityCardProps) => {
           </div>
         </div>
       )}
-      <Tooltip open={showTooltip}>
-        <TooltipTrigger asChild>
-          <div className='h-50 w-50 text-sky-500 hover:text-sky-700' />
-        </TooltipTrigger>
-        <TooltipContent className='rounded-lg bg-white p-4 text-left text-slate-700 shadow-lg hover:cursor-pointer'>
-          <div className='mb-2 text-left text-lg'>{title}</div>
-          {templates.map((template, index) => (
-            <div key={index} className='mb-1 flex items-start py-1'>
-              <span className={clsx('h-2 w-2 rounded-full ', template.color, 'mr-2 mt-1')}></span>
-              <div>
-                <div className='text-md font-semibold'>{template.name}</div>
-                <div className='text-sm font-normal'>{template.description}</div>
-              </div>
-            </div>
-          ))}
-        </TooltipContent>
-      </Tooltip>
+      {template && (
+        <Tooltip open={showTooltip}>
+          <TooltipTrigger asChild>
+            <div className='h-50 w-50 text-sky-500 hover:text-sky-700' />
+          </TooltipTrigger>
+          <TooltipContent className='max-w-md whitespace-normal rounded-lg bg-white p-4 text-left text-slate-700 shadow-lg hover:cursor-pointer sm:max-w-sm'>
+            <div className='mb-2 text-left text-lg font-semibold'>{title}</div>
+            <ActivityLibraryCardDescription templateRef={template} />
+          </TooltipContent>
+        </Tooltip>
+      )}
     </div>
   )
 }
