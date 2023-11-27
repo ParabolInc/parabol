@@ -17,11 +17,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .filter({removedAt: null})
     .merge((orgUser: RDatum<OrganizationUser>) => ({
       tier: r.table('Organization').get(orgUser('orgId'))('tier').default('starter'),
-      trialStartDate: r
-        .db('actionDevelopment')
-        .table('Organization')
-        .get(orgUser('orgId'))('trialStartDate')
-        .default(null)
+      trialStartDate: r.table('Organization').get(orgUser('orgId'))('trialStartDate').default(null)
     }))
     .group('userId')
     .ungroup()
