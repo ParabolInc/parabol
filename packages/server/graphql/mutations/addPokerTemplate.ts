@@ -11,6 +11,7 @@ import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -51,7 +52,10 @@ const addPokerTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (viewerTeam.tier === 'starter' && !viewer.featureFlags.includes('noTemplateLimit')) {
+    if (
+      getFeatureTier(viewerTeam) === 'starter' &&
+      !viewer.featureFlags.includes('noTemplateLimit')
+    ) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data

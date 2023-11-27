@@ -4,6 +4,7 @@ import MeetingSettingsRetrospective from '../../../database/types/MeetingSetting
 import {GQLContext} from '../../graphql'
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const resolveSelectedTemplate =
   (fallbackTemplateId: string) =>
@@ -19,12 +20,11 @@ const resolveSelectedTemplate =
       dataLoader.get('meetingTemplates').load(selectedTemplateId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
-    const {tier} = team
     if (template) {
       if (
         template.isFree ||
         template.scope !== 'PUBLIC' ||
-        tier !== 'starter' ||
+        getFeatureTier(team) !== 'starter' ||
         viewer.featureFlags.includes('noTemplateLimit')
       ) {
         return template

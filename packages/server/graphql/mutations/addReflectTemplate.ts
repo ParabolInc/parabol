@@ -12,6 +12,7 @@ import {GQLContext} from '../graphql'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -52,7 +53,10 @@ const addReflectTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (viewerTeam.tier === 'starter' && !viewer.featureFlags.includes('noTemplateLimit')) {
+    if (
+      getFeatureTier(viewerTeam) === 'starter' &&
+      !viewer.featureFlags.includes('noTemplateLimit')
+    ) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data

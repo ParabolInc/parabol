@@ -47,6 +47,7 @@ const query = graphql`
         id
         name
         tier
+        billingTier
         orgId
         teamMembers(sortBy: "preferredName") {
           teamMemberId: id
@@ -67,7 +68,7 @@ const TeamSettings = (props: Props) => {
   const {viewer} = data
   const {history} = useRouter()
   const {team} = viewer
-  const {name: teamName, orgId, teamMembers, tier} = team!
+  const {name: teamName, orgId, teamMembers, tier, billingTier} = team!
   useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
@@ -78,10 +79,14 @@ const TeamSettings = (props: Props) => {
   return (
     <TeamSettingsLayout>
       <PanelsLayout>
-        {tier === 'starter' && (
+        {billingTier === 'starter' && (
           <Panel>
             <StyledRow>
-              <div>{'This team is currently on a starter plan.'}</div>
+              <div>
+                {tier !== 'starter'
+                  ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
+                  : 'This team is currently on a starter plan.'}
+              </div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
                 {`Upgrade Team to ${TierLabel.TEAM}`}
               </PrimaryButton>
@@ -98,8 +103,8 @@ const TeamSettings = (props: Props) => {
           <Panel className='mt-8'>
             <StyledRow>
               <div>
-                This team is currently on a <b className='capitalize'>{tier} plan</b>. Only Team
-                Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
+                This team is currently on a <b className='capitalize'>{billingTier} plan</b>. Only
+                Team Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
                 The <b>Team Lead</b> for {teamName} is{' '}
                 <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
                   {contact.preferredName}
