@@ -16,34 +16,45 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({removedAt: null})
     .merge((orgUser: RDatum<OrganizationUser>) => ({
-      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('starter'),
-      trialStartDate: r
-        .db('actionDevelopment')
-        .table('Organization')
-        .get(orgUser('orgId'))('trialStartDate')
-        .default(null)
+      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('starter')
     }))
-    .group('userId')
+    .group('userId')('tier')
     .ungroup()
     .map((row) => ({
       id: row('group'),
       tier: r.branch(
-        row('reduction')('tier').contains('enterprise'),
+        row('reduction').contains('enterprise'),
         'enterprise',
-        row('reduction')('tier').contains('team'),
+        row('reduction').contains('team'),
         'team',
         'starter'
-      ),
-      trialStartDate: r.max(row('reduction')('trialStartDate'))
+      )
     }))
-    .run()) as {id: string; tier: TierEnum; trialStartDate: string | null}[]
+    .run()) as {id: string; tier: TierEnum}[]
+
+  const userTrials = (await r
+    .table('OrganizationUser')
+    .getAll(r.args(userIds), {index: 'userId'})
+    .filter({removedAt: null})
+    .merge((orgUser: RDatum<OrganizationUser>) => ({
+      trialStartDate: r.table('Organization').get(orgUser('orgId'))('trialStartDate').default(null)
+    }))
+    .group('userId')
+    .max('trialStartDate')('trialStartDate')
+    .ungroup()
+    .map((row) => ({
+      id: row('group'),
+      trialStartDate: row('reduction')
+    }))
+    .run()) as {id: string; trialStartDate: string | null}[]
 
   const userUpdates = userIds.map((userId) => {
     const userTier = userTiers.find((userTier) => userTier.id === userId)
+    const userTrialStartDate = userTrials.find((userTrial) => userTrial.id === userId)
     return {
       id: userId,
       tier: userTier ? userTier.tier : 'starter',
-      trialStartDate: userTier ? userTier.trialStartDate : null
+      trialStartDate: userTrialStartDate ? userTrialStartDate.trialStartDate : null
     }
   })
   await updateUserTiers({users: userUpdates})
