@@ -177,10 +177,6 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
                 src={template.illustrationUrl}
                 category={template.category as CategoryID}
               />
-              {/* <ActivityLibraryCardDescription
-                className='hidden group-hover/card:flex'
-                templateRef={template}
-              /> */}
             </ActivityLibraryCard>
           </Link>
         )
