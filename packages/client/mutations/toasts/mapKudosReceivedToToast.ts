@@ -37,6 +37,11 @@ const mapKudosReceivedToToast = (
       SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
         snackbarType: 'kudosReceived'
       })
+    },
+    onManualDismiss: () => {
+      SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
+        snackbarType: 'kudosReceived'
+      })
     }
   }
 }
