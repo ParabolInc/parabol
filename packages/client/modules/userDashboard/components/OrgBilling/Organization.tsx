@@ -51,9 +51,10 @@ const query = graphql`
 const Organization = (props: Props) => {
   const {queryRef} = props
   const {viewer} = usePreloadedQuery<OrganizationQuery>(query, queryRef)
-  const {organization} = viewer
-  const {id: orgId, isBillingLeader} = organization
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
+  const {organization} = viewer
+  if (!organization) return null
+  const {id: orgId, isBillingLeader} = organization
 
   return (
     <section className={'px-4 md:px-8'}>
