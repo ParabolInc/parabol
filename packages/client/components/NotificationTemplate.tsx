@@ -12,7 +12,7 @@ import NotificationRow from './NotificationRow'
 
 interface Props {
   avatar?: string
-  message: string | ReactNode
+  message: ReactNode
   notification: NotificationTemplate_notification$key
   action?: ReactNode
   children?: ReactNode
