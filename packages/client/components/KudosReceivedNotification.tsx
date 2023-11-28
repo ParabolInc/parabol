@@ -26,17 +26,19 @@ const KudosReceivedNotification = (props: Props) => {
         meetingName
         meetingId
         emoji
+        status
       }
     `,
     notificationRef
   )
-  const {type, name, picture, meetingName, emoji, meetingId} = notification
+  const {type, name, picture, meetingName, emoji, meetingId, status} = notification
 
   const {unicode} = getReactji(emoji)
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Notification Viewed', {
-      notificationType: type
+      notificationType: type,
+      notificationStatus: status
     })
   }, [])
 
