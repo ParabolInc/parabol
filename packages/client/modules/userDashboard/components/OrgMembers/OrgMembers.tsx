@@ -75,7 +75,8 @@ const OrgMembers = (props: Props) => {
   if (!organization) return null
   const {organizationUsers, name: orgName, isBillingLeader} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
-    (count, {node}) => (node.role === 'BILLING_LEADER' ? count + 1 : count),
+    (count, {node}) =>
+      ['BILLING_LEADER', 'ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count,
     0
   )
 
