@@ -16,6 +16,8 @@ RUN git clone https://github.com/ParabolInc/parabol.git -b ${_PARABOL_GIT_REF} -
     mv /home/node/.env ./.env && \
     mkdir -p /home/node/parabol/node_modules && \
     mkdir -p /home/node/.npm-global && \
+    apt update -y && \
+    apt install systemtap -y && \
     NODE_OPTIONS=--max-old-space-size=20480 && \
     yarn install --frozen-lockfile && \
     yarn cache clean && \
@@ -38,7 +40,7 @@ COPY --from=base /usr/local/bin /usr/local/bin
 COPY --from=base /usr/local/include /usr/local/include
 COPY --from=base /usr/local/share/man /usr/local/share/man
 COPY --from=base /usr/local/share/doc /usr/local/share/doc
-COPY --from=base /usr/local/share/systemtap /usr/local/share/systemtap
+COPY --from=base /usr/local/systemtap /usr/local/share/systemtap
 COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=base /opt /opt
 COPY --from=base /home/node/parabol/ ${HOME}/parabol
