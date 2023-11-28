@@ -35,15 +35,23 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     })
   }
 
-  if (role === 'ORG_ADMIN' && !isSuperUser(authToken)) {
-    return standardError(new Error('Must be super user to promote user to admin'), {
+  if (role && role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN') {
+    return standardError(new Error('Invalid role'), {userId: viewerId})
+  }
+
+  const organizationUser = await r
+    .table('OrganizationUser')
+    .getAll(userId, {index: 'userId'})
+    .filter({orgId, removedAt: null})
+    .nth(0)
+    .run()
+
+  if ((role === 'ORG_ADMIN' || organizationUser.role === 'ORG_ADMIN') && !isSuperUser(authToken)) {
+    return standardError(new Error('Must be super user to promote/demote user to admin'), {
       userId: viewerId
     })
   }
 
-  if (role && role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN') {
-    return standardError(new Error('Invalid role'), {userId: viewerId})
-  }
   // if someone is leaving, make sure there is someone else to take their place
   if (userId === viewerId) {
     const leaderCount = await r
@@ -61,12 +69,6 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   }
 
   // no change required
-  const organizationUser = await r
-    .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
-    .filter({orgId, removedAt: null})
-    .nth(0)
-    .run()
   const {id: organizationUserId} = organizationUser
   if (organizationUser.role === role) {
     return {
