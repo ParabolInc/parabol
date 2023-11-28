@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
-import {useFragment} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
 import {
   AUTHENTICATION_PAGE,
@@ -9,7 +9,7 @@ import {
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../../../utils/constants'
-import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
+import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import OrgNav from '../Organization/OrgNav'
 import OrgTeams from '../OrgTeams/OrgTeams'
 
@@ -30,14 +30,13 @@ const Authentication = lazy(
 )
 
 type Props = {
-  organizationRef: OrgPage_organization$key
+  queryRef: PreloadedQuery<OrganizationQuery>
 }
 
-const OrgPage = (props: Props) => {
-  const {organizationRef} = props
-  const organization = useFragment(
-    graphql`
-      fragment OrgPage_organization on Organization {
+const query = graphql`
+  query OrganizationQuery($orgId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
         id
         ...OrgNav_organization
         ...OrgPlansAndBillingRoot_organization
@@ -45,9 +44,14 @@ const OrgPage = (props: Props) => {
         ...OrgTeams_organization
         isBillingLeader
       }
-    `,
-    organizationRef
-  )
+    }
+  }
+`
+
+const Organization = (props: Props) => {
+  const {queryRef} = props
+  const {viewer} = usePreloadedQuery<OrganizationQuery>(query, queryRef)
+  const {organization} = viewer
   const {id: orgId, isBillingLeader} = organization
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
 
@@ -92,4 +96,4 @@ const OrgPage = (props: Props) => {
   )
 }
 
-export default OrgPage
+export default Organization

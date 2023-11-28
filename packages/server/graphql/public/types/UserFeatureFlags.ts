@@ -6,7 +6,6 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   insights: ({insights}) => !!insights,
   noAISummary: ({noAISummary}) => !!noAISummary,
   noMeetingHistoryLimit: ({noMeetingHistoryLimit}) => !!noMeetingHistoryLimit,
-  checkoutFlow: ({checkoutFlow}) => !!checkoutFlow,
   retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
   gcal: ({gcal}) => !!gcal,
   adHocTeams: ({adHocTeams}) => !!adHocTeams,
