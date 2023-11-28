@@ -116,7 +116,6 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     const groupedReactjis = getGroupedReactjis(reactjis, viewerId, reactableId)
     const nextReactjiId = `${reactableId}:${reactji}`
     const isReactjiPresent = !!groupedReactjis.find((agg) => agg.id === nextReactjiId)
-    // console.log('is present', isReactjiPresent, reactji, groupedReactjis)
     if (!isReactjiPresent && groupedReactjis.length >= Threshold.MAX_REACTJIS) {
       return {error: {message: `Reactji limit reached`}}
     }
@@ -169,33 +168,29 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {meetingType, teamId} = meeting
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const organization = await dataLoader.get('organizations').load(team.orgId)
 
   const reactableCreatorId = getReactableCreatorId(reactableType, reactable, meeting)
 
   let addedKudosId = null
   if (
-    organization.featureFlags?.includes('kudos') &&
     !isRemove &&
     team.giveKudosWithEmoji &&
     reactji === team.kudosEmoji &&
     reactableCreatorId &&
     reactableCreatorId !== viewerId
   ) {
-    addedKudosId = (
-      await pg
-        .insertInto('Kudoses')
-        .values({
-          senderUserId: viewerId,
-          receiverUserId: reactableCreatorId,
-          reactableType: reactableType,
-          reactableId: reactableId,
-          teamId,
-          emoji: team.kudosEmoji
-        })
-        .returning('id')
-        .executeTakeFirst()
-    )?.id
+    addedKudosId = (await pg
+      .insertInto('Kudoses')
+      .values({
+        senderUserId: viewerId,
+        receiverUserId: reactableCreatorId,
+        reactableType: reactableType,
+        reactableId: reactableId,
+        teamId,
+        emoji: team.kudosEmoji
+      })
+      .returning('id')
+      .executeTakeFirst())!.id
 
     const senderUser = await dataLoader.get('users').loadNonNull(viewerId)
 
@@ -213,7 +208,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
 
     publishNotification(notificationsToInsert, subOptions)
 
-    analytics.kudosSent(viewerId, teamId)
+    analytics.kudosSent(viewerId, teamId, addedKudosId, reactableCreatorId)
   }
 
   const data = {reactableId, reactableType, addedKudosId}
