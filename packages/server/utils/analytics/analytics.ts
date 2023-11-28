@@ -667,12 +667,7 @@ class Analytics {
     this.track(userId, 'AutoJoined Team', {userId, teamId})
   }
 
-  kudosSent = (
-    userId: string,
-    teamId: string,
-    kudosId: number | string,
-    receiverUserId: string
-  ) => {
+  kudosSent = (userId: string, teamId: string, kudosId: number, receiverUserId: string) => {
     this.track(userId, 'Kudos Sent', {
       userId,
       teamId,
