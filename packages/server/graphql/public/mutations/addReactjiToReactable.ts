@@ -177,20 +177,18 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     reactableCreatorId &&
     reactableCreatorId !== viewerId
   ) {
-    addedKudosId = (
-      await pg
-        .insertInto('Kudos')
-        .values({
-          senderUserId: viewerId,
-          receiverUserId: reactableCreatorId,
-          reactableType: reactableType,
-          reactableId: reactableId,
-          teamId,
-          emoji: team.kudosEmoji
-        })
-        .returning('id')
-        .executeTakeFirst()
-    )?.id!
+    addedKudosId = (await pg
+      .insertInto('Kudos')
+      .values({
+        senderUserId: viewerId,
+        receiverUserId: reactableCreatorId,
+        reactableType: reactableType,
+        reactableId: reactableId,
+        teamId,
+        emoji: team.kudosEmoji
+      })
+      .returning('id')
+      .executeTakeFirst())!.id
 
     analytics.kudosSent(viewerId, teamId, addedKudosId, reactableCreatorId)
   }
