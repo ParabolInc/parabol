@@ -3,10 +3,10 @@ import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
-import GoogleClientManager from '../utils/GoogleClientManager'
+import MicrosoftClientManager from '../utils/MicrosoftClientManager'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
-import logo from '../styles/theme/images/graphics/google.svg'
+import logo from '../styles/theme/images/graphics/microsoft.svg'
 import RaisedButton from './RaisedButton'
 import clsx from 'clsx'
 
@@ -29,15 +29,15 @@ const HelpMessage = styled(StyledTip)({
   ...helpText
 })
 
-const GoogleOAuthButtonBlock = (props: Props) => {
+const MicrosoftOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint} = props
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history, location} = useRouter()
-  const label = isCreate ? 'Sign up with Google' : 'Sign in with Google'
+  const label = isCreate ? 'Sign up with Microsoft' : 'Sign in with Microsoft'
   const openOAuth = () => {
     const mutationProps = {onError, onCompleted, submitMutation, submitting}
-    GoogleClientManager.openOAuth(
+    MicrosoftClientManager.openOAuth(
       atmosphere,
       mutationProps,
       history,
@@ -56,7 +56,7 @@ const GoogleOAuthButtonBlock = (props: Props) => {
           submitting ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-700'
         )}
       >
-        <img src={logo} className={clsx('mx-4 h-[18px] w-[18px]', submitting && 'contrast-0')} />
+        <img src={logo} className={clsx('mx-4 h-[18px] w-[18px]', submitting && 'saturate-0')} />
         <div>{label}</div>
       </RaisedButton>
       {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}
@@ -65,4 +65,4 @@ const GoogleOAuthButtonBlock = (props: Props) => {
   )
 }
 
-export default GoogleOAuthButtonBlock
+export default MicrosoftOAuthButtonBlock
