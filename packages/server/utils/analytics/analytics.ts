@@ -161,7 +161,7 @@ export type AnalyticsEvent =
   // Conversion Tracking
   | 'Conversion Modal Pay Later Clicked'
   // kudos
-  | 'Kudos sent'
+  | 'Kudos Sent'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
   // Lowercase words are for backwards compatibility
@@ -667,10 +667,12 @@ class Analytics {
     this.track(userId, 'AutoJoined Team', {userId, teamId})
   }
 
-  kudosSent = (userId: string, teamId: string) => {
-    this.track(userId, 'Kudos sent', {
+  kudosSent = (userId: string, teamId: string, kudosId: number, receiverUserId: string) => {
+    this.track(userId, 'Kudos Sent', {
       userId,
-      teamId
+      teamId,
+      kudosId,
+      receiverUserId
     })
   }
 

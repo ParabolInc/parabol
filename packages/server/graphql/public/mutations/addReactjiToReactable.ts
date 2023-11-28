@@ -190,9 +190,9 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
         })
         .returning('id')
         .executeTakeFirst()
-    )?.id
+    )?.id!
 
-    analytics.kudosSent(viewerId, teamId)
+    analytics.kudosSent(viewerId, teamId, addedKudosId, reactableCreatorId)
   }
 
   const data = {reactableId, reactableType, addedKudosId}
