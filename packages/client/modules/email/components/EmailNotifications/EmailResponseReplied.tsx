@@ -10,7 +10,7 @@ import {FONT_FAMILY} from '../../../../styles/typographyV2'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
-import anonymousAvatar from '../../styles/theme/images/anonymous-avatar.svg'
+import anonymousAvatar from '../../../../styles/theme/images/anonymous-avatar.svg'
 
 const editorStyles = {
   backgroundColor: '#FFFFFF',

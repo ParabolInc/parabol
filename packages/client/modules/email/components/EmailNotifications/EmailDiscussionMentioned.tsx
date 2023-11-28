@@ -11,7 +11,7 @@ import makeAppURL from '../../../../utils/makeAppURL'
 import fromStageIdToUrl from '../../../../utils/meetings/fromStageIdToUrl'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
-import anonymousAvatar from '../../styles/theme/images/anonymous-avatar.svg'
+import anonymousAvatar from '../../../../styles/theme/images/anonymous-avatar.svg'
 
 const editorStyles: React.CSSProperties = {
   backgroundColor: '#FFFFFF',
