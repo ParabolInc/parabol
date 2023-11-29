@@ -61,6 +61,8 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
     }
     const {type} = bestIdentity
     if (type === AuthIdentityTypeEnum.GOOGLE) return {error: AuthenticationError.USER_EXISTS_GOOGLE}
+    if (type === AuthIdentityTypeEnum.MICROSOFT)
+      return {error: AuthenticationError.USER_EXISTS_MICROSOFT}
     throw new Error(`Unknown identity type: ${type}`)
   }
   const {hashedPassword} = localIdentity

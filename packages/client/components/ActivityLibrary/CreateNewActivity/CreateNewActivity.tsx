@@ -112,6 +112,9 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
 const query = graphql`
   query CreateNewActivityQuery {
     viewer {
+      featureFlags {
+        noTemplateLimit
+      }
       preferredTeamId
       teams {
         id
@@ -158,7 +161,7 @@ export const CreateNewActivity = (props: Props) => {
     return selectedActivity
   })
   const {viewer} = data
-  const {teams, availableTemplates, preferredTeamId} = viewer
+  const {teams, availableTemplates, preferredTeamId, featureFlags} = viewer
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
@@ -287,7 +290,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none focus:ring-2 focus:ring-offset-8'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none'
                 value={activity.type}
               >
                 <ActivityCard
@@ -331,7 +334,7 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          {selectedTeam.tier === 'starter' ? (
+          {selectedTeam.tier === 'starter' && !featureFlags.noTemplateLimit ? (
             <div className='mx-auto flex h-12 items-center gap-24'>
               <div className='w-96'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s

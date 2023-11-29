@@ -42,8 +42,11 @@ interface Window {
     prblIn: string | undefined
     AUTH_INTERNAL_ENABLED: boolean
     AUTH_GOOGLE_ENABLED: boolean
+    AUTH_MICROSOFT_ENABLED: boolean
     AUTH_SSO_ENABLED: boolean
     AMPLITUDE_WRITE_KEY: string
+    microsoftTenantId: string
+    microsoft: string
   }
 }
 declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}

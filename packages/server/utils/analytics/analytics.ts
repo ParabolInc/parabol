@@ -54,6 +54,7 @@ export type OrgTierChangeEventProperties = {
   orgName: string
   oldTier: string
   newTier: string
+  isTrial?: boolean
   reasonsForLeaving?: ReasonToDowngradeEnum[]
   otherTool?: string
   billingLeaderEmail?: string

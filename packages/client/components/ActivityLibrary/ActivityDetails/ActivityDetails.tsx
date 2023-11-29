@@ -38,7 +38,6 @@ export const query = graphql`
     viewer {
       ...ActivityDetailsSidebar_viewer
       preferredTeamId
-      tier
       activity(activityId: $activityId) {
         ...ActivityDetails_template @relay(mask: false)
       }

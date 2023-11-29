@@ -13,6 +13,7 @@ interface Input {
   isArchived?: boolean
   isPaid?: boolean
   tier: TierEnum
+  trialStartDate?: Date | null
   orgId: string
   qualAIMeetingsCount?: number
   isOnboardTeam?: boolean
@@ -33,6 +34,7 @@ export default class Team {
   lastMeetingType: MeetingTypeEnum
   lockMessageHTML?: string | null
   tier: TierEnum
+  trialStartDate?: Date | null
   orgId: string
   isOnboardTeam: boolean
   isOneOnOneTeam?: boolean
@@ -56,6 +58,7 @@ export default class Team {
       name,
       orgId,
       tier,
+      trialStartDate,
       qualAIMeetingsCount,
       updatedAt
     } = input
@@ -64,6 +67,7 @@ export default class Team {
     this.createdBy = createdBy
     this.orgId = orgId
     this.tier = tier
+    this.trialStartDate = trialStartDate
     this.id = id ?? generateUID()
     this.createdAt = createdAt ?? new Date()
     this.updatedAt = updatedAt ?? new Date()

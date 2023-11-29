@@ -44,7 +44,6 @@ import SuggestedAction from './SuggestedAction'
 import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
-import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import TimelineEvent from '../../database/types/TimelineEvent'
@@ -648,10 +647,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const teamMemberId = toTeamMemberId(teamId, userId || id)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
-    },
-    tier: {
-      type: new GraphQLNonNull(TierEnum),
-      description: 'The highest tier of any org the user belongs to'
     },
     tms: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
