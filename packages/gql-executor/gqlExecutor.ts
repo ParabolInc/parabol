@@ -27,6 +27,17 @@ const run = async () => {
   const subscriber = new RedisInstance('gql_sub')
   const executorChannel = GQLExecutorChannelId.join(SERVER_ID)
 
+  // on shutdown, remove consumer from the group
+  process.on('SIGTERM', async () => {
+    await publisher.xgroup(
+      'DELCONSUMER',
+      ServerChannel.GQL_EXECUTOR_STREAM,
+      ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
+      executorChannel
+    )
+    process.exit()
+  })
+
   // subscribe to direct messages
   const onMessage = async (_channel: string, message: string) => {
     const {jobId, socketServerId, request} = JSON.parse(message) as PubSubPromiseMessage
