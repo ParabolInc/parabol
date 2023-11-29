@@ -1,7 +1,7 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import {PreloadedQuery, commitLocalUpdate, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
@@ -27,6 +27,7 @@ import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import {useDebounce} from 'use-debounce'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -204,11 +205,6 @@ export const ActivityLibrary = (props: Props) => {
       if (!viewer) return
       viewer.setValue(value, 'activityLibrarySearch')
     })
-    if (value.length > 2) {
-      SendClientSideEvent(atmosphere, 'Activity Library Searched', {
-        queryString: value
-      })
-    }
   }
 
   const templates = useMemo(() => {
@@ -227,6 +223,15 @@ export const ActivityLibrary = (props: Props) => {
     onQueryChange,
     resetQuery
   } = useSearchFilter(templates, getTemplateDocumentValue)
+  const [queryString] = useDebounce(searchQuery, 500)
+
+  useEffect(() => {
+    if (queryString) {
+      SendClientSideEvent(atmosphere, 'Activity Library Searched', {
+        queryString
+      })
+    }
+  }, [queryString])
 
   const {match} = useRouter<{categoryId?: string}>()
   const {
