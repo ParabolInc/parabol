@@ -5,6 +5,7 @@ import Comment from '../../../database/types/Comment'
 import DiscussStage from '../../../database/types/DiscussStage'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const buildCommentContentBlock = (title: string, content: string, explainerText?: string) => {
   const explainerBlock = explainerText ? `<i>${explainerText}</i><br>` : ''
@@ -31,7 +32,6 @@ const addAIGeneratedContentToThreads = async (
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  const {tier} = team
   const commentPromises = stages.map(async ({discussionId, reflectionGroupId}, idx) => {
     const group = groups.find((group) => group.id === reflectionGroupId)
     if (!group?.summary && !group?.discussionPromptQuestion) return
@@ -40,7 +40,7 @@ const addAIGeneratedContentToThreads = async (
     if (group.summary) {
       const topicSummaryExplainerText =
         idx === 0
-          ? tier === 'starter'
+          ? getFeatureTier(team) === 'starter'
             ? AIExplainer.STARTER
             : AIExplainer.PREMIUM_REFLECTIONS
           : undefined

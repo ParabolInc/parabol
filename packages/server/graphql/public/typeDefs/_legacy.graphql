@@ -266,6 +266,7 @@ The types of authentication strategies
 enum AuthIdentityTypeEnum {
   LOCAL
   GOOGLE
+  MICROSOFT
 }
 
 """
@@ -2184,10 +2185,9 @@ type OrganizationUser {
   """
   user: User!
 
-  """
-  Their level of access to features on the parabol site
-  """
   tier: TierEnum
+
+  billingTier: TierEnum
 }
 
 """

@@ -8,6 +8,7 @@ import {
   Forum,
   Group,
   Groups,
+  Key,
   PlaylistAddCheck,
   Timeline,
   Warning,
@@ -69,7 +70,8 @@ const iconLookup = {
   groups: <Groups />,
   warning: <Warning />,
   work: <WorkOutline />,
-  timeline: <Timeline />
+  timeline: <Timeline />,
+  key: <Key />
 }
 
 interface Props {

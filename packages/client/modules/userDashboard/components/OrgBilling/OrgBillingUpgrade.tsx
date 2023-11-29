@@ -47,7 +47,7 @@ const OrgBillingUpgrade = (props: Props) => {
     graphql`
       fragment OrgBillingUpgrade_organization on Organization {
         id
-        tier
+        billingTier
         orgUserCount {
           activeUserCount
         }
@@ -55,7 +55,7 @@ const OrgBillingUpgrade = (props: Props) => {
     `,
     organizationRef
   )
-  const {id: orgId, tier, orgUserCount} = organization
+  const {id: orgId, billingTier, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const {togglePortal, closePortal, modalPortal} = useModal()
   const onUpgrade = () => invoiceListRefetch?.({orgId, first: 3})
@@ -70,7 +70,7 @@ const OrgBillingUpgrade = (props: Props) => {
           activeUserCount={activeUserCount}
         />
       )}
-      {tier === 'starter' && (
+      {billingTier === 'starter' && (
         <Panel>
           <Inner>
             <Title>Upgrade</Title>

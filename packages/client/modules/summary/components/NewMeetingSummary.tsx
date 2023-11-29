@@ -67,13 +67,17 @@ const NewMeetingSummary = (props: Props) => {
 
   return (
     <>
-      <div className='hidden print:hidden lg:block'>
-        <DashTopBar queryRef={data} toggle={toggle} />
-      </div>
-      <div className='flex min-h-screen bg-slate-200'>
+      {!isDemoRoute() && (
         <div className='hidden print:hidden lg:block'>
-          <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+          <DashTopBar queryRef={data} toggle={toggle} />
         </div>
+      )}
+      <div className='flex min-h-screen bg-slate-200'>
+        {!isDemoRoute() && (
+          <div className='hidden print:hidden lg:block'>
+            <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+          </div>
+        )}
         <div className='w-full'>
           <MeetingSummaryEmail
             appOrigin={window.location.origin}

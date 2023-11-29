@@ -78,13 +78,13 @@ const OrgPlanDrawer = (props: Props) => {
       fragment OrgPlanDrawer_organization on Organization {
         id
         showDrawer
-        tier
+        billingTier
         showConfetti
       }
     `,
     organizationRef
   )
-  const {id: orgId, tier, showDrawer, showConfetti} = organization
+  const {id: orgId, billingTier, showDrawer, showConfetti} = organization
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.ORG_DRAWER)
 
@@ -113,7 +113,7 @@ const OrgPlanDrawer = (props: Props) => {
               <CloseIcon />
             </StyledCloseButton>
           </DrawerHeader>
-          <OrgPlanDrawerContent tier={tier} />
+          <OrgPlanDrawerContent tier={billingTier} />
         </Drawer>
       </ResponsiveDashSidebar>
       <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform'>

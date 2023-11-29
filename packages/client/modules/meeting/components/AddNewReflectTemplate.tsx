@@ -50,11 +50,20 @@ const AddNewReflectTemplate = (props: Props) => {
       fragment AddNewReflectTemplate_team on Team {
         id
         tier
+        viewerTeamMember {
+          id
+          user {
+            id
+            featureFlags {
+              noTemplateLimit
+            }
+          }
+        }
       }
     `,
     teamRef
   )
-  const {tier, id: teamId} = team
+  const {id: teamId, tier, viewerTeamMember} = team
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -62,9 +71,11 @@ const AddNewReflectTemplate = (props: Props) => {
       window.clearTimeout(errorTimerId.current)
     }
   }, [])
+  const canEditTemplates =
+    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const addNewTemplate = () => {
     if (submitting) return
-    if (tier === 'starter') {
+    if (!canEditTemplates) {
       displayUpgradeDetails()
       return
     }
@@ -95,7 +106,7 @@ const AddNewReflectTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddRetroTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {tier === 'starter' && '🔒'}
+        Create New Template {!canEditTemplates && '🔒'}
       </AddRetroTemplateLink>
     </div>
   )

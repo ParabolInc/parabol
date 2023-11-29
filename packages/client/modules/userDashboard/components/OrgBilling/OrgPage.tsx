@@ -3,6 +3,7 @@ import React, {lazy} from 'react'
 import {useFragment} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
 import {
+  AUTHENTICATION_PAGE,
   BILLING_PAGE,
   MEMBERS_PAGE,
   ORG_SETTINGS_PAGE,
@@ -21,6 +22,12 @@ const OrgMembers = lazy(
 )
 
 const OrgDetails = lazy(() => import(/* webpackChunkName: 'OrgDetails' */ './OrgDetails'))
+const Authentication = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'Authentication' */ '../../containers/OrgAuthentication/OrgAuthenticationRoot'
+    )
+)
 
 type Props = {
   organizationRef: OrgPage_organization$key
@@ -74,6 +81,11 @@ const OrgPage = (props: Props) => {
           exact
           path={`${match.url}/${ORG_SETTINGS_PAGE}`}
           render={(p) => <OrgDetails {...p} organizationRef={organization} />}
+        />
+        <Route
+          exact
+          path={`${match.url}/${AUTHENTICATION_PAGE}`}
+          render={(p) => <Authentication {...p} orgId={orgId} />}
         />
       </Switch>
     </section>
