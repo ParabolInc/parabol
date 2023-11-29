@@ -4,9 +4,11 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import GoogleClientManager from '../utils/GoogleClientManager'
-import GoogleOAuthButton from './GoogleOAuthButton'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
+import logo from '../styles/theme/images/graphics/google.svg'
+import RaisedButton from './RaisedButton'
+import clsx from 'clsx'
 
 interface Props {
   invitationToken?: string
@@ -45,11 +47,21 @@ const GoogleOAuthButtonBlock = (props: Props) => {
     )
   }
   return (
-    <React.Fragment>
-      <GoogleOAuthButton label={label} onClick={openOAuth} waiting={submitting} />
+    <>
+      <RaisedButton
+        onClick={openOAuth}
+        waiting={submitting}
+        className={clsx(
+          'mt-4 h-10 w-60 justify-start px-4 disabled:opacity-100',
+          submitting ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-700'
+        )}
+      >
+        <img src={logo} className={clsx('mx-4 h-[18px] w-[18px]', submitting && 'contrast-0')} />
+        <div>{label}</div>
+      </RaisedButton>
       {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}
       {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
-    </React.Fragment>
+    </>
   )
 }
 

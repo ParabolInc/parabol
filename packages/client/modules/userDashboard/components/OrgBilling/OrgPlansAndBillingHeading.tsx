@@ -71,6 +71,7 @@ const OrgPlansAndBillingHeading = (props: Props) => {
       fragment OrgPlansAndBillingHeading_organization on Organization {
         id
         name
+        billingTier
         tier
         showDrawer
       }
@@ -78,7 +79,7 @@ const OrgPlansAndBillingHeading = (props: Props) => {
     organizationRef
   )
   const atmosphere = useAtmosphere()
-  const {id: orgId, name, tier} = organization
+  const {id: orgId, name, billingTier, tier} = organization
   const tierName = upperFirst(tier)
 
   const handleClick = () => {
@@ -95,7 +96,9 @@ const OrgPlansAndBillingHeading = (props: Props) => {
       <Title>{'Plans & Billing'}</Title>
       <SubtitleBlock>
         <Subtitle isBold>{name}</Subtitle>
-        <Subtitle>{` is currently on the `}</Subtitle>
+        <Subtitle>{` is currently on ${
+          tier !== billingTier ? 'a Free Trial for ' : ''
+        }the `}</Subtitle>
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
       <StyledButton onClick={handleClick}>

@@ -1,6 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import IUser from '../../../postgres/types/IUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {fromEpochSeconds} from '../../../utils/epochTime'
@@ -12,6 +11,7 @@ import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
+import getKysely from '../../../postgres/getKysely'
 
 const getBillingLeaderUser = async (
   email: string | null | undefined,
@@ -57,6 +57,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   {dataLoader}
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
 
   // VALIDATION
@@ -123,16 +124,19 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
           tierLimitExceededAt: null,
           scheduledLockAt: null,
           lockedAt: null,
-          updatedAt: now
+          updatedAt: now,
+          trialStartDate: null
         })
     }).run(),
-    updateTeamByOrgId(
-      {
+    pg
+      .updateTable('Team')
+      .set({
         isPaid: true,
-        tier: 'enterprise'
-      },
-      orgId
-    ),
+        tier: 'enterprise',
+        trialStartDate: null
+      })
+      .where('orgId', '=', orgId)
+      .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
@@ -145,6 +149,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     orgId,
     domain: org.activeDomain,
     orgName: org.name,
+    isTrial: !!org.trialStartDate,
     oldTier: 'starter',
     newTier: 'enterprise',
     billingLeaderEmail: user.email

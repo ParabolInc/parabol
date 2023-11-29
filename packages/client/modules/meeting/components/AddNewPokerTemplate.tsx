@@ -50,11 +50,20 @@ const AddNewPokerTemplate = (props: Props) => {
       fragment AddNewPokerTemplate_team on Team {
         id
         tier
+        viewerTeamMember {
+          id
+          user {
+            id
+            featureFlags {
+              noTemplateLimit
+            }
+          }
+        }
       }
     `,
     teamRef
   )
-  const {id: teamId, tier} = team
+  const {id: teamId, tier, viewerTeamMember} = team
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -62,9 +71,11 @@ const AddNewPokerTemplate = (props: Props) => {
       window.clearTimeout(errorTimerId.current)
     }
   }, [])
+  const canEditTemplates =
+    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const addNewTemplate = () => {
     if (submitting) return
-    if (tier === 'starter') {
+    if (!canEditTemplates) {
       displayUpgradeDetails()
       return
     }
@@ -98,7 +109,7 @@ const AddNewPokerTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {tier === 'starter' && '🔒'}
+        Create New Template {!canEditTemplates && '🔒'}
       </AddPokerTemplateLink>
     </div>
   )

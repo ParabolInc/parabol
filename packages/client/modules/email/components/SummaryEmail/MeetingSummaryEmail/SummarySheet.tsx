@@ -232,7 +232,7 @@ const SummarySheet = (props: Props) => {
           prompt={`How’d your meeting go?`}
           tagline='We’re eager for your feedback!'
         />
-        <LogoFooter corsOptions={corsOptions} />
+        <LogoFooter corsOptions={corsOptions} appOrigin={appOrigin} />
       </tbody>
     </table>
   )

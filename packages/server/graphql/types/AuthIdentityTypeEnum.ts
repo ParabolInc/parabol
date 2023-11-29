@@ -5,7 +5,8 @@ const AuthIdentityTypeEnum = new GraphQLEnumType({
   description: 'The types of authentication strategies',
   values: {
     LOCAL: {},
-    GOOGLE: {}
+    GOOGLE: {},
+    MICROSOFT: {}
   }
 })
 

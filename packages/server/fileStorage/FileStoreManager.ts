@@ -2,6 +2,8 @@ import generateUID from '../generateUID'
 
 export default abstract class FileStoreManager {
   abstract checkExists(fileName: string): Promise<boolean>
+  abstract prependPath(partialPath: string): string
+  abstract getPublicFileLocation(fullPath: string): string
 
   protected abstract putFile(file: Buffer, fullPath: string): Promise<string>
   protected abstract putUserFile(file: Buffer, partialPath: string): Promise<string>
