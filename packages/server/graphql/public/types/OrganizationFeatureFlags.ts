@@ -13,7 +13,8 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   oneOnOne: ({oneOnOne}) => !!oneOnOne,
   publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
-  meetingInception: ({meetingInception}) => !!meetingInception
+  meetingInception: ({meetingInception}) => !!meetingInception,
+  kudos: ({kudos}) => !!kudos
 }
 
 export default OrganizationFeatureFlags

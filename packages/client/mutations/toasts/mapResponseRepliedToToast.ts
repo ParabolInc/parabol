@@ -27,7 +27,7 @@ const mapResponseRepliedToToast = (
 ): Snack | null => {
   if (!notification) return null
   const {id: notificationId, meeting, author, response} = notification
-  const {preferredName: authorName} = author
+  const authorName = author ? author.preferredName : 'Anonymous'
   const {id: meetingId, name: meetingName} = meeting
 
   // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
