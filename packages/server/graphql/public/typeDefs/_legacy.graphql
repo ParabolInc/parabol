@@ -5919,36 +5919,6 @@ type Mutation {
   ): AddPokerTemplateScaleValuePayload!
 
   """
-  Add or remove a reactji from a reactable
-  """
-  addReactjiToReactable(
-    """
-    The id of the reactable
-    """
-    reactableId: ID!
-
-    """
-    the type of the
-    """
-    reactableType: ReactableEnum!
-
-    """
-    the id of the reactji to add
-    """
-    reactji: String!
-
-    """
-    If true, remove the reaction, else add it
-    """
-    isRemove: Boolean
-
-    """
-    The id of the meeting
-    """
-    meetingId: ID!
-  ): AddReactjiToReactablePayload!
-
-  """
   Add a new template full of prompts
   """
   addReflectTemplate(parentTemplateId: ID, teamId: ID!): AddReflectTemplatePayload
@@ -7319,18 +7289,6 @@ input AddTemplateScaleInput {
   The label for this value, e.g., XS, M, L
   """
   label: String!
-}
-
-"""
-Return object for AddReactjiToReactablePayload
-"""
-union AddReactjiToReactablePayload = ErrorPayload | AddReactjiToReactableSuccess
-
-type AddReactjiToReactableSuccess {
-  """
-  the Reactable with the updated list of reactjis
-  """
-  reactable: Reactable!
 }
 
 """

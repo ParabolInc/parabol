@@ -46,7 +46,8 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
   if (existingUser) {
     const {id: viewerId, identities, rol} = existingUser
     let microsoftIdentity = identities.find(
-      (identity): identity is AuthIdentityMicrosoft => identity.type === AuthIdentityTypeEnum.MICROSOFT
+      (identity): identity is AuthIdentityMicrosoft =>
+        identity.type === AuthIdentityTypeEnum.MICROSOFT
     )
     if (!microsoftIdentity) {
       const [bestIdentity] = identities

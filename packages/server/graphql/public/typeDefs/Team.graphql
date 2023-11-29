@@ -174,4 +174,14 @@ type Team {
   The team member that is the viewer
   """
   viewerTeamMember: TeamMember
+
+  """
+  Enable giving kudos with emoji
+  """
+  giveKudosWithEmoji: Boolean!
+
+  """
+  Emoji that will be used for giving kudos
+  """
+  kudosEmoji: String!
 }
