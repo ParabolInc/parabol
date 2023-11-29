@@ -7,7 +7,6 @@ import GcalClientManager from '../../utils/GcalClientManager'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useFragment} from 'react-relay'
 import {ScheduleMeetingButton_team$key} from '~/__generated__/ScheduleMeetingButton_team.graphql'
-import {ScheduleMeetingButton_viewer$key} from '~/__generated__/ScheduleMeetingButton_viewer.graphql'
 import {MenuMutationProps} from '../../hooks/useMutationProps'
 import useModal from '../../hooks/useModal'
 
@@ -15,7 +14,6 @@ type Props = {
   mutationProps: MenuMutationProps
   handleStartActivity: (gcalInput?: CreateGcalEventInput) => void
   teamRef: ScheduleMeetingButton_team$key
-  viewerRef: ScheduleMeetingButton_viewer$key
 }
 
 const ScheduleMeetingButton = (props: Props) => {

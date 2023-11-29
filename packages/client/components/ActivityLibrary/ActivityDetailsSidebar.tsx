@@ -78,7 +78,6 @@ const ActivityDetailsSidebar = (props: Props) => {
           id
           name
         }
-        ...ScheduleMeetingButton_viewer
       }
     `,
     viewerRef
@@ -399,7 +398,6 @@ const ActivityDetailsSidebar = (props: Props) => {
                       handleStartActivity={handleStartActivity}
                       mutationProps={mutationProps}
                       teamRef={selectedTeam}
-                      viewerRef={viewer}
                     />
                   </>
                 )}

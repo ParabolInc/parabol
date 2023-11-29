@@ -110,7 +110,6 @@ const query = graphql`
       featureFlags {
         azureDevOps
         msTeams
-        gcal
       }
     }
   }
