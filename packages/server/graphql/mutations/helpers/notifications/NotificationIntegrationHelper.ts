@@ -28,8 +28,6 @@ export type NotificationIntegration = {
     user: User,
     response: TeamPromptResponse
   ): Promise<NotifyResponse>
-
-  sendNotificationToUser?(notificationId: string, userId: string): Promise<NotifyResponse>
 }
 
 export type NotificationIntegrationHelper<NotificationChannel> = (
