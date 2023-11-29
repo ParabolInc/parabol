@@ -11,7 +11,6 @@ enum UserFlagEnum {
   noMeetingHistoryLimit
   checkoutFlow
   retrosInDisguise
-  gcal
   adHocTeams
   noTemplateLimit
   signUpDestinationTeam
@@ -30,7 +29,6 @@ type UserFeatureFlags {
   noMeetingHistoryLimit: Boolean!
   checkoutFlow: Boolean!
   retrosInDisguise: Boolean!
-  gcal: Boolean!
   adHocTeams: Boolean!
   noTemplateLimit: Boolean!
   signUpDestinationTeam: Boolean!

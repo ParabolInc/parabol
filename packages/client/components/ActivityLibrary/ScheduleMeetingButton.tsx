@@ -19,25 +19,13 @@ type Props = {
 }
 
 const ScheduleMeetingButton = (props: Props) => {
-  const {mutationProps, handleStartActivity, teamRef, viewerRef} = props
+  const {mutationProps, handleStartActivity, teamRef} = props
   const atmosphere = useAtmosphere()
   const [hasStartedGcalAuthTeamId, setHasStartedGcalAuthTeamId] = useState<null | string>(null)
   const {togglePortal: toggleModal, modalPortal} = useModal({
     id: 'createGcalEventModal'
   })
   const {submitting} = mutationProps
-
-  const viewer = useFragment(
-    graphql`
-      fragment ScheduleMeetingButton_viewer on User {
-        featureFlags {
-          gcal
-        }
-      }
-    `,
-    viewerRef
-  )
-  const hasGcalFlag = viewer.featureFlags.gcal
 
   const team = useFragment(
     graphql`
@@ -84,7 +72,7 @@ const ScheduleMeetingButton = (props: Props) => {
     }
   }, [hasStartedGcalAuth, viewerGcalIntegration])
 
-  if (!hasGcalFlag || !cloudProvider) return null
+  if (!cloudProvider) return null
   return (
     <>
       <SecondaryButton onClick={handleClick} waiting={submitting} className='h-14'>

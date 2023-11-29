@@ -70,7 +70,6 @@ const ActivityDetailsSidebar = (props: Props) => {
     graphql`
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
-          gcal
           adHocTeams
           noTemplateLimit
         }
