@@ -24,7 +24,7 @@ const prod = async (isDeploy, noDeps) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy, noDeps})
-  const clientConfig = makeClientConfig({isDeploy: isDeploy || noDeps})
+  const clientConfig = makeClientConfig({minimize: isDeploy})
   await Promise.all([compile(serversConfig), compile(clientConfig)])
 }
 

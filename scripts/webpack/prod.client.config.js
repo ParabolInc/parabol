@@ -33,7 +33,7 @@ const babelPresets = [
   ]
 ]
 
-module.exports = ({isDeploy, isStats}) => ({
+module.exports = ({minimize, isStats}) => ({
   stats: {
     assets: false
   },
@@ -66,19 +66,14 @@ module.exports = ({isDeploy, isStats}) => ({
     modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
   },
   optimization: {
-    minimize: Boolean(isDeploy || isStats),
+    minimize,
     minimizer: [
       new TerserPlugin({
-        parallel: isDeploy ? 2 : true,
+        minify: TerserPlugin.swcMinify,
+        parallel: true,
         terserOptions: {
-          output: {
-            comments: false,
-            ecma: 6
-          },
-          compress: {
-            ecma: 6
-          }
-          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+          mangle: true,
+          compress: true
         }
       })
     ]
