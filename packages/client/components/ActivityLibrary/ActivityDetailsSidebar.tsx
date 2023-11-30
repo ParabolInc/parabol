@@ -70,7 +70,6 @@ const ActivityDetailsSidebar = (props: Props) => {
     graphql`
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
-          gcal
           adHocTeams
           noTemplateLimit
         }
@@ -79,7 +78,6 @@ const ActivityDetailsSidebar = (props: Props) => {
           id
           name
         }
-        ...ScheduleMeetingButton_viewer
       }
     `,
     viewerRef
@@ -400,7 +398,6 @@ const ActivityDetailsSidebar = (props: Props) => {
                       handleStartActivity={handleStartActivity}
                       mutationProps={mutationProps}
                       teamRef={selectedTeam}
-                      viewerRef={viewer}
                     />
                   </>
                 )}

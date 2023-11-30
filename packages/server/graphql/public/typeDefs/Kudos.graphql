@@ -1,0 +1,24 @@
+"""
+A Kudos
+"""
+type Kudos {
+  """
+  Id
+  """
+  id: Int!
+
+  """
+  User who received kudos
+  """
+  receiverUser: User!
+
+  """
+  Use who sent kudos
+  """
+  senderUser: User!
+
+  """
+  emoji name
+  """
+  emoji: String!
+}

@@ -69,6 +69,7 @@
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
+          "Kudos": "../../postgres/types/Kudos#Kudos",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "NewMeetingPhase": "../../database/types/GenericMeetingPhase #default as GenericMeetingPhaseDB",
@@ -95,6 +96,7 @@
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
+          "Reactable": "../../database/types/Reactable#Reactable",
           "RetrospectiveMeetingSettings": "../../database/types/MeetingSettingsRetrospective#default",
           "SAML": "./types/SAML#SAMLSource",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
@@ -131,6 +133,7 @@
           "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
+          "AddReactjiToReactableSuccess": "./types/AddReactjiToReactableSuccess#AddReactjiToReactableSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource"
         }

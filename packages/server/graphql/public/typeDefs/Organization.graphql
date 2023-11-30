@@ -195,4 +195,5 @@ type OrganizationFeatureFlags {
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
   meetingInception: Boolean!
+  kudos: Boolean!
 }

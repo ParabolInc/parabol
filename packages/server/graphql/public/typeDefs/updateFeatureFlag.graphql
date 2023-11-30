@@ -10,7 +10,6 @@ enum UserFlagEnum {
   noAISummary
   noMeetingHistoryLimit
   retrosInDisguise
-  gcal
   adHocTeams
   noTemplateLimit
   signUpDestinationTeam
@@ -28,7 +27,6 @@ type UserFeatureFlags {
   noAISummary: Boolean!
   noMeetingHistoryLimit: Boolean!
   retrosInDisguise: Boolean!
-  gcal: Boolean!
   adHocTeams: Boolean!
   noTemplateLimit: Boolean!
   signUpDestinationTeam: Boolean!

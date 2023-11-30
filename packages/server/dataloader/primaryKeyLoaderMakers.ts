@@ -6,6 +6,7 @@ import getTeamsByIds from '../postgres/queries/getTeamsByIds'
 import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
 import getTemplateScaleRefsByIds from '../postgres/queries/getTemplateScaleRefsByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
+import {getKudosesByIds} from '../postgres/queries/getKudosesByIds'
 import getMeetingTemplatesByIds from '../postgres/queries/getMeetingTemplatesByIds'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 
@@ -18,3 +19,4 @@ export const teamPromptResponses = primaryKeyLoaderMaker(getTeamPromptResponsesB
 export const meetingSeries = primaryKeyLoaderMaker(getMeetingSeriesByIds)
 export const meetingTemplates = primaryKeyLoaderMaker(getMeetingTemplatesByIds)
 export const domainJoinRequests = primaryKeyLoaderMaker(getDomainJoinRequestsByIds)
+export const kudoses = primaryKeyLoaderMaker(getKudosesByIds)
