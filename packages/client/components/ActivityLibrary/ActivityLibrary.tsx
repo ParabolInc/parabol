@@ -223,15 +223,15 @@ export const ActivityLibrary = (props: Props) => {
     onQueryChange,
     resetQuery
   } = useSearchFilter(templates, getTemplateDocumentValue)
-  const [queryString] = useDebounce(searchQuery, 500)
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500)
 
   useEffect(() => {
-    if (queryString) {
+    if (debouncedSearchQuery) {
       SendClientSideEvent(atmosphere, 'Activity Library Searched', {
-        queryString
+        debouncedSearchQuery
       })
     }
-  }, [queryString])
+  }, [debouncedSearchQuery])
 
   const {match} = useRouter<{categoryId?: string}>()
   const {
