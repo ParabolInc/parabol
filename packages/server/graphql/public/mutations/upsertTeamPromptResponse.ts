@@ -87,13 +87,10 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     const oldKudosUserIds = oldTeamPromptResponse
       ? getKudosUserIdsFromJson(oldTeamPromptResponse.content, kudosEmoji)
       : []
-    console.log('oldKudosUserIds', oldKudosUserIds)
     const newKudosUserIds = getKudosUserIdsFromJson(contentJSON, kudosEmoji)
-    console.log('newKudosUserIds', newKudosUserIds)
     kudosUserIds = newKudosUserIds.filter(
       (userId) => !oldKudosUserIds.includes(userId) && userId !== viewerId
     )
-    console.log('difference', kudosUserIds)
   }
 
   let insertedKudoses = null
@@ -112,10 +109,8 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
       .values(kudosRows)
       .returning(['id', 'receiverUserId', 'emoji'])
       .execute()
-    console.log('insertedKudoses', insertedKudoses)
 
     insertedKudoses.forEach((kudos) => {
-      console.log('analytis', kudos.id, kudos.receiverUserId)
       analytics.kudosSent(viewerId, teamId, kudos.id, kudos.receiverUserId)
     })
   }
