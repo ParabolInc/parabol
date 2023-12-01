@@ -28,6 +28,7 @@ const EmailResponseMentioned = (props: Props) => {
           id
           name
         }
+        kudosEmoji
       }
     `,
     notificationRef

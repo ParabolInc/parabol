@@ -39,4 +39,9 @@ type NotifyResponseMentioned implements Notification {
   The meeting the user was mentioned in.
   """
   meeting: TeamPromptMeeting!
+
+  """
+  Kudos emoji if mention includes kudos
+  """
+  kudosEmoji: String
 }

@@ -12,12 +12,15 @@ import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import {getKudosUserIdsFromJson} from './helpers/getKudosUserIdsFromJson'
+import getKysely from '../../../postgres/getKysely'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
   {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -75,6 +78,48 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     })
   )
 
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  // TODO: don't hardcode, convert
+  const kudosEmoji = '❤️'
+
+  let kudosUserIds = null
+  if (team.giveKudosWithEmoji && kudosEmoji) {
+    const oldKudosUserIds = oldTeamPromptResponse
+      ? getKudosUserIdsFromJson(oldTeamPromptResponse.content, kudosEmoji)
+      : []
+    console.log('oldKudosUserIds', oldKudosUserIds)
+    const newKudosUserIds = getKudosUserIdsFromJson(contentJSON, kudosEmoji)
+    console.log('newKudosUserIds', newKudosUserIds)
+    kudosUserIds = newKudosUserIds.filter(
+      (userId) => !oldKudosUserIds.includes(userId) && userId !== viewerId
+    )
+    console.log('difference', kudosUserIds)
+  }
+
+  let insertedKudoses = null
+  if (kudosUserIds?.length) {
+    const kudosRows = kudosUserIds.map((userId) => ({
+      senderUserId: viewerId,
+      receiverUserId: userId,
+      teamId,
+      emoji: team.kudosEmoji
+      // TODO: lets store unicode emoji everywhere to avoid conversions everytime
+      // TODO: Lets link it to teamPromptResponseId
+    }))
+
+    insertedKudoses = await pg
+      .insertInto('Kudos')
+      .values(kudosRows)
+      .returning(['id', 'receiverUserId', 'emoji'])
+      .execute()
+    console.log('insertedKudoses', insertedKudoses)
+
+    insertedKudoses.forEach((kudos) => {
+      console.log('analytis', kudos.id, kudos.receiverUserId)
+      analytics.kudosSent(viewerId, teamId, kudos.id, kudos.receiverUserId)
+    })
+  }
+
   dataLoader.get('teamPromptResponses').clear(teamPromptResponseId)
 
   const newTeamPromptResponse = await dataLoader
@@ -83,13 +128,15 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
 
   const notifications = await createTeamPromptMentionNotifications(
     oldTeamPromptResponse,
-    newTeamPromptResponse
+    newTeamPromptResponse,
+    insertedKudoses
   )
 
   const data = {
     meetingId,
     teamPromptResponseId,
-    addedNotificationIds: notifications.map((notification) => notification.id)
+    addedNotificationIds: notifications.map((notification) => notification.id),
+    addedKudosesIds: insertedKudoses?.map((row) => row.id)
   }
 
   notifications.forEach((notification) => {

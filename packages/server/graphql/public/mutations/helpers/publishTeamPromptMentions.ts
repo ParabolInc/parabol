@@ -17,17 +17,29 @@ const getMentionedUserIdsFromContent = (content: JSONContent): string[] => {
 
 const createTeamPromptMentionNotifications = async (
   oldResponse: TeamPromptResponse | undefined,
-  newResponse: TeamPromptResponse
+  newResponse: TeamPromptResponse,
+  addedKudoses:
+    | {
+        id: number
+        emoji: string | null
+        receiverUserId: string
+      }[]
+    | null
 ) => {
   // Get mentions from previous and new content.
   const newResponseMentions = getMentionedUserIdsFromContent(newResponse.content)
   const oldResponseMentions = oldResponse ? getMentionedUserIdsFromContent(oldResponse.content) : []
 
+  const addedKudosesUserIds = addedKudoses?.map((kudos) => kudos.receiverUserId) ?? []
+
   // Create notifications that should be added.
   const addedMentions = Array.from(
     new Set(
       newResponseMentions.filter(
-        (mention) => !oldResponseMentions.includes(mention) && newResponse.userId !== mention
+        (mention) =>
+          (!oldResponseMentions.includes(mention) && newResponse.userId !== mention) ||
+          // Send mention notification anyway in case it is also include kudos
+          addedKudosesUserIds.includes(mention)
       )
     )
   )
@@ -41,7 +53,8 @@ const createTeamPromptMentionNotifications = async (
       new NotificationResponseMentioned({
         userId: mention,
         responseId: newResponse.id,
-        meetingId: newResponse.meetingId
+        meetingId: newResponse.meetingId,
+        kudosEmoji: addedKudoses?.find((kudos) => kudos.receiverUserId === mention)?.emoji
       })
   )
 
