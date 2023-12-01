@@ -47,7 +47,8 @@ module.exports = ({minimize, isStats}) => ({
     publicPath: 'auto',
     filename: '[name]_[contenthash].js',
     chunkFilename: '[name]_[contenthash].js',
-    crossOriginLoading: 'anonymous'
+    crossOriginLoading: 'anonymous',
+    assetModuleFilename: '[name]_[contenthash][ext]'
   },
   resolve: {
     alias: {
@@ -109,10 +110,22 @@ module.exports = ({minimize, isStats}) => ({
     new InjectManifest({
       swSrc: path.join(PROJECT_ROOT, 'packages/client/serviceWorker/sw.ts'),
       swDest: 'swSkeleton.js',
-      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/],
+      // Trying to keep GraphqlContainer out of here is difficult because there are a lot of common dependencies
+      exclude: [/\.map$/, /^manifest.*\.js$/, /skeleton.html$/],
       modifyURLPrefix: {
         '': '__PUBLIC_PATH__/'
       }
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name]_[contenthash].css',
+      // name refers to the chunk name, which would create 1 copy for each chunk referencing the css
+      chunkFilename: '[contenthash].css'
+    }),
+    new webpack.optimize.MinChunkSizePlugin({
+      // Too many and the extra size from the boostrapping causes bloat
+      // Too few & untouched modules will get invalidated between versions
+      // e.g. 100_000 -> 3.5MB bundle. 1_000 -> 4.05MB. That's a 550KB gzipped savings!
+      minChunkSize: 100_000
     }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
@@ -184,18 +197,15 @@ module.exports = ({minimize, isStats}) => ({
       {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+        use: [
+          MiniCssExtractPlugin.loader,
+          {loader: 'css-loader', options: {sourceMap: false}},
+          'postcss-loader'
+        ]
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 4096
-            }
-          }
-        ]
+        type: 'asset/resource'
       },
       // for graphiql, since graphql uses mjs files to run in the server
       {
@@ -205,7 +215,7 @@ module.exports = ({minimize, isStats}) => ({
       },
       {
         test: /\.(eot|ttf|wav|mp3|woff|woff2|otf)$/,
-        use: ['file-loader']
+        type: 'asset/resource'
       }
     ]
   }
