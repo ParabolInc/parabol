@@ -292,7 +292,7 @@ export const CreateNewActivity = (props: Props) => {
                   {activity.includedCategories.map((badge) => (
                     <ActivityBadge
                       key={badge}
-                      className={clsx('text-white', `bg-${CATEGORY_THEMES[badge].primary}`)}
+                      className={clsx('text-white', CATEGORY_THEMES[badge].primary)}
                     >
                       {CATEGORY_ID_TO_NAME[badge]}
                     </ActivityBadge>

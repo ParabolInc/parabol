@@ -15,6 +15,7 @@ import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 export interface CardTheme {
   primary: string
   secondary: string
+  text: string
 }
 
 type ActivityCardImageProps = {

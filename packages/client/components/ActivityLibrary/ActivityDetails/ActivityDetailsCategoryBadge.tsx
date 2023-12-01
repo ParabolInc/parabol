@@ -39,7 +39,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       <DropdownMenu.Trigger asChild disabled={!isEditing}>
         <PlainButton className={clsx(!isEditing && 'cursor-default', 'flex')} disabled={false}>
           <ActivityDetailsBadge
-            className={clsx(`bg-${CATEGORY_THEMES[category].primary}`, 'select-none text-white')}
+            className={clsx(CATEGORY_THEMES[category].primary, 'select-none text-white')}
           >
             {CATEGORY_ID_TO_NAME[category]}
           </ActivityDetailsBadge>
@@ -59,10 +59,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
                   value={categoryId}
                 >
                   <span
-                    className={clsx(
-                      `bg-${CATEGORY_THEMES[categoryId].primary}`,
-                      'h-5 w-5 rounded-full'
-                    )}
+                    className={clsx(CATEGORY_THEMES[categoryId].primary, 'h-5 w-5 rounded-full')}
                   ></span>
                   <span className='pl-5 pr-10 text-xs font-semibold'>
                     {CATEGORY_ID_TO_NAME[categoryId]}
