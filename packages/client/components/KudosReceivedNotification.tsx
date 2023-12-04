@@ -6,7 +6,6 @@ import {KudosReceivedNotification_notification$key} from '~/__generated__/KudosR
 import NotificationTemplate from './NotificationTemplate'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import getReactji from '~/utils/getReactji'
 
 interface Props {
   notification: KudosReceivedNotification_notification$key
@@ -25,15 +24,13 @@ const KudosReceivedNotification = (props: Props) => {
         picture
         meetingName
         meetingId
-        emoji
+        emojiUnicode
         status
       }
     `,
     notificationRef
   )
-  const {type, name, picture, meetingName, emoji, meetingId, status} = notification
-
-  const {unicode} = getReactji(emoji)
+  const {type, name, picture, meetingName, emojiUnicode, meetingId, status} = notification
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Notification Viewed', {
@@ -46,7 +43,7 @@ const KudosReceivedNotification = (props: Props) => {
     <NotificationTemplate
       message={
         <>
-          {unicode} {name} gave you kudos in{' '}
+          {emojiUnicode} {name} gave you kudos in{' '}
           <Link to={`/meet/${meetingId}`} className='font-semibold text-sky-500 underline'>
             {meetingName}
           </Link>

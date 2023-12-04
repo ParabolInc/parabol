@@ -22,6 +22,7 @@ const createTeamPromptMentionNotifications = async (
     | {
         id: number
         emoji: string | null
+        emojiUnicode: string | null
         receiverUserId: string
       }[]
     | null
@@ -48,15 +49,16 @@ const createTeamPromptMentionNotifications = async (
     return []
   }
 
-  const notificationsToAdd = addedMentions.map(
-    (mention) =>
-      new NotificationResponseMentioned({
-        userId: mention,
-        responseId: newResponse.id,
-        meetingId: newResponse.meetingId,
-        kudosEmoji: addedKudoses?.find((kudos) => kudos.receiverUserId === mention)?.emoji
-      })
-  )
+  const notificationsToAdd = addedMentions.map((mention) => {
+    const kudos = addedKudoses?.find((kudos) => kudos.receiverUserId === mention)
+    return new NotificationResponseMentioned({
+      userId: mention,
+      responseId: newResponse.id,
+      meetingId: newResponse.meetingId,
+      kudosEmoji: kudos?.emoji,
+      kudosEmojiUnicode: kudos?.emojiUnicode
+    })
+  })
 
   const r = await getRethink()
   await r.table('Notification').insert(notificationsToAdd).run()

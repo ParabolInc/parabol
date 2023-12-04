@@ -8,6 +8,7 @@ interface Input {
   meetingName: string
   meetingId: string
   emoji: string
+  emojiUnicode: string
 }
 
 export default class NotificationKudosReceived extends Notification {
@@ -18,9 +19,10 @@ export default class NotificationKudosReceived extends Notification {
   meetingName: string
   meetingId: string
   emoji: string
+  emojiUnicode: string
 
   constructor(input: Input) {
-    const {userId, name, picture, senderUserId, meetingName, meetingId, emoji} = input
+    const {userId, name, picture, senderUserId, meetingName, meetingId, emoji, emojiUnicode} = input
     super({userId, type: 'KUDOS_RECEIVED'})
     this.name = name
     this.picture = picture
@@ -28,5 +30,6 @@ export default class NotificationKudosReceived extends Notification {
     this.meetingName = meetingName
     this.meetingId = meetingId
     this.emoji = emoji
+    this.emojiUnicode = emojiUnicode
   }
 }

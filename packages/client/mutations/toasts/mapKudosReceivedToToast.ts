@@ -4,7 +4,6 @@ import {mapKudosReceivedToToast_notification$data} from '../../__generated__/map
 import makeNotificationToastKey from './makeNotificationToastKey'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
-import getReactji from '~/utils/getReactji'
 
 graphql`
   fragment mapKudosReceivedToToast_notification on NotifyKudosReceived {
@@ -12,7 +11,7 @@ graphql`
     name
     meetingName
     meetingId
-    emoji
+    emojiUnicode
   }
 `
 
@@ -20,13 +19,12 @@ const mapKudosReceivedToToast = (
   notification: mapKudosReceivedToToast_notification$data,
   {atmosphere, history}: OnNextHistoryContext
 ): Snack => {
-  const {id: notificationId, meetingName, name, emoji, meetingId} = notification
-  const {unicode} = getReactji(emoji)
+  const {id: notificationId, meetingName, name, emojiUnicode, meetingId} = notification
   return {
     autoDismiss: 5,
     showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
-    message: `${unicode} ${name} gave you kudos in`,
+    message: `${emojiUnicode} ${name} gave you kudos in`,
     action: {
       label: meetingName,
       callback: () => {

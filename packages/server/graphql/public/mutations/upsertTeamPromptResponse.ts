@@ -79,15 +79,14 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   )
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  // TODO: don't hardcode, convert
-  const kudosEmoji = '❤️'
+  const {kudosEmoji, kudosEmojiUnicode} = team
 
   let kudosUserIds = null
-  if (team.giveKudosWithEmoji && kudosEmoji) {
+  if (team.giveKudosWithEmoji && kudosEmojiUnicode) {
     const oldKudosUserIds = oldTeamPromptResponse
-      ? getKudosUserIdsFromJson(oldTeamPromptResponse.content, kudosEmoji)
+      ? getKudosUserIdsFromJson(oldTeamPromptResponse.content, kudosEmojiUnicode)
       : []
-    const newKudosUserIds = getKudosUserIdsFromJson(contentJSON, kudosEmoji)
+    const newKudosUserIds = getKudosUserIdsFromJson(contentJSON, kudosEmojiUnicode)
     kudosUserIds = newKudosUserIds.filter(
       (userId) => !oldKudosUserIds.includes(userId) && userId !== viewerId
     )
@@ -99,15 +98,15 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
       senderUserId: viewerId,
       receiverUserId: userId,
       teamId,
-      emoji: team.kudosEmoji
-      // TODO: lets store unicode emoji everywhere to avoid conversions everytime
+      emoji: kudosEmoji,
+      emojiUnicode: kudosEmojiUnicode
       // TODO: Lets link it to teamPromptResponseId
     }))
 
     insertedKudoses = await pg
       .insertInto('Kudos')
       .values(kudosRows)
-      .returning(['id', 'receiverUserId', 'emoji'])
+      .returning(['id', 'receiverUserId', 'emoji', 'emojiUnicode'])
       .execute()
 
     insertedKudoses.forEach((kudos) => {

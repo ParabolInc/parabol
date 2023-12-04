@@ -44,4 +44,9 @@ type NotifyResponseMentioned implements Notification {
   Kudos emoji if mention includes kudos
   """
   kudosEmoji: String
+
+  """
+  kudos emoji unicode character
+  """
+  kudosEmojiUnicode: String
 }

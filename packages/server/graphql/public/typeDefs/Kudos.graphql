@@ -21,4 +21,9 @@ type Kudos {
   emoji name
   """
   emoji: String!
+
+  """
+  emoji unicode character
+  """
+  emojiUnicode: String!
 }

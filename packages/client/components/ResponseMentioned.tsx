@@ -5,7 +5,6 @@ import NotificationAction from '~/components/NotificationAction'
 import useRouter from '../hooks/useRouter'
 import {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
-import getReactji from '../utils/getReactji'
 
 interface Props {
   notification: ResponseMentioned_notification$key
@@ -28,13 +27,13 @@ const ResponseMentioned = (props: Props) => {
           id
           name
         }
-        kudosEmoji
+        kudosEmojiUnicode
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
-  const {meeting, response, kudosEmoji} = notification
+  const {meeting, response, kudosEmojiUnicode} = notification
   const {picture: authorPicture, preferredName: authorName} = response.user
 
   const {id: meetingId, name: meetingName} = meeting
@@ -42,10 +41,8 @@ const ResponseMentioned = (props: Props) => {
     history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
-  const unicodeEmoji = kudosEmoji ? getReactji(kudosEmoji).unicode : ''
-
-  const message = kudosEmoji
-    ? `${unicodeEmoji} ${authorName} mentioned you and gave kudos in their response in ${meetingName}.`
+  const message = kudosEmojiUnicode
+    ? `${kudosEmojiUnicode} ${authorName} mentioned you and gave kudos in their response in ${meetingName}.`
     : `${authorName} mentioned you in their response in ${meetingName}.`
 
   // :TODO: (jmtaber129): Show mention preview.

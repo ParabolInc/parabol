@@ -4,7 +4,6 @@ import clientTempId from '~/utils/relay/clientTempId'
 import {UpsertTeamPromptResponseMutation_meeting$data} from '~/__generated__/UpsertTeamPromptResponseMutation_meeting.graphql'
 import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {UpsertTeamPromptResponseMutation as TUpsertTeamPromptResponseMutation} from '../__generated__/UpsertTeamPromptResponseMutation.graphql'
-import getReactji from '../utils/getReactji'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
@@ -23,7 +22,7 @@ graphql`
       receiverUser {
         preferredName
       }
-      emoji
+      emojiUnicode
     }
   }
 `
@@ -108,12 +107,12 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
     onCompleted: (res, errors) => {
       const addedKudoses = res.upsertTeamPromptResponse.addedKudoses
       if (addedKudoses?.length && addedKudoses[0]) {
-        const {unicode} = getReactji(addedKudoses[0].emoji)
+        const {emojiUnicode} = addedKudoses[0]
         atmosphere.eventEmitter.emit('addSnackbar', {
           key: 'youGaveKudos',
           message: `You gave kudos to ${addedKudoses
             .map((kudos) => kudos.receiverUser.preferredName)
-            .join(', ')} ${unicode}`,
+            .join(', ')} ${emojiUnicode}`,
           autoDismiss: 5,
           onShow: () => {
             SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
