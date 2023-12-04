@@ -72,7 +72,7 @@ export default {
     )
     const [team, user] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('users').loadNonNull(viewerId),
+      dataLoader.get('users').loadNonNull(viewerId)
     ])
 
     const organization = await r.table('Organization').get(team.orgId).run()

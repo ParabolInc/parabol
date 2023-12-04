@@ -5,7 +5,10 @@ import {DataLoaderWorker} from '../../graphql/graphql'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 
-const sendEnterpriseOverageEvent = async (organization: Organization, dataLoader: DataLoaderWorker) => {
+const sendEnterpriseOverageEvent = async (
+  organization: Organization,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   const manager = getStripeManager()
   const {id: orgId, stripeSubscriptionId} = organization
@@ -37,7 +40,10 @@ const sendEnterpriseOverageEvent = async (organization: Organization, dataLoader
   }
 }
 
-const handleEnterpriseOrgQuantityChanges = async (paidOrgs: Organization[], dataLoader: DataLoaderWorker) => {
+const handleEnterpriseOrgQuantityChanges = async (
+  paidOrgs: Organization[],
+  dataLoader: DataLoaderWorker
+) => {
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')
   if (enterpriseOrgs.length === 0) return
   for (const org of enterpriseOrgs) {

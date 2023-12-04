@@ -4,7 +4,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 const sendAccountRemovedEvent = async (
   userIdToDelete: string,
   email: string,
-  validReason: string,
+  validReason: string
 ) => {
   const executeGraphQL = require('../../executeGraphQL').default
   const parabolPayload = await executeGraphQL({

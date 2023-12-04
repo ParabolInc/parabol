@@ -207,26 +207,42 @@ class Analytics {
       (previous, response) => ({...previous, [response.userId]: response.plaintextContent}),
       {}
     )
-    await Promise.all(meetingMembers.map(async (meetingMember) => {
-      const plaintextResponseContent = userIdsResponses[meetingMember.userId]
-      return this.meetingEnd(dataLoader, meetingMember.userId, completedMeeting, meetingMembers, undefined, {
-        responseAdded: !!plaintextResponseContent
+    await Promise.all(
+      meetingMembers.map(async (meetingMember) => {
+        const plaintextResponseContent = userIdsResponses[meetingMember.userId]
+        return this.meetingEnd(
+          dataLoader,
+          meetingMember.userId,
+          completedMeeting,
+          meetingMembers,
+          undefined,
+          {
+            responseAdded: !!plaintextResponseContent
+          }
+        )
       })
-    }))
+    )
   }
 
-  checkInEnd = async (completedMeeting: Meeting, meetingMembers: MeetingMember[], team: Team, dataLoader: DataLoaderWorker) =>
-    Promise.all(meetingMembers.map((meetingMember) =>
-      this.meetingEnd(
-        dataLoader,
-        meetingMember.userId,
-        completedMeeting,
-        meetingMembers,
-        undefined,
-        undefined,
-        team,
+  checkInEnd = async (
+    completedMeeting: Meeting,
+    meetingMembers: MeetingMember[],
+    team: Team,
+    dataLoader: DataLoaderWorker
+  ) =>
+    Promise.all(
+      meetingMembers.map((meetingMember) =>
+        this.meetingEnd(
+          dataLoader,
+          meetingMember.userId,
+          completedMeeting,
+          meetingMembers,
+          undefined,
+          undefined,
+          team
+        )
       )
-    ))
+    )
 
   retrospectiveEnd = async (
     completedMeeting: MeetingRetrospective,
@@ -235,11 +251,20 @@ class Analytics {
     dataLoader: DataLoaderWorker
   ) => {
     const {disableAnonymity} = completedMeeting
-    return Promise.all(meetingMembers.map((meetingMember) =>
-      this.meetingEnd(dataLoader, meetingMember.userId, completedMeeting, meetingMembers, template, {
-        disableAnonymity
-      })
-    ))
+    return Promise.all(
+      meetingMembers.map((meetingMember) =>
+        this.meetingEnd(
+          dataLoader,
+          meetingMember.userId,
+          completedMeeting,
+          meetingMembers,
+          template,
+          {
+            disableAnonymity
+          }
+        )
+      )
+    )
   }
 
   sprintPokerEnd = (
@@ -248,9 +273,17 @@ class Analytics {
     template: MeetingTemplate,
     dataLoader: DataLoaderWorker
   ) => {
-    return Promise.all(meetingMembers.map((meetingMember) =>
-      this.meetingEnd(dataLoader, meetingMember.userId, completedMeeting, meetingMembers, template)
-    ))
+    return Promise.all(
+      meetingMembers.map((meetingMember) =>
+        this.meetingEnd(
+          dataLoader,
+          meetingMember.userId,
+          completedMeeting,
+          meetingMembers,
+          template
+        )
+      )
+    )
   }
 
   private meetingEnd = async (
@@ -270,34 +303,25 @@ class Analytics {
     })
   }
 
-  meetingStarted = ( user: AnalyticsUser, meeting: Meeting, template?: MeetingTemplate, team?: Team) => {
-    this.track(
-      user,
-      'Meeting Started',
-      createMeetingProperties(meeting, undefined, template, team)
-    )
+  meetingStarted = (
+    user: AnalyticsUser,
+    meeting: Meeting,
+    template?: MeetingTemplate,
+    team?: Team
+  ) => {
+    this.track(user, 'Meeting Started', createMeetingProperties(meeting, undefined, template, team))
   }
 
-  recurrenceStarted = (
-    user: AnalyticsUser,
-     meetingSeries: MeetingSeriesAnalyticsProperties) => {
+  recurrenceStarted = (user: AnalyticsUser, meetingSeries: MeetingSeriesAnalyticsProperties) => {
     this.track(user, 'Meeting Recurrence Started', meetingSeries)
   }
 
-  recurrenceStopped = (
-    user: AnalyticsUser,
-     meetingSeries: MeetingSeriesAnalyticsProperties) => {
+  recurrenceStopped = (user: AnalyticsUser, meetingSeries: MeetingSeriesAnalyticsProperties) => {
     this.track(user, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
-  meetingJoined = (
-    user: AnalyticsUser,
-     meeting: Meeting, team: Team) => {
-    this.track(
-      user,
-      'Meeting Joined',
-      createMeetingProperties(meeting, undefined, undefined, team)
-    )
+  meetingJoined = (user: AnalyticsUser, meeting: Meeting, team: Team) => {
+    this.track(user, 'Meeting Joined', createMeetingProperties(meeting, undefined, undefined, team))
   }
 
   meetingSettingsChanged = (
@@ -365,9 +389,7 @@ class Analytics {
     })
   }
 
-  reflectionAdded = (
-    user: AnalyticsUser,
-     teamId: string, meetingId: string) => {
+  reflectionAdded = (user: AnalyticsUser, teamId: string, meetingId: string) => {
     this.track(user, 'Reflection Added', {teamId, meetingId})
   }
 
@@ -495,7 +517,10 @@ class Analytics {
     this.track(user, 'Upgrade CTA Clicked', {upgradeCTALocation})
   }
 
-  organizationUpgraded = (user: AnalyticsUser, upgradeEventProperties: OrgTierChangeEventProperties) => {
+  organizationUpgraded = (
+    user: AnalyticsUser,
+    upgradeEventProperties: OrgTierChangeEventProperties
+  ) => {
     this.track(user, 'Organization Upgraded', upgradeEventProperties)
   }
 
@@ -699,7 +724,11 @@ class Analytics {
     this.amplitudeAnalytics.identify(options)
   }
 
-  private track = (user: AnalyticsUser, event: AnalyticsEvent, properties?: Record<string, any>) => {
+  private track = (
+    user: AnalyticsUser,
+    event: AnalyticsEvent,
+    properties?: Record<string, any>
+  ) => {
     const {id, email} = user
     this.amplitudeAnalytics.track(id, email, event, properties)
   }

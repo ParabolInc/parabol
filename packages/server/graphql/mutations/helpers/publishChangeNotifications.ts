@@ -8,7 +8,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 const publishChangeNotifications = async (
   task: Task,
   oldTask: Task,
-  changeUser: {id: string, email: string},
+  changeUser: {id: string; email: string},
   usersToIgnore: string[]
 ) => {
   const r = await getRethink()

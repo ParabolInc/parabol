@@ -33,7 +33,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const [meeting, viewer] = await Promise.all([
-      r.table('NewMeeting').get(meetingId).run(),//) as Meeting | null
+      r.table('NewMeeting').get(meetingId).run(), //) as Meeting | null
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!meeting) {

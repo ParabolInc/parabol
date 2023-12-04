@@ -368,7 +368,14 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       return 'success'
     }
 
-    return addStandupResponsesToThread(res, standupResponses, team, user, meeting, notificationChannel)
+    return addStandupResponsesToThread(
+      res,
+      standupResponses,
+      team,
+      user,
+      meeting,
+      notificationChannel
+    )
   },
 
   async startTimeLimit(scheduledEndTime, meeting, team, user) {

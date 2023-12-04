@@ -282,13 +282,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
 
-    return notifyMattermost(
-      'MEETING_STAGE_TIME_LIMIT_END',
-      webhookUrl,
-      user,
-      team.id,
-      messageText
-    )
+    return notifyMattermost('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, user, team.id, messageText)
   },
   async integrationUpdated(user) {
     const message = `Integration webhook configuration updated`

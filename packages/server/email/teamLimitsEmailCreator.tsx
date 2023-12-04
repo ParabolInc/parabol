@@ -77,7 +77,7 @@ const teamLimitsEmailCreator = (props: Props) => {
       ? LockedEmail
       : emailType === 'sevenDayWarning'
       ? SevenDayWarningEmail
-        : ThirtyDayWarningEmail
+      : ThirtyDayWarningEmail
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
     <Email preferredName={preferredName} orgId={orgId} orgName={orgName} appOrigin={appOrigin} />
   )

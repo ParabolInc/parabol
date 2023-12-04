@@ -11,7 +11,7 @@ import {ReasonToDowngradeEnum} from '../../public/resolverTypes'
 const resolveDowngradeToStarter = async (
   orgId: string,
   stripeSubscriptionId: string,
-  user: {id: string, email: string},
+  user: {id: string; email: string},
   reasonsForLeaving?: ReasonToDowngradeEnum[],
   otherTool?: string
 ) => {

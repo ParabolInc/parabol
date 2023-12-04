@@ -125,7 +125,7 @@ export default {
 
     const [, slackAuthId] = await Promise.all([
       upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
-      upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response),
+      upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
     ])
     analytics.integrationAdded(viewer, teamId, 'slack')
     const data = {slackAuthId, userId: viewerId}

@@ -36,7 +36,7 @@ const notifyMSTeams = async (
 
   return 'success'
 }
-export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string, email: string}
+export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string; email: string}
 
 const createTeamPromptMeetingTitle = (meetingName: string) => `*${meetingName}* is open 💬`
 const createGenericMeetingTitle = () => `Meeting Started 👋`
@@ -256,13 +256,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const adaptiveCard = JSON.stringify(card.toJSON())
     const attachments = MakeACAttachment(adaptiveCard)
 
-    return notifyMSTeams(
-      'MEETING_STAGE_TIME_LIMIT_START',
-      webhookUrl,
-      user,
-      team.id,
-      attachments
-    )
+    return notifyMSTeams('MEETING_STAGE_TIME_LIMIT_START', webhookUrl, user, team.id, attachments)
   },
 
   async endTimeLimit(meeting, team, user) {
@@ -341,9 +335,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
 async function getMSTeams(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
   const [provider, user] = await Promise.all([
-    dataLoader
-      .get('bestTeamIntegrationProviders')
-      .load({service: 'msTeams', teamId, userId}),
+    dataLoader.get('bestTeamIntegrationProviders').load({service: 'msTeams', teamId, userId}),
     dataLoader.get('users').loadNonNull(userId)
   ])
   return provider
