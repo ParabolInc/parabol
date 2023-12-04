@@ -211,7 +211,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
 
     publishNotification(notificationsToInsert, subOptions)
 
-    analytics.kudosSent(viewerId, teamId, addedKudosId, reactableCreatorId)
+    analytics.kudosSent(viewer, teamId, addedKudosId, reactableCreatorId)
   }
 
   const data = {reactableId, reactableType, addedKudosId}

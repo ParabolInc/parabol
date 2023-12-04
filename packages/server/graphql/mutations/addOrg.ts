@@ -52,22 +52,22 @@ export default {
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
-    const user = await dataLoader.get('users').load(viewerId)
-    if (!user) {
+    const viewer = await dataLoader.get('users').load(viewerId)
+    if (!viewer) {
       return standardError(new Error('Authorization error'), {userId: viewerId})
     }
 
     // RESOLUTION
     const orgId = generateUID()
     const teamId = generateUID()
-    const {email} = user
+    const {email} = viewer
     await createNewOrg(orgId, orgName, viewerId, email, dataLoader)
-    await createTeamAndLeader(user, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
+    await createTeamAndLeader(viewer, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
 
     const {tms} = authToken
     // MUTATIVE
     tms.push(teamId)
-    analytics.newOrg(user, orgId, teamId, false)
+    analytics.newOrg(viewer, orgId, teamId, false)
     publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)

@@ -47,16 +47,16 @@ export default {
       const {invitees} = args
       const orgId = args.newTeam.orgId ?? ''
       const viewerId = getUserId(authToken)
-      const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
       if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         return standardError(new Error('Organization not found'), {userId: viewerId})
       }
 
       // VALIDATION
-      const [orgTeams, organization] = await Promise.all([
+      const [orgTeams, organization, viewer] = await Promise.all([
         getTeamsByOrgIds([orgId], {isArchived: false}),
-        dataLoader.get('organizations').load(orgId)
+        dataLoader.get('organizations').load(orgId),
+        dataLoader.get('users').loadNonNull(viewerId)
       ])
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
