@@ -45,7 +45,7 @@ const setTaskEstimate = {
     const {taskId, value, dimensionName, meetingId} = taskEstimate
 
     //AUTH
-    const [task, meeting, user] = await Promise.all([
+    const [task, meeting, viewer] = await Promise.all([
       dataLoader.get('tasks').load(taskId),
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('users').loadNonNull(viewerId)
@@ -374,7 +374,7 @@ const setTaskEstimate = {
       }
     }
 
-    analytics.taskEstimateSet(user, {
+    analytics.taskEstimateSet(viewer, {
       taskId,
       meetingId,
       dimensionName,

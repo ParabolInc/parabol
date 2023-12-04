@@ -70,7 +70,7 @@ export default {
       meetingType,
       dataLoader
     )
-    const [team, user] = await Promise.all([
+    const [team, viewer] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
@@ -142,7 +142,7 @@ export default {
           .run()
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    analytics.meetingStarted(user, meeting, template)
+    analytics.meetingStarted(viewer, meeting, template)
     const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
     const data = {teamId, meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
