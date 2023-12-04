@@ -16,7 +16,6 @@ import IconLabel from '../IconLabel'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityCardImage} from './ActivityCard'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
-import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
@@ -70,6 +69,7 @@ graphql`
     isRecommended
     isFree
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
+    ...ActivityCard_template
     ...ActivityLibraryCardDescription_template
   }
 `
@@ -168,6 +168,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               theme={CATEGORY_THEMES[template.category as CategoryID]}
               title={template.name}
               type={template.type}
+              templateRef={template}
               badge={
                 !template.isFree ? (
                   <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
@@ -178,10 +179,6 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
                 className='group-hover/card:hidden'
                 src={template.illustrationUrl}
                 category={template.category as CategoryID}
-              />
-              <ActivityLibraryCardDescription
-                className='hidden group-hover/card:flex'
-                templateRef={template}
               />
             </ActivityLibraryCard>
           </Link>
