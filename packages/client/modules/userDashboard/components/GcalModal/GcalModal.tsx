@@ -30,7 +30,8 @@ const Wrapper = styled('div')({
 })
 
 const StyledDialogContainer = styled(DialogContainer)({
-  width: 'auto'
+  width: 'auto',
+  overflowY: 'scroll'
 })
 
 const CloseIcon = styled(Close)({

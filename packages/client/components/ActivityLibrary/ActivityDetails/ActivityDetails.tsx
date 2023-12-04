@@ -94,7 +94,7 @@ const ActivityDetails = (props: Props) => {
 
   return (
     <div className='flex h-full flex-col bg-white'>
-      <div className='flex grow'>
+      <div className='flex grow '>
         <div className='mt-4 grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center'>
             <div className='mr-4'>
