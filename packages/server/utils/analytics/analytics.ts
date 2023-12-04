@@ -54,6 +54,7 @@ export type OrgTierChangeEventProperties = {
   orgName: string
   oldTier: string
   newTier: string
+  isTrial?: boolean
   reasonsForLeaving?: ReasonToDowngradeEnum[]
   otherTool?: string
   billingLeaderEmail?: string
@@ -160,6 +161,8 @@ export type AnalyticsEvent =
   | 'Reset Groups Clicked'
   // Conversion Tracking
   | 'Conversion Modal Pay Later Clicked'
+  // kudos
+  | 'Kudos Sent'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
   // Lowercase words are for backwards compatibility
@@ -663,6 +666,15 @@ class Analytics {
 
   autoJoined = (userId: string, teamId: string) => {
     this.track(userId, 'AutoJoined Team', {userId, teamId})
+  }
+
+  kudosSent = (userId: string, teamId: string, kudosId: number, receiverUserId: string) => {
+    this.track(userId, 'Kudos Sent', {
+      userId,
+      teamId,
+      kudosId,
+      receiverUserId
+    })
   }
 
   identify = (options: IdentifyOptions) => {

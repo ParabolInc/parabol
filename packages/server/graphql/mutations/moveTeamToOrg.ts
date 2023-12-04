@@ -84,6 +84,7 @@ const moveToOrg = async (
     orgId,
     isPaid: !!isPaidResult?.isPaid,
     tier: org.tier,
+    trialStartDate: org.trialStartDate,
     updatedAt: new Date()
   }
   const [rethinkResult] = await Promise.all([

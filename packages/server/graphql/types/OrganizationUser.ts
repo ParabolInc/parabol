@@ -5,7 +5,6 @@ import {resolveOrganization} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import OrgUserRole from './OrgUserRole'
-import TierEnum from './TierEnum'
 import User from './User'
 
 const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
@@ -57,10 +56,6 @@ const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
-    },
-    tier: {
-      type: TierEnum,
-      description: 'Their level of access to features on the parabol site'
     }
   })
 })

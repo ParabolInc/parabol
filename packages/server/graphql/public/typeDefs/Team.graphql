@@ -128,10 +128,10 @@ type Team {
     meetingId: ID!
   ): NewMeeting
 
-  """
-  The level of access to features on the parabol site
-  """
   tier: TierEnum!
+
+  billingTier: TierEnum!
+
   organization: Organization!
 
   """
@@ -174,4 +174,14 @@ type Team {
   The team member that is the viewer
   """
   viewerTeamMember: TeamMember
+
+  """
+  Enable giving kudos with emoji
+  """
+  giveKudosWithEmoji: Boolean!
+
+  """
+  Emoji that will be used for giving kudos
+  """
+  kudosEmoji: String!
 }

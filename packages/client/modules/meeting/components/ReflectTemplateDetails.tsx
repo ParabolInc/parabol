@@ -95,6 +95,14 @@ const ReflectTemplateDetails = (props: Props) => {
           id
           orgId
           tier
+          viewerTeamMember {
+            user {
+              id
+              featureFlags {
+                noTemplateLimit
+              }
+            }
+          }
         }
       }
     `,
@@ -103,7 +111,8 @@ const ReflectTemplateDetails = (props: Props) => {
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts, illustrationUrl} = activeTemplate
-  const {id: teamId, orgId, tier} = team
+  const {id: teamId, orgId, tier, viewerTeamMember} = team
+  const noTemplateLimit = viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
   const description = useTemplateDescription(lowestScope, activeTemplate, tier)
@@ -158,6 +167,7 @@ const ReflectTemplateDetails = (props: Props) => {
           template={activeTemplate}
           teamId={teamId}
           tier={tier}
+          noTemplateLimit={noTemplateLimit}
           orgId={orgId}
         />
       )}

@@ -15,6 +15,7 @@ import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayl
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 export default {
   type: UpdateReflectionContentPayload,
@@ -56,7 +57,6 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const {tier} = team
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already ended'), {userId: viewerId})
@@ -76,7 +76,7 @@ export default {
       ? await getReflectionEntities(plaintextContent)
       : reflection.entities
     const sentimentScore =
-      tier !== 'starter'
+      getFeatureTier(team) !== 'starter'
         ? isVeryDifferent
           ? await getReflectionSentimentScore(question, plaintextContent)
           : reflection.sentimentScore

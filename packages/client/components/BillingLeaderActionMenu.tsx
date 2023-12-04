@@ -36,7 +36,7 @@ const BillingLeaderActionMenu = (props: Props) => {
     graphql`
       fragment BillingLeaderActionMenu_organization on Organization {
         id
-        tier
+        billingTier
       }
     `,
     organizationRef
@@ -54,7 +54,7 @@ const BillingLeaderActionMenu = (props: Props) => {
     organizationUserRef
   )
   const atmosphere = useAtmosphere()
-  const {id: orgId, tier} = organization
+  const {id: orgId, billingTier} = organization
   const {viewerId} = atmosphere
   const {newUserUntil, role, user} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
@@ -84,7 +84,7 @@ const BillingLeaderActionMenu = (props: Props) => {
         {viewerId !== userId && (
           <MenuItem
             label={
-              tier === 'team' && new Date(newUserUntil) > new Date()
+              billingTier === 'team' && new Date(newUserUntil) > new Date()
                 ? 'Refund and Remove'
                 : 'Remove from Organization'
             }

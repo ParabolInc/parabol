@@ -1,8 +1,8 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useMemo} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import React, {useEffect, useMemo} from 'react'
+import {PreloadedQuery, commitLocalUpdate, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
@@ -24,6 +24,9 @@ import {
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import {useDebounce} from 'use-debounce'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -122,7 +125,7 @@ const getTemplateDocumentValue = (
     .join('-')
 
 const CategoryIDToColorClass = {
-  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
+  [QUICK_START_CATEGORY_ID]: 'grape-700',
   ...Object.fromEntries(
     Object.entries(CATEGORY_THEMES).map(([key, value]) => {
       return [key, value.primary]
@@ -188,11 +191,20 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
 const MAX_PER_SUBCATEGORY = 6
 
 export const ActivityLibrary = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
   const {featureFlags, availableTemplates, organizations} = viewer
   const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
+
+  const setSearch = (value: string) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      viewer.setValue(value, 'activityLibrarySearch')
+    })
+  }
 
   const templates = useMemo(() => {
     const templatesMap = availableTemplates.edges.map((edge) => edge.node)
@@ -210,6 +222,15 @@ export const ActivityLibrary = (props: Props) => {
     onQueryChange,
     resetQuery
   } = useSearchFilter(templates, getTemplateDocumentValue)
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500)
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      SendClientSideEvent(atmosphere, 'Activity Library Searched', {
+        debouncedSearchQuery
+      })
+    }
+  }, [debouncedSearchQuery])
 
   const {match} = useRouter<{categoryId?: string}>()
   const {
@@ -278,7 +299,13 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
             <div className='hidden grow md:block'>
-              <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+              <SearchBar
+                searchQuery={searchQuery}
+                onChange={(e) => {
+                  onQueryChange(e)
+                  setSearch(e.target.value)
+                }}
+              />
             </div>
             <Link
               className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
@@ -288,7 +315,13 @@ export const ActivityLibrary = (props: Props) => {
             </Link>
           </div>
           <div className='mt-4 flex w-full md:hidden'>
-            <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+            <SearchBar
+              searchQuery={searchQuery}
+              onChange={(e) => {
+                onQueryChange(e)
+                setSearch(e.target.value)
+              }}
+            />
           </div>
         </div>
       </div>
@@ -303,7 +336,7 @@ export const ActivityLibrary = (props: Props) => {
                     'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
                     category === selectedCategory && searchQuery.length === 0
                       ? [
-                          CategoryIDToColorClass[category],
+                          `bg-${CategoryIDToColorClass[category]}`,
                           'font-semibold text-white focus:text-white'
                         ]
                       : 'border border-slate-300 bg-white'

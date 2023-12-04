@@ -35,6 +35,7 @@ export default class Organization {
   upcomingInvoiceEmailSentAt?: Date
   tier: TierEnum
   tierLimitExceededAt?: Date | null
+  trialStartDate?: Date | null
   scheduledLockAt?: Date | null
   lockedAt?: Date | null
   updatedAt: Date
