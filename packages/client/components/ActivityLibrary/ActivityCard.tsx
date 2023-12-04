@@ -1,40 +1,38 @@
 import clsx from 'clsx'
-import React, {ComponentPropsWithoutRef, PropsWithChildren} from 'react'
+import React, {PropsWithChildren} from 'react'
+import {upperFirst} from '../../utils/upperFirst'
+import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import {backgroundImgMap, CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
+import {twMerge} from 'tailwind-merge'
 
 export interface CardTheme {
   primary: string
   secondary: string
 }
 
-export const ActivityCardImage = (
-  props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>
-) => {
-  const {className, src} = props
-
-  return (
-    <div
-      className={clsx(
-        'my-1 flex flex-1 items-center justify-center overflow-hidden px-4',
-        className
-      )}
-    >
-      <img className={'h-full w-full object-contain'} src={src} />
-    </div>
-  )
+type ActivityCardImageProps = {
+  className?: string
+  src: string
+  category: CategoryID
 }
 
-const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
-  const {children, className, ...rest} = props
+export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProps>) => {
+  const {className, src, category} = props
+  const backgroundSrc = backgroundImgMap[category]
 
   return (
     <div
-      className={clsx(
-        'px-2 py-1 text-sm font-semibold leading-5 text-slate-800 sm:text-base',
+      className={twMerge(
+        'relative flex h-full w-full items-center justify-center overflow-hidden',
         className
       )}
-      {...rest}
+      style={{backgroundImage: `url(${backgroundSrc})`, backgroundSize: 'cover'}}
     >
-      {children}
+      <img
+        className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
+        src={src}
+        alt='Card Illustration'
+      />
     </div>
   )
 }
@@ -42,27 +40,38 @@ const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
 export interface ActivityCardProps {
   className?: string
   theme: CardTheme
-  titleAs?: React.ElementType
   title?: string
   badge?: React.ReactNode
   children?: React.ReactNode
+  type?: MeetingTypeEnum
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, theme, title, titleAs, badge, children} = props
-  const Title = titleAs ?? ActivityCardTitle
+  const {className, theme, title, children, type, badge} = props
+  const category = type && MEETING_TYPE_TO_CATEGORY[type]
 
   return (
-    <div className={clsx('flex flex-col overflow-hidden rounded-lg', theme.secondary, className)}>
-      <div className='flex flex-shrink-0'>
-        <Title>{title}</Title>
-        <div className={clsx('ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full', theme.primary)} />
+    <div className='flex w-full flex-col'>
+      <div
+        className={twMerge(
+          'relative flex h-full min-w-0 flex-col overflow-hidden rounded-lg',
+          `bg-${theme.secondary}`,
+          className
+        )}
+      >
+        <div className='flex-1'>
+          {children}
+          <div className='absolute bottom-0 right-0'>{badge}</div>
+        </div>
       </div>
-      {children}
-      <div className='flex flex-shrink-0 group-hover/card:hidden'>
-        <div className={clsx('mt-auto h-8 w-8 flex-shrink-0 rounded-tr-full', theme.primary)} />
-        <div className='ml-auto'>{badge}</div>
-      </div>
+      {title && category && (
+        <div className='mt-2 px-2 pb-2'>
+          <div className='truncate pb-1 text-lg leading-5 text-slate-800'>{title}</div>
+          <div className={clsx('font-semibold italic', `text-${theme.primary}`)}>
+            {upperFirst(category)}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
