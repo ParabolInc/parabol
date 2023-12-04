@@ -12,6 +12,7 @@ import {GQLContext} from '../graphql'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -40,18 +41,22 @@ const addReflectTemplate = {
     }
 
     // VALIDATION
-    const allTemplates = await dataLoader
-      .get('meetingTemplatesByType')
-      .load({meetingType: 'retrospective', teamId})
+    const [allTemplates, viewerTeam, viewer] = await Promise.all([
+      dataLoader.get('meetingTemplatesByType').load({meetingType: 'retrospective', teamId}),
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
 
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       return standardError(new Error('Too many templates'), {userId: viewerId})
     }
-    const viewerTeam = await dataLoader.get('teams').load(teamId)
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (viewerTeam.tier === 'starter') {
+    if (
+      getFeatureTier(viewerTeam) === 'starter' &&
+      !viewer.featureFlags.includes('noTemplateLimit')
+    ) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data

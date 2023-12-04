@@ -11,6 +11,7 @@ import makeAppURL from '../../../../utils/makeAppURL'
 import fromStageIdToUrl from '../../../../utils/meetings/fromStageIdToUrl'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
+import anonymousAvatar from '../../../../styles/theme/images/anonymous-avatar.svg'
 
 const editorStyles: React.CSSProperties = {
   backgroundColor: '#FFFFFF',
@@ -66,7 +67,9 @@ const EmailDiscussionMentioned = (props: Props) => {
     notificationRef
   )
   const {meeting, author, comment, discussion} = notification
-  const {rasterPicture: authorPicture, preferredName: authorName} = author
+  const authorPicture = author ? author.rasterPicture : anonymousAvatar
+  const authorName = author ? author.preferredName : 'Anonymous'
+
   const {stage} = discussion
   const {id: meetingId, name: meetingName} = meeting
   const {id: stageId, response} = stage ?? {}

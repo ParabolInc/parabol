@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -12,6 +11,7 @@ import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
+import getKysely from '../../../postgres/getKysely'
 
 // included here to codegen has access to it
 export type UpgradeToTeamTierSuccessSource = {
@@ -39,6 +39,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
 
   const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const now = new Date()
@@ -46,7 +47,14 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   const organization = await dataLoader.get('organizations').load(orgId)
-  const {stripeId, tier, activeDomain, name: orgName, stripeSubscriptionId} = organization
+  const {
+    stripeId,
+    tier,
+    activeDomain,
+    name: orgName,
+    stripeSubscriptionId,
+    trialStartDate
+  } = organization
 
   if (!stripeId) {
     return standardError(new Error('Organization does not have a stripe id'), {
@@ -76,16 +84,19 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
           tierLimitExceededAt: null,
           scheduledLockAt: null,
           lockedAt: null,
-          updatedAt: now
+          updatedAt: now,
+          trialStartDate: null
         })
     }).run(),
-    updateTeamByOrgId(
-      {
+    pg
+      .updateTable('Team')
+      .set({
         isPaid: true,
-        tier: 'team'
-      },
-      orgId
-    ),
+        tier: 'team',
+        trialStartDate: null
+      })
+      .where('orgId', '=', orgId)
+      .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
   organization.tier = 'team'
@@ -107,6 +118,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   analytics.organizationUpgraded(viewerId, {
     orgId,
     domain: activeDomain,
+    isTrial: !!trialStartDate,
     orgName,
     oldTier: 'starter',
     newTier: 'team'

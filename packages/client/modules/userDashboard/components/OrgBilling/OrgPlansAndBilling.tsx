@@ -49,20 +49,20 @@ const OrgPlansAndBilling = (props: Props) => {
         ...BillingLeaders_organization
         ...PaymentDetails_organization
         ...OrgPlanDrawer_organization
-        tier
+        billingTier
         isBillingLeader
       }
     `,
     organizationRef
   )
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
-  const {tier, isBillingLeader} = organization
+  const {billingTier, isBillingLeader} = organization
 
   const handleSelectTeamPlan = () => {
     setHasSelectedTeamPlan(true)
   }
 
-  if (tier === 'starter') {
+  if (billingTier === 'starter') {
     return (
       <Suspense fallback={''}>
         <div className='pb-20'>
@@ -87,7 +87,7 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <div className='pb-20'>
         <OrgPlansAndBillingHeading organizationRef={organization} />
-        {isBillingLeader && tier === 'team' && (
+        {isBillingLeader && billingTier === 'team' && (
           <>
             <OrgBillingInvoices queryRef={queryData} isWide />
             <OrgBillingCreditCardInfo organizationRef={organization} />

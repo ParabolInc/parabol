@@ -70,15 +70,14 @@ const ActivityDetailsSidebar = (props: Props) => {
     graphql`
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
-          gcal
           adHocTeams
+          noTemplateLimit
         }
         ...AdhocTeamMultiSelect_viewer
         organizations {
           id
           name
         }
-        ...ScheduleMeetingButton_viewer
       }
     `,
     viewerRef
@@ -342,7 +341,9 @@ const ActivityDetailsSidebar = (props: Props) => {
             />
           )}
 
-          {selectedTeam.tier === 'starter' && !selectedTemplate.isFree ? (
+          {selectedTeam.tier === 'starter' &&
+          !viewer.featureFlags.noTemplateLimit &&
+          !selectedTemplate.isFree ? (
             <div className='flex grow flex-col'>
               <div className='my-auto text-center'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
@@ -397,7 +398,6 @@ const ActivityDetailsSidebar = (props: Props) => {
                       handleStartActivity={handleStartActivity}
                       mutationProps={mutationProps}
                       teamRef={selectedTeam}
-                      viewerRef={viewer}
                     />
                   </>
                 )}

@@ -1,6 +1,6 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import getKysely from '../../../postgres/getKysely'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
@@ -15,6 +15,7 @@ const oldUpgradeToTeamTier = async (
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
 
   const organization = await r.table('Organization').get(orgId).run()
@@ -55,7 +56,8 @@ const oldUpgradeToTeamTier = async (
         tierLimitExceededAt: null,
         scheduledLockAt: null,
         lockedAt: null,
-        updatedAt: now
+        updatedAt: now,
+        trialStartDate: null
       })
   }).run()
 
@@ -75,13 +77,15 @@ const oldUpgradeToTeamTier = async (
   }
 
   await Promise.all([
-    updateTeamByOrgId(
-      {
+    pg
+      .updateTable('Team')
+      .set({
         isPaid: true,
-        tier: 'team'
-      },
-      orgId
-    ),
+        tier: 'team',
+        trialStartDate: null
+      })
+      .where('orgId', '=', orgId)
+      .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
 

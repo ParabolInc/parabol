@@ -17,6 +17,7 @@ import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
 import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
 import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
+import {getFeatureTier} from '../../graphql/types/helpers/getFeatureTier'
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
   await r
@@ -101,11 +102,11 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 // Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
-  const {tierLimitExceededAt, tier, featureFlags, name: orgName} = organization
+  const {tierLimitExceededAt, tier, trialStartDate, featureFlags, name: orgName} = organization
 
   if (!featureFlags?.includes('teamsLimit')) return
 
-  if (tierLimitExceededAt || tier !== 'starter') return
+  if (tierLimitExceededAt || getFeatureTier({tier, trialStartDate}) !== 'starter') return
 
   // if an org is using a free provider, e.g. gmail.com, we can't show them usage stats, so don't send notifications/emails directing them there for now. Issue to fix this here: https://github.com/ParabolInc/parabol/issues/7723
   if (!organization.activeDomain) return

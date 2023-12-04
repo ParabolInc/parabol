@@ -24,6 +24,7 @@ const NewTeamOrgDropdown = (props: Props) => {
         id
         name
         tier
+        billingTier
       }
     `,
     organizationsRef
@@ -36,14 +37,14 @@ const NewTeamOrgDropdown = (props: Props) => {
     >
       <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
-        const {id, tier, name} = anOrg
+        const {id, tier, billingTier, name} = anOrg
         return (
           <MenuItem
             key={id}
             label={
               <DropdownMenuItemLabel>
                 <span>{name}</span>
-                {tier !== 'starter' && <TierTag tier={tier} />}
+                {tier !== 'starter' && <TierTag tier={tier} billingTier={billingTier} />}
               </DropdownMenuItemLabel>
             }
             onClick={() => {
