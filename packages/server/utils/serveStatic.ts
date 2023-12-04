@@ -29,14 +29,12 @@ const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boole
   if (!meta) return false
   const {size, pathname, brotliFile, file, type} = meta
   if (file) {
-    res.cork(() => {
-      res.writeHeader('content-type', type)
-      if (__PRODUCTION__ && sendCompressed && brotliFile) {
-        res.writeHeader('content-encoding', 'br').end(brotliFile)
-      } else {
-        res.end(file)
-      }
-    })
+    res.writeHeader('content-type', type)
+    if (__PRODUCTION__ && sendCompressed && brotliFile) {
+      res.writeHeader('content-encoding', 'br').end(brotliFile)
+    } else {
+      res.end(file)
+    }
     return true
   }
   res.writeHeader('content-type', type)
