@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - master
-      - hotfix*
+      - hotfix**
     types: [closed]
 jobs:
   release:
