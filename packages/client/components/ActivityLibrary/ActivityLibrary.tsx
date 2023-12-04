@@ -16,7 +16,6 @@ import IconLabel from '../IconLabel'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityCardImage} from './ActivityCard'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
-import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
@@ -70,6 +69,7 @@ graphql`
     isRecommended
     isFree
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
+    ...ActivityCard_template
     ...ActivityLibraryCardDescription_template
   }
 `
@@ -125,7 +125,7 @@ const getTemplateDocumentValue = (
     .join('-')
 
 const CategoryIDToColorClass = {
-  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
+  [QUICK_START_CATEGORY_ID]: 'grape-700',
   ...Object.fromEntries(
     Object.entries(CATEGORY_THEMES).map(([key, value]) => {
       return [key, value.primary]
@@ -167,6 +167,8 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               key={template.id}
               theme={CATEGORY_THEMES[template.category as CategoryID]}
               title={template.name}
+              type={template.type}
+              templateRef={template}
               badge={
                 !template.isFree ? (
                   <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
@@ -176,10 +178,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               <ActivityCardImage
                 className='group-hover/card:hidden'
                 src={template.illustrationUrl}
-              />
-              <ActivityLibraryCardDescription
-                className='hidden group-hover/card:flex'
-                templateRef={template}
+                category={template.category as CategoryID}
               />
             </ActivityLibraryCard>
           </Link>
@@ -337,7 +336,7 @@ export const ActivityLibrary = (props: Props) => {
                     'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
                     category === selectedCategory && searchQuery.length === 0
                       ? [
-                          CategoryIDToColorClass[category],
+                          `bg-${CategoryIDToColorClass[category]}`,
                           'font-semibold text-white focus:text-white'
                         ]
                       : 'border border-slate-300 bg-white'

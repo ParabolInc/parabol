@@ -13,8 +13,7 @@ import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
-import {Notifier} from './Notifier'
-import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {createNotifier} from './Notifier'
 import {analytics} from '../../../../utils/analytics/analytics'
 
 const notifyMSTeams = async (
@@ -346,87 +345,16 @@ async function getMSTeams(dataLoader: DataLoaderWorker, teamId: string, userId: 
     .get('bestTeamIntegrationProviders')
     .load({service: 'msTeams', teamId, userId})
   return provider
-    ? MSTeamsNotificationHelper({
-        ...(provider as IntegrationProviderMSTeams),
-        userId
-      })
-    : null
+    ? [
+        MSTeamsNotificationHelper({
+          ...(provider as IntegrationProviderMSTeams),
+          userId
+        })
+      ]
+    : []
 }
 
-async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-  const [team, meeting] = await Promise.all([
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('newMeetings').load(meetingId)
-  ])
-  return {
-    meeting,
-    team
-  }
-}
-
-export const MSTeamsNotifier: Notifier = {
-  async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
-    ;(await getMSTeams(dataLoader, team.id, meeting.facilitatorUserId))?.startMeeting(meeting, team)
-  },
-
-  async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
-    ;(await getMSTeams(dataLoader, team.id, meeting.facilitatorUserId))?.endMeeting(
-      meeting,
-      team,
-      null
-    )
-  },
-
-  async startTimeLimit(
-    dataLoader: DataLoaderWorker,
-    scheduledEndTime: Date,
-    meetingId: string,
-    teamId: string
-  ) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
-    ;(await getMSTeams(dataLoader, team.id, meeting.facilitatorUserId))?.startTimeLimit(
-      scheduledEndTime,
-      meeting,
-      team
-    )
-  },
-
-  async endTimeLimit(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
-    ;(await getMSTeams(dataLoader, team.id, meeting.facilitatorUserId))?.endTimeLimit(meeting, team)
-  },
-
-  async integrationUpdated(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
-    ;(await getMSTeams(dataLoader, teamId, userId))?.integrationUpdated()
-  },
-
-  async standupResponseSubmitted(
-    dataLoader: DataLoaderWorker,
-    meetingId: string,
-    teamId: string,
-    userId: string
-  ) {
-    const [{meeting, team}, user, responses] = await Promise.all([
-      loadMeetingTeam(dataLoader, meetingId, teamId),
-      dataLoader.get('users').load(userId),
-      getTeamPromptResponsesByMeetingId(meetingId)
-    ])
-    const response = responses.find(({userId: responseUserId}) => responseUserId === userId)
-    if (!meeting || !team || !response || !user) return
-    ;(await getMSTeams(dataLoader, teamId, userId))?.standupResponseSubmitted(
-      meeting,
-      team,
-      user,
-      response
-    )
-  }
-}
+export const MSTeamsNotifier = createNotifier(getMSTeams)
 
 function GenerateACMeetingTitle(meetingTitle: string) {
   const titleTextBlock = new AdaptiveCards.TextBlock(meetingTitle)
