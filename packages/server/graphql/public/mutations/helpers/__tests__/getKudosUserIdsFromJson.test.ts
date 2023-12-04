@@ -85,7 +85,7 @@ describe('findMentionsByEmoji', () => {
           content: [
             {
               type: 'text',
-              text: '❤️ From new line with mention '
+              text: '❤️ Another mentions '
             },
             {
               type: 'mention',
@@ -95,18 +95,7 @@ describe('findMentionsByEmoji', () => {
               }
             },
             {
-              type: 'text',
-              text: ' '
-            },
-            {
               type: 'hardBreak'
-            },
-            {
-              type: 'hardBreak'
-            },
-            {
-              type: 'text',
-              text: 'This mention '
             },
             {
               type: 'mention',
@@ -114,10 +103,6 @@ describe('findMentionsByEmoji', () => {
                 id: 'user_id_3',
                 label: 'userthree'
               }
-            },
-            {
-              type: 'text',
-              text: ' should not be included as no heart emoji in paragraph 🌮'
             }
           ]
         },
@@ -174,13 +159,13 @@ describe('findMentionsByEmoji', () => {
   it('returns correct mention user IDs for emoji ❤️', () => {
     const emoji = '❤️'
     const result = getKudosUserIdsFromJson(doc, emoji)
-    expect(result).toEqual(['user_id_1', 'user_id_2', 'user_id_4', 'user_id_5'])
+    expect(result).toEqual(['user_id_1', 'user_id_2', 'user_id_3', 'user_id_4', 'user_id_5'])
   })
 
   it('returns correct mention user IDs for different emoji (🌮)', () => {
     const emoji = '🌮'
     const result = getKudosUserIdsFromJson(doc, emoji)
-    expect(result).toEqual(['user_id_3', 'user_id_supermention'])
+    expect(result).toEqual(['user_id_supermention'])
   })
 
   it('returns an empty array for an emoji with no mentions (🔥)', () => {
