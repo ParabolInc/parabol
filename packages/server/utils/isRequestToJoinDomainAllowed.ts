@@ -5,6 +5,7 @@ import User from '../database/types/User'
 import {DataLoaderWorker} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import TeamMember from '../database/types/TeamMember'
+import Organization from '../database/types/Organization'
 
 export const getEligibleOrgIdsByDomain = async (
   activeDomain: string,
@@ -39,7 +40,8 @@ export const getEligibleOrgIdsByDomain = async (
     )
     .run()
 
-  const eligibleOrgs = await Promise.all(
+  type OrgWithActiveMembers = Organization & {activeMembers: number}
+  const eligibleOrgs = (await Promise.all(
     orgs.map(async (org) => {
       const {founder} = org
       const importantMembers = org.billingLeads.slice() as TeamMember[]
@@ -57,8 +59,33 @@ export const getEligibleOrgIdsByDomain = async (
       }
       return org
     })
+  )) as OrgWithActiveMembers[]
+
+  const highestTierOrgs = eligibleOrgs.filter(isValid).reduce((acc, org) => {
+    if (acc.length === 0) {
+      return [org]
+    }
+    const highestTier = acc[0]!.tier
+    if (org.tier === highestTier) {
+      return [...acc, org]
+    }
+    if (org.tier === 'enterprise') {
+      return [org]
+    }
+    if (highestTier === 'starter' && org.tier === 'team') {
+      return [org]
+    }
+    return acc
+  }, [] as OrgWithActiveMembers[])
+
+  const biggestSize = highestTierOrgs.reduce(
+    (acc, org) => (org.activeMembers > acc ? org.activeMembers : acc),
+    0
   )
-  return eligibleOrgs.filter(isValid).map(({id}) => id)
+
+  return highestTierOrgs
+    .filter(({activeMembers}) => activeMembers === biggestSize)
+    .map(({id}) => id)
 }
 
 const isRequestToJoinDomainAllowed = async (
