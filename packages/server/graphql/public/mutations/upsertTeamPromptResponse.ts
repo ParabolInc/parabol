@@ -99,8 +99,8 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
       receiverUserId: userId,
       teamId,
       emoji: kudosEmoji,
-      emojiUnicode: kudosEmojiUnicode
-      // TODO: Lets link it to teamPromptResponseId
+      emojiUnicode: kudosEmojiUnicode,
+      teamPromptResponseId: TeamPromptResponseId.split(teamPromptResponseId)
     }))
 
     insertedKudoses = await pg
