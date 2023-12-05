@@ -114,6 +114,7 @@ const query = graphql`
       availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
+            id
             name
             teamId
             type
@@ -155,21 +156,23 @@ export const CreateNewActivity = (props: Props) => {
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const history = useHistory()
 
+  const teamTemplates = availableTemplates.edges.filter(
+    (template) =>
+      template.node.teamId === selectedTeam.id && template.node.type === selectedActivity.type
+  )
+
+  const newTemplate = teamTemplates.find((template) => template.node.name === '*New Template')
+
   const handleCreateRetroTemplate = () => {
     if (submitting) {
       return
     }
 
-    const teamTemplates = availableTemplates.edges.filter(
-      (template) =>
-        template.node.teamId === selectedTeam.id && template.node.type === 'retrospective'
-    )
-
     if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
-    if (teamTemplates.find((template) => template.node.name === '*New Template')) {
+    if (newTemplate) {
       onError(new Error('You already have a new template. Try renaming that one first.'))
       return
     }
@@ -322,6 +325,12 @@ export const CreateNewActivity = (props: Props) => {
             />
           </div>
         </div>
+        {newTemplate && (
+          <div className='text-gold-500'>
+            You already have a new {selectedActivity.type} template. You can edit or rename this
+            existing template.
+          </div>
+        )}
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
           {selectedTeam.tier === 'starter' && !featureFlags.noTemplateLimit ? (
@@ -339,6 +348,18 @@ export const CreateNewActivity = (props: Props) => {
                 Upgrade to Team Plan
               </RaisedButton>
             </div>
+          ) : newTemplate ? (
+            <Link
+              className='mx-auto'
+              to={{
+                pathname: `/activity-library/details/${newTemplate.node.id}`,
+                state: {edit: true}
+              }}
+            >
+              <BaseButton className='h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'>
+                Edit Existing New Template
+              </BaseButton>
+            </Link>
           ) : (
             <BaseButton
               className='mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
