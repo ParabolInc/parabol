@@ -192,7 +192,7 @@ const OrgMemberRow = (props: Props) => {
                     {'before you can remove this role.'}
                   </div>
                 ) : (
-                  <div>Contact support to remove the Org Admin role</div>
+                  <div>Contact support (love@parabol.co) to remove the Org Admin role</div>
                 )
               )}
               <MenuButton disabled />
