@@ -44,7 +44,14 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     .getAll(userId, {index: 'userId'})
     .filter({orgId, removedAt: null})
     .nth(0)
+    .default(null)
     .run()
+
+  if (!organizationUser) {
+    return standardError(new Error('Cannot find org user'), {
+      userId: viewerId
+    })
+  }
 
   if ((role === 'ORG_ADMIN' || organizationUser.role === 'ORG_ADMIN') && !isSuperUser(authToken)) {
     return standardError(new Error('Must be super user to promote/demote user to admin'), {
