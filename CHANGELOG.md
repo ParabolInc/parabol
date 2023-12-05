@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.10.0](https://github.com/ParabolInc/parabol/compare/v7.9.0...v7.10.0) (2023-12-04)
+
+
+### Added
+
+* add tooltip to activity library card ([#9236](https://github.com/ParabolInc/parabol/issues/9236)) ([f8511b2](https://github.com/ParabolInc/parabol/commit/f8511b21cac91d7bf3cace828ceb337848bb3ee8))
+* gcal invite all by default ([#9260](https://github.com/ParabolInc/parabol/issues/9260)) ([1e71688](https://github.com/ParabolInc/parabol/commit/1e71688e0d711e945ed373b2448b58c067e2f4b3))
+* remove gcal flag ([#9251](https://github.com/ParabolInc/parabol/issues/9251)) ([9961e63](https://github.com/ParabolInc/parabol/commit/9961e6305287040179e6a2382f6ad6c9c3035d35))
+* update activity library card UI ([#9168](https://github.com/ParabolInc/parabol/issues/9168)) ([662ec2b](https://github.com/ParabolInc/parabol/commit/662ec2bee8ecbb71ce2d6e5718450130eee8bcac))
+
+
+### Fixed
+
+* cork all http write methods ([#9261](https://github.com/ParabolInc/parabol/issues/9261)) ([d9b6554](https://github.com/ParabolInc/parabol/commit/d9b6554dce372e82a4ef9ba1b4db77d9f4ae1285))
+* increases integration icon visibility ([#9164](https://github.com/ParabolInc/parabol/issues/9164)) ([b9bcd69](https://github.com/ParabolInc/parabol/commit/b9bcd6914a8940600a2a5ac886ba2cf64201aa43))
+
+
+### Changed
+
+* Cleanup Slack/Mattermost/MSTeams notifiers ([#9240](https://github.com/ParabolInc/parabol/issues/9240)) ([3bf4b81](https://github.com/ParabolInc/parabol/commit/3bf4b8102cd21a7a7130c028044d8c2251bfab14))
+* **dx:** allow any branch with hotfix prefix to build ([#9263](https://github.com/ParabolInc/parabol/issues/9263)) ([619c07c](https://github.com/ParabolInc/parabol/commit/619c07ce3c6eb884d3896a53deab210db2feef84))
+* **env-file:** ununsed variables removed ([#9249](https://github.com/ParabolInc/parabol/issues/9249)) ([c155c12](https://github.com/ParabolInc/parabol/commit/c155c12486d3e07384b280b79ec0a0e216343243))
+* **metrics:** add metrics to track search query in AL ([#9235](https://github.com/ParabolInc/parabol/issues/9235)) ([bfaccd8](https://github.com/ParabolInc/parabol/commit/bfaccd8154c7a4c4229adce8bf25e5ffc8d11ef0))
+
 ## [7.9.0](https://github.com/ParabolInc/parabol/compare/v7.8.1...v7.9.0) (2023-11-29)
 
 
