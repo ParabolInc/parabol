@@ -267,10 +267,12 @@ const getSlackMessageForNotification = async (
     const responseId = notification.responseId
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
     const author = await dataLoader.get('users').loadNonNull(response.userId)
-    // TODO: if kudos added, change notification text
+    const title = notification.kudosEmojiUnicode
+      ? `${notification.kudosEmojiUnicode} *${author.preferredName}* mentioned you and gave kudos in their response in *${meeting.name}*`
+      : `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
     return {
       responseId,
-      title: `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`,
+      title,
       buttonText: 'See their response'
     }
   }
