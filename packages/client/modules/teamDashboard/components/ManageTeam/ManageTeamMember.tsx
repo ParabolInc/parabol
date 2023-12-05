@@ -102,8 +102,19 @@ const ManageTeamMember = (props: Props) => {
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
   const isSelectedAvatar = manageTeamMemberId === teamMemberId
+  // Team management permissions:
+  // * Org admin can do anything, including promote themselves to team lead, and remove non-lead
+  //   team members
+  // * Team leads can do anything, except manage org admins
+  // * Non-lead non-admins can only leave the team
+  // Show the menu iff:
+  // 1. Viewer is an admin, and the user is not a lead (viewer can promote them a lead, or remove
+  //    from team).
+  // 2. Viewer is a lead, and user is not the viewer, and not an admin (viewer can promote to lead,
+  //    or remove from team).
+  // 3. User is the viewer, and the user is not a lead (can leave team).
   const showMenuButton =
-    (isViewerOrgAdmin && ((isSelf && !isViewerLead) || !isLead)) ||
+    (isViewerOrgAdmin && !isLead) ||
     (isViewerLead && !isSelf && !isOrgAdmin) ||
     (!isViewerLead && isSelf)
   const {
