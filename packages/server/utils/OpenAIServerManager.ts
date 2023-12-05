@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
 import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
+import {ModifyType} from '../graphql/public/resolverTypes'
 
 class OpenAIServerManager {
   private openAIApi
@@ -240,6 +241,44 @@ class OpenAIServerManager {
     } catch (error) {
       const e = error instanceof Error ? error : new Error('OpenAI failed to group reflections')
       sendToSentry(e)
+      return null
+    }
+  }
+
+  async modifyCheckInQuestion(question: string, modifyType: ModifyType) {
+    if (!this.openAIApi) return null
+
+    const prompt: Record<ModifyType, string> = {
+      EXCITING: `Transform the following team retrospective ice breaker question into something imaginative and unexpected, using simple and clear language suitable for an international audience. Keep it engaging and thrilling, while ensuring it's easy to understand.
+      Original question: "${question}"`,
+
+      FUNNY: `Rewrite the following team retrospective ice breaker question to add humor, using straightforward and easy-to-understand language. Aim for a light-hearted, amusing twist that is accessible to an international audience.
+      Original question: "${question}"`,
+
+      SERIOUS: `Modify the following team retrospective ice breaker question to make it more thought-provoking, using clear and simple language. Make it profound to stimulate insightful discussions, while ensuring it remains comprehensible to a diverse international audience.
+      Original question: "${question}"`
+    }
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: prompt[modifyType]
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 256,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      return (response.choices[0]?.message?.content?.trim() as string).replaceAll(`"`, '') ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to modifyCheckInQuestion')
+      sendToSentry(error)
       return null
     }
   }
