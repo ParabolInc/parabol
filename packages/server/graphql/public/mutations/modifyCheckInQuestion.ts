@@ -7,6 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import {analytics} from '../../../utils/analytics/analytics'
 
 const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async (
   _source,
@@ -36,6 +37,8 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
 
   const openai = new OpenAIServerManager()
   const modifiedCheckInQuestion = await openai.modifyCheckInQuestion(checkInQuestion, modifyType)
+
+  analytics.icebreakerModified(viewerId, meetingId, modifyType)
 
   // RESOLUTION
   const data = {modifiedCheckInQuestion}

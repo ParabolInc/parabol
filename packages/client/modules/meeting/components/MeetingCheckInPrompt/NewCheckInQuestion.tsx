@@ -17,11 +17,11 @@ import ModifyCheckInQuestionMutation from '../../../../mutations/ModifyCheckInQu
 import {PALETTE} from '../../../../styles/paletteV3'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import clsx from 'clsx'
 import {
   ModifyCheckInQuestionMutation$data,
   ModifyType
 } from '../../../../__generated__/ModifyCheckInQuestionMutation.graphql'
+import {Button} from '../../../../ui/Button/Button'
 
 const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
@@ -106,7 +106,12 @@ const NewCheckInQuestion = (props: Props) => {
     }
   } = meeting
   const {checkInQuestion} = localPhase
+  const {viewerId} = atmosphere
+  const isFacilitating = facilitatorUserId === viewerId
+
   const [editorState, setEditorState] = useEditorState(checkInQuestion)
+  const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
+
   const updateQuestion = (nextEditorState: EditorState) => {
     const wasFocused = editorState.getSelection().getHasFocus()
     const isFocused = nextEditorState.getSelection().getHasFocus()
@@ -118,10 +123,14 @@ const NewCheckInQuestion = (props: Props) => {
         : ''
 
       if (nextCheckInQuestion === checkInQuestion) return
-      UpdateNewCheckInQuestionMutation(atmosphere, {
-        meetingId,
-        checkInQuestion: nextCheckInQuestion
-      })
+      UpdateNewCheckInQuestionMutation(
+        atmosphere,
+        {
+          meetingId,
+          checkInQuestion: nextCheckInQuestion
+        },
+        {onCompleted, onError}
+      )
     }
     setEditorState(nextEditorState)
   }
@@ -131,14 +140,35 @@ const NewCheckInQuestion = (props: Props) => {
     const currentText = editorRef.current?.value
     const nextCheckInQuestion = convertToTaskContent(currentText || '')
     if (nextCheckInQuestion === checkInQuestion) return
-    UpdateNewCheckInQuestionMutation(atmosphere, {
-      meetingId,
-      checkInQuestion: nextCheckInQuestion
-    })
+    UpdateNewCheckInQuestionMutation(
+      atmosphere,
+      {
+        meetingId,
+        checkInQuestion: nextCheckInQuestion
+      },
+      {onCompleted, onError}
+    )
   }
 
+  const {
+    tooltipPortal: editIcebreakerTooltipPortal,
+    openTooltip: openEditIcebreakerTooltip,
+    closeTooltip: closeEditIcebreakerTooltip,
+    originRef: editIcebreakerOriginRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER, {
+    disabled: isEditing || !isFacilitating
+  })
+  const {
+    tooltipPortal: refreshIcebreakerTooltipPortal,
+    openTooltip: openRefreshIcebreakerTooltip,
+    closeTooltip: closeRefreshIcebreakerTooltip,
+    originRef: refreshIcebreakerOriginRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER, {
+    disabled: !isFacilitating
+  })
+
   const focusQuestion = () => {
-    closeTooltip()
+    closeEditIcebreakerTooltip()
     editorRef.current && editorRef.current.focus()
     const selection = editorState.getSelection()
     const contentState = editorState.getCurrentContent()
@@ -149,18 +179,7 @@ const NewCheckInQuestion = (props: Props) => {
     const nextEditorState = EditorState.forceSelection(editorState, jumpToEnd)
     setEditorState(nextEditorState)
   }
-  const {viewerId} = atmosphere
-  const isFacilitating = facilitatorUserId === viewerId
-  const tip = 'Tap to customize the Icebreaker'
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
-    MenuPosition.UPPER_CENTER,
-    {
-      delay: 300,
-      disabled: isEditing || !isFacilitating
-    }
-  )
-  const {submitting, submitMutation} = useMutationProps()
+
   const {
     submitting: isModifyingCheckInQuestion,
     submitMutation: submitModifyCheckInQuestion,
@@ -168,21 +187,29 @@ const NewCheckInQuestion = (props: Props) => {
     onCompleted: onModifyCheckInQuestionCompleted
   } = useMutationProps()
   const refresh = () => {
-    UpdateNewCheckInQuestionMutation(atmosphere, {
-      meetingId,
-      checkInQuestion: ''
-    })
+    UpdateNewCheckInQuestionMutation(
+      atmosphere,
+      {
+        meetingId,
+        checkInQuestion: ''
+      },
+      {onCompleted, onError}
+    )
     setAiUpdatedIcebreaker('')
   }
 
   const updateCheckInQuestionWithGeneratedContent = () => {
     submitMutation()
-    UpdateNewCheckInQuestionMutation(atmosphere, {
-      meetingId,
-      checkInQuestion: JSON.stringify(
-        convertToRaw(ContentState.createFromText(aiUpdatedIcebreaker))
-      )
-    })
+    UpdateNewCheckInQuestionMutation(
+      atmosphere,
+      {
+        meetingId,
+        checkInQuestion: JSON.stringify(
+          convertToRaw(ContentState.createFromText(aiUpdatedIcebreaker))
+        )
+      },
+      {onCompleted, onError}
+    )
     setAiUpdatedIcebreaker('')
   }
 
@@ -230,24 +257,29 @@ const NewCheckInQuestion = (props: Props) => {
         {isFacilitating && (
           <div className='flex gap-x-2'>
             <PlainButton
-              aria-label={tip}
+              aria-label={'Edit icebreaker'}
               onClick={focusQuestion}
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
-              ref={originRef}
+              onMouseEnter={openEditIcebreakerTooltip}
+              onMouseLeave={closeEditIcebreakerTooltip}
+              ref={editIcebreakerOriginRef}
             >
               <CogIcon>
                 <CreateIcon />
               </CogIcon>
             </PlainButton>
-            <PlainButton aria-label={'Refresh'} onClick={refresh}>
+            <PlainButton
+              aria-label={'Refresh icebreaker'}
+              onClick={refresh}
+              onMouseEnter={openRefreshIcebreakerTooltip}
+              onMouseLeave={closeRefreshIcebreakerTooltip}
+              ref={refreshIcebreakerOriginRef}
+            >
               <CogIcon>
                 <RefreshIcon />
               </CogIcon>
             </PlainButton>
           </div>
         )}
-        {tooltipPortal(<div>{tip}</div>)}
       </QuestionBlock>
       {shouldShowAiIcebreakers && (
         <div className='flex flex-col gap-6 rounded-lg bg-slate-100 p-4'>
@@ -262,47 +294,49 @@ const NewCheckInQuestion = (props: Props) => {
           </div>
           {aiUpdatedIcebreaker && <div className='p-2 text-center'>{aiUpdatedIcebreaker}</div>}
           <div className='flex items-center justify-center gap-x-3'>
-            <button
-              className={clsx(
-                'text-gray-900 hover:bg-gray-200 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
-              )}
-              disabled={submitting}
+            <Button
+              variant='outline'
+              shape='pill'
+              size='sm'
+              disabled={isModifyingCheckInQuestion}
               onClick={() => modify('SERIOUS')}
             >
               More serious
-            </button>
-            <button
-              className={clsx(
-                'text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
-              )}
-              disabled={submitting}
+            </Button>
+            <Button
+              variant='outline'
+              shape='pill'
+              size='sm'
+              disabled={isModifyingCheckInQuestion}
               onClick={() => modify('FUNNY')}
             >
               More funny
-            </button>
-            <button
-              className={clsx(
-                'text-gray-900 hover:bg-gray-50 cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs font-semibold'
-              )}
-              disabled={submitting}
+            </Button>
+            <Button
+              variant='outline'
+              shape='pill'
+              size='sm'
+              disabled={isModifyingCheckInQuestion}
               onClick={() => modify('EXCITING')}
             >
               More exciting
-            </button>
+            </Button>
           </div>
           <div className='flex items-center justify-center gap-x-3'>
-            <button
-              className={clsx(
-                'cursor-pointer rounded-full bg-sky-500 px-3.5 py-2 text-sm font-semibold text-white hover:bg-sky-600 disabled:pointer-events-none disabled:opacity-50'
-              )}
-              disabled={aiUpdatedIcebreaker === '' || isModifyingCheckInQuestion}
+            <Button
+              variant='secondary'
+              shape='pill'
+              size='md'
+              disabled={aiUpdatedIcebreaker === '' || isModifyingCheckInQuestion || submitting}
               onClick={updateCheckInQuestionWithGeneratedContent}
             >
               {isModifyingCheckInQuestion ? 'Modifying...' : 'Approve'}
-            </button>
+            </Button>
           </div>
         </div>
       )}
+      {editIcebreakerTooltipPortal(<>Edit icebreaker</>)}
+      {refreshIcebreakerTooltipPortal(<>Refresh icebreaker</>)}
     </>
   )
 }
