@@ -129,7 +129,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
           <div className='truncate pb-1 text-lg leading-5 text-slate-800'>{title}</div>
-          <div className={clsx('font-semibold italic', `text-${theme.primary}`)}>
+          <div className={clsx('font-semibold italic', `${theme.text}`)}>
             {upperFirst(category)}
           </div>
         </div>
