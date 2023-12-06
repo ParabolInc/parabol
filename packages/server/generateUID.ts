@@ -10,6 +10,7 @@ const MID_OFFSET = BigInt(SEQ_BIT_LEN)
 const BIG_ZERO = BigInt(0)
 const MAX_SEQ = 2 ** SEQ_BIT_LEN - 1
 
+// if MID overflows, we will generate duplicate ids, throw instead
 if (MID < 0 || MID > 2 ** MACHINE_ID_BIT_LEN - 1) {
   throw new Error('SERVER_ID must be between 0 and 1023')
 }
