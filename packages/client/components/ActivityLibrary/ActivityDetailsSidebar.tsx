@@ -359,7 +359,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                 </div>
               ) : (
                 <NewMeetingTeamPicker
-                  positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT}
+                  positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
                   onSelectTeam={onSelectTeam}
                   selectedTeamRef={selectedTeam}
                   teamsRef={availableTeams}
