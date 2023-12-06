@@ -17,7 +17,6 @@ import GraphQLURLType from './GraphQLURLType'
 import OrganizationUser, {OrganizationUserConnection} from './OrganizationUser'
 import OrgUserCount from './OrgUserCount'
 import Team from './Team'
-import User from './User'
 
 const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'Organization',
@@ -203,14 +202,14 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       }
     },
     billingLeaders: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrganizationUser))),
       description: 'The leaders of the org',
       resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-        const billingLeaderUserIds = organizationUsers
-          .filter((organizationUser) => organizationUser.role === 'BILLING_LEADER')
-          .map(({userId}: {userId: string}) => userId)
-        return dataLoader.get('users').loadMany(billingLeaderUserIds)
+        return organizationUsers.filter(
+          (organizationUser) =>
+            organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
+        )
       }
     }
   })

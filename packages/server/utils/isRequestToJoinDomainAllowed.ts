@@ -31,7 +31,9 @@ export const getEligibleOrgIdsByDomain = async (
     }))
     .merge((org: RDatum) => ({
       founder: org('members').nth(0).default(null),
-      billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false}),
+      billingLeads: org('members')
+        .filter({inactive: false})
+        .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role'))),
       activeMembers: org('members').filter({inactive: false, removedAt: null}).count()
     }))
     .filter((org: RDatum) =>
@@ -43,7 +45,12 @@ export const getEligibleOrgIdsByDomain = async (
     orgs.map(async (org) => {
       const {founder} = org
       const importantMembers = org.billingLeads.slice() as TeamMember[]
-      if (!founder.inactive && !founder.removedAt && founder.role !== 'BILLING_LEADER') {
+      if (
+        !founder.inactive &&
+        !founder.removedAt &&
+        founder.role !== 'BILLING_LEADER' &&
+        founder.role !== 'ORG_ADMIN'
+      ) {
         importantMembers.push(founder)
       }
 

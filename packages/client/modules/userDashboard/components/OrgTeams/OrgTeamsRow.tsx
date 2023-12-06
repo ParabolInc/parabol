@@ -20,6 +20,7 @@ const OrgTeamsRow = (props: Props) => {
         teamMembers {
           id
           isLead
+          isOrgAdmin
           isSelf
           email
         }
@@ -30,7 +31,9 @@ const OrgTeamsRow = (props: Props) => {
   const {id: teamId, teamMembers, name} = team
   const teamMembersCount = teamMembers.length
   const teamLeadEmail = teamMembers.find((member) => member.isLead)?.email ?? ''
-  const isViewerTeamLead = teamMembers.some((member) => member.isSelf && member.isLead)
+  const isViewerTeamLead = teamMembers.some(
+    (member) => member.isSelf && (member.isLead || member.isOrgAdmin)
+  )
   return (
     <Row>
       <div className='flex w-full flex-col px-4 py-1'>

@@ -36,7 +36,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
       fragment NewBillingLeaderMenu_organization on Organization {
         id
         billingLeaders {
-          id
+          userId
         }
         organizationUsers {
           edges {
@@ -61,7 +61,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
       const {user} = node
       const {id: userId} = user
       return !billingLeaders.some((billingLeader) => {
-        const {id: billingLeaderId} = billingLeader
+        const {userId: billingLeaderId} = billingLeader
         return billingLeaderId === userId
       })
     })

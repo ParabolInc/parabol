@@ -7,6 +7,7 @@ import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToStarter from './resolveDowngradeToStarter'
+import {RDatum} from '../../../database/stricterR'
 
 const removeFromOrg = async (
   userId: string,
@@ -57,14 +58,15 @@ const removeFromOrg = async (
 
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
-  if (role === 'BILLING_LEADER') {
+  if (role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)) {
     const organization = await r.table('Organization').get(orgId).run()
     // if no other billing leader, promote the oldest
     // if team tier & no other member, downgrade to starter
     const otherBillingLeaders = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, role: 'BILLING_LEADER'})
+      .filter({removedAt: null})
+      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
       .run()
     if (otherBillingLeaders.length === 0) {
       const nextInLine = await r
