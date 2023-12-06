@@ -38,7 +38,7 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
   const openai = new OpenAIServerManager()
   const modifiedCheckInQuestion = await openai.modifyCheckInQuestion(checkInQuestion, modifyType)
 
-  analytics.icebreakerModified(viewerId, meetingId, modifyType)
+  analytics.icebreakerModified(viewerId, meetingId, modifyType, modifiedCheckInQuestion !== null)
 
   // RESOLUTION
   const data = {modifiedCheckInQuestion}

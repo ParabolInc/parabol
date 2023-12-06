@@ -679,11 +679,17 @@ class Analytics {
     })
   }
 
-  icebreakerModified = (userId: string, meetingId: string, modifyType: ModifyType) => {
+  icebreakerModified = (
+    userId: string,
+    meetingId: string,
+    modifyType: ModifyType,
+    success: boolean
+  ) => {
     this.track(userId, 'Icebreaker Modified', {
       userId,
       meetingId,
-      modifyType
+      modifyType,
+      success
     })
   }
 
