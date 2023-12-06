@@ -164,7 +164,7 @@ export type AnalyticsEvent =
   | 'Conversion Modal Pay Later Clicked'
   // kudos
   | 'Kudos Sent'
-  | 'Icebreaker modified'
+  | 'Icebreaker Modified'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
   // Lowercase words are for backwards compatibility
@@ -680,7 +680,7 @@ class Analytics {
   }
 
   icebreakerModified = (userId: string, meetingId: string, modifyType: ModifyType) => {
-    this.track(userId, 'Icebreaker modified', {
+    this.track(userId, 'Icebreaker Modified', {
       userId,
       meetingId,
       modifyType
