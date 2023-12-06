@@ -101,7 +101,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       <div
         className={twMerge(
           'relative flex h-full min-w-0 flex-col overflow-hidden rounded-lg',
-          `bg-${theme.secondary}`,
+          theme.secondary,
           className
         )}
       >

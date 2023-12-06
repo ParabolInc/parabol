@@ -125,7 +125,7 @@ const getTemplateDocumentValue = (
     .join('-')
 
 const CategoryIDToColorClass = {
-  [QUICK_START_CATEGORY_ID]: 'grape-700',
+  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
   ...Object.fromEntries(
     Object.entries(CATEGORY_THEMES).map(([key, value]) => {
       return [key, value.primary]
@@ -336,7 +336,7 @@ export const ActivityLibrary = (props: Props) => {
                     'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
                     category === selectedCategory && searchQuery.length === 0
                       ? [
-                          `bg-${CategoryIDToColorClass[category]}`,
+                          `${CategoryIDToColorClass[category]}`,
                           'font-semibold text-white focus:text-white'
                         ]
                       : 'border border-slate-300 bg-white'
