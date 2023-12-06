@@ -7,7 +7,6 @@ import getProjectRoot from '../webpack/utils/getProjectRoot'
 
 const PROJECT_ROOT = getProjectRoot()
 const clientDir = path.join(PROJECT_ROOT, 'build')
-const serverDir = path.join(PROJECT_ROOT, 'dist')
 
 const getCDNURL = () => {
   const {CDN_BASE_URL} = process.env
@@ -47,8 +46,6 @@ const writeManifest = () => {
   const manifestPath = path.join(clientDir, 'manifest.json')
   fs.writeFileSync(manifestPath, JSON.stringify(manifest))
   // move the referenced icons into the client build
-  fs.copyFileSync(path.join(serverDir, logo192), path.join(clientDir, logo192))
-  fs.copyFileSync(path.join(serverDir, logo512), path.join(clientDir, logo512))
 }
 
 const rewriteIndexHTML = () => {
@@ -72,7 +69,7 @@ const rewriteIndexHTML = () => {
     AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
     AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
     microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
-    microsoft: process.env.MICROSOFT_CLIENT_ID,
+    microsoft: process.env.MICROSOFT_CLIENT_ID
   }
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'skeleton.html'), 'utf8')

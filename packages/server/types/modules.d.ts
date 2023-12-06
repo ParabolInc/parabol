@@ -26,7 +26,7 @@ declare module 'object-hash'
 declare module 'string-score'
 
 declare const __APP_VERSION__: string
-declare const __PRODUCTION__: string
+declare const __PRODUCTION__: boolean
 declare const __SOCKET_PORT__: string
 declare const __webpack_public_path__: string
 

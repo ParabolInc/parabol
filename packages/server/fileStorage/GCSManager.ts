@@ -1,7 +1,7 @@
 import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import path from 'path'
-import FileStoreManager from './FileStoreManager'
+import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 
 interface CloudKey {
   clientEmail: string
@@ -140,18 +140,18 @@ export default class GCSManager extends FileStoreManager {
   }
 
   putBuildFile(file: Buffer, partialPath: string): Promise<string> {
-    const fullPath = path.join(this.envSubDir, 'build', partialPath)
+    const fullPath = this.prependPath(partialPath, 'build')
     return this.putFile(file, fullPath)
   }
 
-  prependPath(partialPath: string) {
-    return path.join(this.envSubDir, 'store', partialPath)
+  prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
+    return path.join(this.envSubDir, assetDir, partialPath)
   }
   getPublicFileLocation(fullPath: string) {
     return encodeURI(`${this.baseUrl}${fullPath}`)
   }
-  async checkExists(partialPath: string) {
-    const fullPath = encodeURIComponent(this.prependPath(partialPath))
+  async checkExists(partialPath: string, assetDir?: FileAssetDir) {
+    const fullPath = encodeURIComponent(this.prependPath(partialPath, assetDir))
     const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}`
     const res = await fetch(url)
     return res.status !== 404

@@ -2,6 +2,11 @@ import fs from 'fs'
 import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
 import path from 'path'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
+;(require as any).context(
+  '../../static/images/illustrations',
+  false,
+  /\/action.png$|\/teamPrompt.png$|Template.png$/
+)
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -25,46 +30,68 @@ const pushClientAssetsToCDN = async () => {
   console.log(`⛅️ Uploaded ${dirEnts.length} client assets to CDN`)
 }
 
-const pushTemplatesToCDN = async () => {
+const pushServerAssetsToCDN = async () => {
+  const localServerAssetsDir = path.join(PROJECT_ROOT, 'dist', 'images')
   const fileStoreManager = getFileStoreManager()
-  const collector = {} as Record<string, string>
-  const context = (require as any).context(
-    '../../static/images/illustrations',
-    false,
-    /\/action.png$|\/teamPrompt.png$|Template.png$/
-  )
 
-  context.keys().forEach((relativePath: string) => {
-    const {name, ext} = path.parse(relativePath)
-    // This path only exists on the build machine
-    const builtPath = context(relativePath).default
-    // sub out the build machine path prefix with the __dirname
-    // e.g. /Users/CI/dist/templates/X.png -> /app/dist/templates/X.png
-    const absPath = builtPath.replace(/^.+\/dist(\/.+$)/, __dirname + '$1')
-    collector[`${name}${ext}`] = absPath
-  })
-  const results = await Promise.all(
-    Object.entries(collector).map(async ([fileName, pathName]) => {
-      // store meeting templates under our Parabol ghost organization
-      const partialPath = `Organization/aGhostOrg/template/${fileName}`
-      const exists = await fileStoreManager.checkExists(partialPath)
-      if (exists) return false
-      const buffer = await fs.promises.readFile(pathName as string)
-      const {name, ext} = path.parse(fileName)
-      return fileStoreManager.putTemplateIllustration(buffer, 'aGhostOrg', ext, name)
-    })
-  )
-  const urls = results.filter(Boolean)
-
-  if (urls.length > 0) {
-    console.log(urls.join('\n'))
+  // Use this pattern if the asset is publicly available, not kept in the DB
+  const defaultFileUploader = async (dirname: string, filename: string) => {
+    const exists = await fileStoreManager.checkExists(filename)
+    if (exists) return false
+    const buffer = await fs.promises.readFile(path.join(dirname, filename))
+    const url = await fileStoreManager.putBuildFile(buffer, filename)
+    console.log(`⛅️ Uploaded ${url}`)
+    return true
   }
 
-  console.log(`⛅️ Uploaded ${urls.length} Meeting Templates to CDN`)
+  // Use this pattern if the asset is associated with a user (including aGhostUser) and the URL is kept in our DB
+  const templateFileUploader = async (dirname: string, filename: string) => {
+    const partialPath = `Organization/aGhostOrg/template/${filename}`
+    const exists = await fileStoreManager.checkExists(partialPath)
+    if (exists) return false
+    const buffer = await fs.promises.readFile(path.join(dirname, filename))
+    const {name, ext} = path.parse(filename)
+    const url = await fileStoreManager.putTemplateIllustration(buffer, 'aGhostOrg', ext, name)
+    console.log(`⛅️ Uploaded ${url}`)
+    return true
+  }
+
+  const fileUploaders = {
+    templates: templateFileUploader
+  }
+
+  interface NestedArray<T> extends Array<T | NestedArray<T>> {}
+
+  const putBuildFiles = async (
+    curDirname: string,
+    fileUploader: typeof defaultFileUploader
+  ): Promise<NestedArray<boolean>> => {
+    const dirEnts = await fs.promises.readdir(curDirname, {withFileTypes: true})
+    return Promise.all(
+      dirEnts.map(async (dirent) => {
+        const {name} = dirent
+        if (dirent.isDirectory()) {
+          const nextFileUploader =
+            fileUploaders[name as keyof typeof fileUploaders] ?? defaultFileUploader
+          return putBuildFiles(path.join(curDirname, dirent.name), nextFileUploader)
+        } else if (dirent.isFile()) {
+          return fileUploader(curDirname, name)
+        } else {
+          // ignore symlinks, sockets, etc.
+          return false
+        }
+      })
+    )
+  }
+  const totals = await putBuildFiles(localServerAssetsDir, defaultFileUploader)
+  const total = totals.flat()
+  const pushed = total.filter(Boolean).length
+  console.log(`⛅️ Server upload complete. Pushed ${pushed} assets to CDN`)
 }
+
 const pushToCDN = async () => {
   console.log('⛅️ Push to CDN Started')
-  await Promise.all([pushClientAssetsToCDN(), pushTemplatesToCDN()])
+  await Promise.all([pushClientAssetsToCDN(), pushServerAssetsToCDN()])
   console.log('⛅️ Push to CDN Complete')
 }
 

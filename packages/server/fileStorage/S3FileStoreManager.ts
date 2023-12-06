@@ -1,7 +1,7 @@
 import {HeadObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
 import mime from 'mime-types'
 import path from 'path'
-import FileStoreManager from './FileStoreManager'
+import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 
 export default class S3Manager extends FileStoreManager {
   // e.g. development, production
@@ -55,8 +55,8 @@ export default class S3Manager extends FileStoreManager {
     return this.getPublicFileLocation(fullPath)
   }
 
-  prependPath(partialPath: string) {
-    return path.join(this.envSubDir, 'store', partialPath)
+  prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
+    return path.join(this.envSubDir, assetDir, partialPath)
   }
 
   getPublicFileLocation(fullPath: string) {
@@ -64,11 +64,11 @@ export default class S3Manager extends FileStoreManager {
   }
 
   putBuildFile(file: Buffer, partialPath: string): Promise<string> {
-    const fullPath = path.join(this.envSubDir, 'build', partialPath)
+    const fullPath = this.prependPath(partialPath, 'build')
     return this.putFile(file, fullPath)
   }
-  async checkExists(key: string) {
-    const Key = this.prependPath(key)
+  async checkExists(key: string, assetDir?: FileAssetDir) {
+    const Key = this.prependPath(key, assetDir)
     try {
       await this.s3.send(new HeadObjectCommand({Bucket: this.bucket, Key}))
     } catch (e) {
