@@ -53,6 +53,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
   useSnacksForNewMeetings(activeMeetings as any)
   const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
+  if (!meetingCount) return null
   return (
     <>
       <CurrentButton

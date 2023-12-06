@@ -42,6 +42,8 @@ import {SelectGroup} from '../../ui/Select/SelectGroup'
 import {SelectItem} from '../../ui/Select/SelectItem'
 import OneOnOneTeamStatus from './OneOnOneTeamStatus'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
+import useBreakpoint from '../../hooks/useBreakpoint'
+import {Breakpoint} from '../../types/constEnums'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -55,6 +57,7 @@ interface Props {
 const ActivityDetailsSidebar = (props: Props) => {
   const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId, viewerRef} = props
   const [isMinimized, setIsMinimized] = useState(false)
+  const isMobile = !useBreakpoint(Breakpoint.INVOICE)
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -310,7 +313,9 @@ const ActivityDetailsSidebar = (props: Props) => {
           <div
             className={clsx(
               'transition-max-height duration-300 ease-in-out',
-              isMinimized ? 'max-h-[0px] lg:max-h-[100vh]' : 'max-h-[100vh]'
+              isMinimized
+                ? 'max-h-0 opacity-0 lg:max-h-[100vh] lg:opacity-100'
+                : 'max-h-[100vh] pb-4 lg:pb-0'
             )}
           >
             <div className='mt-6 flex grow flex-col gap-2'>
@@ -354,7 +359,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                 </div>
               ) : (
                 <NewMeetingTeamPicker
-                  positionOverride={MenuPosition.UPPER_LEFT}
+                  positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT}
                   onSelectTeam={onSelectTeam}
                   selectedTeamRef={selectedTeam}
                   teamsRef={availableTeams}
@@ -409,7 +414,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           </div>
         </div>
 
-        <div className='flex h-fit w-full flex-col gap-2 pb-4'>
+        <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
           {oneOnOneTeamInput && (
             <OneOnOneTeamStatus
               email={oneOnOneTeamInput.email}

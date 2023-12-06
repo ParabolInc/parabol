@@ -91,10 +91,11 @@ const ActivityDetails = (props: Props) => {
   }`
 
   const isOwner = viewerLowestScope === 'TEAM'
+  const MOBILE_SETTINGS_HEIGHT = 208
 
   return (
     <div className='flex h-full flex-col bg-white'>
-      <div className='flex grow '>
+      <div className={clsx(`flex grow pb-[${MOBILE_SETTINGS_HEIGHT}px]`)}>
         <div className='mt-4 grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center'>
             <div className='mr-4'>
@@ -140,6 +141,18 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
+        <div className='hidden lg:block'>
+          <ActivityDetailsSidebar
+            selectedTemplateRef={activity}
+            teamsRef={teams}
+            isOpen={!isEditing}
+            type={activity.type}
+            preferredTeamId={preferredTeamId}
+            viewerRef={viewer}
+          />
+        </div>
+      </div>
+      <div className={`fixed min-h-[${MOBILE_SETTINGS_HEIGHT}px] bottom-0 w-full lg:hidden`}>
         <ActivityDetailsSidebar
           selectedTemplateRef={activity}
           teamsRef={teams}
