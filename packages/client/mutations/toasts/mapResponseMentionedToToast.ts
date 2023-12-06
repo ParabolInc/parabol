@@ -3,7 +3,7 @@ import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapResponseMentionedToToast_notification$data} from '../../__generated__/mapResponseMentionedToToast_notification.graphql'
 import makeNotificationToastKey from './makeNotificationToastKey'
-import getReactji from '../../utils/getReactji'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 graphql`
   fragment mapResponseMentionedToToast_notification on NotifyResponseMentioned {
@@ -18,23 +18,21 @@ graphql`
       id
       name
     }
-    kudosEmoji
+    kudosEmojiUnicode
   }
 `
 
 const mapResponseMentionedToToast = (
   notification: mapResponseMentionedToToast_notification$data,
-  {history}: OnNextHistoryContext
+  {atmosphere, history}: OnNextHistoryContext
 ): Snack | null => {
   if (!notification) return null
-  const {id: notificationId, meeting, response, kudosEmoji} = notification
+  const {id: notificationId, meeting, response, kudosEmojiUnicode} = notification
   const {preferredName: authorName} = response.user
   const {id: meetingId, name: meetingName} = meeting
 
-  const unicodeEmoji = kudosEmoji ? getReactji(kudosEmoji).unicode : ''
-
-  const message = kudosEmoji
-    ? `${unicodeEmoji} ${authorName} mentioned you and gave kudos in their response in ${meetingName}.`
+  const message = kudosEmojiUnicode
+    ? `${kudosEmojiUnicode} ${authorName} mentioned you and gave kudos in their response in ${meetingName}.`
     : `${authorName} mentioned you in their response in ${meetingName}.`
 
   // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
@@ -49,6 +47,18 @@ const mapResponseMentionedToToast = (
       callback: () => {
         history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
       }
+    },
+    onShow: () => {
+      SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
+        snackbarType: 'responseMentioned',
+        kudosEmojiUnicode
+      })
+    },
+    onManualDismiss: () => {
+      SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
+        snackbarType: 'responseMentioned',
+        kudosEmojiUnicode
+      })
     }
   }
 }
