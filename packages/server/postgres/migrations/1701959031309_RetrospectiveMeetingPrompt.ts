@@ -7,7 +7,6 @@ export async function up() {
   await client.query(`
     CREATE TABLE IF NOT EXISTS "RetrospectivePrompt" (
       "id" SERIAL PRIMARY KEY,
-      "phaseId" VARCHAR(100) NOT NULL,
       "meetingId" VARCHAR(100) NOT NULL,
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,

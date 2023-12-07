@@ -33,13 +33,12 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts used during the reflect phase',
       resolve: async (
-        {id, teamId, meetingId}: {teamId: string, meetingId: string},
+        {teamId, meetingId}: {teamId: string, meetingId: string},
         _args: unknown,
         {dataLoader}: GQLContext
       ) => {
-        console.log('GEORG id', id)
         const pg = getKysely()
-        const customPrompts = (await pg.selectFrom('RetrospectivePrompt').selectAll().where('promptId', '=', id).execute()).map((prompt) => ({
+        const customPrompts = (await pg.selectFrom('RetrospectivePrompt').selectAll().where('meetingId', '=', meetingId).execute()).map((prompt) => ({
             ...prompt,
             id: `MeetingRetrospectivePrompt:${meetingId}:${prompt.id}`,
             teamId,
