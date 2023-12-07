@@ -575,7 +575,9 @@ class Analytics {
     })
 
   billingLeaderModified = (
+    // Modifier
     user: AnalyticsUser,
+    // id of the user being modified
     userId: string,
     orgId: string,
     modificationType: 'add' | 'remove'
