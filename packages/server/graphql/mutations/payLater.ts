@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
-//import Meeting from '../../database/types/Meeting'
 import getPg from '../../postgres/getPg'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -33,7 +32,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const [meeting, viewer] = await Promise.all([
-      r.table('NewMeeting').get(meetingId).run(), //) as Meeting | null
+      r.table('NewMeeting').get(meetingId).run(),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!meeting) {
