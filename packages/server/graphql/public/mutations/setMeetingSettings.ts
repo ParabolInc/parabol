@@ -26,7 +26,10 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
 
   // RESOLUTION
   const {teamId, meetingType} = settings
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const [team, viewer] = await Promise.all([
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
   const organization = await dataLoader.get('organizations').load(team.orgId)
   const {featureFlags} = organization
   const hasTranscriptFlag = featureFlags?.includes('zoomTranscription')
@@ -72,7 +75,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     .run()
 
   const data = {settingsId}
-  analytics.meetingSettingsChanged(viewerId, teamId, meetingType, meetingSettings)
+  analytics.meetingSettingsChanged(viewer, teamId, meetingType, meetingSettings)
   publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
   return data
 }

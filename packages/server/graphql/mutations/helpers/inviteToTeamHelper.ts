@@ -178,7 +178,7 @@ const inviteToTeamHelper = async (
     const isInviteeParabolUser = parabolUserEmails.includes(inviteeEmail)
     const success = !!emailResults[idx]
     analytics.inviteEmailSent(
-      viewerId,
+      inviter,
       teamId,
       inviteeEmail,
       isInviteeParabolUser,

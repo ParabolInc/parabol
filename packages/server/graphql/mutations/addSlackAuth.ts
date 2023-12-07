@@ -110,9 +110,10 @@ export default {
     const {response} = manager
     const slackUserId = response.authed_user.id
     const defaultChannelId = response.incoming_webhook.channel_id
-    const [joinConvoRes, userInfoRes] = await Promise.all([
+    const [joinConvoRes, userInfoRes, viewer] = await Promise.all([
       manager.joinConversation(defaultChannelId),
-      manager.getUserInfo(slackUserId)
+      manager.getUserInfo(slackUserId),
+      dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!userInfoRes.ok) {
       return standardError(new Error(userInfoRes.error), {userId: viewerId})
@@ -126,7 +127,7 @@ export default {
       upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
       upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
     ])
-    analytics.integrationAdded(viewerId, teamId, 'slack')
+    analytics.integrationAdded(viewer, teamId, 'slack')
     const data = {slackAuthId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddSlackAuthPayload', data, subOptions)
     return data

@@ -46,7 +46,11 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const [organization, viewer] = await Promise.all([
+    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
+
   const {
     stripeId,
     tier,
@@ -115,7 +119,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
-  analytics.organizationUpgraded(viewerId, {
+  analytics.organizationUpgraded(viewer, {
     orgId,
     domain: activeDomain,
     isTrial: !!trialStartDate,

@@ -61,7 +61,10 @@ export default {
     // VALIDATION
     const {id: taskId, userId: inputUserId, status, sortOrder, content} = updatedTask
     const validContent = normalizeRawDraftJS(content)
-    const task = await r.table('Task').get(taskId).run()
+    const [task, viewer] = await Promise.all([
+      r.table('Task').get(taskId).run(),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
@@ -146,7 +149,7 @@ export default {
     const {notificationsToAdd} = await publishChangeNotifications(
       newTask,
       task,
-      viewerId,
+      viewer,
       usersToIgnore
     )
     const data = {

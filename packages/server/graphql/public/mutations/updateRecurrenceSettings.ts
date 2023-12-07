@@ -110,7 +110,10 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   const subOptions = {mutatorId, operationId}
 
   // VALIDATION
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const [meeting, viewer] = await Promise.all([
+    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
@@ -128,10 +131,10 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
 
     if (!recurrenceSettings.rrule) {
       await stopMeetingSeries(meetingSeries)
-      analytics.recurrenceStopped(viewerId, meetingSeries)
+      analytics.recurrenceStopped(viewer, meetingSeries)
     } else {
       await updateMeetingSeries(meetingSeries, recurrenceSettings.rrule)
-      analytics.recurrenceStarted(viewerId, meetingSeries)
+      analytics.recurrenceStarted(viewer, meetingSeries)
     }
 
     if (recurrenceSettings.name) {
@@ -155,7 +158,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       recurrenceSettings.rrule,
       recurrenceSettings.name
     )
-    analytics.recurrenceStarted(viewerId, newMeetingSeries)
+    analytics.recurrenceStarted(viewer, newMeetingSeries)
   }
 
   dataLoader.get('newMeetings').clear(meetingId)

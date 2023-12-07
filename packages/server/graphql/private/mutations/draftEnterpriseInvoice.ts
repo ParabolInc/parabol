@@ -148,7 +148,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     setTierForOrgUsers(orgId),
     hideConversionModal(orgId, dataLoader)
   ])
-  analytics.organizationUpgraded(user.id, {
+  analytics.organizationUpgraded(user, {
     orgId,
     domain: org.activeDomain,
     orgName: org.name,

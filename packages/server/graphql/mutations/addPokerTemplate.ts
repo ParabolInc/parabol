@@ -107,7 +107,7 @@ const addPokerTemplate = {
         r.table('TemplateDimension').insert(newTemplateDimensions).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Cloned')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -136,7 +136,7 @@ const addPokerTemplate = {
         r.table('TemplateDimension').insert(newDimension).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Created')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplatePayload', data, subOptions)
