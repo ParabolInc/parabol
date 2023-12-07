@@ -1,31 +1,33 @@
 const webpack = require('webpack')
-const makeServersConfig = require('./webpack/prod.servers.config')
-const makeClientConfig = require('./webpack/prod.client.config')
 const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
-
-const compile = (config, isSilent) => {
-  return new Promise((resolve) => {
-    const cb = (err, stats) => {
-      if (err && !isSilent) {
-        console.log('Webpack error:', err)
-      }
-      const {errors} = stats.compilation
-      if (errors.length > 0 && !isSilent) {
-        console.log('PROD COMPILATION ERRORS:', errors)
-      }
-      resolve()
-    }
-    const compiler = webpack(config)
-    compiler.run(cb)
-  })
-}
+const cp = require('child_process')
 
 const prod = async (isDeploy, noDeps) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   await generateGraphQLArtifacts()
-  const serversConfig = makeServersConfig({isDeploy, noDeps})
-  const clientConfig = makeClientConfig({isDeploy: isDeploy || noDeps})
-  await Promise.all([compile(serversConfig), compile(clientConfig)])
+  const buildServers = new Promise((resolve) => {
+    const serverBuild = cp
+      .exec(
+        `yarn webpack --config ./scripts/webpack/prod.servers.config.js --no-stats --env=noDeps=${noDeps}`
+      )
+      .on('exit', () => {
+        resolve()
+      })
+    serverBuild.stderr.pipe(process.stderr)
+  })
+  const buildClient = new Promise((resolve) => {
+    const clientBuild = cp
+      .exec(
+        `yarn webpack --config ./scripts/webpack/prod.client.config.js --no-stats --env=isDeploy=${
+          isDeploy || noDeps
+        }`
+      )
+      .on('exit', () => {
+        resolve()
+      })
+    clientBuild.stderr.pipe(process.stderr)
+  })
+  await Promise.all([buildServers, buildClient])
 }
 
 if (require.main === module) {
