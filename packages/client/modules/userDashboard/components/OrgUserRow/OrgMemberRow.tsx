@@ -147,6 +147,7 @@ const OrgMemberRow = (props: Props) => {
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_RIGHT)
+  const canViewMenu = !isViewerLastBillingLeader && organizationUser.role !== 'ORG_ADMIN'
 
   return (
     <StyledRow>
@@ -176,7 +177,7 @@ const OrgMemberRow = (props: Props) => {
               Leave Organization
             </StyledFlatButton>
           )}
-          {isViewerLastBillingLeader && userId === viewerId && (
+          {!canViewMenu && (
             <MenuToggleBlock
               onClick={closeTooltip}
               onMouseOver={openTooltip}
@@ -184,16 +185,20 @@ const OrgMemberRow = (props: Props) => {
               ref={tooltipRef}
             >
               {tooltipPortal(
-                <div>
-                  {'You need to promote another Billing Leader'}
-                  <br />
-                  {'before you can leave this role or Organization.'}
-                </div>
+                isViewerLastBillingLeader ? (
+                  <div>
+                    {'You need to promote another Billing Leader'}
+                    <br />
+                    {'before you can remove this role.'}
+                  </div>
+                ) : (
+                  <div>Contact support (love@parabol.co) to remove the Org Admin role</div>
+                )
               )}
               <MenuButton disabled />
             </MenuToggleBlock>
           )}
-          {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
+          {isViewerBillingLeader && canViewMenu && (
             <MenuToggleBlock>
               <MenuButton
                 onClick={togglePortal}

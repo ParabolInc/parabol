@@ -53,6 +53,7 @@ const query = graphql`
           teamMemberId: id
           userId
           isLead
+          isOrgAdmin
           isSelf
           preferredName
           email
@@ -73,7 +74,7 @@ const TeamSettings = (props: Props) => {
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
   if (!viewerTeamMember) return null
-  const {isLead: viewerIsLead} = viewerTeamMember
+  const {isLead: viewerIsLead, isOrgAdmin: viewerIsOrgAdmin} = viewerTeamMember
   const lead = teamMembers.find((m) => m.isLead)
   const contact = lead ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
   return (
@@ -93,7 +94,7 @@ const TeamSettings = (props: Props) => {
             </StyledRow>
           </Panel>
         )}
-        {viewerIsLead ? (
+        {viewerIsLead || viewerIsOrgAdmin ? (
           <Panel label='Danger Zone'>
             <PanelRow>
               <ArchiveTeam team={team!} />

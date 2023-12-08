@@ -47,16 +47,16 @@ export default {
       const {invitees} = args
       const orgId = args.newTeam.orgId ?? ''
       const viewerId = getUserId(authToken)
-      const viewer = await dataLoader.get('users').load(viewerId)
 
       if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         return standardError(new Error('Organization not found'), {userId: viewerId})
       }
 
       // VALIDATION
-      const [orgTeams, organization] = await Promise.all([
+      const [orgTeams, organization, viewer] = await Promise.all([
         getTeamsByOrgIds([orgId], {isArchived: false}),
-        dataLoader.get('organizations').load(orgId)
+        dataLoader.get('organizations').load(orgId),
+        dataLoader.get('users').loadNonNull(viewerId)
       ])
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
@@ -85,12 +85,12 @@ export default {
 
       // RESOLUTION
       const teamId = generateUID()
-      await createTeamAndLeader(viewer!, {id: teamId, isOnboardTeam: false, ...newTeam})
+      await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, ...newTeam})
 
       const {tms} = authToken
       // MUTATIVE
       tms.push(teamId)
-      analytics.newTeam(viewerId, orgId, teamId, orgTeams.length + 1)
+      analytics.newTeam(viewer, orgId, teamId, orgTeams.length + 1)
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {

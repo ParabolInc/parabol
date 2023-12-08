@@ -63,6 +63,7 @@ const textOnlySummary = (props: Props) => {
 
 interface Props {
   userId: string
+  email: string
   preferredName: string
   orgId: string
   orgName: string
@@ -70,7 +71,7 @@ interface Props {
 }
 
 const teamLimitsEmailCreator = (props: Props) => {
-  const {userId, preferredName, orgId, emailType, orgName} = props
+  const {userId, email, preferredName, orgId, emailType, orgName} = props
   const Email =
     emailType === 'locked'
       ? LockedEmail
@@ -95,7 +96,7 @@ const teamLimitsEmailCreator = (props: Props) => {
     bgColor: PALETTE.SLATE_200
   })
 
-  analytics.notificationEmailSent(userId, orgId, emailType)
+  analytics.notificationEmailSent({id: userId, email}, orgId, emailType)
 
   return {
     subject,

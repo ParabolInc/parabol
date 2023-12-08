@@ -1,16 +1,17 @@
+import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {PropsWithChildren, useEffect, useRef, useState} from 'react'
-import {upperFirst} from '../../utils/upperFirst'
-import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
-import {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
-import {backgroundImgMap, CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
-import {twMerge} from 'tailwind-merge'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {useFragment} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {twMerge} from 'tailwind-merge'
+import {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
+import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {upperFirst} from '../../utils/upperFirst'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
+import {CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
+import {backgroundImgMap} from './backgroundImgMap'
 
 export interface CardTheme {
   primary: string
@@ -100,7 +101,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       <div
         className={twMerge(
           'relative flex h-full min-w-0 flex-col overflow-hidden rounded-lg',
-          `bg-${theme.secondary}`,
+          theme.secondary,
           className
         )}
       >
@@ -128,7 +129,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
           <div className='truncate pb-1 text-lg leading-5 text-slate-800'>{title}</div>
-          <div className={clsx('font-semibold italic', `text-${theme.primary}`)}>
+          <div className={clsx('font-semibold italic', `${theme.text}`)}>
             {upperFirst(category)}
           </div>
         </div>

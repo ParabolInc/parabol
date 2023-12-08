@@ -40,7 +40,10 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
       return standardError(new Error("Can't edit response in another meeting"), {userId: viewerId})
     }
   }
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const [meeting, user] = await Promise.all([
+    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
@@ -101,7 +104,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     IntegrationNotifier.standupResponseSubmitted(dataLoader, meetingId, teamId, viewerId)
   }
 
-  analytics.responseAdded(viewerId, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
+  analytics.responseAdded(user, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
   publish(
     SubscriptionChannel.MEETING,
     meetingId,
