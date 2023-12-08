@@ -103,7 +103,7 @@ const safeEndTeamPrompt = async ({
   const timelineEventId = events[0]!.id
   await r.table('TimelineEvent').insert(events).run()
   summarizeTeamPrompt(meeting, context)
-  analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
+  analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   checkTeamsLimit(team.orgId, dataLoader)
   dataLoader.get('newMeetings').clear(meetingId)
 

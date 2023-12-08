@@ -37,7 +37,10 @@ export default {
     }
 
     // VALIDATION
-    const teams = await getTeamsByIds([teamId])
+    const [teams, viewer] = await Promise.all([
+      getTeamsByIds([teamId]),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     const team = teams[0]!
     const oldName = team.name
     const newName = updatedTeam.name
@@ -58,7 +61,7 @@ export default {
     }
     await updateTeamByTeamId(dbUpdate, teamId)
     analytics.teamNameChanged(
-      viewerId,
+      viewer,
       teamId,
       oldName,
       newName,

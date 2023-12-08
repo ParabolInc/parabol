@@ -26,7 +26,10 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
   const r = await getRethink()
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const [meeting, viewer] = await Promise.all([
+    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
 
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
@@ -73,7 +76,7 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     .replace(r.row.without('resetReflectionGroups') as any)
     .run()
   meeting.resetReflectionGroups = undefined
-  analytics.resetGroupsClicked(viewerId, meetingId, teamId)
+  analytics.resetGroupsClicked(viewer, meetingId, teamId)
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'ResetReflectionGroupsSuccess', data, subOptions)
   return data

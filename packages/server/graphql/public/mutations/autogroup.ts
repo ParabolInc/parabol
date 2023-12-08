@@ -18,10 +18,11 @@ const autogroup: MutationResolvers['autogroup'] = async (
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [meeting, reflections, reflectionGroups] = await Promise.all([
+  const [meeting, reflections, reflectionGroups, viewer] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
+    dataLoader.get('users').loadNonNull(viewerId)
   ])
 
   if (!meeting) {
@@ -72,7 +73,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
     r.table('NewMeeting').get(meetingId).update({resetReflectionGroups}).run()
   ])
   meeting.resetReflectionGroups = resetReflectionGroups
-  analytics.suggestGroupsClicked(viewerId, meetingId, teamId)
+  analytics.suggestGroupsClicked(viewer, meetingId, teamId)
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
   return data

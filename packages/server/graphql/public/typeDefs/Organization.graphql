@@ -149,7 +149,7 @@ type Organization {
   """
   The leaders of the org
   """
-  billingLeaders: [User!]!
+  billingLeaders: [OrganizationUser!]!
 
   """
   Minimal details about all teams in the organization

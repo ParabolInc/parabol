@@ -20,7 +20,10 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
   const viewerId = getUserId(authToken)
 
   // AUTH
-  const meeting = await r.table('NewMeeting').get(meetingId).run()
+  const [meeting, viewer] = await Promise.all([
+    r.table('NewMeeting').get(meetingId).run(),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
   const {endedAt, teamId} = meeting
   if (!isTeamMember(authToken, teamId)) {
@@ -38,7 +41,7 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
   const openai = new OpenAIServerManager()
   const modifiedCheckInQuestion = await openai.modifyCheckInQuestion(checkInQuestion, modifyType)
 
-  analytics.icebreakerModified(viewerId, meetingId, modifyType, modifiedCheckInQuestion !== null)
+  analytics.icebreakerModified(viewer, meetingId, modifyType, modifiedCheckInQuestion !== null)
 
   // RESOLUTION
   const data = {modifiedCheckInQuestion}
