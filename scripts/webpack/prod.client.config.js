@@ -35,6 +35,7 @@ const babelPresets = [
 
 module.exports = (config) => {
   const minimize = config.minimize === 'true'
+  const isStats = false // true to analyzing bundle size
   return {
     stats: {
       assets: false

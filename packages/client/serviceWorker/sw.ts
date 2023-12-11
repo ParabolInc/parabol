@@ -17,6 +17,8 @@ const STATIC_CACHE = `parabol-static-${__APP_VERSION__}`
 const DYNAMIC_CACHE = `parabol-dynamic-${__APP_VERSION__}`
 const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
 
+// this gets built in applyEnvVarToClientAssets
+const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/\/{2,}/, 'https://')
 const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => {
   e.waitUntil(cb(e))
 }
@@ -76,7 +78,9 @@ const onFetch = async (event: FetchEvent) => {
     try {
       // request.mode could be 'no-cors'
       // By fetching the URL without specifying the mode the response will not be opaque
-      const networkRes = await fetch(request.url)
+      const isParabolHosted = url.startsWith(PUBLIC_PATH) || url.startsWith(self.origin)
+      const req = isParabolHosted ? request.url : request
+      const networkRes = await fetch(req)
       const cache = await caches.open(DYNAMIC_CACHE)
       // cloning here because I'm not sure if we must clone before reading the body
       cache.put(request.url, networkRes.clone()).catch(console.error)
