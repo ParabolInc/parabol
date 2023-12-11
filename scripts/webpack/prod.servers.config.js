@@ -95,6 +95,12 @@ module.exports = (config) => {
         })
     ].filter(Boolean),
     module: {
+      parser: {
+        javascript: {
+          // group all chunks into its entrypoint file
+          dynamicImportMode: 'eager'
+        }
+      },
       rules: [
         ...transformRules(PROJECT_ROOT, true),
         {
@@ -132,7 +138,8 @@ module.exports = (config) => {
                 {
                   loader: 'file-loader',
                   options: {
-                    publicPath: distPath
+                    publicPath: distPath,
+                    name: '[name].[ext]'
                   }
                 }
               ]

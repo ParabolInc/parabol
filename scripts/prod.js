@@ -16,9 +16,7 @@ const prod = async (isDeploy, noDeps) => {
       `yarn webpack --config ./scripts/webpack/prod.servers.config.js --no-stats --env=noDeps=${noDeps}`
     ),
     runChild(
-      `yarn webpack --config ./scripts/webpack/prod.client.config.js --no-stats --env=isDeploy=${
-        isDeploy || noDeps
-      }`
+      `yarn webpack --config ./scripts/webpack/prod.client.config.js --no-stats --env=minimize=${isDeploy}`
     )
   ])
 }
