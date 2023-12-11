@@ -21,7 +21,7 @@ export const getEligibleOrgIdsByDomain = async (
   const orgs = await r
     .table('Organization')
     .getAll(activeDomain, {index: 'activeDomain'})
-    .filter((org: RDatum) => org('featureFlags').contains('noPromptToJoinOrg').not())
+    .filter((org: RDatum) => org('featureFlags').default([]).contains('noPromptToJoinOrg').not())
     .merge((org: RDatum) => ({
       members: r
         .table('OrganizationUser')
@@ -32,7 +32,7 @@ export const getEligibleOrgIdsByDomain = async (
     .merge((org: RDatum) => ({
       founder: org('members').nth(0).default(null),
       billingLeads: org('members')
-        .filter({inactive: false})
+        .filter({inactive: false, removedAt: null})
         .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role'))),
       activeMembers: org('members').filter({inactive: false, removedAt: null}).count()
     }))

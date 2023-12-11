@@ -51,7 +51,7 @@ const addOrg = async (
   const org = {
     id: orgId,
     activeDomain,
-    featureFlags: featureFlags ?? []
+    featureFlags
   }
 
   const orgUsers = members.map((member) => ({
