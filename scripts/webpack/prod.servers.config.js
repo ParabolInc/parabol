@@ -95,6 +95,12 @@ module.exports = (config) => {
         })
     ].filter(Boolean),
     module: {
+      parser: {
+        javascript: {
+          // group all chunks into its entrypoint file
+          dynamicImportMode: 'eager'
+        }
+      },
       rules: [
         ...transformRules(PROJECT_ROOT, true),
         {
