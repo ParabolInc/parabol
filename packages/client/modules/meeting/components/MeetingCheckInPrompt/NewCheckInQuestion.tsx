@@ -13,15 +13,15 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useEditorState from '../../../../hooks/useEditorState'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
-import ModifyCheckInQuestionMutation from '../../../../mutations/ModifyCheckInQuestionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {
-  ModifyCheckInQuestionMutation$data,
+  useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data,
   ModifyType
-} from '../../../../__generated__/ModifyCheckInQuestionMutation.graphql'
+} from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'
 import {Button} from '../../../../ui/Button/Button'
+import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
 
 const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
@@ -180,12 +180,6 @@ const NewCheckInQuestion = (props: Props) => {
     setEditorState(nextEditorState)
   }
 
-  const {
-    submitting: isModifyingCheckInQuestion,
-    submitMutation: submitModifyCheckInQuestion,
-    onError: onModifyCheckInQuestionError,
-    onCompleted: onModifyCheckInQuestionCompleted
-  } = useMutationProps()
   const refresh = () => {
     UpdateNewCheckInQuestionMutation(
       atmosphere,
@@ -213,32 +207,26 @@ const NewCheckInQuestion = (props: Props) => {
     setAiUpdatedIcebreaker('')
   }
 
-  const modify = (modifyType: ModifyType) => {
-    submitModifyCheckInQuestion()
-
+  const [executeModifyCheckInQuestionMutation, isModifyingCheckInQuestion] =
+    useModifyCheckInQuestionMutation()
+  const modifyCheckInQuestion = (modifyType: ModifyType) => {
     const icebreakerToModify = aiUpdatedIcebreaker || checkInQuestion!
-    ModifyCheckInQuestionMutation(
-      atmosphere,
-      {
+    executeModifyCheckInQuestionMutation({
+      variables: {
         meetingId,
         checkInQuestion: icebreakerToModify,
         modifyType
       },
-      {
-        onCompleted: (res: ModifyCheckInQuestionMutation$data) => {
-          onModifyCheckInQuestionCompleted()
-          const {modifyCheckInQuestion} = res
-          if (!modifyCheckInQuestion.modifiedCheckInQuestion) {
-            return
-          }
+      onCompleted: (res: TModifyCheckInQuestion$data) => {
+        const {modifyCheckInQuestion} = res
+        if (!modifyCheckInQuestion.modifiedCheckInQuestion) {
+          return
+        }
 
-          setAiUpdatedIcebreaker(modifyCheckInQuestion.modifiedCheckInQuestion)
-        },
-        onError: onModifyCheckInQuestionError
+        setAiUpdatedIcebreaker(modifyCheckInQuestion.modifiedCheckInQuestion)
       }
-    )
+    })
   }
-
   const shouldShowAiIcebreakers = featureFlags?.aiIcebreakers && isFacilitating
 
   return (
@@ -282,7 +270,7 @@ const NewCheckInQuestion = (props: Props) => {
         )}
       </QuestionBlock>
       {shouldShowAiIcebreakers && (
-        <div className='flex flex-col gap-6 rounded-lg bg-slate-100 p-4'>
+        <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-3'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>
               <div className='font-semibold'>Modify current icebreaker with AI</div>
@@ -299,7 +287,7 @@ const NewCheckInQuestion = (props: Props) => {
               shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
-              onClick={() => modify('SERIOUS')}
+              onClick={() => modifyCheckInQuestion('SERIOUS')}
             >
               More serious
             </Button>
@@ -308,7 +296,7 @@ const NewCheckInQuestion = (props: Props) => {
               shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
-              onClick={() => modify('FUNNY')}
+              onClick={() => modifyCheckInQuestion('FUNNY')}
             >
               More funny
             </Button>
@@ -317,7 +305,7 @@ const NewCheckInQuestion = (props: Props) => {
               shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
-              onClick={() => modify('EXCITING')}
+              onClick={() => modifyCheckInQuestion('EXCITING')}
             >
               More exciting
             </Button>
