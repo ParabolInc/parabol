@@ -89,7 +89,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async ({id: userId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
-          (organizationUser: OrganizationUserType) => organizationUser.role === 'BILLING_LEADER'
+          (organizationUser: OrganizationUserType) =>
+            organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
         )
       }
     },

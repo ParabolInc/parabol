@@ -11,7 +11,7 @@ import {ReasonToDowngradeEnum} from '../../public/resolverTypes'
 const resolveDowngradeToStarter = async (
   orgId: string,
   stripeSubscriptionId: string,
-  userId: string,
+  user: {id: string; email: string},
   reasonsForLeaving?: ReasonToDowngradeEnum[],
   otherTool?: string
 ) => {
@@ -29,7 +29,7 @@ const resolveDowngradeToStarter = async (
     r.table('Organization').get(orgId).run() as unknown as Organization,
     pg
       .updateTable('SAML')
-      .set({metadata: null, lastUpdatedBy: userId})
+      .set({metadata: null, lastUpdatedBy: user.id})
       .where('orgId', '=', orgId)
       .execute(),
     r({
@@ -50,7 +50,7 @@ const resolveDowngradeToStarter = async (
   ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
-  analytics.organizationDowngraded(userId, {
+  analytics.organizationDowngraded(user, {
     orgId,
     domain: org.activeDomain,
     orgName: org.name,

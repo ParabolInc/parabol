@@ -32,7 +32,7 @@ export default {
     const {userId, teamId} = fromTeamMemberId(teamMemberId)
     const isSelf = viewerId === userId
     if (!isSelf) {
-      if (!(await isTeamLead(viewerId, teamId))) {
+      if (!(await isTeamLead(viewerId, teamId, dataLoader))) {
         return standardError(new Error('Not team lead'), {userId: viewerId})
       }
     }

@@ -93,7 +93,10 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
-    const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+    const [unpaidError, viewer] = await Promise.all([
+      isStartMeetingLocked(teamId, dataLoader),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
     const meetingType: MeetingTypeEnum = 'poker'
@@ -171,7 +174,7 @@ export default {
       updateTeamByTeamId(updates, teamId)
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    analytics.meetingStarted(viewerId, meeting, template)
+    analytics.meetingStarted(viewer, meeting, template)
     const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
     const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)

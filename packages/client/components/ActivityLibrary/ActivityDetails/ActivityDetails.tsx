@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
@@ -11,6 +11,8 @@ import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
 import {CategoryID, CATEGORY_THEMES, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -37,6 +39,7 @@ export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
       ...ActivityDetailsSidebar_viewer
+      activityLibrarySearch
       preferredTeamId
       activity(activityId: $activityId) {
         ...ActivityDetails_template @relay(mask: false)
@@ -60,27 +63,39 @@ interface Props {
 }
 
 const ActivityDetails = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
-  const {activity, preferredTeamId, teams} = viewer
+  const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
   const history = useHistory<{prevCategory?: string}>()
   const [isEditing, setIsEditing] = useState(false)
 
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
-  const {category, illustrationUrl, viewerLowestScope} = activity
+  useEffect(() => {
+    SendClientSideEvent(atmosphere, 'Viewed Template', {
+      meetingType: activity.type,
+      scope: activity.scope,
+      templateName: activity.name,
+      isFree: activity.isFree,
+      queryString: activityLibrarySearch
+    })
+  }, [])
+
+  const {category, illustrationUrl, viewerLowestScope, type} = activity
   const prevCategory = history.location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
     prevCategory ?? category ?? QUICK_START_CATEGORY_ID
   }`
 
   const isOwner = viewerLowestScope === 'TEAM'
+  const MOBILE_SETTINGS_HEIGHT = 208
 
   return (
     <div className='flex h-full flex-col bg-white'>
-      <div className='flex grow'>
+      <div className={clsx(`flex grow pb-[${MOBILE_SETTINGS_HEIGHT}px]`)}>
         <div className='mt-4 grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center'>
             <div className='mr-4'>
@@ -98,11 +113,12 @@ const ActivityDetails = (props: Props) => {
               )}
             >
               <ActivityCard
-                className='ml-14 mb-8 h-[200px] w-80 xl:ml-0 xl:mb-0'
+                className='ml-14 mb-8 max-h-[200px] w-80 xl:ml-0 xl:mb-0'
                 theme={CATEGORY_THEMES[category as CategoryID]}
                 badge={null}
+                type={type}
               >
-                <ActivityCardImage src={illustrationUrl} />
+                <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
               </ActivityCard>
               <div className='pb-20'>
                 <div className='mb-10 space-y-2 pl-14'>
@@ -125,6 +141,18 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
+        <div className='hidden lg:block'>
+          <ActivityDetailsSidebar
+            selectedTemplateRef={activity}
+            teamsRef={teams}
+            isOpen={!isEditing}
+            type={activity.type}
+            preferredTeamId={preferredTeamId}
+            viewerRef={viewer}
+          />
+        </div>
+      </div>
+      <div className={`fixed min-h-[${MOBILE_SETTINGS_HEIGHT}px] bottom-0 w-full lg:hidden`}>
         <ActivityDetailsSidebar
           selectedTemplateRef={activity}
           teamsRef={teams}

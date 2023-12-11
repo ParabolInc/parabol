@@ -42,12 +42,15 @@ export default {
     const {content, sortOrder, meetingId, promptId} = input
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
+    const [reflectPrompt, meeting, viewer] = await Promise.all([
+      dataLoader.get('reflectPrompts').load(promptId),
+      r.table('NewMeeting').get(meetingId).default(null).run(),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
     const {question} = reflectPrompt
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
@@ -114,7 +117,7 @@ export default {
         })
         .run()
     }
-    analytics.reflectionAdded(viewerId, teamId, meetingId)
+    analytics.reflectionAdded(viewer, teamId, meetingId)
     const data = {
       meetingId,
       reflectionId: reflection.id,
