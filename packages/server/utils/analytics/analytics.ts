@@ -19,6 +19,7 @@ import {createMeetingProperties} from './helpers'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import TemplateScale from '../../database/types/TemplateScale'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import {ModifyType} from '../../graphql/public/resolverTypes'
 
 export type AnalyticsUser = {
   id: string
@@ -168,6 +169,7 @@ export type AnalyticsEvent =
   | 'Conversion Modal Pay Later Clicked'
   // kudos
   | 'Kudos Sent'
+  | 'Icebreaker Modified'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
   // Lowercase words are for backwards compatibility
@@ -719,6 +721,20 @@ class Analytics {
       teamId,
       kudosId,
       receiverUserId
+    })
+  }
+
+  icebreakerModified = (
+    user: AnalyticsUser,
+    meetingId: string,
+    modifyType: ModifyType,
+    success: boolean
+  ) => {
+    this.track(user, 'Icebreaker Modified', {
+      userId: user.id,
+      meetingId,
+      modifyType,
+      success
     })
   }
 
