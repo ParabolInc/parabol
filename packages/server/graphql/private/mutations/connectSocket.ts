@@ -72,7 +72,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     })
   }
 
-  analytics.websocketConnected(userId, {
+  analytics.websocketConnected(user, {
     socketCount,
     socketId,
     tms

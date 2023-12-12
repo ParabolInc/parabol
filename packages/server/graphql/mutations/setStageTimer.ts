@@ -51,7 +51,10 @@ export default {
     const now = new Date()
 
     // AUTH
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const [meeting, viewer] = await Promise.all([
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     const {endedAt, facilitatorStageId, facilitatorUserId, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -117,7 +120,7 @@ export default {
     const eventName =
       scheduledEndTime && newScheduledEndTime ? `Meeting Timer Updated` : stoppedOrStarted
     publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
-    analytics.meetingTimerEvent(viewerId, eventName, {
+    analytics.meetingTimerEvent(viewer, eventName, {
       meetingId,
       phaseType,
       viewCount,

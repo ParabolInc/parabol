@@ -107,7 +107,7 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Cloned')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -136,7 +136,7 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Created')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePayload', data, subOptions)

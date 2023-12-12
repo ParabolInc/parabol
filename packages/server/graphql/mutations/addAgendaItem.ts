@@ -36,6 +36,7 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
+    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
     // VALIDATION
     const schema = makeAgendaItemSchema()
     const {errors, data: validNewAgendaItem} = schema(newAgendaItem)
@@ -57,7 +58,7 @@ export default {
       .run()
 
     const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)
-    analytics.addedAgendaItem(viewerId, teamId, meetingId)
+    analytics.addedAgendaItem(viewer, teamId, meetingId)
     const data = {agendaItemId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddAgendaItemPayload', data, subOptions)
     return data

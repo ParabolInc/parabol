@@ -67,7 +67,10 @@ const joinMeeting = {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     //AUTH
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const [meeting, viewer] = await Promise.all([
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!meeting) {
       return {error: {message: 'Invalid meeting ID'}}
     }
@@ -162,7 +165,7 @@ const joinMeeting = {
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
     const team = await dataLoader.get('teams').loadNonNull(teamId)
-    analytics.meetingJoined(viewerId, meeting, team)
+    analytics.meetingJoined(viewer, meeting, team)
     return data
   }
 }

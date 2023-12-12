@@ -569,6 +569,9 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
   teamMembers.forEach((teamMember) => {
     ;(teamMember as any).team = team
   })
+  users.forEach((user) => {
+    ;(user as any).teams = [team]
+  })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0
   newMeeting.reflectionCount = 0
