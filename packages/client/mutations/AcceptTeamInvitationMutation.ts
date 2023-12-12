@@ -34,11 +34,6 @@ graphql`
     }
     team {
       name
-      organization {
-        id
-        name
-      }
-      ...DashNavListTeam
     }
   }
 `
@@ -55,6 +50,13 @@ graphql`
       activeMeetings {
         id
       }
+      organization {
+        id
+        name
+        ...DashNavList_organization
+      }
+      ...DashNavListTeam
+      ...PublicTeamsFrag_team
     }
     meeting {
       id
@@ -109,6 +111,8 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<
 > = (payload, {store}) => {
   const team = payload.getLinkedRecord('team')
   if (!team) return
+  const organization = team.getLinkedRecord('organization')
+  handleAddOrganization(organization, store)
   handleAddTeams(team, store)
 
   const viewer = store.getRoot().getLinkedRecord('viewer')
@@ -136,10 +140,6 @@ export const acceptTeamInvitationTeamUpdater: SharedUpdater<
 > = (payload, {store}) => {
   const teamMember = payload.getLinkedRecord('teamMember')
   handleAddTeamMembers(teamMember, store)
-  const team = payload.getLinkedRecord('team')
-  const organization = team.getLinkedRecord('organization')
-  handleAddOrganization(organization, store)
-  handleAddTeams(team, store)
 }
 
 export const acceptTeamInvitationTeamOnNext: OnNextHandler<
