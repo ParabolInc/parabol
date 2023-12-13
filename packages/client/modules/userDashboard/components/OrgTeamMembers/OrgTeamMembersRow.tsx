@@ -33,10 +33,6 @@ export const OrgTeamMembersRow = (props: Props) => {
     `,
     teamMemberRef
   )
-  const teamLeadEmail = member.isLead ? member.email : ''
-  const isViewerTeamLead = member.isSelf && (member.isLead || member.isOrgAdmin)
-
-  console.log(member)
 
   return (
     <div className='flex w-full items-center justify-center gap-4 p-4'>

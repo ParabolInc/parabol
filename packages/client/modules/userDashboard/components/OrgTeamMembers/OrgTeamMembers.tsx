@@ -55,7 +55,7 @@ export const OrgTeamMembers = (props: Props) => {
               <ArrowBack />
             </Link>
           </Button>
-          <h1 className='flex-1 text-2xl font-semibold leading-7'>Teams</h1>
+          <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
         </div>
 
         <div className='ml-auto flex gap-x-2'>
