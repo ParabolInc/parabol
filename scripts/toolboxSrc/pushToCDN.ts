@@ -79,7 +79,11 @@ const pushServerAssetsToCDN = async () => {
         if (dirent.isDirectory()) {
           const nextFileUploader =
             fileUploaders[name as keyof typeof fileUploaders] ?? defaultFileUploader
-          return putBuildFiles(path.join(curDirname, dirent.name), targetDirname, nextFileUploader)
+          return putBuildFiles(
+            path.join(curDirname, dirent.name),
+            `${targetDirname}${name}/`,
+            nextFileUploader
+          )
         } else if (dirent.isFile()) {
           return fileUploader(curDirname, name, targetDirname)
         } else {
