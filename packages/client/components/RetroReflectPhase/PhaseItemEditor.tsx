@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import {convertFromRaw, convertToRaw, EditorState, ContentState} from 'draft-js'
 import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -18,6 +18,7 @@ import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import getBBox from './getBBox'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
+import useEditorState from '../../hooks/useEditorState'
 
 const FLIGHT_TIME = 500
 const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
@@ -74,7 +75,7 @@ const PhaseItemEditor = (props: Props) => {
   } = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
-  const [editorState, setEditorState] = useState(EditorState.createEmpty)
+  const [editorState, setEditorState] = useEditorState()
   const [isEditing, setIsEditing] = useState(false)
   const idleTimerIdRef = useRef<number>()
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
@@ -114,12 +115,13 @@ const PhaseItemEditor = (props: Props) => {
             preferredName
           }
         }
+        teamId
       }
     `,
     meetingRef
   )
 
-  const {disableAnonymity, viewerMeetingMember} = meeting
+  const {disableAnonymity, viewerMeetingMember, teamId} = meeting
 
   const handleSubmit = (content: string) => {
     const input = {
@@ -133,7 +135,11 @@ const PhaseItemEditor = (props: Props) => {
     const {top, left} = getBBox(phaseEditorRef.current)!
     const cardInFlight = {
       transform: `translate(${left}px,${top}px)`,
-      editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(content))),
+      editorState: EditorState.push(
+        editorState,
+        convertFromRaw(JSON.parse(content)),
+        'remove-range'
+      ),
       key: content,
       isStart: true
     }
@@ -158,7 +164,11 @@ const PhaseItemEditor = (props: Props) => {
       setTimeout(removeCardInFlight(content), FLIGHT_TIME)
     })
     // move focus to end is very important! otherwise ghost chars appear
-    setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
+    setEditorState(
+      EditorState.moveFocusToEnd(
+        EditorState.push(editorState, ContentState.createFromText(''), 'remove-range')
+      )
+    )
   }
 
   const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -206,6 +216,7 @@ const PhaseItemEditor = (props: Props) => {
   const onFocus = () => {
     setIsFocused(true)
     ensureEditing()
+    return null
   }
   const onBlur = () => {
     setIsFocused(false)
@@ -236,7 +247,6 @@ const PhaseItemEditor = (props: Props) => {
     <>
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
         <ReflectionEditorWrapper
-          dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
           ariaLabel={readOnly ? '' : 'Edit this reflection'}
           editorState={editorState}
@@ -250,6 +260,7 @@ const PhaseItemEditor = (props: Props) => {
           setEditorState={setEditorState}
           readOnly={readOnly}
           disableAnonymity={disableAnonymity}
+          teamId={teamId}
         />
         {disableAnonymity && (
           <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
@@ -272,6 +283,16 @@ const PhaseItemEditor = (props: Props) => {
                   editorState={card.editorState}
                   readOnly
                   disableAnonymity={disableAnonymity}
+                  teamId={teamId}
+                  editorRef={editorRef}
+                  placeholder=''
+                  setEditorState={() => {
+                    /* noop */
+                  }}
+                  handleKeyDownFallback={() => {
+                    /* noop */
+                  }}
+                  handleReturn={() => 'handled'}
                 />
                 {disableAnonymity && (
                   <ReflectionCardAuthor>
