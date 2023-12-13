@@ -2,11 +2,6 @@ import fs from 'fs'
 import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
 import path from 'path'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
-;(require as any).context(
-  '../../static/images/illustrations',
-  false,
-  /\/action.png$|\/teamPrompt.png$|Template.png$/
-)
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -31,71 +26,56 @@ const pushClientAssetsToCDN = async () => {
 }
 
 const pushServerAssetsToCDN = async () => {
-  const localServerAssetsDir = path.join(PROJECT_ROOT, 'dist', 'images')
   const fileStoreManager = getFileStoreManager()
+  const templatesContext = (require as any).context(
+    '../../static/images/illustrations',
+    false,
+    /\/action.png$|\/teamPrompt.png$|Template.png$/
+  )
+  const templatePaths = new Set<string>()
+  templatesContext.keys().forEach((relativePath: `./${string}`) => {
+    const {base} = path.parse(relativePath)
+    templatePaths.add(base)
+  })
+  const isTemplate = (filename: string) => templatePaths.has(filename)
 
-  // Use this pattern if the asset is publicly available, not kept in the DB
-  const defaultFileUploader = async (
-    sourceDirname: string,
-    filename: string,
-    targetDirname: string
-  ) => {
-    const targetObject = `${targetDirname}${filename}`
-    const exists = await fileStoreManager.checkExists(targetObject)
-    if (exists) return false
-    const buffer = await fs.promises.readFile(path.join(sourceDirname, filename))
-    const url = await fileStoreManager.putBuildFile(buffer, targetObject)
-    console.log(`⛅️ Uploaded ${url}`)
-    return true
-  }
+  const localServerAssetsDir = path.join(PROJECT_ROOT, 'dist', 'images')
 
-  // Use this pattern if the asset is associated with a user (including aGhostUser) and the URL is kept in our DB
-  const templateFileUploader = async (dirname: string, filename: string) => {
+  // Use this pattern if this is a user asset (including aGhostUser) & kept in the DB
+  const templateFileUploader = async (filename: string) => {
     const partialPath = `Organization/aGhostOrg/template/${filename}`
     const exists = await fileStoreManager.checkExists(partialPath)
     if (exists) return false
-    const buffer = await fs.promises.readFile(path.join(dirname, filename))
+    const buffer = await fs.promises.readFile(path.join(localServerAssetsDir, filename))
     const {name, ext} = path.parse(filename)
     const url = await fileStoreManager.putTemplateIllustration(buffer, 'aGhostOrg', ext, name)
-    console.log(`⛅️ Uploaded ${url}`)
+    console.log(`⛅️ Uploaded template ${filename} to ${url}`)
     return true
   }
 
-  const fileUploaders = {
-    templates: templateFileUploader
+  // Use this pattern if the asset is publicly available
+  const defaultFileUploader = async (filename: string) => {
+    // static assets in /dist/images are already hosted at /static/images
+    if (process.env.FILE_STORE_PROVIDER === 'local') return
+    const targetObject = `images/${filename}`
+    const exists = await fileStoreManager.checkExists(targetObject)
+    if (exists) return false
+    const buffer = await fs.promises.readFile(path.join(localServerAssetsDir, filename))
+    const url = await fileStoreManager.putBuildFile(buffer, targetObject)
+    console.log(`⛅️ Uploaded server asset ${targetObject} to ${url}`)
+    return true
   }
 
-  interface NestedArray<T> extends Array<T | NestedArray<T>> {}
+  const dirEnts = await fs.promises.readdir(localServerAssetsDir, {withFileTypes: true})
+  const entries = await Promise.all(
+    dirEnts.map(async (dirent) => {
+      const {name} = dirent
+      if (!dirent.isFile()) throw new Error(`⛅️ Expected ${name} to be a file`)
+      return isTemplate(name) ? templateFileUploader(name) : defaultFileUploader(name)
+    })
+  )
 
-  const putBuildFiles = async (
-    curDirname: string,
-    targetDirname: string,
-    fileUploader: typeof defaultFileUploader
-  ): Promise<NestedArray<boolean>> => {
-    const dirEnts = await fs.promises.readdir(curDirname, {withFileTypes: true})
-    return Promise.all(
-      dirEnts.map(async (dirent) => {
-        const {name} = dirent
-        if (dirent.isDirectory()) {
-          const nextFileUploader =
-            fileUploaders[name as keyof typeof fileUploaders] ?? defaultFileUploader
-          return putBuildFiles(
-            path.join(curDirname, dirent.name),
-            `${targetDirname}${name}/`,
-            nextFileUploader
-          )
-        } else if (dirent.isFile()) {
-          return fileUploader(curDirname, name, targetDirname)
-        } else {
-          // ignore symlinks, sockets, etc.
-          return false
-        }
-      })
-    )
-  }
-  const totals = await putBuildFiles(localServerAssetsDir, 'images/', defaultFileUploader)
-  const total = totals.flat()
-  const pushed = total.filter(Boolean).length
+  const pushed = entries.filter(Boolean).length
   console.log(`⛅️ Server upload complete. Pushed ${pushed} assets to CDN`)
 }
 

@@ -111,24 +111,10 @@ module.exports = (config) => {
         ...transformRules(PROJECT_ROOT, true),
         {
           test: /\.(png|jpg|jpeg|gif|svg)$/,
-          oneOf: [
-            {
-              // Put templates in their own directory that will get pushed to the CDN. PG Migrations will reference that URL
-              test: /Template.png$/,
-              include: [path.resolve(PROJECT_ROOT, 'static/images/illustrations')],
-              type: 'asset/resource',
-              generator: {
-                filename: 'images/templates/[name][ext]'
-              }
-            },
-            {
-              // manifest.json icons just need the file name, we'll prefix them with the CDN in preDeploy
-              type: 'asset/resource',
-              generator: {
-                filename: 'images/[name][ext]'
-              }
-            }
-          ]
+          type: 'asset/resource',
+          generator: {
+            filename: 'images/[name][ext]'
+          }
         },
         {
           include: [/node_modules/],
