@@ -92,11 +92,12 @@ jobs:
         run: yarn predeploy
 
       - name: Start testing server in background
-        run: |
-          yarn start &
-
-      - name: Wait for testing server to be healthy
-        run: curl -4 --retry 30 --retry-connrefused --retry-delay 2 http://localhost:3000/graphql
+        uses: JarvusInnovations/background-action@v1
+        with:
+          run: |
+            yarn start &
+          wait-on: |
+            http://localhost:3000/graphql
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit
