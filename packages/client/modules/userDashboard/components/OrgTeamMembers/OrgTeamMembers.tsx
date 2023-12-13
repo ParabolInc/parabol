@@ -9,6 +9,9 @@ import AddTeamMemberModal from '../../../../components/AddTeamMemberModal'
 import useModal from '../../../../hooks/useModal'
 import {Link} from 'react-router-dom'
 import {ORGANIZATIONS} from '../../../../utils/constants'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useMenu from '../../../../hooks/useMenu'
+import {OrgTeamMembersMenu} from './OrgTeamMembersMenu'
 
 interface Props {
   queryRef: PreloadedQuery<OrgTeamMembersQuery>
@@ -42,9 +45,10 @@ export const OrgTeamMembers = (props: Props) => {
   const {viewer} = data
   const {team} = viewer
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
-  if (!team) return null
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
-  const teamMembers = team.teamMembers
+  if (!team) return null
+  const {teamMembers} = team
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -67,7 +71,7 @@ export const OrgTeamMembers = (props: Props) => {
           >
             Add member
           </Button>
-          <Button shape='circle' variant='ghost'>
+          <Button shape='circle' variant='ghost' ref={originRef} onClick={togglePortal}>
             <MoreVert />
           </Button>
         </div>
@@ -87,6 +91,8 @@ export const OrgTeamMembers = (props: Props) => {
       {modalPortal(
         <AddTeamMemberModal closePortal={closeModal} teamId={team.id} teamMembers={teamMembers} />
       )}
+
+      {menuPortal(<OrgTeamMembersMenu menuProps={menuProps} />)}
     </div>
   )
 }

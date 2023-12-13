@@ -2,11 +2,13 @@ import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {OrgTeamMembersRow_teamMember$key} from '../../../../__generated__/OrgTeamMembersRow_teamMember.graphql'
-import {Avatar} from '../../../../UI/Avatar/Avatar'
-import {AvatarFallback} from '../../../../UI/Avatar/AvatarFallback'
-import {AvatarImage} from '../../../../UI/Avatar/AvatarImage'
+import {Avatar} from '../../../../ui/Avatar/Avatar'
+import {AvatarFallback} from '../../../../ui/Avatar/AvatarFallback'
+import {AvatarImage} from '../../../../ui/Avatar/AvatarImage'
 import {Button} from '../../../../ui/Button/Button'
 import {MoreVert} from '@mui/icons-material'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useMenu from '../../../../hooks/useMenu'
 
 type Props = {
   teamMemberRef: OrgTeamMembersRow_teamMember$key
@@ -33,6 +35,8 @@ export const OrgTeamMembersRow = (props: Props) => {
     `,
     teamMemberRef
   )
+
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   return (
     <div className='flex w-full items-center justify-center gap-4 p-4'>
