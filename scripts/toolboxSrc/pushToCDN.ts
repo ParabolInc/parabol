@@ -35,11 +35,16 @@ const pushServerAssetsToCDN = async () => {
   const fileStoreManager = getFileStoreManager()
 
   // Use this pattern if the asset is publicly available, not kept in the DB
-  const defaultFileUploader = async (dirname: string, filename: string) => {
-    const exists = await fileStoreManager.checkExists(filename)
+  const defaultFileUploader = async (
+    sourceDirname: string,
+    filename: string,
+    targetDirname: string
+  ) => {
+    const targetObject = `${targetDirname}${filename}`
+    const exists = await fileStoreManager.checkExists(targetObject)
     if (exists) return false
-    const buffer = await fs.promises.readFile(path.join(dirname, filename))
-    const url = await fileStoreManager.putBuildFile(buffer, filename)
+    const buffer = await fs.promises.readFile(path.join(sourceDirname, filename))
+    const url = await fileStoreManager.putBuildFile(buffer, targetObject)
     console.log(`⛅️ Uploaded ${url}`)
     return true
   }
@@ -64,6 +69,7 @@ const pushServerAssetsToCDN = async () => {
 
   const putBuildFiles = async (
     curDirname: string,
+    targetDirname: string,
     fileUploader: typeof defaultFileUploader
   ): Promise<NestedArray<boolean>> => {
     const dirEnts = await fs.promises.readdir(curDirname, {withFileTypes: true})
@@ -73,9 +79,9 @@ const pushServerAssetsToCDN = async () => {
         if (dirent.isDirectory()) {
           const nextFileUploader =
             fileUploaders[name as keyof typeof fileUploaders] ?? defaultFileUploader
-          return putBuildFiles(path.join(curDirname, dirent.name), nextFileUploader)
+          return putBuildFiles(path.join(curDirname, dirent.name), targetDirname, nextFileUploader)
         } else if (dirent.isFile()) {
-          return fileUploader(curDirname, name)
+          return fileUploader(curDirname, name, targetDirname)
         } else {
           // ignore symlinks, sockets, etc.
           return false
@@ -83,7 +89,7 @@ const pushServerAssetsToCDN = async () => {
       })
     )
   }
-  const totals = await putBuildFiles(localServerAssetsDir, defaultFileUploader)
+  const totals = await putBuildFiles(localServerAssetsDir, 'images/', defaultFileUploader)
   const total = totals.flat()
   const pushed = total.filter(Boolean).length
   console.log(`⛅️ Server upload complete. Pushed ${pushed} assets to CDN`)

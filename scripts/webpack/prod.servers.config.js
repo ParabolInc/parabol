@@ -14,6 +14,7 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
+const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 
@@ -28,12 +29,17 @@ module.exports = (config) => {
       chronos: [DOTENV, path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
       web: [
         DOTENV,
+        INIT_PUBLIC_PATH,
         // each instance of web needs to generate its own index.html to use on startup
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
-      gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-      preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
+      gqlExecutor: [DOTENV, INIT_PUBLIC_PATH, path.join(GQL_ROOT, 'gqlExecutor.ts')],
+      preDeploy: [
+        DOTENV,
+        INIT_PUBLIC_PATH,
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')
+      ],
       pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
       migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')]
     },
@@ -110,25 +116,17 @@ module.exports = (config) => {
               // Put templates in their own directory that will get pushed to the CDN. PG Migrations will reference that URL
               test: /Template.png$/,
               include: [path.resolve(PROJECT_ROOT, 'static/images/illustrations')],
-              use: [
-                {
-                  loader: 'file-loader',
-                  options: {
-                    name: 'images/templates/[name].[ext]'
-                  }
-                }
-              ]
+              type: 'asset/resource',
+              generator: {
+                filename: 'images/templates/[name][ext]'
+              }
             },
             {
               // manifest.json icons just need the file name, we'll prefix them with the CDN in preDeploy
-              use: [
-                {
-                  loader: 'file-loader',
-                  options: {
-                    name: 'images/[name].[ext]'
-                  }
-                }
-              ]
+              type: 'asset/resource',
+              generator: {
+                filename: 'images/[name][ext]'
+              }
             }
           ]
         },

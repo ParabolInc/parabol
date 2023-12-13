@@ -5,34 +5,33 @@ import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
+declare const __webpack_public_path__: string
+
 const PROJECT_ROOT = getProjectRoot()
 const clientDir = path.join(PROJECT_ROOT, 'build')
 
-const getCDNURL = () => {
-  const {CDN_BASE_URL} = process.env
-  return CDN_BASE_URL ? `${CDN_BASE_URL}/build` : '/static'
-}
-
 const rewriteServiceWorker = () => {
   const skeleton = fs.readFileSync(path.join(clientDir, 'swSkeleton.js'), 'utf-8')
-  const deploySpecificServiceWorker = skeleton.replaceAll('__PUBLIC_PATH__', getCDNURL())
+  const deploySpecificServiceWorker = skeleton.replaceAll(
+    '__PUBLIC_PATH__',
+    __webpack_public_path__
+  )
   fs.writeFileSync(path.join(clientDir, 'sw.js'), deploySpecificServiceWorker)
 }
 
 const writeManifest = () => {
   // If src is relative, then it will be relative to the manifest location, so manifest.json must be at root /
-  const cdn = getCDNURL()
   const manifest = {
     short_name: 'Parabol',
     name: 'Parabol',
     icons: [
       {
-        src: `${cdn}/${logo192}`,
+        src: logo192,
         type: 'image/png',
         sizes: '192x192'
       },
       {
-        src: `${cdn}/${logo512}`,
+        src: logo512,
         type: 'image/png',
         sizes: '512x512'
       }
@@ -60,7 +59,7 @@ const rewriteIndexHTML = () => {
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-    publicPath: getCDNURL() + '/',
+    publicPath: __webpack_public_path__,
     oauth2Redirect: process.env.OAUTH2_REDIRECT,
     prblIn: process.env.INVITATION_SHORTLINK,
     AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
@@ -79,7 +78,7 @@ const rewriteIndexHTML = () => {
   const keys = `<script>window.__ACTION__=${JSON.stringify(clientKeys)}</script>`
   const rawHTML = skeleton
     .replace('<head>', `<head>${noindex}${keys}`)
-    .replaceAll('__PUBLIC_PATH__', getCDNURL())
+    .replaceAll('__PUBLIC_PATH__', __webpack_public_path__.replace(/\/$/, ''))
   const minifiedHTML = minify(rawHTML, {
     collapseBooleanAttributes: true,
     collapseWhitespace: true,

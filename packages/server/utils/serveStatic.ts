@@ -19,7 +19,7 @@ const PROJECT_ROOT = getProjectRoot()
 const staticPaths = {
   [path.join(PROJECT_ROOT, 'build')]: true,
   // publish server assets at /static
-  [path.join(PROJECT_ROOT, 'dist', 'images')]: __PRODUCTION__,
+  [path.join(PROJECT_ROOT, 'dist')]: __PRODUCTION__,
   [path.join(PROJECT_ROOT, 'dev')]: !__PRODUCTION__
 }
 const staticServer = new StaticServer({staticPaths})

@@ -18,7 +18,7 @@ const DYNAMIC_CACHE = `parabol-dynamic-${__APP_VERSION__}`
 const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
 
 // this gets built in applyEnvVarToClientAssets
-const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/\/{2,}/, 'https://')
+const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/^\/{2,}/, 'https://')
 const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => {
   e.waitUntil(cb(e))
 }
