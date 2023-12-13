@@ -130,5 +130,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: test-results/
+          path: packages/integration-tests/test-results/
           retention-days: 7
