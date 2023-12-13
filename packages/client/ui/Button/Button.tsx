@@ -7,20 +7,21 @@ type Size = 'sm' | 'md' | 'lg' | 'default'
 type Shape = 'pill' | 'circle' | 'default'
 
 const BASE_STYLES =
-  'cursor-pointer inline-flex items-center justify-center whitespace-nowrap font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+  'cursor-pointer inline-flex items-center justify-center whitespace-nowrap  transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
 
 // TODO: make sure the styles match the designs
 const VARIANT_STYLES: Record<Variant, string> = {
-  primary: 'bg-gradient-to-r from-tomato-600 to-rose-500 text-white hover:opacity-90',
-  destructive: 'bg-tomato-500 text-white hover:bg-tomato-500/90',
-  outline: 'text-slate-900 border border-slate-400 hover:bg-slate-200 px-2.5 py-1 bg-transparent',
-  secondary: 'bg-sky-500 text-white hover:bg-sky-500/80',
-  ghost: 'hover:bg-accent',
+  primary: 'bg-gradient-to-r from-tomato-600 to-rose-500 text-white font-semibold hover:opacity-90',
+  destructive: 'bg-tomato-500 text-white font-semibold hover:bg-tomato-500/90',
+  outline:
+    'text-slate-900 border border-slate-400 hover:bg-slate-200 px-2.5 py-1 bg-transparent font-semibold',
+  secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
+  ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline'
 }
 
 const SIZE_STYLES: Record<Size, string> = {
-  default: 'px-2.5 py-1',
+  default: '',
   sm: 'h-7 px-3 text-xs',
   md: 'h-9 px-4 text-sm',
   lg: 'h-11 px-8 text-base'

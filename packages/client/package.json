@@ -82,6 +82,7 @@
     "@radix-ui/react-select": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-avatar": "^1.0.4",
     "@sentry/browser": "^5.8.0",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^1.47.0",

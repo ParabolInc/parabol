@@ -36,7 +36,7 @@ const OrgTeams = (props: Props) => {
   if (!isBillingLeader) return null
 
   return (
-    <div className='max-w-4xl'>
+    <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
         <h1 className='flex-1 text-2xl font-semibold leading-7'>Teams</h1>
         <div className='ml-auto'>
@@ -53,7 +53,7 @@ const OrgTeams = (props: Props) => {
 
       <div className='divide-y divide-slate-300 overflow-hidden rounded border border-slate-300 bg-white'>
         <div className='bg-slate-100 px-4 py-2'>
-          <div className='flex w-full justify-between px-4'>
+          <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>{allTeams.length} Teams</div>
           </div>
         </div>
