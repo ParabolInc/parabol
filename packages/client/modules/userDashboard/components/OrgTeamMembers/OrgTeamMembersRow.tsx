@@ -36,7 +36,7 @@ export const OrgTeamMembersRow = (props: Props) => {
     teamMemberRef
   )
 
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  // const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   return (
     <div className='flex w-full items-center justify-center gap-4 p-4'>
