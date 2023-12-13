@@ -9,9 +9,10 @@ import RedisInstance from '../server/utils/RedisInstance'
 import RedisStream from './RedisStream'
 
 tracer.init({
-  service: `GQLExecutor ${process.env.SERVER_ID}`,
+  service: `gql`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
+  plugins: false,
+  version: process.env.npm_package_version
 })
 tracer.use('ioredis').use('http').use('pg')
 
@@ -26,6 +27,17 @@ const run = async () => {
   const publisher = new RedisInstance('gql_pub')
   const subscriber = new RedisInstance('gql_sub')
   const executorChannel = GQLExecutorChannelId.join(SERVER_ID)
+
+  // on shutdown, remove consumer from the group
+  process.on('SIGTERM', async () => {
+    await publisher.xgroup(
+      'DELCONSUMER',
+      ServerChannel.GQL_EXECUTOR_STREAM,
+      ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
+      executorChannel
+    )
+    process.exit()
+  })
 
   // subscribe to direct messages
   const onMessage = async (_channel: string, message: string) => {

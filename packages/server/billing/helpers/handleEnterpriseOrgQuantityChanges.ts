@@ -1,10 +1,14 @@
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import Organization from '../../database/types/Organization'
+import {DataLoaderWorker} from '../../graphql/graphql'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 
-const sendEnterpriseOverageEvent = async (organization: Organization) => {
+const sendEnterpriseOverageEvent = async (
+  organization: Organization,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   const manager = getStripeManager()
   const {id: orgId, stripeSubscriptionId} = organization
@@ -31,15 +35,19 @@ const sendEnterpriseOverageEvent = async (organization: Organization) => {
       .nth(0)
       .run()
     const {id: userId} = billingLeaderOrgUser
-    analytics.enterpriseOverUserLimit(userId, orgId)
+    const user = await dataLoader.get('users').loadNonNull(userId)
+    analytics.enterpriseOverUserLimit(user, orgId)
   }
 }
 
-const handleEnterpriseOrgQuantityChanges = async (paidOrgs: Organization[]) => {
+const handleEnterpriseOrgQuantityChanges = async (
+  paidOrgs: Organization[],
+  dataLoader: DataLoaderWorker
+) => {
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')
   if (enterpriseOrgs.length === 0) return
   for (const org of enterpriseOrgs) {
-    sendEnterpriseOverageEvent(org).catch()
+    sendEnterpriseOverageEvent(org, dataLoader).catch()
   }
 }
 

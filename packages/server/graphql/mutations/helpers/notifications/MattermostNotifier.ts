@@ -23,11 +23,12 @@ import {
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 import {analytics} from '../../../../utils/analytics/analytics'
+import IUser from '../../../../postgres/types/IUser'
 
 const notifyMattermost = async (
   event: EventEnum,
   webhookUrl: string,
-  userId: string,
+  user: IUser,
   teamId: string,
   textOrAttachmentsArray: string | unknown[],
   notificationText?: string
@@ -35,12 +36,12 @@ const notifyMattermost = async (
   const manager = new MattermostServerManager(webhookUrl)
   const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
-    sendToSentry(result, {userId, tags: {teamId, event, webhookUrl}})
+    sendToSentry(result, {userId: user.id, tags: {teamId, event, webhookUrl}})
     return {
       error: result
     }
   }
-  analytics.mattermostNotificationSent(userId, teamId, event)
+  analytics.mattermostNotificationSent(user, teamId, event)
 
   return 'success'
 }
@@ -158,8 +159,7 @@ const makeStartMeetingNotificationLookup: Record<
 const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNotificationAuth> = (
   notificationChannel
 ) => ({
-  async startMeeting(meeting, team) {
-    const {facilitatorUserId} = meeting
+  async startMeeting(meeting, team, user) {
     const {webhookUrl} = notificationChannel
 
     const searchParams = {
@@ -175,11 +175,11 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
       meetingUrl
     )
 
-    return notifyMattermost('meetingStart', webhookUrl, facilitatorUserId, team.id, notification)
+    return notifyMattermost('meetingStart', webhookUrl, user, team.id, notification)
   },
 
-  async endMeeting(meeting, team) {
-    const {facilitatorUserId, summary} = meeting
+  async endMeeting(meeting, team, user) {
+    const {summary} = meeting
     const {webhookUrl} = notificationChannel
 
     const summaryText = await getSummaryText(meeting)
@@ -216,11 +216,11 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
         title_link: meetingUrl
       })
     ]
-    return notifyMattermost('meetingEnd', webhookUrl, facilitatorUserId, team.id, attachments)
+    return notifyMattermost('meetingEnd', webhookUrl, user, team.id, attachments)
   },
 
-  async startTimeLimit(scheduledEndTime, meeting, team) {
-    const {name: meetingName, phases, facilitatorStageId, facilitatorUserId} = meeting
+  async startTimeLimit(scheduledEndTime, meeting, team, user) {
+    const {name: meetingName, phases, facilitatorStageId} = meeting
     const {webhookUrl} = notificationChannel
 
     const {name: teamName} = team
@@ -271,29 +271,22 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     return notifyMattermost(
       'MEETING_STAGE_TIME_LIMIT_START',
       webhookUrl,
-      facilitatorUserId,
+      user,
       team.id,
       attachments
     )
   },
-  async endTimeLimit(meeting, team) {
-    const {facilitatorUserId: userId} = meeting
+  async endTimeLimit(meeting, team, user) {
     const {webhookUrl} = notificationChannel
 
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
 
-    return notifyMattermost(
-      'MEETING_STAGE_TIME_LIMIT_END',
-      webhookUrl,
-      team.id,
-      userId,
-      messageText
-    )
+    return notifyMattermost('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, user, team.id, messageText)
   },
-  async integrationUpdated() {
+  async integrationUpdated(user) {
     const message = `Integration webhook configuration updated`
-    const {webhookUrl, teamId, userId} = notificationChannel
+    const {webhookUrl, teamId} = notificationChannel
 
     const attachments = [
       makeFieldsAttachment(
@@ -308,7 +301,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
         }
       )
     ]
-    return notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
+    return notifyMattermost('meetingEnd', webhookUrl, user, teamId, attachments)
   },
   async standupResponseSubmitted() {
     // Not implemented

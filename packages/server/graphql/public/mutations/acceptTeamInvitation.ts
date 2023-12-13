@@ -55,7 +55,10 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const {invitation} = invitationRes
   const {meetingId, teamId, invitedBy: inviterId} = invitation
   const acceptAt = invitation.meetingId ? 'meeting' : 'team'
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const [team, inviter] = await Promise.all([
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('users').loadNonNull(inviterId)
+  ])
   const {orgId} = team
 
   // make sure that same invite can't be accepted at the same moment
@@ -77,7 +80,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     return {error: {message: approvalError.message}}
   }
   if (isAnyViewerTeamLocked) {
-    analytics.lockedUserAttemptToJoinTeam(viewerId, orgId)
+    analytics.lockedUserAttemptToJoinTeam(viewer, orgId)
     return {
       error: {
         message: LOCKED_MESSAGE.TEAM_INVITE
@@ -145,7 +148,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     )
   }
   const isNewUser = viewer.createdAt.getDate() === viewer.lastSeenAt.getDate()
-  analytics.inviteAccepted(viewerId, teamId, inviterId, isNewUser, acceptAt)
+  analytics.inviteAccepted(viewer, inviter, teamId, isNewUser, acceptAt)
   return {
     ...data,
     authToken: encodedAuthToken

@@ -53,7 +53,7 @@ const removeFromOrg = async (
       )('changes')(0)('new_val')
       .default(null)
       .run() as unknown as OrganizationUser,
-    dataLoader.get('users').load(userId)
+    dataLoader.get('users').loadNonNull(userId)
   ])
 
   // need to make sure the org doc is updated before adjusting this
@@ -86,7 +86,7 @@ const removeFromOrg = async (
           })
           .run()
       } else if (organization.tier !== 'starter') {
-        await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, userId)
+        await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, user)
       }
     }
   }

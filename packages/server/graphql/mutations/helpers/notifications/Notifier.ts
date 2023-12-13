@@ -49,30 +49,32 @@ async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, 
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  const user = await dataLoader.get('users').load(meeting?.facilitatorUserId || '')
   return {
     meeting,
-    team
+    team,
+    user
   }
 }
 
 export const createNotifier = (loader: NotificationIntegrationLoader): Notifier => ({
   async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
+    const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team || !user) return
     const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId, 'meetingStart')
-    notifiers.forEach((notifier) => notifier.startMeeting(meeting, team))
+    notifiers.forEach((notifier) => notifier.startMeeting(meeting, team, user))
   },
 
   async updateMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
+    const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team || !user) return
     const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId, 'meetingStart')
-    notifiers.forEach((notifier) => notifier.updateMeeting?.(meeting, team))
+    notifiers.forEach((notifier) => notifier.updateMeeting?.(meeting, team, user))
   },
 
   async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
+    const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team || !user) return
     const meetingResponses = await getTeamPromptResponsesByMeetingId(meetingId)
     const standupResponses = await Promise.all(
       meetingResponses.map(async (response) => {
@@ -84,7 +86,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
       })
     )
     const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId, 'meetingEnd')
-    notifiers.forEach((notifier) => notifier.endMeeting(meeting, team, standupResponses))
+    notifiers.forEach((notifier) => notifier.endMeeting(meeting, team, user, standupResponses))
   },
 
   async startTimeLimit(
@@ -93,32 +95,34 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
     meetingId: string,
     teamId: string
   ) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
+    const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team || !user) return
     const notifiers = await loader(
       dataLoader,
       team.id,
       meeting.facilitatorUserId,
       'MEETING_STAGE_TIME_LIMIT_START'
     )
-    notifiers.forEach((notifier) => notifier.startTimeLimit(scheduledEndTime, meeting, team))
+    notifiers.forEach((notifier) => notifier.startTimeLimit(scheduledEndTime, meeting, team, user))
   },
 
   async endTimeLimit(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
-    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
-    if (!meeting || !team) return
+    const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team || !user) return
     const notifiers = await loader(
       dataLoader,
       team.id,
       meeting.facilitatorUserId,
       'MEETING_STAGE_TIME_LIMIT_END'
     )
-    notifiers.forEach((notifier) => notifier.endTimeLimit(meeting, team))
+    notifiers.forEach((notifier) => notifier.endTimeLimit(meeting, team, user))
   },
 
   async integrationUpdated(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
     const notifiers = await loader(dataLoader, teamId, userId, 'meetingEnd')
-    notifiers.forEach((notifier) => notifier.integrationUpdated())
+    const user = await dataLoader.get('users').load(userId)
+    if (!user) return
+    notifiers.forEach((notifier) => notifier.integrationUpdated(user))
   },
 
   async standupResponseSubmitted(

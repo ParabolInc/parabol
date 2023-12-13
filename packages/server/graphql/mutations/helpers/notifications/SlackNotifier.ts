@@ -79,16 +79,17 @@ const notifySlack = async (
   notificationChannel: NotificationChannel,
   event: SlackNotificationEvent,
   teamId: string,
+  user: User,
   slackMessage: string | Array<{type: string}>,
   notificationText?: string,
   ts?: string,
   reflectionGroupId?: string
 ): Promise<PostMessageResponse | ErrorResponse> => {
   const {channelId, auth} = notificationChannel
-  const {botAccessToken, userId} = auth
+  const {botAccessToken} = auth
   const manager = new SlackServerManager(botAccessToken!)
   const res = await manager.postMessage(channelId!, slackMessage, notificationText, ts)
-  analytics.slackNotificationSent(userId, teamId, event, reflectionGroupId)
+  analytics.slackNotificationSent(user, teamId, event, reflectionGroupId)
 
   return res
 }
@@ -184,6 +185,7 @@ const addStandupResponsesToThread = async (
   res: PostMessageResponse,
   standupResponses: Array<{user: User; response: TeamPromptResponse}> | null,
   team: Team,
+  user: User,
   meeting: Meeting,
   notificationChannel: NotificationChannel
 ) => {
@@ -193,6 +195,7 @@ const addStandupResponsesToThread = async (
       notificationChannel,
       'meetingEnd',
       team.id,
+      user,
       message,
       message,
       res.ts
@@ -224,6 +227,7 @@ const addStandupResponsesToThread = async (
         notificationChannel,
         'meetingEnd',
         team.id,
+        user,
         threadBlocks,
         undefined,
         res.ts
@@ -280,7 +284,7 @@ const getSlackMessageForNotification = async (
 export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNotificationAuth> = (
   notificationChannel
 ) => ({
-  async startMeeting(meeting, team) {
+  async startMeeting(meeting, team, user) {
     const searchParams = {
       utm_source: 'slack meeting start',
       utm_medium: 'product',
@@ -294,7 +298,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       meetingUrl
     )
 
-    const res = await notifySlack(notificationChannel, 'meetingStart', team.id, blocks, title)
+    const res = await notifySlack(notificationChannel, 'meetingStart', team.id, user, blocks, title)
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
@@ -343,7 +347,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     return 'success'
   },
 
-  async endMeeting(meeting, team, standupResponses) {
+  async endMeeting(meeting, team, user, standupResponses) {
     const summaryText = await getSummaryText(meeting)
     const title = 'Meeting completed :tada:'
     const blocks: Array<{type: string}> = [
@@ -356,7 +360,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       blocks.push(makeSection(`*${aiSummaryTitle}*:\n${meeting.summary}`))
     }
     blocks.push(makeEndMeetingButtons(meeting))
-    const res = await notifySlack(notificationChannel, 'meetingEnd', team.id, blocks, title)
+    const res = await notifySlack(notificationChannel, 'meetingEnd', team.id, user, blocks, title)
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
@@ -364,10 +368,17 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       return 'success'
     }
 
-    return addStandupResponsesToThread(res, standupResponses, team, meeting, notificationChannel)
+    return addStandupResponsesToThread(
+      res,
+      standupResponses,
+      team,
+      user,
+      meeting,
+      notificationChannel
+    )
   },
 
-  async startTimeLimit(scheduledEndTime, meeting, team) {
+  async startTimeLimit(scheduledEndTime, meeting, team, user) {
     const {phases, facilitatorStageId} = meeting
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
@@ -394,6 +405,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       notificationChannel,
       'MEETING_STAGE_TIME_LIMIT_START',
       team.id,
+      user,
       blocks,
       title
     )
@@ -403,7 +415,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     return 'success'
   },
 
-  async endTimeLimit(meeting, team) {
+  async endTimeLimit(meeting, team, user) {
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     // TODO now is a good time to make the message nice with the `meetingName`
     const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
@@ -411,6 +423,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       notificationChannel,
       'MEETING_STAGE_TIME_LIMIT_END',
       team.id,
+      user,
       slackText
     )
 
@@ -444,6 +457,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       notificationChannel,
       'STANDUP_RESPONSE_SUBMITTED',
       team.id,
+      user,
       blocks,
       title
     )
@@ -512,8 +526,9 @@ export const SlackNotifier = {
     channelId: string
   ) {
     const r = await getRethink()
-    const [team, meeting, reflectionGroup, reflections, slackAuth] = await Promise.all([
+    const [team, user, meeting, reflectionGroup, reflections, slackAuth] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
+      dataLoader.get('users').loadNonNull(userId),
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
       r.table('RetroReflection').getAll(reflectionGroupId, {index: 'reflectionGroupId'}).run(),
@@ -591,6 +606,7 @@ export const SlackNotifier = {
       notificationChannel,
       'TOPIC_SHARED',
       team.id,
+      user,
       slackBlocks,
       undefined,
       undefined,

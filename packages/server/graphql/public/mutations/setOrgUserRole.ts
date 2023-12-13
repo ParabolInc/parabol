@@ -39,13 +39,16 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     return standardError(new Error('Invalid role'), {userId: viewerId})
   }
 
-  const organizationUser = await r
-    .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
-    .filter({orgId, removedAt: null})
-    .nth(0)
-    .default(null)
-    .run()
+  const [organizationUser, viewer] = await Promise.all([
+    r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({orgId, removedAt: null})
+      .nth(0)
+      .default(null)
+      .run(),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
 
   if (!organizationUser) {
     return standardError(new Error('Cannot find org user'), {
@@ -88,7 +91,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
 
   if (role !== 'ORG_ADMIN') {
     const modificationType = role === 'BILLING_LEADER' ? 'add' : 'remove'
-    analytics.billingLeaderModified(userId, viewerId, orgId, modificationType)
+    analytics.billingLeaderModified(viewer, userId, orgId, modificationType)
   }
 
   // Don't add notification when promoting to org admin.
