@@ -21,7 +21,6 @@ jobs:
           curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/$JOB_ID/play" \
             --request POST \
             --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}'
-          sleep 90
       - name: Poll Production Release
         uses: artiz/poll-endpoint@1.0.2
         with:

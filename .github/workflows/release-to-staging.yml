@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - master
-      - hotfix-*
+      - hotfix**
     types: [closed]
 jobs:
   release:
@@ -64,7 +64,6 @@ jobs:
           PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
           echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
           echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
-          sleep 90
       - name: Open PR to Push to Prod
         run: |
           BACKLINK="Production Job Id: $PROD_JOB_ID\nStaging Job Id: $JOB_ID"
