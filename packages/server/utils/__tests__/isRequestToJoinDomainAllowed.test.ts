@@ -45,13 +45,15 @@ type TestOrganizationUser = Pick<
 const addOrg = async (
   activeDomain: string | null,
   members: TestOrganizationUser[],
-  featureFlags?: string[]
+  rest?: {featureFlags?: string[]; tier?: string}
 ) => {
+  const {featureFlags, tier} = rest ?? {}
   const orgId = generateUID()
   const org = {
     id: orgId,
     activeDomain,
-    featureFlags: featureFlags ?? []
+    featureFlags: featureFlags ?? [],
+    tier: tier ?? 'starter'
   }
 
   const orgUsers = members.map((member) => ({
@@ -143,7 +145,7 @@ test('Org with noPromptToJoinOrg feature flag is ignored', async () => {
         userId: 'user2'
       }
     ],
-    ['noPromptToJoinOrg']
+    {featureFlags: ['noPromptToJoinOrg']}
   )
 
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
@@ -285,7 +287,84 @@ test('Org matching the user are ignored', async () => {
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
-test('All orgs with verified emails qualify', async () => {
+test('Only the biggest org with verified emails qualify', async () => {
+  const org = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder1'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member1'
+    }
+  ])
+  const biggerOrg = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder2'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member2'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member3'
+    }
+  ])
+  await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder3'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member3'
+    }
+  ])
+
+  userLoader.loadMany.mockImplementation((userIds) => {
+    const users = {
+      founder1: {
+        email: 'user1@parabol.co',
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      founder2: {
+        email: 'user2@parabol.co',
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      founder3: {
+        email: 'user3@parabol.co',
+        identities: [
+          {
+            isEmailVerified: false
+          }
+        ]
+      }
+    }
+    return userIds.map((id) => ({
+      id,
+      ...users[id]
+    }))
+  })
+
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  expect(userLoader.loadMany).toHaveBeenCalledTimes(3)
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder1'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder2'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder3'])
+  expect(orgIds).toIncludeSameMembers([biggerOrg])
+})
+
+test('All the biggest orgs with verified emails qualify', async () => {
   const org1 = await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
@@ -356,6 +435,172 @@ test('All orgs with verified emails qualify', async () => {
   expect(userLoader.loadMany).toHaveBeenCalledWith(['founder2'])
   expect(userLoader.loadMany).toHaveBeenCalledWith(['founder3'])
   expect(orgIds).toIncludeSameMembers([org1, org2])
+})
+
+test('Team trumps starter tier with more users org', async () => {
+  const teamOrg = await addOrg(
+    'parabol.co',
+    [
+      {
+        joinedAt: new Date('2023-09-06'),
+        userId: 'founder1'
+      },
+      {
+        joinedAt: new Date('2023-09-07'),
+        userId: 'member1'
+      }
+    ],
+    {tier: 'team'}
+  )
+  const biggerStarterOrg = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder2'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member2'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member3'
+    }
+  ])
+  await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder3'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member3'
+    }
+  ])
+
+  userLoader.loadMany.mockImplementation((userIds) => {
+    const users = {
+      founder1: {
+        email: 'user1@parabol.co',
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      founder2: {
+        email: 'user2@parabol.co',
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      founder3: {
+        email: 'user3@parabol.co',
+        identities: [
+          {
+            isEmailVerified: false
+          }
+        ]
+      }
+    }
+    return userIds.map((id) => ({
+      id,
+      ...users[id]
+    }))
+  })
+
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  expect(userLoader.loadMany).toHaveBeenCalledTimes(3)
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder1'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder2'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder3'])
+  expect(orgIds).toIncludeSameMembers([teamOrg])
+})
+
+test('Enterprise trumps team tier with more users org', async () => {
+  const enterpriseOrg = await addOrg(
+    'parabol.co',
+    [
+      {
+        joinedAt: new Date('2023-09-06'),
+        userId: 'founder1'
+      },
+      {
+        joinedAt: new Date('2023-09-07'),
+        userId: 'member1'
+      }
+    ],
+    {tier: 'enterprise'}
+  )
+  const starterOrg = await addOrg(
+    'parabol.co',
+    [
+      {
+        joinedAt: new Date('2023-09-06'),
+        userId: 'founder2'
+      },
+      {
+        joinedAt: new Date('2023-09-07'),
+        userId: 'member2'
+      },
+      {
+        joinedAt: new Date('2023-09-07'),
+        userId: 'member3'
+      }
+    ],
+    {tier: 'team'}
+  )
+  await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder3'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member3'
+    }
+  ])
+
+  userLoader.loadMany.mockImplementation((userIds) => {
+    const users = {
+      founder1: {
+        email: 'user1@parabol.co',
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      founder2: {
+        email: 'user2@parabol.co',
+        identities: [
+          {
+            isEmailVerified: true
+          }
+        ]
+      },
+      founder3: {
+        email: 'user3@parabol.co',
+        identities: [
+          {
+            isEmailVerified: false
+          }
+        ]
+      }
+    }
+    return userIds.map((id) => ({
+      id,
+      ...users[id]
+    }))
+  })
+
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  expect(userLoader.loadMany).toHaveBeenCalledTimes(3)
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder1'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder2'])
+  expect(userLoader.loadMany).toHaveBeenCalledWith(['founder3'])
+  expect(orgIds).toIncludeSameMembers([enterpriseOrg])
 })
 
 test('Orgs with verified emails from different domains do not qualify', async () => {

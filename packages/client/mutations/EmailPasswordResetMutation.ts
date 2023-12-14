@@ -6,6 +6,7 @@ import {EmailPasswordResetMutation as TEmailPasswordResetMutation} from '../__ge
 
 export enum ForgotPasswordResType {
   GOOGLE = 'goog',
+  MICROSOFT = 'ms',
   SAML = 'saml',
   SUCCESS = 'success'
 }
@@ -39,6 +40,8 @@ const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, 
         const {message} = res.emailPasswordReset.error
         if (message === AuthenticationError.USER_EXISTS_GOOGLE) {
           params.set('type', ForgotPasswordResType.GOOGLE)
+        } else if (message === AuthenticationError.USER_EXISTS_MICROSOFT) {
+          params.set('type', ForgotPasswordResType.MICROSOFT)
         } else if (message === AuthenticationError.USER_EXISTS_SAML) {
           params.set('type', ForgotPasswordResType.SAML)
         } else return

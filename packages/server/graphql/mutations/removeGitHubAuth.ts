@@ -33,10 +33,13 @@ export default {
     }
 
     // RESOLUTION
-    await removeGitHubAuthDB(viewerId, teamId)
+    const [viewer] = await Promise.all([
+      dataLoader.get('users').loadNonNull(viewerId),
+      removeGitHubAuthDB(viewerId, teamId)
+    ])
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
 
-    analytics.integrationRemoved(viewerId, teamId, 'github')
+    analytics.integrationRemoved(viewer, teamId, 'github')
     const data = {teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveGitHubAuthPayload', data, subOptions)
     return data

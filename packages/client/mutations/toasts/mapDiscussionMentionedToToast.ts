@@ -46,7 +46,7 @@ const mapDiscussionMentionedToToast = (
 ): Snack | null => {
   if (!notification) return null
   const {id: notificationId, meeting, author, discussion} = notification
-  const {preferredName: authorName} = author
+  const authorName = author ? author.preferredName : 'Anonymous'
   const {id: meetingId, name: meetingName} = meeting
   const {stage} = discussion
   const {id: stageId, response} = stage ?? {}

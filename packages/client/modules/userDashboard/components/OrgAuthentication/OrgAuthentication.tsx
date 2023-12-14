@@ -1,4 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
+import styled from '@emotion/styled'
+import {ElementWidth} from '../../../../types/constEnums'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
@@ -7,6 +9,10 @@ import Panel from '../../../../components/Panel/Panel'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
 import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
+
+const StyledPanel = styled(Panel)({
+  maxWidth: ElementWidth.PANEL_WIDTH
+})
 
 interface Props {
   queryRef: PreloadedQuery<OrgAuthenticationQuery>
@@ -35,14 +41,14 @@ const OrgAuthentication = (props: Props) => {
   const saml = organization?.saml ?? null
   const disabled = !saml
   return (
-    <Panel>
+    <StyledPanel>
       <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
       <OrgAuthenticationSSOFrame samlRef={saml} />
       <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
         <OrgAuthenticationSignOnUrl samlRef={saml} />
         <OrgAuthenticationMetadata samlRef={saml} />
       </div>
-    </Panel>
+    </StyledPanel>
   )
 }
 

@@ -36,6 +36,8 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   const {error} = loginAttempt
   if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
     return {error: {message: 'Try logging in with Google'}}
+  } else if (error === AuthenticationError.USER_EXISTS_MICROSOFT) {
+    return {error: {message: 'Try logging in with Microsoft'}}
   } else if (error === AuthenticationError.INVALID_PASSWORD) {
     return {error: {message: 'User already exists'}}
   }

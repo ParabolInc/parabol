@@ -22,6 +22,7 @@ import connectionFromTemplateArray from '../../queries/helpers/connectionFromTem
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 declare const __PRODUCTION__: string
 
@@ -191,7 +192,11 @@ const User: UserResolvers = {
     const urlObj = new URL(baseUrl)
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
-  }
+  },
+  tier: ({tier, trialStartDate}) => {
+    return getFeatureTier({tier, trialStartDate})
+  },
+  billingTier: ({tier}) => tier
 }
 
 export default User

@@ -9,9 +9,7 @@ enum UserFlagEnum {
   recurrence
   noAISummary
   noMeetingHistoryLimit
-  checkoutFlow
   retrosInDisguise
-  gcal
   adHocTeams
   noTemplateLimit
   signUpDestinationTeam
@@ -28,9 +26,7 @@ type UserFeatureFlags {
   recurrence: Boolean!
   noAISummary: Boolean!
   noMeetingHistoryLimit: Boolean!
-  checkoutFlow: Boolean!
   retrosInDisguise: Boolean!
-  gcal: Boolean!
   adHocTeams: Boolean!
   noTemplateLimit: Boolean!
   signUpDestinationTeam: Boolean!

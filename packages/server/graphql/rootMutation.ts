@@ -10,7 +10,6 @@ import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addReactjiToReactable from './mutations/addReactjiToReactable'
 import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
@@ -136,7 +135,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReactjiToReactable,
       addReflectTemplate,
       addReflectTemplatePrompt,
       addSlackAuth,

@@ -41,7 +41,7 @@ const createNewTeamAndInvite = async (
   const {tms} = authToken
   // MUTATIVE
   tms.push(teamId)
-  analytics.newTeam(viewerId, orgId, teamId, orgTeams.length + 1, true)
+  analytics.newTeam(viewer, orgId, teamId, orgTeams.length + 1, true)
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)

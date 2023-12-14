@@ -39,19 +39,6 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   )
 }
 
-const CategoryTitle = (props: ComponentPropsWithoutRef<'div'>) => {
-  const {children, className, ...rest} = props
-
-  return (
-    <div
-      className={clsx('p-4 text-lg font-semibold leading-5 text-slate-700', className)}
-      {...rest}
-    >
-      {children}
-    </div>
-  )
-}
-
 type ActivityType = 'retrospective' | 'poker'
 
 type SupportedActivity = {
@@ -112,6 +99,9 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
 const query = graphql`
   query CreateNewActivityQuery {
     viewer {
+      featureFlags {
+        noTemplateLimit
+      }
       preferredTeamId
       teams {
         id
@@ -158,7 +148,7 @@ export const CreateNewActivity = (props: Props) => {
     return selectedActivity
   })
   const {viewer} = data
-  const {teams, availableTemplates, preferredTeamId} = viewer
+  const {teams, availableTemplates, preferredTeamId, featureFlags} = viewer
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
@@ -287,22 +277,25 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none focus:ring-2 focus:ring-offset-8'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none'
                 value={activity.type}
               >
                 <ActivityCard
                   className='aspect-[320/190] w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
                   theme={DEFAULT_CARD_THEME}
                   title={activity.title}
-                  titleAs={CategoryTitle}
+                  type={activity.type}
                 >
-                  <ActivityCardImage src={activity.image} />
+                  <ActivityCardImage
+                    src={activity.image}
+                    category={activity.type === 'retrospective' ? 'retrospective' : 'estimation'}
+                  />
                 </ActivityCard>
                 <div className='flex gap-x-3 p-3'>
                   {activity.includedCategories.map((badge) => (
                     <ActivityBadge
                       key={badge}
-                      className={clsx('text-white', CATEGORY_THEMES[badge].primary)}
+                      className={clsx('text-white', `${CATEGORY_THEMES[badge].primary}`)}
                     >
                       {CATEGORY_ID_TO_NAME[badge]}
                     </ActivityBadge>
@@ -331,7 +324,7 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          {selectedTeam.tier === 'starter' ? (
+          {selectedTeam.tier === 'starter' && !featureFlags.noTemplateLimit ? (
             <div className='mx-auto flex h-12 items-center gap-24'>
               <div className='w-96'>
                 Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s

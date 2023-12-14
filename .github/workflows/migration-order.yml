@@ -1,0 +1,39 @@
+name: Migration Order
+on:
+  pull_request:
+    paths:
+      - packages/server/postgres/migrations/*.ts
+jobs:
+  migration-order:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - name: Get newest migration on master
+        run: |
+          MAX_OLD_MIGRATION=$(ls packages/server/postgres/migrations | tail -n 1)
+          echo MAX_OLD_MIGRATION=$MAX_OLD_MIGRATION >> $GITHUB_ENV
+
+      - name: Checkout PR
+        uses: actions/checkout@v3
+
+      - name: Get new migrations
+        id: new-migrations
+        uses: tj-actions/changed-files@v40
+        with:
+          files: packages/server/postgres/migrations/*.ts
+
+      - name: Check migration conflicts
+        run: |
+          for file in ${{ steps.new-migrations.outputs.added_files }}; do
+            FILE_NAME=$(basename $file)
+            if [[ "$FILE_NAME" < "${{ env.MAX_OLD_MIGRATION }}" ]]; then
+              echo "$FILE_NAME predates ${{ env.MAX_OLD_MIGRATION}}. Please rename it"
+              exit 1
+            else
+              echo "$FILE_NAME does not conflict with existing migrations on master"
+            fi
+          done

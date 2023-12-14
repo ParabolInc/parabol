@@ -50,7 +50,7 @@ const maybeUpdateOrganizationActiveDomain = async (
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {
   const r = await getRethink()
   const {id: userId, email} = user
-  inactive ? analytics.accountPaused(userId) : analytics.accountUnpaused(userId)
+  inactive ? analytics.accountPaused(user) : analytics.accountUnpaused(user)
   analytics.identify({
     userId,
     email,
@@ -110,7 +110,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
 
 const deleteUser = async (orgIds: string[], user: IUser) => {
   const r = await getRethink()
-  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user.id, orgId))
+  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
   return r
     .table('OrganizationUser')
     .getAll(user.id, {index: 'userId'})
@@ -160,6 +160,6 @@ export default async function adjustUserCount(
     .filter((org: RDatum) => org('stripeSubscriptionId').default(null).ne(null))
     .run()
 
-  handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
+  handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch()
   handleTeamOrgQuantityChanges(paidOrgs).catch(console.error)
 }

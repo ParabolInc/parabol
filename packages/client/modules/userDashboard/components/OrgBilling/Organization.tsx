@@ -1,14 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
-import {useFragment} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
 import {
+  AUTHENTICATION_PAGE,
   BILLING_PAGE,
   MEMBERS_PAGE,
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../../../utils/constants'
-import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
+import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import OrgNav from '../Organization/OrgNav'
 import OrgTeams from '../OrgTeams/OrgTeams'
 
@@ -21,16 +22,21 @@ const OrgMembers = lazy(
 )
 
 const OrgDetails = lazy(() => import(/* webpackChunkName: 'OrgDetails' */ './OrgDetails'))
+const Authentication = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'Authentication' */ '../../containers/OrgAuthentication/OrgAuthenticationRoot'
+    )
+)
 
 type Props = {
-  organizationRef: OrgPage_organization$key
+  queryRef: PreloadedQuery<OrganizationQuery>
 }
 
-const OrgPage = (props: Props) => {
-  const {organizationRef} = props
-  const organization = useFragment(
-    graphql`
-      fragment OrgPage_organization on Organization {
+const query = graphql`
+  query OrganizationQuery($orgId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
         id
         ...OrgNav_organization
         ...OrgPlansAndBillingRoot_organization
@@ -38,11 +44,17 @@ const OrgPage = (props: Props) => {
         ...OrgTeams_organization
         isBillingLeader
       }
-    `,
-    organizationRef
-  )
-  const {id: orgId, isBillingLeader} = organization
+    }
+  }
+`
+
+const Organization = (props: Props) => {
+  const {queryRef} = props
+  const {viewer} = usePreloadedQuery<OrganizationQuery>(query, queryRef)
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
+  const {organization} = viewer
+  if (!organization) return null
+  const {id: orgId, isBillingLeader} = organization
 
   return (
     <section className={'px-4 md:px-8'}>
@@ -75,9 +87,14 @@ const OrgPage = (props: Props) => {
           path={`${match.url}/${ORG_SETTINGS_PAGE}`}
           render={(p) => <OrgDetails {...p} organizationRef={organization} />}
         />
+        <Route
+          exact
+          path={`${match.url}/${AUTHENTICATION_PAGE}`}
+          render={(p) => <Authentication {...p} orgId={orgId} />}
+        />
       </Switch>
     </section>
   )
 }
 
-export default OrgPage
+export default Organization

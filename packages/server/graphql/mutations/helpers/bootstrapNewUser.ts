@@ -18,6 +18,7 @@ import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import {DataLoaderWorker} from '../../graphql'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import isValid from '../../isValid'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 
 const bootstrapNewUser = async (
   newUser: User,
@@ -76,10 +77,12 @@ const bootstrapNewUser = async (
   }
 
   const isVerified = identities.some((identity) => identity.isEmailVerified)
+  const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
+  const isQualifiedForAutoJoin = (isVerified || hasSAMLURL) && isCompanyDomain
   const orgIds = organizations.map(({id}) => id)
 
   const [teamsWithAutoJoinRes] = await Promise.all([
-    isVerified && isCompanyDomain ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
+    isQualifiedForAutoJoin ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
     insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
@@ -123,7 +126,7 @@ const bootstrapNewUser = async (
                   new SuggestedActionCreateNewTeam({userId})
                 ])
                 .run(),
-          analytics.autoJoined(userId, teamId)
+          analytics.autoJoined(newUser, teamId)
         ])
       })
     )
@@ -145,7 +148,7 @@ const bootstrapNewUser = async (
       r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run(),
       sendPromptToJoinOrg(newUser, dataLoader)
     ])
-    analytics.newOrg(userId, orgId, teamId, true)
+    analytics.newOrg(newUser, orgId, teamId, true)
   } else {
     await r
       .table('SuggestedAction')
@@ -153,7 +156,7 @@ const bootstrapNewUser = async (
       .run()
   }
 
-  analytics.accountCreated(userId, !isOrganic, isPatient0)
+  analytics.accountCreated(newUser, !isOrganic, isPatient0)
 
   return new AuthToken({sub: userId, tms})
 }
