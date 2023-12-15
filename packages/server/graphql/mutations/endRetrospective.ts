@@ -25,14 +25,110 @@ import generateWholeMeetingSentimentScore from './helpers/generateWholeMeetingSe
 import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
+import publishNotification from '../public/mutations/helpers/publishNotification'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 import gatherInsights from './helpers/gatherInsights'
+import NotificationKudosReceived from '../../database/types/NotificationKudosReceived'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
   const manager = new RecallAIServerManager()
   return await manager.getBotTranscript(recallBotId)
+}
+
+const sendKudos = async (meeting: MeetingRetrospective, teamId: string, context: GQLContext) => {
+  const {dataLoader, socketId: mutatorId} = context
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
+  const {id: meetingId, disableAnonymity} = meeting
+  const isAnonymous = !disableAnonymity
+  const pg = getKysely()
+  const r = await getRethink()
+
+  const [reflections, team] = await Promise.all([
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('teams').loadNonNull(teamId)
+  ])
+
+  const {giveKudosWithEmoji, kudosEmojiUnicode, kudosEmoji} = team
+
+  if (!giveKudosWithEmoji || !kudosEmojiUnicode) {
+    return
+  }
+
+  const kudosToInsert = [] as any // FIXME
+  const notificationsToInsert = [] as any // FIXME
+
+  for (const reflection of reflections) {
+    const {id: reflectionId, content, plaintextContent, creatorId} = reflection
+    const senderUser = await dataLoader.get('users').loadNonNull(creatorId)
+
+    const contentJson = JSON.parse(content)
+
+    if (plaintextContent.includes(kudosEmojiUnicode) && contentJson.entityMap) {
+      // FIXME Type
+      const mentions = Object.values<any>(contentJson.entityMap).filter(
+        (entity) => entity.type === 'MENTION'
+      )
+
+      if (mentions.length) {
+        const userIds = [...new Set(mentions.map((mention) => mention.data.userId))].filter(
+          (userId) => userId !== creatorId
+        )
+
+        if (userIds.length) {
+          userIds.forEach((userId) => {
+            kudosToInsert.push({
+              senderUserId: creatorId, // FIXME: don't expose field in graphql if anonymous
+              receiverUserId: userId,
+              teamId,
+              emoji: kudosEmoji,
+              emojiUnicode: kudosEmojiUnicode,
+              isAnonymous,
+              reflectionId
+            })
+
+            notificationsToInsert.push(
+              // TODO: if not difficult, can we link exact discussion, would be better than just retro meeting which can have a lot of discussion topic
+              new NotificationKudosReceived({
+                userId,
+                senderUserId: creatorId, // FIXME: don't expose field in graphql if anonymous
+                isAnonymous,
+                meetingId,
+                meetingName: meeting.name,
+                emoji: team.kudosEmoji,
+                emojiUnicode: team.kudosEmojiUnicode,
+                name: senderUser.preferredName,
+                picture: senderUser.picture
+              })
+            )
+          })
+        }
+      }
+    }
+  }
+
+  if (kudosToInsert.length) {
+    const [insertedKudoses] = await Promise.all([
+      pg
+        .insertInto('Kudos')
+        .values(kudosToInsert)
+        .returning(['id', 'senderUserId', 'receiverUserId', 'emoji', 'emojiUnicode'])
+        .execute(),
+      r.table('Notification').insert(notificationsToInsert).run()
+    ])
+
+    insertedKudoses.forEach((kudos) => {
+      analytics.kudosSent(kudos.senderUserId, teamId, kudos.id, kudos.receiverUserId, isAnonymous)
+    })
+
+    // FIXME we must handle anonymous notifications on frontend
+    // TODO: should we send some notification to sender that kudos was sent?
+    notificationsToInsert.forEach((notification: any) => {
+      publishNotification(notification, subOptions)
+    })
+  }
 }
 
 const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
@@ -195,7 +291,8 @@ export default {
         .filter({isActive: false})
         .delete()
         .run(),
-      updateTeamInsights(teamId, dataLoader)
+      updateTeamInsights(teamId, dataLoader),
+      sendKudos(meeting, teamId, context)
     ])
     // wait for removeEmptyTasks before summarizeRetroMeeting
     // don't await for the OpenAI response or it'll hang for a while when ending the retro
