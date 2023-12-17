@@ -1,0 +1,36 @@
+{
+  "name": "parabol-embedder",
+  "version": "7.10.0",
+  "description": "A service that computes embedding vectors from Parabol objects",
+  "author": "Jordan Husney <jordan.husney@gmail.com>",
+  "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/embedder#readme",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ParabolInc/parabol.git"
+  },
+  "scripts": {
+    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
+  },
+  "bugs": {
+    "url": "https://github.com/ParabolInc/parabol/issues"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.18.6",
+    "@babel/core": "7.18.6",
+    "@types/node": "^16.11.62",
+    "babel-plugin-inline-import": "^3.0.0",
+    "sucrase": "^3.32.0",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "4.9.5"
+  },
+  "dependencies": {
+    "dd-trace": "^4.2.0",
+    "fix-esm": "git+https://git.cryto.net/aabluedragon/fix-esm.git",
+    "node-llama-cpp": "^2.8.3",
+    "parabol-client": "7.10.0",
+    "parabol-server": "7.10.0",
+    "quick-lru": "^7.0.0",
+    "redlock": "^5.0.0-beta.2"
+  }
+}

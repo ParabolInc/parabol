@@ -18,6 +18,7 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers,
   aiTemplate: ({aiTemplate}) => !!aiTemplate,
   recurringRetros: ({recurringRetros}) => !!recurringRetros
+  relatedDiscussions: ({relatedDiscussions}) => !!relatedDiscussions
 }
 
 export default OrganizationFeatureFlags
