@@ -137,6 +137,9 @@ const auditEventTypeLookup = {
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
 } as {[key in InvoiceItemType]: OrganizationUserAuditEventTypeEnum}
 
+/**
+ * Also adds the organization user if not present
+ */
 export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],

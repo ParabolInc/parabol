@@ -106,30 +106,28 @@ const bootstrapNewUser = async (
   const tms = [] as string[]
 
   if (teamsWithAutoJoin.length > 0) {
-    await Promise.all(
-      teamsWithAutoJoin.map((team) => {
-        const teamId = team.id
-        tms.push(teamId)
-        return Promise.all([
-          acceptTeamInvitation(team, userId, dataLoader),
-          isOrganic
-            ? Promise.all([
-                r
-                  .table('SuggestedAction')
-                  .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
-                  .run()
-              ])
-            : r
+    for (const team of teamsWithAutoJoin) {
+      const teamId = team.id
+      tms.push(teamId)
+      await Promise.all([
+        acceptTeamInvitation(team, userId, dataLoader),
+        isOrganic
+          ? Promise.all([
+              r
                 .table('SuggestedAction')
-                .insert([
-                  new SuggestedActionTryTheDemo({userId}),
-                  new SuggestedActionCreateNewTeam({userId})
-                ])
-                .run(),
-          analytics.autoJoined(newUser, teamId)
-        ])
-      })
-    )
+                .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
+                .run()
+            ])
+          : r
+              .table('SuggestedAction')
+              .insert([
+                new SuggestedActionTryTheDemo({userId}),
+                new SuggestedActionCreateNewTeam({userId})
+              ])
+              .run(),
+        analytics.autoJoined(newUser, teamId)
+      ])
+    }
   } else if (isOrganic) {
     const orgId = generateUID()
     const teamId = generateUID()

@@ -45,6 +45,9 @@ const handleFirstAcceptedInvitation = async (team: Team): Promise<string | null>
   return newTeamLeadUserId
 }
 
+/**
+ * Must not be run in parallel
+ */
 const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const now = new Date()
