@@ -97,10 +97,16 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
       (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
       organization.periodEnd ||
       new Date()
-    return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
+    return new OrganizationUser({
+      id: oldOrganizationUser?.id,
+      orgId,
+      userId,
+      newUserUntil,
+      tier: organization.tier
+    })
   })
 
-  await r.table('OrganizationUser').insert(docs).run()
+  await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
