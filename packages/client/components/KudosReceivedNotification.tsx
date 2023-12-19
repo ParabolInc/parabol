@@ -6,6 +6,7 @@ import {KudosReceivedNotification_notification$key} from '~/__generated__/KudosR
 import NotificationTemplate from './NotificationTemplate'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
+import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 
 interface Props {
   notification: KudosReceivedNotification_notification$key
@@ -43,14 +44,14 @@ const KudosReceivedNotification = (props: Props) => {
     <NotificationTemplate
       message={
         <>
-          {emojiUnicode} {name} gave you kudos in{' '}
+          {emojiUnicode} {name !== '' ? name : 'Anonymous'} gave you kudos in{' '}
           <Link to={`/meet/${meetingId}`} className='font-semibold text-sky-500 underline'>
             {meetingName}
           </Link>
         </>
       }
       notification={notification}
-      avatar={picture}
+      avatar={name !== '' ? picture : anonymousAvatar}
     />
   )
 }

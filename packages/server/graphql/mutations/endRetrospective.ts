@@ -30,6 +30,7 @@ import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 import gatherInsights from './helpers/gatherInsights'
 import NotificationKudosReceived from '../../database/types/NotificationKudosReceived'
+import {RawDraftContentState} from 'draft-js'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -57,18 +58,26 @@ const sendKudos = async (meeting: MeetingRetrospective, teamId: string, context:
     return
   }
 
-  const kudosToInsert = [] as any // FIXME
-  const notificationsToInsert = [] as any // FIXME
+  const kudosToInsert: {
+    senderUserId: string
+    receiverUserId: any
+    teamId: string
+    emoji: string
+    emojiUnicode: string
+    isAnonymous: boolean
+    reflectionId: string
+  }[] = []
+
+  const notificationsToInsert: NotificationKudosReceived[] = []
 
   for (const reflection of reflections) {
     const {id: reflectionId, content, plaintextContent, creatorId} = reflection
     const senderUser = await dataLoader.get('users').loadNonNull(creatorId)
 
-    const contentJson = JSON.parse(content)
+    const contentJson = JSON.parse(content) as RawDraftContentState
 
     if (plaintextContent.includes(kudosEmojiUnicode) && contentJson.entityMap) {
-      // FIXME Type
-      const mentions = Object.values<any>(contentJson.entityMap).filter(
+      const mentions = Object.values(contentJson.entityMap).filter(
         (entity) => entity.type === 'MENTION'
       )
 
@@ -80,7 +89,7 @@ const sendKudos = async (meeting: MeetingRetrospective, teamId: string, context:
         if (userIds.length) {
           userIds.forEach((userId) => {
             kudosToInsert.push({
-              senderUserId: creatorId, // FIXME: don't expose field in graphql if anonymous
+              senderUserId: creatorId,
               receiverUserId: userId,
               teamId,
               emoji: kudosEmoji,
@@ -90,17 +99,15 @@ const sendKudos = async (meeting: MeetingRetrospective, teamId: string, context:
             })
 
             notificationsToInsert.push(
-              // TODO: if not difficult, can we link exact discussion, would be better than just retro meeting which can have a lot of discussion topic
               new NotificationKudosReceived({
                 userId,
-                senderUserId: creatorId, // FIXME: don't expose field in graphql if anonymous
-                isAnonymous,
+                senderUserId: creatorId,
                 meetingId,
                 meetingName: meeting.name,
                 emoji: team.kudosEmoji,
                 emojiUnicode: team.kudosEmojiUnicode,
-                name: senderUser.preferredName,
-                picture: senderUser.picture
+                name: isAnonymous ? '' : senderUser.preferredName,
+                picture: isAnonymous ? '' : senderUser.picture
               })
             )
           })
@@ -123,8 +130,6 @@ const sendKudos = async (meeting: MeetingRetrospective, teamId: string, context:
       analytics.kudosSent(kudos.senderUserId, teamId, kudos.id, kudos.receiverUserId, isAnonymous)
     })
 
-    // FIXME we must handle anonymous notifications on frontend
-    // TODO: should we send some notification to sender that kudos was sent?
     notificationsToInsert.forEach((notification: any) => {
       publishNotification(notification, subOptions)
     })

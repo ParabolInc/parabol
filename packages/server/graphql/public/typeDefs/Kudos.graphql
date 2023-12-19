@@ -14,8 +14,9 @@ type Kudos {
 
   """
   Use who sent kudos
+  Can be null if kudos is anonymous
   """
-  senderUser: User!
+  senderUser: User
 
   """
   emoji name
