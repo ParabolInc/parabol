@@ -81,37 +81,42 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {kudosEmoji, kudosEmojiUnicode} = team
 
-  let kudosUserIds = null
+  let insertedKudoses:
+    | {
+        id: number
+        receiverUserId: string
+        emoji: string | null
+        emojiUnicode: string
+      }[]
+    | null = null
   if (team.giveKudosWithEmoji && kudosEmojiUnicode) {
     const oldKudosUserIds = oldTeamPromptResponse
       ? getKudosUserIdsFromJson(oldTeamPromptResponse.content, kudosEmojiUnicode)
       : []
     const newKudosUserIds = getKudosUserIdsFromJson(contentJSON, kudosEmojiUnicode)
-    kudosUserIds = newKudosUserIds.filter(
+    const kudosUserIds = newKudosUserIds.filter(
       (userId) => !oldKudosUserIds.includes(userId) && userId !== viewerId
     )
-  }
+    if (kudosUserIds.length) {
+      const kudosRows = kudosUserIds.map((userId) => ({
+        senderUserId: viewerId,
+        receiverUserId: userId,
+        teamId,
+        emoji: kudosEmoji,
+        emojiUnicode: kudosEmojiUnicode,
+        teamPromptResponseId: TeamPromptResponseId.split(teamPromptResponseId)
+      }))
 
-  let insertedKudoses = null
-  if (kudosUserIds?.length) {
-    const kudosRows = kudosUserIds.map((userId) => ({
-      senderUserId: viewerId,
-      receiverUserId: userId,
-      teamId,
-      emoji: kudosEmoji,
-      emojiUnicode: kudosEmojiUnicode,
-      teamPromptResponseId: TeamPromptResponseId.split(teamPromptResponseId)
-    }))
+      insertedKudoses = await pg
+        .insertInto('Kudos')
+        .values(kudosRows)
+        .returning(['id', 'receiverUserId', 'emoji', 'emojiUnicode'])
+        .execute()
 
-    insertedKudoses = await pg
-      .insertInto('Kudos')
-      .values(kudosRows)
-      .returning(['id', 'receiverUserId', 'emoji', 'emojiUnicode'])
-      .execute()
-
-    insertedKudoses.forEach((kudos) => {
-      analytics.kudosSent(viewerId, teamId, kudos.id, kudos.receiverUserId)
-    })
+      insertedKudoses.forEach((kudos) => {
+        analytics.kudosSent(viewerId, teamId, kudos.id, kudos.receiverUserId)
+      })
+    }
   }
 
   dataLoader.get('teamPromptResponses').clear(teamPromptResponseId)
