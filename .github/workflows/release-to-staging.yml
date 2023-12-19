@@ -33,10 +33,7 @@ jobs:
           gcloud container images add-tag -q \
           ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
-      - name: Push to Staging Server
-        env:
-          STAGING_JOB: staging-release
-          PRODUCTION_JOB: prod-release
+      - name: Push Version Commit to Staging Server
         run: |
           COMMIT_ID=$(curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/commits" \
             --request POST \
@@ -52,18 +49,31 @@ jobs:
           global:
             image:
               tag: *applicationVersion" | jq .id)
-          PIPELINES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines" \
-            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
-          PIPELINE_ID=$(echo $PIPELINES | jq ".[] | select(.sha == \"$COMMIT_ID\")" | jq .id)
-          JOBS=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines/$PIPELINE_ID/jobs" \
-            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
-          JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.STAGING_JOB }}")' | jq .id)
-          curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/$JOB_ID/play" \
-            --request POST \
-            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}'
-          PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
-          echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
-          echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
+          echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
+      - name: Poll for new pipeline
+        env:
+          STAGING_JOB: staging-release
+          PRODUCTION_JOB: prod-release
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 100
+          retry_wait_seconds: 5
+          command: |
+            echo ${{ env.COMMIT_ID }}
+            PIPELINES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines" \
+              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
+            PIPELINE_ID=$(echo $PIPELINES | jq ".[] | select(.sha == \"${{ env.COMMIT_ID }}\")" | jq .id)
+            [ -z "$PIPELINE_ID" ] && exit 1
+            JOBS=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines/$PIPELINE_ID/jobs" \
+              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
+            JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.STAGING_JOB }}")' | jq .id)
+            curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/$JOB_ID/play" \
+              --request POST \
+              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}'
+            PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
+            echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
+            echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
       - name: Open PR to Push to Prod
         run: |
           BACKLINK="Production Job Id: $PROD_JOB_ID\nStaging Job Id: $JOB_ID"
