@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.11.1](https://github.com/ParabolInc/parabol/compare/v7.11.0...v7.11.1) (2023-12-20)
+
+
+### Fixed
+
+* Fix duplicate organizations for teams with auto join ([#9290](https://github.com/ParabolInc/parabol/issues/9290)) ([e5971c4](https://github.com/ParabolInc/parabol/commit/e5971c44d40118b66f0a32b862dc380ac03b03c4))
+* release-to-staging debug ([#9294](https://github.com/ParabolInc/parabol/issues/9294)) ([71e438d](https://github.com/ParabolInc/parabol/commit/71e438dab7b33f01b951abcec481360147933075))
+
 ## [7.11.0](https://github.com/ParabolInc/parabol/compare/v7.10.0...v7.11.0) (2023-12-20)
 
 
