@@ -768,13 +768,16 @@ export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
 
       const pg = getKysely()
 
-      const teams = (await pg
-        .selectFrom('Team')
-        .where('orgId', 'in', verifiedOrgIds)
-        .where('autoJoin', '=', true)
-        .where('isArchived', '!=', true)
-        .selectAll()
-        .execute()) as unknown as Team[]
+      const teams =
+        verifiedOrgIds.length === 0
+          ? []
+          : ((await pg
+              .selectFrom('Team')
+              .where('orgId', 'in', verifiedOrgIds)
+              .where('autoJoin', '=', true)
+              .where('isArchived', '!=', true)
+              .selectAll()
+              .execute()) as unknown as Team[])
 
       return orgIds.map((orgId) => teams.filter((team) => team.orgId === orgId))
     },
