@@ -277,13 +277,6 @@ const RemoteReflection = (props: Props) => {
             disableAnonymity={disableAnonymity}
             teamId={teamId}
             editorRef={editorRef}
-            placeholder=''
-            setEditorState={() => {
-              /* noop */
-            }}
-            handleKeyDownFallback={() => {
-              /* noop */
-            }}
             handleReturn={() => 'handled'}
           />
           {disableAnonymity && (

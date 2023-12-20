@@ -51,12 +51,12 @@ type DraftProps = Pick<
 
 interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>
-  placeholder: string
-  setEditorState: (newEditorState: EditorState) => void
+  placeholder?: string
+  setEditorState?: (newEditorState: EditorState) => void
   teamId: string
   isClipped?: boolean
   isPhaseItemEditor?: boolean
-  handleKeyDownFallback: (e: any) => void
+  handleKeyDownFallback?: (e: any) => void
   handleReturn: (e: any, editorState: EditorState) => DraftHandleValue
   userSelect?: string
   disableAnonymity?: boolean
@@ -126,7 +126,15 @@ const ReflectionEditorWrapper = (props: Props) => {
     handleBeforeInput,
     handleKeyCommand,
     keyBindingFn
-  } = useCommentPlugins({...props, handleReturn: undefined})
+  } = useCommentPlugins({
+    ...props,
+    setEditorState:
+      setEditorState ??
+      (() => {
+        /* noop */
+      }),
+    handleReturn: undefined
+  })
 
   const onRemoveModal = () => {
     if (renderModal && removeModal) {
@@ -145,7 +153,7 @@ const ReflectionEditorWrapper = (props: Props) => {
       const contentState = entitizeText(editorState.getCurrentContent(), selectionState)
       entityPasteStartRef.current = undefined
       if (contentState) {
-        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'))
+        setEditorState?.(EditorState.push(editorState, contentState, 'apply-entity'))
         return
       }
     }
@@ -154,7 +162,7 @@ const ReflectionEditorWrapper = (props: Props) => {
     } else if (handleChange) {
       handleChange(editorState)
     }
-    setEditorState(editorState)
+    setEditorState?.(editorState)
   }
 
   const onReturn: EditorProps['handleReturn'] = (e) => {
@@ -222,7 +230,7 @@ const ReflectionEditorWrapper = (props: Props) => {
       const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
         keepSelection: true
       })
-      setEditorState(nextEditorState)
+      setEditorState?.(nextEditorState)
       return 'handled'
     }
     return 'not-handled'
