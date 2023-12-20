@@ -83,9 +83,9 @@ jobs:
           CHANGES=$(perl -0777ne 'print "$1\n" and exit if m/\n##\s[^\n]*\n+(.*?\n)##?\s|$/gs;' CHANGELOG.md)
           BODY="${BACKLINK}\n\n${TEMPLATE}\n\n\n${CHANGES}"
           gh pr create \
-            --assignee ${{ github.actor }}
-            --base production
-            --title "chore(release): Test v${{ env.ACTION_VERSION }}"
+            --assignee ${{ github.actor }} \
+            --base production \
+            --title "chore(release): Test v${{ env.ACTION_VERSION }}" \
             --body "$BODY"
       - name: Poll Staging Release
         uses: artiz/poll-endpoint@1.0.2
