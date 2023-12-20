@@ -27,8 +27,7 @@
   ],
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
-    // .eslint is important! otherwise it'll remove unreachable code on save
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {

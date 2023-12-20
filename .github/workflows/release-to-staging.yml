@@ -75,6 +75,8 @@ jobs:
             echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
             echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
       - name: Open PR to Push to Prod
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           BACKLINK="Production Job Id: $PROD_JOB_ID\nStaging Job Id: $JOB_ID"
           TEMPLATE=$(tail -n +12 .github/ISSUE_TEMPLATE/release_test.md)
