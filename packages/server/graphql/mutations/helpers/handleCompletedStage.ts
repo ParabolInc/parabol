@@ -17,6 +17,7 @@ import generateGroups from './generateGroups'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 import addRecallBot from './addRecallBot'
+import generateRelatedDiscussions from './generateRelatedDiscussions'
 
 /*
  * handle side effects when a stage is completed
@@ -111,7 +112,8 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader),
+      generateRelatedDiscussions(meeting, teamId, dataLoader)
     ])
     if (videoMeetingURL) {
       addRecallBot(meetingId, videoMeetingURL)

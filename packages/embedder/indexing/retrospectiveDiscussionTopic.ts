@@ -2,23 +2,18 @@ import {Selectable} from 'kysely'
 import prettier from 'prettier'
 
 import getRethink, {RethinkSchema} from 'parabol-server/database/rethinkDriver'
+import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 
 import Comment from 'parabol-server/database/types/Comment'
 import DiscussStage from 'parabol-server/database/types/DiscussStage'
-import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
+import MeetingRetrospective, {
+  isMeetingRetrospective
+} from 'parabol-server/database/types/MeetingRetrospective'
 import {RDatum} from 'parabol-server/database/stricterR'
 
 import generateHourIntervals from './generateHourIntervals'
-
-import {
-  getNewMeetingById,
-  getMeetingTemplateById,
-  getReflectPromptById,
-  getUserById,
-  getOrgIdByTeamId
-} from '../cachedFetches'
 import {DBInsert} from '../embedder'
 
 export interface EmbeddingsIndexRetrospectiveDiscussionTopic
@@ -45,32 +40,32 @@ const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
 const pg = getKysely()
 
-export async function refreshEmbeddingsIndex() {
+export async function refreshEmbeddingsIndex(dataLoader: DataLoaderWorker) {
   const r = await getRethink()
-  const {createdAt: endDateTime} = (await r
+  const {createdAt: newestMeetingDate} = (await r
     .table('NewMeeting')
     .max({index: 'createdAt'})
     .run()) as unknown as RethinkSchema['NewMeeting']['type']
-  const {createdAt: minNewMeetingDateTime} = (await r
+  const {createdAt: oldestMeetingDate} = (await r
     .table('NewMeeting')
     .min({index: 'createdAt'})
     .run()) as unknown as RethinkSchema['NewMeeting']['type']
 
-  const {maxIndexDateTime} = (await pg
+  const {newestIndexDate} = (await pg
     .selectFrom('EmbeddingsIndex')
-    .select(pg.fn.max('refDateTime').as('maxIndexDateTime'))
-    .executeTakeFirst()) ?? {maxIndexDateTime: null}
-  const startDateTime = maxIndexDateTime || minNewMeetingDateTime
-  console.log(`Index range from ${startDateTime} to ${endDateTime}`)
+    .select(pg.fn.max('refDateTime').as('newestIndexDate'))
+    .executeTakeFirst()) ?? {newestIndexDate: null}
+  const startDateTime = newestIndexDate || oldestMeetingDate
+  console.log(`Index will consider adding items from ${startDateTime} to ${newestMeetingDate}`)
 
-  if (startDateTime.getTime() === endDateTime.getTime()) return
+  if (startDateTime.getTime() === newestMeetingDate.getTime()) return
 
-  for (const interval of generateHourIntervals(startDateTime, endDateTime)) {
+  for (const interval of generateHourIntervals(startDateTime, newestMeetingDate)) {
     // fetch completed meetings within the time range, ensuring these meetings
     // contain at least 1 discuss phase
     const meetings = await r
       .table('NewMeeting')
-      .between(interval[0], interval[1], {index: 'createdAt'})
+      .between(interval[0], interval[1], {rightBound: 'closed', index: 'createdAt'})
       .filter((r: RDatum) =>
         r('meetingType')
           .eq('retrospective')
@@ -81,8 +76,10 @@ export async function refreshEmbeddingsIndex() {
               .and(r('phases').count().gt(0))
               .and(
                 r('phases')
-                  .filter((phase) => phase('phaseType').eq('discuss'))
-                  .filter((phase) => phase.hasFields('stages').and(phase('stages').count().gt(0)))
+                  .filter((phase: RDatum) => phase('phaseType').eq('discuss'))
+                  .filter((phase: RDatum) =>
+                    phase.hasFields('stages').and(phase('stages').count().gt(0))
+                  )
                   .count()
                   .gt(0)
               )
@@ -90,38 +87,42 @@ export async function refreshEmbeddingsIndex() {
       )
       .run()
     const embeddingsIndexRows = (
-      await Promise.all(meetings.map((m) => newRetroDiscussionTopicFromNewMeeting(m)))
+      await Promise.all(meetings.map((m) => newRetroDiscussionTopicFromNewMeeting(m, dataLoader)))
     )
       .flat()
       .filter((row) => row.orgId !== null)
     if (embeddingsIndexRows.length < 1) continue
+
     await pg
       .insertInto('EmbeddingsIndex')
       .values(embeddingsIndexRows)
       .onConflict((oc) =>
-        oc
-          .column('id') // Assuming 'id' is the unique column that might cause a conflict
-          .doUpdateSet((eb) => ({
-            objectType: eb.ref('excluded.objectType'),
-            state: eb.ref('excluded.state'),
-            teamId: eb.ref('excluded.teamId'),
-            orgId: eb.ref('excluded.orgId'),
-            refTable: eb.ref('excluded.refTable'),
-            refId: eb.ref('excluded.refId'),
-            refDateTime: eb.ref('excluded.refDateTime'),
-            embedText: eb.ref('excluded.embedText')
-          }))
+        oc.columns(['objectType', 'refTable', 'refId']).doUpdateSet((eb) => ({
+          objectType: eb.ref('excluded.objectType'),
+          refTable: eb.ref('excluded.refTable'),
+          refId: eb.ref('excluded.refId'),
+          refDateTime: eb.ref('excluded.refDateTime')
+          // state: eb.ref('excluded.state'),          // preserve the prior values
+          // teamId: eb.ref('excluded.teamId'),
+          // orgId: eb.ref('excluded.orgId'),
+          // embedText: eb.ref('excluded.embedText')
+        }))
       )
       .execute()
   }
 }
 
-async function getPreferredNameByUserId(userId: string) {
-  const User = await getUserById(userId)
-  return !User ? 'Unknown' : User.preferredName
+async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderWorker) {
+  const user = await dataLoader.get('users').load(userId)
+  return !user ? 'Unknown' : user.preferredName
 }
 
-async function formatThread(comments: Comment[], parentId: string | null = null, depth = 0) {
+async function formatThread(
+  dataLoader: DataLoaderWorker,
+  comments: Comment[],
+  parentId: string | null = null,
+  depth = 0
+): Promise<string> {
   // Filter and sort comments as before
   const filteredComments = comments
     .filter((comment) => comment.threadParentId === parentId)
@@ -133,14 +134,14 @@ async function formatThread(comments: Comment[], parentId: string | null = null,
     const author = comment.isAnonymous
       ? 'Anonymous'
       : comment.createdBy
-      ? await getPreferredNameByUserId(comment.createdBy)
+      ? await getPreferredNameByUserId(comment.createdBy, dataLoader)
       : 'Unknown'
     const how = depth === 0 ? 'wrote' : 'replied'
     const content = comment.plaintextContent
     const formattedPost = `${indent}- ${author} ${how}, "${content}"\n`
 
     // Recursively format child threads
-    const childThread = await formatThread(comments, comment.id, depth + 1)
+    const childThread = await formatThread(dataLoader, comments, comment.id, depth + 1)
     return formattedPost + '\n' + childThread
   })
 
@@ -149,15 +150,14 @@ async function formatThread(comments: Comment[], parentId: string | null = null,
   return formattedComments.join('')
 }
 
-export const createText = async (
-  item: Selectable<EmbeddingsIndexRetrospectiveDiscussionTopic>
-): Promise<string> => {
-  if (!item.refId) throw 'refId is undefined'
-  const [newMeetingId, discussionId] = item.refId.split(':')
-  const newMeeting = await getNewMeetingById(newMeetingId)
+export const createTextFromNewMeetingDiscussion = async (
+  newMeeting: MeetingRetrospective,
+  discussionId: string,
+  dataLoader: DataLoaderWorker
+) => {
   if (!newMeeting) throw 'newMeeting is undefined'
   if (!isMeetingRetrospective(newMeeting)) throw 'newMeeting is not retrospective'
-  const template = await getMeetingTemplateById(newMeeting.templateId)
+  const template = await dataLoader.get('meetingTemplates').load(newMeeting.templateId)
   if (!template) throw 'template is undefined'
   const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
   if (!discussPhase) throw 'newMeeting discuss phase is undefined'
@@ -186,13 +186,13 @@ export const createText = async (
     `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
     `\n`
   for (const promptId of promptIds) {
-    const prompt = await getReflectPromptById(promptId)
+    const prompt = await dataLoader.get('reflectPrompts').load(promptId)
     markdown += `Participants were prompted with, "${prompt!.question}`
     if (prompt!.description) markdown += `: ${prompt!.description}`
     markdown += `".\n`
     if (newMeeting.disableAnonymity) {
       for (const reflection of reflections.filter((r) => r.promptId === promptId)) {
-        const author = await getPreferredNameByUserId(reflection.creatorId)
+        const author = await getPreferredNameByUserId(reflection.creatorId, dataLoader)
         markdown += `   - ${author} wrote, "${reflection.plaintextContent}"\n`
       }
     } else {
@@ -216,7 +216,7 @@ export const createText = async (
     const filteredComments = comments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy))
     if (filteredComments.length) {
       markdown += `Futher discussion was made:\n`
-      markdown += await formatThread(filteredComments)
+      markdown += await formatThread(dataLoader, filteredComments)
       // TODO: if the discussion threads are too long, summarize them
     }
   }
@@ -226,15 +226,32 @@ export const createText = async (
     proseWrap: 'always',
     printWidth: 72
   })
-  console.log(markdown)
 
   return markdown
 }
+
+export const createText = async (
+  item: Selectable<EmbeddingsIndexRetrospectiveDiscussionTopic>,
+  dataLoader: DataLoaderWorker
+): Promise<string> => {
+  if (!item.refId) throw 'refId is undefined'
+  const [newMeetingId, discussionId] = item.refId.split(':')
+  if (!newMeetingId) throw new Error('newMeetingId cannot be undefined')
+  if (!discussionId) throw new Error('discussionId cannot be undefined')
+  const newMeeting = await dataLoader.get('newMeetings').load(newMeetingId)
+  return createTextFromNewMeetingDiscussion(
+    newMeeting as MeetingRetrospective,
+    discussionId,
+    dataLoader
+  )
+}
+
 export const newRetroDiscussionTopicFromNewMeeting = async (
-  newMeeting: RethinkSchema['NewMeeting']['type']
+  newMeeting: RethinkSchema['NewMeeting']['type'],
+  dataLoader: DataLoaderWorker
 ): Promise<DBInsert['EmbeddingsIndex'][]> => {
   const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
-  const orgId = await getOrgIdByTeamId(newMeeting.teamId)
+  const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
   if (orgId && discussPhase && discussPhase.stages) {
     const indexRows = discussPhase.stages.map(async (stage) => ({
       objectType: 'retrospectiveDiscussionTopic' as 'retrospectiveDiscussionTopic',

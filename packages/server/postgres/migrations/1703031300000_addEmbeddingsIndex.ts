@@ -25,15 +25,16 @@ export async function up() {
     CREATE TABLE IF NOT EXISTS "EmbeddingsIndex" (
       "id" SERIAL PRIMARY KEY,
       "objectType" "EmbeddingsObjectTypeEnum" NOT NULL,
+      "refTable" VARCHAR(100),
+      "refId" VARCHAR(100),
+      UNIQUE("objectType", "refTable", "refId"),
+      "refDateTime" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "state" "EmbeddingsStateEnum" DEFAULT 'new',
       "stateMessage" TEXT,
       "stateUpdatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "models" TEXT[],
       "teamId" VARCHAR(100) NOT NULL,
       "orgId" VARCHAR(100) NOT NULL,
-      "refTable" VARCHAR(100),
-      "refId" VARCHAR(100),
-      "refDateTime" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "embedText" TEXT
     );
     CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_objectType" ON "EmbeddingsIndex"("objectType");

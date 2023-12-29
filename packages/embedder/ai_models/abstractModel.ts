@@ -1,9 +1,19 @@
 import path from 'path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
-import {ModelConfig, EmbeddingModelConfig, SummarizationModelConfig} from './ModelManager'
 
-export {EmbeddingModelConfig, SummarizationModelConfig}
+export interface ModelConfig {
+  model: string
+  priority: number
+  maxInputTokens: number
+  tableSuffix?: string
+  url?: string
+}
 
+export interface EmbeddingModelConfig extends ModelConfig {
+  tableSuffix: string
+}
+
+export interface SummarizationModelConfig extends ModelConfig {}
 export abstract class AbstractModel {
   public readonly modelConfigString: string
   public readonly priority: number

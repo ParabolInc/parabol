@@ -26,11 +26,8 @@
   },
   "dependencies": {
     "dd-trace": "^4.2.0",
-    "fix-esm": "git+https://git.cryto.net/aabluedragon/fix-esm.git",
-    "node-llama-cpp": "^2.8.3",
     "parabol-client": "7.10.0",
     "parabol-server": "7.10.0",
-    "quick-lru": "^7.0.0",
     "redlock": "^5.0.0-beta.2"
   }
 }

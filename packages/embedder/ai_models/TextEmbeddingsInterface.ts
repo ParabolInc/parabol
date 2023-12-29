@@ -15,7 +15,6 @@ function isValidModelSubType(type: any): type is ModelSubTypes {
 }
 
 export class TextEmbeddingsInterface extends AbstractEmbeddingsModel {
-  private readonly modelSubType: string
   private readonly modelSubTypeParams: EmbeddingModelParams
   constructor(config: EmbeddingModelConfig) {
     super(config)
@@ -30,7 +29,6 @@ export class TextEmbeddingsInterface extends AbstractEmbeddingsModel {
     const modelSubType = modelConfigStringSplit[1]
     if (!isValidModelSubType(modelSubType))
       throw new Error(`TextEmbeddingsInterface model subtype unknown: ${modelSubType}`)
-    this.modelSubType = modelSubType
     this.modelSubTypeParams = modelSubTypeDefinitions[modelSubType]
   }
 
@@ -59,7 +57,7 @@ export class TextEmbeddingsInterface extends AbstractEmbeddingsModel {
       const listOfVectors = (await res.json()) as Array<number[]>
       if (!listOfVectors)
         throw new Error('TextEmbeddingsInterface.getEmbeddings(): listOfVectors is undefined')
-      if (listOfVectors.length !== 1)
+      if (listOfVectors.length !== 1 || !listOfVectors[0])
         throw new Error(
           `TextEmbeddingsInterface.getEmbeddings(): listOfVectors list length !== 1 (length: ${listOfVectors.length})`
         )

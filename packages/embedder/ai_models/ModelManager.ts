@@ -1,52 +1,39 @@
 import {Kysely, sql} from 'kysely'
-import getKysely from 'parabol-server/postgres/getKysely'
 
-import {AbstractEmbeddingsModel, AbstractSummerizerModel} from './abstractModel'
+import {
+  AbstractEmbeddingsModel,
+  AbstractSummerizerModel,
+  EmbeddingModelConfig,
+  SummarizationModelConfig,
+  ModelConfig
+} from './abstractModel'
 import TextEmbeddingsInterface from './TextEmbeddingsInterface'
 import TextGenerationInterfaceSummarizer from './TextGenerationInterfaceSummarizer'
-import {table} from 'console'
-import {string} from 'yargs'
-
-export enum EmbeddingsModelTypes {
-  TextEmbeddingsInterface = 'text-embeddings-inference'
-}
-
-function isValidEmbeddingsModelType(type: any): type is EmbeddingsModelTypes {
-  return Object.values(EmbeddingsModelTypes).includes(type)
-}
-
-export enum SummarizationModelTypes {
-  TextGenerationInterface = 'text-generation-interface'
-}
-
-function isValidSummarizationModelType(type: any): type is SummarizationModelTypes {
-  return Object.values(SummarizationModelTypes).includes(type)
-}
-
-export interface ModelConfig {
-  model: string
-  priority: number
-  maxInputTokens: number
-  tableSuffix?: string
-  url?: string
-}
-
-export interface EmbeddingModelConfig extends ModelConfig {
-  tableSuffix: string
-}
-
-export interface SummarizationModelConfig extends ModelConfig {}
 
 interface EnvConfig {
   embeddingModels: EmbeddingModelConfig[]
   summarizationModels: SummarizationModelConfig[]
 }
 
-class ModelManager {
+export enum EmbeddingsModelTypes {
+  TextEmbeddingsInterface = 'text-embeddings-inference'
+}
+export function isValidEmbeddingsModelType(type: any): type is EmbeddingsModelTypes {
+  return Object.values(EmbeddingsModelTypes).includes(type)
+}
+
+export enum SummarizationModelTypes {
+  TextGenerationInterface = 'text-generation-interface'
+}
+export function isValidSummarizationModelType(type: any): type is SummarizationModelTypes {
+  return Object.values(SummarizationModelTypes).includes(type)
+}
+
+export class ModelManager {
   private embeddingModels: AbstractEmbeddingsModel[]
   private summarizationModels: AbstractSummerizerModel[]
 
-  static validateEnvConfig(envConfig: any): EnvConfig {
+  private validateEnvConfig(envConfig: any): EnvConfig {
     if (!envConfig.embeddingModels || !Array.isArray(envConfig.embeddingModels)) {
       throw new Error('Invalid configuration: embedding_models is missing or not an array')
     }
@@ -55,17 +42,17 @@ class ModelManager {
     }
 
     envConfig.embeddingModels.forEach((model: ModelConfig) => {
-      ModelManager.validateEmbeddingModelConfig(model)
+      this.validateEmbeddingModelConfig(model)
     })
 
     envConfig.summarizationModels.forEach((model: ModelConfig) => {
-      ModelManager.validateSummarizationModelConfig(model)
+      this.validateSummarizationModelConfig(model)
     })
 
     return envConfig
   }
 
-  private static validateModelConfig(model: ModelConfig, requireTableSuffix = false) {
+  private validateModelConfig(model: ModelConfig, requireTableSuffix = false) {
     if (typeof model.model !== 'string') {
       throw new Error('Invalid ModelConfig: model field should be a string')
     }
@@ -87,19 +74,19 @@ class ModelManager {
     }
   }
 
-  private static validateEmbeddingModelConfig(model: ModelConfig): model is EmbeddingModelConfig {
-    ModelManager.validateModelConfig(model, true)
+  private validateEmbeddingModelConfig(model: ModelConfig): model is EmbeddingModelConfig {
+    this.validateModelConfig(model, true)
     return true
   }
 
-  private static validateSummarizationModelConfig(
-    model: ModelConfig
-  ): model is SummarizationModelConfig {
-    ModelManager.validateModelConfig(model, false)
+  private validateSummarizationModelConfig(model: ModelConfig): model is SummarizationModelConfig {
+    this.validateModelConfig(model, false)
     return true
   }
 
   constructor(envConfig: EnvConfig) {
+    // Validate configuration
+    this.validateEnvConfig(envConfig)
     // Initialize embeddings models
     this.embeddingModels = []
     const embeddingsModelConfigs = envConfig.embeddingModels.sort((a, b) => a.priority - b.priority)
@@ -138,7 +125,7 @@ class ModelManager {
   }
 
   async createEmbeddingsTables(pg: Kysely<any>) {
-    for (const embeddingsModel of this.getAllEmbeddingsModels()) {
+    for (const embeddingsModel of this.getEmbeddingsModelsIter()) {
       const tableName = embeddingsModel.getTableName()
       const hasTable = await (async () => {
         const query = sql<number[]>`SELECT 1 FROM ${sql.id(
@@ -179,9 +166,28 @@ class ModelManager {
     return this.summarizationModels[0]
   }
 
-  getAllEmbeddingsModels() {
+  getEmbeddingsModelsIter() {
     return this.embeddingModels[Symbol.iterator]()
   }
 }
 
-export default ModelManager
+let modelManager: ModelManager | undefined
+export function getModelManager() {
+  if (!modelManager) {
+    const {AI_MODELS} = process.env
+    if (AI_MODELS) {
+      let aiModels
+      try {
+        aiModels = JSON.parse(AI_MODELS)
+      } catch (e) {
+        throw new Error(`Invalid AI_MODELS configuration: ${e}`)
+      }
+      if (!aiModels || !aiModels.config) return
+
+      modelManager = new ModelManager(aiModels.config)
+    }
+  }
+  return modelManager
+}
+
+export default getModelManager

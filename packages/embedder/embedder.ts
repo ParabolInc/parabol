@@ -3,18 +3,18 @@ import tracer from 'dd-trace'
 import Redlock, {RedlockAbortSignal} from 'redlock'
 
 import 'parabol-server/initSentry'
-import getRethink, {RethinkSchema} from 'parabol-server/database/rethinkDriver'
+import getRethink from 'parabol-server/database/rethinkDriver'
 import {RDatum} from 'parabol-server/database/stricterR'
 import getKysely from 'parabol-server/postgres/getKysely'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {DB} from 'parabol-server/postgres/pg'
-
+import getDataLoader from 'parabol-server/graphql/getDataLoader'
 import {refreshEmbeddingsIndex as refreshRetroDiscussionTopicsEmbeddingsIndex} from './indexing/retrospectiveDiscussionTopic'
 import numberVectorToString from './indexing/numberVectorToString'
-import ModelManager from './ai_models/ModelManager'
+import getModelManager, {ModelManager} from './ai_models/ModelManager'
 import {countWords} from './indexing/countWords'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
-import {newRetroDiscussionTopicFromNewMeeting} from './indexing/retrospectiveDiscussionTopic'
+import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
 
 /*
  * Embedder service
@@ -59,6 +59,7 @@ tracer.init({
 tracer.use('pg')
 
 const pg = getKysely()
+const dataLoader = getDataLoader() as DataLoaderWorker
 
 const redisClient = new RedisInstance(`embedder-${SERVER_ID}`)
 const redlock = new Redlock([redisClient], {
@@ -70,7 +71,7 @@ const redlock = new Redlock([redisClient], {
 })
 
 const refreshIndexTable = async () => {
-  await refreshRetroDiscussionTopicsEmbeddingsIndex()
+  await refreshRetroDiscussionTopicsEmbeddingsIndex(dataLoader)
   // In the future, other sorts of objects to index could be added here...
 }
 
@@ -95,7 +96,6 @@ const maybeQueueIndexTableItems = async () => {
   const batchToQueue = await pg
     .selectFrom('EmbeddingsIndex')
     .selectAll()
-    .where('objectType', '=', 'retrospectiveDiscussionTopic')
     .where('state', '=', 'new')
     .where('orgId', 'in', orgIds)
     .limit(itemCountToQueue)
@@ -107,6 +107,7 @@ const maybeQueueIndexTableItems = async () => {
   }
 
   batchToQueue.forEach((item) => {
+    console.log(`embedder: queued index entry ${item.id}`)
     const score = new Date(item.refDateTime).getTime()
     redisClient.zadd('embedder:queue', score, item.id)
   })
@@ -124,7 +125,7 @@ const maybeQueueIndexTableItems = async () => {
     )
     .execute()
 
-  console.log(`embedder: queued ${itemCountToQueue} items`)
+  console.log(`embedder: queued ${batchToQueue.length} items`)
 }
 
 const fetchEmbeddedIndexItemById = async (
@@ -167,7 +168,11 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
     const maybeQItem = await redisClient.zpopmax('embedder:queue', 1)
     if (maybeQItem.length < 2) return // Q is empty, all done!
 
-    const [embeddingsIndexIdStr, score] = maybeQItem
+    const [embeddingsIndexIdStr, _] = maybeQItem
+    if (!embeddingsIndexIdStr) {
+      console.warn(`De-queued undefined item from embedder:queue`)
+      continue
+    }
     const embeddingsIndexId = parseInt(embeddingsIndexIdStr, 10)
     const embeddingsIndexItem = await fetchEmbeddedIndexItemById(embeddingsIndexId)
     if (!embeddingsIndexItem) {
@@ -179,7 +184,7 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
 
     let fullText: string
     try {
-      fullText = await createEmbeddingTextFrom(embeddingsIndexItem)
+      fullText = await createEmbeddingTextFrom(embeddingsIndexItem, dataLoader)
     } catch (e) {
       await updateEmbeddedIndexItemStateById(embeddingsIndexId, 'failed', {
         stateMessage: `unable to create embedding text: ${e}`
@@ -189,13 +194,15 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
 
     const wordCount = countWords(fullText)
     const modelsRan: string[] = []
-    for (const embeddingsModel of modelManager.getAllEmbeddingsModels()) {
+    for (const embeddingsModel of modelManager.getEmbeddingsModelsIter()) {
       let textToEmbed = fullText
       const {maxInputTokens} = embeddingsModel
       // we're using word count as an appoximation of tokens
       if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > embeddingsModel.maxInputTokens) {
         try {
-          textToEmbed = await modelManager.getSummarizer().summarize(fullText, 0.8, maxInputTokens)
+          const summarizer = modelManager.getSummarizer()
+          if (!summarizer) throw new Error(`Summarizer unavailable`)
+          textToEmbed = await summarizer.summarize(fullText, 0.8, maxInputTokens)
         } catch (e) {
           await updateEmbeddedIndexItemStateById(embeddingsIndexId, 'failed', {
             stateMessage: `unable to summarize long embed text: ${e}`
@@ -277,19 +284,18 @@ const doNothingForever = () => {
 }
 
 const run = async () => {
-  let embedderEnabled = false
-  let aiModelsConfig = null
   console.log(`embedder: run()`)
+  let aiModels
   if (AI_MODELS) {
-    const aiModels = JSON.parse(AI_MODELS)
-    if (aiModels.config) {
-      ModelManager.validateEnvConfig(aiModels.config)
-      aiModelsConfig = aiModels.config
+    try {
+      aiModels = JSON.parse(AI_MODELS)
+    } catch (e) {
+      throw new Error(`Invalid AI_MODELS configuration: ${e})`)
     }
-    embedderEnabled = aiModels.enabledServices && aiModels.enabledServices.embedder
   }
-  if (embedderEnabled && aiModelsConfig) {
-    const modelManager = new ModelManager(aiModelsConfig)
+  const embedderEnabled = aiModels && aiModels.enabledServices && aiModels.enabledServices.embedder
+  const modelManager = getModelManager()
+  if (embedderEnabled && modelManager) {
     modelManager.createEmbeddingsTables(pg).then(() => {
       console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
       tick(modelManager)

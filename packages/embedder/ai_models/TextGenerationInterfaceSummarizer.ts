@@ -3,7 +3,6 @@ import {AbstractSummerizerModel, SummarizationModelConfig} from './abstractModel
 const MAX_REQUEST_TIME_MS = 120 * 1000
 
 export class TextGenerationInterfaceSummarizer extends AbstractSummerizerModel {
-  private readonly modelSubType: string
   constructor(config: SummarizationModelConfig) {
     super(config)
 
@@ -15,8 +14,6 @@ export class TextGenerationInterfaceSummarizer extends AbstractSummerizerModel {
     }
 
     if (!this.url) throw new Error('TextGenerationInterfaceSummarizer model requires url')
-
-    this.modelSubType = modelConfigStringSplit[1]
   }
 
   public async summarize(content: string, temperature: number = 0.8, maxTokens: number = 512) {
