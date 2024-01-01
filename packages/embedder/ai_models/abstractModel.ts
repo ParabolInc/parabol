@@ -1,11 +1,5 @@
-import path from 'path'
-import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
-
 export interface ModelConfig {
   model: string
-  priority: number
-  maxInputTokens: number
-  tableSuffix?: string
   url?: string
 }
 
@@ -13,26 +7,17 @@ export interface EmbeddingModelConfig extends ModelConfig {
   tableSuffix: string
 }
 
-export interface SummarizationModelConfig extends ModelConfig {}
+export interface GenerationModelConfig extends ModelConfig {}
+
 export abstract class AbstractModel {
   public readonly modelConfigString: string
-  public readonly priority: number
-  public readonly maxInputTokens: number
-  public readonly tableSuffix?: string
   public readonly url?: string
-
-  public readonly embedderRoot: string
 
   public modelInstance: any
 
   constructor(config: ModelConfig) {
     this.modelConfigString = config.model
-    this.priority = config.priority
-    this.maxInputTokens = config.maxInputTokens
-    this.tableSuffix = config.tableSuffix
     this.url = this.normalizeUrl(config.url)
-
-    this.embedderRoot = path.join(getProjectRoot() as string, 'packages', 'server', 'embedder')
   }
 
   // removes a trailing slash from the inputUrl
@@ -45,26 +30,43 @@ export abstract class AbstractModel {
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
+  maxInputTokens: number
+  tableSuffix: string
 }
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
+  protected modelParams!: EmbeddingModelParams
   private readonly tableName: string
   constructor(config: EmbeddingModelConfig) {
     super(config)
-    this.tableName = `Embeddings_${this.tableSuffix}`
+    this.modelParams = this.constructModelParams()
+    this.tableName = `Embeddings_${this.getModelParams().tableSuffix}`
   }
   getTableName() {
     return this.tableName
   }
+  protected abstract constructModelParams(): EmbeddingModelParams
+  getModelParams() {
+    return this.modelParams
+  }
   abstract getEmbeddings(content: string): Promise<number[]>
-  abstract getModelParams(): EmbeddingModelParams
 }
 
-export abstract class AbstractSummerizerModel extends AbstractModel {
-  constructor(config: SummarizationModelConfig) {
+export interface GenerationModelParams {
+  maxInputTokens: number
+}
+
+export abstract class AbstractGenerationModel extends AbstractModel {
+  protected modelParams!: GenerationModelParams
+  constructor(config: GenerationModelConfig) {
     super(config)
+    this.modelParams = this.constructModelParams()
   }
 
+  protected abstract constructModelParams(): GenerationModelParams
+  getModelParams() {
+    return this.modelParams
+  }
   abstract summarize(content: string, temperature: number, maxTokens: number): Promise<string>
 }
 

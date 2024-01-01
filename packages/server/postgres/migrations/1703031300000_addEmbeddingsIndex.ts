@@ -38,11 +38,13 @@ export async function up() {
       "embedText" TEXT
     );
     CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_objectType" ON "EmbeddingsIndex"("objectType");
-    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_state" ON "EmbeddingsIndex"("state");
-    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_models" ON "EmbeddingsIndex" USING GIN (models);
-    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_orgId" ON "EmbeddingsIndex"("orgId");
     CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_refTable" ON "EmbeddingsIndex"("refTable");
     CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_refDateTime" ON "EmbeddingsIndex"("refDateTime");
+    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_state" ON "EmbeddingsIndex"("state");
+    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_stateUpdatedAt" ON "EmbeddingsIndex"("stateUpdatedAt")
+    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_models" ON "EmbeddingsIndex" USING GIN (models);
+    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_teamId" ON "EmbeddingsIndex"("teamId");
+    CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_orgId" ON "EmbeddingsIndex"("orgId");
     END $$;
   `)
   await client.end()
@@ -65,11 +67,13 @@ export async function down() {
     DO $$
     BEGIN
       DROP INDEX IF EXISTS "idx_EmbeddingsIndex_objectType";
-      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_state";
-      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_models";
-      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_orgId";
       DROP INDEX IF EXISTS "idx_EmbeddingsIndex_refTable";
       DROP INDEX IF EXISTS "idx_EmbeddingsIndex_refDate";
+      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_state";
+      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_stateUpdatedAt";
+      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_models";
+      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_teamId";
+      DROP INDEX IF EXISTS "idx_EmbeddingsIndex_orgId";
       DROP TABLE IF EXISTS "EmbeddingsIndex";
       DROP TYPE IF EXISTS "EmbeddingsStateEnum";
       DROP TYPE IF EXISTS "EmbeddingsObjectTypeEnum";

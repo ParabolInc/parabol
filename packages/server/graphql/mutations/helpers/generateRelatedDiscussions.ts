@@ -16,12 +16,103 @@ import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {createTextFromNewMeetingDiscussion} from '../../../../embedder/indexing/retrospectiveDiscussionTopic'
 import getModelManager from '../../../../embedder/ai_models/ModelManager'
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
-import {AbstractEmbeddingsModel} from '../../../../embedder/ai_models/abstractModel'
+import {AbstractEmbeddingsModel} from '../../../../embedder/ai_models/AbstractModel'
+
+const MAX_CANDIDATES = 10
+const MAX_RESULTS = 3
+const SIMILARITY_THRESHOLD = 0.67
+const RERANK_THRESHOLD = 0.7
+const RERANK_MULTIPLE = 3
+
+/*
+ * An overview on how this works:
+ *
+ * A previous discussion could be fully related (similarity=1), not related
+ * (similarity=0), opposite (similarity=-1), or any place between 1..0..-1.
+ *
+ * We create an embeddingVector for the current retro discussion topic, then
+ * fetch up to MAX_CANDIDATES that are greater than or equal
+ * to SIMILARITY_THRESHOLD.
+ *
+ * We create a new embeddingVector that emphasizes only the reflections from the
+ * topic and use this to re-rank the initial results by:
+ *
+ * newSimilarity = initialSimilarity +
+ *   (rerankSimilarity - RERANK_THRESHOLD) * RERANK_MULTIPLE
+ *
+ * This amplifies the role reflection content plays in matches, making similar
+ * reflections boost matches and de-emphasize matches that otherwise might be
+ * based on similar template prompts, authorship, etc.
+ *
+ */
 
 interface SimilarDiscussion {
+  modelId: string
   similarity: number
   newMeetingId: string
   discussionId: string
+}
+
+const rerankSimilarDiscussions = async (
+  meeting: MeetingRetrospective,
+  discussionStageId: string,
+  similarDiscussions: SimilarDiscussion[],
+  dataLoader: DataLoaderWorker
+): Promise<SimilarDiscussion[] | undefined> => {
+  const embedText = await createTextFromNewMeetingDiscussion(
+    meeting,
+    discussionStageId,
+    dataLoader,
+    true
+  )
+  const embeddingsModel = getModelManager()?.getEmbedder()
+  if (!embeddingsModel) return undefined
+  const embeddingVector = await (embeddingsModel as AbstractEmbeddingsModel).getEmbeddings(
+    embedText
+  )
+  const embeddingVectorStr = numberVectorToString(embeddingVector)
+  const rerankIds = similarDiscussions.map((sd) => sd.modelId)
+  const pg = getKysely()
+  const embeddingsTable = embeddingsModel.getTableName()
+  const query = await pg
+    .selectFrom(embeddingsTable as any)
+    .select([
+      sql`${sql.id(embeddingsTable, 'id')}`.as('modelId'),
+      sql<number>`(1 - (${sql.id(embeddingsTable, 'embedding')} <=> ${embeddingVectorStr}))`.as(
+        'similarity'
+      )
+    ])
+    .where('id', 'in', rerankIds)
+    .execute()
+
+  // console.log(`SD INPUTS: ${JSON.stringify(similarDiscussions)}`)
+  // console.log(`RERANK QUERY: ${JSON.stringify(query)}`)
+
+  const results = query.map((r) => {
+    const modelId: string = r.modelId as unknown as string
+    const similarDiscussion = similarDiscussions.find((sd) => sd.modelId === modelId)
+    const similarity = Math.min(
+      0.999999999, // Limit the upper bound to 0.999..
+      Math.max(
+        -0.999999999, // Limit the lower bound to -0.999..
+        similarDiscussion!.similarity + (r.similarity - RERANK_THRESHOLD) * RERANK_MULTIPLE
+      )
+    )
+    const [newMeetingId, discussionId] = [
+      similarDiscussion!.newMeetingId,
+      similarDiscussion!.discussionId
+    ]
+    return {
+      modelId,
+      similarity,
+      newMeetingId,
+      discussionId
+    }
+  })
+
+  // console.log(`RERANK RESULTS: ${JSON.stringify(results)}`)
+
+  return results
 }
 
 const getSimilarDiscussions = async (
@@ -35,7 +126,7 @@ const getSimilarDiscussions = async (
   if (!modelManager) return undefined
 
   // for this demo, we're just going to use the highest priority embedding model:
-  const embeddingsModel = modelManager.getEmbeddingsModelsIter().next().value
+  const embeddingsModel = getModelManager()?.getEmbedder()
   if (!embeddingsModel) return undefined
   const embeddingVector = await (embeddingsModel as AbstractEmbeddingsModel).getEmbeddings(
     embedText
@@ -46,8 +137,9 @@ const getSimilarDiscussions = async (
   const query = await pg
     .with('CosineSimilarity', (pg) =>
       pg
-        .selectFrom(embeddingsTable)
+        .selectFrom(embeddingsTable as any)
         .select([
+          sql`${sql.id(embeddingsTable, 'id')}`.as('modelId'),
           sql<number>`(1 - (${sql.id(embeddingsTable, 'embedding')} <=> ${embeddingVectorStr}))`.as(
             'similarity'
           ),
@@ -61,19 +153,21 @@ const getSimilarDiscussions = async (
         .where('EmbeddingsIndex.orgId', '=', team.orgId)
     )
     .selectFrom('CosineSimilarity')
-    .select(['refId', 'similarity'])
-    .where('similarity', '>', 0.8)
+    .select(['modelId', 'refId', 'similarity'])
+    .where('similarity', '>=', SIMILARITY_THRESHOLD)
     .orderBy('similarity', 'desc')
-    .limit(3)
+    .limit(MAX_CANDIDATES)
     .execute()
 
   const results = query
     .map((r) => {
+      const modelId = r.modelId
       const similarity = r.similarity
       const [newMeetingId, discussionId] = r.refId?.split(':') || [undefined, undefined]
       if (!similarity || !newMeetingId || !discussionId) return undefined
       else
         return {
+          modelId,
           similarity,
           newMeetingId,
           discussionId
@@ -91,7 +185,8 @@ const makeSimilarDiscussionLink = async (
   const meeting = await dataLoader.get('newMeetings').load(similarDiscussion.newMeetingId)
   if (!meeting || !isRetroMeeting(meeting)) return undefined
   const discussPhase = meeting.phases?.find((phase) => phase.phaseType === 'discuss')
-  const discussPhaseStage = (discussPhase as DiscussPhase)?.stages.find(
+  const discussStages = (discussPhase as DiscussPhase)?.stages
+  const discussPhaseStage = discussStages.find(
     (stage) => stage.id === similarDiscussion.discussionId
   )
   const stageSortOrder = discussPhaseStage?.sortOrder
@@ -102,7 +197,11 @@ const makeSimilarDiscussionLink = async (
   const meetingName = meeting.name ? meeting.name : 'Past retrospective'
   const topic = reflectionGroup?.title ? reflectionGroup.title : 'topic'
 
-  const url = makeAppURL(appOrigin, `meet/${meeting.id}/discuss/${stageSortOrder + 1}`)
+  const stageIndex = discussStages
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .findIndex((stage) => stage.id === similarDiscussion.discussionId)
+
+  const url = makeAppURL(appOrigin, `meet/${meeting.id}/discuss/${stageIndex + 1}`)
 
   return (
     `<a href="${url}">` +
@@ -128,12 +227,22 @@ const generateRelatedDiscussions = async (
   const commentPromises = discussPhaseStages.map(async ({id: stageId, discussionId}) => {
     const similarDiscussions = await getSimilarDiscussions(meeting, stageId, team, dataLoader)
     if (!similarDiscussions) return
+    const rerankedDiscussions = await rerankSimilarDiscussions(
+      meeting,
+      stageId,
+      similarDiscussions,
+      dataLoader
+    )
+    if (!rerankedDiscussions) return
+    const topResults = rerankedDiscussions
+      .filter((sd) => sd.similarity >= SIMILARITY_THRESHOLD)
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, MAX_RESULTS)
+    if (!topResults.length) return
     const links = (
       await Promise.all(
-        similarDiscussions.map((similarDiscussion) =>
-          makeSimilarDiscussionLink(similarDiscussion, dataLoader).then(
-            (link) => `<li>${link}</li>`
-          )
+        topResults.map((sd) =>
+          makeSimilarDiscussionLink(sd, dataLoader).then((link) => `<li>${link}</li>`)
         )
       )
     )

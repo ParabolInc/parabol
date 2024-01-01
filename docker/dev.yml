@@ -76,8 +76,7 @@ services:
     container_name: text-embeddings-inference
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-0.6
     command:
-      - "--model-id=BAAI/bge-large-en-v1.5"
-      - "--revision=refs/pr/9"
+      - "--model-id=llmrails/ember-v1"
     platform: linux/x86_64
     hostname: text-embeddings-inference
     restart: unless-stopped

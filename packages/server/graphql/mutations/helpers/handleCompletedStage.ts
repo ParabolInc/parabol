@@ -121,7 +121,7 @@ const handleCompletedRetrospectiveStage = async (
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
     const {discussionId} = stage as DiscussStage
-    // dont await for the OpenAI API response
+    // don't await for the OpenAI API response
     generateDiscussionSummary(discussionId, meeting, dataLoader)
   }
   return {}

@@ -44,10 +44,11 @@ export type DBInsert = {
   [K in keyof DB]: Insertable<DB[K]>
 }
 
+const POLLING_PERIOD_SEC = 60 // How often do we try to grab the lock and re-index?
 const Q_MAX_LENGTH = 100 // How many EmbeddingIndex items do we batch in redis?
 const WORD_COUNT_TO_TOKEN_RATIO = 3.0 / 2 // We multiple the word count by this to estimate token count
 
-const {AI_MODELS} = process.env
+const {AI_EMBEDDER_ENABLED} = process.env
 const {SERVER_ID} = process.env
 
 tracer.init({
@@ -196,13 +197,14 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
     const modelsRan: string[] = []
     for (const embeddingsModel of modelManager.getEmbeddingsModelsIter()) {
       let textToEmbed = fullText
-      const {maxInputTokens} = embeddingsModel
+      const {maxInputTokens} = embeddingsModel.getModelParams()
       // we're using word count as an appoximation of tokens
-      if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > embeddingsModel.maxInputTokens) {
+      if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > maxInputTokens) {
         try {
-          const summarizer = modelManager.getSummarizer()
-          if (!summarizer) throw new Error(`Summarizer unavailable`)
-          textToEmbed = await summarizer.summarize(fullText, 0.8, maxInputTokens)
+          const generator = modelManager.getGenerator()
+          if (!generator) throw new Error(`Generator unavailable`)
+          const textToSummarize = fullText.slice(0, generator.getModelParams().maxInputTokens)
+          textToEmbed = await generator.summarize(textToSummarize, 0.8, maxInputTokens)
         } catch (e) {
           await updateEmbeddedIndexItemStateById(embeddingsIndexId, 'failed', {
             stateMessage: `unable to summarize long embed text: ${e}`
@@ -275,7 +277,7 @@ const tick = async (modelManager: ModelManager) => {
   // get the highest priority item and embed it
   await dequeueAndEmbedUntilEmpty(modelManager)
 
-  setTimeout(() => tick(modelManager), 60 * 1000)
+  setTimeout(() => tick(modelManager), POLLING_PERIOD_SEC * 1000)
 }
 
 const doNothingForever = () => {
@@ -283,17 +285,13 @@ const doNothingForever = () => {
   setTimeout(doNothingForever, 60 * 1000)
 }
 
+function parseEnvBoolean(envVarValue: string | undefined): boolean {
+  return envVarValue === 'true'
+}
+
 const run = async () => {
   console.log(`embedder: run()`)
-  let aiModels
-  if (AI_MODELS) {
-    try {
-      aiModels = JSON.parse(AI_MODELS)
-    } catch (e) {
-      throw new Error(`Invalid AI_MODELS configuration: ${e})`)
-    }
-  }
-  const embedderEnabled = aiModels && aiModels.enabledServices && aiModels.enabledServices.embedder
+  const embedderEnabled = parseEnvBoolean(AI_EMBEDDER_ENABLED)
   const modelManager = getModelManager()
   if (embedderEnabled && modelManager) {
     modelManager.createEmbeddingsTables(pg).then(() => {

@@ -2,17 +2,17 @@ import {Kysely, sql} from 'kysely'
 
 import {
   AbstractEmbeddingsModel,
-  AbstractSummerizerModel,
+  AbstractGenerationModel,
   EmbeddingModelConfig,
-  SummarizationModelConfig,
+  GenerationModelConfig,
   ModelConfig
-} from './abstractModel'
+} from './AbstractModel'
 import TextEmbeddingsInterface from './TextEmbeddingsInterface'
-import TextGenerationInterfaceSummarizer from './TextGenerationInterfaceSummarizer'
+import TextGenerationInterface from './TextGenerationInterface'
 
-interface EnvConfig {
+interface ModelManagerConfig {
   embeddingModels: EmbeddingModelConfig[]
-  summarizationModels: SummarizationModelConfig[]
+  generationModels: GenerationModelConfig[]
 }
 
 export enum EmbeddingsModelTypes {
@@ -31,66 +31,46 @@ export function isValidSummarizationModelType(type: any): type is SummarizationM
 
 export class ModelManager {
   private embeddingModels: AbstractEmbeddingsModel[]
-  private summarizationModels: AbstractSummerizerModel[]
+  private generationModels: AbstractGenerationModel[]
 
-  private validateEnvConfig(envConfig: any): EnvConfig {
-    if (!envConfig.embeddingModels || !Array.isArray(envConfig.embeddingModels)) {
+  private isValidConfig(
+    maybeConfig: Partial<ModelManagerConfig>
+  ): maybeConfig is ModelManagerConfig {
+    if (!maybeConfig.embeddingModels || !Array.isArray(maybeConfig.embeddingModels)) {
       throw new Error('Invalid configuration: embedding_models is missing or not an array')
     }
-    if (!envConfig.summarizationModels || !Array.isArray(envConfig.summarizationModels)) {
+    if (!maybeConfig.generationModels || !Array.isArray(maybeConfig.generationModels)) {
       throw new Error('Invalid configuration: summarization_models is missing or not an array')
     }
 
-    envConfig.embeddingModels.forEach((model: ModelConfig) => {
-      this.validateEmbeddingModelConfig(model)
+    maybeConfig.embeddingModels.forEach((model: ModelConfig) => {
+      this.isValidModelConfig(model)
     })
 
-    envConfig.summarizationModels.forEach((model: ModelConfig) => {
-      this.validateSummarizationModelConfig(model)
+    maybeConfig.generationModels.forEach((model: ModelConfig) => {
+      this.isValidModelConfig(model)
     })
 
-    return envConfig
+    return true
   }
 
-  private validateModelConfig(model: ModelConfig, requireTableSuffix = false) {
+  private isValidModelConfig(model: ModelConfig): model is ModelConfig {
     if (typeof model.model !== 'string') {
       throw new Error('Invalid ModelConfig: model field should be a string')
-    }
-    if (typeof model.priority !== 'number') {
-      throw new Error('Invalid ModelConfig: priority field should be a number')
-    }
-    if (typeof model.maxInputTokens !== 'number') {
-      throw new Error('Invalid ModelConfig: maxInputTokens field should be a number')
-    }
-    if (
-      requireTableSuffix &&
-      model.tableSuffix !== undefined &&
-      typeof model.tableSuffix !== 'string'
-    ) {
-      throw new Error('Invalid ModelConfig: tableSuffix field should be a string')
     }
     if (model.url !== undefined && typeof model.url !== 'string') {
       throw new Error('Invalid ModelConfig: url field should be a string')
     }
-  }
 
-  private validateEmbeddingModelConfig(model: ModelConfig): model is EmbeddingModelConfig {
-    this.validateModelConfig(model, true)
     return true
   }
 
-  private validateSummarizationModelConfig(model: ModelConfig): model is SummarizationModelConfig {
-    this.validateModelConfig(model, false)
-    return true
-  }
-
-  constructor(envConfig: EnvConfig) {
+  constructor(config: ModelManagerConfig) {
     // Validate configuration
-    this.validateEnvConfig(envConfig)
+    this.isValidConfig(config)
     // Initialize embeddings models
     this.embeddingModels = []
-    const embeddingsModelConfigs = envConfig.embeddingModels.sort((a, b) => a.priority - b.priority)
-    embeddingsModelConfigs.forEach(async (modelConfig) => {
+    config.embeddingModels.forEach(async (modelConfig) => {
       const modelType = modelConfig.model.split(':')[0]
 
       if (!isValidEmbeddingsModelType(modelType))
@@ -105,11 +85,8 @@ export class ModelManager {
     })
 
     // Initialize summarization models
-    this.summarizationModels = []
-    const summarizationModelConfigs = envConfig.summarizationModels.sort(
-      (a, b) => a.priority - b.priority
-    )
-    summarizationModelConfigs.forEach(async (modelConfig) => {
+    this.generationModels = []
+    config.generationModels.forEach(async (modelConfig) => {
       const modelType = modelConfig.model.split(':')[0]
 
       if (!isValidSummarizationModelType(modelType))
@@ -117,8 +94,8 @@ export class ModelManager {
 
       switch (modelType) {
         case 'text-generation-interface':
-          const summarizer = new TextGenerationInterfaceSummarizer(modelConfig)
-          this.summarizationModels.push(summarizer)
+          const generator = new TextGenerationInterface(modelConfig)
+          this.generationModels.push(generator)
           break
       }
     })
@@ -161,9 +138,14 @@ export class ModelManager {
   }
 
   // returns the highest priority summarizer instance
-  getSummarizer() {
-    if (!this.summarizationModels.length) throw new Error('no summarizer initialzed')
-    return this.summarizationModels[0]
+  getGenerator() {
+    if (!this.generationModels.length) throw new Error('no generator model initialzed')
+    return this.generationModels[0]
+  }
+
+  getEmbedder() {
+    if (!this.embeddingModels.length) throw new Error('no embedder model initialzed')
+    return this.embeddingModels[0]
   }
 
   getEmbeddingsModelsIter() {
@@ -173,20 +155,25 @@ export class ModelManager {
 
 let modelManager: ModelManager | undefined
 export function getModelManager() {
-  if (!modelManager) {
-    const {AI_MODELS} = process.env
-    if (AI_MODELS) {
-      let aiModels
-      try {
-        aiModels = JSON.parse(AI_MODELS)
-      } catch (e) {
-        throw new Error(`Invalid AI_MODELS configuration: ${e}`)
-      }
-      if (!aiModels || !aiModels.config) return
-
-      modelManager = new ModelManager(aiModels.config)
-    }
+  if (modelManager) return modelManager
+  const {AI_EMBEDDING_MODELS, AI_GENERATION_MODELS} = process.env
+  let config: ModelManagerConfig = {
+    embeddingModels: [],
+    generationModels: []
   }
+  try {
+    config.embeddingModels = AI_EMBEDDING_MODELS && JSON.parse(AI_EMBEDDING_MODELS)
+  } catch (e) {
+    throw new Error(`Invalid AI_EMBEDDING_MODELS .env JSON: ${e}`)
+  }
+  try {
+    config.generationModels = AI_GENERATION_MODELS && JSON.parse(AI_GENERATION_MODELS)
+  } catch (e) {
+    throw new Error(`Invalid AI_EMBEDDING_MODELS .env JSON: ${e}`)
+  }
+
+  modelManager = new ModelManager(config)
+
   return modelManager
 }
 

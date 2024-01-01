@@ -15,6 +15,7 @@ import {RDatum} from 'parabol-server/database/stricterR'
 
 import generateHourIntervals from './generateHourIntervals'
 import {DBInsert} from '../embedder'
+import {upsertEmbeddingsIndexRows} from './upsertEmbeddingsIndexRows'
 
 export interface EmbeddingsIndexRetrospectiveDiscussionTopic
   extends Omit<DB['EmbeddingsIndex'], 'objectType'> {
@@ -38,7 +39,7 @@ export interface EmbeddingsIndexRetrospectiveDiscussionTopic
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
-const pg = getKysely()
+export const pg = getKysely()
 
 export async function refreshEmbeddingsIndex(dataLoader: DataLoaderWorker) {
   const r = await getRethink()
@@ -87,29 +88,14 @@ export async function refreshEmbeddingsIndex(dataLoader: DataLoaderWorker) {
       )
       .run()
     const embeddingsIndexRows = (
-      await Promise.all(meetings.map((m) => newRetroDiscussionTopicFromNewMeeting(m, dataLoader)))
+      await Promise.all(meetings.map((m) => newRetroDiscussionTopicsFromNewMeeting(m, dataLoader)))
     )
       .flat()
-      .filter((row) => row.orgId !== null)
-    if (embeddingsIndexRows.length < 1) continue
-
-    await pg
-      .insertInto('EmbeddingsIndex')
-      .values(embeddingsIndexRows)
-      .onConflict((oc) =>
-        oc.columns(['objectType', 'refTable', 'refId']).doUpdateSet((eb) => ({
-          objectType: eb.ref('excluded.objectType'),
-          refTable: eb.ref('excluded.refTable'),
-          refId: eb.ref('excluded.refId'),
-          refDateTime: eb.ref('excluded.refDateTime')
-          // state: eb.ref('excluded.state'),          // preserve the prior values
-          // teamId: eb.ref('excluded.teamId'),
-          // orgId: eb.ref('excluded.orgId'),
-          // embedText: eb.ref('excluded.embedText')
-        }))
-      )
-      .execute()
+      .filter((row) => row.orgId !== null) // guarding against an observed condition
+    if (!embeddingsIndexRows.length) continue
+    await upsertEmbeddingsIndexRows(embeddingsIndexRows)
   }
+  return
 }
 
 async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderWorker) {
@@ -153,7 +139,8 @@ async function formatThread(
 export const createTextFromNewMeetingDiscussion = async (
   newMeeting: MeetingRetrospective,
   discussionId: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  textForReranking: boolean = false
 ) => {
   if (!newMeeting) throw 'newMeeting is undefined'
   if (!isMeetingRetrospective(newMeeting)) throw 'newMeeting is not retrospective'
@@ -181,15 +168,19 @@ export const createTextFromNewMeetingDiscussion = async (
     .getAll(reflectionGroup.id, {index: 'reflectionGroupId'})
     .run()
   const promptIds = [...new Set(reflections.map((r) => r.promptId!))]
-  let markdown =
-    `A topic "${reflectionGroup.title}" was discussed during ` +
-    `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
-    `\n`
+  let markdown = ''
+  if (!textForReranking)
+    markdown =
+      `A topic "${reflectionGroup.title}" was discussed during ` +
+      `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
+      `\n`
   for (const promptId of promptIds) {
-    const prompt = await dataLoader.get('reflectPrompts').load(promptId)
-    markdown += `Participants were prompted with, "${prompt!.question}`
-    if (prompt!.description) markdown += `: ${prompt!.description}`
-    markdown += `".\n`
+    if (!textForReranking) {
+      const prompt = await dataLoader.get('reflectPrompts').load(promptId)
+      markdown += `Participants were prompted with, "${prompt!.question}`
+      if (prompt!.description) markdown += `: ${prompt!.description}`
+      markdown += `".\n`
+    }
     if (newMeeting.disableAnonymity) {
       for (const reflection of reflections.filter((r) => r.promptId === promptId)) {
         const author = await getPreferredNameByUserId(reflection.creatorId, dataLoader)
@@ -246,7 +237,7 @@ export const createText = async (
   )
 }
 
-export const newRetroDiscussionTopicFromNewMeeting = async (
+export const newRetroDiscussionTopicsFromNewMeeting = async (
   newMeeting: RethinkSchema['NewMeeting']['type'],
   dataLoader: DataLoaderWorker
 ): Promise<DBInsert['EmbeddingsIndex'][]> => {
@@ -266,4 +257,16 @@ export const newRetroDiscussionTopicFromNewMeeting = async (
   } else {
     return []
   }
+}
+
+export const upsertRetroDiscussionTopicFromNewMeeting = async (
+  newMeeting: MeetingRetrospective,
+  dataLoader: DataLoaderWorker
+) => {
+  const newEmbeddingsIndexItems = await newRetroDiscussionTopicsFromNewMeeting(
+    newMeeting,
+    dataLoader
+  )
+  if (!newEmbeddingsIndexItems || !newEmbeddingsIndexItems.length) return
+  return upsertEmbeddingsIndexRows(newEmbeddingsIndexItems)
 }
