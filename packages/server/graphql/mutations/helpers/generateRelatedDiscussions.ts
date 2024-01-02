@@ -63,7 +63,7 @@ const rerankSimilarDiscussions = async (
     meeting,
     discussionStageId,
     dataLoader,
-    true
+    true // only return reflection & discussion content
   )
   const embeddingsModel = getModelManager()?.getEmbedder()
   if (!embeddingsModel) return undefined
