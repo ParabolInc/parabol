@@ -1,6 +1,7 @@
 import {Threshold} from 'parabol-client/types/constEnums'
 import {Team} from '../../../postgres/queries/getTeamsByIds'
 import {DataLoaderWorker} from '../../graphql'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const canAccessAISummary = async (
   team: Team,
@@ -9,7 +10,7 @@ const canAccessAISummary = async (
   meetingType: 'standup' | 'retrospective'
 ) => {
   if (featureFlags.includes('noAISummary') || !team) return false
-  const {qualAIMeetingsCount, tier, orgId} = team
+  const {qualAIMeetingsCount, orgId} = team
   const organization = await dataLoader.get('organizations').load(orgId)
   if (organization.featureFlags?.includes('noAISummary')) return false
   if (meetingType === 'standup') {
@@ -17,7 +18,7 @@ const canAccessAISummary = async (
     return true
   }
 
-  if (tier !== 'starter') return true
+  if (getFeatureTier(team) !== 'starter') return true
   return qualAIMeetingsCount < Threshold.MAX_QUAL_AI_MEETINGS
 }
 

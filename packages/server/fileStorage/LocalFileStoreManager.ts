@@ -11,13 +11,6 @@ export default class LocalFileSystemManager extends FileStoreManager {
       throw new Error('Env Vars PROTO and HOST must be set if FILE_STORE_PROVIDER=local')
     }
   }
-  private prependPath(partialPath: string): string {
-    return path.join('self-hosted', partialPath)
-  }
-
-  protected getPublicFileLocation(fullPath: string): string {
-    return encodeURI(makeAppURL(appOrigin, fullPath))
-  }
 
   protected async putUserFile(file: Buffer, partialPath: string) {
     const fullPath = this.prependPath(partialPath)
@@ -28,6 +21,14 @@ export default class LocalFileSystemManager extends FileStoreManager {
     await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
     await fs.promises.writeFile(fsAbsLocation, file)
     return this.getPublicFileLocation(fullPath)
+  }
+
+  prependPath(partialPath: string): string {
+    return path.join('self-hosted', partialPath)
+  }
+
+  getPublicFileLocation(fullPath: string): string {
+    return encodeURI(makeAppURL(appOrigin, fullPath))
   }
 
   async putBuildFile() {

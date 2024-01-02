@@ -59,7 +59,8 @@ const moveToOrg = async (
     if (!newOrganizationUser) {
       return standardError(new Error('Not on organization'), {userId})
     }
-    const isBillingLeaderForOrg = newOrganizationUser.role === 'BILLING_LEADER'
+    const isBillingLeaderForOrg =
+      newOrganizationUser.role === 'BILLING_LEADER' || newOrganizationUser.role === 'ORG_ADMIN'
     if (!isBillingLeaderForOrg) {
       return standardError(new Error('Not organization leader'), {userId})
     }
@@ -69,7 +70,8 @@ const moveToOrg = async (
       .filter({orgId: currentOrgId, removedAt: null})
       .nth(0)
       .run()
-    const isBillingLeaderForTeam = oldOrganizationUser.role === 'BILLING_LEADER'
+    const isBillingLeaderForTeam =
+      oldOrganizationUser.role === 'BILLING_LEADER' || oldOrganizationUser.role === 'ORG_ADMIN'
     if (!isBillingLeaderForTeam) {
       return standardError(new Error('Not organization leader'), {userId})
     }
@@ -84,6 +86,7 @@ const moveToOrg = async (
     orgId,
     isPaid: !!isPaidResult?.isPaid,
     tier: org.tier,
+    trialStartDate: org.trialStartDate,
     updatedAt: new Date()
   }
   const [rethinkResult] = await Promise.all([

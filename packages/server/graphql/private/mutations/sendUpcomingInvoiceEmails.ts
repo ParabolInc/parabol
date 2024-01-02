@@ -5,7 +5,7 @@ import {isNotNull} from 'parabol-client/utils/predicates'
 import {Threshold} from '../../../../client/types/constEnums'
 import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
+import {RDatum, RValue} from '../../../database/stricterR'
 import getMailManager from '../../../email/getMailManager'
 import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTemplate'
 import IUser from '../../../postgres/types/IUser'
@@ -91,7 +91,10 @@ const sendUpcomingInvoiceEmails: MutationResolvers['sendUpcomingInvoiceEmails'] 
       billingLeaderIds: r
         .table('OrganizationUser')
         .getAll(organization('id'), {index: 'orgId'})
-        .filter({role: 'BILLING_LEADER', removedAt: null})('userId')
+        .filter({removedAt: null})
+        .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))(
+          'userId'
+        )
         .coerceTo('array')
     }))
     .coerceTo('array')

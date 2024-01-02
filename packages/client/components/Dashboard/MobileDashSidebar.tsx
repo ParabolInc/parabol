@@ -5,7 +5,13 @@ import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
-import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE, TEAMS_PAGE} from '../../utils/constants'
+import {
+  AUTHENTICATION_PAGE,
+  BILLING_PAGE,
+  MEMBERS_PAGE,
+  ORG_SETTINGS_PAGE,
+  TEAMS_PAGE
+} from '../../utils/constants'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
@@ -89,7 +95,6 @@ const MobileDashSidebar = (props: Props) => {
       fragment MobileDashSidebar_viewer on User {
         ...StandardHub_viewer
         featureFlags {
-          checkoutFlow
           retrosInDisguise
         }
         organizations {
@@ -104,9 +109,8 @@ const MobileDashSidebar = (props: Props) => {
   )
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
-  const showOrgSidebar = featureFlags.checkoutFlow && match
 
-  if (showOrgSidebar) {
+  if (match) {
     const {orgId: orgIdFromParams} = match.params
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
@@ -148,6 +152,12 @@ const MobileDashSidebar = (props: Props) => {
                 icon={'work'}
                 href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                 label={'Organization Settings'}
+              />
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'key'}
+                href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
+                label={'Authentication'}
               />
             </NavItemsWrap>
           </Nav>

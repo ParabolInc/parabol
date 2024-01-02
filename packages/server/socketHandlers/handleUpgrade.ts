@@ -1,5 +1,6 @@
 import {WebSocketBehavior} from 'uWebSockets.js'
 import {TrebuchetCloseReason} from '../../client/types/constEnums'
+import safetyPatchRes from '../safetyPatchRes'
 import {isAuthenticated} from '../utils/authorization'
 import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import getQueryToken from '../utils/getQueryToken'
@@ -7,6 +8,7 @@ import sendToSentry from '../utils/sendToSentry'
 import uwsGetIP from '../utils/uwsGetIP'
 
 const handleUpgrade: WebSocketBehavior<void>['upgrade'] = async (res, req, context) => {
+  safetyPatchRes(res)
   const protocol = req.getHeader('sec-websocket-protocol')
   if (protocol !== 'trebuchet-ws') {
     sendToSentry(new Error(`WebSocket error: invalid protocol: ${protocol}`))
@@ -19,9 +21,6 @@ const handleUpgrade: WebSocketBehavior<void>['upgrade'] = async (res, req, conte
     res.writeStatus('401').end()
     return
   }
-  res.onAborted(() => {
-    res.aborted = true
-  })
 
   const key = req.getHeader('sec-websocket-key')
   const extensions = req.getHeader('sec-websocket-extensions')
@@ -29,12 +28,10 @@ const handleUpgrade: WebSocketBehavior<void>['upgrade'] = async (res, req, conte
   const {sub: userId, iat} = authToken
   // ALL async calls must come after the message listener, or we'll skip out on messages (e.g. resub after server restart)
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-  if (res.aborted) return
   if (isBlacklistedJWT) {
     res.writeStatus('401').end(TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
-
   res.upgrade({ip, authToken}, key, protocol, extensions, context)
 }
 

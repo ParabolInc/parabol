@@ -5,7 +5,8 @@ const OrgUserRole = new GraphQLEnumType({
   description: 'The role of the org user',
   values: {
     // graphql only supports enum values at runtime, the value here is the text value
-    BILLING_LEADER: {}
+    BILLING_LEADER: {},
+    ORG_ADMIN: {}
   }
 })
 

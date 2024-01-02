@@ -628,7 +628,8 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
           return r
             .table('OrganizationUser')
             .getAll(orgId, {index: 'orgId'})
-            .filter({removedAt: null, role: 'BILLING_LEADER'})
+            .filter({removedAt: null})
+            .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
             .coerceTo('array')('userId')
             .run()
         })
@@ -723,7 +724,9 @@ export const isOrgVerified = (parent: RootDataLoader) => {
         }))
         .merge((org: RDatum) => ({
           founder: org('members').nth(0).default(null),
-          billingLeads: org('members').filter({role: 'BILLING_LEADER', inactive: false})
+          billingLeads: org('members')
+            .filter({inactive: false})
+            .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
         }))
         .run()
 
@@ -765,13 +768,16 @@ export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
 
       const pg = getKysely()
 
-      const teams = (await pg
-        .selectFrom('Team')
-        .where('orgId', 'in', verifiedOrgIds)
-        .where('autoJoin', '=', true)
-        .where('isArchived', '!=', true)
-        .selectAll()
-        .execute()) as unknown as Team[]
+      const teams =
+        verifiedOrgIds.length === 0
+          ? []
+          : ((await pg
+              .selectFrom('Team')
+              .where('orgId', 'in', verifiedOrgIds)
+              .where('autoJoin', '=', true)
+              .where('isArchived', '!=', true)
+              .selectAll()
+              .execute()) as unknown as Team[])
 
       return orgIds.map((orgId) => teams.filter((team) => team.orgId === orgId))
     },

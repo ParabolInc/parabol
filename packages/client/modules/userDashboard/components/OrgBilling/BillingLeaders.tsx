@@ -72,7 +72,7 @@ const BillingLeaders = (props: Props) => {
         isViewerBillingLeader: isBillingLeader
         billingLeaders {
           id
-          ...BillingLeader_user
+          ...BillingLeader_orgUser
         }
       }
     `,

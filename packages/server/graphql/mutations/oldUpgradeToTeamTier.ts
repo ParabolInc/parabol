@@ -52,8 +52,8 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    const viewer = await dataLoader.get('users').load(viewerId)
-    const {email} = viewer!
+    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+    const {email} = viewer
     try {
       await oldUpgradeToTeamTier(orgId, stripeToken, email, dataLoader)
     } catch (e) {
@@ -74,7 +74,7 @@ export default {
 
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
-    analytics.organizationUpgraded(viewerId, {
+    analytics.organizationUpgraded(viewer, {
       orgId,
       domain,
       orgName,

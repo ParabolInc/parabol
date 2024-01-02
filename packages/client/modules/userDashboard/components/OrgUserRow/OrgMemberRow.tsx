@@ -25,6 +25,7 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {OrgMemberRow_organization$key} from '../../../../__generated__/OrgMemberRow_organization.graphql'
 import {OrgMemberRow_organizationUser$key} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
+import BaseTag from '../../../../components/Tag/BaseTag'
 
 const AvatarBlock = styled('div')({
   display: 'none',
@@ -132,6 +133,7 @@ const OrgMemberRow = (props: Props) => {
   const {orgId, isViewerBillingLeader} = organization
   const {newUserUntil, user, role} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
+  const isOrgAdmin = role === 'ORG_ADMIN'
   const {email, inactive, picture, preferredName, userId} = user
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
@@ -145,6 +147,7 @@ const OrgMemberRow = (props: Props) => {
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_RIGHT)
+  const canViewMenu = !isViewerLastBillingLeader && organizationUser.role !== 'ORG_ADMIN'
 
   return (
     <StyledRow>
@@ -159,7 +162,8 @@ const OrgMemberRow = (props: Props) => {
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
           {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>}
-          {inactive && !isBillingLeader && <InactiveTag>{'Inactive'}</InactiveTag>}
+          {isOrgAdmin && <BaseTag className='bg-gold-500 text-white'>{'Org Admin'}</BaseTag>}
+          {inactive && !isBillingLeader && !isOrgAdmin && <InactiveTag>{'Inactive'}</InactiveTag>}
           {new Date(newUserUntil) > new Date() && <EmphasisTag>{'New'}</EmphasisTag>}
         </RowInfoHeader>
         <RowInfoLink href={`mailto:${email}`} title='Send an email'>
@@ -168,12 +172,12 @@ const OrgMemberRow = (props: Props) => {
       </StyledRowInfo>
       <RowActions>
         <ActionsBlock>
-          {!isBillingLeader && viewerId === userId && (
+          {!isBillingLeader && !isOrgAdmin && viewerId === userId && (
             <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
               Leave Organization
             </StyledFlatButton>
           )}
-          {isViewerLastBillingLeader && userId === viewerId && (
+          {!canViewMenu && (
             <MenuToggleBlock
               onClick={closeTooltip}
               onMouseOver={openTooltip}
@@ -181,16 +185,20 @@ const OrgMemberRow = (props: Props) => {
               ref={tooltipRef}
             >
               {tooltipPortal(
-                <div>
-                  {'You need to promote another Billing Leader'}
-                  <br />
-                  {'before you can leave this role or Organization.'}
-                </div>
+                isViewerLastBillingLeader ? (
+                  <div>
+                    {'You need to promote another Billing Leader'}
+                    <br />
+                    {'before you can remove this role.'}
+                  </div>
+                ) : (
+                  <div>Contact support (love@parabol.co) to remove the Org Admin role</div>
+                )
               )}
               <MenuButton disabled />
             </MenuToggleBlock>
           )}
-          {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
+          {isViewerBillingLeader && canViewMenu && (
             <MenuToggleBlock>
               <MenuButton
                 onClick={togglePortal}

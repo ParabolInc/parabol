@@ -35,9 +35,12 @@ const removeTeamMemberIntegrationAuth = {
       return standardError(new Error('permission denied; must be team member'))
 
     // RESOLUTION
-    await removeTeamMemberIntegrationAuthQuery(service, teamId, viewerId)
+    const [viewer] = await Promise.all([
+      dataLoader.get('users').loadNonNull(viewerId),
+      removeTeamMemberIntegrationAuthQuery(service, teamId, viewerId)
+    ])
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
-    analytics.integrationRemoved(viewerId, teamId, service)
+    analytics.integrationRemoved(viewer, teamId, service)
 
     const data = {userId: viewerId, teamId}
     return data

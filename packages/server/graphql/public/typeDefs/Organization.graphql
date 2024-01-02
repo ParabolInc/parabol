@@ -57,10 +57,14 @@ type Organization {
   """
   teams: [Team!]!
 
-  """
-  The level of access to features on the parabol site
-  """
   tier: TierEnum!
+
+  billingTier: TierEnum!
+
+  """
+  When the trial started, iff there is a trial active
+  """
+  trialStartDate: DateTime
 
   """
   THe datetime the current billing cycle ends
@@ -145,7 +149,7 @@ type Organization {
   """
   The leaders of the org
   """
-  billingLeaders: [User!]!
+  billingLeaders: [OrganizationUser!]!
 
   """
   Minimal details about all teams in the organization
@@ -191,4 +195,6 @@ type OrganizationFeatureFlags {
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
   meetingInception: Boolean!
+  kudos: Boolean!
+  aiIcebreakers: Boolean!
 }

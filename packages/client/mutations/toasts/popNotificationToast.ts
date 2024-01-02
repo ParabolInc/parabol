@@ -13,6 +13,7 @@ import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
 import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
 import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
+import mapKudosReceivedToToast from './mapKudosReceivedToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
@@ -23,7 +24,8 @@ const typePicker: Partial<
   TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
   PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
-  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
+  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast,
+  KUDOS_RECEIVED: mapKudosReceivedToToast
 }
 
 graphql`
@@ -38,6 +40,7 @@ graphql`
       ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
       ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
       ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
+      ...mapKudosReceivedToToast_notification @relay(mask: false)
     }
   }
 `
