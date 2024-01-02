@@ -7,7 +7,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
 import db from '../../db'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {GQLContext} from '../graphql'
