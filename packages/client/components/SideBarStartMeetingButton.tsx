@@ -45,7 +45,7 @@ const SideBarStartMeetingButton = ({isOpen, hasRid}: {isOpen: boolean; hasRid: b
   return (
     <Button isOpen={isOpen} onClick={onClick}>
       <MeetingIcon />
-      <MeetingLabel isOpen={isOpen}>Add Meeting</MeetingLabel>
+      <MeetingLabel isOpen={isOpen}>Add Activity</MeetingLabel>
     </Button>
   )
 }

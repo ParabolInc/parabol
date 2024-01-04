@@ -26,6 +26,7 @@ const DrawerHeader = styled('div')({
 
 const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
+  borderRadius: '8px 0 0 0',
   display: 'flex',
   overflow: 'hidden',
   padding: `0 0 ${isDesktop ? 58 : 0}px`,

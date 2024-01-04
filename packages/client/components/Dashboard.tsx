@@ -134,20 +134,20 @@ const Dashboard = (props: Props) => {
   return (
     <DashLayout>
       <SkipLink href='#main'>Skip to content</SkipLink>
-      {isDesktop ? (
-        <DashTopBar queryRef={data} toggle={toggle} />
-      ) : (
-        <MobileDashTopBar queryRef={data} toggle={toggle} />
-      )}
       <DashPanel>
         {isDesktop ? (
-          <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+          <DashSidebar viewerRef={viewer} toggle={toggle} isOpen={isOpen} />
         ) : (
           <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
             <MobileDashSidebar viewerRef={viewer} handleMenuClick={handleMenuClick} />
           </SwipeableDashSidebar>
         )}
         <DashMain id='main' ref={meetingsDashRef}>
+          {isDesktop ? (
+            <DashTopBar queryRef={data} />
+          ) : (
+            <MobileDashTopBar queryRef={data} toggle={toggle} />
+          )}
           <Switch>
             <Route
               path='(/meetings|/new-meeting)'

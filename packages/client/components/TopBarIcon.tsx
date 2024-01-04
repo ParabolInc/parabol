@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {HelpOutline, Notifications, Search} from '@mui/icons-material'
+import {HelpOutline, Notifications, Search, Settings} from '@mui/icons-material'
 import React, {forwardRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
@@ -55,6 +55,7 @@ const TopBarIcon = forwardRef((props: Props, ref: any) => {
           {
             search: <Search />,
             help_outline: <HelpOutline />,
+            settings: <Settings />,
             notifications: <Notifications />
           }[icon]
         }

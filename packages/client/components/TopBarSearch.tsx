@@ -38,8 +38,6 @@ interface Props {
 
 const Wrapper = styled('div')<{location: any}>(({location}) => ({
   alignItems: 'center',
-  backgroundColor: 'hsla(0,0%,100%,.125)',
-  borderRadius: 4,
   display: 'flex',
   flex: 1,
   height: 40,
@@ -50,23 +48,31 @@ const Wrapper = styled('div')<{location: any}>(({location}) => ({
 
 const SearchInput = styled('input')({
   appearance: 'none',
-  border: '1px solid transparent',
-  color: PALETTE.SLATE_200,
-  fontSize: 20,
-  lineHeight: '24px',
+  backgroundColor: PALETTE.SLATE_300,
+  border: `1px solid ${PALETTE.SLATE_300}`,
+  borderRadius: 4,
+  color: PALETTE.SLATE_900,
+  fontSize: 14,
+  fontWeight: 600,
+  lineHeight: '20px',
   margin: 0,
   outline: 0,
-  padding: '12px 16px',
-  backgroundColor: 'transparent',
-  width: '100%'
+  padding: '8px 16px',
+  width: '100%',
+  ':placeholder': {
+    color: PALETTE.SLATE_500
+  },
+  ':focus': {
+    border: `1px solid ${PALETTE.SKY_500}`
+  }
 })
 
 const SearchIcon = styled('div')({
   height: 24,
   width: 24,
-  color: '#fff',
+  color: PALETTE.SLATE_500,
   cursor: 'pointer',
-  margin: 12
+  margin: '8px 12px 8px -32px'
 })
 
 const setSearch = (atmosphere: Atmosphere, value: string) => {
@@ -101,7 +107,12 @@ const TopBarSearch = (props: Props) => {
   }
   return (
     <Wrapper location={location}>
-      <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
+      <SearchInput
+        ref={inputRef}
+        onChange={onChange}
+        placeholder={'Search for activities or tasks'}
+        value={dashSearch}
+      />
       <SearchIcon onClick={onClick}>
         <Icon />
       </SearchIcon>

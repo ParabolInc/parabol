@@ -9,6 +9,7 @@ import {AppBar} from '~/types/constEnums'
 import {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'
+import TopBarSettings from './TopBarSettings'
 import TopBarIcon from './TopBarIcon'
 import TopBarNotifications from './TopBarNotifications'
 
@@ -18,7 +19,6 @@ interface Props {
 }
 
 const Wrapper = styled('header')({
-  backgroundColor: PALETTE.GRAPE_700,
   display: 'flex',
   height: AppBar.HEIGHT,
   maxWidth: '100%'
@@ -32,7 +32,7 @@ const LeftNavToggle = styled(PlainButton)({
 
 const LeftNavHeader = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_200,
+  color: PALETTE.SLATE_900,
   display: 'flex',
   flex: 1,
   minWidth: 0
@@ -40,7 +40,7 @@ const LeftNavHeader = styled('div')({
 
 const TopBarIcons = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_200,
+  color: PALETTE.SLATE_900,
   display: 'flex',
   justifyContent: 'flex-end',
   maxWidth: 560,
@@ -82,6 +82,7 @@ const MobileDashTopBar = (props: Props) => {
         {/* Disable search in mobile for now */}
         {false && <TopBarIcon icon={'search'} ariaLabel={'Search'} />}
         <TopBarHelp />
+        <TopBarSettings />
         <TopBarNotifications queryRef={data || null} />
       </TopBarIcons>
     </Wrapper>

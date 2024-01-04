@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DashSidebar from '../../../components/Dashboard/DashSidebar'
-import DashTopBar from '../../../components/DashTopBar'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
@@ -67,15 +66,10 @@ const NewMeetingSummary = (props: Props) => {
 
   return (
     <>
-      {!isDemoRoute() && (
-        <div className='hidden print:hidden lg:block'>
-          <DashTopBar queryRef={data} toggle={toggle} />
-        </div>
-      )}
       <div className='flex min-h-screen bg-slate-200'>
         {!isDemoRoute() && (
           <div className='hidden print:hidden lg:block'>
-            <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+            <DashSidebar viewerRef={viewer} toggle={toggle} isOpen={isOpen} />
           </div>
         )}
         <div className='w-full'>

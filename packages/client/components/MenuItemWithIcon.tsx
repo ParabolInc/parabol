@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Bookmark, Comment, Delete, Edit, Keyboard} from '@mui/icons-material'
+import {Bookmark, Comment, Delete, Edit, Keyboard, Domain, Star} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 
@@ -39,10 +39,12 @@ const MenuItemWithIcon = (props: Props) => {
         {
           {
             delete: <Delete />,
+            domain: <Domain />,
             bookmark: <Bookmark />,
             keyboard: <Keyboard />,
             comment: <Comment />,
-            edit: <Edit />
+            edit: <Edit />,
+            star: <Star />
           }[icon]
         }
       </ItemIcon>

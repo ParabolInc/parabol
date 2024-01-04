@@ -23,7 +23,7 @@ import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
 const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   alignItems: 'center',
-  backgroundColor: isActive ? PALETTE.SLATE_300 : undefined,
+  backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
   borderRadius: 4,
   color: PALETTE.SLATE_700,
   display: 'flex',
@@ -41,7 +41,7 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
     borderRadius: '0 4px 4px 0'
   },
   ':hover': {
-    backgroundColor: PALETTE.SLATE_300
+    backgroundColor: PALETTE.SLATE_200
   }
 }))
 
