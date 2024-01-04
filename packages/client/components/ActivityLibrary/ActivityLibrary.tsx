@@ -91,6 +91,7 @@ const query = graphql`
       organizations {
         featureFlags {
           oneOnOne
+          aiTemplate
         }
       }
     }
@@ -198,6 +199,8 @@ export const ActivityLibrary = (props: Props) => {
   const {viewer} = data
   const {featureFlags, availableTemplates, organizations} = viewer
   const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
+  const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
+  console.log('🚀 ~ hasAITemplateFeatureFlag:', hasAITemplateFeatureFlag)
 
   const setSearch = (value: string) => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -357,9 +360,11 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
-          <div className='mx-auto mt-4 pt-2'>
-            <AISearch />
-          </div>
+          {hasAITemplateFeatureFlag && (
+            <div className='mx-auto mt-4 pt-2'>
+              <AISearch />
+            </div>
+          )}
           {templatesToRender.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
               <img className='w-32' src={halloweenRetrospectiveTemplate} />

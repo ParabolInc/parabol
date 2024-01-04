@@ -78,7 +78,10 @@ const AISearch = () => {
               <div className='mt-2 text-slate-700'>{explanation}</div>
             </div>
             <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-              <ActivityGrid templates={[suggestedTemplate]} selectedCategory={'retrospective'} />
+              <ActivityGrid
+                templates={[suggestedTemplate]}
+                selectedCategory={suggestedTemplate.category}
+              />
             </div>
           </>
         )}

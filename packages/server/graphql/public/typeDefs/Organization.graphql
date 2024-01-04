@@ -197,4 +197,5 @@ type OrganizationFeatureFlags {
   meetingInception: Boolean!
   kudos: Boolean!
   aiIcebreakers: Boolean!
+  aiTemplate: Boolean!
 }

@@ -195,7 +195,7 @@ class OpenAIServerManager {
 
   async getTemplateSuggestion(templates: Template[], userPrompt: string) {
     if (!this.openAIApi) return null
-    const promptText = `Based on the user's input "${userPrompt}", identify the most suitable meeting template from the list below and provide a response in the format: { templateId: "the chosen template ID", explanation: "reason for choosing this template" }. The explanation should be concise. Available templates are: ${templates
+    const promptText = `Based on the user's input "${userPrompt}", identify the most suitable meeting template from the list below and provide a JSON response in the format: { templateId: "the chosen template ID", explanation: "reason for choosing this template" }. The explanation should be concise. Available templates are: ${templates
       .map(
         (template) =>
           `ID: ${template.templateId}, Name: ${template.templateName}, Prompts: ${template.prompts
@@ -207,6 +207,7 @@ class OpenAIServerManager {
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-4-1106-preview',
+        response_format: {type: 'json_object'},
         messages: [
           {
             role: 'user',
@@ -220,25 +221,7 @@ class OpenAIServerManager {
       })
 
       const templateResponse = (response.choices[0]?.message?.content?.trim() as string) ?? null
-      let parsedResponse: AITemplateSuggestion | null
-      try {
-        const formattedResponse = templateResponse.replace(/([a-zA-Z0-9]+):/g, '"$1":')
-        parsedResponse = JSON.parse(formattedResponse)
-      } catch (parseError) {
-        console.error('Failed to parse AI response:', parseError)
-        return null
-      }
-      if (
-        parsedResponse &&
-        typeof parsedResponse === 'object' &&
-        'templateId' in parsedResponse &&
-        'explanation' in parsedResponse
-      ) {
-        return parsedResponse
-      } else {
-        console.error('AI response does not have the expected format')
-        return null
-      }
+      return JSON.parse(templateResponse)
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
       console.error(error.message)
