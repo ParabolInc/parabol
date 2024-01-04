@@ -135,11 +135,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
       <MenuItem
         key='slack'
         label={
-          <Link
-            to={`/team/${team.id}/settings/integrations`}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
+          <Link to={`/team/${team.id}/integrations`} target='_blank' rel='noopener noreferrer'>
             <OptionMenuItem>
               <SlackSVG />
               <span className='ml-2'>Configure Slack</span>
