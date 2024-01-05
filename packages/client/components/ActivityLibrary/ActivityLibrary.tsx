@@ -200,7 +200,6 @@ export const ActivityLibrary = (props: Props) => {
   const {featureFlags, availableTemplates, organizations} = viewer
   const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
-  console.log('🚀 ~ hasAITemplateFeatureFlag:', hasAITemplateFeatureFlag)
 
   const setSearch = (value: string) => {
     commitLocalUpdate(atmosphere, (store) => {
