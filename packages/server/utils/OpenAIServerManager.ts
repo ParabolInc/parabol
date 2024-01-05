@@ -221,7 +221,7 @@ class OpenAIServerManager {
       })
 
       const templateResponse = (response.choices[0]?.message?.content?.trim() as string) ?? null
-      return JSON.parse(templateResponse)
+      return JSON.parse(templateResponse) as AITemplateSuggestion
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
       console.error(error.message)

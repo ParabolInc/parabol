@@ -7,12 +7,13 @@ import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import StyledError from '../StyledError'
 import ActivityGrid from './ActivityGrid'
 
+type SuggestedTemplate =
+  GetTemplateSuggestionMutation$data['getTemplateSuggestion']['suggestedTemplate']
+
 const AISearch = () => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const [suggestedTemplate, setSuggestedTemplate] = useState<
-    GetTemplateSuggestionMutation$data['getTemplateSuggestion']['suggestedTemplate'] | null
-  >(null)
+  const [suggestedTemplate, setSuggestedTemplate] = useState<SuggestedTemplate | null>(null)
   const [explanation, setExplanation] = useState<string | null>('')
   const [prompt, setPrompt] = useState('')
 
