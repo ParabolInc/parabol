@@ -9,7 +9,7 @@ import TeamPromptMeeting from './TeamPromptMeeting'
 const NewMeeting: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'NewMeeting',
   description: 'A team meeting history for all previous meetings',
-  fields: () => ({}),
+  fields: {},
   resolveType: ({meetingType}: {meetingType: MeetingTypeEnumType}) => {
     const resolveTypeLookup = {
       retrospective: RetrospectiveMeeting,
