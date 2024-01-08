@@ -5,7 +5,7 @@ import {getTeamPromptResponsesByMeetingId} from '../../postgres/queries/getTeamP
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import {GQLContext} from '../graphql'
-import NewMeeting, {newMeetingFields} from './NewMeeting'
+import NewMeeting from './NewMeeting'
 import TeamPromptMeetingMember from './TeamPromptMeetingMember'
 import TeamPromptMeetingSettings from './TeamPromptMeetingSettings'
 import TeamPromptResponse from './TeamPromptResponse'
@@ -15,7 +15,6 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [NewMeeting],
   description: 'A team prompt meeting',
   fields: () => ({
-    ...newMeetingFields(),
     meetingPrompt: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the meeting'
