@@ -117,7 +117,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
         .execute()
 
       insertedKudoses.forEach((kudos) => {
-        analytics.kudosSent(viewerId, teamId, kudos.id, kudos.receiverUserId)
+        analytics.kudosSent(user, teamId, kudos.id, kudos.receiverUserId)
       })
     }
   }
