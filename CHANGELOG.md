@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.12.0](https://github.com/ParabolInc/parabol/compare/v7.11.2...v7.12.0) (2024-01-09)
+
+
+### Added
+
+* **kudos:** send kudos by text in standups ([#9259](https://github.com/ParabolInc/parabol/issues/9259)) ([371d5f6](https://github.com/ParabolInc/parabol/commit/371d5f6a90471c2e974d495d01b8a5cf062c0024))
+
+
+### Fixed
+
+* add pr write permission to CI ([#9313](https://github.com/ParabolInc/parabol/issues/9313)) ([463bc96](https://github.com/ParabolInc/parabol/commit/463bc96ae34363966434280af8922399d3715cf0))
+* Fix kudosSent analytics ([#9310](https://github.com/ParabolInc/parabol/issues/9310)) ([193151d](https://github.com/ParabolInc/parabol/commit/193151d10bc12e6856c865725493edb4c5071727))
+
+
+### Changed
+
+* Change email summary setting copy to be clearer ([#9303](https://github.com/ParabolInc/parabol/issues/9303)) ([176ce1e](https://github.com/ParabolInc/parabol/commit/176ce1e195715a91b7620e8ef8072fb110a6ef11))
+* **deps:** bump tj-actions/changed-files in /.github/workflows ([#9299](https://github.com/ParabolInc/parabol/issues/9299)) ([8de6b80](https://github.com/ParabolInc/parabol/commit/8de6b803653a8bab84d23c67db91db04a0ff44d1))
+* disable autoJoin test ([#9304](https://github.com/ParabolInc/parabol/issues/9304)) ([61d6842](https://github.com/ParabolInc/parabol/commit/61d6842dd67917c701726837de117fdcd900ea8f))
+* document SOCKET_PORT environment ([#9309](https://github.com/ParabolInc/parabol/issues/9309)) ([0d4d7db](https://github.com/ParabolInc/parabol/commit/0d4d7db593bb651ae5fa11613fe2a20ae333088b))
+* **meeting-inception:** use retrosInDisguise flag for displaying add an activity button ([#9297](https://github.com/ParabolInc/parabol/issues/9297)) ([126a1a0](https://github.com/ParabolInc/parabol/commit/126a1a0b182e90fa736e6cf06662e472a6555522))
+
 ## [7.11.2](https://github.com/ParabolInc/parabol/compare/v7.11.1...v7.11.2) (2023-12-20)
 
 
