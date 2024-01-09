@@ -44,4 +44,9 @@ type NotifyKudosReceived implements Notification {
   Kudos emoji
   """
   emoji: String!
+
+  """
+  Kudos emoji unicode
+  """
+  emojiUnicode: String!
 }
