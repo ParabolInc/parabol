@@ -71,7 +71,9 @@ const AISearch = () => {
       </form>
       <div className='mt-8'>
         {submitting && <LoadingComponent />}
-        {error?.message && !submitting && <StyledError>{error.message}</StyledError>}
+        {error?.message && !submitting && (
+          <StyledError>{`Despite its best efforts, our AI couldn't find a matching template. Try again?`}</StyledError>
+        )}
         {!submitting && suggestedTemplate && (
           <>
             <div className='ml-4 text-xl font-bold text-slate-700'>Our AI's Suggestion</div>
