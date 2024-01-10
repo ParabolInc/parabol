@@ -37,7 +37,7 @@ const NewMeeting: NewMeetingResolvers = {
     const viewerId = getUserId(authToken)
     const locked = await isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
 
-    const resolvedPhases = phases.map((phase: any) => ({
+    const resolvedPhases = phases.map((phase) => ({
       ...phase,
       meetingId,
       teamId
@@ -45,9 +45,9 @@ const NewMeeting: NewMeetingResolvers = {
 
     if (locked) {
       // make all stages non-navigable so even if the user removes the overlay they cannot see all meeting data
-      return resolvedPhases.map((phase: any) => ({
+      return resolvedPhases.map((phase) => ({
         ...phase,
-        stages: phase.stages.map((stage: any) => ({
+        stages: phase.stages.map((stage) => ({
           ...stage,
           isNavigable: false,
           isNavigableByFacilitator: false
