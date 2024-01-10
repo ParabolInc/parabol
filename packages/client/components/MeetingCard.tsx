@@ -230,13 +230,11 @@ const MeetingCard = (props: Props) => {
             ...AvatarListUser_user
           }
         }
-        ... on TeamPromptMeeting {
-          meetingSeries {
-            id
-            title
-            cancelledAt
-            recurrenceRule
-          }
+        meetingSeries {
+          id
+          title
+          cancelledAt
+          recurrenceRule
         }
       }
     `,
@@ -307,7 +305,7 @@ const MeetingCard = (props: Props) => {
           <MeetingImgWrapper>
             <MeetingImgBackground meetingType={meetingType} />
             <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
-            {meetingType === 'teamPrompt' && isRecurring && (
+            {isRecurring && (
               <RecurringLabel>Recurring</RecurringLabel>
             )}
             <Link to={meetingLink}>

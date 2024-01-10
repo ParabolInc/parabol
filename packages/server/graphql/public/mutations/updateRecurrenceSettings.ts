@@ -11,26 +11,31 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
+import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 
 export const startNewMeetingSeries = async (
-  viewerId: string,
-  teamId: string,
-  meetingId: string,
-  meetingName: string,
+  meeting: {
+    id: string,
+    teamId: string,
+    meetingType: MeetingTypeEnum,
+    name: string,
+    facilitatorUserId: string,
+  },
   recurrenceRule: RRule,
   meetingSeriesName?: string | null
 ) => {
+  const {id: meetingId, teamId, meetingType, name: meetingName, facilitatorUserId: facilitatorId} = meeting
   const now = new Date()
   const r = await getRethink()
 
   const newMeetingSeriesParams = {
-    meetingType: 'teamPrompt',
+    meetingType,
     title: meetingSeriesName || meetingName.split('-')[0]!.trim(), // if no name is provided, we use the name of the first meeting without the date
     recurrenceRule: recurrenceRule.toString(),
     // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
     duration: 0,
     teamId,
-    facilitatorId: viewerId
+    facilitatorId
   } as const
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
   const rruleNow = getRRuleDateFromJSDate(now)
@@ -151,10 +156,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     }
 
     const newMeetingSeries = await startNewMeetingSeries(
-      viewerId,
-      teamId,
-      meetingId,
-      meeting.name,
+      meeting,
       recurrenceSettings.rrule,
       recurrenceSettings.name
     )

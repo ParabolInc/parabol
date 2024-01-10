@@ -13,11 +13,12 @@ import {MutationResolvers} from '../resolverTypes'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import {startNewMeetingSeries} from './updateRecurrenceSettings'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
-  {teamId, gcalInput},
+  {teamId, recurrenceSettings, gcalInput},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const r = await getRethink()
@@ -84,7 +85,9 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const updates = {
     lastMeetingType: meetingType
   }
-  await Promise.all([
+  const [meetingSeries] = await Promise.all([
+    recurrenceSettings?.rrule &&
+      startNewMeetingSeries(meeting, recurrenceSettings.rrule, recurrenceSettings.name),
     r
       .table('MeetingMember')
       .insert(
@@ -101,6 +104,9 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
         })
         .run()
   ])
+  if (meetingSeries) {
+    analytics.recurrenceStarted(viewer, meetingSeries)
+  }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting, template)
   const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
