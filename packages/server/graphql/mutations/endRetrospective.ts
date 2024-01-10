@@ -136,7 +136,7 @@ const sendKudos = async (meeting: MeetingRetrospective, teamId: string, context:
       )
     })
 
-    notificationsToInsert.forEach((notification: any) => {
+    notificationsToInsert.forEach((notification) => {
       publishNotification(notification, subOptions)
     })
   }
