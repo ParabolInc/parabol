@@ -21,11 +21,7 @@ const createGcalEvent = async (input: Input) => {
   if (!gcalInput) {
     return {error: null}
   }
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  const {featureFlags} = viewer
-  if (!featureFlags.includes('gcal')) {
-    return standardError(new Error('Does not have gcal feature flag'), {userId: viewerId})
-  }
+
   const {startTimestamp, endTimestamp, title, timeZone, invitees, videoType} = gcalInput
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})

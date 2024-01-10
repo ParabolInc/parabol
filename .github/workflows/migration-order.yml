@@ -22,7 +22,7 @@ jobs:
 
       - name: Get new migrations
         id: new-migrations
-        uses: tj-actions/changed-files@v40
+        uses: tj-actions/changed-files@v41
         with:
           files: packages/server/postgres/migrations/*.ts
 

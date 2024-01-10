@@ -19,6 +19,7 @@ import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 export default {
   type: CreateReflectionPayload,
@@ -41,19 +42,21 @@ export default {
     const {content, sortOrder, meetingId, promptId} = input
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
+    const [reflectPrompt, meeting, viewer] = await Promise.all([
+      dataLoader.get('reflectPrompts').load(promptId),
+      r.table('NewMeeting').get(meetingId).default(null).run(),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
     const {question} = reflectPrompt
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
     const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const {tier} = team
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
@@ -65,7 +68,9 @@ export default {
     const plaintextContent = extractTextFromDraftString(normalizedContent)
     const [entities, sentimentScore] = await Promise.all([
       getReflectionEntities(plaintextContent),
-      tier !== 'starter' ? getReflectionSentimentScore(question, plaintextContent) : undefined
+      getFeatureTier(team) !== 'starter'
+        ? getReflectionSentimentScore(question, plaintextContent)
+        : undefined
     ])
     const reflectionGroupId = generateUID()
 
@@ -112,7 +117,7 @@ export default {
         })
         .run()
     }
-    analytics.reflectionAdded(viewerId, teamId, meetingId)
+    analytics.reflectionAdded(viewer, teamId, meetingId)
     const data = {
       meetingId,
       reflectionId: reflection.id,

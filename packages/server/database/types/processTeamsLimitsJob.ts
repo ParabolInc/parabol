@@ -17,7 +17,7 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
   if (!scheduledLockAt || lockedAt) return
 
   const billingLeadersIds = orgUsers
-    .filter(({role}) => role === 'BILLING_LEADER')
+    .filter(({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role))
     .map(({userId}) => userId)
   const billingLeaderUsers = (await dataLoader.get('users').loadMany(billingLeadersIds)).filter(
     isValid

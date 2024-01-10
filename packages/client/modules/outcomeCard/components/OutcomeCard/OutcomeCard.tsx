@@ -21,6 +21,7 @@ import isTempId from '../../../../utils/relay/isTempId'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const RootCard = styled('div')<{
   isTaskHovered: boolean
@@ -89,6 +90,9 @@ const OutcomeCard = memo((props: Props) => {
     graphql`
       fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
         ...IntegratedTaskContent_task
+        editors {
+          userId
+        }
         id
         integration {
           __typename
@@ -110,7 +114,11 @@ const OutcomeCard = memo((props: Props) => {
   )
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
-  const {integration, status, id: taskId, team, isHighlighted} = task
+  const {integration, status, id: taskId, team, isHighlighted, editors} = task
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
+  const isEditing = editors.length > otherEditors.length
   const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const {id: teamId} = team
   const type = integration?.__typename
@@ -165,7 +173,7 @@ const OutcomeCard = memo((props: Props) => {
         <TaskFooter
           dataCy={`${dataCy}`}
           area={area}
-          cardIsActive={isTaskFocused || isTaskHovered}
+          cardIsActive={isTaskFocused || isTaskHovered || isEditing}
           editorState={editorState}
           isAgenda={isAgenda}
           task={task}

@@ -13,10 +13,13 @@ interface Input {
   isArchived?: boolean
   isPaid?: boolean
   tier: TierEnum
+  trialStartDate?: Date | null
   orgId: string
   qualAIMeetingsCount?: number
   isOnboardTeam?: boolean
   isOneOnOneTeam?: boolean
+  giveKudosWithEmoji?: boolean
+  kudosEmoji?: string
   updatedAt?: Date
 }
 
@@ -31,9 +34,12 @@ export default class Team {
   lastMeetingType: MeetingTypeEnum
   lockMessageHTML?: string | null
   tier: TierEnum
+  trialStartDate?: Date | null
   orgId: string
   isOnboardTeam: boolean
   isOneOnOneTeam?: boolean
+  giveKudosWithEmoji: boolean
+  kudosEmoji: string
   qualAIMeetingsCount: number
   updatedAt: Date
   constructor(input: Input) {
@@ -45,11 +51,14 @@ export default class Team {
       isArchived,
       isOnboardTeam,
       isOneOnOneTeam,
+      giveKudosWithEmoji,
+      kudosEmoji,
       lastMeetingType,
       isPaid,
       name,
       orgId,
       tier,
+      trialStartDate,
       qualAIMeetingsCount,
       updatedAt
     } = input
@@ -58,6 +67,7 @@ export default class Team {
     this.createdBy = createdBy
     this.orgId = orgId
     this.tier = tier
+    this.trialStartDate = trialStartDate
     this.id = id ?? generateUID()
     this.createdAt = createdAt ?? new Date()
     this.updatedAt = updatedAt ?? new Date()
@@ -65,6 +75,8 @@ export default class Team {
     this.isArchived = isArchived ?? false
     this.isOnboardTeam = isOnboardTeam ?? false
     this.isOneOnOneTeam = isOneOnOneTeam ?? false
+    this.giveKudosWithEmoji = giveKudosWithEmoji ?? true
+    this.kudosEmoji = kudosEmoji ?? 'heart'
     this.isPaid = isPaid ?? true
     this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
   }

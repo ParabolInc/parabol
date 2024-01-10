@@ -30,7 +30,6 @@ import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
 import TemplateScale from './TemplateScale'
-import TierEnum from './TierEnum'
 
 const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -252,10 +251,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         if (meeting && meeting.teamId === teamId) return meeting
         return null
       }
-    },
-    tier: {
-      type: new GraphQLNonNull(TierEnum),
-      description: 'The level of access to features on the parabol site'
     },
     organization: {
       type: new GraphQLNonNull(Organization),

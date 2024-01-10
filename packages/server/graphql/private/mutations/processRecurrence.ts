@@ -27,7 +27,10 @@ const startRecurringTeamPrompt = async (
   const {teamId, facilitatorId} = meetingSeries
 
   // AUTH
-  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+  const [unpaidError, facilitator] = await Promise.all([
+    isStartMeetingLocked(teamId, dataLoader),
+    dataLoader.get('users').loadNonNull(facilitatorId)
+  ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
@@ -46,7 +49,7 @@ const startRecurringTeamPrompt = async (
   await r.table('NewMeeting').insert(meeting).run()
 
   IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
-  analytics.meetingStarted(facilitatorId, meeting)
+  analytics.meetingStarted(facilitator, meeting)
   const data = {teamId, meetingId: meeting.id}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return undefined

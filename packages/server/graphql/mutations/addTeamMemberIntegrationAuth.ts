@@ -73,7 +73,10 @@ const addTeamMemberIntegrationAuth = {
     }
 
     const providerDbId = IntegrationProviderId.split(providerId)
-    const integrationProvider = await dataLoader.get('integrationProviders').load(providerDbId)
+    const [integrationProvider, viewer] = await Promise.all([
+      dataLoader.get('integrationProviders').load(providerDbId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!integrationProvider) {
       return standardError(
         new Error(`Unable to find appropriate integration provider for providerId ${providerId}`),
@@ -176,7 +179,7 @@ const addTeamMemberIntegrationAuth = {
     })
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
-    analytics.integrationAdded(viewerId, teamId, service)
+    analytics.integrationAdded(viewer, teamId, service)
 
     const data = {userId: viewerId, teamId, service}
     return data

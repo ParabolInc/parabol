@@ -293,6 +293,7 @@ const initDemoOrg = () => {
     id: demoOrgId,
     name: 'Demo Organization',
     tier: 'team',
+    billingTier: 'team',
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
@@ -327,6 +328,7 @@ const initDemoTeam = (
     teamName: demoTeamName,
     orgId: demoOrgId,
     tier: 'team',
+    billingTier: 'team',
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),
@@ -566,6 +568,9 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
     ;(teamMember as any).team = team
+  })
+  users.forEach((user) => {
+    ;(user as any).teams = [team]
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0

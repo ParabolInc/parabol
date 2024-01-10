@@ -7,6 +7,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SelectTemplatePayload from '../types/SelectTemplatePayload'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -54,7 +55,7 @@ const selectTemplate = {
       if (
         !isFree &&
         !viewer.featureFlags.includes('noTemplateLimit') &&
-        viewerTeam.tier === 'starter'
+        getFeatureTier(viewerTeam) === 'starter'
       ) {
         return standardError(new Error('User does not have access to this premium template'), {
           userId: viewerId

@@ -84,7 +84,6 @@ const DashSidebar = (props: Props) => {
       fragment DashSidebar_viewer on User {
         ...StandardHub_viewer
         featureFlags {
-          checkoutFlow
           retrosInDisguise
         }
         organizations {
@@ -102,9 +101,8 @@ const DashSidebar = (props: Props) => {
 
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
-  const showOrgSidebar = featureFlags.checkoutFlow && match
 
-  if (showOrgSidebar) {
+  if (match) {
     const {orgId: orgIdFromParams} = match.params
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
