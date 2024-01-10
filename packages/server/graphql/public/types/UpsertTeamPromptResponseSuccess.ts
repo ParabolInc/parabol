@@ -1,4 +1,5 @@
 import {UpsertTeamPromptResponseSuccessResolvers} from '../resolverTypes'
+import isValid from '../../../graphql/isValid'
 
 export type UpsertTeamPromptResponseSuccessSource = {
   teamPromptResponseId: string
@@ -21,7 +22,7 @@ const UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponseSuccessResolvers 
       return null
     }
 
-    return dataLoader.get('kudoses').loadMany(addedKudosesIds)
+    return (await dataLoader.get('kudoses').loadMany(addedKudosesIds)).filter(isValid)
   }
 }
 

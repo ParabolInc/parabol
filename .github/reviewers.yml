@@ -17,6 +17,7 @@ reviewers:
     devops:
       - rafaelromcar-parabol
       - adaniels-parabol
+      - dbumblis-parabol
     none:
 
   per_author:
@@ -39,6 +40,8 @@ files:
     - data
   "**/analytics/**":
     - data
+  ".env.example":
+    - devops
 options:
   ignore_draft: true
   ignored_keywords:

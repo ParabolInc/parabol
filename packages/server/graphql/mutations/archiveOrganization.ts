@@ -40,7 +40,10 @@ export default {
       }
     }
 
-    const organization = await dataLoader.get('organizations').load(orgId)
+    const [organization, viewer] = await Promise.all([
+      dataLoader.get('organizations').load(orgId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     const {tier} = organization
     if (tier !== 'starter') {
       return standardError(new Error('You must first downgrade before archiving'), {
@@ -49,7 +52,7 @@ export default {
     }
 
     // RESOLUTION
-    analytics.archiveOrganization(viewerId, orgId)
+    analytics.archiveOrganization(viewer, orgId)
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const teamArchiveResults = (await Promise.all(

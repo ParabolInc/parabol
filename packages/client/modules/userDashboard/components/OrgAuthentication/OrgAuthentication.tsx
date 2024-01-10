@@ -10,9 +10,9 @@ import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
 import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
 
-const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
-}))
+const StyledPanel = styled(Panel)({
+  maxWidth: ElementWidth.PANEL_WIDTH
+})
 
 interface Props {
   queryRef: PreloadedQuery<OrgAuthenticationQuery>
@@ -23,9 +23,6 @@ const OrgAuthentication = (props: Props) => {
     graphql`
       query OrgAuthenticationQuery($orgId: ID!) {
         viewer {
-          featureFlags {
-            checkoutFlow
-          }
           organization(orgId: $orgId) {
             saml {
               ...OrgAuthenticationSSOFrame_saml
@@ -40,12 +37,11 @@ const OrgAuthentication = (props: Props) => {
     queryRef
   )
   const {viewer} = data
-  const {organization, featureFlags} = viewer
-  const {checkoutFlow} = featureFlags
+  const {organization} = viewer
   const saml = organization?.saml ?? null
   const disabled = !saml
   return (
-    <StyledPanel isWide={checkoutFlow}>
+    <StyledPanel>
       <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
       <OrgAuthenticationSSOFrame samlRef={saml} />
       <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>

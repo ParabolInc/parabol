@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
@@ -30,7 +30,8 @@ const Wrapper = styled('div')({
 })
 
 const StyledDialogContainer = styled(DialogContainer)({
-  width: 'auto'
+  width: 'auto',
+  overflowY: 'scroll'
 })
 
 const CloseIcon = styled(Close)({
@@ -82,7 +83,7 @@ const GcalModal = (props: Props) => {
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
   const [end, setEnd] = useState(endOfNextHour)
-  const [inviteAll, setInviteAll] = useState(false)
+  const [inviteAll, setInviteAll] = useState(true)
   const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
@@ -159,28 +160,42 @@ const GcalModal = (props: Props) => {
     setInvitees(uniqueInvitees)
   }
 
+  const addAllTeamMembers = () => {
+    const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+    const currentInvitees = parsedInvitees
+      ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
+      : []
+    const emailsToAdd = teamMemberEmails.filter((email) => !currentInvitees.includes(email))
+    const lastInvitee = currentInvitees[currentInvitees.length - 1]
+    const formattedCurrentInvitees =
+      currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
+        ? `${currentInvitees.join(', ')}, `
+        : currentInvitees.join(', ')
+    setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
+    setInvitees([...currentInvitees, ...emailsToAdd])
+  }
+
+  useEffect(() => {
+    if (hasTeamMemberEmails) {
+      addAllTeamMembers()
+    }
+  }, [hasTeamMemberEmails])
+
+  const removeAllTeamMembers = () => {
+    const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+    const currentInvitees = parsedInvitees
+      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+      : []
+    const remainingInvitees = currentInvitees.filter((email) => !teamMemberEmails.includes(email))
+    setRawInvitees(remainingInvitees.join(', '))
+    setInvitees(remainingInvitees)
+  }
+
   const handleToggleInviteAll = () => {
     if (!inviteAll) {
-      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
-      const currentInvitees = parsedInvitees
-        ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
-        : []
-      const emailsToAdd = teamMemberEmails.filter((email) => !currentInvitees.includes(email))
-      const lastInvitee = currentInvitees[currentInvitees.length - 1]
-      const formattedCurrentInvitees =
-        currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
-          ? `${currentInvitees.join(', ')}, `
-          : currentInvitees.join(', ')
-      setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
-      setInvitees([...currentInvitees, ...emailsToAdd])
+      addAllTeamMembers()
     } else {
-      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
-      const currentInvitees = parsedInvitees
-        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
-        : []
-      const remainingInvitees = currentInvitees.filter((email) => !teamMemberEmails.includes(email))
-      setRawInvitees(remainingInvitees.join(', '))
-      setInvitees(remainingInvitees)
+      removeAllTeamMembers()
     }
     setInviteAll((inviteAll) => !inviteAll)
   }

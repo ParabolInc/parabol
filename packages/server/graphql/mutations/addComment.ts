@@ -107,9 +107,10 @@ const addComment = {
       return {error: {message: 'Discussion does not take place in a meeting'}}
     }
     const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-    const [meeting, viewerMeetingMember] = await Promise.all([
+    const [meeting, viewerMeetingMember, viewer] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('meetingMembers').load(meetingMemberId)
+      dataLoader.get('meetingMembers').load(meetingMemberId),
+      dataLoader.get('users').loadNonNull(viewerId)
     ])
 
     if (!viewerMeetingMember) {
@@ -173,7 +174,7 @@ const addComment = {
     )!
     const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage: GenericMeetingStage) => stage.isAsync)
-    analytics.commentAdded(viewerId, meeting, isAnonymous, isAsync, !!threadParentId)
+    analytics.commentAdded(viewer, meeting, isAnonymous, isAsync, !!threadParentId)
     publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
     return data
   }

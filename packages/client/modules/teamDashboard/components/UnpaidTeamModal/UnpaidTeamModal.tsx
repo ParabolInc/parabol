@@ -45,9 +45,11 @@ const query = graphql`
           lockedAt
           name
           billingLeaders {
-            id
-            preferredName
-            email
+            user {
+              id
+              preferredName
+              email
+            }
           }
           creditCard {
             brand
@@ -85,9 +87,10 @@ const UnpaidTeamModal = (props: Props) => {
 
   const {id: orgId, billingLeaders, name: orgName} = organization
   const [firstBillingLeader] = billingLeaders
-  const billingLeaderName = firstBillingLeader?.preferredName ?? 'Unknown'
-  const email = firstBillingLeader?.email ?? 'Unknown'
-  const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1
+  const {user: firstBillingLeaderUser} = firstBillingLeader ?? {}
+  const billingLeaderName = firstBillingLeaderUser?.preferredName ?? 'Unknown'
+  const email = firstBillingLeaderUser?.email ?? 'Unknown'
+  const isALeader = billingLeaders.findIndex((leader) => leader.user.id === viewerId) !== -1
 
   const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnumType) => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {

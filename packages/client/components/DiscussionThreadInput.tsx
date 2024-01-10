@@ -106,6 +106,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     graphql`
       fragment DiscussionThreadInput_viewer on User {
         picture
+        featureFlags {
+          retrosInDisguise
+        }
       }
     `,
     viewerRef
@@ -119,22 +122,16 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         discussionTopicType
         team {
           id
-          organization {
-            featureFlags {
-              meetingInception
-            }
-          }
         }
       }
     `,
     discussionRef
   )
-  const {picture} = viewer
+  const {picture, featureFlags} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: discussionId, meetingId, isAnonymousComment, team, discussionTopicType} = discussion
-  const {id: teamId, organization} = team
-  const {featureFlags} = organization
+  const {id: teamId} = team
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -301,7 +298,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
-  const allowAddActivity = featureFlags.meetingInception
+  const allowAddActivity = featureFlags.retrosInDisguise
   const isActionsContainerVisible = allowTasks || allowPolls || allowAddActivity
   const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
