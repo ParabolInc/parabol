@@ -75,15 +75,17 @@ jobs:
       - name: Push to staging
         uses: nick-fields/retry@v2
         with:
-          timeout_minutes: 1
-          max_attempts: 20
+          timeout_minutes: 5
+          max_attempts: 100
           retry_wait_seconds: 5
           # If the job isn't created yet, will return {"message":"400 Bad request - Unplayable Job"}
           command: |
             RES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}/play" \
               --request POST \
               --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
+            echo $RES
             JOB_ID_DONE=$(echo $RES | jq .id)
+            echo $JOB_ID_DONE
             [ -z "$JOB_ID_DONE" ] && exit 1
       - name: Open PR to Push to Prod
         env:
