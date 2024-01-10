@@ -172,7 +172,8 @@ export default {
       return {error: {message: 'Not on team'}}
     }
 
-    const errors = await Promise.all([
+    const [viewer, ...errors] = await Promise.all([
+      dataLoader.get('users').loadNonNull(viewerId),
       // threadParentId not validated because if it's invalid it simply won't appear
       validateTaskDiscussionId(newTask, dataLoader),
       validateTaskMeetingId(meetingId, viewerId, dataLoader),
@@ -254,9 +255,9 @@ export default {
       meetingType: meeting?.meetingType,
       inMeeting: !!meetingId
     }
-    analytics.taskCreated(viewerId, taskProperties)
+    analytics.taskCreated(viewer, taskProperties)
     if (integration?.service) {
-      analytics.taskPublished(viewerId, taskProperties, integration.service)
+      analytics.taskPublished(viewer, taskProperties, integration.service)
     }
     return {taskId}
   }

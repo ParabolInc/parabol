@@ -89,6 +89,11 @@ type Team {
   isLead: Boolean!
 
   """
+  true if the viewer is an admin for the team's org, else false
+  """
+  isOrgAdmin: Boolean!
+
+  """
   The team-specific settings for running all available types of meetings
   """
   meetingSettings(

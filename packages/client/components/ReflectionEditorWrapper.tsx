@@ -50,13 +50,13 @@ type DraftProps = Pick<
 >
 
 interface Props extends DraftProps {
-  editorRef: RefObject<HTMLTextAreaElement>
-  placeholder: string
-  setEditorState: (newEditorState: EditorState) => void
+  editorRef?: RefObject<HTMLTextAreaElement>
+  placeholder?: string
+  setEditorState?: (newEditorState: EditorState) => void
   teamId: string
   isClipped?: boolean
   isPhaseItemEditor?: boolean
-  handleKeyDownFallback: (e: any) => void
+  handleKeyDownFallback?: (e: any) => void
   handleReturn: (e: any, editorState: EditorState) => DraftHandleValue
   userSelect?: string
   disableAnonymity?: boolean
@@ -67,7 +67,7 @@ const blockStyleFn = (contentBlock: ContentBlock) => {
   if (type === 'blockquote') {
     return 'italic border-l-4 border-solid my-4 px-2 border-slate-500'
   } else if (type === 'code-block') {
-    return 'bg-slate-200 text-tomato-600 font-mono text-[13px] leading-[24px] m-0 px-2'
+    return 'bg-slate-200 text-tomato-600 font-mono text-[13px] leading-6 m-0 px-2'
   }
   return ''
 }
@@ -98,7 +98,7 @@ const ReflectionEditorWrapper = (props: Props) => {
     if (!editorState.getCurrentContent().hasText()) {
       const timeoutId = setTimeout(() => {
         try {
-          editorRef.current && editorRef.current.focus()
+          editorRef?.current && editorRef.current.focus()
         } catch (e) {
           // DraftEditor was unmounted before this was called
         }
@@ -126,7 +126,15 @@ const ReflectionEditorWrapper = (props: Props) => {
     handleBeforeInput,
     handleKeyCommand,
     keyBindingFn
-  } = useCommentPlugins({...props, handleReturn: undefined})
+  } = useCommentPlugins({
+    ...props,
+    setEditorState:
+      setEditorState ??
+      (() => {
+        /* noop */
+      }),
+    handleReturn: undefined
+  })
 
   const onRemoveModal = () => {
     if (renderModal && removeModal) {
@@ -145,7 +153,7 @@ const ReflectionEditorWrapper = (props: Props) => {
       const contentState = entitizeText(editorState.getCurrentContent(), selectionState)
       entityPasteStartRef.current = undefined
       if (contentState) {
-        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'))
+        setEditorState?.(EditorState.push(editorState, contentState, 'apply-entity'))
         return
       }
     }
@@ -154,7 +162,7 @@ const ReflectionEditorWrapper = (props: Props) => {
     } else if (handleChange) {
       handleChange(editorState)
     }
-    setEditorState(editorState)
+    setEditorState?.(editorState)
   }
 
   const onReturn: EditorProps['handleReturn'] = (e) => {
@@ -187,7 +195,7 @@ const ReflectionEditorWrapper = (props: Props) => {
         // add to callback queue so we can check activeElement and
         // determine whether modal should close in expandedReflectionStack
         setTimeout(() => {
-          const el = editorRef.current
+          const el = editorRef?.current
           el?.blur()
         })
       }
@@ -222,7 +230,7 @@ const ReflectionEditorWrapper = (props: Props) => {
       const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
         keepSelection: true
       })
-      setEditorState(nextEditorState)
+      setEditorState?.(nextEditorState)
       return 'handled'
     }
     return 'not-handled'

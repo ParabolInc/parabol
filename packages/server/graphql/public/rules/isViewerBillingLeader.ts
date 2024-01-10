@@ -9,7 +9,8 @@ const resolve = async (orgId: string, {authToken, dataLoader}: GQLContext) => {
     .load({orgId, userId: viewerId})
   if (!organizationUser) return new Error('Organization User not found')
   const {role} = organizationUser
-  if (role !== 'BILLING_LEADER') return new Error('User is not billing leader')
+  if (role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN')
+    return new Error('User is not billing leader')
   return true
 }
 
