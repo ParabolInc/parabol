@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.12.2](https://github.com/ParabolInc/parabol/compare/v7.12.1...v7.12.2) (2024-01-10)
+
+
+### Fixed
+
+* longer timeout for unplayable job ([#9321](https://github.com/ParabolInc/parabol/issues/9321)) ([60320e4](https://github.com/ParabolInc/parabol/commit/60320e488f1ad9bd8a85ce66e77387dd32a17cbd))
+
+
+### Changed
+
+* Convert GraphQL meeting types to use codegen ([#9306](https://github.com/ParabolInc/parabol/issues/9306)) ([dc6be15](https://github.com/ParabolInc/parabol/commit/dc6be15a2818065353e8e3b45e50fd54a7b6ba5c))
+
 ## [7.12.1](https://github.com/ParabolInc/parabol/compare/v7.12.0...v7.12.1) (2024-01-09)
 
 
