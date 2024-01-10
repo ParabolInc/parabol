@@ -110,9 +110,6 @@ const addReflectTemplate = {
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
-      if (allTemplates.find((template) => template.name === '*New Template')) {
-        return standardError(new Error('Template already created'), {userId: viewerId})
-      }
       const {orgId} = viewerTeam
       // RESOLUTION
       const base = {
