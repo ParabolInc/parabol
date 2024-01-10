@@ -1,9 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
-import generateUID from '../../../generateUID'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
@@ -13,9 +11,9 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
-import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
@@ -34,37 +32,14 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
-  const meetingType: MeetingTypeEnum = 'retrospective'
-
   // RESOLUTION
-  const meetingCount = await r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({meetingType})
-    .count()
-    .default(0)
-    .run()
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
-  const meetingId = generateUID()
-  const phases = await createNewMeetingPhases(
-    viewerId,
-    teamId,
-    meetingId,
-    meetingCount,
-    meetingType,
-    dataLoader
-  )
-  const [team, viewer] = await Promise.all([
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
-
-  const organization = await r.table('Organization').get(team.orgId).run()
-  const {showConversionModal} = organization
-
+  const meetingType: MeetingTypeEnum = 'retrospective'
   const meetingSettings = (await dataLoader
     .get('meetingSettingsByType')
     .load({teamId, meetingType})) as MeetingSettingsRetrospective
+
   const {
     id: meetingSettingsId,
     totalVotes,
@@ -73,19 +48,20 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     disableAnonymity,
     videoMeetingURL
   } = meetingSettings
-  const meeting = new MeetingRetrospective({
-    id: meetingId,
-    teamId,
-    meetingCount,
-    phases,
-    showConversionModal,
-    facilitatorUserId: viewerId,
-    totalVotes,
-    maxVotesPerGroup,
-    disableAnonymity,
-    templateId: selectedTemplateId,
-    videoMeetingURL: videoMeetingURL ?? undefined
-  })
+
+  const meeting = await safeCreateRetrospective(
+    {
+      teamId,
+      facilitatorUserId: viewerId,
+      totalVotes,
+      maxVotesPerGroup,
+      disableAnonymity,
+      templateId: selectedTemplateId,
+      videoMeetingURL: videoMeetingURL ?? undefined
+    },
+    dataLoader
+  )
+  const meetingId = meeting.id
 
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
   await Promise.all([
