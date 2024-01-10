@@ -50,7 +50,7 @@ type DraftProps = Pick<
 >
 
 interface Props extends DraftProps {
-  editorRef: RefObject<HTMLTextAreaElement>
+  editorRef?: RefObject<HTMLTextAreaElement>
   placeholder?: string
   setEditorState?: (newEditorState: EditorState) => void
   teamId: string
@@ -67,7 +67,7 @@ const blockStyleFn = (contentBlock: ContentBlock) => {
   if (type === 'blockquote') {
     return 'italic border-l-4 border-solid my-4 px-2 border-slate-500'
   } else if (type === 'code-block') {
-    return 'bg-slate-200 text-tomato-600 font-mono text-[13px] leading-[24px] m-0 px-2'
+    return 'bg-slate-200 text-tomato-600 font-mono text-[13px] leading-6 m-0 px-2'
   }
   return ''
 }
@@ -98,7 +98,7 @@ const ReflectionEditorWrapper = (props: Props) => {
     if (!editorState.getCurrentContent().hasText()) {
       const timeoutId = setTimeout(() => {
         try {
-          editorRef.current && editorRef.current.focus()
+          editorRef?.current && editorRef.current.focus()
         } catch (e) {
           // DraftEditor was unmounted before this was called
         }
@@ -195,7 +195,7 @@ const ReflectionEditorWrapper = (props: Props) => {
         // add to callback queue so we can check activeElement and
         // determine whether modal should close in expandedReflectionStack
         setTimeout(() => {
-          const el = editorRef.current
+          const el = editorRef?.current
           el?.blur()
         })
       }

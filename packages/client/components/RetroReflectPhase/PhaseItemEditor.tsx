@@ -284,7 +284,6 @@ const PhaseItemEditor = (props: Props) => {
                   readOnly
                   disableAnonymity={disableAnonymity}
                   teamId={teamId}
-                  editorRef={editorRef}
                   handleReturn={() => 'handled'}
                 />
                 {disableAnonymity && (

@@ -71,7 +71,7 @@ const {hasCommandModifier} = KeyBindingUtil
 interface CustomProps {
   removeModal?: () => void
   renderModal?: () => ReactNode
-  editorRef: RefObject<HTMLTextAreaElement>
+  editorRef?: RefObject<HTMLTextAreaElement>
   useTaskChild: UseTaskChild
 }
 

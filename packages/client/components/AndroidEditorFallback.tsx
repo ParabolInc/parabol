@@ -14,7 +14,7 @@ interface Props {
   onKeyDown?: (e: React.KeyboardEvent) => void
   onPastedText?: (text: string) => void
   placeholder?: string
-  editorRef: RefObject<HTMLTextAreaElement>
+  editorRef?: RefObject<HTMLTextAreaElement>
   onChange?: () => void
 }
 
