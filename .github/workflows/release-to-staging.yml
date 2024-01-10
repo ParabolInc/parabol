@@ -86,7 +86,8 @@ jobs:
             echo $RES
             JOB_ID_DONE=$(echo $RES | jq .id)
             echo $JOB_ID_DONE
-            [ -z "$JOB_ID_DONE" ] && exit 1
+            [ -z "$JOB_ID_DONE" ] && echo null || echo not null
+            [ -z "$JOB_ID_DONE" ] && exit 1 || exit 0
       - name: Open PR to Push to Prod
         env:
           GH_TOKEN: ${{ github.token }}
