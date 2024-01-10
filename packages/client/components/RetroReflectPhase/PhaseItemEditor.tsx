@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Stack} from 'immutable'
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw, convertToRaw, EditorState, ContentState} from 'draft-js'
 import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
@@ -165,8 +166,11 @@ const PhaseItemEditor = (props: Props) => {
     })
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(
-      EditorState.moveFocusToEnd(
-        EditorState.push(editorState, ContentState.createFromText(''), 'remove-range')
+      EditorState.set(
+        EditorState.moveFocusToEnd(
+          EditorState.push(editorState, ContentState.createFromText(''), 'remove-range')
+        ),
+        {undoStack: Stack(), redoStack: Stack()}
       )
     )
   }
