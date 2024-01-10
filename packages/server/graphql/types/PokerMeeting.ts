@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} f
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
-import NewMeeting, {newMeetingFields} from './NewMeeting'
+import NewMeeting from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
 import Task from './Task'
 
@@ -11,7 +11,6 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [NewMeeting],
   description: 'A Poker meeting',
   fields: () => ({
-    ...newMeetingFields(),
     commentCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
