@@ -26,5 +26,5 @@ Fixes/Partially Fixes #[issue number]
 - [ ] I have performed a self-review of my code, the same way I'd do it for any other team member
 - [ ] I have tested all cases I listed in the testing scenarios and I haven't found any issues or regressions
 - [ ] Whenever I took a non-obvious choice I added a comment explaining why I did it this way
-- [ ] I added the label `One Review Required` if the PR introduces only minor changes, does not contain any architectural changes or does not introduce any new patterns and I think one review is sufficient'
+- [ ] I added the label https://github.com/ParabolInc/parabol/labels/Skip%20Maintainer%20Review if the PR introduces only minor changes, does not contain any architectural changes or does not introduce any new patterns and I think one review is sufficient'
 - [ ] PR title is human readable and could be used in changelog
