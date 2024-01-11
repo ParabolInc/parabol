@@ -158,7 +158,7 @@ const TeamDashHeader = (props: Props) => {
         </Avatars>
       </TeamHeaderAndAvatars>
       <Tabs
-        activeIdx={isTasks ? 1 : 0 || isIntegrations ? 2 : 0}
+        activeIdx={isTasks ? 1 : isIntegrations ? 2 : 0}
         className='full-w max-w-none border-b border-solid border-slate-300'
       >
         <Tab label='Activity' onClick={() => history.push(`/team/${teamId}/activity`)} />
