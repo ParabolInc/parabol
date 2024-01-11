@@ -3,18 +3,18 @@ import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
+import activeClients from './activeClients'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
-import webhookGraphQLHandler from './graphql/webhookGraphQLHandler'
 import './initSentry'
-import githubWebhookHandler from './integrations/githubWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import './monkeyPatchFetch'
 import selfHostedHandler from './selfHostedHandler'
 import handleClose from './socketHandlers/handleClose'
+import handleDisconnect from './socketHandlers/handleDisconnect'
 import handleMessage from './socketHandlers/handleMessage'
 import handleOpen from './socketHandlers/handleOpen'
 import handleUpgrade from './socketHandlers/handleUpgrade'
@@ -24,9 +24,10 @@ import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 
 tracer.init({
-  service: `Web ${process.env.SERVER_ID}`,
+  service: `web`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
+  plugins: false,
+  version: process.env.npm_package_version
 })
 tracer.use('ioredis').use('http').use('pg')
 
@@ -35,6 +36,16 @@ if (!__PRODUCTION__) {
     r.getPoolMaster()?.drain()
   })
 }
+
+process.on('SIGTERM', () => {
+  const RECONNECT_WINDOW = 60_000 // ms
+  Object.values(activeClients.store).forEach((connectionContext) => {
+    const disconnectIn = ~~(Math.random() * RECONNECT_WINDOW)
+    setTimeout(() => {
+      handleDisconnect(connectionContext)
+    }, disconnectIn)
+  })
+})
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
 uws
@@ -50,8 +61,6 @@ uws
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
-  .post('/webhooks/github', githubWebhookHandler)
-  .post('/webhooks/graphql', webhookGraphQLHandler)
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetGraphQLHandler)
   .post('/saml/:domain', SAMLHandler)

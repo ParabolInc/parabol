@@ -59,7 +59,7 @@ const EmailNotifications = (props: Props) => {
   return (
     <Wrapper onClick={handleClick}>
       <StyledCheckbox active={sendSummaryEmail} />
-      <Text>{'Send meeting summary emails'}</Text>
+      <Text>{'Receive meeting summary emails'}</Text>
       <ErrorMessage>{error?.message}</ErrorMessage>
     </Wrapper>
   )

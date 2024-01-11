@@ -32,6 +32,11 @@ type UpsertTeamPromptResponseSuccess {
   the updated meeting
   """
   meeting: NewMeeting
+
+  """
+  Kudos added with the response
+  """
+  addedKudoses: [Kudos!]
 }
 
 union UpsertTeamPromptResponsePayload = UpsertTeamPromptResponseSuccess | ErrorPayload

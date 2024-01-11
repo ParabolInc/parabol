@@ -20,6 +20,7 @@ import {GQLContext} from '../graphql'
 import publishNotification from '../public/mutations/helpers/publishNotification'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 
 type AddCommentMutationVariables = {
   comment: {
@@ -106,9 +107,10 @@ const addComment = {
       return {error: {message: 'Discussion does not take place in a meeting'}}
     }
     const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-    const [meeting, viewerMeetingMember] = await Promise.all([
+    const [meeting, viewerMeetingMember, viewer] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('meetingMembers').load(meetingMemberId)
+      dataLoader.get('meetingMembers').load(meetingMemberId),
+      dataLoader.get('users').loadNonNull(viewerId)
     ])
 
     if (!viewerMeetingMember) {
@@ -135,6 +137,11 @@ const addComment = {
 
         await r.table('Notification').insert(notification).run()
 
+        IntegrationNotifier.sendNotificationToUser?.(
+          dataLoader,
+          notification.id,
+          notification.userId
+        )
         publishNotification(notification, subOptions)
       }
     }
@@ -167,7 +174,7 @@ const addComment = {
     )!
     const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage: GenericMeetingStage) => stage.isAsync)
-    analytics.commentAdded(viewerId, meeting, isAnonymous, isAsync, !!threadParentId)
+    analytics.commentAdded(viewer, meeting, isAnonymous, isAsync, !!threadParentId)
     publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
     return data
   }

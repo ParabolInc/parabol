@@ -6,10 +6,10 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   insights: ({insights}) => !!insights,
   noAISummary: ({noAISummary}) => !!noAISummary,
   noMeetingHistoryLimit: ({noMeetingHistoryLimit}) => !!noMeetingHistoryLimit,
-  checkoutFlow: ({checkoutFlow}) => !!checkoutFlow,
   retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
-  gcal: ({gcal}) => !!gcal,
-  adHocTeams: ({adHocTeams}) => !!adHocTeams
+  adHocTeams: ({adHocTeams}) => !!adHocTeams,
+  noTemplateLimit: ({noTemplateLimit}) => !!noTemplateLimit,
+  signUpDestinationTeam: ({signUpDestinationTeam}) => !!signUpDestinationTeam
 }
 
 export default UserFeatureFlags

@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import plural from '../utils/plural'
 import {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
 import StyledLink from './StyledLink'
@@ -74,7 +74,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
   const canUpgrade = !!viewerOrganizationUser
 
   const onUpgrade = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'timelineHistoryLock',
       upgradeTier: 'team',
       meetingId

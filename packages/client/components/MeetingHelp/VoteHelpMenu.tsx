@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import useSegmentTrack from '../../hooks/useSegmentTrack'
+import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {VOTE} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -12,7 +12,7 @@ interface Props {}
 
 const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('Help Menu Open', {phase: 'vote'})
+  useClientSideTrack('Help Menu Open', {phase: 'vote'})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[VOTE]}</HelpMenuHeader>

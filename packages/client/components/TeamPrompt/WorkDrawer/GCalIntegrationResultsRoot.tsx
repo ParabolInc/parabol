@@ -44,7 +44,9 @@ const GCalIntegrationResultsRoot = (props: Props) => {
   return (
     <ErrorBoundary>
       <Suspense fallback={<Loader />}>
-        {queryRef && <GCalIntegrationResults queryRef={queryRef} order={eventRange.order} />}
+        {queryRef && (
+          <GCalIntegrationResults queryRef={queryRef} order={eventRange.order} teamId={teamId} />
+        )}
       </Suspense>
     </ErrorBoundary>
   )

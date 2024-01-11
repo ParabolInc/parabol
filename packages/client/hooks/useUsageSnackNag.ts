@@ -4,7 +4,7 @@ import {useEffect} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import {RouterProps, useHistory} from 'react-router'
 import Atmosphere from '../Atmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {TierEnum} from './../__generated__/NewTeamOrgPicker_organizations.graphql'
 import {useUsageSnackNagQuery} from './../__generated__/useUsageSnackNagQuery.graphql'
 import useAtmosphere from './useAtmosphere'
@@ -17,10 +17,10 @@ const getIsNaggingPath = (history: RouterProps['history']) => {
   return !(pathname.includes('/usage') || pathname.includes('/meet/'))
 }
 
-const shouldNag = (tier: TierEnum, suggestedTier: TierEnum | null) => {
+const shouldNag = (billingTier: TierEnum, suggestedTier: TierEnum | null) => {
   if (!suggestedTier) return false
-  const suggestPro = suggestedTier === 'team' && tier === 'starter'
-  const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
+  const suggestPro = suggestedTier === 'team' && billingTier === 'starter'
+  const suggestEnterprise = suggestedTier === 'enterprise' && billingTier !== 'enterprise'
   return suggestPro || suggestEnterprise
 }
 
@@ -41,11 +41,11 @@ const emitNag = (atmosphere: Atmosphere, history: RouterProps['history']) => {
       callback: () => {
         atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'usage')
         history.push(`/usage`)
-        SendClientSegmentEventMutation(atmosphere, 'Clicked usage snackbar CTA')
+        SendClientSideEvent(atmosphere, 'Clicked usage snackbar CTA')
       }
     }
   })
-  SendClientSegmentEventMutation(atmosphere, 'Sent usage snackbar')
+  SendClientSideEvent(atmosphere, 'Sent usage snackbar')
 }
 
 const useUsageSnackNag = (insights: boolean) => {

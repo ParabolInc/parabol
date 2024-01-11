@@ -133,7 +133,13 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     publish(SubscriptionChannel.TEAM, teamId, 'AcceptTeamInvitationPayload', data, subOptions)
 
     // Send individualized message to the user
-    publish(SubscriptionChannel.TEAM, userId, 'AcceptTeamInvitationPayload', data, subOptions)
+    publish(
+      SubscriptionChannel.NOTIFICATION,
+      userId,
+      'AcceptTeamInvitationPayload',
+      data,
+      subOptions
+    )
   })
 
   return {viewerId}

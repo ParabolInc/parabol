@@ -6,12 +6,12 @@ import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
 import {ElementWidth, Threshold} from '../../../../types/constEnums'
-import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
+import {TierEnum} from '../../../../__generated__/NewMeetingQuery.graphql'
 import OrgStats from './OrgStats'
 import useModal from '../../../../hooks/useModal'
 import DowngradeModal from './DowngradeModal'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 import {Breakpoint} from '~/types/constEnums'
@@ -74,7 +74,7 @@ const OrgPlans = (props: Props) => {
         ...DowngradeModal_organization
         ...LimitExceededWarning_organization
         id
-        tier
+        billingTier
         scheduledLockAt
         lockedAt
       }
@@ -83,7 +83,7 @@ const OrgPlans = (props: Props) => {
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, scheduledLockAt, lockedAt, tier} = organization
+  const {id: orgId, scheduledLockAt, lockedAt, billingTier} = organization
   const showNudge = scheduledLockAt || lockedAt
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
@@ -97,24 +97,24 @@ const OrgPlans = (props: Props) => {
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
-      buttonStyle: getButtonStyle(tier, 'starter'),
-      buttonLabel: getButtonLabel(tier, 'starter'),
-      isActive: !hasSelectedTeamPlan && tier === 'starter'
+      buttonStyle: getButtonStyle(billingTier, 'starter'),
+      buttonLabel: getButtonLabel(billingTier, 'starter'),
+      isActive: !hasSelectedTeamPlan && billingTier === 'starter'
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
-      buttonStyle: getButtonStyle(tier, 'team'),
-      buttonLabel: getButtonLabel(tier, 'team'),
-      isActive: hasSelectedTeamPlan || tier === 'team'
+      buttonStyle: getButtonStyle(billingTier, 'team'),
+      buttonLabel: getButtonLabel(billingTier, 'team'),
+      isActive: hasSelectedTeamPlan || billingTier === 'team'
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', ...EnterpriseBenefits],
-      buttonStyle: getButtonStyle(tier, 'enterprise'),
-      buttonLabel: getButtonLabel(tier, 'enterprise'),
-      isActive: tier === 'enterprise'
+      buttonStyle: getButtonStyle(billingTier, 'enterprise'),
+      buttonLabel: getButtonLabel(billingTier, 'enterprise'),
+      isActive: billingTier === 'enterprise'
     }
   ] as const
 
@@ -122,7 +122,7 @@ const OrgPlans = (props: Props) => {
     label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan',
     planTier: TierEnum
   ) => {
-    SendClientSegmentEventMutation(atmosphere, 'Plan Tier Selected', {
+    SendClientSideEvent(atmosphere, 'Plan Tier Selected', {
       orgId,
       tier: planTier
     })
@@ -132,7 +132,7 @@ const OrgPlans = (props: Props) => {
       handleSelectTeamPlan()
     } else if (label === 'Downgrade') {
       openPortal()
-      SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
+      SendClientSideEvent(atmosphere, 'Downgrade Clicked', {
         orgId,
         tier: planTier
       })

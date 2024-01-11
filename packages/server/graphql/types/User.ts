@@ -44,7 +44,6 @@ import SuggestedAction from './SuggestedAction'
 import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
-import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import TimelineEvent from '../../database/types/TimelineEvent'
@@ -58,9 +57,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId provided by us'
     },
-    segmentId: {
+    pseudoId: {
       type: GraphQLString,
-      description: 'The optional segmentId for the user'
+      description: 'The optional pseudoId for the user'
     },
     archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,
@@ -90,7 +89,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async ({id: userId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
-          (organizationUser: OrganizationUserType) => organizationUser.role === 'BILLING_LEADER'
+          (organizationUser: OrganizationUserType) =>
+            organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
         )
       }
     },
@@ -648,10 +648,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const teamMemberId = toTeamMemberId(teamId, userId || id)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
-    },
-    tier: {
-      type: new GraphQLNonNull(TierEnum),
-      description: 'The highest tier of any org the user belongs to'
     },
     tms: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),

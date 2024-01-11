@@ -5,7 +5,7 @@ import useRouter from '~/hooks/useRouter'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import {TeamsLimitReminderNotification_notification$key} from '~/__generated__/TeamsLimitReminderNotification_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {Threshold} from '../types/constEnums'
 import makeDateString from '../utils/makeDateString'
 import NotificationAction from './NotificationAction'
@@ -35,14 +35,14 @@ const TeamsLimitReminderNotification = (props: Props) => {
   const {orgId, orgName, orgPicture, scheduledLockAt} = notification
 
   useEffect(() => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
       upgradeCTALocation: 'teamsLimitReminderNotification',
       orgId
     })
   }, [])
 
   const onActionClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'teamsLimitReminderNotification'
     })
     history.push(`/me/organizations/${orgId}`)

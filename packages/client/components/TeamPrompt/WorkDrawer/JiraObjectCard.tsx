@@ -9,6 +9,8 @@ import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {JiraObjectCard_result$key} from '../../../__generated__/JiraObjectCard_result.graphql'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   resultRef: JiraObjectCard_result$key
@@ -36,6 +38,8 @@ const JiraObjectCard = (props: Props) => {
     resultRef
   )
 
+  const atmosphere = useAtmosphere()
+
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -47,8 +51,21 @@ const JiraObjectCard = (props: Props) => {
     originRef: copiedTooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
 
+  const trackLinkClick = () => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Link Clicked', {
+      service: 'jira'
+    })
+  }
+
+  const trackCopy = () => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Copied', {
+      service: 'jira'
+    })
+  }
+
   const handleCopy = () => {
     openCopiedTooltip()
+    trackCopy()
     setTimeout(() => {
       closeCopiedTooltip()
     }, 2000)
@@ -65,13 +82,20 @@ const JiraObjectCard = (props: Props) => {
           target='_blank'
           className='font-semibold text-slate-600 hover:underline'
           rel='noreferrer'
+          onClick={trackLinkClick}
         >
           {issueKey}
         </a>
         <div>Updated {relativeDate(lastUpdated)}</div>
       </div>
       <div className='my-2 text-sm'>
-        <a href={url} target='_blank' className='hover:underline' rel='noreferrer'>
+        <a
+          href={url}
+          target='_blank'
+          className='hover:underline'
+          rel='noreferrer'
+          onClick={trackLinkClick}
+        >
           {summary}
         </a>
       </div>
@@ -86,6 +110,7 @@ const JiraObjectCard = (props: Props) => {
               target='_blank'
               className='text-xs text-slate-600 hover:underline'
               rel='noreferrer'
+              onClick={trackLinkClick}
             >
               {project.name}
             </a>

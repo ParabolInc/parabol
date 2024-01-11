@@ -10,7 +10,6 @@ import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addReactjiToReactable from './mutations/addReactjiToReactable'
 import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
@@ -90,7 +89,6 @@ import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
 import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
-import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
 import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
@@ -101,9 +99,7 @@ import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
 import setTaskHighlight from './mutations/setTaskHighlight'
-import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
-import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
@@ -137,7 +133,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReactjiToReactable,
       addReflectTemplate,
       addReflectTemplatePrompt,
       addSlackAuth,
@@ -207,7 +202,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       removeTeamMember,
       resetPassword,
       resetRetroMeetingToGroupStage,
-      segmentEventTrack,
       selectTemplate,
       setAppLocation,
       setDefaultSlackChannel,
@@ -215,8 +209,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       setStageTimer,
       setSlackNotification,
       startDraggingReflection,
-      startCheckIn,
-      startRetrospective,
       startSprintPoker,
       setTaskHighlight,
       updateAgendaItem,

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useCallback} from 'react'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import pokerTutorialThumb from '../../../static/images/illustrations/pokerTutorialThumb.jpg'
 import standupTutorialThumb from '../../../static/images/illustrations/standupTutorialThumb.jpg'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -122,10 +122,10 @@ const TutorialMeetingCard = (props: Props) => {
   const config = TUTORIAL_MAP[props.type]
 
   const onOpen = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Opened')
+    SendClientSideEvent(atmospehere, 'Tutorial Meeting Card Opened')
   }, [])
   const onClose = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Closed')
+    SendClientSideEvent(atmospehere, 'Tutorial Meeting Card Closed')
   }, [])
 
   const {togglePortal: toggleModal, modalPortal} = useModal({onOpen, onClose})

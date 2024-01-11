@@ -22,22 +22,19 @@ const staticPaths = {
   [path.join(PROJECT_ROOT, 'static')]: !__PRODUCTION__,
   [path.join(PROJECT_ROOT, 'dev', 'dll')]: !__PRODUCTION__
 }
-const filesToCache = ['sw.js', 'favicon.ico', 'manifest.json']
-const staticServer = new StaticServer({staticPaths, filesToCache})
+const staticServer = new StaticServer({staticPaths})
 
 const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boolean) => {
   const meta = staticServer.getMeta(fileName)
   if (!meta) return false
   const {size, pathname, brotliFile, file, type} = meta
   if (file) {
-    res.cork(() => {
-      res.writeHeader('content-type', type)
-      if (__PRODUCTION__ && sendCompressed && brotliFile) {
-        res.writeHeader('content-encoding', 'br').end(brotliFile)
-      } else {
-        res.end(file)
-      }
-    })
+    res.writeHeader('content-type', type)
+    if (__PRODUCTION__ && sendCompressed && brotliFile) {
+      res.writeHeader('content-encoding', 'br').end(brotliFile)
+    } else {
+      res.end(file)
+    }
     return true
   }
   res.writeHeader('content-type', type)

@@ -10,18 +10,27 @@ const mutation = graphql`
   mutation LoginWithGoogleMutation(
     $code: ID!
     $invitationToken: ID!
-    $segmentId: ID
+    $pseudoId: ID
     $isInvitation: Boolean!
     $params: String!
   ) {
     loginWithGoogle(
       code: $code
-      segmentId: $segmentId
+      pseudoId: $pseudoId
       invitationToken: $invitationToken
       params: $params
     ) {
       error {
         message
+      }
+      isNewUser
+      user {
+        featureFlags {
+          signUpDestinationTeam
+        }
+        teams {
+          id
+        }
       }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
@@ -44,13 +53,22 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const {error: uiError} = loginWithGoogle
+      const {error: uiError, user, isNewUser} = loginWithGoogle
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken ?? loginWithGoogle.authToken
         atmosphere.setAuthToken(authToken)
-        handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
+        const redirectPath =
+          isNewUser && user?.featureFlags.signUpDestinationTeam
+            ? `/team/${user?.teams?.[0]?.id}`
+            : '/meetings'
+
+        handleAuthenticationRedirect(acceptTeamInvitation, {
+          atmosphere,
+          history,
+          redirectPath
+        })
       }
     }
   })

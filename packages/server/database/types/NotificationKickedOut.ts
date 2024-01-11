@@ -7,6 +7,7 @@ interface Input {
 }
 
 export default class NotificationKickedOut extends Notification {
+  readonly type = 'KICKED_OUT'
   teamId: string
   evictorUserId: string
   constructor(input: Input) {

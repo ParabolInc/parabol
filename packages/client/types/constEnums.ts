@@ -15,7 +15,8 @@ export const enum AppBar {
 
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE'
+  GOOGLE = 'GOOGLE',
+  MICROSOFT = 'MICROSOFT'
 }
 
 // https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
@@ -219,6 +220,7 @@ export const enum AuthenticationError {
   EXCEEDED_RESET_THRESHOLD = 'exceededResetThreshold',
   USER_NOT_FOUND = 'userNotFound',
   USER_EXISTS_GOOGLE = 'userExistsGoogle',
+  USER_EXISTS_MICROSOFT = 'userExistsMicrosoft',
   USER_EXISTS_SAML = 'userExistsSaml'
 }
 
@@ -384,7 +386,7 @@ export const enum Threshold {
   MASS_INVITATION_TOKEN_LIFESPAN = 2592000000, // 30 days
   TEAM_INVITATION_LIFESPAN = 2592000000, // 30 days
   FINAL_WARNING_DAYS_BEFORE_LOCK = 7,
-  MAX_FREE_TEAMS = 10,
+  MAX_FREE_TEAMS = 100,
   MAX_ACCOUNT_PASSWORD_ATTEMPTS = 10,
   MAX_ACCOUNT_DAILY_PASSWORD_RESETS = 3,
   MAX_AVATAR_FILE_SIZE = 1024 * 1024,

@@ -50,7 +50,7 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
       )
     })
   }
-  analytics.websocketDisconnected(userId, {
+  analytics.websocketDisconnected(user, {
     socketCount: userPresence.length,
     socketId,
     tms

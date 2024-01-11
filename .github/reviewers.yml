@@ -17,6 +17,7 @@ reviewers:
     devops:
       - rafaelromcar-parabol
       - adaniels-parabol
+      - dbumblis-parabol
     none:
 
   per_author:
@@ -35,12 +36,15 @@ reviewers:
     - developers
 
 files:
-  '**/migrations/**':
+  "**/migrations/**":
     - data
-  '**/analytics/**':
+  "**/analytics/**":
     - data
+  ".env.example":
+    - devops
 options:
   ignore_draft: true
   ignored_keywords:
     - WIP
+    - chore(release)
   number_of_reviewers: 1

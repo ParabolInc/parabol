@@ -7,7 +7,7 @@ import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import {RDatum} from '../../../database/stricterR'
 
 export type StripeFailPaymentPayloadSource =
   | {
@@ -75,15 +75,15 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     // After 23 hours subscription updates to incomplete_expired and the invoice becomes void.
     // Not to handle this particular case in 23 hours, we do it now
     await terminateSubscription(orgId)
-  } else {
-    // Keep subscription, but disable teams
-    await updateTeamByOrgId({isPaid: false}, orgId)
   }
 
   const billingLeaderUserIds = (await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null, role: 'BILLING_LEADER'})('userId')
+    .filter({removedAt: null})
+    .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))(
+      'userId'
+    )
     .run()) as string[]
 
   const {default_source} = customer

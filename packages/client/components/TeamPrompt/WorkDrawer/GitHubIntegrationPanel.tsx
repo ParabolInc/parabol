@@ -9,6 +9,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
   {
@@ -30,6 +31,8 @@ const GitHubIntegrationPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitHubIntegrationPanel_meeting on TeamPromptMeeting {
+        teamId
+        id
         viewerMeetingMember {
           teamMember {
             teamId
@@ -60,6 +63,19 @@ const GitHubIntegrationPanel = (props: Props) => {
       return onError(new Error('Could not find team member'))
     }
     teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
+
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+      teamId: meeting.teamId,
+      meetingId: meeting.id,
+      service: 'github'
+    })
+  }
+
+  const trackTabNavigated = (label: string) => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
+      service: 'github',
+      buttonLabel: label
+    })
   }
 
   return (
@@ -69,7 +85,14 @@ const GitHubIntegrationPanel = (props: Props) => {
           <GitHubRepoFilterBar
             teamMemberRef={teamMember}
             selectedRepos={selectedRepos}
-            setSelectedRepos={setSelectedRepos}
+            setSelectedRepos={(repos) => {
+              SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
+                teamId: meeting.teamId,
+                meetingId: meeting.id,
+                service: 'github'
+              })
+              setSelectedRepos(repos)
+            }}
           />
           <div className='mb-4 flex w-full gap-2 px-4'>
             {GITHUB_QUERY_TABS.map((tab) => (
@@ -81,7 +104,10 @@ const GitHubIntegrationPanel = (props: Props) => {
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'
                     : 'border border-slate-300 bg-white'
                 )}
-                onClick={() => setGithubType(tab.key)}
+                onClick={() => {
+                  trackTabNavigated(tab.label)
+                  setGithubType(tab.key)
+                }}
               >
                 {tab.label}
               </div>

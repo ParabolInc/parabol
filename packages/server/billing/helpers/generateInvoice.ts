@@ -15,6 +15,7 @@ import isValid from '../../graphql/isValid'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import sendToSentry from '../../utils/sendToSentry'
 import {getStripeManager} from '../../utils/stripe'
+import {RDatum} from '../../database/stricterR'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -356,7 +357,8 @@ export default async function generateInvoice(
     billingLeaderIds: r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, role: 'BILLING_LEADER'})
+      .filter({removedAt: null})
+      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
       .coerceTo('array')('userId') as unknown as string[]
   }).run()
 

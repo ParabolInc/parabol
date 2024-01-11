@@ -1,5 +1,4 @@
 import React from 'react'
-import {FiberNew as NewIcon} from '@mui/icons-material'
 import FlatButton from './FlatButton'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
@@ -38,15 +37,6 @@ const ButtonHeader = styled(FlatButton)<{isActive?: boolean; hasZoomFlag: boolea
     }
   })
 )
-
-const Badge = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  height: 10,
-  position: 'relative',
-  width: 10,
-  color: PALETTE.SUCCESS_LIGHT
-})
 
 type Props = {
   showTranscription: boolean
@@ -96,9 +86,6 @@ const RetroDiscussionThreadHeader = (props: Props) => {
           hasZoomFlag={hasZoomFlag}
         >
           {'Transcription'}
-          <Badge>
-            <NewIcon />
-          </Badge>
         </ButtonHeader>
       </HeaderWrapper>
     )

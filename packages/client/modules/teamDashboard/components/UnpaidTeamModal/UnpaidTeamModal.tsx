@@ -9,10 +9,10 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
-import {UpgradeCTALocationEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
+import {UpgradeCTALocationEnumType} from 'parabol-server/graphql/types/UpgradeCTALocationEnum'
 import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 
 const StyledButton = styled(PrimaryButton)({
@@ -45,9 +45,11 @@ const query = graphql`
           lockedAt
           name
           billingLeaders {
-            id
-            preferredName
-            email
+            user {
+              id
+              preferredName
+              email
+            }
           }
           creditCard {
             brand
@@ -71,7 +73,7 @@ const UnpaidTeamModal = (props: Props) => {
 
   useEffect(() => {
     if (team?.organization.lockedAt) {
-      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'organizationLockedModal',
         orgId: team.organization.id
       })
@@ -85,12 +87,13 @@ const UnpaidTeamModal = (props: Props) => {
 
   const {id: orgId, billingLeaders, name: orgName} = organization
   const [firstBillingLeader] = billingLeaders
-  const billingLeaderName = firstBillingLeader?.preferredName ?? 'Unknown'
-  const email = firstBillingLeader?.email ?? 'Unknown'
-  const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1
+  const {user: firstBillingLeaderUser} = firstBillingLeader ?? {}
+  const billingLeaderName = firstBillingLeaderUser?.preferredName ?? 'Unknown'
+  const email = firstBillingLeaderUser?.email ?? 'Unknown'
+  const isALeader = billingLeaders.findIndex((leader) => leader.user.id === viewerId) !== -1
 
-  const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnum) => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+  const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnumType) => {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation
     })
     history.push(`/me/organizations/${orgId}`)

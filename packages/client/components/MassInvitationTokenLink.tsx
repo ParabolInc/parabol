@@ -7,7 +7,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
@@ -68,7 +68,7 @@ const MassInvitationTokenLink = (props: Props) => {
     doFetch().catch()
   }, [])
   const onCopy = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Copied Invite Link', {
+    SendClientSideEvent(atmosphere, 'Copied Invite Link', {
       teamId: teamId,
       meetingId: meetingId
     })

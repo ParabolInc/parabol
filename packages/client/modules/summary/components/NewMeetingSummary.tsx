@@ -7,6 +7,7 @@ import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import useSidebar from '../../../hooks/useSidebar'
+import useSnacksForNewMeetings from '../../../hooks/useSnacksForNewMeetings'
 import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
@@ -35,6 +36,11 @@ const query = graphql`
         }
         name
       }
+      teams {
+        activeMeetings {
+          ...useSnacksForNewMeetings_meetings
+        }
+      }
     }
   }
 `
@@ -43,7 +49,8 @@ const NewMeetingSummary = (props: Props) => {
   const {urlAction, queryRef} = props
   const data = usePreloadedQuery<NewMeetingSummaryQuery>(query, queryRef)
   const {viewer} = data
-  const {newMeeting} = viewer
+  const {newMeeting, teams} = viewer
+  const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {history} = useRouter()
   useEffect(() => {
     if (!newMeeting) {
@@ -65,15 +72,20 @@ const NewMeetingSummary = (props: Props) => {
     ? `/retrospective-demo-summary/csv`
     : `/new-summary/${meetingId}/csv`
 
+  useSnacksForNewMeetings(activeMeetings as any)
   return (
     <>
-      <div className='hidden print:hidden lg:block'>
-        <DashTopBar queryRef={data} toggle={toggle} />
-      </div>
-      <div className='flex min-h-screen bg-slate-200'>
+      {!isDemoRoute() && (
         <div className='hidden print:hidden lg:block'>
-          <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+          <DashTopBar queryRef={data} toggle={toggle} />
         </div>
+      )}
+      <div className='flex min-h-screen bg-slate-200'>
+        {!isDemoRoute() && (
+          <div className='hidden print:hidden lg:block'>
+            <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+          </div>
+        )}
         <div className='w-full'>
           <MeetingSummaryEmail
             appOrigin={window.location.origin}

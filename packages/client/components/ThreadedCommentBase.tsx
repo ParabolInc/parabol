@@ -14,7 +14,7 @@ import isTempId from '~/utils/relay/isTempId'
 import {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
 import {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
 import {ThreadedCommentBase_viewer$key} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
 import {PARABOL_AI_USER_ID} from '../utils/constants'
@@ -66,7 +66,7 @@ const ThreadedCommentBase = (props: Props) => {
     graphql`
       fragment ThreadedCommentBase_viewer on User {
         ...ThreadedItemReply_viewer
-        tier
+        billingTier
       }
     `,
     viewerRef
@@ -138,9 +138,9 @@ const ThreadedCommentBase = (props: Props) => {
 
   useEffect(() => {
     if (createdByUserNullable?.id === PARABOL_AI_USER_ID) {
-      SendClientSegmentEventMutation(atmosphere, 'AI Summary Viewed', {
+      SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
         source: 'Discussion',
-        tier: viewer.tier,
+        tier: viewer.billingTier,
         meetingId,
         discussionTopicId
       })

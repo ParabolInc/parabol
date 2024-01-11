@@ -6,8 +6,8 @@ import sendToSentry from '../utils/sendToSentry'
 export type uWSHandler = (res: HttpResponse, req: HttpRequest) => void
 const uWSAsyncHandler =
   (handler: uWSHandler, ignoreDone?: boolean) => async (res: HttpResponse, req: HttpRequest) => {
-    const authToken = getReqAuth(req)
     safetyPatchRes(res)
+    const authToken = getReqAuth(req)
     try {
       await handler(res, req)
       if (!ignoreDone && !res.done) {

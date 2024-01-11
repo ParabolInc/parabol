@@ -121,7 +121,6 @@ module.exports = {
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         googleAnalytics: process.env.GA_TRACKING_ID,
-        segment: process.env.SEGMENT_WRITE_KEY,
         sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
@@ -129,8 +128,11 @@ module.exports = {
         prblIn: process.env.INVITATION_SHORTLINK,
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
+        AUTH_MICROSOFT_ENABLED: process.env.AUTH_MICROSOFT_DISABLED !== 'true',
         AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
-        AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY
+        AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
+        microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
+        microsoft: process.env.MICROSOFT_CLIENT_ID,
       })
     }),
     new ReactRefreshWebpackPlugin(),

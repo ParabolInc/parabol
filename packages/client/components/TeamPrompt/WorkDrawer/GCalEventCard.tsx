@@ -9,6 +9,8 @@ import {mergeRefs} from '../../../utils/react/mergeRefs'
 import clsx from 'clsx'
 import {ContentCopy} from '@mui/icons-material'
 import ms from 'ms'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 
 interface Props {
   eventRef: GCalEventCard_event$key
@@ -81,6 +83,8 @@ const GCalEventCard = (props: Props) => {
     eventRef
   )
 
+  const atmosphere = useAtmosphere()
+
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -94,6 +98,7 @@ const GCalEventCard = (props: Props) => {
 
   const handleCopy = () => {
     openCopiedTooltip()
+    trackCopy()
     setTimeout(() => {
       closeCopiedTooltip()
     }, 2000)
@@ -101,6 +106,18 @@ const GCalEventCard = (props: Props) => {
 
   const startDate = result.startDate ? new Date(result.startDate) : null
   const endDate = result.endDate ? new Date(result.endDate) : null
+
+  const trackLinkClick = () => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Link Clicked', {
+      service: 'gcal'
+    })
+  }
+
+  const trackCopy = () => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Copied', {
+      service: 'gcal'
+    })
+  }
 
   return (
     <div className='group'>
@@ -113,6 +130,7 @@ const GCalEventCard = (props: Props) => {
             href={result.link ?? undefined}
             target='_blank'
             rel='noreferrer'
+            onClick={trackLinkClick}
           >
             {result.summary}
           </a>

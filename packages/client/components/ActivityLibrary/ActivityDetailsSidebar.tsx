@@ -1,6 +1,8 @@
 import {LockOpen} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import React, {useState, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
@@ -14,7 +16,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
-import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
@@ -40,6 +42,8 @@ import {SelectGroup} from '../../ui/Select/SelectGroup'
 import {SelectItem} from '../../ui/Select/SelectItem'
 import OneOnOneTeamStatus from './OneOnOneTeamStatus'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
+import useBreakpoint from '../../hooks/useBreakpoint'
+import {Breakpoint} from '../../types/constEnums'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -52,6 +56,8 @@ interface Props {
 
 const ActivityDetailsSidebar = (props: Props) => {
   const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId, viewerRef} = props
+  const [isMinimized, setIsMinimized] = useState(false)
+  const isMobile = !useBreakpoint(Breakpoint.INVOICE)
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -70,15 +76,14 @@ const ActivityDetailsSidebar = (props: Props) => {
     graphql`
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
-          gcal
           adHocTeams
+          noTemplateLimit
         }
         ...AdhocTeamMultiSelect_viewer
         organizations {
           id
           name
         }
-        ...ScheduleMeetingButton_viewer
       }
     `,
     viewerRef
@@ -166,7 +171,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     const user = newUsers[0]
     setSelectedUser(user)
     if (user) {
-      SendClientSegmentEventMutation(atmosphere, 'Teammate Selected', {
+      SendClientSideEvent(atmosphere, 'Teammate Selected', {
         selectionLocation: 'oneOnOneUserPicker'
       })
     }
@@ -277,7 +282,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   )
 
   const handleUpgrade = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'publicTemplate',
       meetingType: type
     })
@@ -289,128 +294,153 @@ const ActivityDetailsSidebar = (props: Props) => {
       {isOpen && <div className='w-96' />}
       <div
         className={clsx(
-          'fixed right-0 flex h-screen translate-x-0 flex-col border-l border-solid border-slate-300 px-4 pb-9 pt-14 transition-all',
-          isOpen ? ' w-96' : 'w-0 overflow-hidden opacity-0'
+          'fixed bottom-0 flex  w-full flex-col overflow-hidden border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:w-96 lg:border-l lg:pt-14',
+          isOpen ? 'translate-y-0' : 'translate-y-full lg:translate-x-0 lg:translate-y-0',
+          isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'
         )}
       >
-        <div className='mb-6 text-xl font-semibold'>Settings</div>
+        <div className='flex-grow'>
+          <div className='flex items-center justify-between pt-2 text-xl font-semibold lg:pt-0'>
+            Settings
+            <span
+              className='hover:cursor-pointer lg:hidden'
+              onClick={() => setIsMinimized(!isMinimized)}
+            >
+              {isMinimized ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </span>
+          </div>
 
-        <div className='flex grow flex-col gap-2'>
-          {/* TODO: move one-on-one logic to its own component */}
-          {selectedTemplate.id === 'oneOnOneAction' ? (
-            <div className='rounded-lg bg-slate-200 p-3'>
-              <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
-              <AdhocTeamMultiSelect
-                viewerRef={viewer}
-                onChange={onUserSelected}
-                value={selectedUser ? [selectedUser] : []}
-                multiple={false}
-              />
-
-              {showOrgPicker && (
-                <>
-                  <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
-                  <Select onValueChange={(orgId) => setSelectedOrgId(orgId)} value={selectedOrgId}>
-                    <SelectTrigger className='bg-white'>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {viewerOrganizations
-                          .filter((org) =>
-                            mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true
-                          )
-                          .map((org) => (
-                            <SelectItem value={org.id} key={org.id}>
-                              {org.name}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </>
-              )}
-            </div>
-          ) : (
-            <NewMeetingTeamPicker
-              positionOverride={MenuPosition.UPPER_LEFT}
-              onSelectTeam={onSelectTeam}
-              selectedTeamRef={selectedTeam}
-              teamsRef={availableTeams}
-              customPortal={teamScopePopover}
-              allowAddTeam={viewer.featureFlags.adHocTeams}
-            />
-          )}
-
-          {selectedTeam.tier === 'starter' && !selectedTemplate.isFree ? (
-            <div className='flex grow flex-col'>
-              <div className='my-auto text-center'>
-                Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
-                ideal workflow.
-              </div>
-              <RaisedButton
-                palette='pink'
-                className='h-12 w-full text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
-                onClick={handleUpgrade}
-              >
-                Upgrade to Team Plan
-              </RaisedButton>
-            </div>
-          ) : (
-            <>
-              {type === 'retrospective' && (
-                <>
-                  <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                  <NewMeetingSettingsToggleTeamHealth
-                    settingsRef={selectedTeam.retroSettings}
-                    teamRef={selectedTeam}
+          <div
+            className={clsx(
+              'transition-max-height duration-300 ease-in-out',
+              isMinimized
+                ? 'max-h-0 opacity-0 lg:max-h-[100vh] lg:opacity-100'
+                : 'max-h-[100vh] pb-4 lg:pb-0'
+            )}
+          >
+            <div className='mt-6 flex grow flex-col gap-2'>
+              {/* TODO: move one-on-one logic to its own component */}
+              {selectedTemplate.id === 'oneOnOneAction' ? (
+                <div className='rounded-lg bg-slate-200 p-3'>
+                  <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
+                  <AdhocTeamMultiSelect
+                    viewerRef={viewer}
+                    onChange={onUserSelected}
+                    value={selectedUser ? [selectedUser] : []}
+                    multiple={false}
                   />
-                  <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-                </>
-              )}
-              {type === 'poker' && (
-                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
-              )}
-              {type === 'action' && (
-                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
-              )}
-              {type === 'teamPrompt' && (
-                <ActivityDetailsRecurrenceSettings
-                  onRecurrenceSettingsUpdated={setRecurrenceSettings}
-                  recurrenceSettings={recurrenceSettings}
+
+                  {showOrgPicker && (
+                    <>
+                      <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
+                      <Select
+                        onValueChange={(orgId) => setSelectedOrgId(orgId)}
+                        value={selectedOrgId}
+                      >
+                        <SelectTrigger className='bg-white'>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {viewerOrganizations
+                              .filter((org) =>
+                                mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true
+                              )
+                              .map((org) => (
+                                <SelectItem value={org.id} key={org.id}>
+                                  {org.name}
+                                </SelectItem>
+                              ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <NewMeetingTeamPicker
+                  positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
+                  onSelectTeam={onSelectTeam}
+                  selectedTeamRef={selectedTeam}
+                  teamsRef={availableTeams}
+                  customPortal={teamScopePopover}
+                  allowAddTeam={viewer.featureFlags.adHocTeams}
                 />
               )}
-              <div className='flex grow flex-col justify-end gap-2'>
-                {oneOnOneTeamInput && (
-                  <OneOnOneTeamStatus
-                    email={oneOnOneTeamInput.email}
-                    orgId={oneOnOneTeamInput.orgId}
-                    name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
-                  />
-                )}
-                {error && <StyledError>{error.message}</StyledError>}
-                {selectedTemplate.id !== 'oneOnOneAction' && (
-                  <>
-                    <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-                    {/* TODO: scheduling meeting does not work with one-on-one https://github.com/ParabolInc/parabol/issues/8820  */}
-                    <ScheduleMeetingButton
-                      handleStartActivity={handleStartActivity}
-                      mutationProps={mutationProps}
-                      teamRef={selectedTeam}
-                      viewerRef={viewer}
+
+              {selectedTeam.tier === 'starter' &&
+              !viewer.featureFlags.noTemplateLimit &&
+              !selectedTemplate.isFree ? (
+                <div className='flex grow flex-col'>
+                  <div className='my-auto text-center'>
+                    Upgrade to the <b>Team Plan</b> to create custom activities unlocking your
+                    team’s ideal workflow.
+                  </div>
+                  <RaisedButton
+                    palette='pink'
+                    className='h-12 w-full text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                    onClick={handleUpgrade}
+                  >
+                    Upgrade to Team Plan
+                  </RaisedButton>
+                </div>
+              ) : (
+                <>
+                  {type === 'retrospective' && (
+                    <>
+                      <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+                      <NewMeetingSettingsToggleTeamHealth
+                        settingsRef={selectedTeam.retroSettings}
+                        teamRef={selectedTeam}
+                      />
+                      <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+                    </>
+                  )}
+                  {type === 'poker' && (
+                    <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+                  )}
+                  {type === 'action' && (
+                    <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
+                  )}
+                  {type === 'teamPrompt' && (
+                    <ActivityDetailsRecurrenceSettings
+                      onRecurrenceSettingsUpdated={setRecurrenceSettings}
+                      recurrenceSettings={recurrenceSettings}
                     />
-                  </>
-                )}
-                <FlatPrimaryButton
-                  onClick={() => handleStartActivity()}
-                  waiting={submitting}
-                  className='h-14'
-                >
-                  <div className='text-lg'>Start Activity</div>
-                </FlatPrimaryButton>
-              </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
+          {oneOnOneTeamInput && (
+            <OneOnOneTeamStatus
+              email={oneOnOneTeamInput.email}
+              orgId={oneOnOneTeamInput.orgId}
+              name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
+            />
+          )}
+          {error && <StyledError>{error.message}</StyledError>}
+          {selectedTemplate.id !== 'oneOnOneAction' && (
+            <>
+              <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+              {/* TODO: scheduling meeting does not work with one-on-one https://github.com/ParabolInc/parabol/issues/8820  */}
+              <ScheduleMeetingButton
+                handleStartActivity={handleStartActivity}
+                mutationProps={mutationProps}
+                teamRef={selectedTeam}
+              />
             </>
           )}
+          <FlatPrimaryButton
+            onClick={() => handleStartActivity()}
+            waiting={submitting}
+            className='h-14'
+          >
+            <div className='text-lg'>Start Activity</div>
+          </FlatPrimaryButton>
         </div>
       </div>
     </>

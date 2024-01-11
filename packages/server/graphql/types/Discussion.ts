@@ -23,6 +23,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NewMeetingStage from './NewMeetingStage'
 import {ThreadableConnection} from './Threadable'
 import User from './User'
+import Team from './Team'
 
 const Discussion = new GraphQLObjectType<any, GQLContext>({
   name: 'Discussion',
@@ -33,6 +34,12 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
+    },
+    team: {
+      type: new GraphQLNonNull(Team),
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId)
+      }
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)

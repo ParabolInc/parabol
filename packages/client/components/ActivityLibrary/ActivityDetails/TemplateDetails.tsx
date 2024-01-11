@@ -154,6 +154,7 @@ export const TemplateDetails = (props: Props) => {
         teams {
           ...TeamPickerModal_teams
         }
+        ...useTemplateDescription_viewer
       }
     `,
     viewerRef
@@ -217,7 +218,7 @@ export const TemplateDetails = (props: Props) => {
 
   const isOwner = viewerLowestScope === 'TEAM'
 
-  const description = useTemplateDescription(viewerLowestScope, activity, tier)
+  const description = useTemplateDescription(viewerLowestScope, activity, tier, viewer)
 
   useEffect(() => {
     setIsEditing(!!history.location.state?.edit)

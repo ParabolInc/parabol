@@ -26,7 +26,7 @@ import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import {TableChart} from '@mui/icons-material'
 import {Link} from 'react-router-dom'
-import SendClientSegmentEventMutation from '../../../../../mutations/SendClientSegmentEventMutation'
+import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 
 const ExportAllTasks = lazyPreload(() => import('./ExportAllTasks'))
@@ -94,7 +94,7 @@ const SummarySheet = (props: Props) => {
   const isDemo = !!props.isDemo
 
   const downloadPDF = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Download PDF Clicked', {meetingId})
+    SendClientSideEvent(atmosphere, 'Download PDF Clicked', {meetingId})
     window.print()
   }
 
@@ -232,7 +232,7 @@ const SummarySheet = (props: Props) => {
           prompt={`How’d your meeting go?`}
           tagline='We’re eager for your feedback!'
         />
-        <LogoFooter corsOptions={corsOptions} />
+        <LogoFooter corsOptions={corsOptions} appOrigin={appOrigin} />
       </tbody>
     </table>
   )

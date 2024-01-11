@@ -1,6 +1,6 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import Tabs from '../Tabs/Tabs'
@@ -13,6 +13,8 @@ import JiraSVG from '../JiraSVG'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import useAtmosphere from '../../hooks/useAtmosphere'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
@@ -24,13 +26,8 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
-        viewerMeetingMember {
-          user {
-            featureFlags {
-              gcal
-            }
-          }
-        }
+        id
+        teamId
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
         ...JiraIntegrationPanel_meeting
@@ -39,27 +36,33 @@ const TeamPromptWorkDrawer = (props: Props) => {
     `,
     meetingRef
   )
+  const atmosphere = useAtmosphere()
+
+  useEffect(() => {
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Impression', {
+      teamId: meeting.teamId,
+      meetingId: meeting.id
+    })
+  }, [])
 
   const [activeIdx, setActiveIdx] = useState(0)
 
   const baseTabs = [
     {
       icon: <ParabolLogoSVG />,
+      service: 'PARABOL',
       label: 'Parabol',
       Component: ParabolTasksPanel
     },
-    {icon: <GitHubSVG />, label: 'GitHub', Component: GitHubIntegrationPanel},
-    {icon: <JiraSVG />, label: 'Jira', Component: JiraIntegrationPanel},
-    ...(meeting.viewerMeetingMember?.user.featureFlags.gcal
-      ? [
-          {
-            icon: <img className='h-6 w-6' src={gcalLogo} />,
-            label: 'Google Calendar',
-            Component: GCalIntegrationPanel
-          }
-        ]
-      : [])
-  ].filter((tab) => !!tab)
+    {icon: <GitHubSVG />, service: 'github', label: 'GitHub', Component: GitHubIntegrationPanel},
+    {icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel},
+    {
+      icon: <img className='h-6 w-6' src={gcalLogo} />,
+      service: 'gcal',
+      label: 'Google Calendar',
+      Component: GCalIntegrationPanel
+    }
+  ] as const
 
   const {Component} = baseTabs[activeIdx]!
 
@@ -80,7 +83,14 @@ const TeamPromptWorkDrawer = (props: Props) => {
             {baseTabs.map((tab, idx) => (
               <Tab
                 key={tab.label}
-                onClick={() => setActiveIdx(idx)}
+                onClick={() => {
+                  SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
+                    teamId: meeting.teamId,
+                    meetingId: meeting.id,
+                    service: baseTabs[idx]?.service
+                  })
+                  setActiveIdx(idx)
+                }}
                 label={<div className='flex items-center justify-center'>{tab.icon}</div>}
               />
             ))}

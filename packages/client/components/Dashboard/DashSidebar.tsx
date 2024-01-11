@@ -5,7 +5,13 @@ import {useFragment} from 'react-relay'
 import {useLocation, useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
-import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE, TEAMS_PAGE} from '../../utils/constants'
+import {
+  AUTHENTICATION_PAGE,
+  BILLING_PAGE,
+  MEMBERS_PAGE,
+  ORG_SETTINGS_PAGE,
+  TEAMS_PAGE
+} from '../../utils/constants'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
@@ -77,12 +83,11 @@ const DashSidebar = (props: Props) => {
     graphql`
       fragment DashSidebar_viewer on User {
         ...StandardHub_viewer
-        ...DashNavList_viewer
         featureFlags {
-          checkoutFlow
           retrosInDisguise
         }
         organizations {
+          ...DashNavList_organization
           id
           name
           isBillingLeader
@@ -96,9 +101,8 @@ const DashSidebar = (props: Props) => {
 
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
-  const showOrgSidebar = featureFlags.checkoutFlow && match
 
-  if (showOrgSidebar) {
+  if (match) {
     const {orgId: orgIdFromParams} = match.params
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
@@ -132,6 +136,11 @@ const DashSidebar = (props: Props) => {
                 href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                 label={'Organization Settings'}
               />
+              <NavItem
+                icon={'key'}
+                href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
+                label={'Authentication'}
+              />
             </NavItemsWrap>
           </Contents>
         </Nav>
@@ -153,7 +162,7 @@ const DashSidebar = (props: Props) => {
           </NavItemsWrap>
           <DashHR />
           <NavMain>
-            <NavList viewer={viewer} />
+            <NavList organizationsRef={organizations} />
           </NavMain>
           <DashHR />
           <NavItemsWrap>

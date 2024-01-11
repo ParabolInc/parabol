@@ -15,6 +15,7 @@ import DialogTitle from './DialogTitle'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import ForgotPasswordPage from './ForgotPasswordPage'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
+import MicrosoftOAuthButtonBlock from './MicrosoftOAuthButtonBlock'
 import HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator'
 import PlainButton from './PlainButton/PlainButton'
 import SubmittedForgotPasswordPage from './SubmittedForgotPasswordPage'
@@ -60,7 +61,7 @@ const DialogSubTitle = styled('div')({
   fontWeight: 400,
   lineHeight: 1.5,
   paddingTop: 16,
-  paddingBottom: 24
+  paddingBottom: 8
 })
 
 const GenericAuthentication = (props: Props) => {
@@ -71,6 +72,7 @@ const GenericAuthentication = (props: Props) => {
   const email = params.get('email')
 
   const isGoogleAuthEnabled = window.__ACTION__.AUTH_GOOGLE_ENABLED
+  const isMicrosoftAuthEnabled = window.__ACTION__.AUTH_MICROSOFT_ENABLED
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   const isSSOAuthEnabled = window.__ACTION__.AUTH_SSO_ENABLED
 
@@ -106,9 +108,13 @@ const GenericAuthentication = (props: Props) => {
       {isGoogleAuthEnabled && (
         <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
       )}
-      {isGoogleAuthEnabled && (isInternalAuthEnabled || isSSOAuthEnabled) && (
-        <HorizontalSeparator margin='1rem 0 0' text='or' />
+      {isMicrosoftAuthEnabled && (
+        <MicrosoftOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
       )}
+      {(isGoogleAuthEnabled || isMicrosoftAuthEnabled) &&
+        (isInternalAuthEnabled || isSSOAuthEnabled) && (
+          <HorizontalSeparator margin='1rem 0 0' text='or' />
+        )}
       {(isInternalAuthEnabled || isSSOAuthEnabled) && (
         <EmailPasswordAuthForm
           email={email || ''}

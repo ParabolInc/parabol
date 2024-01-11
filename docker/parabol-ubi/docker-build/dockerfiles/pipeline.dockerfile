@@ -4,13 +4,16 @@ FROM node:${_NODE_VERSION} as base
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PORT=3000
 
+RUN apt update -y && \
+    apt install systemtap -y
+
 USER node
 EXPOSE ${PORT}
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Final image - copies in parabol build and applies all security configurations to container if enabled
-FROM redhat/ubi8:8.6
+FROM redhat/ubi9:9.2
 
 ARG _SECURITY_ENABLED="true"
 
@@ -26,7 +29,7 @@ COPY --from=base /usr/local/bin /usr/local/bin
 COPY --from=base /usr/local/include /usr/local/include
 COPY --from=base /usr/local/share/man /usr/local/share/man
 COPY --from=base /usr/local/share/doc /usr/local/share/doc
-COPY --from=base /usr/local/share/systemtap /usr/local/share/systemtap
+COPY --from=base /usr/share/systemtap /usr/local/share/systemtap
 COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=base /opt /opt
 

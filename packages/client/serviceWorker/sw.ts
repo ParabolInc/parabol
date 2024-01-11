@@ -17,6 +17,8 @@ const STATIC_CACHE = `parabol-static-${__APP_VERSION__}`
 const DYNAMIC_CACHE = `parabol-dynamic-${__APP_VERSION__}`
 const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
 
+// this gets built in applyEnvVarToClientAssets
+const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/\/{2,}/, 'https://')
 const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => {
   e.waitUntil(cb(e))
 }
@@ -27,11 +29,13 @@ const onInstall = async (_event: ExtendableEvent) => {
   const cacheNames = await caches.keys()
   const oldStaticCacheName = cacheNames.find((cacheName) => cacheName.startsWith('parabol-static'))
   const newCache = await caches.open(STATIC_CACHE)
+  const fetchCachedFiles = async (urls: string[]) =>
+    Promise.all(urls.map((url) => newCache.add(url)))
 
   // if this is their first service worker, fetch it all
   if (!oldStaticCacheName) {
     console.log('Installing service worker')
-    return newCache.addAll(urls)
+    return fetchCachedFiles(urls).catch(console.error)
   }
 
   // if they already have some assets, forward them over to the new cache & fetch the rest
@@ -45,7 +49,7 @@ const onInstall = async (_event: ExtendableEvent) => {
       newCache.put(urls[idx], res)
     })
   )
-  return newCache.addAll(newUrls)
+  return fetchCachedFiles(newUrls).catch(console.error)
 }
 
 const onActivate = async (_event: ExtendableEvent) => {
@@ -72,7 +76,11 @@ const onFetch = async (event: FetchEvent) => {
       return cachedRes
     }
     try {
-      const networkRes = await fetch(request)
+      // request.mode could be 'no-cors'
+      // By fetching the URL without specifying the mode the response will not be opaque
+      const isParabolHosted = url.startsWith(PUBLIC_PATH) || url.startsWith(self.origin)
+      const req = isParabolHosted ? request.url : request
+      const networkRes = await fetch(req)
       const cache = await caches.open(DYNAMIC_CACHE)
       // cloning here because I'm not sure if we must clone before reading the body
       cache.put(request.url, networkRes.clone()).catch(console.error)

@@ -96,7 +96,7 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
   await r.table('AgendaItem').insert(clonedPins).run()
 }
 
-const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
+const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
   /* If isKill, no agenda items were processed so clear none of them.
    * Similarly, don't clone pins. the original ones will show up again.
    */
@@ -221,17 +221,17 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId)
+      removeEmptyTasks(meetingId),
+      updateTeamInsights(teamId, dataLoader)
     ])
     // need to wait for removeEmptyTasks before finishing the meeting
-    const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
+    const result = await summarizeCheckInMeeting(completedCheckIn, dataLoader)
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
 
-    analytics.checkInEnd(completedCheckIn, meetingMembers, team)
+    analytics.checkInEnd(completedCheckIn, meetingMembers, team, dataLoader)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     checkTeamsLimit(team.orgId, dataLoader)
-    updateTeamInsights(teamId, dataLoader)
 
     const events = teamMembers.map(
       (teamMember) =>

@@ -1,6 +1,5 @@
 import getRethink from '../../database/rethinkDriver'
 import Organization from '../../database/types/Organization'
-import updateTeamByOrgId from '../../postgres/queries/updateTeamByOrgId'
 import {getStripeManager} from '../../utils/stripe'
 
 const terminateSubscription = async (orgId: string) => {
@@ -21,8 +20,7 @@ const terminateSubscription = async (orgId: string) => {
           {returnChanges: true}
         )('changes')(0)('old_val')
         .default(null) as unknown as Organization
-    }).run(),
-    updateTeamByOrgId({isPaid: false}, orgId)
+    }).run()
   ])
   const {organization} = rethinkResult
   const {stripeSubscriptionId} = organization

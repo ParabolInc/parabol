@@ -1,10 +1,10 @@
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import activeClients from '../activeClients'
 import AuthToken from '../database/types/AuthToken'
 import parseBody from '../parseBody'
 import parseFormBody from '../parseFormBody'
 import StatelessContext from '../socketHelpers/StatelessContext'
-import sseClients from '../sseClients'
 import {getUserId} from '../utils/authorization'
 import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import getReqAuth from '../utils/getReqAuth'
@@ -23,7 +23,7 @@ const httpGraphQLBodyHandler = async (
   ip: string
 ) => {
   const connectionContext: any = connectionId
-    ? sseClients.get(connectionId)
+    ? activeClients.get(connectionId)
     : new StatelessContext(ip, authToken)
   if (!connectionContext) {
     const viewerId = getUserId(authToken)
@@ -56,13 +56,11 @@ const httpGraphQLBodyHandler = async (
     }
   }
   const response = await handleGraphQLTrebuchetRequest(body, connectionContext)
-  res.cork(() => {
-    if (response) {
-      res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))
-    } else {
-      res.writeStatus('200').end()
-    }
-  })
+  if (response) {
+    res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))
+  } else {
+    res.writeStatus('200').end()
+  }
 }
 
 const contentTypeBodyParserMap = {

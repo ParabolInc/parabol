@@ -1,8 +1,8 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useMemo} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import React, {useEffect, useMemo} from 'react'
+import {PreloadedQuery, commitLocalUpdate, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
@@ -16,15 +16,18 @@ import IconLabel from '../IconLabel'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityCardImage} from './ActivityCard'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
-import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
+  CUSTOM_CATEGORY_ID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import {useDebounce} from 'use-debounce'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -34,6 +37,7 @@ graphql`
     name
     type
     category
+    scope
     ... on PokerTemplate {
       dimensions {
         name
@@ -67,6 +71,7 @@ graphql`
     isRecommended
     isFree
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
+    ...ActivityCard_template
     ...ActivityLibraryCardDescription_template
   }
 `
@@ -121,14 +126,11 @@ const getTemplateDocumentValue = (
     .flat()
     .join('-')
 
-const CategoryIDToColorClass = {
-  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
-  ...Object.fromEntries(
-    Object.entries(CATEGORY_THEMES).map(([key, value]) => {
-      return [key, value.primary]
-    })
-  )
-} as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
+const CategoryIDToColorClass = Object.fromEntries(
+  Object.entries(CATEGORY_THEMES).map(([key, value]) => {
+    return [key, value.primary]
+  })
+) as Record<keyof typeof CATEGORY_THEMES, string>
 
 type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
@@ -164,6 +166,8 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               key={template.id}
               theme={CATEGORY_THEMES[template.category as CategoryID]}
               title={template.name}
+              type={template.type}
+              templateRef={template}
               badge={
                 !template.isFree ? (
                   <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
@@ -173,10 +177,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               <ActivityCardImage
                 className='group-hover/card:hidden'
                 src={template.illustrationUrl}
-              />
-              <ActivityLibraryCardDescription
-                className='hidden group-hover/card:flex'
-                templateRef={template}
+                category={template.category as CategoryID}
               />
             </ActivityLibraryCard>
           </Link>
@@ -189,11 +190,20 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
 const MAX_PER_SUBCATEGORY = 6
 
 export const ActivityLibrary = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
   const {featureFlags, availableTemplates, organizations} = viewer
   const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
+
+  const setSearch = (value: string) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      viewer.setValue(value, 'activityLibrarySearch')
+    })
+  }
 
   const templates = useMemo(() => {
     const templatesMap = availableTemplates.edges.map((edge) => edge.node)
@@ -211,6 +221,15 @@ export const ActivityLibrary = (props: Props) => {
     onQueryChange,
     resetQuery
   } = useSearchFilter(templates, getTemplateDocumentValue)
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500)
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      SendClientSideEvent(atmosphere, 'Activity Library Searched', {
+        debouncedSearchQuery
+      })
+    }
+  }, [debouncedSearchQuery])
 
   const {match} = useRouter<{categoryId?: string}>()
   const {
@@ -226,6 +245,8 @@ export const ActivityLibrary = (props: Props) => {
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
+        : categoryId === CUSTOM_CATEGORY_ID
+        ? template.scope !== 'PUBLIC'
         : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
@@ -279,7 +300,13 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
             <div className='hidden grow md:block'>
-              <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+              <SearchBar
+                searchQuery={searchQuery}
+                onChange={(e) => {
+                  onQueryChange(e)
+                  setSearch(e.target.value)
+                }}
+              />
             </div>
             <Link
               className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
@@ -289,7 +316,13 @@ export const ActivityLibrary = (props: Props) => {
             </Link>
           </div>
           <div className='mt-4 flex w-full md:hidden'>
-            <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+            <SearchBar
+              searchQuery={searchQuery}
+              onChange={(e) => {
+                onQueryChange(e)
+                setSearch(e.target.value)
+              }}
+            />
           </div>
         </div>
       </div>
@@ -304,7 +337,7 @@ export const ActivityLibrary = (props: Props) => {
                     'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
                     category === selectedCategory && searchQuery.length === 0
                       ? [
-                          CategoryIDToColorClass[category],
+                          `${CategoryIDToColorClass[category]}`,
                           'font-semibold text-white focus:text-white'
                         ]
                       : 'border border-slate-300 bg-white'

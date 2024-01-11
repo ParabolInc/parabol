@@ -16,6 +16,9 @@ import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
 import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import {DataLoaderWorker} from '../../graphql'
+import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
+import isValid from '../../isValid'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 
 const bootstrapNewUser = async (
   newUser: User,
@@ -24,10 +27,22 @@ const bootstrapNewUser = async (
   searchParams?: string
 ) => {
   const r = await getRethink()
-  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
+  const {
+    id: userId,
+    createdAt,
+    preferredName,
+    email,
+    featureFlags,
+    tier,
+    pseudoId,
+    identities
+  } = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
-  const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(domain)
+  const [isCompanyDomain, organizations] = await Promise.all([
+    dataLoader.get('isCompanyDomain').load(domain),
+    dataLoader.get('organizationsByActiveDomain').load(domain)
+  ])
   const usersWithDomain = isCompanyDomain ? await getUsersbyDomain(domain) : []
   const isPatient0 = !!domain && isCompanyDomain && usersWithDomain.length === 0
 
@@ -35,6 +50,7 @@ const bootstrapNewUser = async (
 
   const experimentalFlags = [...featureFlags]
 
+  // Retros in disguise
   const domainUserHasRidFlag = usersWithDomain.some((user) =>
     user.featureFlags.includes('retrosInDisguise')
   )
@@ -45,11 +61,32 @@ const bootstrapNewUser = async (
     experimentalFlags.push('retrosInDisguise')
   }
 
-  await Promise.all([
+  // Add signUpDestinationTeam feature flag to 50% of new accounts
+  if (Math.random() < 0.5) {
+    experimentalFlags.push('signUpDestinationTeam')
+  }
+
+  // No template limit
+  const domainUserHasNoTemplateLimitFlag = usersWithDomain.some((user) =>
+    user.featureFlags.includes('noTemplateLimit')
+  )
+  if (domainUserHasNoTemplateLimitFlag) {
+    experimentalFlags.push('noTemplateLimit')
+  } else if (Math.random() < 0.5) {
+    experimentalFlags.push('noTemplateLimit')
+  }
+
+  const isVerified = identities.some((identity) => identity.isEmailVerified)
+  const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
+  const isQualifiedForAutoJoin = (isVerified || hasSAMLURL) && isCompanyDomain
+  const orgIds = organizations.map(({id}) => id)
+
+  const [teamsWithAutoJoinRes] = await Promise.all([
+    isQualifiedForAutoJoin ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
+    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
     r({
       event: r.table('TimelineEvent').insert(joinEvent)
-    }).run(),
-    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags})
+    }).run()
   ])
 
   // Identify the user so user properties are set before any events are sent
@@ -62,11 +99,38 @@ const bootstrapNewUser = async (
     featureFlags: experimentalFlags,
     highestTier: tier,
     isPatient0,
-    anonymousId: segmentId
+    anonymousId: pseudoId
   })
 
+  const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
   const tms = [] as string[]
-  if (isOrganic) {
+
+  if (teamsWithAutoJoin.length > 0) {
+    await Promise.all(
+      teamsWithAutoJoin.map((team) => {
+        const teamId = team.id
+        tms.push(teamId)
+        return Promise.all([
+          acceptTeamInvitation(team, userId, dataLoader),
+          isOrganic
+            ? Promise.all([
+                r
+                  .table('SuggestedAction')
+                  .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
+                  .run()
+              ])
+            : r
+                .table('SuggestedAction')
+                .insert([
+                  new SuggestedActionTryTheDemo({userId}),
+                  new SuggestedActionCreateNewTeam({userId})
+                ])
+                .run(),
+          analytics.autoJoined(newUser, teamId)
+        ])
+      })
+    )
+  } else if (isOrganic) {
     const orgId = generateUID()
     const teamId = generateUID()
     tms.push(teamId) // MUTATIVE
@@ -81,20 +145,18 @@ const bootstrapNewUser = async (
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam),
       addSeedTasks(userId, teamId),
-      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
+      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run(),
+      sendPromptToJoinOrg(newUser, dataLoader)
     ])
-    analytics.newOrg(userId, orgId, teamId, true)
+    analytics.newOrg(newUser, orgId, teamId, true)
   } else {
     await r
       .table('SuggestedAction')
       .insert([new SuggestedActionTryTheDemo({userId}), new SuggestedActionCreateNewTeam({userId})])
       .run()
   }
-  analytics.accountCreated(userId, !isOrganic, isPatient0)
 
-  if (isOrganic) {
-    sendPromptToJoinOrg(newUser, dataLoader)
-  }
+  analytics.accountCreated(newUser, !isOrganic, isPatient0)
 
   return new AuthToken({sub: userId, tms})
 }

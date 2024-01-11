@@ -47,7 +47,10 @@ export default {
     if (oldTitle === title) {
       return {error: {message: 'Group already renamed'}}
     }
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const [meeting, viewer] = await Promise.all([
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -95,7 +98,7 @@ export default {
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!
       const similarity = stringSimilarity.compareTwoStrings(smartTitle, normalizedTitle)
-      analytics.smartGroupTitleChanged(viewerId, similarity, smartTitle, normalizedTitle)
+      analytics.smartGroupTitleChanged(viewer, similarity, smartTitle, normalizedTitle)
     }
 
     const data = {meetingId, reflectionGroupId}

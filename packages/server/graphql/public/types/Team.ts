@@ -1,7 +1,8 @@
 import {TeamResolvers} from '../resolverTypes'
 import TeamInsightsId from 'parabol-client/shared/gqlIds/TeamInsightsId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const Team: TeamResolvers = {
   insights: async (
@@ -34,6 +35,18 @@ const Team: TeamResolvers = {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     return teamMember
+  },
+  isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),
+  tier: ({tier, trialStartDate}) => {
+    return getFeatureTier({tier, trialStartDate})
+  },
+  billingTier: ({tier}) => tier,
+  isOrgAdmin: async ({orgId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const organizationUser = await dataLoader
+      .get('organizationUsersByUserIdOrgId')
+      .load({userId: viewerId, orgId})
+    return organizationUser?.role === 'ORG_ADMIN'
   }
 }
 

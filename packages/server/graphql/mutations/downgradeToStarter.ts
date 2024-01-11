@@ -43,10 +43,12 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!isSuperUser(authToken)) {
-      if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-        return standardError(new Error('Not organization leader'), {userId: viewerId})
-      }
+    const [isBillingLeader, viewer] = await Promise.all([
+      isUserBillingLeader(viewerId, orgId, dataLoader),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
+    if (!isSuperUser(authToken) && !isBillingLeader) {
+      return standardError(new Error('Not organization leader'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -65,7 +67,7 @@ export default {
     await resolveDowngradeToStarter(
       orgId,
       stripeSubscriptionId!,
-      viewerId,
+      viewer,
       reasonsForLeaving,
       otherTool
     )

@@ -11,6 +11,7 @@ interface Input {
 }
 
 export default class NotificationTaskInvolves extends Notification {
+  readonly type = 'TASK_INVOLVES'
   changeAuthorId: string
   involvement: TaskInvolvement
   taskId: string

@@ -6,6 +6,7 @@ import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   meetingRef: JiraIntegrationPanel_meeting$key
@@ -16,6 +17,8 @@ const JiraIntegrationPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment JiraIntegrationPanel_meeting on TeamPromptMeeting {
+        id
+        teamId
         viewerMeetingMember {
           teamMember {
             teamId
@@ -42,6 +45,12 @@ const JiraIntegrationPanel = (props: Props) => {
       return onError(new Error('Could not find team member'))
     }
     AtlassianClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
+
+    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+      teamId: meeting.teamId,
+      meetingId: meeting.id,
+      service: 'jira'
+    })
   }
 
   return (

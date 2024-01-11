@@ -16,6 +16,7 @@ export type NotificationEnum =
   | 'TEAMS_LIMIT_REMINDER'
   | 'PROMPT_TO_JOIN_ORG'
   | 'REQUEST_TO_JOIN_ORG'
+  | 'KUDOS_RECEIVED'
 
 export interface NotificationInput {
   type: NotificationEnum
@@ -26,7 +27,7 @@ export default abstract class Notification {
   id = generateUID()
   status: NotificationStatusEnumType = 'UNREAD'
   createdAt = new Date()
-  type: NotificationEnum
+  readonly type: NotificationEnum
   userId: string
 
   constructor({type, userId}: NotificationInput) {

@@ -14,7 +14,7 @@ import {URLSearchParams} from 'url'
 
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,
-  {invitationToken, password, segmentId, email: denormEmail, params},
+  {invitationToken, password, pseudoId, email: denormEmail, params},
   context
 ) => {
   const email = denormEmail.toLowerCase().trim()
@@ -36,6 +36,8 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   const {error} = loginAttempt
   if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
     return {error: {message: 'Try logging in with Google'}}
+  } else if (error === AuthenticationError.USER_EXISTS_MICROSOFT) {
+    return {error: {message: 'Try logging in with Microsoft'}}
   } else if (error === AuthenticationError.INVALID_PASSWORD) {
     return {error: {message: 'User already exists'}}
   }
@@ -58,10 +60,10 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
       return {error: {message: 'Verification email already sent'}}
     }
     const redirectTo = new URLSearchParams(params).get('redirectTo')
-    return createEmailVerification({invitationToken, password, segmentId, email, redirectTo})
+    return createEmailVerification({invitationToken, password, pseudoId, email, redirectTo})
   }
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
-  const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, segmentId})
+  const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, pseudoId})
   // MUTATIVE
   context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader, params)
   return {
