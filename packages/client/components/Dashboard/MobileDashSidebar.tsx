@@ -125,6 +125,7 @@ const MobileDashSidebar = (props: Props) => {
                 icon={'arrowBack'}
                 href={'/me/organizations'}
                 label={'Organizations'}
+                exact
               />
               <OrgName>{name}</OrgName>
               <LeftDashNavItem
