@@ -144,6 +144,7 @@ const ReflectionCard = (props: Props) => {
         }
         disableAnonymity
         spotlightSearchQuery
+        teamId
       }
     `,
     meetingRef
@@ -159,8 +160,15 @@ const ReflectionCard = (props: Props) => {
     reflectionGroupId,
     creator
   } = reflection
-  const {localPhase, localStage, spotlightGroup, phases, disableAnonymity, spotlightSearchQuery} =
-    meeting
+  const {
+    localPhase,
+    localStage,
+    spotlightGroup,
+    phases,
+    disableAnonymity,
+    spotlightSearchQuery,
+    teamId
+  } = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -333,7 +341,6 @@ const ReflectionCard = (props: Props) => {
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
-        dataCy={`editor-wrapper`}
         isClipped={isClipped}
         ariaLabel={readOnly ? '' : 'Edit this reflection'}
         editorRef={editorRef}
@@ -343,10 +350,11 @@ const ReflectionCard = (props: Props) => {
         handleReturn={handleReturn}
         handleKeyDownFallback={handleKeyDownFallback}
         placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
-        readOnly={readOnly}
+        readOnly={!!readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
         disableAnonymity={disableAnonymity}
+        teamId={teamId}
       />
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
