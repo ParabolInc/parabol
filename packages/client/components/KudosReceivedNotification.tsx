@@ -44,14 +44,14 @@ const KudosReceivedNotification = (props: Props) => {
     <NotificationTemplate
       message={
         <>
-          {emojiUnicode} {name !== '' ? name : 'Anonymous'} gave you kudos in{' '}
+          {emojiUnicode} {name ?? 'Anonymous'} gave you kudos in{' '}
           <Link to={`/meet/${meetingId}`} className='font-semibold text-sky-500 underline'>
             {meetingName}
           </Link>
         </>
       }
       notification={notification}
-      avatar={name !== '' ? picture : anonymousAvatar}
+      avatar={picture ?? anonymousAvatar}
     />
   )
 }

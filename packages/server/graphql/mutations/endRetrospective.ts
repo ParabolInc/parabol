@@ -106,8 +106,8 @@ const sendKudos = async (meeting: MeetingRetrospective, teamId: string, context:
                 meetingName: meeting.name,
                 emoji: team.kudosEmoji,
                 emojiUnicode: team.kudosEmojiUnicode,
-                name: isAnonymous ? '' : senderUser.preferredName,
-                picture: isAnonymous ? '' : senderUser.picture
+                name: isAnonymous ? null : senderUser.preferredName,
+                picture: isAnonymous ? null : senderUser.picture
               })
             )
           })
