@@ -18,8 +18,8 @@ function getSeedTasks(teamId: string) {
     utm_campaign: 'onboarding'
   }
   const options = {searchParams}
-  const integrationURL = makeAppURL(appOrigin, `team/${teamId}/settings/integrations`, options)
-  const integrationTaskHTML = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on <a href="${integrationURL}">Settings > Integrations</a>.`
+  const integrationURL = makeAppURL(appOrigin, `team/${teamId}/integrations`, options)
+  const integrationTaskHTML = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools in <a href="${integrationURL}">Integrations</a>.`
 
   return [
     {
