@@ -42,7 +42,11 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100', text: 'text-rose-500'},
   premortem: {primary: 'bg-gold-500', secondary: 'bg-gold-100', text: 'text-gold-500'},
   postmortem: {primary: 'bg-grass-500', secondary: 'bg-grass-100', text: 'text-grass-500'},
-  [CUSTOM_CATEGORY_ID]: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100', text: 'text-aqua-400'}
+  [CUSTOM_CATEGORY_ID]: {
+    primary: 'bg-fuscia-400',
+    secondary: 'bg-slate-200',
+    text: 'text-slate-500'
+  }
 }
 
 export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string> = {
