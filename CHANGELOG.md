@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.12.4](https://github.com/ParabolInc/parabol/compare/v7.12.3...v7.12.4) (2024-01-11)
+
+
+### Fixed
+
+* default to empty instead of null ([#9325](https://github.com/ParabolInc/parabol/issues/9325)) ([87b023c](https://github.com/ParabolInc/parabol/commit/87b023cd44c8a9d60f9ce2553394cf6c198bc335))
+
 ## [7.12.3](https://github.com/ParabolInc/parabol/compare/v7.12.2...v7.12.3) (2024-01-10)
 
 
