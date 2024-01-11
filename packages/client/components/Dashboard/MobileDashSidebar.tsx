@@ -191,6 +191,7 @@ const MobileDashSidebar = (props: Props) => {
               icon={'timeline'}
               href={'/me'}
               label={'History'}
+              exact
             />
             <LeftDashNavItem
               onClick={handleMenuClick}
