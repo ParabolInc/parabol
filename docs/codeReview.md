@@ -11,7 +11,7 @@ The goal is to help reviewers to make their intentions clear to the author and f
 ## Requesting Code Reviews
 
 - Self-assess which domains are involved in the changes made by your PR, find a reviewer from among the folks who are in the reviewers or maintainer [groups](/.github/reviewers.yml), paying specific attention to who GitHub suggests, who has indicated expertise within a domain (e.g. backend, front-end, etc.), and who has capacity to review within 24 hours.
-  - If you feel that maintainer review isn't necessary, add the label: "One Review Required". Use the label for PRs of any size and complexity if you are confident enough, and it feels safe. One exception: we should be extremely careful with DB migrations as they might break the application in the way that is hard to restore.
+  - If you feel that maintainer review isn't necessary, add the label: "Skip Maintainer Review". Use the label for PRs of any size and complexity if you are confident enough, and it feels safe. One exception: we should be extremely careful with DB migrations as they might break the application in the way that is hard to restore.
   - Otherwise request a review directly from a maintainer.
 - If the PR has not been reviewed within 24 hours, ping the reviewer on Slack and ask when they'll be able to review. If they don't have capacity for review, reassign to a different reviewer. If you're still blocked at the next check-in meeting, add an agenda item.
 
