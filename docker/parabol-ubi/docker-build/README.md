@@ -40,7 +40,7 @@ Recommended:
 Example of variables:
 
 ```commandLine
-export postgresql_tag=12.10-alpine; \
+export postgresql_tag=15.4-alpine; \
 export rethinkdb_tag=2.4.2; \
 export redis_tag=7.0-alpine; \
 export _BUILD_ENV_PATH=docker/parabol-ubi/docker-build/environments/pipeline; \
@@ -131,7 +131,7 @@ Modify the version export below e.g. update vX.X.X and run the export command an
 - Use `_DOCKER_TAG` to define the tag for the new image.
 
 ```commandLine
-export postgresql_tag=12.10-alpine; \
+export postgresql_tag=15.4-alpine; \
 export rethinkdb_tag=2.4.2; \
 export redis_tag=7.0-alpine; \
 export _BUILD_ENV_PATH=environments/local-buildenv \
