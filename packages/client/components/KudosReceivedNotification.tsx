@@ -44,7 +44,7 @@ const KudosReceivedNotification = (props: Props) => {
     <NotificationTemplate
       message={
         <>
-          {emojiUnicode} {name ?? 'Anonymous'} gave you kudos in{' '}
+          {emojiUnicode} {name ?? 'Someone'} gave you kudos in{' '}
           <Link to={`/meet/${meetingId}`} className='font-semibold text-sky-500 underline'>
             {meetingName}
           </Link>

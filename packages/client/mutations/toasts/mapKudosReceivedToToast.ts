@@ -24,7 +24,7 @@ const mapKudosReceivedToToast = (
     autoDismiss: 5,
     showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
-    message: `${emojiUnicode} ${name ?? 'Anonymous'} gave you kudos in`,
+    message: `${emojiUnicode} ${name ?? 'Someone'} gave you kudos in`,
     action: {
       label: meetingName,
       callback: () => {
