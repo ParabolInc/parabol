@@ -715,12 +715,19 @@ class Analytics {
     this.track(user, 'AutoJoined Team', {userId: user.id, teamId})
   }
 
-  kudosSent = (user: AnalyticsUser, teamId: string, kudosId: number, receiverUserId: string) => {
+  kudosSent = (
+    user: AnalyticsUser,
+    teamId: string,
+    kudosId: number,
+    receiverUserId: string,
+    isAnonymous = false
+  ) => {
     this.track(user, 'Kudos Sent', {
       userId: user.id,
       teamId,
       kudosId,
-      receiverUserId
+      receiverUserId,
+      isAnonymous
     })
   }
 

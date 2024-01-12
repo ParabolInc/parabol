@@ -4,8 +4,8 @@ const Kudos: KudosResolvers = {
   receiverUser: async ({receiverUserId}, _args, {dataLoader}) => {
     return dataLoader.get('users').loadNonNull(receiverUserId)
   },
-  senderUser: async ({senderUserId}, _args, {dataLoader}) => {
-    return dataLoader.get('users').loadNonNull(senderUserId)
+  senderUser: async ({senderUserId, isAnonymous}, _args, {dataLoader}) => {
+    return isAnonymous ? null : dataLoader.get('users').loadNonNull(senderUserId)
   }
 }
 
