@@ -20,6 +20,7 @@ import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import {analytics} from '../../utils/analytics/analytics'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import {RawDraftContentState} from 'draft-js'
 
 export default {
   type: CreateReflectionPayload,
@@ -66,6 +67,38 @@ export default {
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
+    const contentJson = JSON.parse(normalizedContent) as RawDraftContentState
+    const draftKudoses: {
+      id: string
+      receiverUserId: string
+      emoji: string
+      emojiUnicode: string
+    }[] = []
+
+    const {giveKudosWithEmoji, kudosEmojiUnicode, kudosEmoji} = team
+    if (
+      giveKudosWithEmoji &&
+      kudosEmojiUnicode &&
+      plaintextContent.includes(kudosEmojiUnicode) &&
+      contentJson.entityMap
+    ) {
+      const mentions = Object.values(contentJson.entityMap).filter(
+        (entity) => entity.type === 'MENTION'
+      )
+      const userIds = [...new Set(mentions.map((mention) => mention.data.userId))].filter(
+        (userId) => userId !== viewerId
+      )
+
+      userIds.forEach((userId) => {
+        draftKudoses.push({
+          id: 'DRAFT_KUDOS_' + generateUID(),
+          receiverUserId: userId,
+          emoji: kudosEmoji,
+          emojiUnicode: kudosEmojiUnicode
+        })
+      })
+    }
+
     const [entities, sentimentScore] = await Promise.all([
       getReflectionEntities(plaintextContent),
       getFeatureTier(team) !== 'starter'
@@ -122,7 +155,8 @@ export default {
       meetingId,
       reflectionId: reflection.id,
       reflectionGroupId,
-      unlockedStageIds
+      unlockedStageIds,
+      draftKudoses
     }
     publish(SubscriptionChannel.MEETING, meetingId, 'CreateReflectionPayload', data, subOptions)
     return data
