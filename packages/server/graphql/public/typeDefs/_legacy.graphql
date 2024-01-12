@@ -5957,20 +5957,6 @@ type Mutation {
   ): StartDraggingReflectionPayload
 
   """
-  Start a new meeting
-  """
-  startRetrospective(
-    """
-    The team starting the meeting
-    """
-    teamId: ID!
-    """
-    The gcal input if creating a gcal event
-    """
-    gcalInput: CreateGcalEventInput
-  ): StartRetrospectivePayload!
-
-  """
   Start a new sprint poker meeting
   """
   startSprintPoker(
@@ -7859,18 +7845,6 @@ type StartDraggingReflectionPayload {
   reflection: RetroReflection
   reflectionId: ID
   teamId: ID
-}
-
-"""
-Return object for StartRetrospectivePayload
-"""
-union StartRetrospectivePayload = ErrorPayload | StartRetrospectiveSuccess
-
-type StartRetrospectiveSuccess {
-  meeting: RetrospectiveMeeting!
-  meetingId: ID!
-  team: Team!
-  hasGcalError: Boolean!
 }
 
 """

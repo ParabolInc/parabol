@@ -297,7 +297,7 @@ export const enum Providers {
   GCAL_NAME = 'Google Calendar',
   GCAL_DESC = 'Create Google Calendar events from within Parabol',
   GITHUB_DESC = 'Use GitHub Issues from within Parabol',
-  GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
+  GITHUB_SCOPE = 'read:org,repo',
   GITLAB_SCOPE = 'api',
   MATTERMOST_NAME = 'Mattermost',
   MATTERMOST_DESC = 'Push notifications to Mattermost',

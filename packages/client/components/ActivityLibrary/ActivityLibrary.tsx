@@ -20,6 +20,7 @@ import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
+  CUSTOM_CATEGORY_ID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
@@ -36,6 +37,7 @@ graphql`
     name
     type
     category
+    scope
     ... on PokerTemplate {
       dimensions {
         name
@@ -124,14 +126,11 @@ const getTemplateDocumentValue = (
     .flat()
     .join('-')
 
-const CategoryIDToColorClass = {
-  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
-  ...Object.fromEntries(
-    Object.entries(CATEGORY_THEMES).map(([key, value]) => {
-      return [key, value.primary]
-    })
-  )
-} as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
+const CategoryIDToColorClass = Object.fromEntries(
+  Object.entries(CATEGORY_THEMES).map(([key, value]) => {
+    return [key, value.primary]
+  })
+) as Record<keyof typeof CATEGORY_THEMES, string>
 
 type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
@@ -246,6 +245,8 @@ export const ActivityLibrary = (props: Props) => {
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
+        : categoryId === CUSTOM_CATEGORY_ID
+        ? template.scope !== 'PUBLIC'
         : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
