@@ -125,7 +125,6 @@ const PhaseItemEditor = (props: Props) => {
   const {disableAnonymity, viewerMeetingMember, teamId} = meeting
 
   const handleSubmit = (content: string) => {
-    console.log('HANDLE SUBMIT')
     const input = {
       content,
       meetingId,
