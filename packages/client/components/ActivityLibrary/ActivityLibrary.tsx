@@ -13,9 +13,6 @@ import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import IconLabel from '../IconLabel'
-import {ActivityBadge} from './ActivityBadge'
-import {ActivityCardImage} from './ActivityCard'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
