@@ -22,8 +22,8 @@ const MeetingTemplate: MeetingTemplateResolvers = {
     if (teamId === 'aGhostTeam') return 'PUBLIC'
     const viewerId = getUserId(authToken)
     const teamMemberId = TeamMemberId.join(teamId, viewerId)
-    const team = await dataLoader.get('teamMembers').load(teamMemberId)
-    const isViewerOnOwningTeam = !!team
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const isViewerOnOwningTeam = teamMember && teamMember.isNotRemoved
     // public user-defined templates are not visible outside their org
     return isViewerOnOwningTeam ? 'TEAM' : 'ORGANIZATION'
   }
