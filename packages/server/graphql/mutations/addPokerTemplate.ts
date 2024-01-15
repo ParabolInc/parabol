@@ -112,8 +112,9 @@ const addPokerTemplate = {
     } else {
       const {orgId} = viewerTeam
 
+      const templateCount = allTemplates.length
       const newTemplate = new PokerTemplate({
-        name: '*New Template',
+        name: `*New Template #${templateCount}`,
         teamId,
         orgId,
         mainCategory: 'estimation',

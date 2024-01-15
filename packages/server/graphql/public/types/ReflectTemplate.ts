@@ -42,7 +42,7 @@ const ReflectTemplate: ReflectTemplateResolvers = {
   subCategories: async ({id, name}, _args, {dataLoader, authToken}) => {
     // :TODO: (jmtaber129): Refactor this to be a bit cleaner if decide to use subcategories
     // long-term.
-    if (name === '*New Template') {
+    if (name.startsWith('*New Template')) {
       return []
     }
 

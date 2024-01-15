@@ -112,8 +112,9 @@ const addReflectTemplate = {
     } else {
       const {orgId} = viewerTeam
       // RESOLUTION
+      const templateCount = allTemplates.length
       const base = {
-        '*New Template': [
+        [`*New Template #${templateCount}`]: [
           {
             question: 'New prompt',
             description: '',

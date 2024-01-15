@@ -90,7 +90,7 @@ const AddNewPokerTemplate = (props: Props) => {
       }, 8000)
       return
     }
-    if (pokerTemplates.find((template) => template.name === '*New Template')) {
+    if (pokerTemplates.find((template) => template.name.startsWith('*New Template'))) {
       onError(new Error('You already have a new template. Try renaming that one first.'))
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
@@ -102,7 +102,9 @@ const AddNewPokerTemplate = (props: Props) => {
     gotoTeamTemplates()
   }
 
-  const containsNewTemplate = pokerTemplates.find((template) => template.name === '*New Template')
+  const containsNewTemplate = pokerTemplates.find((template) =>
+    template.name.startsWith('*New Template')
+  )
 
   if (pokerTemplates.length > Threshold.MAX_POKER_TEAM_TEMPLATES || containsNewTemplate) return null
   return (
