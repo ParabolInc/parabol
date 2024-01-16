@@ -13,9 +13,6 @@ import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import IconLabel from '../IconLabel'
-import {ActivityBadge} from './ActivityBadge'
-import {ActivityCardImage} from './ActivityCard'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {
   CategoryID,
   CATEGORY_ID_TO_NAME,
@@ -26,8 +23,10 @@ import {
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import AISearch from './AISearch'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import {useDebounce} from 'use-debounce'
+import ActivityGrid from './ActivityGrid'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -92,6 +91,7 @@ const query = graphql`
       organizations {
         featureFlags {
           oneOnOne
+          aiTemplate
         }
       }
     }
@@ -132,7 +132,7 @@ const CategoryIDToColorClass = Object.fromEntries(
   })
 ) as Record<keyof typeof CATEGORY_THEMES, string>
 
-type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
+export type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
 type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried'
 
@@ -141,50 +141,6 @@ const subCategoryMapping: Record<SubCategory, string> = {
   recentlyUsed: 'You used these recently',
   recentlyUsedInOrg: 'Others in your organization are using',
   neverTried: 'Try these activities'
-}
-
-interface ActivityGridProps {
-  templates: Template[]
-  selectedCategory: string
-}
-
-const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
-  return (
-    <>
-      {templates.map((template) => {
-        return (
-          <Link
-            key={template.id}
-            to={{
-              pathname: `/activity-library/details/${template.id}`,
-              state: {prevCategory: selectedCategory}
-            }}
-            className='flex focus:rounded-md focus:outline-primary'
-          >
-            <ActivityLibraryCard
-              className='group aspect-[256/160] flex-1'
-              key={template.id}
-              theme={CATEGORY_THEMES[template.category as CategoryID]}
-              title={template.name}
-              type={template.type}
-              templateRef={template}
-              badge={
-                !template.isFree ? (
-                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
-                ) : null
-              }
-            >
-              <ActivityCardImage
-                className='group-hover/card:hidden'
-                src={template.illustrationUrl}
-                category={template.category as CategoryID}
-              />
-            </ActivityLibraryCard>
-          </Link>
-        )
-      })}
-    </>
-  )
 }
 
 const MAX_PER_SUBCATEGORY = 6
@@ -196,6 +152,7 @@ export const ActivityLibrary = (props: Props) => {
   const {viewer} = data
   const {featureFlags, availableTemplates, organizations} = viewer
   const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
+  const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
   const setSearch = (value: string) => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -299,15 +256,17 @@ export const ActivityLibrary = (props: Props) => {
                 Start Activity
               </div>
             </div>
-            <div className='hidden grow md:block'>
-              <SearchBar
-                searchQuery={searchQuery}
-                onChange={(e) => {
-                  onQueryChange(e)
-                  setSearch(e.target.value)
-                }}
-              />
-            </div>
+            {!hasAITemplateFeatureFlag && (
+              <div className='hidden grow md:block'>
+                <SearchBar
+                  searchQuery={searchQuery}
+                  onChange={(e) => {
+                    onQueryChange(e)
+                    setSearch(e.target.value)
+                  }}
+                />
+              </div>
+            )}
             <Link
               className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
               to={`/activity-library/new-activity/${selectedCategory}`}
@@ -357,6 +316,11 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
+          {hasAITemplateFeatureFlag && (
+            <div className='mx-auto mt-4 pt-2'>
+              <AISearch />
+            </div>
+          )}
           {templatesToRender.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
               <img className='w-32' src={halloweenRetrospectiveTemplate} />

@@ -15,7 +15,8 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
   meetingInception: ({meetingInception}) => !!meetingInception,
   kudos: ({kudos}) => !!kudos,
-  aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers
+  aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers,
+  aiTemplate: ({aiTemplate}) => !!aiTemplate
 }
 
 export default OrganizationFeatureFlags

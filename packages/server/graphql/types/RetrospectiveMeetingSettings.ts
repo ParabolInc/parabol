@@ -7,7 +7,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
 import db from '../../db'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {GQLContext} from '../graphql'
@@ -86,10 +85,10 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
         const {orgId} = team
         const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
         const organizationTemplates = templates.filter(
-          (template: MeetingTemplate) =>
+          (template) =>
             template.scope !== 'TEAM' &&
             template.teamId !== teamId &&
-            (template.type as MeetingTypeEnum) === 'retrospective'
+            template.type === 'retrospective'
         )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, ORG_HOTNESS_FACTOR)
         return connectionFromTemplateArray(scoredTemplates, first, after)
