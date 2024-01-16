@@ -114,7 +114,7 @@ const addReflectTemplate = {
       // RESOLUTION
       const templateCount = allTemplates.length
       const base = {
-        [`*New Template #${templateCount}`]: [
+        [`*New Template #${templateCount + 1}`]: [
           {
             question: 'New prompt',
             description: '',
