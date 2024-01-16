@@ -112,7 +112,12 @@ const DashSidebar = (props: Props) => {
         <Nav isOpen={isOpen}>
           <Contents>
             <NavItemsWrap>
-              <NavItem icon={'arrowBack'} href={'/me/organizations'} label={'Organizations'} />
+              <NavItem
+                icon={'arrowBack'}
+                href={'/me/organizations'}
+                label={'Organizations'}
+                exact
+              />
               <OrgName>{name}</OrgName>
               <NavItem
                 icon={'creditScore'}
@@ -157,7 +162,7 @@ const DashSidebar = (props: Props) => {
         <Contents>
           <NavItemsWrap>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            <NavItem icon={'timeline'} href={'/me'} label={'History'} />
+            <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </NavItemsWrap>
           <DashHR />
