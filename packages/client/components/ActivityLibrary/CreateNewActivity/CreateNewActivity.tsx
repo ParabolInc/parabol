@@ -169,10 +169,6 @@ export const CreateNewActivity = (props: Props) => {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
-    if (teamTemplates.find((template) => template.node.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
-      return
-    }
 
     submitMutation()
     AddReflectTemplateMutation(
@@ -205,10 +201,6 @@ export const CreateNewActivity = (props: Props) => {
 
     if (teamTemplates.length >= Threshold.MAX_POKER_TEAM_TEMPLATES) {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
-      return
-    }
-    if (teamTemplates.find((template) => template.node.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
       return
     }
 

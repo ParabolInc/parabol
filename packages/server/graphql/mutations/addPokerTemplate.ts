@@ -110,13 +110,11 @@ const addPokerTemplate = {
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
-      if (allTemplates.find((template) => template.name === '*New Template')) {
-        return standardError(new Error('Template already created'), {userId: viewerId})
-      }
       const {orgId} = viewerTeam
 
+      const templateCount = allTemplates.length
       const newTemplate = new PokerTemplate({
-        name: '*New Template',
+        name: `*New Template #${templateCount + 1}`,
         teamId,
         orgId,
         mainCategory: 'estimation',

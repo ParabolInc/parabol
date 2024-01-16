@@ -86,7 +86,7 @@ const AddNewReflectTemplate = (props: Props) => {
       }, 8000)
       return
     }
-    if (reflectTemplates.find((template) => template.name === '*New Template')) {
+    if (reflectTemplates.find((template) => template.name.startsWith('*New Template'))) {
       onError(new Error('You already have a new template. Try renaming that one first.'))
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
@@ -98,7 +98,9 @@ const AddNewReflectTemplate = (props: Props) => {
     gotoTeamTemplates()
   }
 
-  const containsNewTemplate = reflectTemplates.find((template) => template.name === '*New Template')
+  const containsNewTemplate = reflectTemplates.find((template) =>
+    template.name.startsWith('*New Template')
+  )
 
   if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate)
     return null
