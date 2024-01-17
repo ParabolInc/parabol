@@ -305,9 +305,7 @@ const MeetingCard = (props: Props) => {
           <MeetingImgWrapper>
             <MeetingImgBackground meetingType={meetingType} />
             <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
-            {isRecurring && (
-              <RecurringLabel>Recurring</RecurringLabel>
-            )}
+            {isRecurring && <RecurringLabel>Recurring</RecurringLabel>}
             <Link to={meetingLink}>
               <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
             </Link>

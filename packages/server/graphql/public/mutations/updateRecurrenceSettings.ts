@@ -15,16 +15,22 @@ import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 
 export const startNewMeetingSeries = async (
   meeting: {
-    id: string,
-    teamId: string,
-    meetingType: MeetingTypeEnum,
-    name: string,
-    facilitatorUserId: string,
+    id: string
+    teamId: string
+    meetingType: MeetingTypeEnum
+    name: string
+    facilitatorUserId: string
   },
   recurrenceRule: RRule,
   meetingSeriesName?: string | null
 ) => {
-  const {id: meetingId, teamId, meetingType, name: meetingName, facilitatorUserId: facilitatorId} = meeting
+  const {
+    id: meetingId,
+    teamId,
+    meetingType,
+    name: meetingName,
+    facilitatorUserId: facilitatorId
+  } = meeting
   const now = new Date()
   const r = await getRethink()
 
