@@ -13,7 +13,6 @@ enum UserFlagEnum {
   adHocTeams
   noTemplateLimit
   signUpDestinationTeam
-  recurringRetros
 }
 
 """
@@ -31,7 +30,6 @@ type UserFeatureFlags {
   adHocTeams: Boolean!
   noTemplateLimit: Boolean!
   signUpDestinationTeam: Boolean!
-  recurringRetros: Boolean!
 }
 
 extend type Mutation {
