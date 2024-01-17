@@ -7,8 +7,6 @@ import {AvatarFallback} from '../../../../ui/Avatar/AvatarFallback'
 import {AvatarImage} from '../../../../ui/Avatar/AvatarImage'
 import {Button} from '../../../../ui/Button/Button'
 import {MoreVert} from '@mui/icons-material'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 
 type Props = {
   teamMemberRef: OrgTeamMembersRow_teamMember$key

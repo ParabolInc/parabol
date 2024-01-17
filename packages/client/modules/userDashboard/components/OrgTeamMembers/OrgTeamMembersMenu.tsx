@@ -5,14 +5,22 @@ import MenuItem from '../../../../components/MenuItem'
 
 interface OrgTeamMembersMenuProps {
   menuProps: MenuProps
+  openDeleteTeamModal: () => void
 }
 
 export const OrgTeamMembersMenu = (props: OrgTeamMembersMenuProps) => {
-  const {menuProps} = props
+  const {menuProps, openDeleteTeamModal} = props
+  const {closePortal} = menuProps
 
   return (
     <Menu ariaLabel={'Select your action'} {...menuProps}>
-      <MenuItem label='Delete team' />
+      <MenuItem
+        label='Delete team'
+        onClick={() => {
+          closePortal()
+          openDeleteTeamModal()
+        }}
+      />
     </Menu>
   )
 }

@@ -12,6 +12,8 @@ import {ORGANIZATIONS} from '../../../../utils/constants'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {OrgTeamMembersMenu} from './OrgTeamMembersMenu'
+import {useDialogState} from '../../../../ui/Dialog/useDialogState'
+import DeleteTeamDialogRoot from '../../../../components/DeleteTeamDialogRoot'
 
 interface Props {
   queryRef: PreloadedQuery<OrgTeamMembersQuery>
@@ -46,6 +48,12 @@ export const OrgTeamMembers = (props: Props) => {
   const {team} = viewer
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+
+  const {
+    open: openDeleteTeamDialog,
+    close: closeDeleteTeamDialog,
+    isOpen: isDeleteTeamDialogOpened
+  } = useDialogState()
 
   if (!team) return null
   const {teamMembers} = team
@@ -92,7 +100,19 @@ export const OrgTeamMembers = (props: Props) => {
         <AddTeamMemberModal closePortal={closeModal} teamId={team.id} teamMembers={teamMembers} />
       )}
 
-      {menuPortal(<OrgTeamMembersMenu menuProps={menuProps} />)}
+      {menuPortal(
+        <OrgTeamMembersMenu menuProps={menuProps} openDeleteTeamModal={openDeleteTeamDialog} />
+      )}
+
+      {isDeleteTeamDialogOpened ? (
+        <DeleteTeamDialogRoot
+          teamId={team.id}
+          teamName={team.name}
+          teamOrgId={team.orgId}
+          onDeleteTeam={closeDeleteTeamDialog}
+          onClose={closeDeleteTeamDialog}
+        />
+      ) : null}
     </div>
   )
 }
