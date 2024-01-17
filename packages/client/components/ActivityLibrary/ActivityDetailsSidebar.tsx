@@ -99,6 +99,9 @@ const ActivityDetailsSidebar = (props: Props) => {
         orgId
         organization {
           name
+          featureFlags {
+            recurringRetros
+          }
         }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
@@ -401,10 +404,12 @@ const ActivityDetailsSidebar = (props: Props) => {
                         teamRef={selectedTeam}
                       />
                       <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-                      <ActivityDetailsRecurrenceSettings
-                        onRecurrenceSettingsUpdated={setRecurrenceSettings}
-                        recurrenceSettings={recurrenceSettings}
-                      />
+                      {selectedTeam.organization.featureFlags.recurringRetros && (
+                        <ActivityDetailsRecurrenceSettings
+                          onRecurrenceSettingsUpdated={setRecurrenceSettings}
+                          recurrenceSettings={recurrenceSettings}
+                        />
+                      )}
                     </>
                   )}
                   {type === 'poker' && (
