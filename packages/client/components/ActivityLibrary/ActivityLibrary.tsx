@@ -278,7 +278,7 @@ export const ActivityLibrary = (props: Props) => {
   }
 
   const selectedCategory = categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
-  const subCategoryTitle =
+  const quickStartTitle =
     selectedCategory === 'recommended' ? subCategoryMapping['getStarted'] : undefined
 
   return (
@@ -409,12 +409,12 @@ export const ActivityLibrary = (props: Props) => {
                 </>
               ) : (
                 <>
-                  {subCategoryTitle && (
-                    <div className='ml-4 mt-8 w-full text-xl font-bold text-slate-700'>
-                      {subCategoryTitle}
+                  {quickStartTitle && (
+                    <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                      {quickStartTitle}
                     </div>
                   )}
-                  <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
+                  <div className='grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4'>
                     <ActivityGrid
                       templates={templatesToRender as Template[]}
                       selectedCategory={selectedCategory}
