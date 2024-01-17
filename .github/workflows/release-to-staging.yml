@@ -101,6 +101,7 @@ jobs:
           gh pr create \
             --assignee ${{ github.actor }} \
             --base production \
+            --head v${{ env.ACTION_VERSION }} \
             --title "chore(release): Test v${{ env.ACTION_VERSION }}" \
             --body "$BODY"
       - name: Poll Staging Release
