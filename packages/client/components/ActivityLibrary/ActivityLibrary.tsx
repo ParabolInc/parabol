@@ -135,14 +135,21 @@ const CategoryIDToColorClass = {
 
 type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
-type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried' | 'getStarted'
+type SubCategory =
+  | 'popular'
+  | 'recentlyUsed'
+  | 'recentlyUsedInOrg'
+  | 'neverTried'
+  | 'getStarted'
+  | 'mostPopular'
 
 const subCategoryMapping: Record<SubCategory, string> = {
   popular: 'Popular templates',
   recentlyUsed: 'You used these recently',
   recentlyUsedInOrg: 'Others in your organization are using',
   neverTried: 'Try these activities',
-  getStarted: 'Activities to get you started'
+  getStarted: 'Activities to get you started',
+  mostPopular: 'Our most popular'
 }
 
 interface ActivityGridProps {
@@ -280,8 +287,6 @@ export const ActivityLibrary = (props: Props) => {
   const selectedCategory = categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
   const subCategoryTitle =
     selectedCategory === 'recommended' ? subCategoryMapping['getStarted'] : undefined
-
-  console.log('🚀 ~ subCategoryTitle:', subCategoryTitle)
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
