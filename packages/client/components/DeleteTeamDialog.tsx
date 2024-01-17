@@ -47,7 +47,7 @@ const DeleteTeamDialog = (props: Props) => {
 
         <fieldset className={fieldsetStyles}>
           <label className={labelStyles}>
-            Please type your team name to confirm and hit Enter to delete it.
+            Please type your team name to confirm. <b>This action can't be undone.</b>
           </label>
           <Input
             autoFocus
