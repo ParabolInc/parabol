@@ -9,7 +9,8 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   retrosInDisguise: ({retrosInDisguise}) => !!retrosInDisguise,
   adHocTeams: ({adHocTeams}) => !!adHocTeams,
   noTemplateLimit: ({noTemplateLimit}) => !!noTemplateLimit,
-  signUpDestinationTeam: ({signUpDestinationTeam}) => !!signUpDestinationTeam
+  signUpDestinationTeam: ({signUpDestinationTeam}) => !!signUpDestinationTeam,
+  recurringRetros: ({recurringRetros}) => !!recurringRetros
 }
 
 export default UserFeatureFlags
