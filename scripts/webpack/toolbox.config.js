@@ -9,7 +9,7 @@ const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const TOOLBOX_SRC = path.join(PROJECT_ROOT, 'scripts/toolboxSrc')
-const CircularDependencyPlugin = require('circular-dependency-plugin')
+// const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 // move __generated__ outside of src
 module.exports = {
