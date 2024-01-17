@@ -15,6 +15,7 @@ import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
+import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
@@ -50,6 +51,10 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     videoMeetingURL
   } = meetingSettings
 
+  const name = recurrenceSettings?.name
+    ? createMeetingSeriesTitle(recurrenceSettings.name, new Date(), 'UTC')
+    : undefined
+
   const meeting = await safeCreateRetrospective(
     {
       teamId,
@@ -58,7 +63,8 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       maxVotesPerGroup,
       disableAnonymity,
       templateId: selectedTemplateId,
-      videoMeetingURL: videoMeetingURL ?? undefined
+      videoMeetingURL: videoMeetingURL ?? undefined,
+      name
     },
     dataLoader
   )

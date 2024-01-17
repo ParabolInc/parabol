@@ -11,8 +11,8 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
-import {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 
 const MEETING_START_DELAY_MS = 3000
 
@@ -46,7 +46,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   }
 
   //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
-  const meetingName = createTeamPromptTitle(
+  const meetingName = createMeetingSeriesTitle(
     recurrenceSettings?.name || 'Standup',
     new Date(),
     'UTC'

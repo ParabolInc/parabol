@@ -16,11 +16,12 @@ const safeCreateRetrospective = async (
     videoMeetingURL?: string
     meetingSeriesId?: number
     scheduledEndTime?: Date
+    name?: string
   },
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
-  const {teamId, facilitatorUserId} = meetingSettings
+  const {teamId, facilitatorUserId, name} = meetingSettings
   const meetingType: MeetingTypeEnum = 'retrospective'
   const [meetingCount, team] = await Promise.all([
     r
@@ -37,6 +38,7 @@ const safeCreateRetrospective = async (
   const {showConversionModal} = organization
 
   const meetingId = generateUID()
+  const meetingName = name ?? `Retro ${meetingCount + 1}`
   const phases = await createNewMeetingPhases(
     facilitatorUserId,
     teamId,
@@ -51,7 +53,8 @@ const safeCreateRetrospective = async (
     meetingCount,
     phases,
     showConversionModal,
-    ...meetingSettings
+    ...meetingSettings,
+    name: meetingName
   })
 }
 

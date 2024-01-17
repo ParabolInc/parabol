@@ -15,7 +15,7 @@ interface Input {
   id?: string
   teamId: string
   meetingCount: number
-  name?: string
+  name: string
   phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
@@ -84,7 +84,7 @@ export default class MeetingRetrospective extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'retrospective',
-      name: name ?? `Retro #${meetingCount + 1}`,
+      name,
       meetingSeriesId,
       scheduledEndTime
     })

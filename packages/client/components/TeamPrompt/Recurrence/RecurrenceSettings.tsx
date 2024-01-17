@@ -175,10 +175,11 @@ interface Props {
     validationErrors: string[] | undefined
   ) => void
   recurrenceSettings: RecurrenceSettings
+  placeholder: string
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings, placeholder} = props
   const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
   const [name, setName] = React.useState(meetingSeriesName)
   const [nameError, setNameError] = React.useState<string | undefined>()
@@ -268,7 +269,7 @@ export const RecurrenceSettings = (props: Props) => {
             hasError={!!nameError}
             id='series-title'
             type='text'
-            placeholder='Standup'
+            placeholder={placeholder}
             value={meetingSeriesName}
             onChange={handleNameChange}
             min={1}
@@ -304,7 +305,7 @@ export const RecurrenceSettings = (props: Props) => {
           <Description>
             The next meeting in this series will be called{' '}
             <span className='font-semibold'>
-              "{meetingSeriesName || 'Standup'} - {dayjs(recurrenceStartTime).format('MMM DD')}"
+              "{meetingSeriesName || placeholder} - {dayjs(recurrenceStartTime).format('MMM DD')}"
             </span>
           </Description>
         )}
