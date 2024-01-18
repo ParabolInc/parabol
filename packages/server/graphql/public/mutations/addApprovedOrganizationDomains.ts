@@ -1,5 +1,5 @@
 import {domainRegex, emailRegex} from 'parabol-client/validation/regex'
-import insertApprovedOrganizationDomains from '../../../postgres/queries/insertApprovedOrganizationDomains'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -9,8 +9,13 @@ const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganization
   {authToken}
 ) => {
   const viewerId = getUserId(authToken)
+  const pg = getKysely()
 
   // VALIDATION
+  if (emailDomains.length < 1) {
+    return {error: {message: 'Must include at least 1 email domain'}}
+  }
+
   const normalizedEmailDomains = emailDomains.map((domain) => domain.toLowerCase().trim())
   const invalidEmailDomain = normalizedEmailDomains.find(
     (domain) => !emailRegex.test(domain) && !domainRegex.test(domain)
@@ -20,7 +25,18 @@ const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganization
   }
 
   // RESOLUTION
-  await insertApprovedOrganizationDomains(orgId, viewerId, normalizedEmailDomains)
+  const approvals = normalizedEmailDomains.map((domain) => ({
+    addedByUserId: viewerId,
+    orgId,
+    domain
+  }))
+
+  await pg
+    .insertInto('OrganizationApprovedDomain')
+    .values(approvals)
+    .onConflict((oc) => oc.doNothing())
+    .execute()
+
   const data = {orgId}
   return data
 }
