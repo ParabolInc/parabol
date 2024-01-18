@@ -28,7 +28,7 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import gatherInsights from './gatherInsights'
-import NotificationKudosReceived from '../../../database/types/NotificationKudosReceived'
+import NotificationMentioned from '../../../database/types/NotificationMentioned'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -49,10 +49,15 @@ const sendKudos = async (
   const pg = getKysely()
   const r = await getRethink()
 
-  const [reflections, team] = await Promise.all([
+  const [reflections, team, meetingMembers] = await Promise.all([
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId)
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('meetingMembersByMeetingId').load(meetingId)
   ])
+
+  const {phases} = meeting
+  const discussPhase = getPhase(phases, 'discuss')
+  const {stages} = discussPhase
 
   const {giveKudosWithEmoji, kudosEmojiUnicode, kudosEmoji} = team
 
@@ -70,7 +75,7 @@ const sendKudos = async (
     reflectionId: string
   }[] = []
 
-  const notificationsToInsert: NotificationKudosReceived[] = []
+  const notificationsToInsert: NotificationMentioned[] = []
 
   for (const reflection of reflections) {
     const {id: reflectionId, content, plaintextContent, creatorId} = reflection
@@ -78,17 +83,20 @@ const sendKudos = async (
 
     const contentJson = JSON.parse(content) as RawDraftContentState
 
-    if (plaintextContent.includes(kudosEmojiUnicode) && contentJson.entityMap) {
-      const mentions = Object.values(contentJson.entityMap).filter(
-        (entity) => entity.type === 'MENTION'
+    const mentions = contentJson.entityMap
+      ? Object.values(contentJson.entityMap).filter((entity) => entity.type === 'MENTION')
+      : []
+
+    if (mentions.length) {
+      const userIds = [...new Set(mentions.map((mention) => mention.data.userId))].filter(
+        (userId) => userId !== creatorId
       )
 
-      if (mentions.length) {
-        const userIds = [...new Set(mentions.map((mention) => mention.data.userId))].filter(
-          (userId) => userId !== creatorId
-        )
+      if (userIds.length) {
+        const retroDiscussStageIdx =
+          stages.findIndex((stage) => stage.reflectionGroupId === reflection.reflectionGroupId) + 1
 
-        if (userIds.length) {
+        if (plaintextContent.includes(kudosEmojiUnicode)) {
           userIds.forEach((userId) => {
             kudosToInsert.push({
               senderUserId: creatorId,
@@ -99,15 +107,35 @@ const sendKudos = async (
               isAnonymous,
               reflectionId
             })
-
             notificationsToInsert.push(
-              new NotificationKudosReceived({
+              new NotificationMentioned({
                 userId,
                 senderUserId: creatorId,
                 meetingId,
+                retroDiscussStageIdx,
+                retroReflectionId: reflectionId,
+                kudosEmoji: team.kudosEmoji,
+                kudosEmojiUnicode: team.kudosEmojiUnicode,
                 meetingName: meeting.name,
-                emoji: team.kudosEmoji,
-                emojiUnicode: team.kudosEmojiUnicode,
+                name: isAnonymous ? null : senderUser.preferredName,
+                picture: isAnonymous ? null : senderUser.picture
+              })
+            )
+          })
+        } else {
+          const absentUserIds = userIds.filter(
+            (userId) => !meetingMembers.find((member) => member.userId === userId)
+          )
+
+          absentUserIds.forEach((userId) => {
+            notificationsToInsert.push(
+              new NotificationMentioned({
+                userId,
+                senderUserId: creatorId,
+                meetingId,
+                retroDiscussStageIdx,
+                retroReflectionId: reflectionId,
+                meetingName: meeting.name,
                 name: isAnonymous ? null : senderUser.preferredName,
                 picture: isAnonymous ? null : senderUser.picture
               })
@@ -119,14 +147,11 @@ const sendKudos = async (
   }
 
   if (kudosToInsert.length) {
-    const [insertedKudoses] = await Promise.all([
-      pg
-        .insertInto('Kudos')
-        .values(kudosToInsert)
-        .returning(['id', 'senderUserId', 'receiverUserId', 'emoji', 'emojiUnicode'])
-        .execute(),
-      r.table('Notification').insert(notificationsToInsert).run()
-    ])
+    const insertedKudoses = await pg
+      .insertInto('Kudos')
+      .values(kudosToInsert)
+      .returning(['id', 'senderUserId', 'receiverUserId', 'emoji', 'emojiUnicode'])
+      .execute()
 
     insertedKudoses.forEach((kudos) => {
       analytics.kudosSent(
@@ -137,7 +162,10 @@ const sendKudos = async (
         isAnonymous
       )
     })
+  }
 
+  if (notificationsToInsert.length) {
+    await r.table('Notification').insert(notificationsToInsert).run()
     notificationsToInsert.forEach((notification) => {
       publishNotification(notification, subOptions)
     })

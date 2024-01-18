@@ -85,6 +85,7 @@
           "NotifyPromoteToOrgLeader": "../../database/types/NotificationPromoteToBillingLeader#default",
           "NotifyRequestToJoinOrg": "../../database/types/NotificationRequestToJoinOrg#default",
           "NotifyResponseMentioned": "../../database/types/NotificationResponseMentioned#default as NotificationResponseMentionedDB",
+          "NotifyMentioned": "../../database/types/NotificationMentioned#default as NotificationMentionedDB",
           "NotifyResponseReplied": "../../database/types/NotifyResponseReplied#default as NotifyResponseRepliedDB",
           "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
           "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",

@@ -41,6 +41,7 @@ import TemplateScale from './types/TemplateScale'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
 import NotificationResponseReplied from './types/NotificationResponseReplied'
+import NotificationMentioned from './types/NotificationMentioned'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -115,6 +116,7 @@ export type RethinkSchema = {
       | NotificationTeamInvitation
       | NotificationResponseMentioned
       | NotificationResponseReplied
+      | NotificationMentioned
     index: 'userId'
   }
   Organization: {
