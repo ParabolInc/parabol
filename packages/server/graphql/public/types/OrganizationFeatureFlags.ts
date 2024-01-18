@@ -16,7 +16,8 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   meetingInception: ({meetingInception}) => !!meetingInception,
   kudos: ({kudos}) => !!kudos,
   aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers,
-  aiTemplate: ({aiTemplate}) => !!aiTemplate
+  aiTemplate: ({aiTemplate}) => !!aiTemplate,
+  recurringRetros: ({recurringRetros}) => !!recurringRetros
 }
 
 export default OrganizationFeatureFlags
