@@ -9,8 +9,7 @@ export default class MailManagerDebug extends MailManager {
     Subject: ${subject}
     Body: ${body}`)
 
-    let toStr = to
-    if (Array.isArray(to)) toStr = to.join(',')
+    const toStr = to.toString()
 
     const {html} = options
     // limit filename length so it does not exceed filesystem limits
