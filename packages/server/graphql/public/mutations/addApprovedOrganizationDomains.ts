@@ -1,4 +1,4 @@
-import {domainRegex, emailRegex} from 'parabol-client/validation/regex'
+import {domainRegex, domainWithWildcardRegex, emailRegex} from 'parabol-client/validation/regex'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
@@ -18,7 +18,8 @@ const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganization
 
   const normalizedEmailDomains = emailDomains.map((domain) => domain.toLowerCase().trim())
   const invalidEmailDomain = normalizedEmailDomains.find(
-    (domain) => !emailRegex.test(domain) && !domainRegex.test(domain)
+    (domain) =>
+      !emailRegex.test(domain) && !domainRegex.test(domain) && !domainWithWildcardRegex.test(domain)
   )
   if (invalidEmailDomain) {
     return {error: {message: `${invalidEmailDomain} is not a valid domain or email`}}
