@@ -145,8 +145,8 @@ const User: UserResolvers = {
       })
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {
-      const IS_STANDUP = 1 << 9 // prioritize standups (see https://github.com/ParabolInc/parabol/issues/8848)
       const SEASONAL = 1 << 8 // put seasonal templates at the top
+      const IS_STANDUP = 1 << 7 // prioritize standups but less than seasonal
       const USED_LAST_90 = 1 << 7 // next, show all templates used within the last 90 days
       const ON_TEAM = 1 << 6 // tiebreak by putting team templates first
       const ON_ORG = 1 << 5 // then org templates
