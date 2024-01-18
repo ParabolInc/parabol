@@ -85,8 +85,6 @@ jobs:
               --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
             echo $RES
             JOB_ID_DONE=$(echo $RES | jq '.id // empty')
-            echo $JOB_ID_DONE
-            [ -z "$JOB_ID_DONE" ] && echo nully || echo "not null"
             [ -z "$JOB_ID_DONE" ] && exit 1 || exit 0
       - name: Open PR to Push to Prod
         env:
