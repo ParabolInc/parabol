@@ -15,6 +15,7 @@ import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment CreateReflectionMutation_meeting on CreateReflectionPayload {
+    reflectionId
     reflectionGroup {
       meetingId
       sortOrder
@@ -72,7 +73,7 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
           .map((kudos) => kudos.receiverUser.preferredName)
           .join(', ')
         atmosphere.eventEmitter.emit('addSnackbar', {
-          key: 'youGaveKudos',
+          key: `youGaveKudos:${res.createReflection.reflectionId}`,
           message: `${preferredNames} will receive kudos at the end ot the meeting ${draftKudoses[0]?.emojiUnicode}`,
           autoDismiss: 5,
           onShow: () => {
