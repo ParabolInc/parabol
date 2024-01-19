@@ -271,6 +271,7 @@ const safeEndRetrospective = async ({
 
   // remove any empty tasks
   const {templateId} = completedRetrospective
+  console.log('GEORG', {teamId, templateId})
   const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
