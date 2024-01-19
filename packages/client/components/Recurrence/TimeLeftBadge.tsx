@@ -1,10 +1,10 @@
 import dayjs from 'dayjs'
 import React from 'react'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useRefreshInterval from '../../../hooks/useRefreshInterval'
-import useTooltip from '../../../hooks/useTooltip'
-import {humanReadableCountdown} from '../../../utils/date/relativeDate'
-import {TeamPromptBadge} from '../TeamPromptBadge'
+import {MenuPosition} from '../../hooks/useCoords'
+import useRefreshInterval from '../../hooks/useRefreshInterval'
+import useTooltip from '../../hooks/useTooltip'
+import {humanReadableCountdown} from '../../utils/date/relativeDate'
+import {TeamPromptBadge} from '../TeamPrompt/TeamPromptBadge'
 
 interface Props {
   meetingEndTime: string

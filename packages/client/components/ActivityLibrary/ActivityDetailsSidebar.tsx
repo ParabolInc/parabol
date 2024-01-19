@@ -23,7 +23,7 @@ import {PALETTE} from '../../styles/paletteV3'
 import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import {RecurrenceSettings} from '../Recurrence/RecurrenceSettings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
@@ -136,9 +136,9 @@ const ActivityDetailsSidebar = (props: Props) => {
     selectedTemplate.scope === 'PUBLIC'
       ? teams
       : selectedTemplate.scope === 'ORGANIZATION'
-      ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-      : // it is a team-scoped template, templateTeam  must exist
-        [templateTeam!]
+        ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
+        : // it is a team-scoped template, templateTeam  must exist
+          [templateTeam!]
 
   const availableTeamsRef = useRef(availableTeams)
 

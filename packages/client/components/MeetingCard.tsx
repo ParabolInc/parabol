@@ -26,7 +26,7 @@ import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import useModal from '../hooks/useModal'
-import {EndRecurringMeetingModal} from './TeamPrompt/Recurrence/EndRecurringMeetingModal'
+import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import clsx from 'clsx'
 
 const CardWrapper = styled('div')<{
@@ -206,6 +206,7 @@ const MeetingCard = (props: Props) => {
     graphql`
       fragment MeetingCard_meeting on NewMeeting {
         ...useMeetingMemberAvatars_meeting
+        ...EndRecurringMeetingModal_meeting
         id
         name
         meetingType
@@ -342,7 +343,7 @@ const MeetingCard = (props: Props) => {
           {meeting &&
             endRecurringMeetingModal(
               <EndRecurringMeetingModal
-                meetingId={meetingId}
+                meetingRef={meeting}
                 recurrenceRule={isRecurring ? meetingSeries.recurrenceRule : undefined}
                 closeModal={toggleEndRecurringMeetingModal}
               />

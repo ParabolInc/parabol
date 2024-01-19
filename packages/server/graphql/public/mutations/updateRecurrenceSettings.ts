@@ -128,13 +128,12 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
-  const {teamId, meetingType} = meeting
+  const {teamId, meetingSeriesId} = meeting
+  if (!meetingSeriesId) {
+    return standardError(new Error('Meeting is not recurring'), {userId: viewerId})
+  }
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
-  }
-
-  if (meetingType !== 'teamPrompt') {
-    return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
   }
 
   if (meeting.meetingSeriesId) {

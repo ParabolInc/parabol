@@ -6,21 +6,16 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
-import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
-import EndCheckInMutation from '../mutations/EndCheckInMutation'
-import EndRetrospectiveMutation from '../mutations/EndRetrospectiveMutation'
-import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
-import {HistoryMaybeLocalHandler, StandardMutation} from '../types/relayMutations'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import {MeetingTypeEnum} from '../__generated__/NewMeetingQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuItemLabelStyle} from './MenuItemLabel'
+import {EndMeetingMutationLookup} from './Recurrence/EndRecurringMeetingModal'
 
 interface Props {
   menuProps: MenuProps
@@ -49,16 +44,6 @@ const OptionMenuItem = styled('div')({
   minWidth: '200px'
 })
 
-const EndMeetingMutationLookup: Record<
-  MeetingTypeEnum,
-  StandardMutation<any, HistoryMaybeLocalHandler>
-> = {
-  teamPrompt: EndTeamPromptMutation,
-  action: EndCheckInMutation,
-  retrospective: EndRetrospectiveMutation,
-  poker: EndSprintPokerMutation
-}
-
 const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
@@ -73,10 +58,8 @@ const query = graphql`
         id
         meetingType
         facilitatorUserId
-        ... on TeamPromptMeeting {
-          meetingSeries {
-            cancelledAt
-          }
+        meetingSeries {
+          cancelledAt
         }
       }
     }

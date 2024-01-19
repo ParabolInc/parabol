@@ -1,7 +1,7 @@
 import React from 'react'
-import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import {RecurrenceSettings} from '../Recurrence/RecurrenceSettings'
 import NewMeetingDropdown from '../NewMeetingDropdown'
-import {toHumanReadable} from '../TeamPrompt/Recurrence/HumanReadableRecurrenceRule'
+import {toHumanReadable} from '../Recurrence/HumanReadableRecurrenceRule'
 import useModal from '../../hooks/useModal'
 import DialogContainer from '../DialogContainer'
 

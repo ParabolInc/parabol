@@ -23,7 +23,7 @@ import NewMeetingCarousel from './NewMeetingCarousel'
 import {NewMeetingRecurrenceSettings} from './NewMeetingRecurrenceSettings'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
-import {RecurrenceSettings} from './TeamPrompt/Recurrence/RecurrenceSettings'
+import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
 
 interface Props {
   teamId?: string | null
