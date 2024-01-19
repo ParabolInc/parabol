@@ -16,7 +16,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Get Job ID from PR
         run: |
-          JOB_ID=$(echo ${{ github.event.pull_request.body}} | perl -ne 'print "$1\n" and exit if m/^Production Job Id:\s(\w+)/;')
+          cat > BODY <<'EOF'
+          ${{ github.event.pull_request.body}}
+          EOF
+          JOB_ID=$(cat BODY | perl -ne 'print "$1\n" and exit if m/Production Job Id:\s(\w+)/;')
           echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
       - name: Push to Production Server
         uses: nick-fields/retry@v2
