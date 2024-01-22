@@ -27,6 +27,7 @@ import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import useModal from '../hooks/useModal'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
+import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
 import clsx from 'clsx'
 
 const CardWrapper = styled('div')<{
@@ -207,6 +208,7 @@ const MeetingCard = (props: Props) => {
       fragment MeetingCard_meeting on NewMeeting {
         ...useMeetingMemberAvatars_meeting
         ...EndRecurringMeetingModal_meeting
+        ...UpdateRecurrenceSettingsModal_meeting
         id
         name
         meetingType
@@ -255,6 +257,8 @@ const MeetingCard = (props: Props) => {
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
 
+  const {togglePortal: toggleRecurrenceSettingsModal, modalPortal: recurrenceSettingsModal} =
+    useModal({id: 'updateRecurrenceSettingsModal'})
   const {togglePortal: toggleEndRecurringMeetingModal, modalPortal: endRecurringMeetingModal} =
     useModal({id: 'endRecurringMeetingModal'})
 
@@ -337,6 +341,7 @@ const MeetingCard = (props: Props) => {
               menuProps={menuProps}
               popTooltip={popTooltip}
               openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
+              openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
             />
           )}
           {tooltipPortal('Copied!')}
@@ -346,6 +351,13 @@ const MeetingCard = (props: Props) => {
                 meetingRef={meeting}
                 recurrenceRule={isRecurring ? meetingSeries.recurrenceRule : undefined}
                 closeModal={toggleEndRecurringMeetingModal}
+              />
+            )}
+          {meeting &&
+            recurrenceSettingsModal(
+              <UpdateRecurrenceSettingsModal
+                meeting={meeting}
+                closeModal={toggleRecurrenceSettingsModal}
               />
             )}
         </InnerCard>

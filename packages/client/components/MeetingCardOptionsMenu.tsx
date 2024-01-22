@@ -1,5 +1,10 @@
 import styled from '@emotion/styled'
-import {Close as CloseIcon, Link, PersonAdd as PersonAddIcon} from '@mui/icons-material'
+import {
+  Close as CloseIcon,
+  Link,
+  PersonAdd as PersonAddIcon,
+  Replay as ReplayIcon
+} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -21,6 +26,7 @@ interface Props {
   menuProps: MenuProps
   popTooltip: () => void
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
+  openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
 }
 
@@ -67,7 +73,13 @@ const query = graphql`
 `
 
 const MeetingCardOptionsMenu = (props: Props) => {
-  const {menuProps, popTooltip, queryRef, openEndRecurringMeetingModal} = props
+  const {
+    menuProps,
+    popTooltip,
+    queryRef,
+    openRecurrenceSettingsModal,
+    openEndRecurringMeetingModal
+  } = props
   const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef)
   const {viewer} = data
   const {id: viewerId, team, meeting} = viewer
@@ -129,6 +141,23 @@ const MeetingCardOptionsMenu = (props: Props) => {
           })
         }}
       />
+      {canEndMeeting && hasRecurrenceEnabled && (
+        <MenuItem
+          key='edit-recurrence'
+          label={
+            <OptionMenuItem>
+              <StyledIcon>
+                <ReplayIcon />
+              </StyledIcon>
+              <span>{'Edit recurrence settings'}</span>
+            </OptionMenuItem>
+          }
+          onClick={() => {
+            closePortal()
+            openRecurrenceSettingsModal()
+          }}
+        />
+      )}
       {canEndMeeting && (
         <MenuItem
           key='close'
