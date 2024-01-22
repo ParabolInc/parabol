@@ -102,6 +102,7 @@
           "RequestToJoinDomainSuccess": "./types/RequestToJoinDomainSuccess#RequestToJoinDomainSuccessSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
           "RetroReflectionGroup": "../../database/types/RetroReflectionGroup#default as RetroReflectionGroupDB",
+          "RetroReflection": "../../database/types/RetroReflection#default as RetroReflectionDB",
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
           "RetrospectiveMeetingMember": "../../database/types/RetroMeetingMember#default",
           "Reactable": "../../database/types/Reactable#Reactable",

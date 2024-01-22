@@ -21,6 +21,7 @@ import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingSta
 import NotificationPaymentRejected from './types/NotificationPaymentRejected'
 import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
 import NotificationResponseMentioned from './types/NotificationResponseMentioned'
+import NotificationMentioned from './types/NotificationMentioned'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
@@ -41,7 +42,6 @@ import TemplateScale from './types/TemplateScale'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
 import NotificationResponseReplied from './types/NotificationResponseReplied'
-import NotificationMentioned from './types/NotificationMentioned'
 
 export type RethinkSchema = {
   AgendaItem: {
