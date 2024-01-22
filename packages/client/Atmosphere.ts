@@ -272,6 +272,7 @@ export default class Atmosphere extends Environment {
       console.error('Cannot connect!')
       // this may be reached if the auth token was deemed invalid by the server
       this.setAuthToken(null)
+      window.location.href = '/'
       return
     }
     this.transport = new GQLTrebuchetClient(trebuchet)
