@@ -109,8 +109,8 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
     meetingType === 'teamPrompt'
       ? 'Standup'
       : meetingType === 'retrospective'
-        ? 'Retrospective'
-        : 'Meeting'
+      ? 'Retrospective'
+      : 'Meeting'
   const currentRecurrenceRule = meeting.meetingSeries?.recurrenceRule
   const atmosphere = useAtmosphere()
   const isMeetingSeriesActive = meeting.meetingSeries?.cancelledAt === null

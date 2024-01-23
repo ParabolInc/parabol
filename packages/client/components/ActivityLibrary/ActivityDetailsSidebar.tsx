@@ -136,9 +136,9 @@ const ActivityDetailsSidebar = (props: Props) => {
     selectedTemplate.scope === 'PUBLIC'
       ? teams
       : selectedTemplate.scope === 'ORGANIZATION'
-        ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-        : // it is a team-scoped template, templateTeam  must exist
-          [templateTeam!]
+      ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
+      : // it is a team-scoped template, templateTeam  must exist
+        [templateTeam!]
 
   const availableTeamsRef = useRef(availableTeams)
 
