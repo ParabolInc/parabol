@@ -71,7 +71,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       recurrenceSettings.name
     )
     // meeting was modified if a new meeting series was created
-    await dataLoader.get('newMeetings').clear(meetingId)
+    dataLoader.get('newMeetings').clear(meetingId)
     analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
