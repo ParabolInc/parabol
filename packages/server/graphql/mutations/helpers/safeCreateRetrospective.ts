@@ -14,6 +14,8 @@ const safeCreateRetrospective = async (
     disableAnonymity: boolean
     templateId: string
     videoMeetingURL?: string
+    meetingSeriesId?: number
+    scheduledEndTime?: Date
   },
   dataLoader: DataLoaderWorker
 ) => {

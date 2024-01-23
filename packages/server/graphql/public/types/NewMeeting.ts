@@ -1,3 +1,4 @@
+import MeetingSeriesId from '../../../../client/shared/gqlIds/MeetingSeriesId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import isMeetingLocked from '../../types/helpers/isMeetingLocked'
@@ -24,7 +25,23 @@ const NewMeeting: NewMeetingResolvers = {
     const viewerId = getUserId(authToken)
     return isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
   },
+  meetingSeriesId: ({meetingSeriesId}, _args, _context) => {
+    if (meetingSeriesId) {
+      return MeetingSeriesId.join(meetingSeriesId)
+    }
 
+    return null
+  },
+  meetingSeries: async ({meetingSeriesId}, _args, {dataLoader}) => {
+    if (!meetingSeriesId) return null
+
+    const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
+    if (!series) {
+      return null
+    }
+
+    return series
+  },
   meetingMembers: ({id: meetingId}, _args, {dataLoader}) => {
     return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
   },

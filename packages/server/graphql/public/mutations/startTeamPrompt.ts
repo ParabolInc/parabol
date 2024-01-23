@@ -66,10 +66,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   const {id: meetingId} = meeting
   if (recurrenceSettings?.rrule) {
     const meetingSeries = await startNewMeetingSeries(
-      viewerId,
-      teamId,
-      meetingId,
-      meeting.name,
+      meeting,
       recurrenceSettings.rrule,
       recurrenceSettings.name
     )
