@@ -61,7 +61,7 @@
     "jest-transform-graphql": "^2.1.0",
     "json-loader": "^0.5.7",
     "lint-staged": "^10.1.7",
-    "prettier": "^3.2.4",
+    "prettier": "^2.8.8",
     "prettier-plugin-organize-imports": "^2.3.4",
     "rethinkdb-ts-migrate": "^0.3.6",
     "style-loader": "2.0.0",
