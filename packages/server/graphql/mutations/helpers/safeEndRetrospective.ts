@@ -159,6 +159,8 @@ const sendKudos = async (
         teamId,
         kudos.id,
         kudos.receiverUserId,
+        'mention',
+        'retrospective',
         isAnonymous
       )
     })
