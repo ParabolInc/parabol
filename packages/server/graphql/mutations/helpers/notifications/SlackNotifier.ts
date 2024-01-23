@@ -308,13 +308,10 @@ const getSlackMessageForNotification = async (
 
     let location = 'message'
     let buttonText = 'See their message'
-    const utm_source = 'slack mention notification'
-    const utm_medium = 'product'
-    const utm_campaign = 'notifications'
-    let searchParams = {
-      utm_source,
-      utm_medium,
-      utm_campaign
+    const searchParams = {
+      utm_source: 'slack mention notification',
+      utm_medium: 'product',
+      utm_campaign: 'notifications'
     }
     let buttonUrl = makeAppURL(appOrigin, `meet/${meetingId}`, {
       searchParams
