@@ -261,8 +261,19 @@ const getSlackMessageForNotification = async (
     }
     const author = await dataLoader.get('users').loadNonNull(notification.authorId)
     const comment = await dataLoader.get('comments').load(notification.commentId)
+
+    const options = {
+      searchParams: {
+        utm_source: 'slack standup notification',
+        utm_medium: 'product',
+        utm_campaign: 'notifications',
+        responseId
+      }
+    }
+
+    const buttonUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
     return {
-      responseId,
+      buttonUrl,
       title: `*${author.preferredName}* replied to your response in *${meeting.name}*`,
       body: `> ${comment.plaintextContent}`,
       buttonText: 'See the discussion'
@@ -274,10 +285,61 @@ const getSlackMessageForNotification = async (
     const title = notification.kudosEmojiUnicode
       ? `${notification.kudosEmojiUnicode} *${author.preferredName}* mentioned you and gave kudos in their response in *${meeting.name}*`
       : `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
+
+    const options = {
+      searchParams: {
+        utm_source: 'slack standup notification',
+        utm_medium: 'product',
+        utm_campaign: 'notifications',
+        responseId
+      }
+    }
+
+    const buttonUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
+
     return {
-      responseId,
+      buttonUrl,
       title,
       buttonText: 'See their response'
+    }
+  } else if (notification.type === 'MENTIONED') {
+    const authorName = notification.name ?? 'Someone'
+    const {meetingId} = notification
+
+    let location = 'message'
+    let buttonText = 'See their message'
+    const utm_source = 'slack mention notification'
+    const utm_medium = 'product'
+    const utm_campaign = 'notifications'
+    let searchParams = {
+      utm_source,
+      utm_medium,
+      utm_campaign
+    }
+    let buttonUrl = makeAppURL(appOrigin, `meet/${meetingId}`, {
+      searchParams
+    })
+
+    if (notification.retroDiscussStageIdx) {
+      buttonText = 'See their reflection'
+      location = 'reflection'
+      buttonUrl = makeAppURL(
+        appOrigin,
+        `meet/${meetingId}/discuss/${notification.retroDiscussStageIdx}`,
+        {
+          searchParams
+        }
+      )
+    }
+
+    const title = notification.kudosEmojiUnicode
+      ? `${notification.kudosEmojiUnicode} *${authorName}* mentioned you and gave kudos in their ${location} in *${meeting.name}*`
+      : `*${authorName}* mentioned you in their ${location} in *${meeting.name}*`
+
+    return {
+      buttonUrl,
+      title,
+      buttonText
     }
   }
 
@@ -627,7 +689,11 @@ export const SlackNotifier = {
     userId: string
   ) {
     const notification = await dataLoader.get('notifications').load(notificationId)
-    if (notification.type !== 'RESPONSE_MENTIONED' && notification.type !== 'RESPONSE_REPLIED') {
+    if (
+      notification.type !== 'RESPONSE_MENTIONED' &&
+      notification.type !== 'RESPONSE_REPLIED' &&
+      notification.type !== 'MENTIONED'
+    ) {
       return
     }
 
@@ -648,26 +714,16 @@ export const SlackNotifier = {
       return
     }
 
-    const {responseId, title, buttonText, body} = slackMessageFields
+    const {buttonUrl, title, buttonText, body} = slackMessageFields
 
-    if (!responseId) {
+    if (!buttonUrl) {
       return
     }
 
-    const options = {
-      searchParams: {
-        utm_source: 'slack standup notification',
-        utm_medium: 'product',
-        utm_campaign: 'notifications',
-        responseId
-      }
-    }
-
-    const responseUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
     const blocks: Array<{type: string}> = [
       makeSection(title),
       ...(body ? [makeSection(body)] : []),
-      makeButtons([{text: buttonText, url: responseUrl, type: 'primary'}])
+      makeButtons([{text: buttonText, url: buttonUrl, type: 'primary'}])
     ]
 
     const {botAccessToken} = userSlackAuth
