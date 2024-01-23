@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.14.0](https://github.com/ParabolInc/parabol/compare/v7.13.3...v7.14.0) (2024-01-23)
+
+
+### Added
+
+* Add recurring retros ([#9311](https://github.com/ParabolInc/parabol/issues/9311)) ([df2e992](https://github.com/ParabolInc/parabol/commit/df2e992c982ad4c8bcf57a9c1552e28ea05e6e70))
+* support SERVER_SECRET rotations gracefully ([#9360](https://github.com/ParabolInc/parabol/issues/9360)) ([53fe4c9](https://github.com/ParabolInc/parabol/commit/53fe4c91182f9846bde6b162604c9d7bf04c5266))
+
+
+### Fixed
+
+* handle breaking syntax in pr body ([#9368](https://github.com/ParabolInc/parabol/issues/9368)) ([310659e](https://github.com/ParabolInc/parabol/commit/310659e21a35ae3378441bc6480d1bc694b893fb))
+* render activity library tooltip ([#9376](https://github.com/ParabolInc/parabol/issues/9376)) ([d561fb3](https://github.com/ParabolInc/parabol/commit/d561fb314fb11ce83004ba58a3a13ab059823c57))
+
+
+### Changed
+
+* Prettify "Time's up" Slack message ([#9352](https://github.com/ParabolInc/parabol/issues/9352)) ([73aac5f](https://github.com/ParabolInc/parabol/commit/73aac5fa399937c391a56d0d0f37a0938d2b097b))
+
 ## [7.13.3](https://github.com/ParabolInc/parabol/compare/v7.13.2...v7.13.3) (2024-01-18)
 
 
