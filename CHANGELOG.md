@@ -5,6 +5,86 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.14.0](https://github.com/ParabolInc/parabol/compare/v7.13.3...v7.14.0) (2024-01-23)
+
+
+### Added
+
+* Add recurring retros ([#9311](https://github.com/ParabolInc/parabol/issues/9311)) ([df2e992](https://github.com/ParabolInc/parabol/commit/df2e992c982ad4c8bcf57a9c1552e28ea05e6e70))
+* support SERVER_SECRET rotations gracefully ([#9360](https://github.com/ParabolInc/parabol/issues/9360)) ([53fe4c9](https://github.com/ParabolInc/parabol/commit/53fe4c91182f9846bde6b162604c9d7bf04c5266))
+
+
+### Fixed
+
+* handle breaking syntax in pr body ([#9368](https://github.com/ParabolInc/parabol/issues/9368)) ([310659e](https://github.com/ParabolInc/parabol/commit/310659e21a35ae3378441bc6480d1bc694b893fb))
+* render activity library tooltip ([#9376](https://github.com/ParabolInc/parabol/issues/9376)) ([d561fb3](https://github.com/ParabolInc/parabol/commit/d561fb314fb11ce83004ba58a3a13ab059823c57))
+
+
+### Changed
+
+* Prettify "Time's up" Slack message ([#9352](https://github.com/ParabolInc/parabol/issues/9352)) ([73aac5f](https://github.com/ParabolInc/parabol/commit/73aac5fa399937c391a56d0d0f37a0938d2b097b))
+
+## [7.13.3](https://github.com/ParabolInc/parabol/compare/v7.13.2...v7.13.3) (2024-01-18)
+
+
+### Fixed
+
+* support edge cases in release to prod ([#9364](https://github.com/ParabolInc/parabol/issues/9364)) ([006d714](https://github.com/ParabolInc/parabol/commit/006d7143b4d9ed82d402b9886c9537335ae3ff47))
+
+## [7.13.2](https://github.com/ParabolInc/parabol/compare/v7.13.1...v7.13.2) (2024-01-18)
+
+
+### Fixed
+
+* contents: write for gh actions ([#9361](https://github.com/ParabolInc/parabol/issues/9361)) ([d1c3719](https://github.com/ParabolInc/parabol/commit/d1c37195bebcecb5005cc1b92a8859b59faafaed))
+
+## [7.13.1](https://github.com/ParabolInc/parabol/compare/v7.13.0...v7.13.1) (2024-01-18)
+
+
+### Fixed
+
+* create release branch as head ([#9356](https://github.com/ParabolInc/parabol/issues/9356)) ([5089e4c](https://github.com/ParabolInc/parabol/commit/5089e4cf3bfc0fe5d2799aba3367ed8e55765d4b))
+* new branch debug ([#9358](https://github.com/ParabolInc/parabol/issues/9358)) ([7c11b6a](https://github.com/ParabolInc/parabol/commit/7c11b6a54f09f655e851b05da55af0fad77e9e12))
+* release-to-staging create branch to act as a the PR head ([#9359](https://github.com/ParabolInc/parabol/issues/9359)) ([3a7145e](https://github.com/ParabolInc/parabol/commit/3a7145ef02c3de3ff3cb62cd1dcc47daa746987b))
+
+
+### Changed
+
+* embedder add pgvector (and fixes) ([#9341](https://github.com/ParabolInc/parabol/issues/9341)) ([0fae983](https://github.com/ParabolInc/parabol/commit/0fae983c24b44da86a89d1721b8f20d6fb016aa6))
+
+## [7.13.0](https://github.com/ParabolInc/parabol/compare/v7.12.4...v7.13.0) (2024-01-18)
+
+
+### Added
+
+* Add custom category to activity library ([#9319](https://github.com/ParabolInc/parabol/issues/9319)) ([5af8726](https://github.com/ParabolInc/parabol/commit/5af87262907fd293d88b29bd42ed503655487c02))
+* adding integrations to team view tabs ([#8985](https://github.com/ParabolInc/parabol/issues/8985)) ([2140f61](https://github.com/ParabolInc/parabol/commit/2140f6184d3d5ad719e914dd87e04cf966d4ee9d))
+* ai template recommendation ([#9223](https://github.com/ParabolInc/parabol/issues/9223)) ([32591f1](https://github.com/ParabolInc/parabol/commit/32591f1d38e66cd9f878556897cfa673d48f59c1))
+* **kudos:** enable mentions in retro reflections ([#9284](https://github.com/ParabolInc/parabol/issues/9284)) ([bd8f696](https://github.com/ParabolInc/parabol/commit/bd8f6962f18ff45e1dc87b8b117829704065a052))
+* **kudos:** send kudos at the end of the retro ([#9288](https://github.com/ParabolInc/parabol/issues/9288)) ([aef83a7](https://github.com/ParabolInc/parabol/commit/aef83a7231f777ebd59f33b0b86b4fce9485bbee))
+* **kudos:** show snackbar when reflection with kudos created ([#9334](https://github.com/ParabolInc/parabol/issues/9334)) ([6a8224b](https://github.com/ParabolInc/parabol/commit/6a8224b61074b9d86ec78b90943d20698a0fd3ec))
+* remove unnecessary github oauth scopes ([#8786](https://github.com/ParabolInc/parabol/issues/8786)) ([c9d4110](https://github.com/ParabolInc/parabol/commit/c9d411052b8dfacef7312090eb68f3931a45c7a7))
+* update activity library quick start ([#9350](https://github.com/ParabolInc/parabol/issues/9350)) ([3aa04e6](https://github.com/ParabolInc/parabol/commit/3aa04e6bf242e9a25f6436134e6eae27d05cd534))
+
+
+### Fixed
+
+* Allow multiple "*New Template" ([#9320](https://github.com/ParabolInc/parabol/issues/9320)) ([3d81c3f](https://github.com/ParabolInc/parabol/commit/3d81c3f246218bd45a8046cbe27d24d369b4f6be))
+* Docker build readme updated with the correct PostgreSQL version ([#9330](https://github.com/ParabolInc/parabol/issues/9330)) ([5fde915](https://github.com/ParabolInc/parabol/commit/5fde915d06bfa44b6008f9d0ba4546612de09760))
+* fix broken demo summary ([#9351](https://github.com/ParabolInc/parabol/issues/9351)) ([62d24f1](https://github.com/ParabolInc/parabol/commit/62d24f11591f4822a850a6cf940a6b6e32dae09b))
+* gh action release switch head to version tag ([#9349](https://github.com/ParabolInc/parabol/issues/9349)) ([dee7525](https://github.com/ParabolInc/parabol/commit/dee75252d2cc5baa7f95bab043bb5f5a520eca67))
+* highlight team dash in sidebar regardless of tab ([#9333](https://github.com/ParabolInc/parabol/issues/9333)) ([8db6770](https://github.com/ParabolInc/parabol/commit/8db6770518ef63d496c45c2312ba67f0d1a9e7b4))
+* Show correct template owner for ex-team members ([#9331](https://github.com/ParabolInc/parabol/issues/9331)) ([57cf084](https://github.com/ParabolInc/parabol/commit/57cf0840cc89509210f3e6a8e0732b7b8f5c4b0b))
+
+
+### Changed
+
+* Add recurring retros feature flag ([#9347](https://github.com/ParabolInc/parabol/issues/9347)) ([9db9485](https://github.com/ParabolInc/parabol/commit/9db9485fd5fb1e72f4d12b3d0914cd9939675ad0))
+* **configuration:** .env with the minimal configuration to make the application work ([#9335](https://github.com/ParabolInc/parabol/issues/9335)) ([7723292](https://github.com/ParabolInc/parabol/commit/7723292e612491bf97102c7ea1b58b2a49329301))
+* Distribute assignSURole ([#9353](https://github.com/ParabolInc/parabol/issues/9353)) ([6871fad](https://github.com/ParabolInc/parabol/commit/6871fad4dbe74b6dbd3c9ecb2967aa99bcbfa825))
+* prepare start and endRetrospective for recurrence ([#9318](https://github.com/ParabolInc/parabol/issues/9318)) ([8eb807d](https://github.com/ParabolInc/parabol/commit/8eb807d5f03c19be0a2803b187266014a0e746f5))
+* Update code review guidelines ([#9307](https://github.com/ParabolInc/parabol/issues/9307)) ([334efc9](https://github.com/ParabolInc/parabol/commit/334efc9fcb853552115974d695bb297594219b55))
+
 ## [7.12.4](https://github.com/ParabolInc/parabol/compare/v7.12.3...v7.12.4) (2024-01-11)
 
 

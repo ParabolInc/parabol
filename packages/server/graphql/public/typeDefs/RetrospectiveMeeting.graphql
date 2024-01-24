@@ -112,6 +112,11 @@ type RetrospectiveMeeting implements NewMeeting {
   """
   meetingSeriesId: ID
 
+  """
+  The meeting series this meeting is associated with if the meeting is recurring
+  """
+  meetingSeries: MeetingSeries
+
   meetingType: MeetingTypeEnum!
 
   """

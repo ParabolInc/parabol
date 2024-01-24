@@ -619,6 +619,29 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
   )
 }
 
+export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
+  return new DataLoader<number, AnyMeeting | null, string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((key) => {
+          return r
+            .table('NewMeeting')
+            .getAll(key, {index: 'meetingSeriesId'})
+            .orderBy(r.desc('createdAt'))
+            .nth(0)
+            .default(null)
+            .run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, string[], string>(
     async (keys) => {

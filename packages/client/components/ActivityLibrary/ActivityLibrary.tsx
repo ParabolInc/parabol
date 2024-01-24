@@ -134,13 +134,14 @@ const CategoryIDToColorClass = Object.fromEntries(
 
 export type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
-type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried'
+type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried' | 'getStarted'
 
 const subCategoryMapping: Record<SubCategory, string> = {
   popular: 'Popular templates',
   recentlyUsed: 'You used these recently',
   recentlyUsedInOrg: 'Others in your organization are using',
-  neverTried: 'Try these activities'
+  neverTried: 'Try these activities',
+  getStarted: 'Activities to get you started'
 }
 
 const MAX_PER_SUBCATEGORY = 6
@@ -235,6 +236,8 @@ export const ActivityLibrary = (props: Props) => {
   }
 
   const selectedCategory = categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
+  const quickStartTitle =
+    selectedCategory === 'recommended' ? subCategoryMapping['getStarted'] : undefined
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
@@ -370,12 +373,19 @@ export const ActivityLibrary = (props: Props) => {
                   )}
                 </>
               ) : (
-                <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-                  <ActivityGrid
-                    templates={templatesToRender as Template[]}
-                    selectedCategory={selectedCategory}
-                  />
-                </div>
+                <>
+                  {quickStartTitle && (
+                    <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                      {quickStartTitle}
+                    </div>
+                  )}
+                  <div className='grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4'>
+                    <ActivityGrid
+                      templates={templatesToRender as Template[]}
+                      selectedCategory={selectedCategory}
+                    />
+                  </div>
+                </>
               )}
             </>
           )}

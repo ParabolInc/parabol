@@ -27,6 +27,7 @@ import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import useModal from '../hooks/useModal'
 import {EndRecurringMeetingModal} from './TeamPrompt/Recurrence/EndRecurringMeetingModal'
+import clsx from 'clsx'
 
 const CardWrapper = styled('div')<{
   maybeTabletPlus: boolean
@@ -118,6 +119,12 @@ const BACKGROUND_COLORS = {
   poker: PALETTE.TOMATO_400,
   teamPrompt: PALETTE.JADE_400
 }
+const RECURRING_LABEL_COLORS = {
+  retrospective: 'text-grape-600 bg-grape-100',
+  action: 'text-aqua-600 bg-aqua-300',
+  poker: 'text-tomato-600 bg-tomato-300',
+  teamPrompt: 'text-jade-600 bg-jade-300'
+}
 const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
   ({meetingType}) => ({
     background: BACKGROUND_COLORS[meetingType],
@@ -129,19 +136,6 @@ const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_CO
     width: '100%'
   })
 )
-
-const RecurringLabel = styled.span({
-  color: PALETTE.JADE_500,
-  background: PALETTE.JADE_300,
-  fontSize: 11,
-  lineHeight: '12px',
-  fontWeight: 500,
-  position: 'absolute',
-  right: 8,
-  top: 8,
-  padding: '4px 8px 4px 8px',
-  borderRadius: '64px'
-})
 
 const MeetingImgWrapper = styled('div')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
@@ -230,13 +224,11 @@ const MeetingCard = (props: Props) => {
             ...AvatarListUser_user
           }
         }
-        ... on TeamPromptMeeting {
-          meetingSeries {
-            id
-            title
-            cancelledAt
-            recurrenceRule
-          }
+        meetingSeries {
+          id
+          title
+          cancelledAt
+          recurrenceRule
         }
       }
     `,
@@ -307,8 +299,15 @@ const MeetingCard = (props: Props) => {
           <MeetingImgWrapper>
             <MeetingImgBackground meetingType={meetingType} />
             <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
-            {meetingType === 'teamPrompt' && isRecurring && (
-              <RecurringLabel>Recurring</RecurringLabel>
+            {isRecurring && (
+              <span
+                className={clsx(
+                  'absolute right-2 top-2 rounded-[64px] px-2 py-1 text-[11px] font-medium leading-3',
+                  RECURRING_LABEL_COLORS[meetingType]
+                )}
+              >
+                Recurring
+              </span>
             )}
             <Link to={meetingLink}>
               <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
