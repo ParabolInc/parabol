@@ -57,6 +57,9 @@ const sendKudos = async (
 
   const {phases} = meeting
   const discussPhase = getPhase(phases, 'discuss')
+  if (!discussPhase) {
+    return
+  }
   const {stages} = discussPhase
 
   const {giveKudosWithEmoji, kudosEmojiUnicode, kudosEmoji} = team
@@ -319,7 +322,7 @@ const safeEndRetrospective = async ({
       .delete()
       .run(),
     updateTeamInsights(teamId, dataLoader),
-    sendKudos(meeting, teamId, context)
+    sendKudos(completedRetrospective, teamId, context)
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
