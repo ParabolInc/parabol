@@ -117,8 +117,8 @@ const sendKudos = async (
                 kudosEmoji: team.kudosEmoji,
                 kudosEmojiUnicode: team.kudosEmojiUnicode,
                 meetingName: meeting.name,
-                name: isAnonymous ? null : senderUser.preferredName,
-                picture: isAnonymous ? null : senderUser.picture
+                senderName: isAnonymous ? null : senderUser.preferredName,
+                senderPicture: isAnonymous ? null : senderUser.picture
               })
             )
           })
@@ -136,8 +136,8 @@ const sendKudos = async (
                 retroDiscussStageIdx,
                 retroReflectionId: reflectionId,
                 meetingName: meeting.name,
-                name: isAnonymous ? null : senderUser.preferredName,
-                picture: isAnonymous ? null : senderUser.picture
+                senderName: isAnonymous ? null : senderUser.preferredName,
+                senderPicture: isAnonymous ? null : senderUser.picture
               })
             )
           })

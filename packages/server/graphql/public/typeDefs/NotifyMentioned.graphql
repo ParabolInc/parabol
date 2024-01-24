@@ -18,12 +18,12 @@ type NotifyMentioned implements Notification {
   """
   Sender name, null if anonymous
   """
-  name: String
+  senderName: String
 
   """
   Sender picture
   """
-  picture: URL
+  senderPicture: URL
 
   """
   The userId that should see this notification
