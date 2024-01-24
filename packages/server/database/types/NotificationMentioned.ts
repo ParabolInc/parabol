@@ -13,6 +13,7 @@ interface Input {
   kudosEmojiUnicode?: string | null
 }
 
+// TODO: replace NotificationResponseMentioned and NotificationResponseReplied with NotificationMentioned
 export default class NotificationMentioned extends Notification {
   readonly type = 'MENTIONED'
   senderName: string | null
