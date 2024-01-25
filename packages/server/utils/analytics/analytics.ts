@@ -720,6 +720,8 @@ class Analytics {
     teamId: string,
     kudosId: number,
     receiverUserId: string,
+    kudosType: 'mention' | 'reaction',
+    meetingType: MeetingTypeEnum,
     isAnonymous = false
   ) => {
     this.track(user, 'Kudos Sent', {
@@ -727,6 +729,8 @@ class Analytics {
       teamId,
       kudosId,
       receiverUserId,
+      kudosType,
+      meetingType,
       isAnonymous
     })
   }
