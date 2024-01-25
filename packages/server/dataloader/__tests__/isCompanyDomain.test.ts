@@ -1,7 +1,4 @@
-import faker from 'faker'
-import '../../../../scripts/webpack/utils/dotenv'
 import getDataLoader from '../../graphql/getDataLoader'
-import getPg from '../../postgres/getPg'
 
 const dataloader = getDataLoader()
 

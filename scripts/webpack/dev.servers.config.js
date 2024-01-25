@@ -1,4 +1,3 @@
-require('./utils/dotenv')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
@@ -8,7 +7,6 @@ const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
-const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js')
 // const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 module.exports = {
@@ -25,8 +23,8 @@ module.exports = {
     __dirname: false
   },
   entry: {
-    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
-    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
+    web: [path.join(SERVER_ROOT, 'server.ts')],
+    gqlExecutor: [path.join(GQL_ROOT, 'gqlExecutor.ts')]
   },
   output: {
     filename: '[name].js',

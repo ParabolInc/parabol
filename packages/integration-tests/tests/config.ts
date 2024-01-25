@@ -1,6 +1,5 @@
 import {Page} from '@playwright/test'
 import {newConfig, number, string} from 'ts-app-env'
-import '../../../scripts/webpack/utils/dotenv'
 
 const EnvConfig = {
   HOST: string(),

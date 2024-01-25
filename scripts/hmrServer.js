@@ -1,5 +1,4 @@
 require('sucrase/register')
-require('./webpack/utils/dotenv')
 const path = require('path')
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server/lib/Server')

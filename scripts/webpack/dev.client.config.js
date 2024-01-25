@@ -1,4 +1,3 @@
-require('./utils/dotenv')
 const path = require('path')
 const webpack = require('webpack')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
@@ -132,7 +131,7 @@ module.exports = {
         AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
         AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
         microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
-        microsoft: process.env.MICROSOFT_CLIENT_ID,
+        microsoft: process.env.MICROSOFT_CLIENT_ID
       })
     }),
     new ReactRefreshWebpackPlugin(),

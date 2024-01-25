@@ -1,12 +1,8 @@
-import dotenv from 'dotenv'
 import flag from 'node-env-flag'
-import path from 'path'
 import {parse} from 'url'
 import readCert from './readCert'
 
 export default function getRethinkConfig() {
-  const envFile = path.join(__dirname, '../../../', '.env')
-  dotenv.config({path: envFile})
   const urlString = process.env.RETHINKDB_URL
   if (!urlString) throw new Error('Invalid RETHINKDB_URL in ENV')
   const u = parse(urlString)

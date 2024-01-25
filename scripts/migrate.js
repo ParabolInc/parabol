@@ -1,4 +1,3 @@
-require('./webpack/utils/dotenv')
 const path = require('path')
 const migrate = require('rethinkdb-ts-migrate')
 const {parse} = require('url')

@@ -1,4 +1,3 @@
-import '../../../scripts/webpack/utils/dotenv'
 import getRethink from '../database/rethinkDriver'
 import getKysely from '../postgres/getKysely'
 

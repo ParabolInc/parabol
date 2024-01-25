@@ -1,5 +1,4 @@
-// call with yarn sucrase-node hubSpot/backfillHubSpot.ts
-import '../../../scripts/webpack/utils/dotenv'
+// call with node --env-file .env -r sucrase/register packages/server/hubSpot/backfillHubSpot.ts
 import {getUsersByEmails} from '../postgres/queries/getUsersByEmails'
 
 const contactKeys = {

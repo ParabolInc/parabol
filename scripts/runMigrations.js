@@ -1,4 +1,3 @@
-require('./webpack/utils/dotenv')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
 const path = require('path')

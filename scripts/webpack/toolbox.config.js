@@ -7,7 +7,6 @@ const webpack = require('webpack')
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
-const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const TOOLBOX_SRC = path.join(PROJECT_ROOT, 'scripts/toolboxSrc')
 // const CircularDependencyPlugin = require('circular-dependency-plugin')
 
@@ -20,12 +19,12 @@ module.exports = {
     __dirname: false
   },
   entry: {
-    assignSURole: [DOTENV, path.join(TOOLBOX_SRC, 'assignSURole.ts')],
-    pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')],
-    renameDB: [DOTENV, path.join(TOOLBOX_SRC, 'renameDB.ts')],
-    setIsEnterprise: [DOTENV, path.join(TOOLBOX_SRC, 'setIsEnterprise.ts')],
-    softenDurability: [DOTENV, path.join(TOOLBOX_SRC, 'softenDurability.ts')],
-    updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')]
+    assignSURole: [path.join(TOOLBOX_SRC, 'assignSURole.ts')],
+    pgRestore: [path.join(TOOLBOX_SRC, 'pgRestore.ts')],
+    renameDB: [path.join(TOOLBOX_SRC, 'renameDB.ts')],
+    setIsEnterprise: [path.join(TOOLBOX_SRC, 'setIsEnterprise.ts')],
+    softenDurability: [path.join(TOOLBOX_SRC, 'softenDurability.ts')],
+    updateSchema: [path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')]
   },
   output: {
     filename: '[name].js',

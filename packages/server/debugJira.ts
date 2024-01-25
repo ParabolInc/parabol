@@ -1,5 +1,4 @@
-// call with yarn sucrase-node debugJira.ts
-import '../../scripts/webpack/utils/dotenv'
+// call with node --env-file .env -r sucrase/register packages/server/debugJira.ts
 import AtlassianServerManager from './utils/AtlassianServerManager'
 
 const debugJira = async () => {

@@ -1,4 +1,3 @@
-require('../../../scripts/webpack/utils/dotenv')
 const ssl = require('./getPgSSL')()
 
 const emitTemplateTarget = 'packages/server/postgres/queries/generated/{{name}}.ts'

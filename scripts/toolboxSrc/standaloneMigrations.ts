@@ -5,7 +5,6 @@ import path from 'path'
 import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import cliPgmConfig from '../../packages/server/postgres/pgmConfig'
-import '../webpack/utils/dotenv'
 import pgMigrate from './pgMigrateRunner'
 import * as rethinkMigrate from './rethinkMigrateRunner'
 

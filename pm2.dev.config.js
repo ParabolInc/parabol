@@ -74,6 +74,7 @@ module.exports = {
     env_production: {
       NODE_ENV: 'development'
     },
+    node_args: '--env-file .env',
     ...app
   }))
 }

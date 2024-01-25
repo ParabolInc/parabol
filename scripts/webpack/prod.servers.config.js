@@ -1,4 +1,3 @@
-require('./utils/dotenv')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
@@ -12,7 +11,6 @@ const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
-const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
@@ -25,18 +23,17 @@ module.exports = (config) => {
       __dirname: false
     },
     entry: {
-      chronos: [DOTENV, path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
+      chronos: [path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
       web: [
-        DOTENV,
         // each instance of web needs to generate its own index.html to use on startup
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
-      gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-      preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
-      pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
-      migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
-      assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')]
+      gqlExecutor: [path.join(GQL_ROOT, 'gqlExecutor.ts')],
+      preDeploy: [path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
+      pushToCDN: [path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
+      migrate: [path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
+      assignSURole: [path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')]
     },
     output: {
       filename: '[name].js',
