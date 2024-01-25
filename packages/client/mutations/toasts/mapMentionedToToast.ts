@@ -9,7 +9,7 @@ graphql`
   fragment mapMentionedToToast_notification on NotifyMentioned {
     id
     kudosEmojiUnicode
-    name
+    senderName
     meetingId
     meetingName
     retroReflection {
@@ -26,15 +26,16 @@ const mapMentionedToToast = (
   if (!notification) return null
   const {
     id: notificationId,
-    name,
+    senderName,
     meetingName,
     kudosEmojiUnicode,
     retroReflection,
     retroDiscussStageIdx,
     meetingId
   } = notification
-  const isAnonymous = !name
-  const authorName = isAnonymous ? 'Someone' : name
+
+  const isAnonymous = !senderName
+  const authorName = isAnonymous ? 'Someone' : senderName
 
   let locationType = 'their response'
   let actionLabel = 'See their response'

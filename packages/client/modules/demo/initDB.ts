@@ -509,6 +509,7 @@ const initNewMeeting = (
     __isNewMeeting: 'RetrospectiveMeeting',
     createdAt: now,
     createdBy: demoViewerId,
+    createdByUser: viewerMeetingMember?.user,
     endedAt: null,
     facilitatorStageId: RetroDemo.REFLECT_STAGE_ID,
     facilitatorUserId: demoViewerId,

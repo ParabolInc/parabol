@@ -23,8 +23,8 @@ const Mentioned = (props: Props) => {
         ...NotificationTemplate_notification
         type
         status
-        name
-        picture
+        senderName
+        senderPicture
         kudosEmojiUnicode
         createdAt
         meetingId
@@ -41,8 +41,8 @@ const Mentioned = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   const {
-    name,
-    picture,
+    senderName,
+    senderPicture,
     meetingId,
     meetingName,
     kudosEmojiUnicode,
@@ -51,8 +51,9 @@ const Mentioned = (props: Props) => {
     retroReflection,
     retroDiscussStageIdx
   } = notification
-  const isAnonymous = !name
-  const authorName = isAnonymous ? 'Someone' : name
+
+  const isAnonymous = !senderName
+  const authorName = isAnonymous ? 'Someone' : senderName
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Notification Viewed', {
@@ -88,7 +89,7 @@ const Mentioned = (props: Props) => {
 
   return (
     <NotificationTemplate
-      avatar={!isAnonymous ? picture : anonymousAvatar}
+      avatar={!isAnonymous ? senderPicture : anonymousAvatar}
       message={message}
       notification={notification}
       action={<NotificationAction label={actionLabel} onClick={goThere} />}

@@ -2,8 +2,8 @@ import Notification from './Notification'
 
 interface Input {
   userId: string
-  name: string | null
-  picture: string | null
+  senderName: string | null
+  senderPicture: string | null
   senderUserId: string
   meetingName: string
   meetingId: string
@@ -13,10 +13,11 @@ interface Input {
   kudosEmojiUnicode?: string | null
 }
 
+// TODO: replace NotificationResponseMentioned and NotificationResponseReplied with NotificationMentioned
 export default class NotificationMentioned extends Notification {
   readonly type = 'MENTIONED'
-  name: string | null
-  picture: string | null
+  senderName: string | null
+  senderPicture: string | null
   senderUserId: string
   meetingName: string
   meetingId: string
@@ -28,8 +29,8 @@ export default class NotificationMentioned extends Notification {
   constructor(input: Input) {
     const {
       userId,
-      name,
-      picture,
+      senderName,
+      senderPicture,
       senderUserId,
       meetingName,
       meetingId,
@@ -39,8 +40,8 @@ export default class NotificationMentioned extends Notification {
       kudosEmojiUnicode
     } = input
     super({userId, type: 'MENTIONED'})
-    this.name = name
-    this.picture = picture
+    this.senderName = senderName
+    this.senderPicture = senderPicture
     this.senderUserId = senderUserId
     this.meetingName = meetingName
     this.meetingId = meetingId

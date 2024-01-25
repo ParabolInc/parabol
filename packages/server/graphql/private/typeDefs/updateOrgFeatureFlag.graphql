@@ -18,6 +18,7 @@ enum OrganizationFeatureFlagsEnum {
   kudos
   aiIcebreakers
   aiTemplate
+  recurringRetros
 }
 
 extend type Mutation {

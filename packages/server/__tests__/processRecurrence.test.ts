@@ -3,9 +3,12 @@ import {RRule} from 'rrule'
 import getRethink from '../database/rethinkDriver'
 import MeetingTeamPrompt from '../database/types/MeetingTeamPrompt'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
+import MeetingRetrospective from '../database/types/MeetingRetrospective'
+import ReflectPhase from '../database/types/ReflectPhase'
 import generateUID from '../generateUID'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../postgres/queries/insertMeetingSeries'
 import {getUserTeams, sendIntranet, signUp} from './common'
+import createNewMeetingPhases from '../graphql/mutations/helpers/createNewMeetingPhases'
 
 const PROCESS_RECURRENCE = `
   mutation {
@@ -180,7 +183,7 @@ test('Should end meetings that are scheduled to end in the past', async () => {
   expect(actualMeeting.endedAt).toBeTruthy()
 }, 10000)
 
-test('Should end the current meeting and start a new meeting', async () => {
+test('Should end the current team prompt meeting and start a new meeting', async () => {
   const r = await getRethink()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
@@ -196,7 +199,7 @@ test('Should end the current meeting and start a new meeting', async () => {
     dtstart: startDate
   })
 
-  const newMeetingSeriesId = await insertMeetingSeriesQuery({
+  const meetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'teamPrompt',
     title: 'Daily Test Standup',
     recurrenceRule: recurrenceRule.toString(),
@@ -214,7 +217,7 @@ test('Should end the current meeting and start a new meeting', async () => {
     facilitatorUserId: userId,
     meetingPrompt: 'What are you working on today? Stuck on anything?',
     scheduledEndTime: new Date(Date.now() - ms('5m')),
-    meetingSeriesId: newMeetingSeriesId
+    meetingSeriesId
   })
 
   // The last meeting in the series was created just over 24h ago, so the next one should start
@@ -244,13 +247,88 @@ test('Should end the current meeting and start a new meeting', async () => {
 
   const lastMeeting = await r
     .table('NewMeeting')
-    .filter({meetingType: 'teamPrompt', meetingSeriesId: newMeetingSeriesId})
+    .filter({meetingType: 'teamPrompt', meetingSeriesId})
     .orderBy(r.desc('createdAt'))
     .nth(0)
     .run()
 
   expect(lastMeeting).toMatchObject({
-    name: expect.stringMatching(/Daily Test Standup.*/)
+    name: expect.stringMatching(/Daily Test Standup.*/),
+    meetingSeriesId
+  })
+})
+
+test('Should end the current retro meeting and start a new meeting', async () => {
+  const r = await getRethink()
+  const {userId} = await signUp()
+  const {id: teamId} = (await getUserTeams(userId))[0]
+
+  const now = new Date()
+
+  // Create a meeting series that's been going on for a few days, and happens daily at 9a UTC.
+  const startDate = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 2, 9)
+  )
+  const recurrenceRule = new RRule({
+    freq: RRule.DAILY,
+    dtstart: startDate
+  })
+
+  const meetingSeriesId = await insertMeetingSeriesQuery({
+    meetingType: 'retrospective',
+    title: 'Daily Retro', //they're really committed to improving
+    recurrenceRule: recurrenceRule.toString(),
+    duration: 24 * 60, // 24 hours
+    teamId,
+    facilitatorId: userId
+  })
+
+  const meetingId = generateUID()
+  const meeting = new MeetingRetrospective({
+    id: meetingId,
+    teamId,
+    meetingCount: 0,
+    phases: [new ReflectPhase(teamId, [])],
+    facilitatorUserId: userId,
+    scheduledEndTime: new Date(Date.now() - ms('5m')),
+    meetingSeriesId,
+    templateId: 'startStopContinueTemplate'
+  })
+
+  // The last meeting in the series was created just over 24h ago, so the next one should start
+  // soon.
+  meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('25h'))
+
+  await r.table('NewMeeting').insert(meeting).run()
+
+  const update = await sendIntranet({
+    query: PROCESS_RECURRENCE,
+    isPrivate: true
+  })
+
+  expect(update).toEqual({
+    data: {
+      processRecurrence: {
+        meetingsStarted: 1,
+        meetingsEnded: 1
+      }
+    }
+  })
+
+  await assertIdempotency()
+
+  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  expect(actualMeeting.endedAt).toBeTruthy()
+
+  const lastMeeting = await r
+    .table('NewMeeting')
+    .filter({meetingType: 'retrospective', meetingSeriesId})
+    .orderBy(r.desc('createdAt'))
+    .nth(0)
+    .run()
+
+  expect(lastMeeting).toMatchObject({
+    meetingSeriesId
   })
 })
 

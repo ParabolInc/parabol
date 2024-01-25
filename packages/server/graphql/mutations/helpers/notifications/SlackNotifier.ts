@@ -303,7 +303,7 @@ const getSlackMessageForNotification = async (
       buttonText: 'See their response'
     }
   } else if (notification.type === 'MENTIONED') {
-    const authorName = notification.name ?? 'Someone'
+    const authorName = notification.senderName ?? 'Someone'
     const {meetingId} = notification
 
     let location = 'message'
@@ -479,14 +479,21 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
 
   async endTimeLimit(meeting, team, user) {
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
-    // TODO now is a good time to make the message nice with the `meetingName`
-    const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
+    const title = `Time’s up! Advance your meeting to the next phase :alarm_clock:`
+    const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
+    const blocks = [
+      makeSection(title),
+      makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
+      makeButtons([button])
+    ]
+
     const res = await notifySlack(
       notificationChannel,
       'MEETING_STAGE_TIME_LIMIT_END',
       team.id,
       user,
-      slackText
+      blocks,
+      title
     )
 
     if ('error' in res) {

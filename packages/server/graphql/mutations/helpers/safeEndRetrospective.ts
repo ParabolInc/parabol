@@ -57,6 +57,9 @@ const sendKudos = async (
 
   const {phases} = meeting
   const discussPhase = getPhase(phases, 'discuss')
+  if (!discussPhase) {
+    return
+  }
   const {stages} = discussPhase
 
   const {giveKudosWithEmoji, kudosEmojiUnicode, kudosEmoji} = team
@@ -117,8 +120,8 @@ const sendKudos = async (
                 kudosEmoji: team.kudosEmoji,
                 kudosEmojiUnicode: team.kudosEmojiUnicode,
                 meetingName: meeting.name,
-                name: isAnonymous ? null : senderUser.preferredName,
-                picture: isAnonymous ? null : senderUser.picture
+                senderName: isAnonymous ? null : senderUser.preferredName,
+                senderPicture: isAnonymous ? null : senderUser.picture
               })
             )
           })
@@ -136,8 +139,8 @@ const sendKudos = async (
                 retroDiscussStageIdx,
                 retroReflectionId: reflectionId,
                 meetingName: meeting.name,
-                name: isAnonymous ? null : senderUser.preferredName,
-                picture: isAnonymous ? null : senderUser.picture
+                senderName: isAnonymous ? null : senderUser.preferredName,
+                senderPicture: isAnonymous ? null : senderUser.picture
               })
             )
           })
@@ -159,6 +162,8 @@ const sendKudos = async (
         teamId,
         kudos.id,
         kudos.receiverUserId,
+        'mention',
+        'retrospective',
         isAnonymous
       )
     })
@@ -318,7 +323,7 @@ const safeEndRetrospective = async ({
       .delete()
       .run(),
     updateTeamInsights(teamId, dataLoader),
-    sendKudos(meeting, teamId, context)
+    sendKudos(completedRetrospective, teamId, context)
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
