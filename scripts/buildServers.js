@@ -10,7 +10,6 @@ const webpack = require('webpack')
 const waitForFileExists = require('./waitForFileExists').default
 const path = require('path')
 
-console.log('BS', process.env.SERVER_SECRET)
 const buildServers = async () => {
   const config = require('./webpack/dev.servers.config')
   const compiler = webpack(config)
