@@ -10,7 +10,7 @@ enum OrganizationFeatureFlagsEnum {
   zoomTranscription
   shareSummary
   teamsLimit
-  teamInsights
+  noTeamInsights
   oneOnOne
   singleColumnStandups
   publicTeams
