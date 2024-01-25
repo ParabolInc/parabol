@@ -172,6 +172,7 @@ const sendKudos = async (
   if (notificationsToInsert.length) {
     await r.table('Notification').insert(notificationsToInsert).run()
     notificationsToInsert.forEach((notification) => {
+      IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
       publishNotification(notification, subOptions)
     })
   }

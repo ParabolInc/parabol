@@ -51,6 +51,7 @@ const Mentioned = (props: Props) => {
     retroReflection,
     retroDiscussStageIdx
   } = notification
+
   const isAnonymous = !senderName
   const authorName = isAnonymous ? 'Someone' : senderName
 

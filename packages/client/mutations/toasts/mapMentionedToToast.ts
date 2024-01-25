@@ -33,6 +33,7 @@ const mapMentionedToToast = (
     retroDiscussStageIdx,
     meetingId
   } = notification
+
   const isAnonymous = !senderName
   const authorName = isAnonymous ? 'Someone' : senderName
 
