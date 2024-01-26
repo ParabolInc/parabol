@@ -1,5 +1,5 @@
 #final image
-FROM redhat/ubi9:9.2
+FROM redhat/ubi9:9.3-1552
 
 COPY entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
 COPY security /security
