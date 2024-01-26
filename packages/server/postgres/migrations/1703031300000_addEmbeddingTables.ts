@@ -16,39 +16,45 @@ export async function up() {
           EXECUTE 'CREATE TYPE "EmbeddingsStateEnum" AS ENUM (''queued'', ''embedding'', ''failed'')';
       END IF;
 
+      EXECUTE 'CREATE TABLE IF NOT EXISTS "EmbeddingsMetadata" (
+        "id" SERIAL PRIMARY KEY,
+        "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "objectType" "EmbeddingsObjectTypeEnum" NOT NULL,
+        "refId" VARCHAR(100),
+        UNIQUE("objectType", "refId"),
+        "refUpdatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "models" VARCHAR(255)[],
+        "teamId" VARCHAR(100) NOT NULL,
+        "embedText" TEXT
+      )';
+
+      DROP TRIGGER IF EXISTS "update_EmbeddingsMetadata_updatedAt" ON "EmbeddingsMetadata";
+      CREATE TRIGGER "update_EmbeddingsMetadata_updatedAt" BEFORE UPDATE ON "EmbeddingsMetadata" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
+
+      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_objectType" ON "EmbeddingsMetadata"("objectType")';
+      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_refDateTime" ON "EmbeddingsMetadata"("refDateTime")';
+      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_models" ON "EmbeddingsMetadata" USING GIN (models)';
+      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_teamId" ON "EmbeddingsMetadata"("teamId")';
+
       EXECUTE 'CREATE TABLE IF NOT EXISTS "EmbeddingsJobQueue" (
           "id" SERIAL PRIMARY KEY,
+          "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
           "objectType" "EmbeddingsObjectTypeEnum" NOT NULL,
           "refId" VARCHAR(100) NOT NULL,
-          "model" TEXT NOT NULL,
+          "model" VARCHAR(255) NOT NULL,
           UNIQUE("objectType", "refId", "model"),
           "state" "EmbeddingsStateEnum" DEFAULT ''queued'' NOT NULL,
           "stateMessage" TEXT,
-          "stateUpdatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
       )';
+
+      DROP TRIGGER IF EXISTS "update_EmbeddingsJobQueue_updatedAt" ON "EmbeddingsJobQueue";
+      CREATE TRIGGER "update_EmbeddingsJobQueue_updatedAt" BEFORE UPDATE ON "EmbeddingsJobQueue" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
 
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_objectType" ON "EmbeddingsJobQueue"("objectType")';
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_refId" ON "EmbeddingsJobQueue"("refId")';
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_state" ON "EmbeddingsJobQueue"("state")';
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_stateUpdatedAt" ON "EmbeddingsJobQueue"("stateUpdatedAt")';
-
-      EXECUTE 'CREATE TABLE IF NOT EXISTS "EmbeddingsIndex" (
-        "id" SERIAL PRIMARY KEY,
-        "objectType" "EmbeddingsObjectTypeEnum" NOT NULL,
-        "refId" VARCHAR(100),
-        UNIQUE("objectType", "refId"),
-        "refDateTime" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        "models" TEXT[],
-        "teamId" VARCHAR(100) NOT NULL,
-        "orgId" VARCHAR(100) NOT NULL,
-        "embedText" TEXT
-      )';
-
-      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_objectType" ON "EmbeddingsIndex"("objectType")';
-      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_refDateTime" ON "EmbeddingsIndex"("refDateTime")';
-      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_models" ON "EmbeddingsIndex" USING GIN (models)';
-      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_teamId" ON "EmbeddingsIndex"("teamId")';
-      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsIndex_orgId" ON "EmbeddingsIndex"("orgId")';
   END $$;
   `)
   await client.end()
@@ -69,31 +75,12 @@ export async function down() {
   await client.connect()
   await client.query(`
   DO $$
-  DECLARE
-      r RECORD;
   BEGIN
-      FOR r IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename LIKE 'Embeddings_%'
-      LOOP
-          EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
-      END LOOP;
-
-      EXECUTE 'DROP INDEX IF EXISTS "idx_EmbeddingsJobQueue_objectType"';
-      EXECUTE 'DROP INDEX IF EXISTS "idx_EmbeddingsJobQueue_refId"';
-      EXECUTE 'DROP INDEX IF EXISTS "idx_EmbeddingsJobQueue_state"';
-      EXECUTE 'DROP INDEX IF EXISTS "idx_EmbeddingsJobQueue_stateUpdatedAt"';
-
       EXECUTE 'DROP TABLE IF EXISTS "EmbeddingsJobQueue"';
+      EXECUTE 'DROP TABLE IF EXISTS "EmbeddingsMetadata"';
 
-      EXECUTE 'DROP INDEX IF EXISTS idx_EmbeddingsIndex_objectType';
-      EXECUTE 'DROP INDEX IF EXISTS idx_EmbeddingsIndex_refDate';
-      EXECUTE 'DROP INDEX IF EXISTS idx_EmbeddingsIndex_models';
-      EXECUTE 'DROP INDEX IF EXISTS idx_EmbeddingsIndex_teamId';
-      EXECUTE 'DROP INDEX IF EXISTS idx_EmbeddingsIndex_orgId';
-
-      EXECUTE 'DROP TABLE IF EXISTS EmbeddingsIndex';
-
-      EXECUTE 'DROP TYPE IF EXISTS EmbeddingsStateEnum';
-      EXECUTE 'DROP TYPE IF EXISTS EmbeddingsObjectTypeEnum';
+      EXECUTE 'DROP TYPE IF EXISTS "EmbeddingsStateEnum"';
+      EXECUTE 'DROP TYPE IF EXISTS "EmbeddingsObjectTypeEnum"';
   END $$;
   `)
   await client.end()
