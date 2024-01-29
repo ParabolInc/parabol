@@ -35,7 +35,8 @@ module.exports = (config) => {
       gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
       preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
       pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
-      migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')]
+      migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
+      assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')]
     },
     output: {
       filename: '[name].js',

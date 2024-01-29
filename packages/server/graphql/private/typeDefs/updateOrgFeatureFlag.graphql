@@ -17,6 +17,8 @@ enum OrganizationFeatureFlagsEnum {
   meetingInception
   kudos
   aiIcebreakers
+  aiTemplate
+  recurringRetros
 }
 
 extend type Mutation {

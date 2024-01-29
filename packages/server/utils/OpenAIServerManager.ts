@@ -3,6 +3,22 @@ import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
 import {ModifyType} from '../graphql/public/resolverTypes'
 
+type Prompt = {
+  question: string
+  description: string
+}
+
+type Template = {
+  templateId: string
+  templateName: string
+  prompts: Prompt[]
+}
+
+type AITemplateSuggestion = {
+  templateId: string
+  explanation: string
+}
+
 class OpenAIServerManager {
   private openAIApi
   constructor() {
@@ -169,6 +185,43 @@ class OpenAIServerManager {
       })
       const themes = (response.choices[0]?.message?.content?.trim() as string) ?? null
       return themes.split(', ')
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
+      console.error(error.message)
+      sendToSentry(error)
+      return null
+    }
+  }
+
+  async getTemplateSuggestion(templates: Template[], userPrompt: string) {
+    if (!this.openAIApi) return null
+    const promptText = `Based on the user's input "${userPrompt}", identify the most suitable meeting template from the list below and provide a JSON response in the format: { templateId: "the chosen template ID", explanation: "reason for choosing this template" }. The explanation should be concise. Available templates are: ${templates
+      .map(
+        (template) =>
+          `ID: ${template.templateId}, Name: ${template.templateName}, Prompts: ${template.prompts
+            .map((prompt) => `${prompt.question} - ${prompt.description}`)
+            .join('; ')}`
+      )
+      .join('. ')}.`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4-1106-preview',
+        response_format: {type: 'json_object'},
+        messages: [
+          {
+            role: 'user',
+            content: promptText
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const templateResponse = (response.choices[0]?.message?.content?.trim() as string) ?? null
+      return JSON.parse(templateResponse) as AITemplateSuggestion
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
       console.error(error.message)

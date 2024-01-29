@@ -15,7 +15,7 @@ type Handlers = Pick<
 interface CustomProps {
   editorState: EditorState
   setEditorState: SetEditorState
-  editorRef: RefObject<HTMLTextAreaElement>
+  editorRef?: RefObject<HTMLTextAreaElement>
   teamId: string
 }
 

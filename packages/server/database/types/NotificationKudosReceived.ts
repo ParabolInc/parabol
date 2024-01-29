@@ -2,8 +2,8 @@ import Notification from './Notification'
 
 interface Input {
   userId: string
-  name: string
-  picture: string
+  name: string | null
+  picture: string | null
   senderUserId: string
   meetingName: string
   meetingId: string
@@ -13,8 +13,8 @@ interface Input {
 
 export default class NotificationKudosReceived extends Notification {
   readonly type = 'KUDOS_RECEIVED'
-  name: string
-  picture: string
+  name: string | null
+  picture: string | null
   senderUserId: string
   meetingName: string
   meetingId: string

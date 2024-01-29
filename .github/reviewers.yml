@@ -1,10 +1,8 @@
 reviewers:
   groups:
-    developers:
-      - jmtaber129
+    reviewers:
       - igorlesnenko
       - nickoferrall
-      - BartoszJarocki
     maintainers:
       - mattkrick
       - Dschoordsch
@@ -13,7 +11,6 @@ reviewers:
       - tghanken
     designers:
       - ackernaut
-      - enriquesanchez
     devops:
       - rafaelromcar-parabol
       - adaniels-parabol
@@ -21,7 +18,7 @@ reviewers:
     none:
 
   per_author:
-    developers:
+    reviewers:
       - none
     maintainers:
       - none
@@ -33,7 +30,7 @@ reviewers:
       - none
 
   defaults:
-    - developers
+    - maintainers
 
 files:
   "**/migrations/**":

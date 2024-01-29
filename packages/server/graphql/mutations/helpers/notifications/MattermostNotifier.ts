@@ -277,12 +277,38 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     )
   },
   async endTimeLimit(meeting, team, user) {
+    const {name: meetingName} = meeting
     const {webhookUrl} = notificationChannel
-
+    const {name: teamName} = team
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
-    const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
 
-    return notifyMattermost('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, user, team.id, messageText)
+    const attachments = [
+      makeFieldsAttachment(
+        [
+          {
+            short: true,
+            title: 'Team',
+            value: teamName
+          },
+          {
+            short: true,
+            title: 'Meeting',
+            value: meetingName
+          },
+          {
+            short: false,
+            value: makeHackedFieldButtonValue({label: 'Open meeting', link: meetingUrl})
+          }
+        ],
+        {
+          fallback: `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`,
+          title: `Time’s up! Advance your meeting to the next phase ⏰`,
+          title_link: meetingUrl
+        }
+      )
+    ]
+
+    return notifyMattermost('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, user, team.id, attachments)
   },
   async integrationUpdated(user) {
     const message = `Integration webhook configuration updated`

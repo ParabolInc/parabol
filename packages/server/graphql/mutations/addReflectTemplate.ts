@@ -110,13 +110,11 @@ const addReflectTemplate = {
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
-      if (allTemplates.find((template) => template.name === '*New Template')) {
-        return standardError(new Error('Template already created'), {userId: viewerId})
-      }
       const {orgId} = viewerTeam
       // RESOLUTION
+      const templateCount = allTemplates.length
       const base = {
-        '*New Template': [
+        [`*New Template #${templateCount + 1}`]: [
           {
             question: 'New prompt',
             description: '',

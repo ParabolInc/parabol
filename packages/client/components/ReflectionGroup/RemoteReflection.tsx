@@ -202,16 +202,18 @@ const RemoteReflection = (props: Props) => {
             isConnected
           }
         }
+        teamId
       }
     `,
     meetingRef
   )
   const {id: reflectionId, content, isDropping, reflectionGroupId, creator} = reflection
-  const {meetingMembers, localPhase, disableAnonymity} = meeting
+  const {meetingMembers, localPhase, disableAnonymity, teamId} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection$data['remoteDrag']
   >
   const ref = useRef<HTMLDivElement>(null)
+  const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState] = useEditorState(content)
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
@@ -273,6 +275,9 @@ const RemoteReflection = (props: Props) => {
             editorState={editorState}
             readOnly
             disableAnonymity={disableAnonymity}
+            teamId={teamId}
+            editorRef={editorRef}
+            handleReturn={() => 'handled'}
           />
           {disableAnonymity && (
             <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>

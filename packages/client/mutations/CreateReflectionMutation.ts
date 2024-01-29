@@ -11,9 +11,11 @@ import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateReflectionMutation as TCreateReflectionMutation} from '../__generated__/CreateReflectionMutation.graphql'
 import handleAddReflectionGroups from './handlers/handleAddReflectionGroups'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment CreateReflectionMutation_meeting on CreateReflectionPayload {
+    reflectionId
     reflectionGroup {
       meetingId
       sortOrder
@@ -31,6 +33,12 @@ graphql`
     unlockedStages {
       id
       isNavigableByFacilitator
+    }
+    draftKudoses {
+      receiverUser {
+        preferredName
+      }
+      emojiUnicode
     }
   }
 `
@@ -58,7 +66,30 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
   return commitMutation<TCreateReflectionMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
+    onCompleted: (res, errors) => {
+      const draftKudoses = res.createReflection?.draftKudoses
+      if (draftKudoses && draftKudoses.length) {
+        const preferredNames = draftKudoses
+          .map((kudos) => kudos.receiverUser.preferredName)
+          .join(', ')
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: `youGaveKudos:${res.createReflection.reflectionId}`,
+          message: `${preferredNames} will receive kudos at the end ot the meeting ${draftKudoses[0]?.emojiUnicode}`,
+          autoDismiss: 5,
+          onShow: () => {
+            SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
+              snackbarType: 'kudosSent'
+            })
+          },
+          onManualDismiss: () => {
+            SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
+              snackbarType: 'kudosSent'
+            })
+          }
+        })
+      }
+      onCompleted(res, errors)
+    },
     onError,
     updater: (store) => {
       const payload = store.getRootField('createReflection')
