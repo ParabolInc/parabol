@@ -20,8 +20,8 @@ export const ALL_CATEGORIES = [
   CUSTOM_CATEGORY_ID
 ] as const
 
-export type CategoryID = typeof MAIN_CATEGORIES[number]
-export type AllCategoryID = typeof ALL_CATEGORIES[number]
+export type CategoryID = (typeof MAIN_CATEGORIES)[number]
+export type AllCategoryID = (typeof ALL_CATEGORIES)[number]
 
 export const DEFAULT_CARD_THEME: CardTheme = {
   primary: 'bg-slate-500',

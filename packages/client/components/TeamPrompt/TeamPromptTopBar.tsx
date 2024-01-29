@@ -12,9 +12,9 @@ import {meetingAvatarMediaQueries, meetingTopBarMediaQuery} from '../../styles/m
 import EditableText from '../EditableText'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
-import {HumanReadableRecurrenceRule} from './Recurrence/HumanReadableRecurrenceRule'
-import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
-import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
+import {HumanReadableRecurrenceRule} from '../Recurrence/HumanReadableRecurrenceRule'
+import {UpdateRecurrenceSettingsModal} from '../Recurrence/UpdateRecurrenceSettingsModal'
+import {EndRecurringMeetingModal} from '../Recurrence/EndRecurringMeetingModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
@@ -116,6 +116,7 @@ const TeamPromptTopBar = (props: Props) => {
         ...NewMeetingAvatarGroup_meeting
         ...TeamPromptMeetingStatus_meeting
         ...UpdateRecurrenceSettingsModal_meeting
+        ...EndRecurringMeetingModal_meeting
       }
     `,
     meetingRef
@@ -244,7 +245,7 @@ const TeamPromptTopBar = (props: Props) => {
         )}
         {endRecurringMeetingModal(
           <EndRecurringMeetingModal
-            meetingId={meetingId}
+            meetingRef={meeting}
             recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
             closeModal={toggleEndRecurringMeetingModal}
           />

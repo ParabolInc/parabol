@@ -111,6 +111,9 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
         .run()
   ])
   if (meetingSeries) {
+    // meeting was modified if a new meeting series was created
+    dataLoader.get('newMeetings').clear(meetingId)
+    dataLoader.get('activeMeetingsByTeamId').clear(teamId)
     analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)

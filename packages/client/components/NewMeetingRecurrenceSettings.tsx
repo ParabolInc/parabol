@@ -3,8 +3,8 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
 import NewMeetingDropdown from './NewMeetingDropdown'
-import {toHumanReadable} from './TeamPrompt/Recurrence/HumanReadableRecurrenceRule'
-import {RecurrenceSettings} from './TeamPrompt/Recurrence/RecurrenceSettings'
+import {toHumanReadable} from './Recurrence/HumanReadableRecurrenceRule'
+import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
 
 interface Props {
   onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void

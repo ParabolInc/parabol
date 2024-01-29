@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {Weekday} from 'rrule'
-import {PALETTE} from '../../../styles/paletteV3'
+import {PALETTE} from '../../styles/paletteV3'
 
 type DayFullName =
   | 'Monday'

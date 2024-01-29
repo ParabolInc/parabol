@@ -100,7 +100,7 @@ export const getIssue = async (
   extraFieldIds: string[] = [],
   extraExpand: string[] = []
 ) => {
-  return new Promise<Unpromise<ReturnType<typeof manager['getIssue']>>>((resolve) => {
+  return new Promise<Unpromise<ReturnType<(typeof manager)['getIssue']>>>((resolve) => {
     const requests = {
       firstToResolve: resolve,
       cachedIssue: undefined
