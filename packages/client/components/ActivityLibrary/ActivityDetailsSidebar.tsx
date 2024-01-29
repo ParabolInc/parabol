@@ -408,6 +408,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                         <ActivityDetailsRecurrenceSettings
                           onRecurrenceSettingsUpdated={setRecurrenceSettings}
                           recurrenceSettings={recurrenceSettings}
+                          placeholder='Retro'
                         />
                       )}
                     </>
@@ -422,6 +423,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                     <ActivityDetailsRecurrenceSettings
                       onRecurrenceSettingsUpdated={setRecurrenceSettings}
                       recurrenceSettings={recurrenceSettings}
+                      placeholder='Standup'
                     />
                   )}
                 </>

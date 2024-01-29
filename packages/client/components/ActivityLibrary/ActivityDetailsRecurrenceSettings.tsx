@@ -8,10 +8,11 @@ import DialogContainer from '../DialogContainer'
 interface Props {
   onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
   recurrenceSettings: RecurrenceSettings
+  placeholder: string
 }
 
 export const ActivityDetailsRecurrenceSettings = (props: Props) => {
-  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings, placeholder} = props
   const {togglePortal, modalPortal} = useModal({
     id: 'activityDetailsRecurrenceSettings'
   })
@@ -32,6 +33,7 @@ export const ActivityDetailsRecurrenceSettings = (props: Props) => {
           <RecurrenceSettings
             onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
             recurrenceSettings={recurrenceSettings}
+            placeholder={placeholder}
           />
         </DialogContainer>
       )}

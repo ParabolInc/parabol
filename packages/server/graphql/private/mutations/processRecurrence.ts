@@ -3,10 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingTeamPrompt, {
-  createTeamPromptTitle,
-  isMeetingTeamPrompt
-} from '../../../database/types/MeetingTeamPrompt'
+import MeetingTeamPrompt, {isMeetingTeamPrompt} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -24,6 +21,7 @@ import MeetingRetrospective, {
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 
 const startRecurringMeeting = async (
   meetingSeries: MeetingSeries,
@@ -52,13 +50,13 @@ const startRecurringMeeting = async (
     ? getJSDateFromRRuleDate(nextMeetingStartDate)
     : undefined
 
+  const meetingName = createMeetingSeriesTitle(
+    meetingSeries.title,
+    startTime,
+    rrule.options.tzid ?? 'UTC'
+  )
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
-      const meetingName = createTeamPromptTitle(
-        meetingSeries.title,
-        startTime,
-        rrule.options.tzid ?? 'UTC'
-      )
       const teamPromptMeeting = lastMeeting as MeetingTeamPrompt | null
       const meeting = await safeCreateTeamPrompt(
         meetingName,
@@ -92,7 +90,8 @@ const startRecurringMeeting = async (
           templateId,
           videoMeetingURL: undefined,
           meetingSeriesId: meetingSeries.id,
-          scheduledEndTime
+          scheduledEndTime,
+          name: meetingName
         },
         dataLoader
       )

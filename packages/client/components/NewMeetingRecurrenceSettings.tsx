@@ -9,10 +9,11 @@ import {RecurrenceSettings} from './TeamPrompt/Recurrence/RecurrenceSettings'
 interface Props {
   onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
   recurrenceSettings: RecurrenceSettings
+  placeholder: string
 }
 
 export const NewMeetingRecurrenceSettings = (props: Props) => {
-  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings, placeholder} = props
   const {togglePortal, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
@@ -41,6 +42,7 @@ export const NewMeetingRecurrenceSettings = (props: Props) => {
         <RecurrenceSettings
           onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
           recurrenceSettings={recurrenceSettings}
+          placeholder={placeholder}
         />
       )}
     </>

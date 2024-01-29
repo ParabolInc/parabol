@@ -90,8 +90,9 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
 
   const meeting = useFragment(
     graphql`
-      fragment UpdateRecurrenceSettingsModal_meeting on TeamPromptMeeting {
+      fragment UpdateRecurrenceSettingsModal_meeting on NewMeeting {
         id
+        meetingType
         meetingSeries {
           id
           title
@@ -103,6 +104,13 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
     meetingRef
   )
 
+  const {meetingType} = meeting
+  const placeholder =
+    meetingType === 'teamPrompt'
+      ? 'Standup'
+      : meetingType === 'retrospective'
+      ? 'Retrospective'
+      : 'Meeting'
   const currentRecurrenceRule = meeting.meetingSeries?.recurrenceRule
   const atmosphere = useAtmosphere()
   const isMeetingSeriesActive = meeting.meetingSeries?.cancelledAt === null
@@ -191,6 +199,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
       <RecurrenceSettings
         recurrenceSettings={newRecurrenceSettings}
         onRecurrenceSettingsUpdated={handleNewRecurrenceSettings}
+        placeholder={placeholder}
       />
       <StyledCloseButton onClick={closeModal}>
         <CloseIcon />

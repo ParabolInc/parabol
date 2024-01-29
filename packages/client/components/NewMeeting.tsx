@@ -215,6 +215,7 @@ const NewMeeting = (props: Props) => {
               <NewMeetingRecurrenceSettings
                 onRecurrenceSettingsUpdated={setRecurrenceSettings}
                 recurrenceSettings={recurrenceSettings}
+                placeholder='Standup'
               />
             )}
           </SettingsRow>
