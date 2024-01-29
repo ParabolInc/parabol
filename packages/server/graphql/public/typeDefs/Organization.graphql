@@ -190,7 +190,7 @@ type OrganizationFeatureFlags {
   zoomTranscription: Boolean!
   shareSummary: Boolean!
   teamsLimit: Boolean!
-  teamInsights: Boolean!
+  noTeamInsights: Boolean!
   oneOnOne: Boolean!
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
