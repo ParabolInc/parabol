@@ -262,6 +262,8 @@ const getSlackMessageForNotification = async (
     const author = await dataLoader.get('users').loadNonNull(notification.authorId)
     const comment = await dataLoader.get('comments').load(notification.commentId)
 
+    const authorName = comment.isAnonymous ? 'Anonymous' : author.preferredName
+
     const options = {
       searchParams: {
         utm_source: 'slack standup notification',
@@ -274,7 +276,7 @@ const getSlackMessageForNotification = async (
     const buttonUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
     return {
       buttonUrl,
-      title: `*${author.preferredName}* replied to your response in *${meeting.name}*`,
+      title: `*${authorName}* replied to your response in *${meeting.name}*`,
       body: `> ${comment.plaintextContent}`,
       buttonText: 'See the discussion'
     }
