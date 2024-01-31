@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.15.0](https://github.com/ParabolInc/parabol/compare/v7.14.0...v7.15.0) (2024-01-30)
+
+
+### Added
+
+* Add meeting series end options for retros ([#9370](https://github.com/ParabolInc/parabol/issues/9370)) ([715ed47](https://github.com/ParabolInc/parabol/commit/715ed47a180cd70c494f7cae397b455f04adea50))
+* add notifications for mention in reflections and show kudos preview ([#9354](https://github.com/ParabolInc/parabol/issues/9354)) ([a7f9b5d](https://github.com/ParabolInc/parabol/commit/a7f9b5df4c7c6a66b5b5856e56968e5b94579911))
+* add slack notification for mention and kudos in reflections ([#9377](https://github.com/ParabolInc/parabol/issues/9377)) ([bd0347b](https://github.com/ParabolInc/parabol/commit/bd0347b8e91c57092d6a30ab4a28a151d06bac3b))
+* Allow retro meeting series naming ([#9348](https://github.com/ParabolInc/parabol/issues/9348)) ([894b716](https://github.com/ParabolInc/parabol/commit/894b71663cbb62c8008aa54f1dbe920b8cb56c85))
+* Release team insights ([#9385](https://github.com/ParabolInc/parabol/issues/9385)) ([7505fc3](https://github.com/ParabolInc/parabol/commit/7505fc33edd21e44396395122789a3dee66e414c))
+* support globs for org approvals ([#9367](https://github.com/ParabolInc/parabol/issues/9367)) ([822ee57](https://github.com/ParabolInc/parabol/commit/822ee57800b3acc8eac76be5cae612c90eb94d94))
+
+
+### Fixed
+
+* add suggested vscode extensions ([#9382](https://github.com/ParabolInc/parabol/issues/9382)) ([d991532](https://github.com/ParabolInc/parabol/commit/d9915321fb58b6e364629be79a11713eaf6d9a6f))
+* fix recreating invite link in case of expiration ([#9222](https://github.com/ParabolInc/parabol/issues/9222)) ([027579e](https://github.com/ParabolInc/parabol/commit/027579ef961713963ef630d25502cd5299170d46))
+* fix slack resonse replied anonymous notification ([#9390](https://github.com/ParabolInc/parabol/issues/9390)) ([1717936](https://github.com/ParabolInc/parabol/commit/17179361395b744641e597ab1d7e1d6dc43828ee))
+
 ## [7.14.0](https://github.com/ParabolInc/parabol/compare/v7.13.3...v7.14.0) (2024-01-23)
 
 
