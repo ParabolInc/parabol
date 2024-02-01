@@ -134,7 +134,7 @@ const Description = ({
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
     <div
-      className={clsx('max-w-xs break-words text-sm italic text-slate-600', className)}
+      className={clsx('break-words text-sm italic text-slate-600', className)}
       {...rest}
     >
       {children}
@@ -261,35 +261,16 @@ export const RecurrenceSettings = (props: Props) => {
 
   return (
     <div className='space-y-4 p-4'>
-      <div className='text-lg font-semibold leading-none'>Recurrence</div>
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
-          <Input
-            className='h-[34px] w-[210px]'
-            hasError={!!nameError}
-            id='series-title'
-            type='text'
-            placeholder={placeholder}
-            value={meetingSeriesName}
-            onChange={handleNameChange}
-            min={1}
-            max={50}
-            label={
-              <Label className='block ' htmlFor='series-title'>
-                Series title
-              </Label>
-            }
-          />
+          <label className='block text-sm text-slate-800' htmlFor='series-interval'>
+            Restarts every
+          </label>
           <Input
             className={'h-[34px] w-[100px]'}
             hasError={!!intervalError}
             id='series-interval'
             type='number'
-            label={
-              <Label className='block' htmlFor='series-interval'>
-                Restarts every
-              </Label>
-            }
             onChange={handleIntervalChange}
             value={recurrenceInterval}
             min={1}

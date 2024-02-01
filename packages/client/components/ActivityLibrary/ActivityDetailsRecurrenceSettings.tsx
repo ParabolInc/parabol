@@ -1,5 +1,6 @@
 import React from 'react'
 import {RecurrenceSettings} from '../Recurrence/RecurrenceSettings'
+import {ScheduleDialog} from '../ScheduleDialog'
 import NewMeetingDropdown from '../NewMeetingDropdown'
 import {toHumanReadable} from '../Recurrence/HumanReadableRecurrenceRule'
 import useModal from '../../hooks/useModal'
@@ -30,7 +31,7 @@ export const ActivityDetailsRecurrenceSettings = (props: Props) => {
       />
       {modalPortal(
         <DialogContainer className='bg-white'>
-          <RecurrenceSettings
+          <ScheduleDialog
             onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
             recurrenceSettings={recurrenceSettings}
             placeholder={placeholder}
