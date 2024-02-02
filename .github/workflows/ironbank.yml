@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version_number:
-        description: "Version number of the Parabol image to process"
+        description: "Version number of the Parabol application image to process"
         required: true
 
 jobs:
