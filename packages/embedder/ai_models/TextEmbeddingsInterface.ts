@@ -11,12 +11,12 @@ const modelSubTypeDefinitions: Record<ModelSubTypes, EmbeddingModelParams> = {
   [ModelSubTypes.BGE_Large_En_1p5]: {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
-    tableSuffix: 'ember_1'
+    tableSuffix: 'bge_l_en_1p5'
   },
   [ModelSubTypes.Ember_v1]: {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
-    tableSuffix: 'bge_l_en_1p5'
+    tableSuffix: 'ember_1'
   }
 }
 
