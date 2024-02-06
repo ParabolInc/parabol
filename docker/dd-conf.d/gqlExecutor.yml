@@ -1,0 +1,5 @@
+logs:
+  - type: file
+    path: "/var/log/datadog/logs/gqlExecutor-1.log"
+    service: parabol-local-dev
+    source: GQL-Executor

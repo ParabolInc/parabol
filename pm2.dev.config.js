@@ -15,7 +15,8 @@ module.exports = {
       },
       watch: ['dev/gqlExecutor.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
-      autorestart: false
+      autorestart: false,
+      log_file: 'logs/gqlExecutor.log'
     },
     {
       name: 'Socket Server',
