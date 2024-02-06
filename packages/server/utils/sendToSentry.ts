@@ -15,7 +15,7 @@ export interface SentryOptions {
 const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
   console.trace(
     'SEND TO SENTRY',
-    error.message,
+    error.message || error?.toString() || JSON.stringify(error),
     JSON.stringify(options.tags),
     JSON.stringify(options.extras)
   )
