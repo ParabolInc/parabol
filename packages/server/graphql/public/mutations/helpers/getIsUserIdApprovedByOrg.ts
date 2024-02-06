@@ -7,6 +7,8 @@ const getIsUserIdApprovedByOrg = async (
   dataLoader: DataLoaderWorker,
   invitationToken?: string
 ) => {
+  const approvedDomains = await dataLoader.get('organizationApprovedDomainsByOrgId').load(orgId)
+  if (approvedDomains.length === 0) return undefined
   const organizationUser = await dataLoader
     .get('organizationUsersByUserIdOrgId')
     .load({userId, orgId})
