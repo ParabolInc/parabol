@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.15.1](https://github.com/ParabolInc/parabol/compare/v7.15.0...v7.15.1) (2024-02-06)
+
+
+### Fixed
+
+* **env:** typo in AZURE_DEVOPS vars ([#9396](https://github.com/ParabolInc/parabol/issues/9396)) ([7de7514](https://github.com/ParabolInc/parabol/commit/7de751463532d7e42c61b5fdb9ab5d0dc8348841))
+* fix accepting invite always required email verification ([#9404](https://github.com/ParabolInc/parabol/issues/9404)) ([58f5f97](https://github.com/ParabolInc/parabol/commit/58f5f9706a7c14f20e72fc6be9ab208f52939c91))
+* handle all types of errors in sendToSentry ([#9387](https://github.com/ParabolInc/parabol/issues/9387)) ([3b5d4eb](https://github.com/ParabolInc/parabol/commit/3b5d4ebfd2cee575c903036f06cb57dafb22f87c))
+
+
+### Changed
+
+* **deps:** bump nodemailer ([#9399](https://github.com/ParabolInc/parabol/issues/9399)) ([342968d](https://github.com/ParabolInc/parabol/commit/342968d3a5f622e704e3677322d1bcdc6f2e2749))
+* update Ironbank GH action dependencies ([#9393](https://github.com/ParabolInc/parabol/issues/9393)) ([886ce6f](https://github.com/ParabolInc/parabol/commit/886ce6f203fceb4b90fcd95ddc1972ea23556dfe))
+
 ## [7.15.0](https://github.com/ParabolInc/parabol/compare/v7.14.0...v7.15.0) (2024-01-30)
 
 
