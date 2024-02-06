@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "engines": {
-    "node": "^20.9.0",
+    "node": "^20.11.0",
     "yarn": "^1.22.5"
   },
   "private": true,

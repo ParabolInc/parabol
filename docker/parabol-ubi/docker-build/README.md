@@ -27,9 +27,9 @@ Recommended:
 
 | Name                 | Description                                                                                                             | Possible values                                       | Recommended value                                                   |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
-| `postgresql_tag`     | PostgreSQL version from the [Docker image](https://hub.docker.com/_/postgres)                                           | `Any tag`                                             | `15.4`                                                      |
+| `postgresql_tag`     | PostgreSQL version from the [Docker image](https://hub.docker.com/_/postgres)                                           | `Any tag`                                             | `15.4`                                                              |
 | `rethinkdb_tag`      | RethinkDB version from the [Docker image](https://hub.docker.com/_/rethinkdb)                                           | `Any tag`                                             | `2.4.2`                                                             |
-| `redis_tag`          | Redis version from the [Docker image](https://hub.docker.com/_/redis)                                                   | `Any tag`                                             | `7.0-alpine`                                                             |
+| `redis_tag`          | Redis version from the [Docker image](https://hub.docker.com/_/redis)                                                   | `Any tag`                                             | `7.0-alpine`                                                        |
 | `_BUILD_ENV_PATH`    | File `.env` used by the application during the build process                                                            | `Relative path from the root level of the repository` | `docker/parabol-ubi/docker-build/environments/pipeline`             |
 | `_NODE_VERSION`      | Node version, used by Docker to use the Docker image node:\_NODE_VERSION as base image to build                         | `Same as in root package.json`                        |                                                                     |
 | `_DOCKERFILE`        | Dockerfile used to build the image                                                                                      | `Relative path from the root level of the repository` | `./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile` |
@@ -135,7 +135,7 @@ export postgresql_tag=15.4-alpine; \
 export rethinkdb_tag=2.4.2; \
 export redis_tag=7.0-alpine; \
 export _BUILD_ENV_PATH=environments/local-buildenv \
-export _NODE_VERSION=20.9.0 \
+export _NODE_VERSION=20.11.0 \
 export _DOCKER_REPOSITORY=parabol \
 export _PARABOL_GIT_REF=vX.X.X \
 export _DOCKER_TAG=vX.X.X
