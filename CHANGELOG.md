@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.15.1](https://github.com/ParabolInc/parabol/compare/v7.15.0...v7.15.1) (2024-02-06)
+
+
+### Fixed
+
+* fix accepting invite always required email verification ([ffc06dc](https://github.com/ParabolInc/parabol/commit/ffc06dc550de1db59150544760aaae1f9bf9f131))
+
 ## [7.15.0](https://github.com/ParabolInc/parabol/compare/v7.14.0...v7.15.0) (2024-01-30)
 
 
