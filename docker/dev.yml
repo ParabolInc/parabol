@@ -14,7 +14,7 @@ services:
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
       - "./dd-conf.d:/etc/datadog-agent/conf.d/local.d/"
-      - "../logs:/var/log/datadog/logs"
+      - "../dev/logs:/var/log/datadog/logs"
   db:
     image: rethinkdb:2.4.2
     restart: unless-stopped

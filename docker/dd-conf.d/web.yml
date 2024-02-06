@@ -1,5 +1,5 @@
 logs:
   - type: file
-    path: "/var/log/datadog/logs/gqlExecutor.log"
+    path: "/var/log/datadog/logs/web.log"
     service: parabol
     source: parabol
