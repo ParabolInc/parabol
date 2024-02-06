@@ -9,12 +9,6 @@ interface JiraNoAccessError {
   errorMessages: ['The app is not installed on this instance.']
 }
 
-export function isJiraNoAccessError<T extends object>(
-  response: T | JiraNoAccessError
-): response is JiraNoAccessError {
-  return 'errorMessages' in response && response.errorMessages.length > 0
-}
-
 interface JiraFieldError {
   errors: {
     [fieldName: string]: string
@@ -30,6 +24,12 @@ interface JiraGetError {
 }
 
 type JiraError = JiraNoAccessError | JiraFieldError | JiraGetError
+
+export function isJiraNoAccessError<T extends object>(
+  response: T | JiraNoAccessError
+): response is JiraNoAccessError {
+  return 'errorMessages' in response && response.errorMessages.length > 0
+}
 
 export type JiraPermissionScope =
   | 'read:jira-user'
