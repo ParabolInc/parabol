@@ -33,7 +33,7 @@ export async function up() {
       CREATE TRIGGER "update_EmbeddingsMetadata_updatedAt" BEFORE UPDATE ON "EmbeddingsMetadata" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
 
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_objectType" ON "EmbeddingsMetadata"("objectType")';
-      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_refDateTime" ON "EmbeddingsMetadata"("refDateTime")';
+      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_refUpdatedAt" ON "EmbeddingsMetadata"("refUpdatedAt")';
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_models" ON "EmbeddingsMetadata" USING GIN (models)';
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsMetadata_teamId" ON "EmbeddingsMetadata"("teamId")';
 
@@ -45,7 +45,7 @@ export async function up() {
           "model" VARCHAR(255) NOT NULL,
           UNIQUE("objectType", "refId", "model"),
           "state" "EmbeddingsStateEnum" DEFAULT ''queued'' NOT NULL,
-          "stateMessage" TEXT,
+          "stateMessage" TEXT
       )';
 
       DROP TRIGGER IF EXISTS "update_EmbeddingsJobQueue_updatedAt" ON "EmbeddingsJobQueue";
@@ -54,7 +54,6 @@ export async function up() {
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_objectType" ON "EmbeddingsJobQueue"("objectType")';
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_refId" ON "EmbeddingsJobQueue"("refId")';
       EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_state" ON "EmbeddingsJobQueue"("state")';
-      EXECUTE 'CREATE INDEX IF NOT EXISTS "idx_EmbeddingsJobQueue_stateUpdatedAt" ON "EmbeddingsJobQueue"("stateUpdatedAt")';
   END $$;
   `)
   await client.end()
