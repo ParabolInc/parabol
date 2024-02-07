@@ -31,7 +31,7 @@ export class TextEmbeddingsInterface extends AbstractEmbeddingsModel {
     this.constructModelParams()
   }
 
-  public async getEmbeddings(content: string) {
+  public async getEmbedding(content: string) {
     const body = {
       inputs: content
     }

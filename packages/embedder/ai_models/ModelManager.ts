@@ -102,7 +102,7 @@ export class ModelManager {
   }
 
   async createEmbeddingsTables(pg: Kysely<any>) {
-    for (const embeddingsModel of this.getEmbeddingsModelsIter()) {
+    for (const embeddingsModel of this.getEmbeddingModelsIter()) {
       const tableName = embeddingsModel.getTableName()
       const hasTable = await (async () => {
         const query = sql<number[]>`SELECT 1 FROM ${sql.id(
@@ -122,9 +122,9 @@ export class ModelManager {
         "id" SERIAL PRIMARY KEY,
         "embedText" TEXT,
         "embedding" vector(${sql.raw(vectorDimensions.toString())}),
-        "embeddingsIndexId" INTEGER NOT NULL,
-        FOREIGN KEY ("embeddingsIndexId")
-          REFERENCES "EmbeddingsIndex"("id")
+        "embeddingsMetadataId" INTEGER NOT NULL,
+        FOREIGN KEY ("embeddingsMetadataId")
+          REFERENCES "EmbeddingsMetadata"("id")
           ON DELETE CASCADE
       );
       CREATE INDEX IF NOT EXISTS "idx_${sql.raw(tableName)}_embedding_vector_cosign_ops"
@@ -132,23 +132,22 @@ export class ModelManager {
         USING hnsw ("embedding" vector_cosine_ops);
       END $$;
       `
-      console.log(`query: ${query.compile(pg).sql}`)
       await query.execute(pg)
     }
   }
 
   // returns the highest priority summarizer instance
-  getGenerator() {
+  getFirstGenerator() {
     if (!this.generationModels.length) throw new Error('no generator model initialzed')
     return this.generationModels[0]
   }
 
-  getEmbedder() {
+  getFirstEmbedder() {
     if (!this.embeddingModels.length) throw new Error('no embedder model initialzed')
     return this.embeddingModels[0]
   }
 
-  getEmbeddingsModelsIter() {
+  getEmbeddingModelsIter() {
     return this.embeddingModels[Symbol.iterator]()
   }
 }

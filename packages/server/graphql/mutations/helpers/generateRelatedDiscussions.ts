@@ -65,11 +65,9 @@ const rerankSimilarDiscussions = async (
     dataLoader,
     true // only return reflection & discussion content
   )
-  const embeddingsModel = getModelManager()?.getEmbedder()
+  const embeddingsModel = getModelManager()?.getFirstEmbedder()
   if (!embeddingsModel) return undefined
-  const embeddingVector = await (embeddingsModel as AbstractEmbeddingsModel).getEmbeddings(
-    embedText
-  )
+  const embeddingVector = await (embeddingsModel as AbstractEmbeddingsModel).getEmbedding(embedText)
   const embeddingVectorStr = numberVectorToString(embeddingVector)
   const rerankIds = similarDiscussions.map((sd) => sd.modelId)
   const pg = getKysely()
@@ -126,11 +124,9 @@ const getSimilarDiscussions = async (
   if (!modelManager) return undefined
 
   // for this demo, we're just going to use the highest priority embedding model:
-  const embeddingsModel = getModelManager()?.getEmbedder()
+  const embeddingsModel = getModelManager()?.getFirstEmbedder()
   if (!embeddingsModel) return undefined
-  const embeddingVector = await (embeddingsModel as AbstractEmbeddingsModel).getEmbeddings(
-    embedText
-  )
+  const embeddingVector = await (embeddingsModel as AbstractEmbeddingsModel).getEmbedding(embedText)
   const embeddingVectorStr = numberVectorToString(embeddingVector)
   const pg = getKysely()
   const embeddingsTable = embeddingsModel.getTableName()
@@ -143,14 +139,19 @@ const getSimilarDiscussions = async (
           sql<number>`(1 - (${sql.id(embeddingsTable, 'embedding')} <=> ${embeddingVectorStr}))`.as(
             'similarity'
           ),
-          sql<number>`${sql.id(embeddingsTable, 'embeddingsIndexId')}`.as('embeddingsIndexId'),
-          'EmbeddingsIndex.refId as refId'
+          sql<number>`${sql.id(embeddingsTable, 'embeddingsMetadataId')}`.as(
+            'embeddingsMetadataId'
+          ),
+          'EmbeddingsMetadata.refId as refId'
         ])
-        .innerJoin('EmbeddingsIndex', `${embeddingsTable}.embeddingsIndexId`, 'EmbeddingsIndex.id')
-        .where('EmbeddingsIndex.objectType', '=', 'retrospectiveDiscussionTopic')
-        .where('EmbeddingsIndex.state', '=', 'embedded')
-        .where('EmbeddingsIndex.teamId', '=', team.id)
-        .where('EmbeddingsIndex.orgId', '=', team.orgId)
+        .innerJoin(
+          'EmbeddingsMetadata',
+          `${embeddingsTable}.embeddingsMetadataId`,
+          'EmbeddingsMetadata.id'
+        )
+        .where('EmbeddingsMetadata.objectType', '=', 'retrospectiveDiscussionTopic')
+        .where('EmbeddingsMetadata.models', '@>', sql`ARRAY[${embeddingsTable}]` as any)
+        .where('EmbeddingsMetadata.teamId', '=', team.id)
     )
     .selectFrom('CosineSimilarity')
     .select(['modelId', 'refId', 'similarity'])

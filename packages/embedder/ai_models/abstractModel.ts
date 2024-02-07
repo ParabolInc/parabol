@@ -49,7 +49,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   getModelParams() {
     return this.modelParams
   }
-  abstract getEmbeddings(content: string): Promise<number[]>
+  abstract getEmbedding(content: string): Promise<number[]>
 }
 
 export interface GenerationModelParams {

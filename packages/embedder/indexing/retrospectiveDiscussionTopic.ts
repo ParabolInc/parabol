@@ -15,10 +15,10 @@ import {RDatum} from 'parabol-server/database/stricterR'
 
 import generateHourIntervals from './generateHourIntervals'
 import {DBInsert} from '../embedder'
-import {upsertEmbeddingsIndexRows} from './upsertEmbeddingsIndexRows'
+import {upsertEmbeddingsMetaRows} from './upsertEmbeddingsMetaRows'
 
-export interface EmbeddingsIndexRetrospectiveDiscussionTopic
-  extends Omit<DB['EmbeddingsIndex'], 'objectType'> {
+export interface EmbeddingsJobQueueRetrospectiveDiscussionTopic
+  extends Omit<DB['EmbeddingsJobQueue'], 'objectType'> {
   objectType: 'retrospectiveDiscussionTopic'
 }
 
@@ -41,7 +41,7 @@ const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
 export const pg = getKysely()
 
-export async function refreshEmbeddingsIndex(dataLoader: DataLoaderWorker) {
+export async function refreshEmbeddingsMeta(dataLoader: DataLoaderWorker) {
   const r = await getRethink()
   const {createdAt: newestMeetingDate} = (await r
     .table('NewMeeting')
@@ -53,8 +53,8 @@ export async function refreshEmbeddingsIndex(dataLoader: DataLoaderWorker) {
     .run()) as unknown as RethinkSchema['NewMeeting']['type']
 
   const {newestIndexDate} = (await pg
-    .selectFrom('EmbeddingsIndex')
-    .select(pg.fn.max('refDateTime').as('newestIndexDate'))
+    .selectFrom('EmbeddingsMetadata')
+    .select(pg.fn.max('refUpdatedAt').as('newestIndexDate'))
     .executeTakeFirst()) ?? {newestIndexDate: null}
   const startDateTime = newestIndexDate || oldestMeetingDate
   console.log(`Index will consider adding items from ${startDateTime} to ${newestMeetingDate}`)
@@ -87,13 +87,11 @@ export async function refreshEmbeddingsIndex(dataLoader: DataLoaderWorker) {
           )
       )
       .run()
-    const embeddingsIndexRows = (
+    const embeddingsMetaRows = (
       await Promise.all(meetings.map((m) => newRetroDiscussionTopicsFromNewMeeting(m, dataLoader)))
-    )
-      .flat()
-      .filter((row) => row.orgId !== null) // guarding against an observed condition
-    if (!embeddingsIndexRows.length) continue
-    await upsertEmbeddingsIndexRows(embeddingsIndexRows)
+    ).flat()
+    if (!embeddingsMetaRows.length) continue
+    await upsertEmbeddingsMetaRows(embeddingsMetaRows)
   }
   return
 }
@@ -222,7 +220,7 @@ export const createTextFromNewMeetingDiscussion = async (
 }
 
 export const createText = async (
-  item: Selectable<EmbeddingsIndexRetrospectiveDiscussionTopic>,
+  item: Selectable<EmbeddingsJobQueueRetrospectiveDiscussionTopic>,
   dataLoader: DataLoaderWorker
 ): Promise<string> => {
   if (!item.refId) throw 'refId is undefined'
@@ -240,20 +238,17 @@ export const createText = async (
 export const newRetroDiscussionTopicsFromNewMeeting = async (
   newMeeting: RethinkSchema['NewMeeting']['type'],
   dataLoader: DataLoaderWorker
-): Promise<DBInsert['EmbeddingsIndex'][]> => {
+): Promise<DBInsert['EmbeddingsMetadata'][]> => {
   const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
   const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
   if (orgId && discussPhase && discussPhase.stages) {
-    const indexRows = discussPhase.stages.map(async (stage) => ({
+    const metadataRows = discussPhase.stages.map(async (stage) => ({
       objectType: 'retrospectiveDiscussionTopic' as 'retrospectiveDiscussionTopic',
-      state: 'new' as 'new',
       teamId: newMeeting.teamId,
-      orgId: orgId,
-      refTable: 'NewMeeting',
       refId: `${newMeeting.id}:${stage.id}`,
-      refDateTime: newMeeting.createdAt
+      refUpdatedAt: newMeeting.createdAt
     }))
-    return Promise.all(indexRows)
+    return Promise.all(metadataRows)
   } else {
     return []
   }
@@ -268,5 +263,5 @@ export const upsertRetroDiscussionTopicFromNewMeeting = async (
     dataLoader
   )
   if (!newEmbeddingsIndexItems || !newEmbeddingsIndexItems.length) return
-  return upsertEmbeddingsIndexRows(newEmbeddingsIndexItems)
+  return upsertEmbeddingsMetaRows(newEmbeddingsIndexItems)
 }
