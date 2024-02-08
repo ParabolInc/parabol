@@ -25,6 +25,7 @@ const query = graphql`
       team(teamId: $teamId) {
         ...ArchiveTeam_team
         isLead
+        isOrgAdmin
         id
         name
         tier
@@ -56,7 +57,7 @@ export const OrgTeamMembers = (props: Props) => {
   } = useDialogState()
 
   if (!team) return null
-  const {teamMembers} = team
+  const {isLead: isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -92,7 +93,12 @@ export const OrgTeamMembers = (props: Props) => {
           </div>
         </div>
         {teamMembers.map((teamMember) => (
-          <OrgTeamMembersRow key={teamMember.id} teamMemberRef={teamMember} />
+          <OrgTeamMembersRow
+            isViewerLead={isViewerLead}
+            isViewerOrgAdmin={isViewerOrgAdmin}
+            teamMemberRef={teamMember}
+            key={teamMember.id}
+          />
         ))}
       </div>
 
