@@ -220,7 +220,15 @@ describe('findMentionsByEmoji', () => {
   it('returns correct mention user IDs for emoji ❤️', () => {
     const emoji = '❤️'
     const result = getKudosUserIdsFromJson(doc, emoji)
-    expect(result).toEqual(['user_id_1', 'user_id_2', 'user_id_3', 'user_id_4', 'user_id_5'])
+    expect(result).toEqual([
+      'user_id_1',
+      'user_id_2',
+      'user_id_3',
+      'user_id_4',
+      'user_id_5',
+      'user_id_list_1',
+      'user_id_nested_list'
+    ])
   })
 
   it('returns correct mention user IDs for different emoji (🌮)', () => {
@@ -240,12 +248,5 @@ describe('findMentionsByEmoji', () => {
     const result = getKudosUserIdsFromJson(doc, emoji)
     const uniqueResult = Array.from(new Set(result))
     expect(result).toEqual(uniqueResult)
-  })
-
-  it('handles nested list mentions correctly for emoji ❤️', () => {
-    const emoji = '❤️'
-    const result = getKudosUserIdsFromJson(doc, emoji)
-    expect(result).toContain('user_id_list_1')
-    expect(result).toContain('user_id_nested_list')
   })
 })
