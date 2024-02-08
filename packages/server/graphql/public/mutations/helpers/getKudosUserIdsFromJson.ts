@@ -3,27 +3,33 @@ import {JSONContent} from '@tiptap/core'
 export const getKudosUserIdsFromJson = (doc: JSONContent, emoji: string): string[] => {
   const mentionedIds = new Set<string>()
 
-  if (!doc.content) return []
-  for (const paragraph of doc.content) {
-    if (paragraph.content) {
-      let emojiFound = false
-      const tempMentions = new Set<string>()
+  const searchForMentionsAndEmojis = (node: JSONContent | undefined) => {
+    if (!node || !node.content) return
 
-      for (const node of paragraph.content) {
-        if (node.type === 'text' && node.text?.includes(emoji)) {
-          emojiFound = true
+    node.content.forEach((contentNode) => {
+      if (contentNode.type === 'paragraph') {
+        const tempMentions: string[] = []
+        let emojiFound = false
+
+        contentNode.content?.forEach((item) => {
+          if (item.type === 'text' && item.text?.includes(emoji)) {
+            emojiFound = true
+          }
+          if (item.type === 'mention') {
+            tempMentions.push(item.attrs?.id)
+          }
+        })
+
+        if (emojiFound) {
+          tempMentions.forEach((id) => mentionedIds.add(id))
         }
-
-        if (node.type === 'mention') {
-          tempMentions.add(node.attrs?.id)
-        }
+      } else if (contentNode.content) {
+        searchForMentionsAndEmojis(contentNode)
       }
-
-      if (emojiFound) {
-        tempMentions.forEach((id) => mentionedIds.add(id))
-      }
-    }
+    })
   }
+
+  searchForMentionsAndEmojis(doc)
 
   return Array.from(mentionedIds)
 }
