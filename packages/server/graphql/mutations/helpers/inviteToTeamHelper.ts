@@ -59,6 +59,21 @@ const inviteToTeamHelper = async (
     return standardError(new Error('No valid emails'), {userId: viewerId})
   }
 
+  const [total, pending] = await Promise.all([
+    r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
+    r
+      .table('TeamInvitation')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({acceptedAt: null})
+      .count()
+      .run()
+  ])
+  const accepted = total - pending
+  // if no one has accepted one of their 100+ invites, don't trust them
+  if (accepted === 0 && total >= 100) {
+    return standardError(new Error('Exceeded unaccepted invitation limit'), {userId: viewerId})
+  }
+
   const [users, team, inviter] = await Promise.all([
     getUsersByEmails(validInvitees),
     dataLoader.get('teams').load(teamId),
