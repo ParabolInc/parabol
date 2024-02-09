@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import {Selectable, sql} from 'kysely'
+import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
@@ -478,11 +478,11 @@ export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
         .selectAll()
         .where('orgId', 'in', orgIds)
         .where('isActive', '=', true)
-        .where(({or, cmpr}) =>
+        .where(({or, eb}) =>
           or([
-            cmpr('hideStartingAt', 'is', null),
-            sql`make_date(2020 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`,
-            sql`make_date(2019 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`
+            eb('hideStartingAt', 'is', null),
+            sql<SqlBool>`make_date(2020 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`,
+            sql<SqlBool>`make_date(2019 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`
           ])
         )
         .orderBy('createdAt', 'desc')

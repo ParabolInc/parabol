@@ -10,6 +10,13 @@ const getKysely = () => {
       dialect: new PostgresDialect({
         pool: pg
       })
+      // query logging, if you'd like it:
+      // log(event) {
+      //   if (event.level === 'query') {
+      //     console.log(event.query.sql)
+      //     console.log(event.query.parameters)
+      //   }
+      // }
     })
   }
   return kysely
