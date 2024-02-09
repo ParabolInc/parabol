@@ -23,36 +23,6 @@ import {insertNewJobs} from './indexing/embeddingsTablesOps'
 import {completeJobTxn} from './indexing/embeddingsTablesOps'
 
 /*
- * Embedder service
- *
- * This service builds embedding vectors for semantic search. It does so
- * by:
- *
- * 1. Updating a list of all possible items to generating embedding vectors for and
- *    storing that list (and metadata) in the EmbeddingsMetadata table
- * 2. Adding these items in batches to the EmbeddingsJobQueue table and a redis
- *    priority queue called `embedder:queue`
- * 3. Allowing one or more parallel embedding services to calculate the embedding
- *    vectors (EmbeddingJobQueue states queued -> embedding,
- *    then embedding -> [deleting the EmbeddingJobQueue row]
- *
- *    In addition to deleteing the EmbeddingJobQueue row, when a job completes
- *    successfully:
- *
- *       - A row is added to the model table with the embedding vector; the
- *         EmbeddingMetadataId field on this row points the appropriate
- *         metadata row on EmbeddingsMetadata
- *       - The EmbeddingsMetadata.models field is updated with the name of the
- *         table that the embedding has been generated for
- *
- * 4. This process repeats forever using a silly polling loop
- *
- * In the future, it would be wonderful to enhance this service such that it were
- * event driven, and new items were added to the EmbeddingIndex table via a published
- * redis events.
- */
-
-/*
  * TODO List
  * - [ ] implement a clean-up function that re-queues items that haven't transitioned
  *       to a completed state, or that failed
