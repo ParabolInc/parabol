@@ -1,20 +1,26 @@
-import {Insertable, Selectable, Updateable, sql, RawBuilder} from 'kysely'
+import {Insertable} from 'kysely'
 import tracer from 'dd-trace'
 import Redlock, {RedlockAbortSignal} from 'redlock'
 
 import 'parabol-server/initSentry'
-import getRethink from 'parabol-server/database/rethinkDriver'
-import {RDatum} from 'parabol-server/database/stricterR'
 import getKysely from 'parabol-server/postgres/getKysely'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {DB} from 'parabol-server/postgres/pg'
 import getDataLoader from 'parabol-server/graphql/getDataLoader'
 import {refreshEmbeddingsMeta as refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
-import numberVectorToString from './indexing/numberVectorToString'
+import {orgIdsWithFeatureFlag} from './indexing/orgIdsWithFeatureFlag'
 import getModelManager, {ModelManager} from './ai_models/ModelManager'
 import {countWords} from './indexing/countWords'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
 import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
+import {
+  selectJobQueueItemById,
+  selectMetadataByJobQueueId,
+  updateJobState
+} from './indexing/embeddingsTablesOps'
+import {selectMetaToQueue} from './indexing/embeddingsTablesOps'
+import {insertNewJobs} from './indexing/embeddingsTablesOps'
+import {completeJobTxn} from './indexing/embeddingsTablesOps'
 
 /*
  * Embedder service
@@ -71,7 +77,7 @@ tracer.init({
 })
 tracer.use('pg')
 
-const pg = getKysely()
+export const pg = getKysely()
 const dataLoader = getDataLoader() as DataLoaderWorker
 
 const redisClient = new RedisInstance(`embedder-${SERVER_ID}`)
@@ -87,20 +93,6 @@ const refreshIndexTable = async () => {
   await refreshRetroDiscussionTopicsMeta(dataLoader)
   // In the future, other sorts of objects to index could be added here...
 }
-
-const orgIdsWithFeatureFlag = async () => {
-  // I had to add a secondary index to the Organization table to get
-  // this query to be cheap
-  const r = await getRethink()
-  return await r
-    .table('Organization')
-    .getAll('relatedDiscussions', {index: 'featureFlagsIndex' as any})
-    .filter((r: RDatum) => r('featureFlags').contains('relatedDiscussions'))
-    .map((r: RDatum) => r('id'))
-    .coerceTo('array')
-    .run()
-}
-
 const maybeQueueIndexTableItems = async (modelManager: ModelManager) => {
   const queueLength = await redisClient.zcard('embedder:queue')
   if (queueLength >= Q_MAX_LENGTH) return
@@ -116,40 +108,7 @@ const maybeQueueIndexTableItems = async (modelManager: ModelManager) => {
   //   * I don't love all overrides, I wish there was a better way
   //     see: https://github.com/kysely-org/kysely/issues/872
 
-  function unnestedArray<T>(value: T): RawBuilder<T> {
-    if (!Array.isArray(value)) {
-      throw new TypeError('Value must be an array')
-    }
-
-    return sql`unnest(ARRAY[${sql.join(value)}]::varchar[])`
-  }
-
-  const batchToQueue = (await pg
-    .selectFrom('EmbeddingsMetadata as em')
-    .selectAll('em')
-    .leftJoinLateral(unnestedArray(configuredModels).as('model'), (join) => join.onTrue())
-    .leftJoin('Team as t', 'em.teamId', 't.id')
-    .select('model' as any)
-    .where(({eb, not, or, and, exists, selectFrom}) =>
-      and([
-        or([
-          not(eb('em.models', '<@', sql`ARRAY[${sql.ref('model')}]::varchar[]` as any) as any),
-          eb('em.models' as any, 'is', null)
-        ]),
-        not(
-          exists(
-            selectFrom('EmbeddingsJobQueue as ejq')
-              .select('ejq.id')
-              .whereRef('em.objectType', '=', 'ejq.objectType')
-              .whereRef('em.refId', '=', 'ejq.refId')
-              .whereRef('ejq.model', '=', 'model' as any)
-          )
-        ),
-        eb('t.orgId', 'in', orgIds)
-      ])
-    )
-    .limit(itemCountToQueue)
-    .execute()) as unknown as Selectable<DB['EmbeddingsMetadata'] & {model: string}>[]
+  const batchToQueue = await selectMetaToQueue(configuredModels, orgIds, itemCountToQueue)
 
   if (!batchToQueue.length) {
     console.log(`embedder: no new items to queue`)
@@ -176,11 +135,7 @@ const maybeQueueIndexTableItems = async (modelManager: ModelManager) => {
     }
   })
 
-  const ejqRows = await pg
-    .insertInto('EmbeddingsJobQueue')
-    .values(ejqValues)
-    .returning(['id', 'objectType', 'refId'])
-    .execute()
+  const ejqRows = await insertNewJobs(ejqValues)
 
   ejqRows.forEach((item) => {
     const {refUpdatedAt} = ejqHash[makeKey(item)]!
@@ -190,41 +145,6 @@ const maybeQueueIndexTableItems = async (modelManager: ModelManager) => {
   })
 
   console.log(`embedder: queued ${batchToQueue.length} items`)
-}
-
-const fetchJobQueueItemById = async (
-  id: number
-): Promise<Selectable<DB['EmbeddingsJobQueue']> | undefined> => {
-  return pg.selectFrom('EmbeddingsJobQueue').selectAll().where('id', '=', id).executeTakeFirst()
-}
-
-const fetchMetadataByJobQueueId = async (
-  id: number
-): Promise<Selectable<DB['EmbeddingsMetadata']> | undefined> => {
-  return pg
-    .selectFrom('EmbeddingsMetadata as em')
-    .selectAll()
-    .leftJoin('EmbeddingsJobQueue as ejq', (join) =>
-      join.onRef('em.objectType', '=', 'ejq.objectType').onRef('em.refId', '=', 'ejq.refId')
-    )
-    .where('ejq.id', '=', id)
-    .executeTakeFirstOrThrow()
-}
-
-const updateJobState = async (
-  id: number,
-  state: Updateable<DB['EmbeddingsJobQueue']>['state'],
-  jobQueueFields: Updateable<DB['EmbeddingsJobQueue']> = {}
-) => {
-  const jobQueueColumns: Updateable<DB['EmbeddingsJobQueue']> = {
-    ...jobQueueFields,
-    state
-  }
-  return pg
-    .updateTable('EmbeddingsJobQueue')
-    .set(jobQueueColumns)
-    .where('id', '=', id)
-    .executeTakeFirstOrThrow()
 }
 
 const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
@@ -238,13 +158,19 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
       continue
     }
     const jobQueueId = parseInt(id, 10)
-    const jobQueueItem = await fetchJobQueueItemById(jobQueueId)
+    const jobQueueItem = await selectJobQueueItemById(jobQueueId)
     if (!jobQueueItem) {
       console.warn(`Unable to fetch EmbeddingsJobQueue.id = ${id}`)
       continue
     }
 
-    const metadata = await fetchMetadataByJobQueueId(jobQueueId)
+    const metadata = await selectMetadataByJobQueueId(jobQueueId)
+    if (!metadata) {
+      await updateJobState(jobQueueId, 'failed', {
+        stateMessage: `unable to fetch metadata by EmbeddingsJobQueue.id = ${id}`
+      })
+      continue
+    }
 
     let fullText = metadata?.embedText
     try {
@@ -260,7 +186,7 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
 
     const wordCount = countWords(fullText)
     for (const embeddingModel of modelManager.getEmbeddingModelsIter()) {
-      let textToEmbed = fullText
+      let embedText = fullText
       const {maxInputTokens} = embeddingModel.getModelParams()
       // we're using word count as an appoximation of tokens
       if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > maxInputTokens) {
@@ -268,7 +194,7 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
           const generator = modelManager.getFirstGenerator()
           if (!generator) throw new Error(`Generator unavailable`)
           const textToSummarize = fullText.slice(0, generator.getModelParams().maxInputTokens)
-          textToEmbed = await generator.summarize(textToSummarize, 0.8, maxInputTokens)
+          embedText = await generator.summarize(textToSummarize, 0.8, maxInputTokens)
         } catch (e) {
           await updateJobState(jobQueueId, 'failed', {
             stateMessage: `unable to summarize long embed text: ${e}`
@@ -276,10 +202,11 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
           continue
         }
       }
-      console.log(`textToEmbed: ${textToEmbed}`)
+      // console.log(`embedText: ${embedText}`)
+
       let embeddingVector: number[]
       try {
-        embeddingVector = await embeddingModel.getEmbedding(textToEmbed)
+        embeddingVector = await embeddingModel.getEmbedding(embedText)
       } catch (e) {
         await updateJobState(jobQueueId, 'failed', {
           stateMessage: `unable to get embeddings: ${e}`
@@ -291,60 +218,14 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
       // (1) update EmbeddingsMetadata to reflect model completion
       // (2) upsert model table row with embedding
       // (3) delete EmbeddingsJobQueue row
-      await pg.transaction().execute(async (trx) => {
-        const modelTable = embeddingModel.getTableName()
-        // get fields to update correct metadata row
-        const jobQueueItem = await trx
-          .selectFrom('EmbeddingsJobQueue')
-          .select(['objectType', 'refId', 'model'])
-          .where('id', '=', jobQueueId)
-          .executeTakeFirstOrThrow()
-        // (1) update metadata row
-        const metadataColumnsToUpdate: {
-          models: RawBuilder<string[]>
-          embedText?: string | null | undefined
-        } = {
-          // update models as a set
-          models: sql<string[]>`(
-SELECT array_agg(DISTINCT value)
-FROM (
-  SELECT unnest(COALESCE("models", '{}')) AS value
-  UNION
-  SELECT unnest(ARRAY[${modelTable}]::VARCHAR[]) AS value
-) AS combined_values
-)`
-        }
-        if (metadata?.embedText !== fullText) {
-          metadataColumnsToUpdate.embedText = fullText
-        }
-        const updatedMetadata = await trx
-          .updateTable('EmbeddingsMetadata')
-          .set(metadataColumnsToUpdate)
-          .where('objectType', '=', jobQueueItem.objectType)
-          .where('refId', '=', jobQueueItem.refId)
-          .returning(['id'])
-          .executeTakeFirstOrThrow()
-        // (2) upsert into model table
-        await trx
-          .insertInto(modelTable as any)
-          .values({
-            embedText: fullText !== textToEmbed ? textToEmbed : null,
-            embedding: numberVectorToString(embeddingVector),
-            embeddingsMetadataId: updatedMetadata.id
-          })
-          .onConflict((oc) =>
-            oc.column('id').doUpdateSet((eb) => ({
-              embedText: eb.ref('excluded.embedText'),
-              embeddingsMetadataId: eb.ref('excluded.embeddingsMetadataId')
-            }))
-          )
-          .executeTakeFirstOrThrow()
-        // (3) delete completed job queue item
-        return await trx
-          .deleteFrom('EmbeddingsJobQueue')
-          .where('id', '=', jobQueueId)
-          .executeTakeFirstOrThrow()
-      })
+      await completeJobTxn(
+        embeddingModel,
+        jobQueueId,
+        metadata,
+        fullText,
+        embedText,
+        embeddingVector
+      )
     }
   }
 }
