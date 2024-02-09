@@ -158,12 +158,13 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
       let embedText = fullText
       const {maxInputTokens} = embeddingModel.getModelParams()
       // we're using word count as an appoximation of tokens
-      if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > maxInputTokens) {
+      if (true || wordCount * WORD_COUNT_TO_TOKEN_RATIO > maxInputTokens) {
         try {
           const generator = modelManager.getFirstGenerator()
           if (!generator) throw new Error(`Generator unavailable`)
           const textToSummarize = fullText.slice(0, generator.getModelParams().maxInputTokens)
           embedText = await generator.summarize(textToSummarize, 0.8, maxInputTokens)
+          console.log(`summarized: ${embedText}`)
         } catch (e) {
           await updateJobState(jobQueueId, 'failed', {
             stateMessage: `unable to summarize long embed text: ${e}`

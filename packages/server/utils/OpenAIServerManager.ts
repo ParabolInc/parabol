@@ -20,7 +20,7 @@ type AITemplateSuggestion = {
 }
 
 class OpenAIServerManager {
-  private openAIApi
+  protected openAIApi
   constructor() {
     if (!process.env.OPEN_AI_API_KEY) {
       this.openAIApi = null
@@ -28,6 +28,7 @@ class OpenAIServerManager {
     }
     this.openAIApi = new OpenAI({
       apiKey: process.env.OPEN_AI_API_KEY,
+      baseURL: process.env.OPEN_AI_BASE_URL,
       organization: process.env.OPEN_AI_ORG_ID
     })
   }

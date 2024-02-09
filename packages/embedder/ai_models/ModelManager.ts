@@ -7,6 +7,7 @@ import {
   GenerationModelConfig,
   ModelConfig
 } from './AbstractModel'
+import OpenAIGeneration from './OpenAIGeneration'
 import TextEmbeddingsInterface from './TextEmbeddingsInterface'
 import TextGenerationInterface from './TextGenerationInterface'
 
@@ -22,11 +23,12 @@ export function isValidEmbeddingsModelType(type: any): type is EmbeddingsModelTy
   return Object.values(EmbeddingsModelTypes).includes(type)
 }
 
-export enum SummarizationModelTypes {
+export enum GenerationModelTypes {
+  OpenAIGeneration = 'openai',
   TextGenerationInterface = 'text-generation-interface'
 }
-export function isValidSummarizationModelType(type: any): type is SummarizationModelTypes {
-  return Object.values(SummarizationModelTypes).includes(type)
+export function isValidGenerationModelType(type: any): type is GenerationModelTypes {
+  return Object.values(GenerationModelTypes).includes(type)
 }
 
 export class ModelManager {
@@ -89,12 +91,17 @@ export class ModelManager {
     config.generationModels.forEach(async (modelConfig) => {
       const modelType = modelConfig.model.split(':')[0]
 
-      if (!isValidSummarizationModelType(modelType))
+      if (!isValidGenerationModelType(modelType))
         throw new Error(`unsupported summarization model '${modelType}'`)
 
+      let generator: AbstractGenerationModel
       switch (modelType) {
+        case 'openai':
+          generator = new OpenAIGeneration(modelConfig)
+          this.generationModels.push(generator)
+          break
         case 'text-generation-interface':
-          const generator = new TextGenerationInterface(modelConfig)
+          generator = new TextGenerationInterface(modelConfig)
           this.generationModels.push(generator)
           break
       }
