@@ -8,7 +8,7 @@
       "parabol-client/*": ["client/*"],
       "~/*": ["client/*"]
     },
-    "lib": ["", "dom"],
+    "lib": ["esnext", "dom"],
     "types": ["node", "jest", "jest-extended"]
   },
 
