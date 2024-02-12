@@ -151,6 +151,67 @@ describe('findMentionsByEmoji', () => {
               text: ' both mentioned ❤️'
             }
           ]
+        },
+        {
+          type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [
+                    {
+                      type: 'text',
+                      text: 'List item with mention '
+                    },
+                    {
+                      type: 'mention',
+                      attrs: {
+                        id: 'user_id_list_1',
+                        label: 'userlistone'
+                      }
+                    },
+                    {
+                      type: 'text',
+                      text: ' ❤️ in a list'
+                    }
+                  ]
+                },
+                {
+                  type: 'listItem',
+                  content: [
+                    {
+                      type: 'bulletList',
+                      content: [
+                        {
+                          type: 'listItem',
+                          content: [
+                            {
+                              type: 'paragraph',
+                              content: [
+                                {
+                                  type: 'mention',
+                                  attrs: {
+                                    id: 'user_id_nested_list',
+                                    label: 'usernestedlist'
+                                  }
+                                },
+                                {
+                                  type: 'text',
+                                  text: ' Nested mention ❤️'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -159,7 +220,15 @@ describe('findMentionsByEmoji', () => {
   it('returns correct mention user IDs for emoji ❤️', () => {
     const emoji = '❤️'
     const result = getKudosUserIdsFromJson(doc, emoji)
-    expect(result).toEqual(['user_id_1', 'user_id_2', 'user_id_3', 'user_id_4', 'user_id_5'])
+    expect(result).toEqual([
+      'user_id_1',
+      'user_id_2',
+      'user_id_3',
+      'user_id_4',
+      'user_id_5',
+      'user_id_list_1',
+      'user_id_nested_list'
+    ])
   })
 
   it('returns correct mention user IDs for different emoji (🌮)', () => {
