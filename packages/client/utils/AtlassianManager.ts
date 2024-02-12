@@ -40,7 +40,7 @@ export type JiraPermissionScope =
 
 export class RateLimitError {
   retryAt: Date
-  name: 'RateLimitError' = 'RateLimitError'
+  name = 'RateLimitError' as const
   message: string
 
   constructor(message: string, retryAt: Date) {
