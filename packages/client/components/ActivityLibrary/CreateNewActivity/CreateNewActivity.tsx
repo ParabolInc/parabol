@@ -166,7 +166,11 @@ export const CreateNewActivity = (props: Props) => {
     )
 
     if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
+      onError(
+        new Error(
+          `You may only have ${Threshold.MAX_RETRO_TEAM_TEMPLATES} templates per team. Please remove one first.`
+        )
+      )
       return
     }
 
@@ -200,7 +204,11 @@ export const CreateNewActivity = (props: Props) => {
     )
 
     if (teamTemplates.length >= Threshold.MAX_POKER_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
+      onError(
+        new Error(
+          `You may only have ${Threshold.MAX_POKER_TEAM_TEMPLATES} templates per team. Please remove one first.`
+        )
+      )
       return
     }
 
