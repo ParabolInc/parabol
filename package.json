@@ -21,7 +21,7 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "pm2-runtime start pm2.config.js",
+    "start": "pm2-runtime start pm2.config.js -- --env-file .env",
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "node --max-old-space-size=8192 --env-file .env scripts/prod.js",
     "clean": "git clean -fdx -e .env",
