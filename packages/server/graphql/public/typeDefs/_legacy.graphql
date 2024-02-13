@@ -267,6 +267,7 @@ enum AuthIdentityTypeEnum {
   LOCAL
   GOOGLE
   MICROSOFT
+  SAML
 }
 
 """
@@ -6215,7 +6216,6 @@ type Mutation {
   pokerResetDimension(meetingId: ID!, stageId: ID!): PokerResetDimensionPayload!
 
   """
-
   """
   pokerAnnounceDeckHover(
     meetingId: ID!
@@ -6262,7 +6262,6 @@ type Mutation {
   ): SetPokerSpectatePayload!
 
   """
-
   """
   persistGitHubSearchQuery(
     """

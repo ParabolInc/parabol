@@ -3,6 +3,7 @@ import {AuthIdentityTypeEnum as EAuthIdentityTypeEnum} from '../../../client/typ
 import AuthIdentityMicrosoft from './AuthIdentityMicrosoft'
 import AuthIdentityGoogle from './AuthIdentityGoogle'
 import AuthIdentityLocal from './AuthIdentityLocal'
+import AuthIdentitySAML from './AuthIdentitySAML'
 import AuthIdentityTypeEnum from './AuthIdentityTypeEnum'
 
 export const authStrategyFields = () => ({
@@ -23,7 +24,8 @@ const AuthIdentity: GraphQLInterfaceType = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       [EAuthIdentityTypeEnum.LOCAL]: AuthIdentityLocal,
       [EAuthIdentityTypeEnum.GOOGLE]: AuthIdentityGoogle,
-      [EAuthIdentityTypeEnum.MICROSOFT]: AuthIdentityMicrosoft
+      [EAuthIdentityTypeEnum.MICROSOFT]: AuthIdentityMicrosoft,
+      [EAuthIdentityTypeEnum.SAML]: AuthIdentitySAML
     }
     return resolveTypeLookup[type]
   }

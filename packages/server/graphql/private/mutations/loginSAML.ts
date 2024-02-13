@@ -16,6 +16,9 @@ import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnUR
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
 import standardError from '../../../utils/standardError'
+import AuthIdentitySAML from '../../../database/types/AuthIdentitySAML'
+import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
+import updateUser from '../../../postgres/queries/updateUser'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -48,6 +51,8 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const {isInvited, metadataURL: newMetadataURL} = relayState
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
+
+  console.log('normalizedName', normalizedName)
 
   if (!doc)
     return {
@@ -124,6 +129,21 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
 
   const user = await getUserByEmail(email)
   if (user) {
+    const existingSAMLIdentity = user.identities.find(
+      (identity) => identity.type === AuthIdentityTypeEnum.SAML
+    ) as AuthIdentitySAML
+
+    if (!existingSAMLIdentity) {
+      user.identities.push(
+        new AuthIdentitySAML({
+          id: normalizedName,
+          isEmailVerified: true
+        })
+      ) // mutative
+
+      await updateUser({identities: user.identities}, user.id)
+    }
+
     return {
       userId: user.id,
       authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol})),
@@ -136,7 +156,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     id: userId,
     email,
     preferredName,
-    tier: 'enterprise'
+    tier: 'enterprise',
+    identities: [
+      new AuthIdentitySAML({
+        id: normalizedName,
+        isEmailVerified: true
+      })
+    ]
   })
 
   const authToken = await bootstrapNewUser(tempUser, !isInvited, dataLoader)
