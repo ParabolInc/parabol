@@ -47,9 +47,6 @@ const addReflectTemplate = {
       dataLoader.get('users').loadNonNull(viewerId)
     ])
 
-    if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      return standardError(new Error('Too many templates'), {userId: viewerId})
-    }
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }

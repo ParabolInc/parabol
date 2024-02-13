@@ -116,12 +116,10 @@ const ReflectTemplateDetails = (props: Props) => {
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
   const description = useTemplateDescription(lowestScope, activeTemplate, tier)
-  const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
-  const canClone = templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES
   const onClone = () => {
-    if (submitting || !canClone) return
+    if (submitting) return
     submitMutation()
     AddReflectTemplateMutation(
       atmosphere,

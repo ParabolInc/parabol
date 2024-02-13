@@ -160,20 +160,6 @@ export const CreateNewActivity = (props: Props) => {
       return
     }
 
-    const teamTemplates = availableTemplates.edges.filter(
-      (template) =>
-        template.node.teamId === selectedTeam.id && template.node.type === 'retrospective'
-    )
-
-    if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(
-        new Error(
-          `You may only have ${Threshold.MAX_RETRO_TEAM_TEMPLATES} templates per team. Please remove one first.`
-        )
-      )
-      return
-    }
-
     submitMutation()
     AddReflectTemplateMutation(
       atmosphere,
