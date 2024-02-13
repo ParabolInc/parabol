@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import JSON5 from 'json5'
 import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
 import {ModifyType} from '../graphql/public/resolverTypes'
@@ -206,8 +207,7 @@ class OpenAIServerManager {
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4-1106-preview',
-        response_format: {type: 'json_object'},
+        model: 'gpt-3.5-turbo-0125',
         messages: [
           {
             role: 'user',
@@ -221,9 +221,11 @@ class OpenAIServerManager {
       })
 
       const templateResponse = (response.choices[0]?.message?.content?.trim() as string) ?? null
-      return JSON.parse(templateResponse) as AITemplateSuggestion
+      const parsedResponse = JSON5.parse(templateResponse)
+      return parsedResponse as AITemplateSuggestion
     } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to generate the suggested template')
       console.error(error.message)
       sendToSentry(error)
       return null
