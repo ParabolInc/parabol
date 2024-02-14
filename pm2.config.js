@@ -44,7 +44,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production'
       }
-    }
+    },
     {
       name: 'GQL Executor',
       script: 'dist/gqlExecutor.js',
