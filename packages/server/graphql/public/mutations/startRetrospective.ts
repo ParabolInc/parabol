@@ -124,7 +124,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     meetingId,
     teamId,
     viewerId,
-    rrule: meetingSeries?.recurrenceRule,
+    rrule: recurrenceSettings?.rrule,
     dataLoader
   })
   if (meetingSeries && gcalSeriesId) {

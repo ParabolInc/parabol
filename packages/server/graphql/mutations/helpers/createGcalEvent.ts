@@ -4,20 +4,23 @@ import appOrigin from '../../../appOrigin'
 import {DataLoaderWorker} from '../../graphql'
 import standardError from '../../../utils/standardError'
 import {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
+import {RRule} from 'rrule'
+import {pick} from 'lodash'
 
 const emailRemindMinsBeforeMeeting = 24 * 60
 const popupRemindMinsBeforeMeeting = 10
 
-const convertRruleToGcal = (rrule: string | null | undefined) => {
-  const recurrence = rrule
-    ? [
-        rrule
-          .split('\n')
-          .filter((line) => !line.startsWith('DTSTART') && !line.startsWith('DTEND'))
-          .join('\n')
-      ]
-    : []
-  return recurrence
+const convertRruleToGcal = (rrule: RRule | null | undefined) => {
+  if (!rrule) {
+    return []
+  }
+
+  // Google does not allow for all fields in rrule. For example DTSTART and DTEND are not allowed.
+  // It also has trouble with BYHOUR, BYMINUTE, and BYSECOND. It's best to stick to fields known to work.
+  // Also strip TZID as google wants the UNTIL field in Z, but rrule only uses that if no TZID is present.
+  const options = pick(rrule.options, 'freq', 'interval', 'byweekday', 'until', 'count')
+  const gcalRule = new RRule(options)
+  return [gcalRule.toString()]
 }
 
 type Input = {
@@ -25,7 +28,7 @@ type Input = {
   meetingId: string
   viewerId: string
   teamId: string
-  rrule?: string | null
+  rrule?: RRule | null
   dataLoader: DataLoaderWorker
 }
 
@@ -113,7 +116,7 @@ const createGcalEvent = async (
 export type UpdateGcalSeriesInput = {
   gcalSeriesId: string
   title?: string
-  rrule: string | null
+  rrule: RRule | null
   userId: string
   teamId: string
   dataLoader: DataLoaderWorker
