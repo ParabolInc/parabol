@@ -7,7 +7,6 @@ import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
 import {AddNewReflectTemplate_reflectTemplates$key} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 import {AddNewReflectTemplate_team$key} from '../../../__generated__/AddNewReflectTemplate_team.graphql'
 

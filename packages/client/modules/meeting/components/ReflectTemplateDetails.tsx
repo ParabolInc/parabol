@@ -6,7 +6,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {ReflectTemplateDetails_settings$key} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
@@ -151,7 +150,7 @@ const ReflectTemplateDetails = (props: Props) => {
                 type='retrospective'
               />
             )}
-            {showClone && <CloneTemplate onClick={onClone} canClone={canClone} />}
+            {showClone && <CloneTemplate onClick={onClone} />}
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>

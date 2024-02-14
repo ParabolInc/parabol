@@ -7,7 +7,6 @@ import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
 import {AddNewPokerTemplate_pokerTemplates$key} from '../../../__generated__/AddNewPokerTemplate_pokerTemplates.graphql'
 import {AddNewPokerTemplate_team$key} from '../../../__generated__/AddNewPokerTemplate_team.graphql'
 
