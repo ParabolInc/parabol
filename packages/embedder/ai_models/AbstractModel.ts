@@ -1,6 +1,6 @@
 export interface ModelConfig {
   model: string
-  url?: string
+  url: string
 }
 
 export interface EmbeddingModelConfig extends ModelConfig {
@@ -10,13 +10,10 @@ export interface EmbeddingModelConfig extends ModelConfig {
 export interface GenerationModelConfig extends ModelConfig {}
 
 export abstract class AbstractModel {
-  public readonly modelConfigString: string
   public readonly url?: string
-
   public modelInstance: any
 
   constructor(config: ModelConfig) {
-    this.modelConfigString = config.model
     this.url = this.normalizeUrl(config.url)
   }
 
@@ -35,20 +32,17 @@ export interface EmbeddingModelParams {
 }
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
-  protected modelParams!: EmbeddingModelParams
-  private readonly tableName: string
+  readonly embeddingDimensions: number
+  readonly maxInputTokens: number
+  readonly tableName: string
   constructor(config: EmbeddingModelConfig) {
     super(config)
-    this.modelParams = this.constructModelParams()
-    this.tableName = `Embeddings_${this.getModelParams().tableSuffix}`
+    const modelParams = this.constructModelParams(config)
+    this.embeddingDimensions = modelParams.embeddingDimensions
+    this.maxInputTokens = modelParams.maxInputTokens
+    this.tableName = `Embeddings_${modelParams.tableSuffix}`
   }
-  getTableName() {
-    return this.tableName
-  }
-  protected abstract constructModelParams(): EmbeddingModelParams
-  getModelParams() {
-    return this.modelParams
-  }
+  protected abstract constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams
   abstract getEmbedding(content: string): Promise<number[]>
 }
 
@@ -56,18 +50,26 @@ export interface GenerationModelParams {
   maxInputTokens: number
 }
 
+export interface GenerationOptions {
+  maxNewTokens?: number
+  seed?: number
+  stop?: string
+  temperature?: number
+  topK?: number
+  topP?: number
+  truncate?: boolean
+}
+
 export abstract class AbstractGenerationModel extends AbstractModel {
-  protected modelParams!: GenerationModelParams
+  readonly maxInputTokens: number
   constructor(config: GenerationModelConfig) {
     super(config)
-    this.modelParams = this.constructModelParams()
+    const modelParams = this.constructModelParams(config)
+    this.maxInputTokens = modelParams.maxInputTokens
   }
 
-  protected abstract constructModelParams(): GenerationModelParams
-  getModelParams() {
-    return this.modelParams
-  }
-  abstract summarize(content: string, temperature: number, maxTokens: number): Promise<string>
+  protected abstract constructModelParams(config: GenerationModelConfig): GenerationModelParams
+  abstract summarize(content: string, options: GenerationOptions): Promise<string>
 }
 
 export default AbstractModel
