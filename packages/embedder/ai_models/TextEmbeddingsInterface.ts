@@ -1,34 +1,37 @@
-import {AbstractEmbeddingsModel, EmbeddingModelConfig, EmbeddingModelParams} from './AbstractModel'
+import {
+  AbstractEmbeddingsModel,
+  EmbeddingModelConfig,
+  EmbeddingModelParams,
+  ModelConfig
+} from './AbstractModel'
 
 const MAX_REQUEST_TIME_MS = 120 * 1000
 
-export enum ModelSubTypes {
-  BGE_Large_En_1p5 = 'BAAI/bge-large-en-v1.5',
-  Ember_v1 = 'llmrails/ember-v1'
-}
+export type ModelSubTypes = 'BAAI/bge-large-en-v1.5' | 'llmrails/ember-v1'
 
 const modelSubTypeDefinitions: Record<ModelSubTypes, EmbeddingModelParams> = {
-  [ModelSubTypes.BGE_Large_En_1p5]: {
+  'BAAI/bge-large-en-v1.5': {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
     tableSuffix: 'bge_l_en_1p5'
   },
-  [ModelSubTypes.Ember_v1]: {
+  'llmrails/ember-v1': {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
     tableSuffix: 'ember_1'
   }
 }
 
-function isValidModelSubType(type: any): type is ModelSubTypes {
-  return Object.values(ModelSubTypes).includes(type)
+function isValidModelSubType(object: any): object is ModelSubTypes {
+  return Object.keys(modelSubTypeDefinitions).includes(object)
 }
 
 export class TextEmbeddingsInterface extends AbstractEmbeddingsModel {
+  protected constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams {
+    throw new Error('Method not implemented.')
+  }
   constructor(config: EmbeddingModelConfig) {
     super(config)
-
-    this.constructModelParams()
   }
 
   public async getEmbedding(content: string) {
@@ -67,8 +70,8 @@ export class TextEmbeddingsInterface extends AbstractEmbeddingsModel {
       throw e
     }
   }
-  protected constructModelParams(): EmbeddingModelParams {
-    const modelConfigStringSplit = this.modelConfigString.split(':')
+  protected contructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams {
+    const modelConfigStringSplit = config.model.split(':')
     if (modelConfigStringSplit.length != 2) {
       throw new Error('TextGenerationInterface model string must be colon-delimited and len 2')
     }

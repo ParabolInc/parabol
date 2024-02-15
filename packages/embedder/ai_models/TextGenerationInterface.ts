@@ -6,18 +6,16 @@ import {
 
 const MAX_REQUEST_TIME_MS = 120 * 1000
 
-export enum ModelSubTypes {
-  Zephyr_7b = 'TheBloke/zephyr-7b-beta'
-}
+export type ModelSubTypes = 'TheBloke/zephyr-7b-beta'
 
 const modelSubTypeDefinitions: Record<ModelSubTypes, GenerationModelParams> = {
-  [ModelSubTypes.Zephyr_7b]: {
+  'TheBloke/zephyr-7b-beta': {
     maxInputTokens: 512
   }
 }
 
-function isValidModelSubType(type: any): type is ModelSubTypes {
-  return Object.values(ModelSubTypes).includes(type)
+function isValidModelSubType(object: any): object is ModelSubTypes {
+  return Object.keys(modelSubTypeDefinitions).includes(object)
 }
 
 export class TextGenerationInterface extends AbstractGenerationModel {
@@ -63,8 +61,8 @@ export class TextGenerationInterface extends AbstractGenerationModel {
       throw e
     }
   }
-  protected constructModelParams(): GenerationModelParams {
-    const modelConfigStringSplit = this.modelConfigString.split(':')
+  protected constructModelParams(config: GenerationModelConfig): GenerationModelParams {
+    const modelConfigStringSplit = config.model.split(':')
     if (modelConfigStringSplit.length != 2) {
       throw new Error('TextGenerationInterface model string must be colon-delimited and len 2')
     }
