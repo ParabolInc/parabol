@@ -1,9 +1,9 @@
 import {Insertable, Selectable, Updateable, sql} from 'kysely'
+import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
-import {DBInsert, pg} from '../embedder'
+import {DBInsert} from '../embedder'
 import {RawBuilder} from 'kysely'
 import numberVectorToString from './numberVectorToString'
-import {AbstractEmbeddingsModel} from '../ai_models/AbstractModel'
 
 function unnestedArray<T>(maybeArray: T[] | T): RawBuilder<T> {
   let a: T[] = Array.isArray(maybeArray) ? maybeArray : [maybeArray]
@@ -13,11 +13,13 @@ function unnestedArray<T>(maybeArray: T[] | T): RawBuilder<T> {
 export const selectJobQueueItemById = async (
   id: number
 ): Promise<Selectable<DB['EmbeddingsJobQueue']> | undefined> => {
+  const pg = getKysely()
   return pg.selectFrom('EmbeddingsJobQueue').selectAll().where('id', '=', id).executeTakeFirst()
 }
 export const selectMetadataByJobQueueId = async (
   id: number
 ): Promise<Selectable<DB['EmbeddingsMetadata']> | undefined> => {
+  const pg = getKysely()
   return pg
     .selectFrom('EmbeddingsMetadata as em')
     .selectAll()
@@ -35,12 +37,13 @@ export const selectMetadataByJobQueueId = async (
 //   * `em.models @> ARRAY[v.model]` is an indexed query
 //   * I don't love all overrides, I wish there was a better way
 //     see: https://github.com/kysely-org/kysely/issues/872
-export function selectMetaToQueue(
+export async function selectMetaToQueue(
   configuredModels: string[],
   orgIds: any[],
   itemCountToQueue: number
 ) {
-  return pg
+  const pg = getKysely()
+  const maybeMetaToQueue = (await pg
     .selectFrom('EmbeddingsMetadata as em')
     .selectAll('em')
     .leftJoinLateral(unnestedArray(configuredModels).as('model'), (join) => join.onTrue())
@@ -65,7 +68,17 @@ export function selectMetaToQueue(
       ])
     )
     .limit(itemCountToQueue)
-    .execute() as unknown as Selectable<DB['EmbeddingsMetadata'] & {model: string}>[]
+    .execute()) as unknown as Selectable<DB['EmbeddingsMetadata'] & {model: string}>[]
+
+  type MetadataToQueue = Selectable<
+    Omit<DB['EmbeddingsMetadata'], 'refId'> & {
+      refId: NonNullable<DB['EmbeddingsMetadata']['refId']>
+    } & {model: string}
+  >
+
+  return maybeMetaToQueue.filter(
+    (item) => item.refId !== null && item.refId !== undefined
+  ) as MetadataToQueue[]
 }
 
 export const updateJobState = async (
@@ -73,10 +86,12 @@ export const updateJobState = async (
   state: Updateable<DB['EmbeddingsJobQueue']>['state'],
   jobQueueFields: Updateable<DB['EmbeddingsJobQueue']> = {}
 ) => {
+  const pg = getKysely()
   const jobQueueColumns: Updateable<DB['EmbeddingsJobQueue']> = {
     ...jobQueueFields,
     state
   }
+  if (state === 'failed') console.log(`embedder: failed job ${id}, ${jobQueueFields.stateMessage}`)
   return pg
     .updateTable('EmbeddingsJobQueue')
     .set(jobQueueColumns)
@@ -85,6 +100,7 @@ export const updateJobState = async (
 }
 
 export function insertNewJobs(ejqValues: Insertable<DB['EmbeddingsJobQueue']>[]) {
+  const pg = getKysely()
   return pg
     .insertInto('EmbeddingsJobQueue')
     .values(ejqValues)
@@ -104,6 +120,7 @@ export function completeJobTxn(
   embedText: string,
   embeddingVector: number[]
 ) {
+  const pg = getKysely()
   return pg.transaction().execute(async (trx) => {
     // get fields to update correct metadata row
     const jobQueueItem = await trx
@@ -115,7 +132,7 @@ export function completeJobTxn(
     // (1) update metadata row
     const metadataColumnsToUpdate: {
       models: RawBuilder<string[]>
-      embedText?: string | null | undefined
+      fullText?: string | null | undefined
     } = {
       // update models as a set
       models: sql<string[]>`(
@@ -128,8 +145,8 @@ FROM (
 )`
     }
 
-    if (metadata?.embedText !== fullText) {
-      metadataColumnsToUpdate.embedText = fullText
+    if (metadata?.fullText !== fullText) {
+      metadataColumnsToUpdate.fullText = fullText
     }
 
     const updatedMetadata = await trx
@@ -166,6 +183,7 @@ FROM (
 export async function upsertEmbeddingsMetaRows(
   embeddingsMetaRows: DBInsert['EmbeddingsMetadata'][]
 ) {
+  const pg = getKysely()
   return pg
     .insertInto('EmbeddingsMetadata')
     .values(embeddingsMetaRows)

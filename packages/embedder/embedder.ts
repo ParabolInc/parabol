@@ -7,7 +7,7 @@ import getKysely from 'parabol-server/postgres/getKysely'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {DB} from 'parabol-server/postgres/pg'
 import getDataLoader from 'parabol-server/graphql/getDataLoader'
-import {refreshEmbeddingsMeta as refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
+import {refreshRetroDiscussionTopicsMeta as refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
 import {orgIdsWithFeatureFlag} from './indexing/orgIdsWithFeatureFlag'
 import getModelManager, {ModelManager} from './ai_models/ModelManager'
 import {countWords} from './indexing/countWords'
@@ -47,27 +47,19 @@ tracer.init({
 })
 tracer.use('pg')
 
-export const pg = getKysely()
-const dataLoader = getDataLoader() as DataLoaderWorker
-
-const redisClient = new RedisInstance(`embedder-${SERVER_ID}`)
-const redlock = new Redlock([redisClient], {
-  driftFactor: 0.01,
-  retryCount: 10,
-  retryDelay: 250,
-  retryJitter: 50,
-  automaticExtensionThreshold: 500
-})
+const getRedisClient = () => new RedisInstance(`embedder-${SERVER_ID}`)
 
 const refreshMetadata = async () => {
+  const dataLoader = getDataLoader() as DataLoaderWorker
   await refreshRetroDiscussionTopicsMeta(dataLoader)
   // In the future, other sorts of objects to index could be added here...
 }
 const maybeQueueMetadataItems = async (modelManager: ModelManager) => {
+  const redisClient = getRedisClient()
   const queueLength = await redisClient.zcard('embedder:queue')
   if (queueLength >= Q_MAX_LENGTH) return
   const itemCountToQueue = Q_MAX_LENGTH - queueLength
-  const configuredModels = [...modelManager.getEmbeddingModelsIter()].map((m) => m.getTableName())
+  const modelTables = modelManager.embeddingModels.map((m) => m.tableName)
   const orgIds = await orgIdsWithFeatureFlag()
 
   // For each configured embedding model, select rows from EmbeddingsMetadata
@@ -78,7 +70,7 @@ const maybeQueueMetadataItems = async (modelManager: ModelManager) => {
   //   * I don't love all overrides, I wish there was a better way
   //     see: https://github.com/kysely-org/kysely/issues/872
 
-  const batchToQueue = await selectMetaToQueue(configuredModels, orgIds, itemCountToQueue)
+  const batchToQueue = await selectMetaToQueue(modelTables, orgIds, itemCountToQueue)
 
   if (!batchToQueue.length) {
     console.log(`embedder: no new items to queue`)
@@ -90,8 +82,7 @@ const maybeQueueMetadataItems = async (modelManager: ModelManager) => {
       refUpdatedAt: Date
     }
   } = {}
-  const makeKey = (item: {objectType: string | null; refId: string | null}) =>
-    `${item.objectType}:${item.refId}`
+  const makeKey = (item: {objectType: string; refId: string}) => `${item.objectType}:${item.refId}`
 
   const ejqValues = batchToQueue.map((item) => {
     ejqHash[makeKey(item)] = {
@@ -101,7 +92,7 @@ const maybeQueueMetadataItems = async (modelManager: ModelManager) => {
       objectType: item.objectType,
       refId: item.refId as string,
       model: item.model,
-      state: 'queued' as DBInsert['EmbeddingsJobQueue']['state']
+      state: 'queued' as const
     }
   })
 
@@ -117,19 +108,21 @@ const maybeQueueMetadataItems = async (modelManager: ModelManager) => {
 }
 
 const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
+  const dataLoader = getDataLoader() as DataLoaderWorker
+  const redisClient = getRedisClient()
   while (true) {
     const maybeRedisQItem = await redisClient.zpopmax('embedder:queue', 1)
     if (maybeRedisQItem.length < 2) return // Q is empty, all done!
 
     const [id, _] = maybeRedisQItem
     if (!id) {
-      console.warn(`De-queued undefined item from embedder:queue`)
+      console.log(`embedder: de-queued undefined item from embedder:queue`)
       continue
     }
     const jobQueueId = parseInt(id, 10)
     const jobQueueItem = await selectJobQueueItemById(jobQueueId)
     if (!jobQueueItem) {
-      console.warn(`Unable to fetch EmbeddingsJobQueue.id = ${id}`)
+      console.log(`embedder: unable to fetch EmbeddingsJobQueue.id = ${id}`)
       continue
     }
 
@@ -141,7 +134,7 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
       continue
     }
 
-    let fullText = metadata?.embedText
+    let fullText = metadata?.fullText
     try {
       if (!fullText) {
         fullText = await createEmbeddingTextFrom(jobQueueItem, dataLoader)
@@ -154,50 +147,66 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
     }
 
     const wordCount = countWords(fullText)
-    for (const embeddingModel of modelManager.getEmbeddingModelsIter()) {
-      let embedText = fullText
-      const {maxInputTokens} = embeddingModel.getModelParams()
-      // we're using word count as an appoximation of tokens
-      if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > maxInputTokens) {
-        try {
-          const generator = modelManager.getFirstGenerator()
-          if (!generator) throw new Error(`Generator unavailable`)
-          const textToSummarize = fullText.slice(0, generator.getModelParams().maxInputTokens)
-          embedText = await generator.summarize(textToSummarize, 0.8, maxInputTokens)
-        } catch (e) {
-          await updateJobState(jobQueueId, 'failed', {
-            stateMessage: `unable to summarize long embed text: ${e}`
-          })
-          continue
-        }
-      }
-      // console.log(`embedText: ${embedText}`)
 
-      let embeddingVector: number[]
+    const embeddingModel = modelManager.embeddingModelsMapByTable[jobQueueItem.model]
+    if (!embeddingModel) {
+      await updateJobState(jobQueueId, 'failed', {
+        stateMessage: `embedding model ${jobQueueItem.model} not available`
+      })
+      continue
+    }
+    const itemKey = `${jobQueueItem.objectType}:${jobQueueItem.refId}`
+    const modelTable = embeddingModel.tableName
+
+    let embedText = fullText
+    const {maxInputTokens} = embeddingModel.modelParams
+    // we're using word count as an appoximation of tokens
+    if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > maxInputTokens) {
       try {
-        embeddingVector = await embeddingModel.getEmbedding(embedText)
+        const generator = modelManager.generationModels[0] // use 1st generator
+        if (!generator) throw new Error(`Generator unavailable`)
+        const summarizeOptions = {maxInputTokens, truncate: true}
+        console.log(`embedder:     ...summarizing ${itemKey} for ${modelTable}`)
+        embedText = await generator.summarize(fullText, summarizeOptions)
       } catch (e) {
         await updateJobState(jobQueueId, 'failed', {
-          stateMessage: `unable to get embeddings: ${e}`
+          stateMessage: `unable to summarize long embed text: ${e}`
         })
         continue
       }
-
-      // complete job, do the following atomically
-      // (1) update EmbeddingsMetadata to reflect model completion
-      // (2) upsert model table row with embedding
-      // (3) delete EmbeddingsJobQueue row
-      const modelTable = embeddingModel.getTableName()
-      await completeJobTxn(modelTable, jobQueueId, metadata, fullText, embedText, embeddingVector)
-      console.log(
-        `embedder: completed ${jobQueueItem.objectType}:${jobQueueItem.refId} -> ${modelTable}`
-      )
     }
+    // console.log(`embedText: ${embedText}`)
+
+    let embeddingVector: number[]
+    try {
+      embeddingVector = await embeddingModel.getEmbedding(embedText)
+    } catch (e) {
+      await updateJobState(jobQueueId, 'failed', {
+        stateMessage: `unable to get embeddings: ${e}`
+      })
+      continue
+    }
+
+    // complete job, do the following atomically
+    // (1) update EmbeddingsMetadata to reflect model completion
+    // (2) upsert model table row with embedding
+    // (3) delete EmbeddingsJobQueue row
+    await completeJobTxn(modelTable, jobQueueId, metadata, fullText, embedText, embeddingVector)
+    console.log(`embedder: completed ${itemKey} -> ${modelTable}`)
   }
 }
 
 const tick = async (modelManager: ModelManager) => {
   console.log(`embedder: tick`)
+  const redisClient = getRedisClient()
+  const redlock = new Redlock([redisClient], {
+    driftFactor: 0.01,
+    retryCount: 10,
+    retryDelay: 250,
+    retryJitter: 50,
+    automaticExtensionThreshold: 500
+  })
+
   await redlock
     .using(['embedder:lock'], 10000, async (signal: RedlockAbortSignal) => {
       console.log(`embedder: acquired index queue lock`)
@@ -225,11 +234,6 @@ const tick = async (modelManager: ModelManager) => {
   setTimeout(() => tick(modelManager), POLLING_PERIOD_SEC * 1000)
 }
 
-const doNothingForever = () => {
-  console.log(`embedder: no valid configuration (check AI_EMBEDDER_ENABLED in .env)`)
-  setTimeout(doNothingForever, 60 * 1000)
-}
-
 function parseEnvBoolean(envVarValue: string | undefined): boolean {
   return envVarValue === 'true'
 }
@@ -239,11 +243,13 @@ const run = async () => {
   const embedderEnabled = parseEnvBoolean(AI_EMBEDDER_ENABLED)
   const modelManager = getModelManager()
   if (embedderEnabled && modelManager) {
+    const pg = getKysely()
     await modelManager.maybeCreateTables(pg)
     console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
     tick(modelManager)
   } else {
-    doNothingForever()
+    console.log(`embedder: no valid configuration (check AI_EMBEDDER_ENABLED in .env)`)
+    // exit
   }
 }
 

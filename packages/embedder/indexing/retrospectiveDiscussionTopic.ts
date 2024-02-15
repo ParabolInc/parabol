@@ -11,11 +11,11 @@ import DiscussStage from 'parabol-server/database/types/DiscussStage'
 import MeetingRetrospective, {
   isMeetingRetrospective
 } from 'parabol-server/database/types/MeetingRetrospective'
-import {RDatum} from 'parabol-server/database/stricterR'
 
-import generateHourIntervals from './generateHourIntervals'
-import {DBInsert} from '../embedder'
 import {upsertEmbeddingsMetaRows} from './embeddingsTablesOps'
+import {AnyMeeting} from 'parabol-server/postgres/types/Meeting'
+
+const BATCH_SIZE = 1000
 
 export interface EmbeddingsJobQueueRetrospectiveDiscussionTopic
   extends Omit<DB['EmbeddingsJobQueue'], 'objectType'> {
@@ -41,7 +41,7 @@ const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
 const pg = getKysely()
 
-export async function refreshEmbeddingsMeta(dataLoader: DataLoaderWorker) {
+export async function refreshRetroDiscussionTopicsMeta(dataLoader: DataLoaderWorker) {
   const r = await getRethink()
   const {createdAt: newestMeetingDate} = (await r
     .table('NewMeeting')
@@ -52,48 +52,86 @@ export async function refreshEmbeddingsMeta(dataLoader: DataLoaderWorker) {
     .min({index: 'createdAt'})
     .run()) as unknown as RethinkSchema['NewMeeting']['type']
 
-  const {newestIndexDate} = (await pg
+  const {newestMetaDate} = (await pg
     .selectFrom('EmbeddingsMetadata')
-    .select(pg.fn.max('refUpdatedAt').as('newestIndexDate'))
-    .executeTakeFirst()) ?? {newestIndexDate: null}
-  const startDateTime = newestIndexDate || oldestMeetingDate
-  console.log(`Index will consider adding items from ${startDateTime} to ${newestMeetingDate}`)
+    .select(pg.fn.max('refUpdatedAt').as('newestMetaDate'))
+    .executeTakeFirst()) ?? {newestMetaDate: null}
+  let startDateTime = newestMetaDate || oldestMeetingDate
 
   if (startDateTime.getTime() === newestMeetingDate.getTime()) return
 
-  for (const interval of generateHourIntervals(startDateTime, newestMeetingDate)) {
-    // fetch completed meetings within the time range, ensuring these meetings
-    // contain at least 1 discuss phase
-    const meetings = await r
+  console.log(
+    `refreshRetroDiscussionTopicsMeta(): ` +
+      `will consider adding items from ${startDateTime.toISOString()} to ` +
+      `${newestMeetingDate.toISOString()}`
+  )
+
+  let totalAdded = 0
+  do {
+    // Process history in batches.
+    //
+    // N.B. We add historical meetings to the EmbeddingsMetadata table here.
+    // This query will intentionally miss meetings that haven't been completed
+    // (`summarySentAt` is null). These meetings will need to be added to the
+    // EmbeddingsMetadata table by a hook that runs when the meetings complete.
+    const {maxCreatedAt, completedNewMeetings} = await r
       .table('NewMeeting')
-      .between(interval[0], interval[1], {rightBound: 'closed', index: 'createdAt'})
-      .filter((r: RDatum) =>
-        r('meetingType')
-          .eq('retrospective')
-          .and(
-            r('summarySentAt').gt(0),
-            r
-              .hasFields('phases')
-              .and(r('phases').count().gt(0))
-              .and(
-                r('phases')
-                  .filter((phase: RDatum) => phase('phaseType').eq('discuss'))
-                  .filter((phase: RDatum) =>
-                    phase.hasFields('stages').and(phase('stages').count().gt(0))
-                  )
-                  .count()
-                  .gt(0)
-              )
-          )
-      )
+      .between(startDateTime, newestMeetingDate, {rightBound: 'closed', index: 'createdAt'})
+      .orderBy({index: 'createdAt'})
+      .limit(BATCH_SIZE)
+      .coerceTo('array')
+      .do((rows: any) => ({
+        maxCreatedAt: r.expr(rows).max('createdAt')('createdAt'), // Then find the max createdAt value
+        completedNewMeetings: r.expr(rows).filter((r: any) =>
+          r('meetingType')
+            .eq('retrospective')
+            .and(
+              r('endedAt').gt(0),
+              r
+                .hasFields('phases')
+                .and(r('phases').count().gt(0))
+                .and(
+                  r('phases')
+                    .filter((phase: any) => phase('phaseType').eq('discuss'))
+                    .filter((phase: any) =>
+                      phase.hasFields('stages').and(phase('stages').count().gt(0))
+                    )
+                    .count()
+                    .gt(0)
+                )
+            )
+        )
+      }))
       .run()
     const embeddingsMetaRows = (
-      await Promise.all(meetings.map((m) => newRetroDiscussionTopicsFromNewMeeting(m, dataLoader)))
+      await Promise.all(
+        completedNewMeetings.map((m: AnyMeeting) =>
+          newRetroDiscussionTopicsFromNewMeeting(m, dataLoader)
+        )
+      )
     ).flat()
-    if (!embeddingsMetaRows.length) continue
-    await upsertEmbeddingsMetaRows(embeddingsMetaRows)
-  }
-  return
+    if (embeddingsMetaRows.length > 0) {
+      await upsertEmbeddingsMetaRows(embeddingsMetaRows)
+      totalAdded += embeddingsMetaRows.length
+      console.log(
+        `refreshRetroDiscussionTopicsMeta(): synced to ${maxCreatedAt.toISOString()}, added` +
+          ` ${embeddingsMetaRows.length} retrospectiveDiscussionTopics`
+      )
+    }
+
+    // N.B. In the unlikely event that we have >=BATCH_SIZE meetings that end at _exactly_
+    // the same timetsamp, this will loop forever.
+    if (
+      startDateTime.getTime() === newestMeetingDate.getTime() &&
+      completedNewMeetings.length < BATCH_SIZE
+    )
+      break
+    startDateTime = maxCreatedAt
+  } while (true)
+
+  console.log(
+    `refreshRetroDiscussionTopicsMeta(): added ${totalAdded} total retrospectiveDiscussionTopics`
+  )
 }
 
 async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderWorker) {
@@ -110,7 +148,7 @@ async function formatThread(
   // Filter and sort comments as before
   const filteredComments = comments
     .filter((comment) => comment.threadParentId === parentId)
-    .sort((a, b) => a.threadSortOrder - b.threadSortOrder)
+    .sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
 
   // Use map to create an array of promises for each formatted comment string
   const formattedCommentsPromises = filteredComments.map(async (comment) => {
@@ -134,75 +172,108 @@ async function formatThread(
   return formattedComments.join('')
 }
 
-export const createTextFromNewMeetingDiscussion = async (
+export const createTextFromNewMeetingDiscussionStage = async (
   newMeeting: MeetingRetrospective,
-  discussionId: string,
+  stageId: string,
   dataLoader: DataLoaderWorker,
   textForReranking: boolean = false
 ) => {
   if (!newMeeting) throw 'newMeeting is undefined'
   if (!isMeetingRetrospective(newMeeting)) throw 'newMeeting is not retrospective'
+  if (!newMeeting.templateId) throw 'template is undefined'
   const template = await dataLoader.get('meetingTemplates').load(newMeeting.templateId)
   if (!template) throw 'template is undefined'
   const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
   if (!discussPhase) throw 'newMeeting discuss phase is undefined'
   if (!discussPhase.stages) throw 'newMeeting discuss phase has no stages'
-  const discussStage = discussPhase.stages.find(
-    (stage) => stage.id === discussionId
-  ) as DiscussStage
+  const discussStage = discussPhase.stages.find((stage) => stage.id === stageId) as DiscussStage
   if (!discussStage) throw 'newMeeting discuss stage not found'
-  const {summary: discussionSummary} = (await pg
-    .selectFrom('Discussion')
-    .select('summary')
-    .where('id', '=', discussStage.discussionId)
-    .executeTakeFirst()) ?? {summary: null}
+  const {summary: discussionSummary} = discussStage.discussionId
+    ? (await dataLoader.get('discussions').load(discussStage.discussionId)) ?? {summary: null}
+    : {summary: null}
   const r = await getRethink()
+  if (!discussStage.reflectionGroupId) throw 'newMeeting discuss stage has no reflectionGroupId'
   const reflectionGroup = await r
     .table('RetroReflectionGroup')
     .get(discussStage.reflectionGroupId)
     .run()
+  if (!reflectionGroup.id) throw 'newMeeting reflectionGroup has no id'
   const reflections = await r
     .table('RetroReflection')
     .getAll(reflectionGroup.id, {index: 'reflectionGroupId'})
     .run()
-  const promptIds = [...new Set(reflections.map((r) => r.promptId!))]
+  const promptIds = [...new Set(reflections.map((r) => r.promptId))]
   let markdown = ''
   if (!textForReranking)
     markdown =
       `A topic "${reflectionGroup.title}" was discussed during ` +
       `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
       `\n`
-  for (const promptId of promptIds) {
+  const prompts = await dataLoader.get('reflectPrompts').loadMany(promptIds)
+  for (const prompt of prompts) {
+    if (!prompt || prompt instanceof Error) continue
     if (!textForReranking) {
-      const prompt = await dataLoader.get('reflectPrompts').load(promptId)
-      markdown += `Participants were prompted with, "${prompt!.question}`
-      if (prompt!.description) markdown += `: ${prompt!.description}`
+      markdown += `Participants were prompted with, "${prompt.question}`
+      if (prompt.description) markdown += `: ${prompt.description}`
       markdown += `".\n`
     }
     if (newMeeting.disableAnonymity) {
-      for (const reflection of reflections.filter((r) => r.promptId === promptId)) {
+      for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
         const author = await getPreferredNameByUserId(reflection.creatorId, dataLoader)
         markdown += `   - ${author} wrote, "${reflection.plaintextContent}"\n`
       }
     } else {
-      for (const reflection of reflections.filter((r) => r.promptId === promptId)) {
+      for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
         markdown += `   - Anonymous wrote, "${reflection.plaintextContent}"\n`
       }
     }
     markdown += `\n`
   }
+
   markdown += `\n`
+
+  /**
+   * The choice I made here was default to the summary of the discussion if it exists in order to make this textual
+   * representation of a retrospective discussion a shorter token count. Using the summary almost certainly ensures
+   * this text won't need to be sent to be summarized again before an embedding vector is calculated.
+   *
+   * If we included the comments all the time, then we're maximizing the chance that rarer tokens might end up in the
+   * embed text and these tokens might affect the final embed vector in a useful way. However, we increase the odds that
+   * the embed text will need to be summarized before the vector is calculated.
+   *
+   * I decided to "just be cheap" and try and minimize calls to the summarizer.
+   *
+   * If we wanted to compare and contrast these approaches, we could always generate a second set of embed vectors
+   * objectType: 'retrospectiveDiscussionNoSummary' or something and do a bit of testing.
+   */
 
   if (discussionSummary) {
     markdown += `Further discussion was made. ` + ` ${discussionSummary}`
   } else {
-    const comments = await r
-      .table('Comment')
-      .getAll(discussStage.discussionId, {index: 'discussionId'})
-      .orderBy(r.asc('threadParentId'), r.asc('threadSortOrder'))
-      .map((doc) => doc.hasFields('threadParentId').branch(doc, doc.merge({threadParentId: null})))
-      .run()
-    const filteredComments = comments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy))
+    const comments = await dataLoader.get('commentsByDiscussionId').load(stageId)
+
+    const sortedComments = comments
+      .map((comment) => {
+        if (!comment.threadParentId) {
+          return {
+            ...comment,
+            threadParentId: null
+          }
+        }
+        return comment
+      })
+      .sort((a, b) => {
+        if (a.threadParentId === b.threadParentId) {
+          return a.threadSortOrder - b.threadSortOrder
+        }
+        if (a.threadParentId == null) return 1
+        if (b.threadParentId == null) return -1
+        return a.threadParentId > b.threadParentId ? 1 : -1
+      }) as Comment[]
+
+    const filteredComments = sortedComments.filter(
+      (c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy)
+    )
     if (filteredComments.length) {
       markdown += `Futher discussion was made:\n`
       markdown += await formatThread(dataLoader, filteredComments)
@@ -228,7 +299,7 @@ export const createText = async (
   if (!newMeetingId) throw new Error('newMeetingId cannot be undefined')
   if (!discussionId) throw new Error('discussionId cannot be undefined')
   const newMeeting = await dataLoader.get('newMeetings').load(newMeetingId)
-  return createTextFromNewMeetingDiscussion(
+  return createTextFromNewMeetingDiscussionStage(
     newMeeting as MeetingRetrospective,
     discussionId,
     dataLoader
@@ -238,30 +309,17 @@ export const createText = async (
 export const newRetroDiscussionTopicsFromNewMeeting = async (
   newMeeting: RethinkSchema['NewMeeting']['type'],
   dataLoader: DataLoaderWorker
-): Promise<DBInsert['EmbeddingsMetadata'][]> => {
+) => {
   const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
   const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
   if (orgId && discussPhase && discussPhase.stages) {
-    const metadataRows = discussPhase.stages.map(async (stage) => ({
-      objectType: 'retrospectiveDiscussionTopic' as 'retrospectiveDiscussionTopic',
+    return discussPhase.stages.map((stage) => ({
+      objectType: 'retrospectiveDiscussionTopic' as const,
       teamId: newMeeting.teamId,
       refId: `${newMeeting.id}:${stage.id}`,
       refUpdatedAt: newMeeting.createdAt
     }))
-    return Promise.all(metadataRows)
   } else {
     return []
   }
-}
-
-export const upsertRetroDiscussionTopicFromNewMeeting = async (
-  newMeeting: MeetingRetrospective,
-  dataLoader: DataLoaderWorker
-) => {
-  const newEmbeddingsIndexItems = await newRetroDiscussionTopicsFromNewMeeting(
-    newMeeting,
-    dataLoader
-  )
-  if (!newEmbeddingsIndexItems || !newEmbeddingsIndexItems.length) return
-  return upsertEmbeddingsMetaRows(newEmbeddingsIndexItems)
 }

@@ -62,7 +62,7 @@ environment variables, here given with example configuration:
 
   Example:
 
-`AI_GENERATION_MODELS='[{"model": "text-generation-interface:TheBloke/zephyr-7b-beta", "url": "http://localhost:3050/"}]'`
+`AI_GENERATION_MODELS='[{"model": "text-generation-inference:TheBloke/zephyr-7b-beta", "url": "http://localhost:3050/"}]'`
 
 ## Usage
 
