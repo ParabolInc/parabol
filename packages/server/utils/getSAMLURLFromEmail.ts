@@ -2,6 +2,7 @@ import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import {URL} from 'url'
 import {DataLoaderWorker} from '../graphql/graphql'
+import RootDataLoader from '../dataloader/RootDataLoader'
 
 const urlWithRelayState = (url: string, isInvited?: boolean | null) => {
   if (!isInvited) return url
@@ -13,7 +14,7 @@ const urlWithRelayState = (url: string, isInvited?: boolean | null) => {
 
 const getSAMLURLFromEmail = async (
   email: string,
-  dataLoader: DataLoaderWorker,
+  dataLoader: RootDataLoader | DataLoaderWorker,
   isInvited?: boolean | null
 ) => {
   const domainName = getSSODomainFromEmail(email)
