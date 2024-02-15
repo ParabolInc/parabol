@@ -32,20 +32,14 @@ export interface EmbeddingModelParams {
 }
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
-  protected modelParams!: EmbeddingModelParams
-  private readonly tableName: string
+  readonly modelParams!: EmbeddingModelParams
+  readonly tableName: string
   constructor(config: EmbeddingModelConfig) {
     super(config)
     this.modelParams = this.constructModelParams(config)
-    this.tableName = `Embeddings_${this.getModelParams().tableSuffix}`
-  }
-  getTableName() {
-    return this.tableName
+    this.tableName = `Embeddings_${this.modelParams.tableSuffix}`
   }
   protected abstract constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams
-  getModelParams() {
-    return this.modelParams
-  }
   abstract getEmbedding(content: string): Promise<number[]>
 }
 
@@ -53,18 +47,25 @@ export interface GenerationModelParams {
   maxInputTokens: number
 }
 
+export interface GenerationOptions {
+  maxNewTokens?: number
+  seed?: number
+  stop?: string
+  temperature?: number
+  topK?: number
+  topP?: number
+  truncate?: boolean
+}
+
 export abstract class AbstractGenerationModel extends AbstractModel {
-  protected modelParams!: GenerationModelParams
+  readonly modelParams!: GenerationModelParams
   constructor(config: GenerationModelConfig) {
     super(config)
     this.modelParams = this.constructModelParams(config)
   }
 
   protected abstract constructModelParams(config: GenerationModelConfig): GenerationModelParams
-  getModelParams() {
-    return this.modelParams
-  }
-  abstract summarize(content: string, temperature: number, maxTokens: number): Promise<string>
+  abstract summarize(content: string, options: GenerationOptions): Promise<string>
 }
 
 export default AbstractModel
