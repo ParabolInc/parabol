@@ -10,13 +10,10 @@ export interface EmbeddingModelConfig extends ModelConfig {
 export interface GenerationModelConfig extends ModelConfig {}
 
 export abstract class AbstractModel {
-  public readonly modelConfigString: string
   public readonly url?: string
-
   public modelInstance: any
 
   constructor(config: ModelConfig) {
-    this.modelConfigString = config.model
     this.url = this.normalizeUrl(config.url)
   }
 
@@ -39,13 +36,13 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   private readonly tableName: string
   constructor(config: EmbeddingModelConfig) {
     super(config)
-    this.modelParams = this.constructModelParams()
+    this.modelParams = this.constructModelParams(config)
     this.tableName = `Embeddings_${this.getModelParams().tableSuffix}`
   }
   getTableName() {
     return this.tableName
   }
-  protected abstract constructModelParams(): EmbeddingModelParams
+  protected abstract constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams
   getModelParams() {
     return this.modelParams
   }
@@ -60,10 +57,10 @@ export abstract class AbstractGenerationModel extends AbstractModel {
   protected modelParams!: GenerationModelParams
   constructor(config: GenerationModelConfig) {
     super(config)
-    this.modelParams = this.constructModelParams()
+    this.modelParams = this.constructModelParams(config)
   }
 
-  protected abstract constructModelParams(): GenerationModelParams
+  protected abstract constructModelParams(config: GenerationModelConfig): GenerationModelParams
   getModelParams() {
     return this.modelParams
   }

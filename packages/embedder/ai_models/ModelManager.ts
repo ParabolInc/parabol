@@ -15,18 +15,20 @@ interface ModelManagerConfig {
   generationModels: GenerationModelConfig[]
 }
 
-export enum EmbeddingsModelTypes {
-  TextEmbeddingsInterface = 'text-embeddings-inference'
-}
-export function isValidEmbeddingsModelType(type: any): type is EmbeddingsModelTypes {
-  return Object.values(EmbeddingsModelTypes).includes(type)
+export type EmbeddingsModelTypes = 'text-embeddings-inference'
+
+function isValid<T extends string>(type: T, validValues: T[]): type is T {
+  return validValues.includes(type)
 }
 
-export enum SummarizationModelTypes {
-  TextGenerationInterface = 'text-generation-interface'
+export function isValidEmbeddingsModelType(object: any) {
+  return isValid<EmbeddingsModelTypes>(object, ['text-embeddings-inference'])
 }
-export function isValidSummarizationModelType(type: any): type is SummarizationModelTypes {
-  return Object.values(SummarizationModelTypes).includes(type)
+
+export type SummarizationModelTypes = 'text-generation-interface'
+
+export function isValidSummarizationModelType(object: any) {
+  return isValid<SummarizationModelTypes>(object, ['text-generation-interface'])
 }
 
 export class ModelManager {
