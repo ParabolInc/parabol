@@ -25,7 +25,7 @@ const ManageTeamList = (props: Props) => {
   const team = useFragment(
     graphql`
       fragment ManageTeamList_team on Team {
-        isLead
+        isViewerLead
         isOrgAdmin
         teamMembers(sortBy: "preferredName") {
           id
@@ -36,7 +36,7 @@ const ManageTeamList = (props: Props) => {
     `,
     props.team
   )
-  const {isLead: isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
+  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
   return (
     <List>
       {teamMembers.map((teamMember) => {

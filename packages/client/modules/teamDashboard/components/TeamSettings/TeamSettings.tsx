@@ -43,7 +43,7 @@ const query = graphql`
     viewer {
       team(teamId: $teamId) {
         ...ArchiveTeam_team
-        isLead
+        isViewerLead
         id
         name
         tier
