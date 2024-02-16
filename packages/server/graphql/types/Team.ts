@@ -142,7 +142,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         return dataLoader.get('teamInvitationsByTeamId').load(teamId)
       }
     },
-    isLead: {
+    isViewerLead: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
       resolve: async (
