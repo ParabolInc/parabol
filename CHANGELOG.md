@@ -24,6 +24,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * bump node to v20.11.0 ([#9410](https://github.com/ParabolInc/parabol/issues/9410)) ([51f28a1](https://github.com/ParabolInc/parabol/commit/51f28a10e5c7708035c74478baa1e931bcf4fc8a))
 * update 3d secure card number in release_test.md ([#9394](https://github.com/ParabolInc/parabol/issues/9394)) ([84d183f](https://github.com/ParabolInc/parabol/commit/84d183f149edfa7d4e76e05d29eeb298e7587634))
 
+
 ## [7.15.2](https://github.com/ParabolInc/parabol/compare/v7.15.1...v7.15.2) (2024-02-08)
 
 
