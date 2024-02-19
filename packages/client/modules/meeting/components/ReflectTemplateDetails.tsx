@@ -6,7 +6,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {ReflectTemplateDetails_settings$key} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
@@ -116,12 +115,10 @@ const ReflectTemplateDetails = (props: Props) => {
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
   const description = useTemplateDescription(lowestScope, activeTemplate, tier)
-  const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
-  const canClone = templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES
   const onClone = () => {
-    if (submitting || !canClone) return
+    if (submitting) return
     submitMutation()
     AddReflectTemplateMutation(
       atmosphere,
@@ -153,7 +150,7 @@ const ReflectTemplateDetails = (props: Props) => {
                 type='retrospective'
               />
             )}
-            {showClone && <CloneTemplate onClick={onClone} canClone={canClone} />}
+            {showClone && <CloneTemplate onClick={onClone} />}
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>

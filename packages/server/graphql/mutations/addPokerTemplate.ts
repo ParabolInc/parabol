@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
@@ -45,9 +45,6 @@ const addPokerTemplate = {
       dataLoader.get('teams').load(teamId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
-    if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      return standardError(new Error('Too many templates'), {userId: viewerId})
-    }
 
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
