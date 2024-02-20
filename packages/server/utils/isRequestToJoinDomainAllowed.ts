@@ -59,9 +59,15 @@ export const getEligibleOrgIdsByDomain = async (
       const users = (
         await dataLoader.get('users').loadMany(importantMembers.map(({userId}) => userId))
       ).filter(isValid)
-      if (
-        !users.some((user) => user.email.split('@')[1] === activeDomain && isUserVerified(user))
-      ) {
+
+      const verifiedUsers = await Promise.all(
+        users.map(async (user) => {
+          const verified = await isUserVerified(user, dataLoader)
+          return verified ? user : null
+        })
+      )
+
+      if (!verifiedUsers.some((user) => user && user.email.split('@')[1] === activeDomain)) {
         return null
       }
       return org
@@ -100,7 +106,7 @@ const isRequestToJoinDomainAllowed = async (
   user: User,
   dataLoader: DataLoaderWorker
 ) => {
-  if (!isUserVerified(user)) return false
+  if (!(await isUserVerified(user, dataLoader))) return false
 
   const orgIds = await getEligibleOrgIdsByDomain(domain, user.id, dataLoader)
   return orgIds.length > 0

@@ -772,20 +772,29 @@ export const isOrgVerified = (parent: RootDataLoader) => {
 
       const users = (await parent.get('users').loadMany(userIds)).filter(isValid)
 
-      return orgIds.map((orgId) => {
-        const isValid = orgs.some((org) => {
-          if (org.id !== orgId) return false
-          const checkEmailDomain = (userId: string) => {
-            const user = users.find((user) => user.id === userId)
-            if (!user) return false
-            return isUserVerified(user) && user.domain === org.activeDomain
+      const isUserValid = async (userId: string, activeDomain?: string | null) => {
+        const user = users.find((user) => user.id === userId)
+        if (!user) return false
+        const isVerified = await isUserVerified(user, parent)
+        return isVerified && user.domain === activeDomain
+      }
+
+      const validationPromises = orgIds.map(async (orgId) => {
+        const org = orgs.find((org) => org.id === orgId)
+        if (!org) return false
+
+        const userChecks = [org.founder, ...org.billingLeads].map(async (orgUser) => {
+          if (orgUser && !orgUser.inactive) {
+            return isUserValid(orgUser.userId, org.activeDomain)
           }
-          return [org.founder, ...org.billingLeads].some(
-            (orgUser) => orgUser && !orgUser.inactive && checkEmailDomain(orgUser.userId)
-          )
+          return false
         })
-        return isValid
+
+        const results = await Promise.all(userChecks)
+        return results.some((result) => result)
       })
+
+      return Promise.all(validationPromises)
     },
     {
       ...parent.dataLoaderOptions

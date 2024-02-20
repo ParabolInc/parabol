@@ -12,9 +12,7 @@ jest.mock('../../utils/isUserVerified')
 getRethink.mockImplementation(() => {
   return r
 })
-isUserVerified.mockImplementation(() => {
-  return true
-})
+isUserVerified.mockImplementation(() => Promise.resolve(true))
 
 const TEST_DB = 'getVerifiedOrgIdsTest'
 

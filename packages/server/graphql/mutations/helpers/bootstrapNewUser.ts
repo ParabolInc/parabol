@@ -18,7 +18,7 @@ import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import {DataLoaderWorker} from '../../graphql'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import isValid from '../../isValid'
-import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
+import isUserVerified from '../../../utils/isUserVerified'
 
 const bootstrapNewUser = async (
   newUser: User,
@@ -27,16 +27,7 @@ const bootstrapNewUser = async (
   searchParams?: string
 ) => {
   const r = await getRethink()
-  const {
-    id: userId,
-    createdAt,
-    preferredName,
-    email,
-    featureFlags,
-    tier,
-    pseudoId,
-    identities
-  } = newUser
+  const {id: userId, createdAt, preferredName, email, featureFlags, tier, pseudoId} = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
   const [isCompanyDomain, organizations] = await Promise.all([
@@ -76,9 +67,8 @@ const bootstrapNewUser = async (
     experimentalFlags.push('noTemplateLimit')
   }
 
-  const isVerified = identities.some((identity) => identity.isEmailVerified)
-  const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
-  const isQualifiedForAutoJoin = (isVerified || hasSAMLURL) && isCompanyDomain
+  const isVerified = await isUserVerified(newUser, dataLoader)
+  const isQualifiedForAutoJoin = isVerified && isCompanyDomain
   const orgIds = organizations.map(({id}) => id)
 
   const [teamsWithAutoJoinRes] = await Promise.all([
