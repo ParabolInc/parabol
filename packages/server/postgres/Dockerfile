@@ -1,4 +1,4 @@
-FROM postgres:15.4
+FROM postgres:15
 
 ADD extensions /extensions
 
