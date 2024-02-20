@@ -16,6 +16,7 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
+import getKysely from '../../../postgres/getKysely'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
@@ -118,7 +119,22 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting, template)
-  const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+  const {error, gcalSeriesId} = await createGcalEvent({
+    gcalInput,
+    meetingId,
+    teamId,
+    viewerId,
+    rrule: recurrenceSettings?.rrule,
+    dataLoader
+  })
+  if (meetingSeries && gcalSeriesId) {
+    const pg = getKysely()
+    await pg
+      .updateTable('MeetingSeries')
+      .set({gcalSeriesId})
+      .where('id', '=', meetingSeries.id)
+      .execute()
+  }
   const data = {teamId, meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
   return data
