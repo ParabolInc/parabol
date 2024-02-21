@@ -11,9 +11,9 @@ module.exports = {
       instances: 1,
       increment_var: 'SERVER_ID',
       env: {
-        SERVER_ID: 6
+        SERVER_ID: 0
       },
-      watch: ['dev/embedder.js'],
+      watch: ['dev/web.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
       autorestart: false
     },
