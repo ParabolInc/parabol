@@ -59,31 +59,6 @@ services:
       - ./data/redis:/data
     networks:
       - parabol-network
-  # test-task:
-  #   image: busybox
-  #   command: sh -c "sleep 30"
-  #   depends_on:
-  #     rethinkdb:
-  #       condition: service_started
-  #     postgres:
-  #       condition: service_started
-  #     redis:
-  #       condition: service_healthy
-  #   networks:
-  #     - parabol-network
-  # test-process:
-  #   image: nginx
-  #   depends_on:
-  #     test-task:
-  #       condition: service_completed_successfully
-  #     rethinkdb:
-  #       condition: service_started
-  #     postgres:
-  #       condition: service_started
-  #     redis:
-  #       condition: service_healthy
-  #   networks:
-  #     - parabol-network
   pre-deploy:
     container_name: pre-deploy
     image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
