@@ -1,6 +1,5 @@
-function numberVectorToString(vector: number[]) {
-  const stringArray = vector.map((num) => num.toString())
-  return '[' + stringArray.join(', ') + ']'
+function numberVectorToString(vector: number[]): string {
+  return '[' + vector.join(', ') + ']'
 }
 
 export default numberVectorToString

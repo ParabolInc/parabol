@@ -11,9 +11,9 @@ module.exports = {
       instances: 1,
       increment_var: 'SERVER_ID',
       env: {
-        SERVER_ID: 0
+        SERVER_ID: 6
       },
-      watch: ['dev/web.js'],
+      watch: ['dev/embedder.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
       autorestart: false
     },
@@ -28,9 +28,7 @@ module.exports = {
       },
       watch: ['dev/gqlExecutor.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
-      autorestart: false,
-      log_file: 'dev/logs/gqlExecutor.log',
-      combine_logs: true
+      autorestart: false
     },
     {
       name: 'Embedder',
@@ -43,9 +41,7 @@ module.exports = {
       },
       watch: ['dev/embedder.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
-      autorestart: false,
-      log_file: 'dev/logs/web.log',
-      combine_logs: true
+      autorestart: false
     },
     {
       name: 'Dev Server',
