@@ -13,3 +13,10 @@ To run the Parabol UBI in single tenant mode (e.g. simple docker-compose on a do
 💧💧💧 Server ID: 0. Ready for GraphQL Execution 💧💧💧
 💧💧💧 Server ID: 01. Ready for GraphQL Execution 💧💧💧
 ```
+
+## Upgrade Parabol version
+
+1. Edit the `docker-compose.yaml` and change the `#image:tag` changing the tag. Ex: from `v7.15.0` to `v7.15.2`.
+2. (optional) Run `docker compose logs -f` to follow the upgrade.
+3. Run `docker compose up -d`. It will start the `pre-deploy` and, once it is done successfully, then it will stop and recreate the `web-server` and `gql-executor` with the new version of the image. **This step implies a downtime**.
+4. Verify the application is still up and running.
