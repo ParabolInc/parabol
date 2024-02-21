@@ -30,6 +30,7 @@ import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import gatherInsights from './gatherInsights'
 import NotificationMentioned from '../../../database/types/NotificationMentioned'
 import {Logger} from '../../../utils/Logger'
+import {upsertRetroDiscussionTopicFromNewMeeting as addMeetingToEmbeddingsIndex} from '../../../../embedder/indexing/retrospectiveDiscussionTopic'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -248,6 +249,7 @@ const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: Int
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
+  addMeetingToEmbeddingsIndex(meeting, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}
