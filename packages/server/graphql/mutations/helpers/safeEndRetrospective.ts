@@ -29,6 +29,7 @@ import removeEmptyTasks from './removeEmptyTasks'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import gatherInsights from './gatherInsights'
 import NotificationMentioned from '../../../database/types/NotificationMentioned'
+import {Logger} from '../../../utils/Logger'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -245,7 +246,7 @@ const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: Int
 
   dataLoader.get('newMeetings').clear(meetingId)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
-  sendNewMeetingSummary(meeting, context).catch(console.log)
+  sendNewMeetingSummary(meeting, context).catch(Logger.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)

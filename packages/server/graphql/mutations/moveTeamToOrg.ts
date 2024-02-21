@@ -13,6 +13,7 @@ import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
 import getKysely from '../../postgres/getKysely'
+import {Logger} from '../../utils/Logger'
 
 const MAX_NUM_TEAMS = 40
 
@@ -168,7 +169,7 @@ export default {
     const successes = results.filter((result) => typeof result === 'string')
     const failures = results.filter((result) => typeof result !== 'string')
     const successStr = successes.join('\n')
-    console.error('failures', failures)
+    Logger.error('failures', failures)
     return successStr
   }
 }

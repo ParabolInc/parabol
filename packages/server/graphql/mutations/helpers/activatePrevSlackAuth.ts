@@ -2,6 +2,7 @@ import ms from 'ms'
 import getRethink from '../../../database/rethinkDriver'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import {upsertNotifications} from '../addSlackAuth'
+import {Logger} from '../../../utils/Logger'
 
 const activatePrevSlackAuth = async (userId: string, teamId: string) => {
   const r = await getRethink()
@@ -29,7 +30,7 @@ const activatePrevSlackAuth = async (userId: string, teamId: string) => {
     const manager = new SlackServerManager(botAccessToken)
     const authRes = await manager.isValidAuthToken(botAccessToken)
     if (!authRes.ok) {
-      console.error(authRes.error)
+      Logger.error(authRes.error)
       return
     }
 

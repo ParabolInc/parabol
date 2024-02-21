@@ -1,3 +1,4 @@
+import {Logger} from '../../utils/Logger'
 import getPg from '../getPg'
 import {upsertAzureDevOpsDimensionFieldMapQuery} from './generated/upsertAzureDevOpsDimensionFieldMapQuery'
 
@@ -22,7 +23,7 @@ const upsertAzureDevOpsDimensionFieldMap = async (props: AzureDevOpsFieldMapProp
     projectKey,
     workItemType
   } = props
-  console.log(`Inside upsertAzureDevOpsDimensionFieldMap - props:${JSON.stringify(props)}`)
+  Logger.log(`Inside upsertAzureDevOpsDimensionFieldMap - props:${JSON.stringify(props)}`)
   return upsertAzureDevOpsDimensionFieldMapQuery.run(
     {
       fieldMap: {
