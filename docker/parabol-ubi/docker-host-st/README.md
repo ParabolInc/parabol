@@ -5,7 +5,7 @@ To run Parabol in single tenant mode (e.g. simple docker-compose on a docker hos
 1. Build your Parabol UBI using instructions in `docker/ubi/docker-build/README.md`
 2. Create a working `.env` from `.env.example`
 3. Update docker-compose.yaml `image: #image:tag` with your built image tag from `step (1.)`
-4. Run `docker-compose up --profile databases --profile parabol -d` to deploy the local stack. You can run `docker-compose down --profile databases --profile parabol` to terminate the local stack
+4. Run `docker-compose --profile databases --profile parabol up -d` to deploy the local stack. You can run `docker-compos --profile databases --profile parabol down` to terminate the local stack
 5. Check logs via command `docker logs <name> -f` and wait for the following output to appear
 
 ```shell
@@ -18,12 +18,12 @@ To run Parabol in single tenant mode (e.g. simple docker-compose on a docker hos
 
 1. Edit the `docker-compose.yaml` and change the `#image:tag` changing the tag. Ex: from `v7.15.0` to `v7.15.2`.
 2. (optional) In a different terminal, run `docker compose logs -f` to follow the upgrade.
-3. Run `docker compose up --profile databases --profile parabol -d`. It will start the `pre-deploy` and, once it is done successfully, then it will stop and recreate the `web-server` and `gql-executor` with the new version of the image. **This step implies a downtime**.
+3. Run `docker compose --profile databases --profile parabol up -d`. It will start the `pre-deploy` and, once it is done successfully, then it will stop and recreate the `web-server` and `gql-executor` with the new version of the image. **This step implies a downtime**.
 4. Verify the application is still up and running.
 
 ## Running Chronos
 
-Chronos isn't started by default. If it needs to run, it must be managed using `docker compose up --profile databases --profile parabol --profile chronos`.
+Chronos isn't started by default. If it needs to run, it must be managed using `docker compose --profile databases --profile parabol --profile chronos up`.
 
 This will run `pre-deploy` and thus it will recreate the `web-server` and the `gql-executor`.
 
@@ -38,5 +38,5 @@ To operate them use `docker compose up --profile databases --profile database-de
 
 ## Running the whole stack
 
-- Start the whole stack: `docker compose up --profile databases --profile parabol --profile database-debug --profile chronos -d`.
-- Stop the stack: `docker compose down --profile databases --profile parabol --profile database-debug --profile chronos`
+- Start the whole stack: `docker compose --profile databases --profile parabol --profile database-debug --profile chronos up -d`.
+- Stop the stack: `docker compose --profile databases --profile parabol --profile database-debug --profile chronos down`
