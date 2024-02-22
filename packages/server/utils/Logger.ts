@@ -11,7 +11,7 @@ const LogFun = {
 } satisfies Record<LogLevel, Console[keyof Console]>
 
 function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
-  if (!process.env.DD_LOGS_INJECTION) {
+  if (process.env.DD_LOGS_INJECTION !== 'true') {
     return LogFun[level](message, ...optionalParameters)
   }
 
