@@ -5,7 +5,7 @@ To run Parabol in single tenant mode (e.g. simple docker-compose on a docker hos
 1. Build your Parabol UBI using instructions in `docker/ubi/docker-build/README.md`
 2. Create a working `.env` from `.env.example`
 3. Update docker-compose.yaml `image: #image:tag` with your built image tag from `step (1.)`
-4. Run `docker-compose --profile databases --profile parabol up -d` to deploy the local stack. You can run `docker-compos --profile databases --profile parabol down` to terminate the local stack
+4. Run `docker compose --profile databases --profile parabol up -d` to deploy the local stack. You can run `docker compose --profile databases --profile parabol down` to terminate the local stack
 5. Check logs via command `docker logs <name> -f` and wait for the following output to appear
 
 ```shell
