@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.17.0](https://github.com/ParabolInc/parabol/compare/v7.16.0...v7.17.0) (2024-02-21)
+
+
+### Added
+
+* Add Google calendar meeting series for recurrence ([#9380](https://github.com/ParabolInc/parabol/issues/9380)) ([02dc6fa](https://github.com/ParabolInc/parabol/commit/02dc6fa6e4687021bb46a6774eb5f0be859e4d3f))
+* remove team template limit ([#9424](https://github.com/ParabolInc/parabol/issues/9424)) ([f042628](https://github.com/ParabolInc/parabol/commit/f042628fef5bbdbf566c49bab729f5b9dec058f1))
+
+
+### Fixed
+
+* Increase the number of projects fetched per request from Atlassian ([#9435](https://github.com/ParabolInc/parabol/issues/9435)) ([b0b76f9](https://github.com/ParabolInc/parabol/commit/b0b76f9f45789f60b55243f78eba7b656c751658))
+
+
+### Changed
+
+* **deps:** bump ip from 1.1.8 to 1.1.9 ([#9442](https://github.com/ParabolInc/parabol/issues/9442)) ([c2a31e6](https://github.com/ParabolInc/parabol/commit/c2a31e6b8ef2c4f4d375323f8afbef6874024593))
+* **env vars:** Stripe vars moved to the Integrations section ([#9427](https://github.com/ParabolInc/parabol/issues/9427)) ([a0af0c1](https://github.com/ParabolInc/parabol/commit/a0af0c1230a1dbc93a28977d6d61180319220c88))
+* fix misleading `isLead` field name on `Team` ([#9413](https://github.com/ParabolInc/parabol/issues/9413)) ([c0a2fdf](https://github.com/ParabolInc/parabol/commit/c0a2fdf8fb3deaa34f7935ae8a87d30f43381ecd))
+
 ## [7.16.0](https://github.com/ParabolInc/parabol/compare/v7.15.2...v7.16.0) (2024-02-14)
 
 
