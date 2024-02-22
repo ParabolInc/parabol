@@ -1,5 +1,3 @@
-import fetch, {RequestInfo, RequestInit, Response} from 'node-fetch'
-
 interface FetchWithRetryOptions extends RequestInit {
   deadline: Date // Deadline for the request to complete
   debug?: boolean // Enable debug tracing
@@ -20,8 +18,9 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
   const timeoutId = setTimeout(() => controller.abort(), timeout)
 
   try {
-    while (true) {
+    while (Date.now() < deadline.getTime()) {
       attempt++
+
       if (debug) {
         console.log(`Attempt ${attempt}: Fetching ${url}`)
       }
@@ -37,6 +36,9 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       // if Retry-After specified, use it; else fallback to exponential backoff
       let waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.pow(2, attempt) * 1000
 
+      // cap waitTime to prevent exceeding the deadline
+      waitTime = Math.min(waitTime, deadline.getTime() - Date.now())
+
       if (debug) {
         console.log(
           `Waiting ${waitTime / 1000} seconds before retrying due to status ${response.status}...`
@@ -44,9 +46,11 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       }
       await new Promise((resolve) => setTimeout(resolve, waitTime))
     }
+
+    throw new Error('Deadline exceeded')
   } catch (error) {
     clearTimeout(timeoutId)
-    if (error.name === 'AbortError') {
+    if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request aborted due to deadline')
     }
     if (debug) {

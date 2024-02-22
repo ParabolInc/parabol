@@ -62,7 +62,7 @@ export class ModelManager {
     // Initialize embeddings models
     this.embeddingModelsMapByTable = {}
     this.embeddingModels = config.embeddingModels.map((modelConfig) => {
-      const [modelType, _] = modelConfig.model.split(':') as [EmbeddingsModelType, string]
+      const [modelType] = modelConfig.model.split(':') as [EmbeddingsModelType, string]
 
       switch (modelType) {
         case 'text-embeddings-inference': {
@@ -100,7 +100,7 @@ export class ModelManager {
           )} = ${tableName}`.execute(pg)
         ).rows.length > 0
       if (hasTable) return undefined
-      const vectorDimensions = embeddingsModel.modelParams.embeddingDimensions
+      const vectorDimensions = embeddingsModel.embeddingDimensions
       console.log(`ModelManager: creating ${tableName} with ${vectorDimensions} dimensions`)
       const query = sql`
       DO $$
@@ -130,7 +130,7 @@ let modelManager: ModelManager | undefined
 export function getModelManager() {
   if (modelManager) return modelManager
   const {AI_EMBEDDING_MODELS, AI_GENERATION_MODELS} = process.env
-  let config: ModelManagerConfig = {
+  const config: ModelManagerConfig = {
     embeddingModels: [],
     generationModels: []
   }

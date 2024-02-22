@@ -4,15 +4,12 @@ import Redlock, {RedlockAbortSignal} from 'redlock'
 
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
-import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {DB} from 'parabol-server/postgres/pg'
-import getDataLoader from 'parabol-server/graphql/getDataLoader'
 import {refreshRetroDiscussionTopicsMeta as refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
 import {orgIdsWithFeatureFlag} from './indexing/orgIdsWithFeatureFlag'
 import getModelManager, {ModelManager} from './ai_models/ModelManager'
 import {countWords} from './indexing/countWords'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
-import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
 import {
   selectJobQueueItemById,
   selectMetadataByJobQueueId,
@@ -21,6 +18,8 @@ import {
 import {selectMetaToQueue} from './indexing/embeddingsTablesOps'
 import {insertNewJobs} from './indexing/embeddingsTablesOps'
 import {completeJobTxn} from './indexing/embeddingsTablesOps'
+import {getRootDataLoader} from './indexing/getRootDataLoader'
+import {getRedisClient} from './indexing/getRedisClient'
 
 /*
  * TODO List
@@ -47,10 +46,8 @@ tracer.init({
 })
 tracer.use('pg')
 
-const getRedisClient = () => new RedisInstance(`embedder-${SERVER_ID}`)
-
 const refreshMetadata = async () => {
-  const dataLoader = getDataLoader() as DataLoaderWorker
+  const dataLoader = getRootDataLoader()
   await refreshRetroDiscussionTopicsMeta(dataLoader)
   // In the future, other sorts of objects to index could be added here...
 }
@@ -108,7 +105,7 @@ const maybeQueueMetadataItems = async (modelManager: ModelManager) => {
 }
 
 const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
-  const dataLoader = getDataLoader() as DataLoaderWorker
+  const dataLoader = getRootDataLoader()
   const redisClient = getRedisClient()
   while (true) {
     const maybeRedisQItem = await redisClient.zpopmax('embedder:queue', 1)
@@ -159,7 +156,7 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
     const modelTable = embeddingModel.tableName
 
     let embedText = fullText
-    const {maxInputTokens} = embeddingModel.modelParams
+    const maxInputTokens = embeddingModel.maxInputTokens
     // we're using word count as an appoximation of tokens
     if (wordCount * WORD_COUNT_TO_TOKEN_RATIO > maxInputTokens) {
       try {

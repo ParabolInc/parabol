@@ -1,6 +1,6 @@
 export interface ModelConfig {
   model: string
-  url?: string
+  url: string
 }
 
 export interface EmbeddingModelConfig extends ModelConfig {
@@ -32,12 +32,15 @@ export interface EmbeddingModelParams {
 }
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
-  readonly modelParams!: EmbeddingModelParams
+  readonly embeddingDimensions: number
+  readonly maxInputTokens: number
   readonly tableName: string
   constructor(config: EmbeddingModelConfig) {
     super(config)
-    this.modelParams = this.constructModelParams(config)
-    this.tableName = `Embeddings_${this.modelParams.tableSuffix}`
+    const modelParams = this.constructModelParams(config)
+    this.embeddingDimensions = modelParams.embeddingDimensions
+    this.maxInputTokens = modelParams.maxInputTokens
+    this.tableName = `Embeddings_${modelParams.tableSuffix}`
   }
   protected abstract constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams
   abstract getEmbedding(content: string): Promise<number[]>
@@ -58,10 +61,11 @@ export interface GenerationOptions {
 }
 
 export abstract class AbstractGenerationModel extends AbstractModel {
-  readonly modelParams!: GenerationModelParams
+  readonly maxInputTokens: number
   constructor(config: GenerationModelConfig) {
     super(config)
-    this.modelParams = this.constructModelParams(config)
+    const modelParams = this.constructModelParams(config)
+    this.maxInputTokens = modelParams.maxInputTokens
   }
 
   protected abstract constructModelParams(config: GenerationModelConfig): GenerationModelParams
