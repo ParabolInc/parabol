@@ -3,6 +3,7 @@ version: '3.9'
 services:
   postgres:
     container_name: postgres
+    profiles: ["databases"]
     image: postgres:15.4
     restart: always
     env_file: .env
@@ -11,9 +12,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      #- './postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf'
       - './data/postgres/pgdata:/var/lib/postgresql/data'
-    #command: 'postgres -c config_file=/usr/local/etc/postgres/postgres.conf'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-d", "$POSTGRES_DB", "-U", "$POSTGRES_USER"]
       interval: 10s
@@ -22,6 +21,7 @@ services:
     networks:
       - parabol-network
   pgadmin:
+    profiles: ["database-debug"]
     container_name: pgadmin
     image: dpage/pgadmin4:8.3
     depends_on:
@@ -34,6 +34,7 @@ services:
       - parabol-network
   rethinkdb:
     container_name: rethinkdb
+    profiles: ["databases"]
     image: rethinkdb:2.4.2
     restart: always
     ports:
@@ -46,6 +47,7 @@ services:
       - parabol-network
   redis:
     container_name: redis
+    profiles: ["databases"]
     image: redis:7.0-alpine
     healthcheck:
       test: "[ $$(redis-cli ping) = 'PONG' ]"
@@ -59,8 +61,23 @@ services:
       - ./data/redis:/data
     networks:
       - parabol-network
+  redis-commander:
+    profiles: ["database-debug"]
+    container_name: redis-commander
+    image: ghcr.io/joeferner/redis-commander:0.8.1
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - parabol-network
   pre-deploy:
     container_name: pre-deploy
+    profiles: ["parabol"]
     image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
     command: bash -c "node dist/preDeploy.js"
     env_file: .env
@@ -77,28 +94,31 @@ services:
         condition: service_healthy
     networks:
       - parabol-network
-  # chronos:
-  #   image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
-  #   restart: always
-  #   command: bash -c "node dist/chronos.js"
-  #   env_file: .env
-  #   environment:
-  #     - SERVER_ID=1
-  #   volumes:
-  #     - './.env:/parabol/.env'
-  #   depends_on:
-  #     pre-deploy:
-  #       condition: service_completed_successfully
-  #     rethinkdb:
-  #       condition: service_started
-  #     postgres:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #   networks:
-  #     - parabol-network
+  chronos:
+    container_name: chronos
+    profiles: ["chronos"]
+    image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
+    restart: always
+    command: bash -c "node dist/chronos.js"
+    env_file: .env
+    environment:
+      - SERVER_ID=1
+    volumes:
+      - './.env:/parabol/.env'
+    depends_on:
+      pre-deploy:
+        condition: service_completed_successfully
+      rethinkdb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parabol-network
   web-server:
     container_name: web-server
+    profiles: ["parabol"]
     image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
     restart: always
     command: bash -c "node dist/web.js"
@@ -122,6 +142,7 @@ services:
       - parabol-network
   gql-executor:
     container_name: gql-executor
+    profiles: ["parabol"]
     image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
     restart: always
     command: bash -c "node dist/gqlExecutor.js"
