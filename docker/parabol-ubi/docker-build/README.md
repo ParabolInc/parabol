@@ -116,13 +116,24 @@ _Assumes redis, rethinkdb, and postgres already running to have operational stac
 
 The commands below will start a Parabol container on the target tag specified in \_DOCKER_TAG export. It will volume mount a .env in your current working directory to the container, so you can pass in any .env in your current working directory.
 
+For a more detailed how-to deploy Parabol, please go to the section [docker-host-st](https://github.com/ParabolInc/parabol/tree/master/docker/parabol-ubi/docker-host-st)
+
+- Run the PreDeploy script
+
+```commandLine
+export _DOCKER_REPOSITORY=parabol; \
+export _DOCKER_TAG=vX.X.X
+
+docker run --name=parabol-predeploy --network=host -v $(pwd)/.env:/home/node/parabol/.env ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "node dist/preDeploy.js"
+```
+
 - Start GraphQL
 
 ```commandLine
 export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=vX.X.X
 
-docker run --name=parabolgraphql --network=host -v $(pwd)/.env:/home/node/parabol/.env ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "yarn predeploy && NODE_ENV=production && node ./dist/gqlExecutor.js" || docker container rm parabolgraphql -f
+docker run --name=parabol-gql-executor --network=host -v $(pwd)/.env:/home/node/parabol/.env ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "node ./dist/gqlExecutor.js" || docker container rm parabol-gql-executor -f
 ```
 
 - Start Web Server
@@ -131,7 +142,7 @@ docker run --name=parabolgraphql --network=host -v $(pwd)/.env:/home/node/parabo
 export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=vX.X.X
 
-docker run --name=parabol --network=host -v $(pwd)/.env:/home/node/parabol/.env -p 3000:3000 ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "yarn predeploy && NODE_ENV=production && node ./dist/web.js" || docker container rm parabol -f
+docker run --name=parabol-web-server --network=host -v $(pwd)/.env:/home/node/parabol/.env -p 3000:3000 ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "node ./dist/web.js" || docker container rm parabol-web-server -f
 ```
 
-To stop the container, just open another terminal and enter `docker container stop parabol`
+To stop the container, just open another terminal and enter `docker container stop parabol-COMPONENT`
