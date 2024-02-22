@@ -1,17 +1,8 @@
 # docker-image-parabol
 
-This repo was created to build a **secure** Parabol base image that is **agnostic to configuration and can be used anywhere**. Once an image is built, it can be pushed to any repository.
+This repo was created to build a Parabol base image that is **agnostic to configuration and can be used anywhere**. Once an image is built, it can be pushed to any repository.
 
-There are two possible ways to build the application:
-
-- **Standard build:** duild using local files, using the same Dockerfile and process used in our Docker Build pipeline.
-- **Build from git:** build using a simplified process that downloads the source code and builds from scratch.
-
-The processes are different and the details of it can be checked in both dockerfiles.
-
-## Standard build
-
-### Requirements
+## Requirements
 
 Required:
 
@@ -21,9 +12,9 @@ Required:
 
 Recommended:
 
-- jq installed.
+- [jq](https://jqlang.github.io/jq/) installed. It is used to get the version of the application.
 
-### Variables
+## Variables
 
 | Name                 | Description                                                                                                             | Possible values                                       | Recommended value                                                   |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
@@ -40,7 +31,7 @@ Recommended:
 Example of variables:
 
 ```commandLine
-export postgresql_tag=15.4-alpine; \
+export postgresql_tag=15.4; \
 export rethinkdb_tag=2.4.2; \
 export redis_tag=7.0-alpine; \
 export _BUILD_ENV_PATH=docker/parabol-ubi/docker-build/environments/pipeline; \
@@ -51,7 +42,7 @@ export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=test-image
 ```
 
-### Building the image
+## Building the image
 
 The application must be already built locally using the command `yarn build --no-deps` mode.
 
@@ -90,7 +81,7 @@ yarn build --no-deps
 - **Build the docker image:**
 
 ```commandLine
-docker build -t $_DOCKER_REPOSITORY:$_DOCKER_TAG -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION --build-arg _SECURITY_ENABLED=$_SECURITY_ENABLED .
+docker build -t $_DOCKER_REPOSITORY:$_DOCKER_TAG -f $_DOCKERFILE --build-arg _NODE_VERSION=$_NODE_VERSION .
 ```
 
 > Some build tips
@@ -117,44 +108,6 @@ It will produce a Docker image tagged as `${_DOCKER_REPOSITORY}:${_DOCKER_TAG}`.
 
 ```commandLine
 docker images $_DOCKER_REPOSITORY:$_DOCKER_TAG
-```
-
-## Build from git
-
-This version of the Dockerfile downloads the application during the docker build process and differs in other
-
-Modify the version export below e.g. update vX.X.X and run the export command and the docker command. The command below will create a temp postgres container (this allows pgtype files to be generated) and then build the docker image with a temp .env file.
-
-- Change `environments/buildenv` connection string names form container names to localhost for local image build.
-- Use `_PARABOL_GIT_REF` to select the reference in Parabol's Git repository. It can be any tag or branch, but it is recommended to use released tags as `v6.69.0`. By default it buils a local image using only `parabol` as repository.
-- Use `_DOCKER_REPOSITORY` to build the image for a remote repository (ex: `gcr.io/parabol-proving-ground/parabol`)
-- Use `_DOCKER_TAG` to define the tag for the new image.
-
-```commandLine
-export postgresql_tag=15.4-alpine; \
-export rethinkdb_tag=2.4.2; \
-export redis_tag=7.0-alpine; \
-export _BUILD_ENV_PATH=environments/local-buildenv \
-export _NODE_VERSION=20.11.0 \
-export _DOCKER_REPOSITORY=parabol \
-export _PARABOL_GIT_REF=vX.X.X \
-export _DOCKER_TAG=vX.X.X
-```
-
-Now you can build the image
-
-```commandLine
-docker run --name temp-postgres --network=host -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:${postgresql_tag} && \
-docker run --name temp-rethinkdb --network=host -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:${rethinkdb_tag} && \
-docker run --name temp-redis --network=host -d -p 6379:6379 redis:${redis_tag} && \
-docker build --no-cache --network=host -t ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} -f ./dockerfiles/parabol.dockerfile --build-arg _PARABOL_GIT_REF=${_PARABOL_GIT_REF} --build-arg  _NODE_VERSION=$_NODE_VERSION --build-arg _BUILD_ENV_PATH=${_BUILD_ENV_PATH} . && \
-docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f || docker stop temp-postgres temp-rethinkdb temp-redis && docker rm temp-postgres temp-rethinkdb temp-redis -f
-```
-
-If `_DOCKER_REPOSITORY` wasn't local and you want to push the image, you can run then:
-
-```commandLine
-docker push ${_DOCKER_REPOSITORY}:${_DOCKER_TAG}
 ```
 
 ## Run the application using a docker image
