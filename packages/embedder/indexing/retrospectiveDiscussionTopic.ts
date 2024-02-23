@@ -55,6 +55,7 @@ export async function refreshRetroDiscussionTopicsMeta(dataLoader: DataLoaderWor
   const {newestMetaDate} = (await pg
     .selectFrom('EmbeddingsMetadata')
     .select(pg.fn.max('refUpdatedAt').as('newestMetaDate'))
+    .where('objectType', '=', 'retrospectiveDiscussionTopic')
     .executeTakeFirst()) ?? {newestMetaDate: null}
   let startDateTime = newestMetaDate || oldestMeetingDate
 
