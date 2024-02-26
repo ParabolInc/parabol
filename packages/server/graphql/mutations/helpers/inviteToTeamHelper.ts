@@ -48,7 +48,7 @@ const inviteToTeamHelper = async (
   ])
   const accepted = total - pending
   // if no one has accepted one of their 100+ invites, don't trust them
-  if (accepted === 0 && total + pending >= 100) {
+  if (accepted === 0 && total + invitees.length >= 100) {
     return standardError(new Error('Exceeded unaccepted invitation limit'), {userId: viewerId})
   }
 
