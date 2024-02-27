@@ -99,7 +99,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout -b "release/v${{ env.ACTION_VERSION }}"
-          git merge -s ours origin/production
+          git merge -s ours production
           git push --set-upstream origin "release/v${{ env.ACTION_VERSION }}"
           gh pr create \
             --assignee ${{ github.actor }} \
