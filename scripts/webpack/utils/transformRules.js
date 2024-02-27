@@ -3,6 +3,7 @@ const path = require('path')
 const transformRules = (projectRoot, isProd) => {
   const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client')
   const SERVER_ROOT = path.join(projectRoot, 'packages', 'server')
+  const EMBEDDER_ROOT = path.join(projectRoot, 'packages', 'embedder')
   const GQL_ROOT = path.join(projectRoot, 'packages', 'gql-executor')
   const CHRONOS_ROOT = path.join(projectRoot, 'packages', 'chronos')
   const TOOLBOX_SRC = path.join(projectRoot, 'scripts', 'toolboxSrc')
@@ -48,7 +49,7 @@ const transformRules = (projectRoot, isProd) => {
     {
       test: /\.(tsx?|js)$/,
       // things that don't need babel
-      include: [SERVER_ROOT, GQL_ROOT, CHRONOS_ROOT, TOOLBOX_SRC],
+      include: [SERVER_ROOT, EMBEDDER_ROOT, GQL_ROOT, CHRONOS_ROOT, TOOLBOX_SRC],
       // things that need babel
       exclude: path.join(SERVER_ROOT, 'email'),
       use: {

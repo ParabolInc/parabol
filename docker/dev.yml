@@ -13,8 +13,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-      - "./dd-conf.d:/etc/datadog-agent/conf.d/local.d/"
-      - "../dev/logs:/var/log/datadog/logs"
   db:
     image: rethinkdb:2.4.2
     restart: unless-stopped
@@ -72,6 +70,20 @@ services:
       - "8082:8081"
     networks:
       parabol-network:
+  text-embeddings-inference:
+    container_name: text-embeddings-inference
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-0.6
+    command:
+      - "--model-id=llmrails/ember-v1"
+    platform: linux/x86_64
+    hostname: text-embeddings-inference
+    restart: unless-stopped
+    ports:
+      - "3040:80"
+    volumes:
+      - text-embeddings-inference-data:/data
+    networks:
+      parabol-network:
 networks:
   parabol-network:
 volumes:
@@ -79,3 +91,4 @@ volumes:
   rethink-data: {}
   postgres-data: {}
   pgadmin-data: {}
+  text-embeddings-inference-data: {}
