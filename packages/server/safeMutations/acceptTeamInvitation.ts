@@ -6,6 +6,7 @@ import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import {Team} from '../postgres/queries/getTeamsByIds'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
+import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
@@ -92,7 +93,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     try {
       await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
     } catch (e) {
-      console.log(e)
+      Logger.log(e)
     }
     await setUserTierForUserIds([userId])
   }

@@ -14,6 +14,7 @@ import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityCha
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import {Logger} from '../../utils/Logger'
 
 const maybeUpdateOrganizationActiveDomain = async (
   orgId: string,
@@ -170,5 +171,5 @@ export default async function adjustUserCount(
     .run()
 
   handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch()
-  handleTeamOrgQuantityChanges(paidOrgs).catch(console.error)
+  handleTeamOrgQuantityChanges(paidOrgs).catch(Logger.error)
 }

@@ -11,6 +11,7 @@ import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum as NewMeetingPhaseTypeEnumType
 } from '../../database/types/GenericMeetingPhase'
 import {getUserId} from '../../utils/authorization'
+import {Logger} from '../../utils/Logger'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NewMeeting from './NewMeeting'
@@ -112,7 +113,7 @@ export const newMeetingStageFields = () => ({
       ref: any
     ) => {
       if (!readyToAdvance) return 0
-      if (!meetingId) console.log('no meetingid', ref)
+      if (!meetingId) Logger.log('no meetingid', ref)
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       const {facilitatorUserId} = meeting
       return readyToAdvance.filter((userId: string) => userId !== facilitatorUserId).length

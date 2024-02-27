@@ -3,6 +3,7 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
 import {MutationResolvers} from '../resolverTypes'
+import {Logger} from '../../../utils/Logger'
 
 const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
   _source,
@@ -32,7 +33,7 @@ const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
         try {
           return await adjustUserCount(userId, orgIds, InvoiceItemType.AUTO_PAUSE_USER, dataLoader)
         } catch (e) {
-          console.warn(`Error adjusting user count`)
+          Logger.warn(`Error adjusting user count`)
         }
         return undefined
       })

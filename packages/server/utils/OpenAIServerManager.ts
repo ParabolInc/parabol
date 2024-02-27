@@ -3,6 +3,7 @@ import JSON5 from 'json5'
 import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
 import {ModifyType} from '../graphql/public/resolverTypes'
+import {Logger} from './Logger'
 
 type Prompt = {
   question: string
@@ -188,7 +189,7 @@ class OpenAIServerManager {
       return themes.split(', ')
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
-      console.error(error.message)
+      Logger.error(error.message)
       sendToSentry(error)
       return null
     }
@@ -226,7 +227,7 @@ class OpenAIServerManager {
     } catch (e) {
       const error =
         e instanceof Error ? e : new Error('OpenAI failed to generate the suggested template')
-      console.error(error.message)
+      Logger.error(error.message)
       sendToSentry(error)
       return null
     }
