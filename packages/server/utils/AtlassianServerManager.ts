@@ -358,7 +358,38 @@ class AtlassianServerManager extends AtlassianManager {
   async getAllProjects(cloudIds: string[]) {
     const projects = [] as (JiraProject & {cloudId: string})[]
     let error: Error | undefined
-    const getProjectPage = async (cloudId: string, url: string): Promise<void> => {
+    const getProjectsPage = async (
+      cloudId: string,
+      startAt: number,
+      maxResults: number
+    ): Promise<void> => {
+      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name&startAt=${startAt}`
+      const res = await this.get<JiraProjectResponse>(url)
+      if (res instanceof Error || res instanceof RateLimitError) {
+        error = res
+      } else {
+        const pagedProjects = res.values.map((project) => ({
+          ...project,
+          cloudId
+        }))
+        projects.push(...pagedProjects)
+
+        if (pagedProjects.length < maxResults && res.nextPage) {
+          Logger.log(
+            'Underfetched in getAllProjects, requested',
+            maxResults,
+            'got',
+            pagedProjects.length
+          )
+          const nextStart = res.startAt + pagedProjects.length
+          const nextMaxResults = maxResults - pagedProjects.length
+          return getProjectsPage(cloudId, nextStart, nextMaxResults)
+        }
+      }
+    }
+
+    const getProjects = async (cloudId: string) => {
+      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`
       const res = await this.get<JiraProjectResponse>(url)
       if (res instanceof Error || res instanceof RateLimitError) {
         error = res
@@ -369,19 +400,20 @@ class AtlassianServerManager extends AtlassianManager {
         }))
         projects.push(...pagedProjects)
         if (res.nextPage) {
-          Logger.log('AtlassianServerManager.getAllProjects fetching more results', res.total)
-          return getProjectPage(cloudId, res.nextPage)
+          const {total} = res
+          const nextStart = res.startAt + pagedProjects.length
+          const fetches = [] as Array<Promise<void>>
+          // 50 is the default maxResults for Jira, Jira does not respond with more than that
+          const maxResults = 50
+          for (let i = nextStart; i < total; i += maxResults) {
+            fetches.push(getProjectsPage(cloudId, i, maxResults))
+          }
+          await Promise.all(fetches)
         }
       }
     }
-    await Promise.all(
-      cloudIds.map((cloudId) =>
-        getProjectPage(
-          cloudId,
-          `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name&maxResults=500`
-        )
-      )
-    )
+
+    await Promise.all(cloudIds.map((cloudId) => getProjects(cloudId)))
 
     if (error) {
       Logger.log('getAllProjects ERROR:', error)
