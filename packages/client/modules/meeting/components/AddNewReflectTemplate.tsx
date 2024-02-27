@@ -7,7 +7,6 @@ import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
 import {AddNewReflectTemplate_reflectTemplates$key} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 import {AddNewReflectTemplate_team$key} from '../../../__generated__/AddNewReflectTemplate_team.graphql'
 
@@ -79,13 +78,6 @@ const AddNewReflectTemplate = (props: Props) => {
       displayUpgradeDetails()
       return
     }
-    if (reflectTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
-      errorTimerId.current = window.setTimeout(() => {
-        onCompleted()
-      }, 8000)
-      return
-    }
     if (reflectTemplates.find((template) => template.name.startsWith('*New Template'))) {
       onError(new Error('You already have a new template. Try renaming that one first.'))
       errorTimerId.current = window.setTimeout(() => {
@@ -102,8 +94,7 @@ const AddNewReflectTemplate = (props: Props) => {
     template.name.startsWith('*New Template')
   )
 
-  if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate)
-    return null
+  if (containsNewTemplate) return null
   return (
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}

@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
@@ -47,9 +47,6 @@ const addReflectTemplate = {
       dataLoader.get('users').loadNonNull(viewerId)
     ])
 
-    if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      return standardError(new Error('Too many templates'), {userId: viewerId})
-    }
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }

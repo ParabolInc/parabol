@@ -4,14 +4,11 @@ import graphql from 'babel-plugin-relay/macro'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import clsx from 'clsx'
 import {Link} from 'react-router-dom'
-
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
-
 import {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import {ActivityBadge} from '../ActivityBadge'
-
 import IconLabel from '../../IconLabel'
 import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
 import sortByTier from '../../../utils/sortByTier'
@@ -20,7 +17,6 @@ import {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflect
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
 import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
 import BaseButton from '../../BaseButton'
@@ -111,15 +107,6 @@ const query = graphql`
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
       }
-      availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
-        edges {
-          node {
-            name
-            teamId
-            type
-          }
-        }
-      }
     }
   }
 `
@@ -148,7 +135,7 @@ export const CreateNewActivity = (props: Props) => {
     return selectedActivity
   })
   const {viewer} = data
-  const {teams, availableTemplates, preferredTeamId, featureFlags} = viewer
+  const {teams, preferredTeamId, featureFlags} = viewer
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
@@ -157,16 +144,6 @@ export const CreateNewActivity = (props: Props) => {
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {
-      return
-    }
-
-    const teamTemplates = availableTemplates.edges.filter(
-      (template) =>
-        template.node.teamId === selectedTeam.id && template.node.type === 'retrospective'
-    )
-
-    if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
 
@@ -192,15 +169,6 @@ export const CreateNewActivity = (props: Props) => {
 
   const handleCreatePokerTemplate = () => {
     if (submitting) {
-      return
-    }
-
-    const teamTemplates = availableTemplates.edges.filter(
-      (template) => template.node.teamId === selectedTeam.id && template.node.type === 'poker'
-    )
-
-    if (teamTemplates.length >= Threshold.MAX_POKER_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
 

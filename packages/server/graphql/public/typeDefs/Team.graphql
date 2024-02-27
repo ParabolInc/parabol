@@ -86,7 +86,7 @@ type Team {
   """
   true if the viewer is the team lead, else false
   """
-  isLead: Boolean!
+  isViewerLead: Boolean!
 
   """
   true if the viewer is an admin for the team's org, else false
