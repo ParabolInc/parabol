@@ -11,25 +11,7 @@ import {
   OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
-
-import tracer from 'dd-trace'
-import formats from 'dd-trace/ext/formats'
-import util from 'util'
-
-type LogLevel = 'error' | 'warn' | 'info' | 'debug'
-function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
-  const span = tracer.scope().active()
-  const time = new Date().toISOString()
-  const record = {time, level, message: util.format(message, optionalParameters)}
-
-  if (span) {
-    tracer.inject(span.context(), formats.LOG, record)
-  }
-
-  console.log(JSON.stringify(record))
-}
-
-const log = trace.bind(null, 'info')
+import {Logger} from './Logger'
 
 export interface JiraUser {
   self: string
@@ -343,7 +325,7 @@ class AtlassianServerManager extends AtlassianManager {
     } else {
       callback(null, {cloudId, newProjects: res.values})
       if (res.nextPage) {
-        await this.getPaginatedProjects(cloudId, res.nextPage, callback).catch(console.error)
+        await this.getPaginatedProjects(cloudId, res.nextPage, callback).catch(Logger.error)
       }
     }
   }
@@ -355,7 +337,7 @@ class AtlassianServerManager extends AtlassianManager {
           cloudId,
           `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`,
           callback
-        ).catch(console.error)
+        ).catch(Logger.error)
       })
     )
   }
@@ -387,7 +369,7 @@ class AtlassianServerManager extends AtlassianManager {
         }))
         projects.push(...pagedProjects)
         if (res.nextPage) {
-          log('AtlassianServerManager.getAllProjects fetching more results', res.total)
+          Logger.log('AtlassianServerManager.getAllProjects fetching more results', res.total)
           return getProjectPage(cloudId, res.nextPage)
         }
       }
@@ -402,7 +384,7 @@ class AtlassianServerManager extends AtlassianManager {
     )
 
     if (error) {
-      log('getAllProjects ERROR:', error)
+      Logger.log('getAllProjects ERROR:', error)
     }
     return projects
   }

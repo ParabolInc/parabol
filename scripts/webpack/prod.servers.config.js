@@ -11,6 +11,7 @@ const cp = require('child_process')
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
+const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
@@ -32,6 +33,7 @@ module.exports = (config) => {
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
+      embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'embedder.ts')],
       gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
       preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
       pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],

@@ -13,6 +13,7 @@ import AzureDevOpsServerManager, {
   TeamProjectReference,
   WorkItem
 } from '../utils/AzureDevOpsServerManager'
+import {Logger} from '../utils/Logger'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
 
@@ -215,7 +216,7 @@ export const azureDevOpsAllWorkItems = (
 
           const {error, workItems} = restResult
           if (error !== undefined || workItems === undefined) {
-            console.log(error)
+            Logger.log(error)
             return [] as AzureDevOpsWorkItem[]
           }
 
@@ -264,7 +265,7 @@ export const azureDevUserInfo = (
           const restResult = await manager.getMe()
           const {error, azureDevOpsUser} = restResult
           if (error !== undefined || azureDevOpsUser === undefined) {
-            console.log(error)
+            Logger.log(error)
             return undefined
           }
           return {
@@ -303,7 +304,7 @@ export const allAzureDevOpsAccessibleOrgs = (
           const results = await manager.getAccessibleOrgs(id)
           const {error, accessibleOrgs} = results
           // handle error if defined
-          console.log(error)
+          Logger.log(error)
           return accessibleOrgs.map((resource) => ({
             ...resource
           }))
@@ -340,7 +341,7 @@ export const allAzureDevOpsProjects = (
           )
           const {error, projects} = await manager.getAllUserProjects()
           if (error !== undefined) {
-            console.log(error)
+            Logger.log(error)
             return []
           }
           if (projects !== null) resultReferences.push(...projects)
@@ -383,7 +384,7 @@ export const azureDevOpsProject = (
           )
           const projectRes = await manager.getProject(instanceId, projectId)
           if (projectRes instanceof Error) {
-            console.log(projectRes)
+            Logger.log(projectRes)
             return null
           }
           return {
@@ -475,7 +476,7 @@ export const azureDevOpsUserStory = (
           const restResult = await manager.getWorkItemData(instanceId, workItemIds)
           const {error, workItems} = restResult
           if (error !== undefined || workItems.length !== 1 || !workItems[0]) {
-            console.log(error)
+            Logger.log(error)
             return null
           } else {
             const returnedWorkItem: WorkItem = workItems[0]
@@ -637,7 +638,7 @@ export const azureDevOpsWorkItems = (
           const workItemData = await manager.getWorkItemData(instanceId, workItemIds)
           const {error: workItemDataError, workItems: returnedWorkItems} = workItemData
           if (workItemDataError !== undefined) {
-            console.log(error)
+            Logger.log(error)
             return []
           }
 

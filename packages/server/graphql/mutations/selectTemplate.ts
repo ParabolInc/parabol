@@ -8,6 +8,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SelectTemplatePayload from '../types/SelectTemplatePayload'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import {Logger} from '../../utils/Logger'
 
 const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -37,7 +38,7 @@ const selectTemplate = {
     ])
 
     if (!template || !template.isActive) {
-      console.log('no template', selectedTemplateId, template)
+      Logger.log('no template', selectedTemplateId, template)
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
 

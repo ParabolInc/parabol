@@ -8,6 +8,7 @@ import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
+import {Logger} from '../../../utils/Logger'
 
 const processMeetingStageTimeLimits = async (
   job: ScheduledJobMeetingStageTimeLimit,
@@ -48,9 +49,9 @@ const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) 
     return processMeetingStageTimeLimits(
       job as ScheduledJobMeetingStageTimeLimit,
       dataLoader
-    ).catch(console.error)
+    ).catch(Logger.error)
   } else if (job.type === 'LOCK_ORGANIZATION' || job.type === 'WARN_ORGANIZATION') {
-    return processTeamsLimitsJob(job as ScheduledTeamLimitsJob, dataLoader).catch(console.error)
+    return processTeamsLimitsJob(job as ScheduledTeamLimitsJob, dataLoader).catch(Logger.error)
   }
 }
 
@@ -73,7 +74,7 @@ const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
     const {runAt} = job
     const timeout = Math.max(0, runAt.getTime() - now.getTime())
     setTimeout(() => {
-      processJob(job, dataLoader).catch(console.error)
+      processJob(job, dataLoader).catch(Logger.error)
     }, timeout)
   })
 

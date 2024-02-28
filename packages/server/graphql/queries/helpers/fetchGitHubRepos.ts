@@ -4,6 +4,7 @@ import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
 import {DataLoaderWorker} from '../../graphql'
 import {GQLContext} from './../../graphql'
+import {Logger} from '../../../utils/Logger'
 
 export interface GitHubRepo {
   id: string
@@ -25,7 +26,7 @@ const fetchGitHubRepos = async (
   const githubRequest = getGitHubRequest(info, context, {accessToken})
   const [data, error] = await githubRequest<GetRepositoriesQuery>(getRepositories)
   if (error) {
-    console.error(error.message)
+    Logger.error(error.message)
     return []
   }
   const {viewer} = data

@@ -5,6 +5,54 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.19.3](https://github.com/ParabolInc/parabol/compare/v7.19.2...v7.19.3) (2024-02-28)
+
+
+### Fixed
+
+* force push 5 ([#9467](https://github.com/ParabolInc/parabol/issues/9467)) ([581f0cf](https://github.com/ParabolInc/parabol/commit/581f0cfa2255bbeb438c53b2b5f4d8ceb6a0b0cc))
+
+## [7.19.2](https://github.com/ParabolInc/parabol/compare/v7.19.1...v7.19.2) (2024-02-28)
+
+
+### Fixed
+
+* mrege origin/production strategy ([#9465](https://github.com/ParabolInc/parabol/issues/9465)) ([9e90b9d](https://github.com/ParabolInc/parabol/commit/9e90b9df95b8505c0e1e50d4e8e4f18c73ef17cd))
+
+## [7.19.1](https://github.com/ParabolInc/parabol/compare/v7.19.0...v7.19.1) (2024-02-27)
+
+
+### Fixed
+
+* checkout prod before merging it ([#9463](https://github.com/ParabolInc/parabol/issues/9463)) ([7bd8803](https://github.com/ParabolInc/parabol/commit/7bd880314f6f48c897a9a708b2d6435b257fae90))
+
+## [7.19.0](https://github.com/ParabolInc/parabol/compare/v7.18.1...v7.19.0) (2024-02-27)
+
+
+### Added
+
+* embedder service ([#9417](https://github.com/ParabolInc/parabol/issues/9417)) ([55faa17](https://github.com/ParabolInc/parabol/commit/55faa17ada5b1bd49182a29341b3465a82d2ddfd))
+
+## [7.18.1](https://github.com/ParabolInc/parabol/compare/v7.18.0...v7.18.1) (2024-02-27)
+
+
+### Changed
+
+* no force-push to prod ([#9401](https://github.com/ParabolInc/parabol/issues/9401)) ([6d46e1b](https://github.com/ParabolInc/parabol/commit/6d46e1b2aab6731493de2d2547c88ae3921393f0))
+
+## [7.18.0](https://github.com/ParabolInc/parabol/compare/v7.17.0...v7.18.0) (2024-02-27)
+
+
+### Added
+
+* **standalone-deployment:** Standalone host deployment improved and documented ([#9445](https://github.com/ParabolInc/parabol/issues/9445)) ([61ba015](https://github.com/ParabolInc/parabol/commit/61ba015c8310a72b7e89c64be081cd2f399fc721))
+* support env-defined saml issuer for PPMIs ([#9455](https://github.com/ParabolInc/parabol/issues/9455)) ([92ab5be](https://github.com/ParabolInc/parabol/commit/92ab5be298ceb19ca8718c67a0c9da8728b6b0bf))
+
+
+### Changed
+
+* Associate logs with traces ([#9444](https://github.com/ParabolInc/parabol/issues/9444)) ([c77925b](https://github.com/ParabolInc/parabol/commit/c77925b1c0e07afc428022008143b8b7f4002280))
+
 ## [7.17.0](https://github.com/ParabolInc/parabol/compare/v7.16.0...v7.17.0) (2024-02-21)
 
 
