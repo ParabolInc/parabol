@@ -1,4 +1,4 @@
-name: Ironbank S3 Upload
+name: Ironbank Image Upload
 
 on:
   workflow_dispatch:
