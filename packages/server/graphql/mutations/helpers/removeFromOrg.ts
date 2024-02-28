@@ -8,6 +8,7 @@ import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToStarter from './resolveDowngradeToStarter'
 import {RDatum} from '../../../database/stricterR'
+import {Logger} from '../../../utils/Logger'
 
 const removeFromOrg = async (
   userId: string,
@@ -93,7 +94,7 @@ const removeFromOrg = async (
   try {
     await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, dataLoader)
   } catch (e) {
-    console.log(e)
+    Logger.log(e)
   }
   await setUserTierForUserIds([userId])
   return {

@@ -110,10 +110,12 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
 
   useEffect(() => {
     // if searching for a repoIntegration that doesnt exist in the cache, it could be stale so use the network
+    // It is possible that user has a lot of repositories, if nothing was found in initial request, query everything
+    const veryBigNumberOfRepositories = 10000
     if (!networkOnly && filteredIntegrations.length === 0) {
       setNetworkOnly(true)
       setKeepParentFocus(false)
-      setFirst((first) => first + 50)
+      setFirst((first) => first + veryBigNumberOfRepositories)
     }
   }, [filteredIntegrations.length])
 

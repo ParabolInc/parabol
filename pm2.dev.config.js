@@ -5,21 +5,6 @@ module.exports = {
       script: 'scripts/buildServers.js'
     },
     {
-      name: 'GraphQL Executor',
-      script: 'scripts/runExecutor.js',
-      // increase this to test scaling
-      instances: 1,
-      increment_var: 'SERVER_ID',
-      env: {
-        SERVER_ID: 3
-      },
-      watch: ['dev/gqlExecutor.js'],
-      // if the watched file doeesn't exist, wait for it instead of restarting
-      autorestart: false,
-      log_file: 'dev/logs/gqlExecutor.log',
-      combine_logs: true
-    },
-    {
       name: 'Socket Server',
       script: 'scripts/runSocketServer.js',
       // increase this to test scaling
@@ -30,9 +15,33 @@ module.exports = {
       },
       watch: ['dev/web.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
-      autorestart: false,
-      log_file: 'dev/logs/web.log',
-      combine_logs: true
+      autorestart: false
+    },
+    {
+      name: 'GraphQL Executor',
+      script: 'scripts/runExecutor.js',
+      // increase this to test scaling
+      instances: 1,
+      increment_var: 'SERVER_ID',
+      env: {
+        SERVER_ID: 3
+      },
+      watch: ['dev/gqlExecutor.js'],
+      // if the watched file doeesn't exist, wait for it instead of restarting
+      autorestart: false
+    },
+    {
+      name: 'Embedder',
+      script: 'scripts/runEmbedder.js',
+      // increase this to test scaling
+      instances: 1,
+      increment_var: 'SERVER_ID',
+      env: {
+        SERVER_ID: 6
+      },
+      watch: ['dev/embedder.js'],
+      // if the watched file doeesn't exist, wait for it instead of restarting
+      autorestart: false
     },
     {
       name: 'Dev Server',

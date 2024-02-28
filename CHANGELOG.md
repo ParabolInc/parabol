@@ -5,6 +5,105 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.19.3](https://github.com/ParabolInc/parabol/compare/v7.19.2...v7.19.3) (2024-02-28)
+
+
+### Fixed
+
+* force push 5 ([#9467](https://github.com/ParabolInc/parabol/issues/9467)) ([581f0cf](https://github.com/ParabolInc/parabol/commit/581f0cfa2255bbeb438c53b2b5f4d8ceb6a0b0cc))
+
+## [7.19.2](https://github.com/ParabolInc/parabol/compare/v7.19.1...v7.19.2) (2024-02-28)
+
+
+### Fixed
+
+* mrege origin/production strategy ([#9465](https://github.com/ParabolInc/parabol/issues/9465)) ([9e90b9d](https://github.com/ParabolInc/parabol/commit/9e90b9df95b8505c0e1e50d4e8e4f18c73ef17cd))
+
+## [7.19.1](https://github.com/ParabolInc/parabol/compare/v7.19.0...v7.19.1) (2024-02-27)
+
+
+### Fixed
+
+* checkout prod before merging it ([#9463](https://github.com/ParabolInc/parabol/issues/9463)) ([7bd8803](https://github.com/ParabolInc/parabol/commit/7bd880314f6f48c897a9a708b2d6435b257fae90))
+
+## [7.19.0](https://github.com/ParabolInc/parabol/compare/v7.18.1...v7.19.0) (2024-02-27)
+
+
+### Added
+
+* embedder service ([#9417](https://github.com/ParabolInc/parabol/issues/9417)) ([55faa17](https://github.com/ParabolInc/parabol/commit/55faa17ada5b1bd49182a29341b3465a82d2ddfd))
+
+## [7.18.1](https://github.com/ParabolInc/parabol/compare/v7.18.0...v7.18.1) (2024-02-27)
+
+
+### Changed
+
+* no force-push to prod ([#9401](https://github.com/ParabolInc/parabol/issues/9401)) ([6d46e1b](https://github.com/ParabolInc/parabol/commit/6d46e1b2aab6731493de2d2547c88ae3921393f0))
+
+## [7.18.0](https://github.com/ParabolInc/parabol/compare/v7.17.0...v7.18.0) (2024-02-27)
+
+
+### Added
+
+* **standalone-deployment:** Standalone host deployment improved and documented ([#9445](https://github.com/ParabolInc/parabol/issues/9445)) ([61ba015](https://github.com/ParabolInc/parabol/commit/61ba015c8310a72b7e89c64be081cd2f399fc721))
+* support env-defined saml issuer for PPMIs ([#9455](https://github.com/ParabolInc/parabol/issues/9455)) ([92ab5be](https://github.com/ParabolInc/parabol/commit/92ab5be298ceb19ca8718c67a0c9da8728b6b0bf))
+
+
+### Changed
+
+* Associate logs with traces ([#9444](https://github.com/ParabolInc/parabol/issues/9444)) ([c77925b](https://github.com/ParabolInc/parabol/commit/c77925b1c0e07afc428022008143b8b7f4002280))
+
+## [7.17.0](https://github.com/ParabolInc/parabol/compare/v7.16.0...v7.17.0) (2024-02-21)
+
+
+### Added
+
+* Add Google calendar meeting series for recurrence ([#9380](https://github.com/ParabolInc/parabol/issues/9380)) ([02dc6fa](https://github.com/ParabolInc/parabol/commit/02dc6fa6e4687021bb46a6774eb5f0be859e4d3f))
+* remove team template limit ([#9424](https://github.com/ParabolInc/parabol/issues/9424)) ([f042628](https://github.com/ParabolInc/parabol/commit/f042628fef5bbdbf566c49bab729f5b9dec058f1))
+
+
+### Fixed
+
+* Increase the number of projects fetched per request from Atlassian ([#9435](https://github.com/ParabolInc/parabol/issues/9435)) ([b0b76f9](https://github.com/ParabolInc/parabol/commit/b0b76f9f45789f60b55243f78eba7b656c751658))
+
+
+### Changed
+
+* **deps:** bump ip from 1.1.8 to 1.1.9 ([#9442](https://github.com/ParabolInc/parabol/issues/9442)) ([c2a31e6](https://github.com/ParabolInc/parabol/commit/c2a31e6b8ef2c4f4d375323f8afbef6874024593))
+* **env vars:** Stripe vars moved to the Integrations section ([#9427](https://github.com/ParabolInc/parabol/issues/9427)) ([a0af0c1](https://github.com/ParabolInc/parabol/commit/a0af0c1230a1dbc93a28977d6d61180319220c88))
+* fix misleading `isLead` field name on `Team` ([#9413](https://github.com/ParabolInc/parabol/issues/9413)) ([c0a2fdf](https://github.com/ParabolInc/parabol/commit/c0a2fdf8fb3deaa34f7935ae8a87d30f43381ecd))
+
+## [7.16.0](https://github.com/ParabolInc/parabol/compare/v7.15.2...v7.16.0) (2024-02-14)
+
+
+### Added
+
+* speed up ai search ([#9421](https://github.com/ParabolInc/parabol/issues/9421)) ([9584170](https://github.com/ParabolInc/parabol/commit/95841706d233558d7012781f391b639e8651a244))
+
+
+### Fixed
+
+* not all jira projects are displayed in the list if there are a lot of them ([#9422](https://github.com/ParabolInc/parabol/issues/9422)) ([867ad5e](https://github.com/ParabolInc/parabol/commit/867ad5e37bd28410e339daa6dd183c52582da64a))
+
+
+### Changed
+
+* add embeddings table migration ([#9372](https://github.com/ParabolInc/parabol/issues/9372)) ([012ca77](https://github.com/ParabolInc/parabol/commit/012ca77c5c050df9bd3711332d21d40026018284))
+* bump node to v20.11.0 ([#9410](https://github.com/ParabolInc/parabol/issues/9410)) ([51f28a1](https://github.com/ParabolInc/parabol/commit/51f28a10e5c7708035c74478baa1e931bcf4fc8a))
+* update 3d secure card number in release_test.md ([#9394](https://github.com/ParabolInc/parabol/issues/9394)) ([84d183f](https://github.com/ParabolInc/parabol/commit/84d183f149edfa7d4e76e05d29eeb298e7587634))
+
+## [7.15.2](https://github.com/ParabolInc/parabol/compare/v7.15.1...v7.15.2) (2024-02-08)
+
+
+### Fixed
+
+* fix kudos in standups in nested lists ([#9412](https://github.com/ParabolInc/parabol/issues/9412)) ([7e78d20](https://github.com/ParabolInc/parabol/commit/7e78d20f33c86f3f0323f316512295378934b511))
+
+
+### Changed
+
+* Add more Atlassian logging ([#9405](https://github.com/ParabolInc/parabol/issues/9405)) ([d8f006c](https://github.com/ParabolInc/parabol/commit/d8f006cda39bcb7d89a1f13b839794eaee3f0c01))
+
 ## [7.15.1](https://github.com/ParabolInc/parabol/compare/v7.15.0...v7.15.1) (2024-02-06)
 
 

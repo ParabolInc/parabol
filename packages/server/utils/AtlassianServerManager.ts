@@ -11,25 +11,7 @@ import {
   OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
-
-import tracer from 'dd-trace'
-import formats from 'dd-trace/ext/formats'
-import util from 'util'
-
-type LogLevel = 'error' | 'warn' | 'info' | 'debug'
-function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
-  const span = tracer.scope().active()
-  const time = new Date().toISOString()
-  const record = {time, level, message: util.format(message, optionalParameters)}
-
-  if (span) {
-    tracer.inject(span.context(), formats.LOG, record)
-  }
-
-  console.log(JSON.stringify(record))
-}
-
-const log = trace.bind(null, 'info')
+import {Logger} from './Logger'
 
 export interface JiraUser {
   self: string
@@ -343,7 +325,7 @@ class AtlassianServerManager extends AtlassianManager {
     } else {
       callback(null, {cloudId, newProjects: res.values})
       if (res.nextPage) {
-        await this.getPaginatedProjects(cloudId, res.nextPage, callback).catch(console.error)
+        await this.getPaginatedProjects(cloudId, res.nextPage, callback).catch(Logger.error)
       }
     }
   }
@@ -355,7 +337,7 @@ class AtlassianServerManager extends AtlassianManager {
           cloudId,
           `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`,
           callback
-        ).catch(console.error)
+        ).catch(Logger.error)
       })
     )
   }
@@ -376,7 +358,38 @@ class AtlassianServerManager extends AtlassianManager {
   async getAllProjects(cloudIds: string[]) {
     const projects = [] as (JiraProject & {cloudId: string})[]
     let error: Error | undefined
-    const getProjectPage = async (cloudId: string, url: string): Promise<void> => {
+    const getProjectsPage = async (
+      cloudId: string,
+      startAt: number,
+      maxResults: number
+    ): Promise<void> => {
+      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name&startAt=${startAt}`
+      const res = await this.get<JiraProjectResponse>(url)
+      if (res instanceof Error || res instanceof RateLimitError) {
+        error = res
+      } else {
+        const pagedProjects = res.values.map((project) => ({
+          ...project,
+          cloudId
+        }))
+        projects.push(...pagedProjects)
+
+        if (pagedProjects.length < maxResults && res.nextPage) {
+          Logger.log(
+            'Underfetched in getAllProjects, requested',
+            maxResults,
+            'got',
+            pagedProjects.length
+          )
+          const nextStart = res.startAt + pagedProjects.length
+          const nextMaxResults = maxResults - pagedProjects.length
+          return getProjectsPage(cloudId, nextStart, nextMaxResults)
+        }
+      }
+    }
+
+    const getProjects = async (cloudId: string) => {
+      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`
       const res = await this.get<JiraProjectResponse>(url)
       if (res instanceof Error || res instanceof RateLimitError) {
         error = res
@@ -387,21 +400,23 @@ class AtlassianServerManager extends AtlassianManager {
         }))
         projects.push(...pagedProjects)
         if (res.nextPage) {
-          return getProjectPage(cloudId, res.nextPage)
+          const {total} = res
+          const nextStart = res.startAt + pagedProjects.length
+          const fetches = [] as Array<Promise<void>>
+          // 50 is the default maxResults for Jira, Jira does not respond with more than that
+          const maxResults = 50
+          for (let i = nextStart; i < total; i += maxResults) {
+            fetches.push(getProjectsPage(cloudId, i, maxResults))
+          }
+          await Promise.all(fetches)
         }
       }
     }
-    await Promise.all(
-      cloudIds.map((cloudId) =>
-        getProjectPage(
-          cloudId,
-          `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`
-        )
-      )
-    )
+
+    await Promise.all(cloudIds.map((cloudId) => getProjects(cloudId)))
 
     if (error) {
-      log('getAllProjects ERROR:', error)
+      Logger.log('getAllProjects ERROR:', error)
     }
     return projects
   }

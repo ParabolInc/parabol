@@ -2,6 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import upsertGitLabDimensionFieldMap from '../../../postgres/queries/upsertGitLabDimensionFieldMap'
 import {isTeamMember} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 import {getUserId} from './../../../utils/authorization'
@@ -40,7 +41,7 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
     const {providerId} = gitlabAuth
     await upsertGitLabDimensionFieldMap(teamId, dimensionName, projectId, providerId, labelTemplate)
   } catch (e) {
-    console.log(e)
+    Logger.log(e)
   }
 
   const data = {meetingId, teamId}

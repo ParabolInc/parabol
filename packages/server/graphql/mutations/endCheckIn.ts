@@ -16,6 +16,7 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -230,7 +231,7 @@ export default {
     const updatedTaskIds = (result && result.updatedTaskIds) || []
 
     analytics.checkInEnd(completedCheckIn, meetingMembers, team, dataLoader)
-    sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
+    sendNewMeetingSummary(completedCheckIn, context).catch(Logger.log)
     checkTeamsLimit(team.orgId, dataLoader)
 
     const events = teamMembers.map(

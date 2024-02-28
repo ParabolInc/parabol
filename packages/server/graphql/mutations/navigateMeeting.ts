@@ -11,6 +11,7 @@ import {GQLContext} from '../graphql'
 import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
+import {Logger} from '../../utils/Logger'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -84,7 +85,7 @@ export default {
         phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader)
         if (stage.scheduledEndTime) {
           // not critical, no await needed
-          removeScheduledJobs(stage.scheduledEndTime, {meetingId}).catch(console.error)
+          removeScheduledJobs(stage.scheduledEndTime, {meetingId}).catch(Logger.error)
           stage.scheduledEndTime = null
         }
       }

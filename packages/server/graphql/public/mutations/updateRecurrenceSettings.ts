@@ -12,6 +12,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
 
 export const startNewMeetingSeries = async (
   meeting: {
@@ -111,6 +112,16 @@ const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .run()
 }
 
+const updateGCalRecurrenceRule = (oldRule: RRule, newRule: RRule | null | undefined) => {
+  if (!newRule) {
+    return new RRule({
+      ...oldRule.options,
+      until: new Date()
+    })
+  }
+  return newRule
+}
+
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
   _source,
   {meetingId, recurrenceSettings},
@@ -138,6 +149,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
 
   if (meeting.meetingSeriesId) {
     const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
+    const {gcalSeriesId, teamId, facilitatorId, recurrenceRule} = meetingSeries
 
     if (!recurrenceSettings.rrule) {
       await stopMeetingSeries(meetingSeries)
@@ -145,6 +157,20 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     } else {
       await updateMeetingSeries(meetingSeries, recurrenceSettings.rrule)
       analytics.recurrenceStarted(viewer, meetingSeries)
+    }
+    if (gcalSeriesId) {
+      const rrule = updateGCalRecurrenceRule(
+        RRule.fromString(recurrenceRule),
+        recurrenceSettings.rrule
+      )
+      await updateGcalSeries({
+        gcalSeriesId,
+        title: recurrenceSettings.name ?? undefined,
+        rrule,
+        teamId,
+        userId: facilitatorId,
+        dataLoader
+      })
     }
 
     if (recurrenceSettings.name) {
