@@ -23,8 +23,7 @@ Recommended:
 | `redis_tag`          | Redis version from the [Docker image](https://hub.docker.com/_/redis)                                                   | `Any tag`                                             | `7.0-alpine`                                                        |
 | `_BUILD_ENV_PATH`    | File `.env` used by the application during the build process                                                            | `Relative path from the root level of the repository` | `docker/parabol-ubi/docker-build/environments/pipeline`             |
 | `_NODE_VERSION`      | Node version, used by Docker to use the Docker image node:\_NODE_VERSION as base image to build                         | `Same as in root package.json`                        |                                                                     |
-| `_DOCKERFILE`        | Dockerfile used to build the image                                                                                      | `Relative path from the root level of the repository` | `./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile` |
-| `_SECURITY_ENABLED`  | Enable or disable security configurations. It will add some MBs to the final image, but it will produce a secured image | `true/false`                                          | `true`                                                              |
+| `_DOCKERFILE`        | Dockerfile used to build the image                                                                                      | `Relative path from the root level of the repository` | `./docker/parabol-ubi/docker-build/dockerfiles/basic.dockerfile` |
 | `_DOCKER_REPOSITORY` | The destination repository                                                                                              | `String`                                              | `parabol`                                                           |
 | `_DOCKER_TAG`        | Tag for the produced image                                                                                              | `String`                                              |                                                                     |
 
@@ -36,8 +35,7 @@ export rethinkdb_tag=2.4.2; \
 export redis_tag=7.0-alpine; \
 export _BUILD_ENV_PATH=docker/parabol-ubi/docker-build/environments/pipeline; \
 export _NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json); \
-export _DOCKERFILE=./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile; \
-export _SECURITY_ENABLED=true; \
+export _DOCKERFILE=./docker/parabol-ubi/docker-build/dockerfiles/basic.dockerfile; \
 export _DOCKER_REPOSITORY=parabol; \
 export _DOCKER_TAG=test-image
 ```
