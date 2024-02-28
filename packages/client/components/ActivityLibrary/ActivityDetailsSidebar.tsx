@@ -23,7 +23,7 @@ import {PALETTE} from '../../styles/paletteV3'
 import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import {RecurrenceSettings} from '../Recurrence/RecurrenceSettings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
@@ -99,6 +99,9 @@ const ActivityDetailsSidebar = (props: Props) => {
         orgId
         organization {
           name
+          featureFlags {
+            recurringRetros
+          }
         }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
@@ -233,7 +236,14 @@ const ActivityDetailsSidebar = (props: Props) => {
             if (type === 'retrospective') {
               StartRetrospectiveMutation(
                 atmosphere,
-                {teamId: selectedTeam.id, gcalInput},
+                {
+                  teamId: selectedTeam.id,
+                  recurrenceSettings: {
+                    rrule: recurrenceSettings.rrule?.toString(),
+                    name: recurrenceSettings.name
+                  },
+                  gcalInput
+                },
                 {history, onError, onCompleted}
               )
             } else if (type === 'poker') {
@@ -394,6 +404,13 @@ const ActivityDetailsSidebar = (props: Props) => {
                         teamRef={selectedTeam}
                       />
                       <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+                      {selectedTeam.organization.featureFlags.recurringRetros && (
+                        <ActivityDetailsRecurrenceSettings
+                          onRecurrenceSettingsUpdated={setRecurrenceSettings}
+                          recurrenceSettings={recurrenceSettings}
+                          placeholder='Retro'
+                        />
+                      )}
                     </>
                   )}
                   {type === 'poker' && (
@@ -406,6 +423,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                     <ActivityDetailsRecurrenceSettings
                       onRecurrenceSettingsUpdated={setRecurrenceSettings}
                       recurrenceSettings={recurrenceSettings}
+                      placeholder='Standup'
                     />
                   )}
                 </>

@@ -20,6 +20,7 @@ import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateTeamInsights from './helpers/updateTeamInsights'
+import {Logger} from '../../utils/Logger'
 
 export default {
   type: new GraphQLNonNull(EndSprintPokerPayload),
@@ -114,7 +115,7 @@ export default {
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     if (!isKill) {
-      sendNewMeetingSummary(completedMeeting, context).catch(console.log)
+      sendNewMeetingSummary(completedMeeting, context).catch(Logger.log)
       checkTeamsLimit(team.orgId, dataLoader)
     }
     const events = teamMembers.map(

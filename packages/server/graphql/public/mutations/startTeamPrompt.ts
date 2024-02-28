@@ -11,8 +11,8 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
-import {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 
 const MEETING_START_DELAY_MS = 3000
 
@@ -46,7 +46,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   }
 
   //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
-  const meetingName = createTeamPromptTitle(
+  const meetingName = createMeetingSeriesTitle(
     recurrenceSettings?.name || 'Standup',
     new Date(),
     'UTC'
@@ -66,13 +66,12 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   const {id: meetingId} = meeting
   if (recurrenceSettings?.rrule) {
     const meetingSeries = await startNewMeetingSeries(
-      viewerId,
-      teamId,
-      meetingId,
-      meeting.name,
+      meeting,
       recurrenceSettings.rrule,
       recurrenceSettings.name
     )
+    // meeting was modified if a new meeting series was created
+    dataLoader.get('newMeetings').clear(meetingId)
     analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)

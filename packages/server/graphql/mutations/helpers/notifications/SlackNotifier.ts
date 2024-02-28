@@ -261,9 +261,22 @@ const getSlackMessageForNotification = async (
     }
     const author = await dataLoader.get('users').loadNonNull(notification.authorId)
     const comment = await dataLoader.get('comments').load(notification.commentId)
+
+    const authorName = comment.isAnonymous ? 'Anonymous' : author.preferredName
+
+    const options = {
+      searchParams: {
+        utm_source: 'slack standup notification',
+        utm_medium: 'product',
+        utm_campaign: 'notifications',
+        responseId
+      }
+    }
+
+    const buttonUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
     return {
-      responseId,
-      title: `*${author.preferredName}* replied to your response in *${meeting.name}*`,
+      buttonUrl,
+      title: `*${authorName}* replied to your response in *${meeting.name}*`,
       body: `> ${comment.plaintextContent}`,
       buttonText: 'See the discussion'
     }
@@ -274,10 +287,58 @@ const getSlackMessageForNotification = async (
     const title = notification.kudosEmojiUnicode
       ? `${notification.kudosEmojiUnicode} *${author.preferredName}* mentioned you and gave kudos in their response in *${meeting.name}*`
       : `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
+
+    const options = {
+      searchParams: {
+        utm_source: 'slack standup notification',
+        utm_medium: 'product',
+        utm_campaign: 'notifications',
+        responseId
+      }
+    }
+
+    const buttonUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
+
     return {
-      responseId,
+      buttonUrl,
       title,
       buttonText: 'See their response'
+    }
+  } else if (notification.type === 'MENTIONED') {
+    const authorName = notification.senderName ?? 'Someone'
+    const {meetingId} = notification
+
+    let location = 'message'
+    let buttonText = 'See their message'
+    const searchParams = {
+      utm_source: 'slack mention notification',
+      utm_medium: 'product',
+      utm_campaign: 'notifications'
+    }
+    let buttonUrl = makeAppURL(appOrigin, `meet/${meetingId}`, {
+      searchParams
+    })
+
+    if (notification.retroDiscussStageIdx) {
+      buttonText = 'See their reflection'
+      location = 'reflection'
+      buttonUrl = makeAppURL(
+        appOrigin,
+        `meet/${meetingId}/discuss/${notification.retroDiscussStageIdx}`,
+        {
+          searchParams
+        }
+      )
+    }
+
+    const title = notification.kudosEmojiUnicode
+      ? `${notification.kudosEmojiUnicode} *${authorName}* mentioned you and gave kudos in their ${location} in *${meeting.name}*`
+      : `*${authorName}* mentioned you in their ${location} in *${meeting.name}*`
+
+    return {
+      buttonUrl,
+      title,
+      buttonText
     }
   }
 
@@ -420,14 +481,21 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
 
   async endTimeLimit(meeting, team, user) {
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
-    // TODO now is a good time to make the message nice with the `meetingName`
-    const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
+    const title = `Time’s up! Advance your meeting to the next phase :alarm_clock:`
+    const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
+    const blocks = [
+      makeSection(title),
+      makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
+      makeButtons([button])
+    ]
+
     const res = await notifySlack(
       notificationChannel,
       'MEETING_STAGE_TIME_LIMIT_END',
       team.id,
       user,
-      slackText
+      blocks,
+      title
     )
 
     if ('error' in res) {
@@ -627,7 +695,11 @@ export const SlackNotifier = {
     userId: string
   ) {
     const notification = await dataLoader.get('notifications').load(notificationId)
-    if (notification.type !== 'RESPONSE_MENTIONED' && notification.type !== 'RESPONSE_REPLIED') {
+    if (
+      notification.type !== 'RESPONSE_MENTIONED' &&
+      notification.type !== 'RESPONSE_REPLIED' &&
+      notification.type !== 'MENTIONED'
+    ) {
       return
     }
 
@@ -648,26 +720,16 @@ export const SlackNotifier = {
       return
     }
 
-    const {responseId, title, buttonText, body} = slackMessageFields
+    const {buttonUrl, title, buttonText, body} = slackMessageFields
 
-    if (!responseId) {
+    if (!buttonUrl) {
       return
     }
 
-    const options = {
-      searchParams: {
-        utm_source: 'slack standup notification',
-        utm_medium: 'product',
-        utm_campaign: 'notifications',
-        responseId
-      }
-    }
-
-    const responseUrl = makeAppURL(appOrigin, `meet/${notification.meetingId}/responses`, options)
     const blocks: Array<{type: string}> = [
       makeSection(title),
       ...(body ? [makeSection(body)] : []),
-      makeButtons([{text: buttonText, url: responseUrl, type: 'primary'}])
+      makeButtons([{text: buttonText, url: buttonUrl, type: 'primary'}])
     ]
 
     const {botAccessToken} = userSlackAuth

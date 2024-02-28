@@ -3,6 +3,7 @@ import Organization from '../../../database/types/Organization'
 import getKysely from '../../../postgres/getKysely'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
+import {Logger} from '../../../utils/Logger'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
@@ -22,7 +23,7 @@ const resolveDowngradeToStarter = async (
   try {
     await manager.deleteSubscription(stripeSubscriptionId)
   } catch (e) {
-    console.log(e)
+    Logger.log(e)
   }
 
   const [org] = await Promise.all([

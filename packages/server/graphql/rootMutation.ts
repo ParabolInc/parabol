@@ -99,9 +99,7 @@ import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
 import setTaskHighlight from './mutations/setTaskHighlight'
-import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
-import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
@@ -211,8 +209,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       setStageTimer,
       setSlackNotification,
       startDraggingReflection,
-      startCheckIn,
-      startRetrospective,
       startSprintPoker,
       setTaskHighlight,
       updateAgendaItem,

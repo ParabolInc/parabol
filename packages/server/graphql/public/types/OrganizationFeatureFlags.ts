@@ -9,13 +9,15 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
   teamsLimit: ({teamsLimit}) => !!teamsLimit,
-  teamInsights: ({teamInsights}) => !!teamInsights,
+  noTeamInsights: ({noTeamInsights}) => !!noTeamInsights,
   oneOnOne: ({oneOnOne}) => !!oneOnOne,
   publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
   meetingInception: ({meetingInception}) => !!meetingInception,
   kudos: ({kudos}) => !!kudos,
-  aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers
+  aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers,
+  aiTemplate: ({aiTemplate}) => !!aiTemplate,
+  recurringRetros: ({recurringRetros}) => !!recurringRetros
 }
 
 export default OrganizationFeatureFlags

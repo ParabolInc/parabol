@@ -97,7 +97,7 @@ const GCalIntegrationResults = (props: Props) => {
               Looks like you don’t have any events to display
             </div>
             <Link
-              to={`/team/${teamId}/settings/integrations`}
+              to={`/team/${teamId}/integrations`}
               className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
             >
               Review your Google Calendar configuration

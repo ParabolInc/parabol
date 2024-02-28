@@ -18,7 +18,7 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {orgId} = team
   const organization = await dataLoader.get('organizations').load(orgId)
-  if (!organization?.featureFlags?.includes('teamInsights')) return
+  if (organization?.featureFlags?.includes('noTeamInsights')) return
 
   // actual update
   const r = await getRethink()

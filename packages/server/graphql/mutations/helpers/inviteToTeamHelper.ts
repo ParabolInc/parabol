@@ -37,6 +37,21 @@ const inviteToTeamHelper = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
+  const [total, pending] = await Promise.all([
+    r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
+    r
+      .table('TeamInvitation')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({acceptedAt: null})
+      .count()
+      .run()
+  ])
+  const accepted = total - pending
+  // if no one has accepted one of their 100+ invites, don't trust them
+  if (accepted === 0 && total + invitees.length >= 100) {
+    return standardError(new Error('Exceeded unaccepted invitation limit'), {userId: viewerId})
+  }
+
   const untrustedDomains = ['tempmail.cn', 'qq.com']
   const filteredInvitees = invitees.filter(
     (invitee) => !untrustedDomains.includes(getDomainFromEmail(invitee).toLowerCase())

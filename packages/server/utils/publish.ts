@@ -1,4 +1,5 @@
 import getPubSub from './getPubSub'
+import {Logger} from './Logger'
 
 export interface SubOptions {
   mutatorId?: string // passing the socket id of the mutator will omit sending a message to that user
@@ -18,7 +19,7 @@ const publish = <T>(
   const rootValue = {[subName]: {fieldName: type, [type]: payload}}
   getPubSub()
     .publish(`${topic}.${channel}`, {rootValue, executorServerId: SERVER_ID!, ...subOptions})
-    .catch(console.error)
+    .catch(Logger.error)
 }
 
 export default publish

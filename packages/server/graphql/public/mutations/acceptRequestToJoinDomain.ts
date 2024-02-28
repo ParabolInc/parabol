@@ -14,6 +14,7 @@ import publish from '../../../utils/publish'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
+import {Logger} from '../../../utils/Logger'
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
@@ -106,7 +107,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       try {
         await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
       } catch (e) {
-        console.log(e)
+        Logger.log(e)
       }
       await setUserTierForUserIds([userId])
     }

@@ -139,7 +139,7 @@ const GroupingKanban = (props: Props) => {
   }
 
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
-    const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
+    const container = {} as {[promptId: string]: (typeof reflectionGroups)[0][]}
     let isEditing = false
     reflectionGroups.forEach((group) => {
       const {reflections, promptId} = group

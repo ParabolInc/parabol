@@ -166,7 +166,7 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
       isReady: true
     }
   })
-  db._botScript[stageId as keyof typeof db['_botScript']] = ops
+  db._botScript[stageId as keyof (typeof db)['_botScript']] = ops
 }
 
 const addDiscussionTopics = (db: RetroDemoDB) => {

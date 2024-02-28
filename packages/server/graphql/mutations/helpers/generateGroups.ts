@@ -6,12 +6,14 @@ import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetro
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import publish from '../../../utils/publish'
 import {analytics} from '../../../utils/analytics/analytics'
+import {Logger} from '../../../utils/Logger'
 
 const generateGroups = async (
   reflections: Reflection[],
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
+  if (reflections.length === 0) return
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const organization = await dataLoader.get('organizations').load(team.orgId)
@@ -23,13 +25,13 @@ const generateGroups = async (
 
   const themes = await manager.generateThemes(groupReflectionsInput)
   if (!themes) {
-    console.warn('ChatGPT was unable to generate themes')
+    Logger.warn('ChatGPT was unable to generate themes')
     return
   }
   const groupedReflections = await manager.groupReflections(groupReflectionsInput, themes)
 
   if (!groupedReflections) {
-    console.warn('ChatGPT was unable to group the reflections')
+    Logger.warn('ChatGPT was unable to group the reflections')
     return
   }
   const autogroupReflectionGroups: AutogroupReflectionGroupType[] = []

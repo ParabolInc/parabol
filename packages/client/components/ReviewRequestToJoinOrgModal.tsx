@@ -21,7 +21,7 @@ const ReviewRequestToJoinOrgModalViewerFragment = graphql`
       teams {
         id
         name
-        isLead
+        isViewerLead
         teamMembers(sortBy: "preferredName") {
           userId
         }

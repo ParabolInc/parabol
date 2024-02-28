@@ -1,4 +1,5 @@
 import {HttpResponse, RecognizedString} from 'uWebSockets.js'
+import {Logger} from './utils/Logger'
 
 type Header = [key: RecognizedString, value: RecognizedString]
 
@@ -36,7 +37,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._end = res.end
   res.end = (body?: RecognizedString) => {
     if (res.done) {
-      console.warn(`uWS: Called end after done`)
+      Logger.warn(`uWS: Called end after done`)
     }
     if (res.done || res.aborted) return res
     res.done = true
@@ -46,7 +47,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._close = res.close
   res.close = () => {
     if (res.done) {
-      console.warn(`uWS: Called close after done`)
+      Logger.warn(`uWS: Called close after done`)
     }
     if (res.done || res.aborted) return res
     res.done = true
@@ -61,7 +62,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._tryEnd = res.tryEnd
   res.tryEnd = (fullBodyOrChunk: RecognizedString, totalSize: number) => {
     if (res.done) {
-      console.warn(`uWS: Called tryEnd after done`)
+      Logger.warn(`uWS: Called tryEnd after done`)
     }
     if (res.done || res.aborted) return [true, true]
     return flush(() => res._tryEnd(fullBodyOrChunk, totalSize))
@@ -70,7 +71,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._write = res.write
   res.write = (chunk: RecognizedString) => {
     if (res.done) {
-      console.warn(`uWS: Called write after done`)
+      Logger.warn(`uWS: Called write after done`)
     }
     if (res.done || res.aborted) return res
     return res._write(chunk)
@@ -79,7 +80,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._writeHeader = res.writeHeader
   res.writeHeader = (key: RecognizedString, value: RecognizedString) => {
     if (res.done) {
-      console.warn(`uWS: Called writeHeader after done`)
+      Logger.warn(`uWS: Called writeHeader after done`)
     }
     res.headers.push([key, value])
     return res
@@ -88,7 +89,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._writeStatus = res.writeStatus
   res.writeStatus = (status: RecognizedString) => {
     if (res.done) {
-      console.error(`uWS: Called writeStatus after done ${status}`)
+      Logger.error(`uWS: Called writeStatus after done ${status}`)
     }
     res.status = status
     return res
@@ -97,7 +98,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._upgrade = res.upgrade
   res.upgrade = (...args) => {
     if (res.done) {
-      console.error(`uWS: Called upgrade after done`)
+      Logger.error(`uWS: Called upgrade after done`)
     }
     if (res.done || res.aborted) return
     return res._cork(() => {
@@ -108,7 +109,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._getRemoteAddressAsText = res.getRemoteAddressAsText
   res.getRemoteAddressAsText = () => {
     if (res.done) {
-      console.error(`uWS: Called getRemoteAddressAsText after done`)
+      Logger.error(`uWS: Called getRemoteAddressAsText after done`)
     }
     if (res.done || res.aborted) return Buffer.from('')
     return res._getRemoteAddressAsText()

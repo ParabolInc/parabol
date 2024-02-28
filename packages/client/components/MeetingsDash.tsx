@@ -171,11 +171,9 @@ graphql`
           lastSeenAtURLs
         }
       }
-      ... on TeamPromptMeeting {
-        meetingSeries {
-          createdAt
-          cancelledAt
-        }
+      meetingSeries {
+        createdAt
+        cancelledAt
       }
     }
   }

@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
@@ -47,9 +47,6 @@ const addReflectTemplate = {
       dataLoader.get('users').loadNonNull(viewerId)
     ])
 
-    if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      return standardError(new Error('Too many templates'), {userId: viewerId})
-    }
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -110,13 +107,11 @@ const addReflectTemplate = {
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
-      if (allTemplates.find((template) => template.name === '*New Template')) {
-        return standardError(new Error('Template already created'), {userId: viewerId})
-      }
       const {orgId} = viewerTeam
       // RESOLUTION
+      const templateCount = allTemplates.length
       const base = {
-        '*New Template': [
+        [`*New Template #${templateCount + 1}`]: [
           {
             question: 'New prompt',
             description: '',

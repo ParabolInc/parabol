@@ -1,4 +1,5 @@
-import removeApprovedOrganizationDomainsToPG from '../../../postgres/queries/removeApprovedOrganizationDomainsToPG'
+import {sql} from 'kysely'
+import getKysely from '../../../postgres/getKysely'
 import {MutationResolvers} from '../resolverTypes'
 
 const removeApprovedOrganizationDomains: MutationResolvers['removeApprovedOrganizationDomains'] =
@@ -7,7 +8,15 @@ const removeApprovedOrganizationDomains: MutationResolvers['removeApprovedOrgani
     const normalizedEmailDomains = emailDomains.map((domain) => domain.toLowerCase().trim())
 
     // RESOLUTION
-    await removeApprovedOrganizationDomainsToPG(orgId, normalizedEmailDomains)
+    const pg = getKysely()
+
+    await pg
+      .updateTable('OrganizationApprovedDomain')
+      .set({removedAt: sql`CURRENT_TIMESTAMP`})
+      .where('orgId', '=', orgId)
+      .where('domain', 'in', normalizedEmailDomains)
+      .execute()
+
     const data = {orgId}
     return data
   }

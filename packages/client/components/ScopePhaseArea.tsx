@@ -190,7 +190,7 @@ const ScopePhaseArea = (props: Props) => {
     return idx === -1 ? 1 : idx
   })
 
-  const isTabActive = (label: typeof baseTabs[number]['label']) => {
+  const isTabActive = (label: (typeof baseTabs)[number]['label']) => {
     return activeIdx === tabs.findIndex((tab) => tab.label === label)
   }
 

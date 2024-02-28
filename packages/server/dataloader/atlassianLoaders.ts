@@ -3,12 +3,7 @@ import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {
-  JiraGetIssueRes,
-  JiraGQLFields,
-  JiraProject,
-  RateLimitError
-} from 'parabol-client/utils/AtlassianManager'
+import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
@@ -21,7 +16,11 @@ import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
-import AtlassianServerManager from '../utils/AtlassianServerManager'
+import AtlassianServerManager, {
+  JiraGetIssueRes,
+  JiraGQLFields,
+  JiraProject
+} from '../utils/AtlassianServerManager'
 import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'

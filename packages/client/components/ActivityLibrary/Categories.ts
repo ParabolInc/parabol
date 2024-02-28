@@ -10,7 +10,18 @@ export const MAIN_CATEGORIES = [
   'premortem',
   'postmortem'
 ] as const
-export type CategoryID = typeof MAIN_CATEGORIES[number]
+
+export const QUICK_START_CATEGORY_ID = 'recommended'
+export const CUSTOM_CATEGORY_ID = 'custom'
+
+export const ALL_CATEGORIES = [
+  QUICK_START_CATEGORY_ID,
+  ...MAIN_CATEGORIES,
+  CUSTOM_CATEGORY_ID
+] as const
+
+export type CategoryID = (typeof MAIN_CATEGORIES)[number]
+export type AllCategoryID = (typeof ALL_CATEGORIES)[number]
 
 export const DEFAULT_CARD_THEME: CardTheme = {
   primary: 'bg-slate-500',
@@ -18,19 +29,27 @@ export const DEFAULT_CARD_THEME: CardTheme = {
   text: 'text-slate-500'
 }
 
-export const CATEGORY_THEMES: Record<CategoryID, CardTheme> = {
+export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
+  [QUICK_START_CATEGORY_ID]: {
+    primary: 'bg-grape-700',
+    secondary: 'bg-slate-200',
+    text: 'text-slate-500'
+  },
   standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100', text: 'text-aqua-400'},
   estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100', text: 'text-tomato-500'},
   retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]', text: 'text-grape-500'},
   feedback: {primary: 'bg-jade-400', secondary: 'bg-jade-100', text: 'text-jade-400'},
   strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100', text: 'text-rose-500'},
   premortem: {primary: 'bg-gold-500', secondary: 'bg-gold-100', text: 'text-gold-500'},
-  postmortem: {primary: 'bg-grass-500', secondary: 'bg-grass-100', text: 'text-grass-500'}
+  postmortem: {primary: 'bg-grass-500', secondary: 'bg-grass-100', text: 'text-grass-500'},
+  [CUSTOM_CATEGORY_ID]: {
+    primary: 'bg-fuscia-400',
+    secondary: 'bg-slate-200',
+    text: 'text-slate-500'
+  }
 }
 
-export const QUICK_START_CATEGORY_ID = 'recommended'
-
-export const CATEGORY_ID_TO_NAME: Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string> = {
+export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string> = {
   [QUICK_START_CATEGORY_ID]: 'Quick Start',
   retrospective: 'Retrospective',
   estimation: 'Estimation',
@@ -38,7 +57,8 @@ export const CATEGORY_ID_TO_NAME: Record<CategoryID | typeof QUICK_START_CATEGOR
   feedback: 'Feedback',
   strategy: 'Strategy',
   premortem: 'Pre-Mortem',
-  postmortem: 'Post-Mortem'
+  postmortem: 'Post-Mortem',
+  [CUSTOM_CATEGORY_ID]: 'Custom'
 }
 
 export const MEETING_TYPE_TO_CATEGORY: Record<MeetingTypeEnum, CategoryID> = {
