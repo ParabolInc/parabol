@@ -7,6 +7,7 @@ import {
   GenerationModelConfig,
   ModelConfig
 } from './AbstractModel'
+import OpenAIGeneration from './OpenAIGeneration'
 import TextEmbeddingsInference from './TextEmbeddingsInference'
 import TextGenerationInference from './TextGenerationInference'
 
@@ -16,7 +17,7 @@ interface ModelManagerConfig {
 }
 
 export type EmbeddingsModelType = 'text-embeddings-inference'
-export type GenerationModelType = 'text-generation-inference'
+export type GenerationModelType = 'openai' | 'text-generation-inference'
 
 export class ModelManager {
   embeddingModels: AbstractEmbeddingsModel[]
@@ -80,9 +81,11 @@ export class ModelManager {
       const [modelType, _] = modelConfig.model.split(':') as [GenerationModelType, string]
 
       switch (modelType) {
+        case 'openai': {
+          return new OpenAIGeneration(modelConfig)
+        }
         case 'text-generation-inference': {
-          const generator = new TextGenerationInference(modelConfig)
-          return generator
+          return new TextGenerationInference(modelConfig)
         }
         default:
           throw new Error(`unsupported summarization model '${modelType}'`)

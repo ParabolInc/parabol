@@ -25,16 +25,8 @@ export class TextGenerationInference extends AbstractGenerationModel {
     super(config)
   }
 
-  public async summarize(content: string, options: GenerationOptions) {
-    const {
-      maxNewTokens: max_new_tokens = 512,
-      seed,
-      stop,
-      temperature = 0.8,
-      topP,
-      topK,
-      truncate
-    } = options
+  async summarize(content: string, options: GenerationOptions) {
+    const {maxNewTokens: max_new_tokens = 512, seed, stop, temperature = 0.8, topP, topK} = options
     const parameters = {
       max_new_tokens,
       seed,
@@ -42,7 +34,7 @@ export class TextGenerationInference extends AbstractGenerationModel {
       temperature,
       topP,
       topK,
-      truncate
+      truncate: true
     }
     const prompt = `Create a brief, one-paragraph summary of the following: ${content}`
     const fetchOptions = {
@@ -59,27 +51,27 @@ export class TextGenerationInference extends AbstractGenerationModel {
     }
 
     try {
-      // console.log(`TextGenerationInterface.summarize(): summarizing from ${this.url}/generate`)
+      // console.log(`TextGenerationInference.summarize(): summarizing from ${this.url}/generate`)
       const res = await fetchWithRetry(`${this.url}/generate`, fetchOptions)
       const json = await res.json()
       if (!json || !json.generated_text)
-        throw new Error('TextGenerationInterface.summarize(): malformed response')
+        throw new Error('TextGenerationInference.summarize(): malformed response')
       return json.generated_text as string
     } catch (e) {
-      console.log('TextGenerationInterfaceSummarizer.summarize(): timeout')
+      console.log('TextGenerationInferenceSummarizer.summarize(): timeout')
       throw e
     }
   }
   protected constructModelParams(config: GenerationModelConfig): GenerationModelParams {
     const modelConfigStringSplit = config.model.split(':')
     if (modelConfigStringSplit.length != 2) {
-      throw new Error('TextGenerationInterface model string must be colon-delimited and len 2')
+      throw new Error('TextGenerationInference model string must be colon-delimited and len 2')
     }
 
-    if (!this.url) throw new Error('TextGenerationInterfaceSummarizer model requires url')
+    if (!this.url) throw new Error('TextGenerationInferenceSummarizer model requires url')
     const maybeModelId = modelConfigStringSplit[1]
     if (!isValidModelId(maybeModelId))
-      throw new Error(`TextGenerationInterface model subtype unknown: ${maybeModelId}`)
+      throw new Error(`TextGenerationInference model id unknown: ${maybeModelId}`)
     return modelIdDefinitions[maybeModelId]
   }
 }

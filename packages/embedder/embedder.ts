@@ -162,9 +162,8 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
       try {
         const generator = modelManager.generationModels[0] // use 1st generator
         if (!generator) throw new Error(`Generator unavailable`)
-        const summarizeOptions = {maxInputTokens, truncate: true}
         console.log(`embedder:     ...summarizing ${itemKey} for ${modelTable}`)
-        embedText = await generator.summarize(fullText, summarizeOptions)
+        embedText = await generator.summarize(fullText, {maxNewTokens: maxInputTokens})
       } catch (e) {
         await updateJobState(jobQueueId, 'failed', {
           stateMessage: `unable to summarize long embed text: ${e}`
