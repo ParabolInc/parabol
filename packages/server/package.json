@@ -87,7 +87,7 @@
     "@sentry/integrations": "^7.74.1",
     "@sentry/node": "^7.74.1",
     "adaptivecards": "^2.10.0",
-    "analytics-node": "^5.0.0",
+    "analytics-node": "^6.0.0",
     "api": "^5.0.7",
     "base64url": "^3.0.1",
     "bcryptjs": "^2.4.3",
