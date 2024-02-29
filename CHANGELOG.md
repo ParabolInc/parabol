@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.19.5](https://github.com/ParabolInc/parabol/compare/v7.19.4...v7.19.5) (2024-02-29)
+
+
+### Fixed
+
+* Fix seasonal templates for leap years ([#9476](https://github.com/ParabolInc/parabol/issues/9476)) ([419d104](https://github.com/ParabolInc/parabol/commit/419d104757d905c468d6a72ce607430d01f3b97f))
+
 ## [7.19.4](https://github.com/ParabolInc/parabol/compare/v7.19.3...v7.19.4) (2024-02-28)
 
 
