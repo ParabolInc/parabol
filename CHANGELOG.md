@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.19.4](https://github.com/ParabolInc/parabol/compare/v7.19.3...v7.19.4) (2024-02-28)
+
+
+### Fixed
+
+* Fetch Jira projects in parallel ([#9456](https://github.com/ParabolInc/parabol/issues/9456)) ([9cec00a](https://github.com/ParabolInc/parabol/commit/9cec00a5fd0b46c73ebdde27e6d966b485216132))
+* limit invites from spammers ([#9416](https://github.com/ParabolInc/parabol/issues/9416)) ([5b9526c](https://github.com/ParabolInc/parabol/commit/5b9526c092f7f8675ad2a442da4440e2507cbdcc))
+* packages/server/package.json to reduce vulnerabilities ([#9298](https://github.com/ParabolInc/parabol/issues/9298)) ([fd75d3f](https://github.com/ParabolInc/parabol/commit/fd75d3f2a907888bb461d55ac945d9449071a414))
+* packages/server/package.json to reduce vulnerabilities ([#9392](https://github.com/ParabolInc/parabol/issues/9392)) ([fd833f5](https://github.com/ParabolInc/parabol/commit/fd833f541ef7f915b40331c9d12e94243c8fa24f))
+* packages/server/package.json to reduce vulnerabilities ([#9434](https://github.com/ParabolInc/parabol/issues/9434)) ([1e0075e](https://github.com/ParabolInc/parabol/commit/1e0075e843ce3cf52966a0b77293d72f1d9c60b9))
+* replace lone surrogates in draft-js content ([#9415](https://github.com/ParabolInc/parabol/issues/9415)) ([00092ec](https://github.com/ParabolInc/parabol/commit/00092ec55659d1441e9566d501940dcc6fcf07f4))
+
+
+### Changed
+
+* add upload to GCS step in ironbank ([#9471](https://github.com/ParabolInc/parabol/issues/9471)) ([7bfec91](https://github.com/ParabolInc/parabol/commit/7bfec9188a42b38eb69930fdd86e6fb39249ed7e))
+* **deps:** bump es5-ext from 0.10.62 to 0.10.64 ([#9457](https://github.com/ParabolInc/parabol/issues/9457)) ([92f0be9](https://github.com/ParabolInc/parabol/commit/92f0be917d4bd182bc6ea249f5dc40c05b98320a))
+* **deps:** bump follow-redirects from 1.14.8 to 1.15.4 ([#9312](https://github.com/ParabolInc/parabol/issues/9312)) ([9441b27](https://github.com/ParabolInc/parabol/commit/9441b2727deefb7e27e4015f37d64ff933415c8d))
+
 ## [7.19.3](https://github.com/ParabolInc/parabol/compare/v7.19.2...v7.19.3) (2024-02-28)
 
 
