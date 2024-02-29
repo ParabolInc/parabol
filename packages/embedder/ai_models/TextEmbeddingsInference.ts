@@ -63,7 +63,7 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     if (!this.url) throw new Error('TextGenerationInferenceSummarizer model requires url')
     const maybeModelId = modelConfigStringSplit[1]
     if (!isValidModelId(maybeModelId))
-      throw new Error(`TextGenerationInference model subtype unknown: ${maybeModelId}`)
+      throw new Error(`TextGenerationInference model id unknown: ${maybeModelId}`)
     return modelIdDefinitions[maybeModelId]
   }
 }

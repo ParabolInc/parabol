@@ -11,7 +11,6 @@ export interface GenerationModelConfig extends ModelConfig {}
 
 export abstract class AbstractModel {
   public readonly url?: string
-  public modelInstance: any
 
   constructor(config: ModelConfig) {
     this.url = this.normalizeUrl(config.url)
@@ -57,7 +56,6 @@ export interface GenerationOptions {
   temperature?: number
   topK?: number
   topP?: number
-  truncate?: boolean
 }
 
 export abstract class AbstractGenerationModel extends AbstractModel {
