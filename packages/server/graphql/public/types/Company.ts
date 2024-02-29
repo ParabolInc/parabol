@@ -139,7 +139,7 @@ const Company: CompanyResolvers = {
     const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
-    const filterFn = after ? () => true : (meeting: any) => meeting('createdAt').ge(after)
+    const filterFn = after ? (meeting: any) => meeting('createdAt').ge(after) : () => true
     return r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
