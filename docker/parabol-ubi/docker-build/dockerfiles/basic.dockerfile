@@ -1,6 +1,9 @@
 ARG _NODE_VERSION=${_NODE_VERSION}
 FROM node:${_NODE_VERSION}-bookworm-slim as base
 
+ENV HOME=/home/node \
+    USER=node
+
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PORT=3000
 
