@@ -1,9 +1,10 @@
+# DO NOT DELETE. Legacy docker file for versions still in use. Delete only when all Parabol instances are using the newest docker image.
 ARG _NODE_VERSION=${_NODE_VERSION}
 #base build for dev deps
 FROM node:${_NODE_VERSION} as base
 
 ARG _PARABOL_GIT_REF=${_PARABOL_GIT_REF}
-ARG _BUILD_ENV_PATH=environments/buildenv
+ARG _BUILD_ENV_PATH=environments/legacy-build
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 
 WORKDIR /home/node
