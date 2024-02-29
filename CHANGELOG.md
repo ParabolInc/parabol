@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.19.7](https://github.com/ParabolInc/parabol/compare/v7.19.6...v7.19.7) (2024-02-29)
+
+
+### Fixed
+
+* **docker-build:** home folder is /home/node now ([#9482](https://github.com/ParabolInc/parabol/issues/9482)) ([2ff4a6e](https://github.com/ParabolInc/parabol/commit/2ff4a6e6328bf437a31e9ac7984af4a55aae3d11))
+
+## [7.19.6](https://github.com/ParabolInc/parabol/compare/v7.19.5...v7.19.6) (2024-02-29)
+
+
+### Fixed
+
+* After parameter for meetingCount was ignored ([#9479](https://github.com/ParabolInc/parabol/issues/9479)) ([052acd1](https://github.com/ParabolInc/parabol/commit/052acd14035fe7c96af8d17ca4763be91d863a80))
+
+
+### Changed
+
+* **docker-build:** simplify the docker build process and reduce docker image size ([#9447](https://github.com/ParabolInc/parabol/issues/9447)) ([5e356c2](https://github.com/ParabolInc/parabol/commit/5e356c2566db8e32e45a1393e1b1ea27c4be0a5c))
+
 ## [7.19.5](https://github.com/ParabolInc/parabol/compare/v7.19.4...v7.19.5) (2024-02-29)
 
 
