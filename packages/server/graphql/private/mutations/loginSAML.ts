@@ -16,6 +16,7 @@ import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnUR
 import {SSORelayState} from '../../queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
 import standardError from '../../../utils/standardError'
+import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -104,8 +105,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
   const ssoDomain = getSSODomainFromEmail(email)
   if (!ssoDomain || !domains.includes(ssoDomain)) {
-    // don't blindly trust the IdP
-    return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
+    if (!isSingleTenantSSO) {
+      // don't blindly trust the IdP unless there is only 1
+      return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
+    }
   }
 
   if (newMetadata) {

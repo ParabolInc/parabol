@@ -4,7 +4,7 @@ import {URL} from 'url'
 import {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
 
-const isSingleTenantSSO =
+export const isSingleTenantSSO =
   process.env.AUTH_INTERNAL_DISABLED === 'true' &&
   process.env.AUTH_GOOGLE_DISABLED === 'true' &&
   process.env.AUTH_MICROSOFT_DISABLED === 'true' &&
