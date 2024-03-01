@@ -44,7 +44,6 @@ const writeManifest = () => {
   }
   const manifestPath = path.join(clientDir, 'manifest.json')
   fs.writeFileSync(manifestPath, JSON.stringify(manifest))
-  // move the referenced icons into the client build
 }
 
 const rewriteIndexHTML = () => {
