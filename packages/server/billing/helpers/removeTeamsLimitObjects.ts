@@ -1,20 +1,22 @@
+import getKysely from '../../postgres/getKysely'
+import {DB} from '../../postgres/pg'
 import {r} from 'rethinkdb-ts'
 import {RValue} from '../../database/stricterR'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import updateNotification from '../../graphql/public/mutations/helpers/updateNotification'
 
 const removeTeamsLimitObjects = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const removeJobTypes = ['LOCK_ORGANIZATION', 'WARN_ORGANIZATION']
+  const removeJobTypes = ['LOCK_ORGANIZATION', 'WARN_ORGANIZATION'] as DB['ScheduledJob']['type'][]
   const removeNotificationTypes = ['TEAMS_LIMIT_EXCEEDED', 'TEAMS_LIMIT_REMINDER']
+  const pg = getKysely()
 
   // Remove team limits jobs and existing notifications
   const [, updateNotificationsChanges] = await Promise.all([
-    r
-      .table('ScheduledJob')
-      .getAll(orgId, {index: 'orgId'})
-      .filter((row: RValue) => r.expr(removeJobTypes).contains(row('type')))
-      .delete()
-      .run(),
+    pg
+      .deleteFrom('ScheduledJob')
+      .where('orgId', '=', orgId)
+      .where('type', 'in', removeJobTypes)
+      .execute(),
     r
       .table('Notification')
       .getAll(orgId, {index: 'orgId'})
