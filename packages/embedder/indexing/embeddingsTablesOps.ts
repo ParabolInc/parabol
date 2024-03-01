@@ -52,7 +52,7 @@ export async function selectMetaToQueue(
     .where(({eb, not, or, and, exists, selectFrom}) =>
       and([
         or([
-          not(eb('em.models', '<@', sql`ARRAY[${sql.ref('model')}]::varchar[]` as any) as any),
+          not(eb('em.models', '@>', sql`ARRAY[${sql.ref('model')}]::varchar[]` as any) as any),
           eb('em.models' as any, 'is', null)
         ]),
         not(
