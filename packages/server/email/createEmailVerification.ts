@@ -2,7 +2,7 @@ import base64url from 'base64url'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import {Security} from 'parabol-client/types/constEnums'
-import getRethink from '../database/rethinkDriver'
+import getKysely from '../postgres/getKysely'
 import EmailVerification from '../database/types/EmailVerification'
 import emailVerificationEmailCreator from './emailVerificationEmailCreator'
 import getMailManager from './getMailManager'
@@ -35,7 +35,6 @@ const createEmailVerification = async (props: SignUpWithPasswordMutationVariable
   if (!success) {
     return {error: {message: 'Unable to send verification email'}}
   }
-  const r = await getRethink()
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
   const emailVerification = new EmailVerification({
     email,
@@ -44,7 +43,8 @@ const createEmailVerification = async (props: SignUpWithPasswordMutationVariable
     pseudoId,
     invitationToken
   })
-  await r.table('EmailVerification').insert(emailVerification).run()
+  const pg = getKysely()
+  await pg.insertInto('EmailVerification').values(emailVerification).execute()
   return {error: {message: 'Verification required. Check your inbox.'}}
 }
 

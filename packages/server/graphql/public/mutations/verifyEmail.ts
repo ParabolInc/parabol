@@ -1,5 +1,5 @@
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
 import EmailVerification from '../../../database/types/EmailVerification'
@@ -16,14 +16,14 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   context
 ) => {
   const {dataLoader} = context
-  const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
-  const emailVerification = (await r
-    .table('EmailVerification')
-    .getAll(verificationToken, {index: 'token'})
-    .nth(0)
-    .default(null)
-    .run()) as EmailVerification
+  const emailVerification =
+    ((await pg
+      .selectFrom('EmailVerification')
+      .selectAll()
+      .where('token', '=', verificationToken)
+      .executeTakeFirst()) as EmailVerification) || null
 
   if (!emailVerification) {
     return {error: {message: 'Invalid verification token'}}

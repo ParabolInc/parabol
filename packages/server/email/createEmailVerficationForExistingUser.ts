@@ -1,6 +1,6 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
-import getRethink from '../database/rethinkDriver'
+import getKysely from '../postgres/getKysely'
 import AuthIdentityLocal from '../database/types/AuthIdentityLocal'
 import EmailVerification from '../database/types/EmailVerification'
 import {DataLoaderWorker} from '../graphql/graphql'
@@ -34,7 +34,6 @@ const createEmailVerficationForExistingUser = async (
   if (!success) {
     return new Error('Unable to send verification email')
   }
-  const r = await getRethink()
   const emailVerification = new EmailVerification({
     email,
     token: verifiedEmailToken,
@@ -42,7 +41,8 @@ const createEmailVerficationForExistingUser = async (
     pseudoId,
     invitationToken
   })
-  await r.table('EmailVerification').insert(emailVerification).run()
+  const pg = getKysely()
+  await pg.insertInto('EmailVerification').values(emailVerification).execute()
   return undefined
 }
 
