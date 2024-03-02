@@ -15,26 +15,14 @@ export async function up() {
     {table: 'ScheduledJob'}
   )
 
-  const transformRethinkRow = (row: any) => {
-    const {runAt, type, orgId, meetingId} = row
-    return {
-      runAt,
-      type,
-      orgId,
-      meetingId
-    }
-  }
-
   const getNextData = async (leftBoundCursor: Date | undefined) => {
     const startAt = leftBoundCursor || r.minval
-    const nextBatch = (
-      await r
-        .table('ScheduledJob')
-        .between(startAt, r.maxval, {index: 'runAt', leftBound: 'open'})
-        .orderBy({index: 'runAt'})
-        .limit(batchSize)
-        .run()
-    ).map(transformRethinkRow)
+    const nextBatch = await r
+      .table('ScheduledJob')
+      .between(startAt, r.maxval, {index: 'runAt', leftBound: 'open'})
+      .orderBy({index: 'runAt'})
+      .limit(batchSize)
+      .run()
     if (nextBatch.length === 0) return null
     if (nextBatch.length < batchSize) return nextBatch
     const lastItem = nextBatch.pop()
@@ -44,7 +32,7 @@ export async function up() {
         'batchSize is smaller than the number of items that share the same cursor. Increase batchSize'
       )
     }
-    return nextBatch.slice(0, lastMatchingRunAt + 1)
+    return nextBatch.slice(0, lastMatchingRunAt)
   }
 
   await pg.tx('ScheduledJob', (task) => {
