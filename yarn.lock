@@ -11192,10 +11192,15 @@ dotenv@8.0.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.0.0.tgz#ed310c165b4e8a97bb745b0a9d99c31bda566440"
   integrity sha512-30xVGqjLjiUOArT4+M5q9sYdvuR4riM6yK9wMcas9Vbp6zZa+ocC9dp6QoftuhTPhFAiLK/0C5Ni2nou/Bk8lg==
 
-dotenv@^16.0.0, dotenv@^16.0.3:
+dotenv@^16.0.0:
   version "16.0.3"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.0.3.tgz#115aec42bac5053db3c456db30cc243a5a836a07"
   integrity sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==
+
+dotenv@^16.3.1:
+  version "16.4.5"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
+  integrity sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==
 
 dotenv@~10.0.0:
   version "10.0.0"
@@ -11223,6 +11228,7 @@ draft-js-utils@^1.4.0:
 
 "draft-js@https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6":
   version "0.10.5"
+  uid "025fddba56f21aaf3383aee778e0b17025c9a7bc"
   resolved "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6#025fddba56f21aaf3383aee778e0b17025c9a7bc"
   dependencies:
     fbjs "^0.8.15"
@@ -14905,13 +14911,13 @@ koalas@^1.0.2:
   resolved "https://registry.yarnpkg.com/koalas/-/koalas-1.0.2.tgz#318433f074235db78fae5661a02a8ca53ee295cd"
   integrity sha1-MYQz8HQjXbePrlZhoCqMpT7ilc0=
 
-kysely-codegen@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/kysely-codegen/-/kysely-codegen-0.11.0.tgz#7506955c4c09201b571d528b42ffec8a1869160b"
-  integrity sha512-8aklzXygjANshk5BoGSQ0BWukKIoPL4/k1iFWyteGUQ/VtB1GlyrELBZv1GglydjLGECSSVDpsOgEXyWQmuksg==
+kysely-codegen@0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/kysely-codegen/-/kysely-codegen-0.12.0.tgz#750a84387c916ecd0e204004796231b07805d60e"
+  integrity sha512-jTlN99kIp+igPZOck1P+WB0ATjO9ET0cymou0pBE0kpQfwhYsUj8YeCWCa5OfDna2VlMMfVolDYbzQhqBk5tiA==
   dependencies:
     chalk "4.1.2"
-    dotenv "^16.0.3"
+    dotenv "^16.3.1"
     git-diff "^2.0.6"
     micromatch "^4.0.5"
     minimist "^1.2.8"

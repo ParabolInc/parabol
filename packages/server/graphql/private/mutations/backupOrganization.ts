@@ -71,11 +71,11 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
       [teamIds]
     )
     await client.query(
-      `CREATE TABLE "orgBackup"."TaskEstimate" AS (SELECT * FROM "TaskEstimate" WHERE "userId" = ANY ($1));`,
-      [userIds]
+      `CREATE TABLE "orgBackup"."Invoice" AS (SELECT * FROM "Invoice" WHERE "orgId" = ANY ($1));`,
+      [orgIds]
     )
     await client.query(
-      `CREATE TABLE "orgBackup"."User" AS (SELECT * FROM "User" WHERE "id" = ANY ($1));`,
+      `CREATE TABLE "orgBackup"."TaskEstimate" AS (SELECT * FROM "TaskEstimate" WHERE "userId" = ANY ($1));`,
       [userIds]
     )
     await client.query(
@@ -85,6 +85,10 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
     await client.query(
       `CREATE TABLE "orgBackup"."TemplateScaleRef" AS (SELECT * FROM "TemplateScaleRef" WHERE "id" = ANY ($1));`,
       [templateScaleRefIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."User" AS (SELECT * FROM "User" WHERE "id" = ANY ($1));`,
+      [userIds]
     )
     await client.query('COMMIT')
   } catch (e) {
@@ -174,9 +178,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
     atlassianAuth: (r.table('AtlassianAuth').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('AtlassianAuth').insert(items)),
-    invoice: (r.table('Invoice').filter((row: RDatum) => r(orgIds).contains(row('orgId'))) as any)
-      .coerceTo('array')
-      .do((items: RValue) => r.db(DESTINATION).table('Invoice').insert(items)),
     invoiceItemHook: (
       r.table('InvoiceItemHook').filter((row: RDatum) => r(orgIds).contains(row('orgId'))) as any
     )

@@ -72,23 +72,31 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       .set({domain: normalizedNewDomain})
       .where('domain', '=', normalizedOldDomain)
       .execute(),
-    r
-      .table('Invoice')
-      .filter((row: RDatum) =>
-        row('billingLeaderEmails').contains((email: RValue) =>
-          email.split('@').nth(1).eq(normalizedOldDomain)
+    pg
+      .updateTable('Invoice')
+      .set({
+        billingLeaderEmails: sql<string[]>`
+        array(
+          SELECT
+            CASE
+                WHEN strpos(email, '@') > 0 AND split_part(email, '@', 2) = '${normalizedOldDomain}' THEN
+                    split_part(email, '@', 1) || '@${normalizedNewDomain}'
+                ELSE
+                    email
+            END
+          FROM unnest(billingLeaderEmails) AS t(email)
+        )`
+      })
+      .where((eb) =>
+        eb.exists(sql<boolean[]>`
+        (
+          SELECT 1
+          FROM unnest(billingLeaderEmails) AS t(email)
+          WHERE strpos(email, '@') > 0 AND split_part(email, '@', 2) = '${normalizedOldDomain}'
         )
+      `)
       )
-      .update((row: RDatum) => ({
-        billingLeaderEmails: row('billingLeaderEmails').map((email: RValue) =>
-          r.branch(
-            email.split('@').nth(1).eq(normalizedOldDomain),
-            email.split('@').nth(0).add(`@${normalizedNewDomain}`),
-            email
-          )
-        )
-      }))
-      .run()
+      .execute()
   ])
 
   const usersUpdatedIds = updatedUserRes.map(({id}) => id)
