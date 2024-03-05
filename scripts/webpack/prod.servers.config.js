@@ -35,6 +35,7 @@ module.exports = (config) => {
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
+      embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'embedder.ts')],
       gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
       preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
       pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
