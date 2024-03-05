@@ -15,31 +15,6 @@ export async function up() {
   await client.end()
 }
 
-const PREV_FREE_TEMPLATE_IDS = [
-  'herosJourneyTemplate',
-  'roseThornBudTemplate',
-  'winningStreakTemplate',
-  'starfishTemplate',
-  'hopesAndFearsTemplate',
-  'sixThinkingHatsTemplate',
-  'hotAirBalloonTemplate',
-  'heardSeenRespectedHSRTemplate',
-  'wRAPTemplate',
-  'speedCarTemplate',
-  'surprisedWorriedInspiredTemplate',
-  'marieKondoRetrospectiveTemplate',
-  'highlightsLowlightsTemplate',
-  'saMoLoTemplate',
-  'superheroRetrospectiveTemplate',
-  'questionsCommentsConcernsTemplate',
-  'dreamTeamRetrospectiveTemplate',
-  'handsOnDeckActivityTemplate',
-  'alwaysBeLearningRetrospectiveTemplate',
-  'scrumValuesRetrospectiveTemplate',
-  'estimatedEffortTemplate',
-  'wsjfTemplate'
-]
-
 export async function down() {
   // noop
 }
