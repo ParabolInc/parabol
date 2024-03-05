@@ -15,6 +15,7 @@ const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
+const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 
@@ -29,6 +30,7 @@ module.exports = (config) => {
       chronos: [DOTENV, path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
       web: [
         DOTENV,
+        INIT_PUBLIC_PATH,
         // each instance of web needs to generate its own index.html to use on startup
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
@@ -108,46 +110,10 @@ module.exports = (config) => {
         ...transformRules(PROJECT_ROOT, true),
         {
           test: /\.(png|jpg|jpeg|gif|svg)$/,
-          oneOf: [
-            {
-              // Put templates in their own directory that will get pushed to the CDN. PG Migrations will reference that URL
-              test: /Template.png$/,
-              include: [path.resolve(PROJECT_ROOT, 'static/images/illustrations')],
-              use: [
-                {
-                  loader: 'file-loader',
-                  options: {
-                    name: 'templates/[name].[ext]',
-                    publicPath: distPath
-                  }
-                }
-              ]
-            },
-            {
-              // manifest.json icons just need the file name, we'll prefix them with the CDN in preDeploy
-              test: /mark-cropped-\d+.png$/,
-              include: [path.resolve(PROJECT_ROOT, 'static/images/brand')],
-              use: [
-                {
-                  loader: 'file-loader',
-                  options: {
-                    name: '[name].[ext]'
-                  }
-                }
-              ]
-            },
-            {
-              use: [
-                {
-                  loader: 'file-loader',
-                  options: {
-                    publicPath: distPath,
-                    name: '[name].[ext]'
-                  }
-                }
-              ]
-            }
-          ]
+          type: 'asset/resource',
+          generator: {
+            filename: 'images/[name][ext]'
+          }
         },
         {
           include: [/node_modules/],
