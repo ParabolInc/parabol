@@ -18,7 +18,6 @@ import RoleTag from '../../../../components/Tag/RoleTag'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
-import useTooltip from '../../../../hooks/useTooltip'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
@@ -59,6 +58,7 @@ const MenuToggleBlock = styled('div')({
 
 interface Props extends WithMutationProps {
   billingLeaderCount: number
+  orgAdminCount: number
   organizationUser: OrgMemberRow_organizationUser$key
   organization: OrgMemberRow_organization$key
 }
@@ -90,6 +90,10 @@ const BillingLeaderActionMenu = lazyPreload(
       /* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu'
     )
 )
+const OrgAdminActionMenu = lazyPreload(
+  () =>
+    import(/* webpackChunkName: 'OrgAdminActionMenu' */ '../../../../components/OrgAdminActionMenu')
+)
 
 const RemoveFromOrgModal = lazyPreload(
   () =>
@@ -100,6 +104,7 @@ const OrgMemberRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {
     billingLeaderCount,
+    orgAdminCount,
     organizationUser: organizationUserRef,
     organization: organizationRef
   } = props
@@ -107,8 +112,10 @@ const OrgMemberRow = (props: Props) => {
     graphql`
       fragment OrgMemberRow_organization on Organization {
         isViewerBillingLeader: isBillingLeader
+        isViewerOrgAdmin: isOrgAdmin
         orgId: id
         ...BillingLeaderActionMenu_organization
+        ...OrgAdminActionMenu_organization
       }
     `,
     organizationRef
@@ -126,28 +133,23 @@ const OrgMemberRow = (props: Props) => {
         role
         newUserUntil
         ...BillingLeaderActionMenu_organizationUser
+        ...OrgAdminActionMenu_organizationUser
       }
     `,
     organizationUserRef
   )
-  const {orgId, isViewerBillingLeader} = organization
+  const {orgId, isViewerBillingLeader, isViewerOrgAdmin} = organization
   const {newUserUntil, user, role} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
   const isOrgAdmin = role === 'ORG_ADMIN'
   const {email, inactive, picture, preferredName, userId} = user
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
+  const isViewerLastOrgAdmin = isViewerOrgAdmin && isOrgAdmin && orgAdminCount === 1
   const {viewerId} = atmosphere
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
   const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_RIGHT)
-  const canViewMenu = !isViewerLastBillingLeader && organizationUser.role !== 'ORG_ADMIN'
 
   return (
     <StyledRow>
@@ -177,28 +179,7 @@ const OrgMemberRow = (props: Props) => {
               Leave Organization
             </StyledFlatButton>
           )}
-          {!canViewMenu && (
-            <MenuToggleBlock
-              onClick={closeTooltip}
-              onMouseOver={openTooltip}
-              onMouseOut={closeTooltip}
-              ref={tooltipRef}
-            >
-              {tooltipPortal(
-                isViewerLastBillingLeader ? (
-                  <div>
-                    {'You need to promote another Billing Leader'}
-                    <br />
-                    {'before you can remove this role.'}
-                  </div>
-                ) : (
-                  <div>Contact support (love@parabol.co) to remove the Org Admin role</div>
-                )
-              )}
-              <MenuButton disabled />
-            </MenuToggleBlock>
-          )}
-          {isViewerBillingLeader && canViewMenu && (
+          {isViewerOrgAdmin && (
             <MenuToggleBlock>
               <MenuButton
                 onClick={togglePortal}
@@ -207,16 +188,37 @@ const OrgMemberRow = (props: Props) => {
               />
             </MenuToggleBlock>
           )}
-          {menuPortal(
-            <BillingLeaderActionMenu
-              menuProps={menuProps}
-              isViewerLastBillingLeader={isViewerLastBillingLeader}
-              organizationUser={organizationUser}
-              organization={organization}
-              toggleLeave={toggleLeave}
-              toggleRemove={toggleRemove}
-            />
+          {isViewerOrgAdmin &&
+            menuPortal(
+              <OrgAdminActionMenu
+                menuProps={menuProps}
+                isViewerLastOrgAdmin={isViewerLastOrgAdmin}
+                organizationUser={organizationUser}
+                organization={organization}
+                toggleLeave={toggleLeave}
+                toggleRemove={toggleRemove}
+              />
+            )}
+          {!isViewerOrgAdmin && isViewerBillingLeader && !isViewerLastBillingLeader && (
+            <MenuToggleBlock>
+              <MenuButton
+                onClick={togglePortal}
+                onMouseEnter={BillingLeaderActionMenu.preload}
+                ref={originRef}
+              />
+            </MenuToggleBlock>
           )}
+          {!isViewerOrgAdmin &&
+            menuPortal(
+              <BillingLeaderActionMenu
+                menuProps={menuProps}
+                isViewerLastBillingLeader={isViewerLastBillingLeader}
+                organizationUser={organizationUser}
+                organization={organization}
+                toggleLeave={toggleLeave}
+                toggleRemove={toggleRemove}
+              />
+            )}
           {leaveModal(<LeaveOrgModal orgId={orgId} />)}
           {removeModal(
             <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />

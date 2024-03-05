@@ -27,7 +27,6 @@ export const OrgTeamMembersRow = (props: Props) => {
     graphql`
       fragment OrgTeamMembersRow_teamMember on TeamMember {
         ...OrgTeamMemberMenu_teamMember
-        id
         userId
         picture
         preferredName
@@ -35,11 +34,6 @@ export const OrgTeamMembersRow = (props: Props) => {
         isOrgAdmin
         isSelf
         email
-        user {
-          teams {
-            name
-          }
-        }
         ...PromoteTeamMemberModal_teamMember
         ...RemoveTeamMemberModal_teamMember
       }
@@ -48,7 +42,7 @@ export const OrgTeamMembersRow = (props: Props) => {
   )
 
   const {isViewerLead, isViewerOrgAdmin} = props
-  const {id: isLead, isOrgAdmin, userId} = teamMember
+  const {isLead, isOrgAdmin, userId} = teamMember
 
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -92,12 +86,6 @@ export const OrgTeamMembersRow = (props: Props) => {
           <Button asChild variant='link'>
             <a href={`mailto:${teamMember.email}`}>{teamMember.email}</a>
           </Button>
-        </div>
-        <div className='flex items-center gap-x-1 text-base'>
-          <div>Teams:</div>
-          <div className='space-x-1 font-semibold'>
-            {teamMember.user.teams.map((team) => team.name).join(', ')}
-          </div>
         </div>
       </div>
       <div>

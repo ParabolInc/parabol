@@ -24,12 +24,11 @@ const query = graphql`
     viewer {
       team(teamId: $teamId) {
         ...ArchiveTeam_team
-        isLead
-        isOrgAdmin
         id
-        name
-        tier
         billingTier
+        isOrgAdmin
+        isViewerLead
+        name
         orgId
         teamMembers(sortBy: "preferredName") {
           id
@@ -37,6 +36,7 @@ const query = graphql`
           ...AddTeamMemberModal_teamMembers
           ...OrgTeamMembersRow_teamMember
         }
+        tier
       }
     }
   }
@@ -57,7 +57,7 @@ export const OrgTeamMembers = (props: Props) => {
   } = useDialogState()
 
   if (!team) return null
-  const {isLead: isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
+  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
 
   return (
     <div className='max-w-4xl pb-4'>

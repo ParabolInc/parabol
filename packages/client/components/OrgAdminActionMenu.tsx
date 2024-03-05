@@ -1,0 +1,95 @@
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
+import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import {OrgAdminActionMenu_organization$key} from '../__generated__/OrgAdminActionMenu_organization.graphql'
+import {OrgAdminActionMenu_organizationUser$key} from '../__generated__/OrgAdminActionMenu_organizationUser.graphql'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+
+interface Props extends WithMutationProps {
+  menuProps: MenuProps
+  isViewerLastOrgAdmin: boolean
+  organizationUser: OrgAdminActionMenu_organizationUser$key
+  organization: OrgAdminActionMenu_organization$key
+  toggleLeave: () => void
+  toggleRemove: () => void
+}
+
+const OrgAdminActionMenu = (props: Props) => {
+  const {
+    menuProps,
+    isViewerLastOrgAdmin,
+    organizationUser: organizationUserRef,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted,
+    organization: organizationRef,
+    toggleLeave,
+    toggleRemove
+  } = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgAdminActionMenu_organization on Organization {
+        id
+      }
+    `,
+    organizationRef
+  )
+  const organizationUser = useFragment(
+    graphql`
+      fragment OrgAdminActionMenu_organizationUser on OrganizationUser {
+        role
+        user {
+          id
+        }
+      }
+    `,
+    organizationUserRef
+  )
+  const atmosphere = useAtmosphere()
+  const {id: orgId} = organization
+  const {viewerId} = atmosphere
+  const {role, user} = organizationUser
+  const {id: userId} = user
+
+  const setRole =
+    (role: 'ORG_ADMIN' | 'BILLING_LEADER' | null = null) =>
+    () => {
+      if (submitting) return
+      submitMutation()
+      const variables = {orgId, userId, role}
+      SetOrgUserRoleMutation(atmosphere, variables, {onError, onCompleted})
+    }
+
+  const isOrgAdmin = role === 'ORG_ADMIN'
+  const isBillingLeader = role === 'BILLING_LEADER'
+  const roleName = role === 'ORG_ADMIN' ? 'Org Admin' : 'Billing Leader'
+  const notSelf = viewerId !== userId
+  const canRemoveSelf = viewerId === userId && !isViewerLastOrgAdmin
+
+  return (
+    <>
+      <Menu ariaLabel={'Select your action'} {...menuProps}>
+        {!isOrgAdmin && <MenuItem label='Promote to Org Admin' onClick={setRole('ORG_ADMIN')} />}
+        {!isOrgAdmin && !isBillingLeader && (
+          <MenuItem label='Promote to Billing Leader' onClick={setRole('BILLING_LEADER')} />
+        )}
+        {isOrgAdmin && (
+          <MenuItem label='Change to Billing Leader' onClick={setRole('BILLING_LEADER')} />
+        )}
+        {((role && notSelf) || canRemoveSelf) && (
+          <MenuItem label={`Remove ${roleName} role`} onClick={setRole(null)} />
+        )}
+        {canRemoveSelf && <MenuItem label='Leave Organization' onClick={toggleLeave} />}
+        {notSelf && <MenuItem label='Remove from Organization' onClick={toggleRemove} />}
+      </Menu>
+    </>
+  )
+}
+
+export default withMutationProps(OrgAdminActionMenu)
