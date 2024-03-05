@@ -1,53 +1,141 @@
-import clsx from 'clsx'
-import dayjs from 'dayjs'
-import utcPlugin from 'dayjs/plugin/utc'
-import React, {ChangeEvent, useEffect} from 'react'
+import React, {ChangeEvent, useState} from 'react'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
 import * as Collapsible from '@radix-ui/react-collapsible'
-import {Add, Close} from '@mui/icons-material'
+import {Add, Close, EventRepeat} from '@mui/icons-material'
 import PrimaryButton from './PrimaryButton'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import SecondaryButton from './SecondaryButton'
+import GcalSettings, {
+  GcalEventInput
+} from '../modules/userDashboard/components/GcalModal/GcalSettings'
+import logo from '../styles/theme/images/graphics/google.svg'
+import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
+import useForm from '../hooks/useForm'
+import StyledError from './StyledError'
+import GcalClientManager from '../utils/GcalClientManager'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
+import graphql from 'babel-plugin-relay/macro'
+import {useFragment} from 'react-relay'
+import {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import Legitity from '../validation/Legitity'
+import {
+  CreateGcalEventInput,
+  RecurrenceSettingsInput
+} from '../__generated__/StartRetrospectiveMutation.graphql'
+import {RRule} from 'rrule'
+import dayjs from 'dayjs'
 
-dayjs.extend(utcPlugin)
+const validateTitle = (title: string) =>
+  new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
 
 interface Props {
-  onRecurrenceSettingsUpdated: (
-    recurrenceSettings: RecurrenceSettings,
-    validationErrors: string[] | undefined
-  ) => void
-  recurrenceSettings: RecurrenceSettings
+  onStartActivity: (gcalInput?: CreateGcalEventInput, recurrence?: RecurrenceSettingsInput) => void
   placeholder: string
+  teamRef: ScheduleDialog_team$key
+  onCancel: () => void
+  mutationProps: MenuMutationProps
+  withRecurrence?: boolean
 }
 
 export const ScheduleDialog = (props: Props) => {
-  const {onRecurrenceSettingsUpdated, recurrenceSettings, placeholder} = props
-  const [open, setOpen] = React.useState(!!recurrenceSettings.rrule)
-  const [meetingSeriesName, setMeetingSeriesName] = React.useState(recurrenceSettings.name)
+  const {placeholder, teamRef, onCancel, mutationProps, withRecurrence} = props
+  const [rrule, setRrule] = useState<RRule | null>(null)
+  const [hasRecurrence, setHasRecurrence] = React.useState(!!rrule)
+  const [hasGcalEvent, setHasGcalEvent] = React.useState(false)
 
-  const isRecurring = !!recurrenceSettings.rrule
+  const [gcalInput, setGcalInput] = useState<GcalEventInput>({
+    start: dayjs().add(1, 'hour').startOf('hour'),
+    end: dayjs().add(2, 'hour').startOf('hour'),
+    invitees: [],
+    videoType: null
+  })
+
+  const team = useFragment(
+    graphql`
+      fragment ScheduleDialog_team on Team {
+        id
+        viewerTeamMember {
+          isSelf
+          integrations {
+            gcal {
+              auth {
+                id
+              }
+              cloudProvider {
+                id
+                clientId
+              }
+            }
+          }
+        }
+        ...GcalModal_team
+        ...GcalSettings_team
+      }
+    `,
+    teamRef
+  )
+
+  const {id: teamId, viewerTeamMember} = team
+  const {gcal} = viewerTeamMember?.integrations ?? {}
+
+  const atmosphere = useAtmosphere()
+  const {fields, onChange} = useForm({
+    title: {
+      getDefault: () => ''
+    }
+  })
+  const title = fields.title.value
+  const titleErr = fields.title.error
 
   const onNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setMeetingSeriesName(event.target.value)
-  }
-
-  useEffect(() => {
-    if (recurrenceSettings.name !== meetingSeriesName) {
-      onRecurrenceSettingsUpdated({name: meetingSeriesName, rrule: recurrenceSettings.rrule}, undefined)
+    if (titleErr) {
+      fields.title.setError('')
     }
-  }, [meetingSeriesName, recurrenceSettings])
-
-
-  const onOpenChange = (open: boolean) => {
-    if (!open) {
-      onRecurrenceSettingsUpdated({name: recurrenceSettings.name, rrule: null}, undefined)
-    }
-    setOpen(open)
+    onChange(event)
   }
 
-  const handleCancel = () => {
+  const onOpenGcalChange = (open: boolean) => {
+    setHasGcalEvent(open)
   }
+
+  const onOpenRecurrenceChange = (open: boolean) => {
+    setHasRecurrence(open)
+  }
+
   const handleSubmit = () => {
+    const title = fields.title.value || placeholder
+    const titleRes = validateTitle(title)
+    if (titleRes.error) {
+      fields.title.setError(titleRes.error)
+      return
+    }
+
+    const gcalEventInput = hasGcalEvent
+      ? {
+          title,
+          startTimestamp: gcalInput.start.unix(),
+          endTimestamp: gcalInput.end.unix(),
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          invitees: gcalInput.invitees,
+          videoType: gcalInput.videoType ?? undefined
+        }
+      : undefined
+    props.onStartActivity(gcalEventInput, hasRecurrence && rrule ? {rrule} : undefined)
+  }
+
+  const authGCal = () => {
+    if (!gcal?.cloudProvider) {
+      return
+    }
+    const {clientId, id: providerId} = gcal.cloudProvider
+    GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
+
+    SendClientSideEvent(atmosphere, 'Schedule meeting add gcal clicked', {
+      teamId: teamId,
+      service: 'gcal'
+    })
   }
 
   return (
@@ -58,29 +146,63 @@ export const ScheduleDialog = (props: Props) => {
       </div>
       <div className='flex flex-col'>
         <input
-          className='focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600 form-input text-base font-sans p-2 border border-solid border-slate-500 rounded hover:border-slate-600'
+          className='form-input rounded border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-600'
           type='text'
-          placeholder='Enter the name for your meeting'
-          value={meetingSeriesName}
+          name='title'
+          placeholder={placeholder}
+          value={title}
           onChange={onNameChange}
           min={1}
           max={50}
         />
+        {titleErr && <StyledError>{titleErr}</StyledError>}
       </div>
-      <SecondaryButton>Connect to Google Calendar</SecondaryButton>
-      <Collapsible.Root className='flex flex-col border rounded border-slate-500' open={open} onOpenChange={onOpenChange}>
-        <Collapsible.Trigger className='flex items-center justify-between cursor-pointer bg-transparent p-2'>
-          <div className='text-lg font-semibold leading-none'>Recurrence</div>
-          {open ? <Close /> : <Add />}
-        </Collapsible.Trigger>
-        <Collapsible.Content className='space-y-4'>
-          <RecurrenceSettings {...props} />
-        </Collapsible.Content>
-      </Collapsible.Root>
+      {gcal?.cloudProvider &&
+        (gcal?.auth ? (
+          <Collapsible.Root
+            className='flex flex-col rounded border border-slate-500'
+            open={hasGcalEvent}
+            onOpenChange={onOpenGcalChange}
+          >
+            <Collapsible.Trigger className='flex cursor-pointer items-center bg-transparent p-2'>
+              <img src={gcalLogo} className='mr-2 h-6 w-6' />
+              <div className='grow text-left text-lg font-semibold leading-none'>
+                Calendar Invite
+              </div>
+              {hasGcalEvent ? <Close /> : <Add />}
+            </Collapsible.Trigger>
+            <Collapsible.Content className='space-y-4'>
+              <GcalSettings teamRef={team} settings={gcalInput} onSettingsChanged={setGcalInput} />
+            </Collapsible.Content>
+          </Collapsible.Root>
+        ) : (
+          <div>
+            <SecondaryButton className='h-11 pl-3 pr-4' onClick={authGCal}>
+              <img src={logo} className='mr-2' />
+              Connect to Google Calendar
+            </SecondaryButton>
+          </div>
+        ))}
+      {withRecurrence && (
+        <Collapsible.Root
+          className='flex flex-col rounded border border-slate-500'
+          open={hasRecurrence}
+          onOpenChange={onOpenRecurrenceChange}
+        >
+          <Collapsible.Trigger className='flex cursor-pointer items-center justify-between bg-transparent p-2'>
+            <EventRepeat className='mr-2 text-slate-600' />
+            <div className='grow text-left text-lg font-semibold leading-none'>Recurrence</div>
+            {hasRecurrence ? <Close /> : <Add />}
+          </Collapsible.Trigger>
+          <Collapsible.Content className='space-y-4'>
+            <RecurrenceSettings title={title} rrule={rrule} onRruleUpdated={setRrule} />
+          </Collapsible.Content>
+        </Collapsible.Root>
+      )}
       <DialogActions>
-        <SecondaryButton onClick={handleCancel}>Cancel</SecondaryButton>
+        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
         <PrimaryButton size='medium' onClick={handleSubmit}>
-          {`Create Meeting`}
+          Create Meeting
         </PrimaryButton>
       </DialogActions>
     </div>

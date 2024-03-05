@@ -10,8 +10,6 @@ import DropdownMenuToggle from '../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
 import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
-import Legitity from '../../validation/Legitity'
-import {isNotNull} from '../../utils/predicates'
 import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from '../../shared/rruleUtil'
 dayjs.extend(utcPlugin)
 
@@ -133,10 +131,7 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div
-      className={clsx('break-words text-sm italic text-slate-600', className)}
-      {...rest}
-    >
+    <div className={clsx('break-words text-sm italic text-slate-600', className)} {...rest}>
       {children}
     </div>
   )
@@ -157,46 +152,31 @@ const validateInterval = (interval: number) => {
   return undefined
 }
 
-const validateMeetingSeriesName = (name: string) => {
-  const legitity = new Legitity(name)
-  legitity.trim().max(50, 'Meeting series name must be less than 50 characters')
-
-  return legitity.error
-}
-
 export interface RecurrenceSettings {
   name: string
   rrule: RRule | null
 }
 
 interface Props {
-  onRecurrenceSettingsUpdated: (
-    recurrenceSettings: RecurrenceSettings,
-    validationErrors: string[] | undefined
-  ) => void
-  recurrenceSettings: RecurrenceSettings
-  placeholder: string
+  onRruleUpdated: (rrule: RRule | null) => void
+  rrule: RRule | null
+  title: string
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {onRecurrenceSettingsUpdated, recurrenceSettings, placeholder} = props
-  const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
-  const [name, setName] = React.useState(meetingSeriesName)
-  const [nameError, setNameError] = React.useState<string | undefined>()
+  const {onRruleUpdated, rrule, title} = props
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
-    recurrenceRule ? recurrenceRule.options.interval : 1
+    rrule ? rrule.options.interval : 1
   )
   const [intervalError, setIntervalError] = React.useState<string | undefined>()
   const [recurrenceDays, setRecurrenceDays] = React.useState<Day[]>(
-    recurrenceRule
-      ? recurrenceRule.options.byweekday.map(
-          (weekday) => ALL_DAYS.find((day) => day.intVal === weekday)!
-        )
+    rrule
+      ? rrule.options.byweekday.map((weekday) => ALL_DAYS.find((day) => day.intVal === weekday)!)
       : []
   )
   const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
-    recurrenceRule
-      ? getJSDateFromRRuleDate(recurrenceRule.options.dtstart)
+    rrule
+      ? getJSDateFromRRuleDate(rrule.options.dtstart)
       : dayjs()
           .add(1, 'day')
           .set('hour', 6)
@@ -235,14 +215,6 @@ export const RecurrenceSettings = (props: Props) => {
     }
   }
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value
-    const res = validateMeetingSeriesName(name)
-
-    setName(e.target.value)
-    setNameError(res)
-  }
-
   useEffect(() => {
     const rrule =
       recurrenceDays.length > 0 && !intervalError
@@ -255,9 +227,8 @@ export const RecurrenceSettings = (props: Props) => {
           })
         : null
 
-    onRecurrenceSettingsUpdated({name, rrule}, [nameError, intervalError].filter(isNotNull))
-  }, [recurrenceDays, recurrenceInterval, recurrenceStartTime, name])
-  const hasErrors = !!nameError || !!intervalError
+    onRruleUpdated(rrule)
+  }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
 
   return (
     <div className='space-y-4 p-4'>
@@ -278,15 +249,13 @@ export const RecurrenceSettings = (props: Props) => {
           />
           <div className='self-end py-2 text-sm'>{plural(recurrenceInterval, 'week')}</div>
         </div>
-        {hasErrors ? (
-          [nameError, intervalError]
-            .filter(isNotNull)
-            .map((error) => <Error key={error}>{error}</Error>)
+        {intervalError ? (
+          <Error key={intervalError}>{intervalError}</Error>
         ) : (
           <Description>
             The next meeting in this series will be called{' '}
             <span className='font-semibold'>
-              "{meetingSeriesName || placeholder} - {dayjs(recurrenceStartTime).format('MMM DD')}"
+              "{title} - {dayjs(recurrenceStartTime).format('MMM DD')}"
             </span>
           </Description>
         )}
@@ -313,8 +282,8 @@ export const RecurrenceSettings = (props: Props) => {
         <Description>
           Your meeting{' '}
           <span className='font-semibold'>
-            {recurrenceRule
-              ? `will restart ${toHumanReadable(recurrenceRule, {isPartOfSentence: true})}`
+            {rrule
+              ? `will restart ${toHumanReadable(rrule, {isPartOfSentence: true})}`
               : 'will not restart'}
           </span>
         </Description>
