@@ -41,22 +41,5 @@ const PREV_FREE_TEMPLATE_IDS = [
 ]
 
 export async function down() {
-  const client = new Client(getPgConfig())
-  await client.connect()
-  await client.query(
-    `
-    UPDATE "MeetingTemplate"
-      SET "isFree" = false
-      WHERE "orgId" = 'aGhostOrg'
-    `
-  )
-  await client.query(
-    `
-    UPDATE "MeetingTemplate"
-    SET "isFree" = true
-    WHERE id = ANY ($1)
-   `,
-    [PREV_FREE_TEMPLATE_IDS]
-  )
-  await client.end()
+  // noop
 }
