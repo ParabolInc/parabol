@@ -15,34 +15,29 @@ export async function up() {
   await client.end()
 }
 
-const PREV_FREE_TEMPLATES = [
-  'aChristmasCarolRetrospectiveTemplate',
-  'diwaliRetrospectiveTemplate',
-  'dropAddKeepImproveDAKITemplate',
-  'easterRetrospectiveTemplate',
-  'energyLevelsTemplate',
-  'halloweenRetrospectiveTemplate',
-  'holiRetrospectiveTemplate',
-  'keepProblemTryTemplate',
-  'leanCoffeeTemplate',
-  'lunarNewYearRetrospectiveTemplate',
-  'midsummerRetrospectiveTemplate',
-  'mountainClimberTemplate',
-  'newYearRetrospectiveTemplate',
-  'sWOTAnalysisTemplate',
-  'teamCharterTemplate',
-  'teamRetreatPlanningTemplate',
-  'thanksgivingRetrospectiveTemplate',
-  'threeLittlePigsTemplate',
+const PREV_FREE_TEMPLATE_IDS = [
+  'herosJourneyTemplate',
+  'roseThornBudTemplate',
+  'winningStreakTemplate',
+  'starfishTemplate',
+  'hopesAndFearsTemplate',
+  'sixThinkingHatsTemplate',
+  'hotAirBalloonTemplate',
+  'heardSeenRespectedHSRTemplate',
+  'wRAPTemplate',
+  'speedCarTemplate',
+  'surprisedWorriedInspiredTemplate',
+  'marieKondoRetrospectiveTemplate',
+  'highlightsLowlightsTemplate',
+  'saMoLoTemplate',
+  'superheroRetrospectiveTemplate',
+  'questionsCommentsConcernsTemplate',
+  'dreamTeamRetrospectiveTemplate',
+  'handsOnDeckActivityTemplate',
+  'alwaysBeLearningRetrospectiveTemplate',
+  'scrumValuesRetrospectiveTemplate',
   'estimatedEffortTemplate',
-  'wsjfTemplate',
-  'startStopContinueTemplate',
-  'gladSadMadTemplate',
-  'whatWentWellTemplate',
-  'workingStuckTemplate',
-  'sailboatTemplate',
-  'original4Template',
-  'fourLsTemplate'
+  'wsjfTemplate'
 ]
 
 export async function down() {
@@ -52,6 +47,7 @@ export async function down() {
     `
     UPDATE "MeetingTemplate"
       SET "isFree" = false
+      WHERE "orgId" = 'aGhostOrg'
     `
   )
   await client.query(
@@ -60,7 +56,7 @@ export async function down() {
     SET "isFree" = true
     WHERE id = ANY ($1)
    `,
-    [PREV_FREE_TEMPLATES]
+    [PREV_FREE_TEMPLATE_IDS]
   )
   await client.end()
 }
