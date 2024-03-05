@@ -509,6 +509,7 @@ const initNewMeeting = (
     __isNewMeeting: 'RetrospectiveMeeting',
     createdAt: now,
     createdBy: demoViewerId,
+    createdByUser: viewerMeetingMember?.user,
     endedAt: null,
     facilitatorStageId: RetroDemo.REFLECT_STAGE_ID,
     facilitatorUserId: demoViewerId,
@@ -568,6 +569,9 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
     ;(teamMember as any).team = team
+  })
+  users.forEach((user) => {
+    ;(user as any).teams = [team]
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0

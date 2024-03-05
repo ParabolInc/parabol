@@ -125,6 +125,7 @@ const MobileDashSidebar = (props: Props) => {
                 icon={'arrowBack'}
                 href={'/me/organizations'}
                 label={'Organizations'}
+                exact
               />
               <OrgName>{name}</OrgName>
               <LeftDashNavItem
@@ -191,6 +192,7 @@ const MobileDashSidebar = (props: Props) => {
               icon={'timeline'}
               href={'/me'}
               label={'History'}
+              exact
             />
             <LeftDashNavItem
               onClick={handleMenuClick}

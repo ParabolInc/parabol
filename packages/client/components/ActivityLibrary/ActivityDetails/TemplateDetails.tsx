@@ -267,7 +267,7 @@ export const TemplateDetails = (props: Props) => {
                       />
                     </div>
                     <div className='rounded-full border border-solid border-slate-400'>
-                      <CloneTemplate canClone={true} onClick={toggleTeamPickerPortal} />
+                      <CloneTemplate onClick={toggleTeamPickerPortal} />
                     </div>
                   </>
                 )}

@@ -5,7 +5,7 @@ import {PromoteToTeamLeadMutation as TPromoteToTeamLeadMutation} from '../__gene
 graphql`
   fragment PromoteToTeamLeadMutation_team on PromoteToTeamLeadPayload {
     team {
-      isLead
+      isViewerLead
     }
     oldLeader {
       ...DashboardAvatar_teamMember

@@ -10,13 +10,15 @@ enum OrganizationFeatureFlagsEnum {
   zoomTranscription
   shareSummary
   teamsLimit
-  teamInsights
+  noTeamInsights
   oneOnOne
   singleColumnStandups
   publicTeams
   meetingInception
   kudos
   aiIcebreakers
+  aiTemplate
+  recurringRetros
 }
 
 extend type Mutation {

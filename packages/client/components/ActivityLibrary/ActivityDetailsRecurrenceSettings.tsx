@@ -1,17 +1,18 @@
 import React from 'react'
-import {RecurrenceSettings} from '../TeamPrompt/Recurrence/RecurrenceSettings'
+import {RecurrenceSettings} from '../Recurrence/RecurrenceSettings'
 import NewMeetingDropdown from '../NewMeetingDropdown'
-import {toHumanReadable} from '../TeamPrompt/Recurrence/HumanReadableRecurrenceRule'
+import {toHumanReadable} from '../Recurrence/HumanReadableRecurrenceRule'
 import useModal from '../../hooks/useModal'
 import DialogContainer from '../DialogContainer'
 
 interface Props {
   onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
   recurrenceSettings: RecurrenceSettings
+  placeholder: string
 }
 
 export const ActivityDetailsRecurrenceSettings = (props: Props) => {
-  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings, placeholder} = props
   const {togglePortal, modalPortal} = useModal({
     id: 'activityDetailsRecurrenceSettings'
   })
@@ -32,6 +33,7 @@ export const ActivityDetailsRecurrenceSettings = (props: Props) => {
           <RecurrenceSettings
             onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
             recurrenceSettings={recurrenceSettings}
+            placeholder={placeholder}
           />
         </DialogContainer>
       )}

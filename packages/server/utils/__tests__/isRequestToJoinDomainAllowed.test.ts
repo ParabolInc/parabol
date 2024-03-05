@@ -52,7 +52,7 @@ const addOrg = async (
   const org = {
     id: orgId,
     activeDomain,
-    featureFlags: featureFlags ?? [],
+    featureFlags,
     tier: tier ?? 'starter'
   }
 

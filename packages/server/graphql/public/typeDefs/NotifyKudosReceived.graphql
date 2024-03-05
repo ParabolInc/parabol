@@ -23,12 +23,12 @@ type NotifyKudosReceived implements Notification {
   """
   Sender name
   """
-  name: String!
+  name: String
 
   """
   Sender picture
   """
-  picture: URL!
+  picture: URL
 
   """
   Meeting name
@@ -44,4 +44,9 @@ type NotifyKudosReceived implements Notification {
   Kudos emoji
   """
   emoji: String!
+
+  """
+  Kudos emoji unicode
+  """
+  emojiUnicode: String!
 }

@@ -128,7 +128,13 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   publish(SubscriptionChannel.TEAM, teamId, 'AcceptTeamInvitationPayload', data, subOptions)
 
   // Send individualized message to the user
-  publish(SubscriptionChannel.TEAM, viewerId, 'AcceptTeamInvitationPayload', data, subOptions)
+  publish(
+    SubscriptionChannel.NOTIFICATION,
+    viewerId,
+    'AcceptTeamInvitationPayload',
+    data,
+    subOptions
+  )
 
   // Give the team lead new suggested actions
   if (teamLeadUserIdWithNewActions) {

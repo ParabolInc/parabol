@@ -1,11 +1,9 @@
 import stringify from 'fast-json-stable-stringify'
 import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
-import AtlassianManager, {
-  JiraGetIssueRes,
-  RateLimitError
-} from 'parabol-client/utils/AtlassianManager'
+import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import sleep from 'parabol-client/utils/sleep'
+import AtlassianServerManager, {JiraGetIssueRes} from '../AtlassianServerManager'
 import getRedis from '../getRedis'
 
 const ISSUE_TTL_MS = ms('2d')
@@ -29,7 +27,7 @@ type CacheError = RequestsInit
 
 /* helper fn to only do jira request side effects and return nothing */
 const getIssueFromJira = async (
-  manager: AtlassianManager,
+  manager: AtlassianServerManager,
   cloudId: string,
   issueKey: string,
   pushUpdateToClient: (
@@ -91,7 +89,7 @@ const getIssueFromJira = async (
 }
 
 export const getIssue = async (
-  manager: AtlassianManager,
+  manager: AtlassianServerManager,
   cloudId: string,
   issueKey: string,
   pushUpdateToClient: (
@@ -100,7 +98,7 @@ export const getIssue = async (
   extraFieldIds: string[] = [],
   extraExpand: string[] = []
 ) => {
-  return new Promise<Unpromise<ReturnType<typeof manager['getIssue']>>>((resolve) => {
+  return new Promise<Unpromise<ReturnType<(typeof manager)['getIssue']>>>((resolve) => {
     const requests = {
       firstToResolve: resolve,
       cachedIssue: undefined

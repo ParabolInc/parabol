@@ -1,6 +1,7 @@
 import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import path from 'path'
+import {Logger} from '../utils/Logger'
 import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 
 interface CloudKey {
@@ -132,7 +133,7 @@ export default class GCSManager extends FileStoreManager {
       // https://github.com/nodejs/undici/issues/583#issuecomment-1577475664
       // GCS will cause undici to error randomly with `SocketError: other side closed` `code: 'UND_ERR_SOCKET'`
       if ((e as any).cause?.code === 'UND_ERR_SOCKET') {
-        console.log('   Retrying GCS Post:', fullPath)
+        Logger.log('   Retrying GCS Post:', fullPath)
         await this.putFile(file, fullPath)
       }
     }

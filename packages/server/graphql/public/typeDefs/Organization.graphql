@@ -190,11 +190,13 @@ type OrganizationFeatureFlags {
   zoomTranscription: Boolean!
   shareSummary: Boolean!
   teamsLimit: Boolean!
-  teamInsights: Boolean!
+  noTeamInsights: Boolean!
   oneOnOne: Boolean!
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
   meetingInception: Boolean!
   kudos: Boolean!
   aiIcebreakers: Boolean!
+  aiTemplate: Boolean!
+  recurringRetros: Boolean!
 }

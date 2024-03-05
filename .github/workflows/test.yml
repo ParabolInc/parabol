@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - "release-please--**"
+      - "release/v**"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

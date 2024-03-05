@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import {Selectable, sql} from 'kysely'
+import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
@@ -8,12 +8,12 @@ import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
+import isValid from '../graphql/isValid'
+import {Organization} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import getApprovedOrganizationDomainsByDomainFromPG from '../postgres/queries/getApprovedOrganizationDomainsByDomainFromPG'
-import getApprovedOrganizationDomainsFromPG from '../postgres/queries/getApprovedOrganizationDomainsFromPG'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -27,15 +27,13 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
+import {Team} from '../postgres/queries/getTeamsByIds'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeResults from './normalizeResults'
-import {Team} from '../postgres/queries/getTeamsByIds'
-import {Organization} from '../graphql/public/resolverTypes'
-import isValid from '../graphql/isValid'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -349,7 +347,13 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
 export const organizationApprovedDomainsByOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, string[], string>(
     async (orgIds) => {
-      const currentApprovals = await getApprovedOrganizationDomainsFromPG(orgIds)
+      const pg = getKysely()
+      const currentApprovals = await pg
+        .selectFrom('OrganizationApprovedDomain')
+        .selectAll()
+        .where('orgId', 'in', orgIds)
+        .where('removedAt', 'is', null)
+        .execute()
       return orgIds.map((orgId) => {
         return currentApprovals
           .filter((approval) => approval.orgId === orgId)
@@ -365,7 +369,13 @@ export const organizationApprovedDomainsByOrgId = (parent: RootDataLoader) => {
 export const organizationApprovedDomains = (parent: RootDataLoader) => {
   return new DataLoader<string, boolean, string>(
     async (domains) => {
-      const currentApprovals = await getApprovedOrganizationDomainsByDomainFromPG(domains)
+      const pg = getKysely()
+      const currentApprovals = await pg
+        .selectFrom('OrganizationApprovedDomain')
+        .selectAll()
+        .where('domain', 'in', domains)
+        .where('removedAt', 'is', null)
+        .execute()
       return domains.map((domain) => {
         return !!currentApprovals.find((approval) => approval.domain === domain)
       })
@@ -468,11 +478,11 @@ export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
         .selectAll()
         .where('orgId', 'in', orgIds)
         .where('isActive', '=', true)
-        .where(({or, cmpr}) =>
+        .where(({or, eb}) =>
           or([
-            cmpr('hideStartingAt', 'is', null),
-            sql`make_date(2020 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`,
-            sql`make_date(2019 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`
+            eb('hideStartingAt', 'is', null),
+            sql<SqlBool>`DATE '2020-01-01' + EXTRACT(DOY FROM CURRENT_DATE)::INTEGER - 1 between "hideEndingAt" and "hideStartingAt"`,
+            sql<SqlBool>`DATE '2019-01-01' + EXTRACT(DOY FROM CURRENT_DATE)::INTEGER - 1 between "hideEndingAt" and "hideStartingAt"`
           ])
         )
         .orderBy('createdAt', 'desc')
@@ -608,6 +618,29 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
             .getAll(key, {index: 'meetingSeriesId'})
             .filter({endedAt: null}, {default: true})
             .orderBy(r.asc('createdAt'))
+            .run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
+  return new DataLoader<number, AnyMeeting | null, string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((key) => {
+          return r
+            .table('NewMeeting')
+            .getAll(key, {index: 'meetingSeriesId'})
+            .orderBy(r.desc('createdAt'))
+            .nth(0)
+            .default(null)
             .run()
         })
       )
@@ -768,13 +801,16 @@ export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
 
       const pg = getKysely()
 
-      const teams = (await pg
-        .selectFrom('Team')
-        .where('orgId', 'in', verifiedOrgIds)
-        .where('autoJoin', '=', true)
-        .where('isArchived', '!=', true)
-        .selectAll()
-        .execute()) as unknown as Team[]
+      const teams =
+        verifiedOrgIds.length === 0
+          ? []
+          : ((await pg
+              .selectFrom('Team')
+              .where('orgId', 'in', verifiedOrgIds)
+              .where('autoJoin', '=', true)
+              .where('isArchived', '!=', true)
+              .selectAll()
+              .execute()) as unknown as Team[])
 
       return orgIds.map((orgId) => teams.filter((team) => team.orgId === orgId))
     },

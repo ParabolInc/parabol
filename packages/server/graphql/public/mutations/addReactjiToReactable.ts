@@ -190,7 +190,8 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
         reactableType: reactableType,
         reactableId: reactableId,
         teamId,
-        emoji: team.kudosEmoji
+        emoji: team.kudosEmoji,
+        emojiUnicode: team.kudosEmojiUnicode
       })
       .returning('id')
       .executeTakeFirst())!.id
@@ -203,6 +204,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
       meetingId,
       meetingName: meeting.name,
       emoji: team.kudosEmoji,
+      emojiUnicode: team.kudosEmojiUnicode,
       name: senderUser.preferredName,
       picture: senderUser.picture
     })
@@ -211,7 +213,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
 
     publishNotification(notificationsToInsert, subOptions)
 
-    analytics.kudosSent(viewer, teamId, addedKudosId, reactableCreatorId)
+    analytics.kudosSent(viewer, teamId, addedKudosId, reactableCreatorId, 'reaction', meetingType)
   }
 
   const data = {reactableId, reactableType, addedKudosId}

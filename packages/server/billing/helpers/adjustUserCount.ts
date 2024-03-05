@@ -14,6 +14,7 @@ import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityCha
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import {Logger} from '../../utils/Logger'
 
 const maybeUpdateOrganizationActiveDomain = async (
   orgId: string,
@@ -97,10 +98,16 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
       (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
       organization.periodEnd ||
       new Date()
-    return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
+    return new OrganizationUser({
+      id: oldOrganizationUser?.id,
+      orgId,
+      userId,
+      newUserUntil,
+      tier: organization.tier
+    })
   })
 
-  await r.table('OrganizationUser').insert(docs).run()
+  await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
@@ -137,6 +144,9 @@ const auditEventTypeLookup = {
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
 } as {[key in InvoiceItemType]: OrganizationUserAuditEventTypeEnum}
 
+/**
+ * Also adds the organization user if not present
+ */
 export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
@@ -161,5 +171,5 @@ export default async function adjustUserCount(
     .run()
 
   handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch()
-  handleTeamOrgQuantityChanges(paidOrgs).catch(console.error)
+  handleTeamOrgQuantityChanges(paidOrgs).catch(Logger.error)
 }

@@ -66,7 +66,7 @@ const MassInvitationTokenLink = (props: Props) => {
       CreateMassInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
     }
     doFetch().catch()
-  }, [])
+  }, [isTokenValid, submitting])
   const onCopy = () => {
     SendClientSideEvent(atmosphere, 'Copied Invite Link', {
       teamId: teamId,

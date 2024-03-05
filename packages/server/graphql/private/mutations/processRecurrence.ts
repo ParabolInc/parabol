@@ -2,8 +2,8 @@ import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
 import {RRule} from 'rrule'
-import getRethink, {ParabolR} from '../../../database/rethinkDriver'
-import MeetingTeamPrompt, {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
+import getRethink from '../../../database/rethinkDriver'
+import MeetingTeamPrompt, {isMeetingTeamPrompt} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -15,16 +15,22 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safeCreateTeamPrompt'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
+import MeetingRetrospective, {
+  isMeetingRetrospective
+} from '../../../database/types/MeetingRetrospective'
+import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
+import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
+import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 
-const startRecurringTeamPrompt = async (
+const startRecurringMeeting = async (
   meetingSeries: MeetingSeries,
-  lastMeeting: MeetingTeamPrompt | null,
   startTime: Date,
   dataLoader: DataLoaderWorker,
-  r: ParabolR,
   subOptions: SubOptions
 ) => {
-  const {teamId, facilitatorId} = meetingSeries
+  const r = await getRethink()
+  const {id: meetingSeriesId, teamId, facilitatorId, meetingType} = meetingSeries
 
   // AUTH
   const [unpaidError, facilitator] = await Promise.all([
@@ -33,25 +39,78 @@ const startRecurringTeamPrompt = async (
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
+  const [lastMeeting, meetingSettings] = await Promise.all([
+    dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId),
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+  ])
+
   const rrule = RRule.fromString(meetingSeries.recurrenceRule)
   const nextMeetingStartDate = rrule.after(getRRuleDateFromJSDate(startTime))
-  const meetingName = createTeamPromptTitle(
+  const scheduledEndTime = nextMeetingStartDate
+    ? getJSDateFromRRuleDate(nextMeetingStartDate)
+    : undefined
+
+  const meetingName = createMeetingSeriesTitle(
     meetingSeries.title,
     startTime,
     rrule.options.tzid ?? 'UTC'
   )
-  const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, r, dataLoader, {
-    scheduledEndTime: nextMeetingStartDate ? getJSDateFromRRuleDate(nextMeetingStartDate) : null,
-    meetingSeriesId: meetingSeries.id,
-    meetingPrompt: lastMeeting ? lastMeeting.meetingPrompt : DEFAULT_PROMPT
-  })
+  const meeting = await (async () => {
+    if (meetingSeries.meetingType === 'teamPrompt') {
+      const teamPromptMeeting = lastMeeting as MeetingTeamPrompt | null
+      const meeting = await safeCreateTeamPrompt(
+        meetingName,
+        teamId,
+        facilitatorId,
+        r,
+        dataLoader,
+        {
+          scheduledEndTime,
+          meetingSeriesId: meetingSeries.id,
+          meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
+        }
+      )
+      await r.table('NewMeeting').insert(meeting).run()
+      const data = {teamId, meetingId: meeting.id}
+      publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+      return meeting
+    } else if (meetingSeries.meetingType === 'retrospective') {
+      const {totalVotes, maxVotesPerGroup, disableAnonymity, templateId} =
+        (lastMeeting as MeetingRetrospective) ?? {
+          templateId: (meetingSettings as MeetingSettingsRetrospective).selectedTemplateId,
+          ...meetingSettings
+        }
+      const meeting = await safeCreateRetrospective(
+        {
+          teamId,
+          facilitatorUserId: facilitatorId,
+          totalVotes,
+          maxVotesPerGroup,
+          disableAnonymity,
+          templateId,
+          videoMeetingURL: undefined,
+          meetingSeriesId: meetingSeries.id,
+          scheduledEndTime,
+          name: meetingName
+        },
+        dataLoader
+      )
+      await r.table('NewMeeting').insert(meeting).run()
+      const data = {teamId, meetingId: meeting.id}
+      publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
+      return meeting
+    }
+    return standardError(new Error('Unhandled recurring meeting type'), {
+      tags: {meetingSeriesId: meetingSeries.id, meetingType: meetingSeries.meetingType}
+    })
+  })()
 
-  await r.table('NewMeeting').insert(meeting).run()
+  if ('error' in meeting) {
+    return meeting
+  }
 
   IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
   analytics.meetingStarted(facilitator, meeting)
-  const data = {teamId, meetingId: meeting.id}
-  publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return undefined
 }
 
@@ -64,16 +123,23 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
 
   // RESOLUTION
   // Find any meetings with a scheduledEndTime before now, and close them
-  const teamPromptMeetingsToEnd = (await r
+  const meetingsToEnd = await r
     .table('NewMeeting')
     .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
-    .filter({meetingType: 'teamPrompt'})
-    .run()) as MeetingTeamPrompt[]
+    .run()
 
   const res = await Promise.all(
-    teamPromptMeetingsToEnd.map((meeting) =>
-      safeEndTeamPrompt({meeting, now, context, r, subOptions})
-    )
+    meetingsToEnd.map((meeting) => {
+      if (isMeetingTeamPrompt(meeting)) {
+        return safeEndTeamPrompt({meeting, now, context, r, subOptions})
+      } else if (isMeetingRetrospective(meeting)) {
+        return safeEndRetrospective({meeting, now, context})
+      } else {
+        return standardError(new Error('Unhandled recurring meeting type'), {
+          tags: {meetingId: meeting.id, meetingType: meeting.meetingType}
+        })
+      }
+    })
   )
 
   const meetingsEnded = res.filter((res) => !('error' in res)).length
@@ -83,7 +149,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
   // For each active meeting series, get the meeting start times (according to rrule) after the most
   // recent meeting start time and before now.
   const activeMeetingSeries = await getActiveMeetingSeries()
-  await Promise.all(
+  await Promise.allSettled(
     activeMeetingSeries.map(async (meetingSeries) => {
       const seriesTeam = await dataLoader.get('teams').loadNonNull(meetingSeries.teamId)
       if (seriesTeam.isArchived || !seriesTeam.isPaid) {
@@ -95,14 +161,9 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
         return
       }
 
-      const lastMeeting = (await r
-        .table('NewMeeting')
-        .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
-        .filter({meetingType: 'teamPrompt'})
-        .orderBy(r.desc('createdAt'))
-        .nth(0)
-        .default(null)
-        .run()) as MeetingTeamPrompt | null
+      const lastMeeting = await dataLoader
+        .get('lastMeetingByMeetingSeriesId')
+        .load(meetingSeries.id)
 
       // For meetings that should still be active, start the meeting and set its end time.
       // Any subscriptions are handled by the shared meeting start code
@@ -124,12 +185,10 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
         getRRuleDateFromJSDate(now)
       )
       for (const startTime of newMeetingsStartTimes) {
-        const err = await startRecurringTeamPrompt(
+        const err = await startRecurringMeeting(
           meetingSeries,
-          lastMeeting,
           getJSDateFromRRuleDate(startTime),
           dataLoader,
-          r,
           subOptions
         )
         if (!err) meetingsStarted++

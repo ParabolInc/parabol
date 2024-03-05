@@ -11,7 +11,7 @@ const Team: TeamResolvers = {
     {dataLoader}
   ) => {
     const org = await dataLoader.get('organizations').load(orgId)
-    if (!org?.featureFlags?.includes('teamInsights')) return null
+    if (org?.featureFlags?.includes('noTeamInsights')) return null
     if (!mostUsedEmojis && !meetingEngagement && !topRetroTemplates) return null
 
     const mappedTopRetroTemplates = Array.isArray(topRetroTemplates)

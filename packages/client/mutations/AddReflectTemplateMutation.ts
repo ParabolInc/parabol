@@ -61,7 +61,7 @@ const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> 
       const nowISO = new Date().toJSON()
       const team = store.get(teamId)!
       const parentTemplate = parentTemplateId ? store.get(parentTemplateId) : null
-      const name = parentTemplate ? parentTemplate.getValue('name') + ' Copy' : '*New Template'
+      const name = parentTemplate ? parentTemplate.getValue('name') + ' Copy' : '*New Template ##'
 
       const proxyTemplate = createProxyRecord(store, 'ReflectTemplate', {
         name,
