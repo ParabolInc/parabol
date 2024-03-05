@@ -68,9 +68,9 @@ const OrgAdminActionMenu = (props: Props) => {
 
   const isOrgAdmin = role === 'ORG_ADMIN'
   const isBillingLeader = role === 'BILLING_LEADER'
+  const isSelf = viewerId === userId
+  const canRemoveSelf = isSelf && !isViewerLastOrgAdmin
   const roleName = role === 'ORG_ADMIN' ? 'Org Admin' : 'Billing Leader'
-  const notSelf = viewerId !== userId
-  const canRemoveSelf = viewerId === userId && !isViewerLastOrgAdmin
 
   return (
     <>
@@ -79,14 +79,15 @@ const OrgAdminActionMenu = (props: Props) => {
         {!isOrgAdmin && !isBillingLeader && (
           <MenuItem label='Promote to Billing Leader' onClick={setRole('BILLING_LEADER')} />
         )}
-        {isOrgAdmin && (
+        {isOrgAdmin && !isSelf && (
           <MenuItem label='Change to Billing Leader' onClick={setRole('BILLING_LEADER')} />
         )}
-        {((role && notSelf) || canRemoveSelf) && (
+        {((role && !isSelf) || canRemoveSelf) && (
           <MenuItem label={`Remove ${roleName} role`} onClick={setRole(null)} />
         )}
         {canRemoveSelf && <MenuItem label='Leave Organization' onClick={toggleLeave} />}
-        {notSelf && <MenuItem label='Remove from Organization' onClick={toggleRemove} />}
+        {!isSelf && <MenuItem label='Remove from Organization' onClick={toggleRemove} />}
+        {isSelf && !canRemoveSelf && <MenuItem label='Contact support@parabol.co to be removed' />}
       </Menu>
     </>
   )
