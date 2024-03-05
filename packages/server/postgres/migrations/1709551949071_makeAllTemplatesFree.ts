@@ -8,6 +8,7 @@ export async function up() {
     `
     UPDATE "MeetingTemplate"
       SET "isFree" = true
+      WHERE "orgId" = 'aGhostOrg'
    `
   )
 
@@ -56,8 +57,8 @@ export async function down() {
   await client.query(
     `
     UPDATE "MeetingTemplate"
-      SET "isFree" = true
-      WHERE id = ANY ($1)
+    SET "isFree" = true
+    WHERE id = ANY ($1)
    `,
     [PREV_FREE_TEMPLATES]
   )
