@@ -33,7 +33,6 @@ const getSAMLURLFromEmail = async (
       .limit(1)
       .executeTakeFirst()
     const instanceURL = instanceURLres?.url
-    console.log({instanceURLres})
     if (!instanceURL) return null
     return urlWithRelayState(instanceURL, isInvited)
   }
