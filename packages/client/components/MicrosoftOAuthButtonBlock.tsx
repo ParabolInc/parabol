@@ -14,6 +14,7 @@ interface Props {
   invitationToken?: string
   isCreate?: boolean
   loginHint?: string
+  getOffsetTop?: () => number
 }
 
 const helpText = {
@@ -30,7 +31,7 @@ const HelpMessage = styled(StyledTip)({
 })
 
 const MicrosoftOAuthButtonBlock = (props: Props) => {
-  const {invitationToken, isCreate, loginHint} = props
+  const {invitationToken, isCreate, loginHint, getOffsetTop} = props
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history, location} = useRouter()
@@ -43,7 +44,8 @@ const MicrosoftOAuthButtonBlock = (props: Props) => {
       history,
       location.search,
       invitationToken,
-      loginHint
+      loginHint,
+      getOffsetTop
     )
   }
   return (

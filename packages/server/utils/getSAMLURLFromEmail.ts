@@ -19,12 +19,10 @@ const urlWithRelayState = (url: string, isInvited?: boolean | null) => {
 }
 
 const getSAMLURLFromEmail = async (
-  email: string,
+  email: string | null | undefined,
   dataLoader: DataLoaderWorker,
   isInvited?: boolean | null
 ) => {
-  const domainName = getSSODomainFromEmail(email)
-  if (!domainName) return null
   if (isSingleTenantSSO) {
     // For PPMI use
     const pg = getKysely()
@@ -35,9 +33,14 @@ const getSAMLURLFromEmail = async (
       .limit(1)
       .executeTakeFirst()
     const instanceURL = instanceURLres?.url
+    console.log({instanceURLres})
     if (!instanceURL) return null
     return urlWithRelayState(instanceURL, isInvited)
   }
+  if (!email) return null
+  const domainName = getSSODomainFromEmail(email)
+  if (!domainName) return null
+
   const saml = await dataLoader.get('samlByDomain').load(domainName)
   if (!saml) return null
   const {url} = saml

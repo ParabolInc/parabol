@@ -60,7 +60,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
     const optimisticPopup = window.open(
       '',
       'SSO',
-      getOAuthPopupFeatures({width: 385, height: 550, top: 64})
+      getOAuthPopupFeatures({width: 385, height: 576, top: 64})
     )
 
     // Get the Sign-on URL, which includes metadataURL in the RelayState

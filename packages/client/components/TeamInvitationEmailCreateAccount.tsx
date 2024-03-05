@@ -2,9 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import useDocumentTitle from '../hooks/useDocumentTitle'
 import {TeamInvitationEmailCreateAccount_verifiedInvitation$key} from '../__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
+import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const StyledDialog = styled(InviteDialog)({
-  maxWidth: 356
+  maxWidth: AUTH_DIALOG_WIDTH
 })
 
 const TeamName = styled('span')({

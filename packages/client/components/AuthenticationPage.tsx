@@ -5,13 +5,15 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
+import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
 import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 const CopyBlock = styled('div')({
   marginBottom: 48,
   width: 'calc(100vw - 16px)',
-  maxWidth: 500,
+  // must be no wider than the auth popup width to keep it looking clean
+  maxWidth: AUTH_DIALOG_WIDTH,
   textAlign: 'center'
 })
 
