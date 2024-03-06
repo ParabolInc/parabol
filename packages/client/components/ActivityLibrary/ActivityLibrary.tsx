@@ -1,7 +1,7 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useEffect, useMemo} from 'react'
+import React, {Fragment, useEffect, useMemo} from 'react'
 import {PreloadedQuery, commitLocalUpdate, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
@@ -134,17 +134,63 @@ const CategoryIDToColorClass = Object.fromEntries(
 
 export type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
-type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried' | 'getStarted'
-
-const subCategoryMapping: Record<SubCategory, string> = {
+const MAX_PER_SUBCATEGORY = 6
+const subCategoryMapping = {
   popular: 'Popular templates',
   recentlyUsed: 'You used these recently',
   recentlyUsedInOrg: 'Others in your organization are using',
   neverTried: 'Try these activities',
-  getStarted: 'Activities to get you started'
+  getStarted: 'Activities to get you started',
+  other: 'Other activities'
+} as const
+
+const mapRetroSubCategories = (templates: readonly Template[]) => {
+  const subCategoryTemplates = Object.fromEntries(
+    Object.keys(subCategoryMapping).map((subCategory) => {
+      return [
+        subCategory,
+        templates
+          .filter((template) => template.subCategories?.includes(subCategory))
+          .slice(0, MAX_PER_SUBCATEGORY) as Template[]
+      ]
+    })
+  )
+  //just in case there were values already
+  subCategoryTemplates.other = []
+  subCategoryTemplates.other = templates.filter(
+    (template) =>
+      !Object.values(subCategoryTemplates)
+        .flat()
+        .find((catTemplate) => catTemplate.id === template.id)
+  )
+
+  return Object.fromEntries(
+    Object.entries(subCategoryTemplates).map(([key, value]) => {
+      return [subCategoryMapping[key as keyof typeof subCategoryMapping]!, value]
+    })
+  )
 }
 
-const MAX_PER_SUBCATEGORY = 6
+const mapTeamCategories = (templates: readonly Template[]) => {
+  // list public templates last
+  const publicTemplates = [] as Template[]
+  const mapped = templates.reduce((acc, template) => {
+    const {team, scope} = template
+    if (scope === 'PUBLIC') {
+      publicTemplates.push(template)
+    } else {
+      const {name} = team
+      if (!acc[name]) {
+        acc[name] = []
+      }
+      acc[name]!.push(template)
+    }
+    return acc
+  }, {} as Record<string, Template[]>)
+
+  mapped['Parabol'] = publicTemplates
+  return mapped
+}
 
 export const ActivityLibrary = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -209,23 +255,24 @@ export const ActivityLibrary = (props: Props) => {
     )
   }, [searchQuery, filteredTemplates, categoryId])
 
-  const subCategoryTemplates = Object.fromEntries(
-    Object.keys(subCategoryMapping).map((subCategory) => {
-      return [
-        subCategory,
-        templatesToRender
-          .filter((template) => template.subCategories?.includes(subCategory))
-          .slice(0, MAX_PER_SUBCATEGORY) as Template[]
-      ]
-    })
-  ) as Record<SubCategory, Template[]>
+  const sortedTemplates = useMemo(() => {
+    // Show the teams on search as well, because you can search by team name
+    if (categoryId === CUSTOM_CATEGORY_ID || searchQuery.length > 0) {
+      return mapTeamCategories(templatesToRender)
+    }
 
-  const otherTemplates = templatesToRender.filter(
-    (template) =>
-      !Object.values(subCategoryTemplates)
-        .flat()
-        .find((catTemplate) => catTemplate.id === template.id)
-  ) as Template[]
+    if (searchQuery.length > 0) {
+      return undefined
+    }
+
+    if (categoryId === 'retrospective') {
+      return mapRetroSubCategories(templatesToRender)
+    }
+    if (categoryId === 'recommended') {
+      return {[subCategoryMapping.getStarted]: [...templatesToRender]}
+    }
+    return undefined
+  }, [categoryId, templatesToRender])
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
@@ -236,8 +283,6 @@ export const ActivityLibrary = (props: Props) => {
   }
 
   const selectedCategory = categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
-  const quickStartTitle =
-    selectedCategory === 'recommended' ? subCategoryMapping['getStarted'] : undefined
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
@@ -326,8 +371,8 @@ export const ActivityLibrary = (props: Props) => {
           )}
           {templatesToRender.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
-              <img className='w-32' src={halloweenRetrospectiveTemplate} />
               <div className='ml-10'>
+                <img className='w-32' src={halloweenRetrospectiveTemplate} />
                 <div className='mb-4 text-xl font-semibold'>No results found!</div>
                 <div className='mb-6 max-w-[360px]'>
                   Try tapping a category above, using a different search, or creating exactly what
@@ -340,45 +385,29 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           ) : (
             <>
-              {categoryId === 'retrospective' && searchQuery.length === 0 ? (
+              {sortedTemplates ? (
                 <>
-                  {(Object.keys(subCategoryMapping) as SubCategory[]).map(
-                    (subCategory) =>
-                      subCategoryTemplates[subCategory].length > 0 && (
-                        <>
-                          <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                            {subCategoryMapping[subCategory]}
-                          </div>
+                  {Object.entries(sortedTemplates).map(
+                    ([subCategory, subCategoryTemplates]) =>
+                      subCategoryTemplates.length > 0 && (
+                        <Fragment key={subCategory}>
+                          {subCategory && (
+                            <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                              {subCategory}
+                            </div>
+                          )}
                           <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
                             <ActivityGrid
-                              templates={subCategoryTemplates[subCategory]}
+                              templates={subCategoryTemplates}
                               selectedCategory={selectedCategory}
                             />
                           </div>
-                        </>
+                        </Fragment>
                       )
-                  )}
-                  {otherTemplates.length > 0 && (
-                    <>
-                      <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                        Other activities
-                      </div>
-                      <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                        <ActivityGrid
-                          templates={otherTemplates}
-                          selectedCategory={selectedCategory}
-                        />
-                      </div>
-                    </>
                   )}
                 </>
               ) : (
                 <>
-                  {quickStartTitle && (
-                    <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                      {quickStartTitle}
-                    </div>
-                  )}
                   <div className='grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4'>
                     <ActivityGrid
                       templates={templatesToRender as Template[]}
