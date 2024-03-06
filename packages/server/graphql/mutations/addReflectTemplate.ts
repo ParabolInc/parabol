@@ -47,7 +47,6 @@ const addReflectTemplate = {
       dataLoader.get('teams').load(teamId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
-    console.log('🚀 ~ viewer)))___:', viewer.freeCustomTemplatesRemaining)
 
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -57,8 +56,8 @@ const addReflectTemplate = {
         userId: viewerId
       })
     } else {
-      const test = await decrementFreeCustomTemplatesRemaining(viewerId)
-      console.log('🚀 ~ test:', test)
+      decrementFreeCustomTemplatesRemaining(viewerId)
+      viewer.freeCustomTemplatesRemaining = viewer.freeCustomTemplatesRemaining - 1
     }
     let data
     if (parentTemplateId) {

@@ -9,6 +9,9 @@ import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
   fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
+    user {
+      freeCustomTemplatesRemaining
+    }
     reflectTemplate {
       ...TemplateSharing_template
       ...ReflectTemplateDetailsTemplate
