@@ -135,7 +135,7 @@ jobs:
           retention-days: 7
 
       - name: Report Status
-        if: failure()
+        if: ${{ failure() && github.ref_name == 'master' }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}
