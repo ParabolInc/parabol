@@ -1,8 +1,13 @@
-import getPg from '../postgres/getPg'
-import {appendUserTmsQuery} from '../postgres/queries/generated/appendUserTmsQuery'
+import {sql} from 'kysely'
+import getKysely from '../postgres/getKysely'
 
 const addTeamIdToTMS = async (userId: string, teamId: string) => {
-  return appendUserTmsQuery.run({id: userId, teamId}, getPg())
+  const pg = getKysely()
+  return pg
+    .updateTable('User')
+    .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
+    .where('id', '=', userId)
+    .execute()
 }
 
 export default addTeamIdToTMS
