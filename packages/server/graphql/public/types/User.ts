@@ -196,7 +196,8 @@ const User: UserResolvers = {
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },
-  billingTier: ({tier}) => tier
+  billingTier: ({tier}) => tier,
+  freeCustomTemplatesRemaining: ({freeCustomTemplatesRemaining}) => freeCustomTemplatesRemaining
 }
 
 export default User

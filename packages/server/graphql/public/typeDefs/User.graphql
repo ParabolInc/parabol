@@ -458,4 +458,8 @@ type User {
     """
     domain: String!
   ): ParseSAMLMetadataPayload!
+  """
+  The number of free custom templates remaining
+  """
+  freeCustomTemplatesRemaining: Int!
 }
