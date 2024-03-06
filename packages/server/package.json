@@ -103,7 +103,7 @@
     "fast-xml-parser": "^4.2.7",
     "googleapis": "^118.0.0",
     "graphql": "15.7.2",
-    "graphql-jit": "^0.7.4",
+    "graphql-jit": "^0.8.4",
     "graphql-middleware": "^6.1.18",
     "graphql-relay": "^0.10.0",
     "graphql-shield": "^7.5.0",
