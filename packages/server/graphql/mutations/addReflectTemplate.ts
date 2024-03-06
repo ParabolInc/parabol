@@ -13,6 +13,7 @@ import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import {analytics} from '../../utils/analytics/analytics'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import decrementFreeCustomTemplatesRemaining from '../../postgres/queries/decrementFreeTemplatesRemaining'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -46,15 +47,18 @@ const addReflectTemplate = {
       dataLoader.get('teams').load(teamId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
+    console.log('🚀 ~ viewer)))___:', viewer.freeCustomTemplatesRemaining)
 
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (
-      getFeatureTier(viewerTeam) === 'starter' &&
-      !viewer.featureFlags.includes('noTemplateLimit')
-    ) {
-      return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
+    if (getFeatureTier(viewerTeam) === 'starter' && viewer.freeCustomTemplatesRemaining === 0) {
+      return standardError(new Error('You have reached the limit of free custom templates.'), {
+        userId: viewerId
+      })
+    } else {
+      const test = await decrementFreeCustomTemplatesRemaining(viewerId)
+      console.log('🚀 ~ test:', test)
     }
     let data
     if (parentTemplateId) {
