@@ -1,12 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import getRethink from '../../../database/rethinkDriver'
-import getMeetingTemplatesByIds from '../../../postgres/queries/getMeetingTemplatesByIds'
+import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
-  compareRValUndefinedAsFalse,
-  compareRValUndefinedAsNull,
+  compareRValUndefinedAsNullAndTruncateRVal,
   defaultEqFn
 } from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
@@ -35,22 +34,37 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'MeetingTemplate') {
+  if (tableName === 'RetroReflectionGroup') {
     const rowCountResult = await checkRowCount(tableName)
-    const rethinkQuery = r.table('MeetingTemplate').orderBy('updatedAt', {index: 'updatedAt'})
-    const errors = await checkTableEq(rethinkQuery, getMeetingTemplatesByIds, {
+    const rethinkQuery = (updatedAt: Date, id: string | number) => {
+      return r
+        .table('RetroReflectionGroup')
+        .between([updatedAt, id], [r.maxval, r.maxval], {
+          index: 'updatedAtId',
+          leftBound: 'open',
+          rightBound: 'closed'
+        })
+        .orderBy({index: 'updatedAtId'}) as any
+    }
+    const pgQuery = (ids: string[]) => {
+      return getKysely()
+        .selectFrom('RetroReflectionGroup')
+        .selectAll()
+        .where('id', 'in', ids)
+        .execute()
+    }
+    const errors = await checkTableEq(rethinkQuery, pgQuery, {
+      id: defaultEqFn,
       createdAt: defaultEqFn,
-      isActive: defaultEqFn,
-      name: defaultEqFn,
-      teamId: defaultEqFn,
       updatedAt: compareDateAlmostEqual,
-      scope: defaultEqFn,
-      orgId: defaultEqFn,
-      parentTemplateId: compareRValUndefinedAsNull,
-      lastUsedAt: compareRValUndefinedAsNull,
-      type: defaultEqFn,
-      isStarter: compareRValUndefinedAsFalse,
-      isFree: compareRValUndefinedAsFalse
+      isActive: defaultEqFn,
+      meetingId: defaultEqFn,
+      promptId: defaultEqFn,
+      sortOrder: defaultEqFn,
+      voterIds: defaultEqFn,
+      smartTitle: compareRValUndefinedAsNullAndTruncateRVal(255),
+      title: compareRValUndefinedAsNullAndTruncateRVal(255),
+      summary: compareRValUndefinedAsNullAndTruncateRVal(2000)
     })
     return handleResult(tableName, rowCountResult, errors, writeToFile)
   }
