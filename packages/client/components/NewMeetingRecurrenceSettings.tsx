@@ -53,7 +53,7 @@ export const NewMeetingRecurrenceSettings = (props: Props) => {
       {menuPortal(
         <div className='flex flex-col'>
           <input
-            className='form-input rounded border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-600'
+            className='form-input m-2 rounded border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-600'
             type='text'
             name='title'
             placeholder={placeholder}
