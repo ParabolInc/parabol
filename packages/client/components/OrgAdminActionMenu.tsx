@@ -4,13 +4,13 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import useMutationProps from '../hooks/useMutationProps'
 import {OrgAdminActionMenu_organization$key} from '../__generated__/OrgAdminActionMenu_organization.graphql'
 import {OrgAdminActionMenu_organizationUser$key} from '../__generated__/OrgAdminActionMenu_organizationUser.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 
-interface Props extends WithMutationProps {
+interface Props {
   menuProps: MenuProps
   isViewerLastOrgAdmin: boolean
   organizationUser: OrgAdminActionMenu_organizationUser$key
@@ -24,10 +24,6 @@ const OrgAdminActionMenu = (props: Props) => {
     menuProps,
     isViewerLastOrgAdmin,
     organizationUser: organizationUserRef,
-    submitting,
-    submitMutation,
-    onError,
-    onCompleted,
     organization: organizationRef,
     toggleLeave,
     toggleRemove
@@ -52,6 +48,7 @@ const OrgAdminActionMenu = (props: Props) => {
     organizationUserRef
   )
   const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const {id: orgId} = organization
   const {viewerId} = atmosphere
   const {role, user} = organizationUser
@@ -93,4 +90,4 @@ const OrgAdminActionMenu = (props: Props) => {
   )
 }
 
-export default withMutationProps(OrgAdminActionMenu)
+export default OrgAdminActionMenu

@@ -37,16 +37,13 @@ const DeleteTeamDialog = (props: Props) => {
     history.push(`/me/organizations/${teamOrgId}/teams`)
   }
 
-  const labelStyles = `text-left text-sm font-semibold mb-3 text-slate-600`
-  const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
-
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
         <DialogTitle className='mb-4'>Delete Team</DialogTitle>
 
-        <fieldset className={fieldsetStyles}>
-          <label className={labelStyles}>
+        <fieldset className='mx-0 mb-6 flex w-full flex-col p-0'>
+          <label className='mb-3 text-left text-sm font-semibold text-slate-600'>
             Please type your team name to confirm. <b>This action can't be undone.</b>
           </label>
           <Input

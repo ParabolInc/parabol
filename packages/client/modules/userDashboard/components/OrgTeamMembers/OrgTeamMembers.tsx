@@ -11,7 +11,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {OrgTeamMembersMenu} from './OrgTeamMembersMenu'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
-import DeleteTeamDialogRoot from '../../../../components/DeleteTeamDialogRoot'
+import DeleteTeamDialog from '../../../../components/DeleteTeamDialog'
 
 interface Props {
   queryRef: PreloadedQuery<OrgTeamMembersQuery>
@@ -69,7 +69,7 @@ export const OrgTeamMembers = (props: Props) => {
         </div>
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded border border-slate-300 bg-white'>
+      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>{teamMembers.length} Active</div>
@@ -90,7 +90,8 @@ export const OrgTeamMembers = (props: Props) => {
       )}
 
       {isDeleteTeamDialogOpened ? (
-        <DeleteTeamDialogRoot
+        <DeleteTeamDialog
+          isOpen={isDeleteTeamDialogOpened}
           teamId={team.id}
           teamName={team.name}
           teamOrgId={team.orgId}

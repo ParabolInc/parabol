@@ -6,6 +6,7 @@ import {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_orga
 import AddTeamDialogRoot from '../../../../components/AddTeamDialogRoot'
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
+import plural from '../../../../utils/plural'
 
 type Props = {
   organizationRef: OrgTeams_organization$key
@@ -51,10 +52,12 @@ const OrgTeams = (props: Props) => {
         </div>
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded border border-slate-300 bg-white'>
+      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
-            <div className='flex items-center font-bold'>{allTeams.length} Teams</div>
+            <div className='flex items-center font-bold'>
+              {allTeams.length} {plural(allTeams.length, 'Team')}
+            </div>
           </div>
         </div>
         {allTeams.map((team) => (

@@ -115,7 +115,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
     {picture ? (
       <Avatar hasBadge={false} picture={picture} size={44} />
     ) : (
-      <img alt='' src={defaultUserAvatar} />
+      <img alt='default avatar' src={defaultUserAvatar} />
     )}
   </AvatarBlock>
 )

@@ -48,10 +48,7 @@ export const OrgTeamMembersRow = (props: Props) => {
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
 
-  const showMenuButton =
-    (isViewerOrgAdmin && !isLead) ||
-    (isViewerLead && !isSelf && !isOrgAdmin) ||
-    (!isViewerLead && isSelf)
+  const showMenuButton = (isViewerOrgAdmin && !isLead) || (isViewerLead && !isSelf && !isOrgAdmin)
 
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {
@@ -89,15 +86,17 @@ export const OrgTeamMembersRow = (props: Props) => {
         </div>
       </div>
       <div>
-        <Button
-          disabled={!showMenuButton}
-          shape='circle'
-          variant='ghost'
-          onClick={togglePortal}
-          ref={originRef}
-        >
-          <MoreVert />
-        </Button>
+        {showMenuButton && (
+          <Button
+            disabled={!showMenuButton}
+            shape='circle'
+            variant='ghost'
+            onClick={togglePortal}
+            ref={originRef}
+          >
+            <MoreVert />
+          </Button>
+        )}
         {menuPortal(
           <OrgTeamMemberMenu
             menuProps={menuProps}
