@@ -1,12 +1,10 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {MoreVert, ArrowBack} from '@mui/icons-material'
+import {ArrowBack} from '@mui/icons-material'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'
 import {OrgTeamMembersRow} from './OrgTeamMembersRow'
 import {Button} from '../../../../ui/Button/Button'
-import AddTeamMemberModal from '../../../../components/AddTeamMemberModal'
-import useModal from '../../../../hooks/useModal'
 import {Link} from 'react-router-dom'
 import {ORGANIZATIONS} from '../../../../utils/constants'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -47,8 +45,7 @@ export const OrgTeamMembers = (props: Props) => {
   const data = usePreloadedQuery<OrgTeamMembersQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const {
     open: openDeleteTeamDialog,
@@ -70,20 +67,6 @@ export const OrgTeamMembers = (props: Props) => {
           </Button>
           <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
         </div>
-
-        <div className='ml-auto flex gap-x-2'>
-          <Button
-            variant='secondary'
-            shape='pill'
-            className='text-md w-32 self-center py-2'
-            onClick={toggleModal}
-          >
-            Add member
-          </Button>
-          <Button shape='circle' variant='ghost' ref={originRef} onClick={togglePortal}>
-            <MoreVert />
-          </Button>
-        </div>
       </div>
 
       <div className='divide-y divide-slate-300 overflow-hidden rounded border border-slate-300 bg-white'>
@@ -101,10 +84,6 @@ export const OrgTeamMembers = (props: Props) => {
           />
         ))}
       </div>
-
-      {modalPortal(
-        <AddTeamMemberModal closePortal={closeModal} teamId={team.id} teamMembers={teamMembers} />
-      )}
 
       {menuPortal(
         <OrgTeamMembersMenu menuProps={menuProps} openDeleteTeamModal={openDeleteTeamDialog} />
