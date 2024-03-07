@@ -1,25 +1,28 @@
-import {Insertable} from 'kysely'
 import tracer from 'dd-trace'
+import {Insertable} from 'kysely'
 import Redlock, {RedlockAbortSignal} from 'redlock'
 
+import EmbedderChannelId from 'parabol-client/shared/gqlIds/EmbedderChannelId'
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
-import {refreshRetroDiscussionTopicsMeta as refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
-import {orgIdsWithFeatureFlag} from './indexing/orgIdsWithFeatureFlag'
+import RedisInstance from 'parabol-server/utils/RedisInstance'
+import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
 import getModelManager, {ModelManager} from './ai_models/ModelManager'
 import {countWords} from './indexing/countWords'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
 import {
+  completeJobTxn,
+  insertNewJobs,
   selectJobQueueItemById,
+  selectMetaToQueue,
   selectMetadataByJobQueueId,
   updateJobState
 } from './indexing/embeddingsTablesOps'
-import {selectMetaToQueue} from './indexing/embeddingsTablesOps'
-import {insertNewJobs} from './indexing/embeddingsTablesOps'
-import {completeJobTxn} from './indexing/embeddingsTablesOps'
-import {getRootDataLoader} from './indexing/getRootDataLoader'
 import {getRedisClient} from './indexing/getRedisClient'
+import {getRootDataLoader} from './indexing/getRootDataLoader'
+import {orgIdsWithFeatureFlag} from './indexing/orgIdsWithFeatureFlag'
+import {refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
 
 /*
  * TODO List
@@ -234,19 +237,49 @@ function parseEnvBoolean(envVarValue: string | undefined): boolean {
   return envVarValue === 'true'
 }
 
-const run = async () => {
-  console.log(`embedder: run()`)
-  const embedderEnabled = parseEnvBoolean(AI_EMBEDDER_ENABLED)
-  const modelManager = getModelManager()
-  if (embedderEnabled && modelManager) {
-    const pg = getKysely()
-    await modelManager.maybeCreateTables(pg)
-    console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
-    tick(modelManager)
-  } else {
-    console.log(`embedder: no valid configuration (check AI_EMBEDDER_ENABLED in .env)`)
-    // exit
+export type EmbeddingObjectType = DB['EmbeddingsJobQueue']['objectType']
+
+export interface PubSubEmbedderMessage {
+  jobId?: string | undefined
+  objectType: EmbeddingObjectType
+  startAt?: Date | undefined
+  endAt: Date | undefined
+}
+
+const parseEmbedderMessage = (message: string): PubSubEmbedderMessage => {
+  const {jobId, objectType, startAt, endAt} = JSON.parse(message)
+  return {
+    jobId,
+    objectType,
+    startAt: startAt ? new Date(startAt) : undefined,
+    endAt: endAt ? new Date(endAt) : undefined
   }
+}
+
+const run = async () => {
+  const SERVER_ID = process.env.SERVER_ID
+  if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
+  const embedderEnabled = parseEnvBoolean(AI_EMBEDDER_ENABLED)
+  if (!embedderEnabled) console.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
+
+  const modelManager = getModelManager()
+  const pg = getKysely()
+  await modelManager.maybeCreateTables(pg)
+
+  const subscriber = new RedisInstance(`embedder_sub_${SERVER_ID}`)
+  const publisher = new RedisInstance(`embedder_pub_${SERVER_ID}`)
+  const embedderChannel = EmbedderChannelId.join(SERVER_ID)
+
+  // subscribe to direct messages
+  const onMessage = async (_channel: string, message: string) => {
+    const parsedMessage = parseEmbedderMessage(message)
+    await addEmbeddingsMetadata(publisher, parsedMessage)
+  }
+  subscriber.on('message', onMessage)
+  subscriber.subscribe(embedderChannel)
+
+  console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
+  // tick(modelManager)
 }
 
 run()
