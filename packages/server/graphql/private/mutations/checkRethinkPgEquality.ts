@@ -64,7 +64,8 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
       voterIds: defaultEqFn,
       smartTitle: compareRValUndefinedAsNullAndTruncateRVal(255),
       title: compareRValUndefinedAsNullAndTruncateRVal(255),
-      summary: compareRValUndefinedAsNullAndTruncateRVal(2000)
+      summary: compareRValUndefinedAsNullAndTruncateRVal(2000),
+      discussionPromptQuestion: compareRValUndefinedAsNullAndTruncateRVal(2000)
     })
     return handleResult(tableName, rowCountResult, errors, writeToFile)
   }

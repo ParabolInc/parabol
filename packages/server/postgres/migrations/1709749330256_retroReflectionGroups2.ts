@@ -32,12 +32,13 @@ export async function up() {
     'voterIds',
     'smartTitle',
     'title',
-    'summary'
+    'summary',
+    'discussionPromptQuestion'
   ] as const
   type RetroReflectionGroup = {
     [K in (typeof PG_COLS)[number]]: any
   }
-  const BATCH_SIZE = ~~(MAX_PG_PARAMS / PG_COLS.length)
+  const BATCH_SIZE = Math.trunc(MAX_PG_PARAMS / PG_COLS.length)
 
   let curUpdatedAt = r.minval
   let curId = r.minval
