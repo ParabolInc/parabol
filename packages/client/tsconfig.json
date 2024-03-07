@@ -12,7 +12,6 @@
   },
   "files": [
     "client.tsx",
-    "./modules/userDashboard/components/OrgTeamMembers/OrgTeamMembersMenu.tsx"
   ],
   "exclude": ["serviceWorker", "**/node_modules"]
 }
