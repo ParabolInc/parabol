@@ -255,7 +255,7 @@ export const ActivityLibrary = (props: Props) => {
     )
   }, [searchQuery, filteredTemplates, categoryId])
 
-  const sortedTemplates = useMemo(() => {
+  const sectionedTemplates = useMemo(() => {
     // Show the teams on search as well, because you can search by team name
     if (categoryId === CUSTOM_CATEGORY_ID || searchQuery.length > 0) {
       return mapTeamCategories(templatesToRender)
@@ -281,8 +281,6 @@ export const ActivityLibrary = (props: Props) => {
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
   }
-
-  const selectedCategory = categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
@@ -317,7 +315,7 @@ export const ActivityLibrary = (props: Props) => {
             )}
             <Link
               className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
-              to={`/activity-library/new-activity/${selectedCategory}`}
+              to={`/activity-library/new-activity/${categoryId}`}
             >
               Create custom activity
             </Link>
@@ -342,7 +340,7 @@ export const ActivityLibrary = (props: Props) => {
                 <Link
                   className={clsx(
                     'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
-                    category === selectedCategory && searchQuery.length === 0
+                    category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,
                           'font-semibold text-white focus:text-white'
@@ -385,9 +383,9 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           ) : (
             <>
-              {sortedTemplates ? (
+              {sectionedTemplates ? (
                 <>
-                  {Object.entries(sortedTemplates).map(
+                  {Object.entries(sectionedTemplates).map(
                     ([subCategory, subCategoryTemplates]) =>
                       subCategoryTemplates.length > 0 && (
                         <Fragment key={subCategory}>
@@ -399,7 +397,7 @@ export const ActivityLibrary = (props: Props) => {
                           <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
                             <ActivityGrid
                               templates={subCategoryTemplates}
-                              selectedCategory={selectedCategory}
+                              selectedCategory={categoryId}
                             />
                           </div>
                         </Fragment>
@@ -411,7 +409,7 @@ export const ActivityLibrary = (props: Props) => {
                   <div className='grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4'>
                     <ActivityGrid
                       templates={templatesToRender as Template[]}
-                      selectedCategory={selectedCategory}
+                      selectedCategory={categoryId}
                     />
                   </div>
                 </>
