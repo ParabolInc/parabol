@@ -71,7 +71,6 @@ const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
   const upcomingJobs = await pg
     .selectFrom('ScheduledJob')
     .selectAll()
-    .where('runAt', '>=', new Date(0))
     .where('runAt', '<', before)
     .execute()
 
