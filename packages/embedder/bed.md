@@ -13,7 +13,7 @@ Once Embedder has an item, it acts as ObjectBuilder & computes embedText & write
 After computing embedText, it sends it to the LLM endpoint to get embeddings. on return, it writes that to the Embeddings*% table
 Finally, it calls ACK to redis to report the job as complete
 
-### Embedder
+### Embedder to Metadata
 
 Getting embeddings in our system involves 2 steps
 Step 1: All future embeddings get put into a job queue and are processed ASAP
@@ -21,3 +21,29 @@ Step 2: We migrate all older embeddings by looking at the metadata table. settin
 
 For step 2 we don't want to stick all the logic in the migration, but we don't want migrations that are mutable.
 So, what we may do is attempt to import it & call it. Perhaps we have a file like `migrateOldDiscussions.ts` which then calls the embedder. that way all we have to do is leave that file in place as a tombstone if business cases ever change.
+
+## Metadata to Job Queue
+
+Now that we have all the metadata we could ever want, when do we add it to the job queue?
+
+- do it for only some orgIds
+- do it whenever a new model gets added
+- do it immediately when an item gets added to the metadata table
+
+we could say:
+
+- whenever an item gets added to metadata, trigger an insert into job queue (if matching orgId)
+- whenever a new model gets added, do it for everything. how do we know a new model was added? a table was added
+
+So...
+when a new table gets created, create a trigger that inserts the data into the job queue table
+put this trigger on the metadata table
+
+when a model gets removed, its triggers get removed
+if a model gets re-added, then new items will get added to the queue & the initialization will have to handle dupes
+
+when a model gets added
+
+- a table gets added
+- worker(s) needs to grab all existing metadata & put it into queue
+-

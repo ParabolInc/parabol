@@ -262,13 +262,13 @@ const run = async () => {
   const embedderEnabled = parseEnvBoolean(AI_EMBEDDER_ENABLED)
   if (!embedderEnabled) console.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
 
-  const modelManager = getModelManager()
-  const pg = getKysely()
-  await modelManager.maybeCreateTables(pg)
-
   const subscriber = new RedisInstance(`embedder_sub_${SERVER_ID}`)
   const publisher = new RedisInstance(`embedder_pub_${SERVER_ID}`)
   const embedderChannel = EmbedderChannelId.join(SERVER_ID)
+  const modelManager = getModelManager()
+  const pg = getKysely()
+  await modelManager.maybeCreateTables(pg)
+  await modelManager.removeOldTriggers(pg)
 
   // subscribe to direct messages
   const onMessage = async (_channel: string, message: string) => {

@@ -9,13 +9,14 @@ export const addEmbeddingsMetadata = async (
   const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
   const objectTypes = objectType ? [objectType] : ALL_OBJECT_TYPES
 
-  objectTypes.forEach((type) => {
-    switch (type) {
-      case 'retrospectiveDiscussionTopic':
-        addEmbeddingsMetadataForRetrospectiveDiscussionTopic(redis, startAt, endAt)
-        break
-      default:
-        throw new Error(`Invalid object type: ${type}`)
-    }
-  })
+  return Promise.all(
+    objectTypes.map((type) => {
+      switch (type) {
+        case 'retrospectiveDiscussionTopic':
+          return addEmbeddingsMetadataForRetrospectiveDiscussionTopic(redis, startAt, endAt)
+        default:
+          throw new Error(`Invalid object type: ${type}`)
+      }
+    })
+  )
 }
