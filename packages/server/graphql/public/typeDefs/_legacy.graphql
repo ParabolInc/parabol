@@ -5169,11 +5169,6 @@ type Mutation {
   ): AddCommentPayload!
 
   """
-  Add a new poker template with a default dimension created
-  """
-  addPokerTemplate(parentTemplateId: ID, teamId: ID!): AddPokerTemplatePayload!
-
-  """
   Add a new dimension for the poker template
   """
   addPokerTemplateDimension(templateId: ID!): AddPokerTemplateDimensionPayload!
@@ -6215,7 +6210,6 @@ type Mutation {
   pokerResetDimension(meetingId: ID!, stageId: ID!): PokerResetDimensionPayload!
 
   """
-
   """
   pokerAnnounceDeckHover(
     meetingId: ID!
@@ -6262,7 +6256,6 @@ type Mutation {
   ): SetPokerSpectatePayload!
 
   """
-
   """
   persistGitHubSearchQuery(
     """
@@ -6495,11 +6488,6 @@ input AddCommentInput {
   discussionId: ID!
   threadSortOrder: Float!
   threadParentId: ID
-}
-
-type AddPokerTemplatePayload {
-  error: StandardMutationError
-  pokerTemplate: PokerTemplate
 }
 
 type AddPokerTemplateDimensionPayload {

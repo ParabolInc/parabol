@@ -9,7 +9,7 @@ import {AddPokerTemplateMutation_team$data} from '../__generated__/AddPokerTempl
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
-  fragment AddPokerTemplateMutation_team on AddPokerTemplatePayload {
+  fragment AddPokerTemplateMutation_team on AddPokerTemplateSuccess {
     user {
       freeCustomPokerTemplatesRemaining
     }
@@ -26,6 +26,11 @@ graphql`
 const mutation = graphql`
   mutation AddPokerTemplateMutation($teamId: ID!, $parentTemplateId: ID) {
     addPokerTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
       ...AddPokerTemplateMutation_team @relay(mask: false)
     }
   }
