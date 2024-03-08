@@ -30,7 +30,6 @@ import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
-import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 import {AdhocTeamMultiSelect, Option} from '../AdhocTeamMultiSelect/AdhocTeamMultiSelect'
@@ -378,55 +377,35 @@ const ActivityDetailsSidebar = (props: Props) => {
                 />
               )}
 
-              {selectedTeam.tier === 'starter' &&
-              !viewer.featureFlags.noTemplateLimit &&
-              !selectedTemplate.isFree ? (
-                <div className='flex grow flex-col'>
-                  <div className='my-auto text-center'>
-                    Upgrade to the <b>Team Plan</b> to create custom activities unlocking your
-                    team’s ideal workflow.
-                  </div>
-                  <RaisedButton
-                    palette='pink'
-                    className='h-12 w-full text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
-                    onClick={handleUpgrade}
-                  >
-                    Upgrade to Team Plan
-                  </RaisedButton>
-                </div>
-              ) : (
+              {type === 'retrospective' && (
                 <>
-                  {type === 'retrospective' && (
-                    <>
-                      <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                      <NewMeetingSettingsToggleTeamHealth
-                        settingsRef={selectedTeam.retroSettings}
-                        teamRef={selectedTeam}
-                      />
-                      <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-                      {selectedTeam.organization.featureFlags.recurringRetros && (
-                        <ActivityDetailsRecurrenceSettings
-                          onRecurrenceSettingsUpdated={setRecurrenceSettings}
-                          recurrenceSettings={recurrenceSettings}
-                          placeholder='Retro'
-                        />
-                      )}
-                    </>
-                  )}
-                  {type === 'poker' && (
-                    <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
-                  )}
-                  {type === 'action' && (
-                    <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
-                  )}
-                  {type === 'teamPrompt' && (
+                  <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+                  <NewMeetingSettingsToggleTeamHealth
+                    settingsRef={selectedTeam.retroSettings}
+                    teamRef={selectedTeam}
+                  />
+                  <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+                  {selectedTeam.organization.featureFlags.recurringRetros && (
                     <ActivityDetailsRecurrenceSettings
                       onRecurrenceSettingsUpdated={setRecurrenceSettings}
                       recurrenceSettings={recurrenceSettings}
-                      placeholder='Standup'
+                      placeholder='Retro'
                     />
                   )}
                 </>
+              )}
+              {type === 'poker' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+              )}
+              {type === 'action' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
+              )}
+              {type === 'teamPrompt' && (
+                <ActivityDetailsRecurrenceSettings
+                  onRecurrenceSettingsUpdated={setRecurrenceSettings}
+                  recurrenceSettings={recurrenceSettings}
+                  placeholder='Standup'
+                />
               )}
             </div>
           </div>
