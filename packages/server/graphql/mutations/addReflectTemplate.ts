@@ -51,13 +51,16 @@ const addReflectTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (getFeatureTier(viewerTeam) === 'starter' && viewer.freeCustomTemplatesRemaining === 0) {
+    if (
+      getFeatureTier(viewerTeam) === 'starter' &&
+      viewer.freeCustomRetroTemplatesRemaining === 0
+    ) {
       return standardError(new Error('You have reached the limit of free custom templates.'), {
         userId: viewerId
       })
     } else {
-      decrementFreeCustomTemplatesRemaining(viewerId)
-      viewer.freeCustomTemplatesRemaining = viewer.freeCustomTemplatesRemaining - 1
+      decrementFreeCustomTemplatesRemaining(viewerId, 'retro')
+      viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1
     }
     let data
     if (parentTemplateId) {

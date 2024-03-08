@@ -95,7 +95,8 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
 const query = graphql`
   query CreateNewActivityQuery {
     viewer {
-      freeCustomTemplatesRemaining
+      freeCustomRetroTemplatesRemaining
+      freeCustomPokerTemplatesRemaining
       preferredTeamId
       teams {
         id
@@ -133,12 +134,21 @@ export const CreateNewActivity = (props: Props) => {
     return selectedActivity
   })
   const {viewer} = data
-  const {teams, preferredTeamId, freeCustomTemplatesRemaining} = viewer
+  const {
+    teams,
+    preferredTeamId,
+    freeCustomRetroTemplatesRemaining,
+    freeCustomPokerTemplatesRemaining
+  } = viewer
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const history = useHistory()
+  const freeCustomTemplatesRemaining =
+    selectedActivity.type === 'retrospective'
+      ? freeCustomRetroTemplatesRemaining
+      : freeCustomPokerTemplatesRemaining
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {

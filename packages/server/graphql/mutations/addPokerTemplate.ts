@@ -12,7 +12,7 @@ import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
 import {analytics} from '../../utils/analytics/analytics'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
-import decrementFreeCustomTemplatesRemaining from '../../postgres/queries/decrementFreeTemplatesRemaining'
+import decrementFreeTemplatesRemaining from '../../postgres/queries/decrementFreeTemplatesRemaining'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -50,13 +50,16 @@ const addPokerTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (getFeatureTier(viewerTeam) === 'starter' && viewer.freeCustomTemplatesRemaining === 0) {
+    if (
+      getFeatureTier(viewerTeam) === 'starter' &&
+      viewer.freeCustomPokerTemplatesRemaining === 0
+    ) {
       return standardError(new Error('You have reached the limit of free custom templates.'), {
         userId: viewerId
       })
     } else {
-      decrementFreeCustomTemplatesRemaining(viewerId)
-      viewer.freeCustomTemplatesRemaining = viewer.freeCustomTemplatesRemaining - 1
+      decrementFreeTemplatesRemaining(viewerId, 'poker')
+      viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
     }
     let data
     if (parentTemplateId) {
