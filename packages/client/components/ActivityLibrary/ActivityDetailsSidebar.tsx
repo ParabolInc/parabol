@@ -290,14 +290,6 @@ const ActivityDetailsSidebar = (props: Props) => {
     </div>
   )
 
-  const handleUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'publicTemplate',
-      meetingType: type
-    })
-    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
-  }
-
   return (
     <>
       {isOpen && <div className='w-96' />}
