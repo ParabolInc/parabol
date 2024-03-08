@@ -1,15 +1,17 @@
 import {Selectable} from 'kysely'
-import {DB} from 'parabol-server/postgres/pg'
 import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
+import {DB} from 'parabol-server/postgres/pg'
 
-import {createText as createTextFromRetrospectiveDiscussionTopic} from './retrospectiveDiscussionTopic'
+import {createTextFromRetrospectiveDiscussionTopic} from './retrospectiveDiscussionTopic'
 
 export const createEmbeddingTextFrom = async (
-  item: Selectable<DB['EmbeddingsJobQueue']>,
+  embeddingsMetadata: Selectable<DB['EmbeddingsMetadata']>,
   dataLoader: DataLoaderWorker
-): Promise<string> => {
-  switch (item.objectType) {
+) => {
+  switch (embeddingsMetadata.objectType) {
     case 'retrospectiveDiscussionTopic':
-      return createTextFromRetrospectiveDiscussionTopic(item, dataLoader)
+      return createTextFromRetrospectiveDiscussionTopic(embeddingsMetadata.refId, dataLoader)
+    default:
+      throw new Error(`Unexcepted objectType: ${embeddingsMetadata.objectType}`)
   }
 }

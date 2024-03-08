@@ -1,5 +1,6 @@
-import {Kysely, sql} from 'kysely'
+import {sql} from 'kysely'
 
+import getKysely from 'parabol-server/postgres/getKysely'
 import {
   AbstractEmbeddingsModel,
   AbstractGenerationModel,
@@ -93,16 +94,17 @@ export class ModelManager {
     })
   }
 
-  async maybeCreateTables(pg: Kysely<any>) {
-    return Promise.all(this.embeddingModels.map((model) => model.createTable(pg)))
+  async maybeCreateTables() {
+    return Promise.all(this.embeddingModels.map((model) => model.createTable()))
   }
   /*
     Once a model is no longer used, don't schedule work for it in the job queue
   */
-  async removeOldTriggers(pg: Kysely<any>) {
+  async removeOldTriggers() {
+    const pg = getKysely()
     const prefix = 'embeddings_metadata_to_queue_'
     const triggers = await pg
-      .selectFrom('information_schema.triggers')
+      .selectFrom('information_schema.triggers' as any)
       .select('trigger_name')
       .where('event_object_table', '=', 'EmbeddingsMetadata')
       .where('trigger_name', 'like', `${prefix}%`)

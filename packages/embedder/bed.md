@@ -47,3 +47,16 @@ when a model gets added
 - a table gets added
 - worker(s) needs to grab all existing metadata & put it into queue
 -
+
+## Process the Job Queue
+
+Now we have a job queue full of items to process. PG
+https://leontrolski.github.io/postgres-as-queue.html
+
+SELECT \* FROM "EmbeddingsJobQueue"
+
+UPDATE "EmbeddingsJobQueue"
+Set state = 'queued'
+
+INSERT INTO "EmbeddingsJobQueue" ("objectType", "refId", "model", "embeddingsMetadataId")
+VALUES ('retrospectiveDiscussionTopic', '123', 'Embeddings_ember_1', <1>)

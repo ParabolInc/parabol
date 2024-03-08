@@ -72,7 +72,7 @@ services:
       parabol-network:
   text-embeddings-inference:
     container_name: text-embeddings-inference
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu-0.6
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.1
     command:
       - "--model-id=llmrails/ember-v1"
     platform: linux/x86_64
