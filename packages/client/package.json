@@ -113,7 +113,7 @@
     "fbjs": "^3.0.4",
     "flatted": "^2.0.1",
     "graphiql": "^3.0.0",
-    "graphql-typed": "^0.6.1",
+    "graphql-typed": "^0.7.2",
     "hoist-non-react-statics": "^3.3.0",
     "humanize-duration": "3.29.0",
     "immutable": "3.8.2",
