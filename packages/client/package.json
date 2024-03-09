@@ -134,7 +134,7 @@
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-swipeable-views": "https://github.com/mattkrick/react-swipeable-views/tarball/4f1d3062d6f8939e9889bc6241bb46aa7bc5332d",
-    "react-swipeable-views-core": "0.13.1",
+    "react-swipeable-views-core": "0.14.0",
     "react-swipeable-views-utils": "^0.14.0",
     "react-textarea-autosize": "^7.1.0",
     "react-transition-group": "^4.3.0",
