@@ -76,7 +76,6 @@ const ActivityDetailsSidebar = (props: Props) => {
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
           adHocTeams
-          noTemplateLimit
         }
         ...AdhocTeamMultiSelect_viewer
         organizations {
