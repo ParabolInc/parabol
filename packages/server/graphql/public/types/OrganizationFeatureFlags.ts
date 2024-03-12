@@ -13,7 +13,6 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   oneOnOne: ({oneOnOne}) => !!oneOnOne,
   publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
-  meetingInception: ({meetingInception}) => !!meetingInception,
   kudos: ({kudos}) => !!kudos,
   aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers,
   aiTemplate: ({aiTemplate}) => !!aiTemplate,
