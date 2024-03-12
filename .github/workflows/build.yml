@@ -22,8 +22,7 @@ jobs:
       id-token: "write"
     services:
       postgres:
-        # Image is pinned to v15, OK since it's just for testing
-        image: ankane/pgvector
+        image: pgvector/pgvector:pg15
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
