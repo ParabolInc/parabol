@@ -36,7 +36,7 @@ PGADMIN_DEFAULT_EMAIL=''
 PGADMIN_DEFAULT_PASSWORD=''
 PGSSLMODE=''
 PORT='3000'
-# Database configurations must be the same used in the docker-build.yml Github workflow
+# Database configurations must be the same used in the build.yml Github workflow
 POSTGRES_PASSWORD='temppassword'
 POSTGRES_USER='tempuser'
 POSTGRES_DB='tempdb'

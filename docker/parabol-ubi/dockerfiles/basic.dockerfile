@@ -7,8 +7,8 @@ ENV HOME=/home/node \
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PORT=3000
 
-COPY --chown=node --chmod=755 docker/parabol-ubi/docker-build/entrypoints/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY --chown=node docker/parabol-ubi/docker-build/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
+COPY --chown=node --chmod=755 docker/parabol-ubi/entrypoints/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY --chown=node docker/parabol-ubi/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
 
 # Required for pushToCDN to work with FILE_STORE_PROVIDER set to 'local'
 RUN mkdir -p ${HOME}/parabol/self-hosted && \
