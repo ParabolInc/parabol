@@ -1,4 +1,8 @@
-import {AbstractEmbeddingsModel, EmbeddingModelConfig, EmbeddingModelParams} from './AbstractModel'
+import {
+  AbstractEmbeddingsModel,
+  EmbeddingModelConfig,
+  EmbeddingModelParams
+} from './AbstractEmbeddingsModel'
 import fetchWithRetry from './helpers/fetchWithRetry'
 
 const MAX_REQUEST_TIME_S = 3 * 60

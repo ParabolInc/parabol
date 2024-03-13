@@ -1,13 +1,8 @@
 import {sql} from 'kysely'
-
 import getKysely from 'parabol-server/postgres/getKysely'
-import {
-  AbstractEmbeddingsModel,
-  AbstractGenerationModel,
-  EmbeddingModelConfig,
-  GenerationModelConfig,
-  ModelConfig
-} from './AbstractModel'
+import {AbstractEmbeddingsModel, EmbeddingModelConfig} from './AbstractEmbeddingsModel'
+import {AbstractGenerationModel, GenerationModelConfig} from './AbstractGenerationModel'
+import {ModelConfig} from './AbstractModel'
 import OpenAIGeneration from './OpenAIGeneration'
 import TextEmbeddingsInference from './TextEmbeddingsInference'
 import TextGenerationInference from './TextGenerationInference'
@@ -17,8 +12,8 @@ interface ModelManagerConfig {
   generationModels: GenerationModelConfig[]
 }
 
-export type EmbeddingsModelType = 'text-embeddings-inference'
-export type GenerationModelType = 'openai' | 'text-generation-inference'
+type EmbeddingsModelType = 'text-embeddings-inference'
+type GenerationModelType = 'openai' | 'text-generation-inference'
 
 export class ModelManager {
   embeddingModels: AbstractEmbeddingsModel[]

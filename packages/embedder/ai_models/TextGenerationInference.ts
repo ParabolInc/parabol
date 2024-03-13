@@ -3,7 +3,7 @@ import {
   GenerationModelConfig,
   GenerationModelParams,
   GenerationOptions
-} from './AbstractModel'
+} from './AbstractGenerationModel'
 import fetchWithRetry from './helpers/fetchWithRetry'
 
 const MAX_REQUEST_TIME_S = 3 * 60
