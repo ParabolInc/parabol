@@ -30,7 +30,7 @@
     {
       "name": "Launch Chrome",
       "request": "launch",
-      "type": "pwa-chrome",
+      "type": "chrome",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}"
     },
@@ -38,7 +38,7 @@
       "type": "node",
       "request": "launch",
       "name": "Debug Executor",
-      "program": "scripts/runExecutor.js",
+      "program": "scripts/runExecutor.js"
     },
     {
       "type": "node",

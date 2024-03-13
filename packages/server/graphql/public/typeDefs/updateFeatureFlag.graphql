@@ -4,7 +4,6 @@ A flag to give an individual user super powers
 enum UserFlagEnum {
   standups
   azureDevOps
-  msTeams
   insights
   recurrence
   noAISummary
@@ -21,7 +20,6 @@ The types of flags that give an individual user super powers
 type UserFeatureFlags {
   standups: Boolean!
   azureDevOps: Boolean!
-  msTeams: Boolean!
   insights: Boolean!
   recurrence: Boolean!
   noAISummary: Boolean!

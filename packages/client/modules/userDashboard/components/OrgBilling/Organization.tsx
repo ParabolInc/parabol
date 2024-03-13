@@ -21,6 +21,10 @@ const OrgMembers = lazy(
     import(/* webpackChunkName: 'OrgMembersRoot' */ '../../containers/OrgMembers/OrgMembersRoot')
 )
 
+const OrgTeamMembers = lazy(
+  () => import(/* webpackChunkName: 'OrgTeamMembers' */ '../OrgTeamMembers/OrgTeamMembersRoot')
+)
+
 const OrgDetails = lazy(() => import(/* webpackChunkName: 'OrgDetails' */ './OrgDetails'))
 const Authentication = lazy(
   () =>
@@ -70,13 +74,7 @@ const Organization = (props: Props) => {
           path={`${match.url}/${BILLING_PAGE}`}
           render={() => <OrgPlansAndBillingRoot organizationRef={organization} />}
         />
-        {isBillingLeader && (
-          <Route
-            exact
-            path={`${match.url}/${TEAMS_PAGE}`}
-            render={() => <OrgTeams organizationRef={organization} />}
-          />
-        )}
+
         <Route
           exact
           path={`${match.url}/${MEMBERS_PAGE}`}
@@ -92,6 +90,16 @@ const Organization = (props: Props) => {
           path={`${match.url}/${AUTHENTICATION_PAGE}`}
           render={(p) => <Authentication {...p} orgId={orgId} />}
         />
+        {isBillingLeader && (
+          <>
+            <Route
+              exact
+              path={`${match.url}/${TEAMS_PAGE}`}
+              render={() => <OrgTeams organizationRef={organization} />}
+            />
+            <Route exact path={`${match.url}/${TEAMS_PAGE}/:teamId`} component={OrgTeamMembers} />
+          </>
+        )}
       </Switch>
     </section>
   )
