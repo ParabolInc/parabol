@@ -57,9 +57,6 @@ const addPokerTemplate = {
       return standardError(new Error('You have reached the limit of free custom templates.'), {
         userId: viewerId
       })
-    } else {
-      decrementFreeTemplatesRemaining(viewerId, 'poker')
-      viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
     }
     let data
     if (parentTemplateId) {
@@ -108,8 +105,10 @@ const addPokerTemplate = {
 
       await Promise.all([
         r.table('TemplateDimension').insert(newTemplateDimensions).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeTemplatesRemaining(viewerId, 'poker')
       ])
+      viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
@@ -135,8 +134,10 @@ const addPokerTemplate = {
 
       await Promise.all([
         r.table('TemplateDimension').insert(newDimension).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeTemplatesRemaining(viewerId, 'poker')
       ])
+      viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }

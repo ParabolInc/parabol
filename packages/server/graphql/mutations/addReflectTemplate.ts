@@ -58,9 +58,6 @@ const addReflectTemplate = {
       return standardError(new Error('You have reached the limit of free custom templates.'), {
         userId: viewerId
       })
-    } else {
-      decrementFreeCustomTemplatesRemaining(viewerId, 'retro')
-      viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1
     }
     let data
     if (parentTemplateId) {
@@ -108,8 +105,10 @@ const addReflectTemplate = {
 
       await Promise.all([
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeCustomTemplatesRemaining(viewerId, 'retro')
       ])
+      viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
@@ -135,8 +134,10 @@ const addReflectTemplate = {
       const {id: templateId} = newTemplate
       await Promise.all([
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeCustomTemplatesRemaining(viewerId, 'retro')
       ])
+      viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }
