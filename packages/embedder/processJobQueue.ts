@@ -16,7 +16,7 @@ export const processJobQueue = async (modelManager: ModelManager) => {
 
   // use a loop here to avoid tail call recursion since this will run indefinitely
   while (true) {
-    const job = await pg
+    let job = await pg
       .with(
         (cte) => cte('ids').materialized(),
         (db) =>
@@ -33,11 +33,30 @@ export const processJobQueue = async (modelManager: ModelManager) => {
       .where('id', '=', sql`ANY(SELECT id FROM ids)` as any)
       .returningAll()
       .executeTakeFirst()
-
     if (!job) {
-      // the queue is empty! wait a minute
-      await sleep(ms('1m'))
-      continue
+      job = await pg
+        .with(
+          (cte) => cte('ids').materialized(),
+          (db) =>
+            db
+              .selectFrom('EmbeddingsJobQueue')
+              .select('id')
+              .where('state', '=', 'failed')
+              .where('retryAfter', '<', sql`NOW()`)
+              .limit(1)
+              .forUpdate()
+              .skipLocked()
+        )
+        .updateTable('EmbeddingsJobQueue')
+        .set({state: 'embedding'})
+        .where('id', '=', sql`ANY(SELECT id FROM ids)` as any)
+        .returningAll()
+        .executeTakeFirst()
+      if (!job) {
+        // the queue is empty! wait a minute
+        await sleep(ms('1m'))
+        continue
+      }
     }
 
     const metadata = await pg

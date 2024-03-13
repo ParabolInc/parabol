@@ -60,3 +60,12 @@ Set state = 'queued'
 
 INSERT INTO "EmbeddingsJobQueue" ("objectType", "refId", "model", "embeddingsMetadataId")
 VALUES ('retrospectiveDiscussionTopic', '123', 'Embeddings_ember_1', <1>)
+
+https://www.2ndquadrant.com/en/blog/what-is-select-skip-locked-for-in-postgresql-9-5/
+
+## Retry strategy
+
+If the job queue is empty
+Retry any job where the retryAfter is > now and increment the retryCount by 1
+If the job fails again, increase the retryAfter
+If retryCount is too high, then just set retryAfter to years later
