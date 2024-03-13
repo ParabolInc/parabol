@@ -1,9 +1,12 @@
 import {Kysely, PostgresDialect} from 'kysely'
-import getPg from '../getPgConfig'
-import getKysely from '../getKysely'
+import getPg from '../getPg'
 
 export async function up() {
-  const pg = getKysely()
+  const pg = new Kysely<any>({
+    dialect: new PostgresDialect({
+      pool: getPg()
+    })
+  })
 
   await pg.schema
     .alterTable('User')
@@ -15,7 +18,11 @@ export async function up() {
 }
 
 export async function down() {
-  const pg = getKysely()
+  const pg = new Kysely<any>({
+    dialect: new PostgresDialect({
+      pool: getPg()
+    })
+  })
 
   await pg.schema
     .alterTable('User')
