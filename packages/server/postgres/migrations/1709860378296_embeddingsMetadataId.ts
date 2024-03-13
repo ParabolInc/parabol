@@ -9,6 +9,8 @@ export async function up() {
       DROP COLUMN "models",
       ALTER COLUMN "refId" SET NOT NULL;
     ALTER TABLE "EmbeddingsJobQueue"
+      ADD COLUMN "retryAfter" TIMESTAMP WITH TIME ZONE,
+      ADD COLUMN "retryCount" SMALLINT NOT NULL DEFAULT 0,
       DROP CONSTRAINT IF EXISTS "EmbeddingsJobQueue_objectType_refId_model_key",
       DROP COLUMN "refId",
       DROP COLUMN "objectType",
@@ -34,6 +36,8 @@ export async function down() {
       ADD COLUMN "refId" VARCHAR(100),
       ADD COLUMN "objectType" "EmbeddingsObjectTypeEnum" NOT NULL,
       DROP COLUMN "embeddingsMetadataId",
+      DROP COLUMN "retryAfter",
+      DROP COLUMN "retryCount",
       DROP CONSTRAINT IF EXISTS "EmbeddingsMetadata_embeddingsMetadataId_fkey",
       DROP CONSTRAINT IF EXISTS "EmbeddingsJobQueue_embeddingsMetadataId_model_unique";
   `)

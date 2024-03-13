@@ -42,7 +42,7 @@ export const processJobQueue = async (modelManager: ModelManager) => {
               .selectFrom('EmbeddingsJobQueue')
               .select('id')
               .where('state', '=', 'failed')
-              .where('retryAfter', '<', sql`NOW()`)
+              .where('retryAfter', '<', new Date())
               .limit(1)
               .forUpdate()
               .skipLocked()
@@ -59,15 +59,17 @@ export const processJobQueue = async (modelManager: ModelManager) => {
       }
     }
 
+    const {id: jobId, embeddingsMetadataId, retryCount, model} = job
     const metadata = await pg
       .selectFrom('EmbeddingsMetadata')
       .selectAll()
-      .where('id', '=', job.embeddingsMetadataId)
+      .where('id', '=', embeddingsMetadataId)
       .executeTakeFirst()
 
     if (!metadata) {
-      await updateJobState(job.id, 'failed', {
-        stateMessage: `unable to fetch metadata by EmbeddingsJobQueue.id = ${job.id}`
+      await updateJobState(jobId, 'failed', {
+        stateMessage: `unable to fetch metadata by EmbeddingsJobQueue.id = ${jobId}`,
+        retryCount: retryCount + 1
       })
       continue
     }
@@ -83,39 +85,46 @@ export const processJobQueue = async (modelManager: ModelManager) => {
           .execute()
       }
     } catch (e) {
-      await updateJobState(job.id, 'failed', {
-        stateMessage: `unable to create embedding text: ${e}`
+      await updateJobState(jobId, 'failed', {
+        stateMessage: `unable to create embedding text: ${e}`,
+        retryCount: retryCount + 1
       })
       continue
     }
 
-    const embeddingModel = modelManager.embeddingModelsMapByTable[job.model]
+    const embeddingModel = modelManager.embeddingModelsMapByTable[model]
     if (!embeddingModel) {
-      await updateJobState(job.id, 'failed', {
-        stateMessage: `embedding model ${job.model} not available`
+      await updateJobState(jobId, 'failed', {
+        stateMessage: `embedding model ${model} not available`,
+        retryCount: retryCount + 1
       })
       continue
     }
 
     const tokens = await embeddingModel.getTokens(fullText)
     if (tokens instanceof Error) {
-      await updateJobState(job.id, 'failed', {
-        stateMessage: `unable to get tokens: ${tokens.message}`
+      await updateJobState(jobId, 'failed', {
+        stateMessage: `unable to get tokens: ${tokens.message}`,
+        retryCount: retryCount + 1,
+        retryAfter: retryCount < 10 ? new Date(Date.now() + ms('1m')) : null
       })
       continue
     }
 
     if (tokens.length > embeddingModel.maxInputTokens) {
-      await updateJobState(job.id, 'failed', {
-        stateMessage: `fullText is too long for ${job.model}`
+      await updateJobState(jobId, 'failed', {
+        stateMessage: `fullText is too long for ${model}`,
+        retryCount: retryCount + 1
       })
       continue
     }
 
     const embeddingVector = await embeddingModel.getEmbedding(fullText)
     if (embeddingVector instanceof Error) {
-      await updateJobState(job.id, 'failed', {
-        stateMessage: `unable to get embeddings: ${embeddingVector.message}`
+      await updateJobState(jobId, 'failed', {
+        stateMessage: `unable to get embeddings: ${embeddingVector.message}`,
+        retryCount: retryCount + 1,
+        retryAfter: retryCount < 10 ? new Date(Date.now() + ms('1m')) : null
       })
       continue
     }
@@ -123,10 +132,10 @@ export const processJobQueue = async (modelManager: ModelManager) => {
     await pg
       .insertInto(embeddingModel.tableName as EmbeddingsTable)
       .values({
-        // TODO is the extra space really worth it?!
+        // TODO is the extra space of a null embedText really worth it?!
         embedText: null,
         embedding: numberVectorToString(embeddingVector),
-        embeddingsMetadataId: job.embeddingsMetadataId
+        embeddingsMetadataId
       })
       .onConflict((oc) =>
         oc.doUpdateSet((eb) => ({
@@ -136,7 +145,7 @@ export const processJobQueue = async (modelManager: ModelManager) => {
       )
       .execute()
 
-    await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', job.id).executeTakeFirstOrThrow()
-    console.log(`embedder: completed ${job.embeddingsMetadataId} -> ${job.model}`)
+    await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
+    console.log(`embedder: completed ${embeddingsMetadataId} -> ${model}`)
   }
 }
