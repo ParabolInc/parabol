@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     git
 
 RUN cd /extensions/postgres-json-schema && make install && make installcheck
-RUN git clone --branch v0.5.0 \
+RUN git clone --branch v0.5.1 \
        https://github.com/pgvector/pgvector.git /extensions/pgvector && \
        cd extensions/pgvector && make clean && make && make install
 

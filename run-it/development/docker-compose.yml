@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-      - ".datadog//dd-conf.d:/etc/datadog-agent/conf.d/local.d/"
+      - ".datadog/dd-conf.d:/etc/datadog-agent/conf.d/local.d/"
       - "../../dev/logs:/var/log/datadog/logs"
   rethinkdb:
     image: rethinkdb:2.4.2
