@@ -1,0 +1,20 @@
+{
+  "title": "Node Loader options",
+  "type": "object",
+  "properties": {
+    "name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "instanceof": "Function"
+        }
+      ]
+    },
+    "flags": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false
+}
