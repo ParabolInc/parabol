@@ -22,6 +22,7 @@ import prettier from 'prettier'
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
 async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderWorker) {
+  if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
   return !user ? 'Unknown' : user.preferredName
 }
@@ -42,9 +43,7 @@ async function formatThread(
     const indent = '   '.repeat(depth + 1)
     const author = comment.isAnonymous
       ? 'Anonymous'
-      : comment.createdBy
-      ? await getPreferredNameByUserId(comment.createdBy, dataLoader)
-      : 'Unknown'
+      : await getPreferredNameByUserId(comment.createdBy, dataLoader)
     const how = depth === 0 ? 'wrote' : 'replied'
     const content = comment.plaintextContent
     const formattedPost = `${indent}- ${author} ${how}, "${content}"\n`
@@ -96,15 +95,11 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       if (prompt.description) markdown += `: ${prompt.description}`
       markdown += `".\n`
     }
-    if (newMeeting.disableAnonymity) {
-      for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
-        const author = await getPreferredNameByUserId(reflection.creatorId, dataLoader)
-        markdown += `   - ${author} wrote, "${reflection.plaintextContent}"\n`
-      }
-    } else {
-      for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
-        markdown += `   - Anonymous wrote, "${reflection.plaintextContent}"\n`
-      }
+    for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
+      const author = newMeeting.disableAnonymity
+        ? await getPreferredNameByUserId(reflection.creatorId, dataLoader)
+        : 'Anonymous'
+      markdown += `   - ${author} wrote, "${reflection.plaintextContent}"\n`
     }
     markdown += `\n`
   }

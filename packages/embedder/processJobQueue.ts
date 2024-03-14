@@ -111,39 +111,40 @@ export const processJobQueue = async (modelManager: ModelManager) => {
       continue
     }
 
-    if (tokens.length > embeddingModel.maxInputTokens) {
-      await updateJobState(jobId, 'failed', {
-        stateMessage: `fullText is too long for ${model}`,
-        retryCount: retryCount + 1
-      })
-      continue
-    }
+    const isFullTextTooBig = tokens.length > embeddingModel.maxInputTokens
+    // Cannot use summarization strategy if generation model has same context length as embedding model
+    // We must split the text & not tokens because the endpoint doesn't support decoding input tokens
+    const chunks = isFullTextTooBig ? embeddingModel.splitText(fullText, 0) : [fullText]
 
-    const embeddingVector = await embeddingModel.getEmbedding(fullText)
-    if (embeddingVector instanceof Error) {
-      await updateJobState(jobId, 'failed', {
-        stateMessage: `unable to get embeddings: ${embeddingVector.message}`,
-        retryCount: retryCount + 1,
-        retryAfter: retryCount < 10 ? new Date(Date.now() + ms('1m')) : null
+    await Promise.all(
+      chunks.map(async (chunk, chunkNumber) => {
+        const embeddingVector = await embeddingModel.getEmbedding(chunk)
+        if (embeddingVector instanceof Error) {
+          await updateJobState(jobId, 'failed', {
+            stateMessage: `unable to get embeddings: ${embeddingVector.message}`,
+            retryCount: retryCount + 1,
+            retryAfter: retryCount < 10 ? new Date(Date.now() + ms('1m')) : null
+          })
+          return
+        }
+        await pg
+          .insertInto(embeddingModel.tableName as EmbeddingsTable)
+          .values({
+            // TODO is the extra space of a null embedText really worth it?!
+            embedText: isFullTextTooBig ? chunk : null,
+            embedding: numberVectorToString(embeddingVector),
+            embeddingsMetadataId,
+            chunkNumber: isFullTextTooBig ? chunkNumber : null
+          })
+          .onConflict((oc) =>
+            oc.doUpdateSet((eb) => ({
+              embedText: eb.ref('excluded.embedText'),
+              embedding: eb.ref('excluded.embedding')
+            }))
+          )
+          .execute()
       })
-      continue
-    }
-
-    await pg
-      .insertInto(embeddingModel.tableName as EmbeddingsTable)
-      .values({
-        // TODO is the extra space of a null embedText really worth it?!
-        embedText: null,
-        embedding: numberVectorToString(embeddingVector),
-        embeddingsMetadataId
-      })
-      .onConflict((oc) =>
-        oc.doUpdateSet((eb) => ({
-          embedText: eb.ref('excluded.embedText'),
-          embedding: eb.ref('excluded.embedding')
-        }))
-      )
-      .execute()
+    )
 
     await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
     console.log(`embedder: completed ${embeddingsMetadataId} -> ${model}`)

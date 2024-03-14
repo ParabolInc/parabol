@@ -2,6 +2,7 @@ import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import {AbstractModel, ModelConfig} from './AbstractModel'
+import {RecursiveCharacterTextSplitter} from './RecursiveCharacterTextSplitter'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
@@ -28,6 +29,13 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   abstract getEmbedding(content: string): Promise<number[] | Error>
 
   abstract getTokens(content: string): Promise<number[] | Error>
+  splitText(content: string, chunkOverlap: number) {
+    // it's actually 4 / 3, but don't want to chance a failed split
+    const TOKENS_PER_WORD = 5 / 3
+    const wordLimit = Math.floor(this.maxInputTokens / TOKENS_PER_WORD)
+    const splitter = new RecursiveCharacterTextSplitter({chunkOverlap, chunkSize: wordLimit})
+    return splitter.splitText(content)
+  }
 
   async createTable() {
     const pg = getKysely()
@@ -48,6 +56,8 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           "embedText" TEXT,
           "embedding" vector(${sql.raw(vectorDimensions.toString())}),
           "embeddingsMetadataId" INTEGER UNIQUE NOT NULL,
+          "chunkNumber" SMALLINT,
+          UNIQUE("embeddingsMetadataId", "chunkNumber"),
           FOREIGN KEY ("embeddingsMetadataId")
             REFERENCES "EmbeddingsMetadata"("id")
             ON DELETE CASCADE
@@ -78,11 +88,11 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       `.execute(pg)
 
     console.log(
-      `ModelManager: Queueing EmbeddingsMetadata into EmbeddingsJobQue for ${this.tableName}`
+      `ModelManager: Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`
     )
     await sql`
     INSERT INTO "EmbeddingsJobQueue" ("model", "embeddingsMetadataId")
-    SELECT '${sql.raw(this.tableName)}', "embeddingsMetadataId"
+    SELECT '${sql.raw(this.tableName)}', "id"
     FROM "EmbeddingsMetadata"
     ON CONFLICT DO NOTHING;
     `.execute(pg)
