@@ -133,3 +133,12 @@ jobs:
           name: test-results
           path: packages/integration-tests/test-results/
           retention-days: 7
+
+      - name: Report Status
+        if: ${{ failure() && github.ref_name == 'master' }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

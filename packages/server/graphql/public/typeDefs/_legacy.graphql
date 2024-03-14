@@ -7851,7 +7851,7 @@ type StartSprintPokerSuccess {
   meeting: PokerMeeting!
   team: Team!
   teamId: ID!
-  hasGcalError: Boolean!
+  hasGcalError: Boolean
 }
 
 """

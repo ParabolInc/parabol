@@ -92,8 +92,10 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
 
     await Promise.all([
       r.table('TemplateDimension').insert(newTemplateDimensions).run(),
-      insertMeetingTemplate(newTemplate)
+      insertMeetingTemplate(newTemplate),
+      decrementFreeTemplatesRemaining(viewerId, 'poker')
     ])
+    viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
     analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
     data = {templateId: newTemplate.id}
   } else {
@@ -119,8 +121,10 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
 
     await Promise.all([
       r.table('TemplateDimension').insert(newDimension).run(),
-      insertMeetingTemplate(newTemplate)
+      insertMeetingTemplate(newTemplate),
+      decrementFreeTemplatesRemaining(viewerId, 'poker')
     ])
+    viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
     analytics.templateMetrics(viewer, newTemplate, 'Template Created')
     data = {templateId}
   }

@@ -1,34 +1,34 @@
-import {Client} from 'pg'
-import getPgConfig from '../getPgConfig'
+import {Kysely, PostgresDialect} from 'kysely'
+import getPg from '../getPg'
 
 export async function up() {
-  const client = new Client(getPgConfig())
-  await client.connect()
-  await client.query(`
-    DO $$
-    BEGIN
-      ALTER TABLE "User"
-        ADD COLUMN IF NOT EXISTS "freeCustomRetroTemplatesRemaining" INTEGER DEFAULT 2 NOT NULL;
-      ALTER TABLE "User"
-        ADD COLUMN IF NOT EXISTS "freeCustomPokerTemplatesRemaining" INTEGER DEFAULT 2 NOT NULL;
-    END
-    $$;
-  `)
-  await client.end()
+  const pg = new Kysely<any>({
+    dialect: new PostgresDialect({
+      pool: getPg()
+    })
+  })
+
+  await pg.schema
+    .alterTable('User')
+    .addColumn('freeCustomRetroTemplatesRemaining', 'int2', (col) => col.defaultTo(2).notNull())
+    .addColumn('freeCustomPokerTemplatesRemaining', 'int2', (col) => col.defaultTo(2).notNull())
+    .execute()
+
+  await pg.destroy()
 }
 
 export async function down() {
-  const client = new Client(getPgConfig())
-  await client.connect()
-  await client.query(`
-    DO $$
-    BEGIN
-      ALTER TABLE "User"
-        DROP COLUMN "freeCustomRetroTemplatesRemaining";
-      ALTER TABLE "User"
-        DROP COLUMN "freeCustomPokerTemplatesRemaining";
-    END
-    $$;
-  `)
-  await client.end()
+  const pg = new Kysely<any>({
+    dialect: new PostgresDialect({
+      pool: getPg()
+    })
+  })
+
+  await pg.schema
+    .alterTable('User')
+    .dropColumn('freeCustomRetroTemplatesRemaining')
+    .dropColumn('freeCustomPokerTemplatesRemaining')
+    .execute()
+
+  await pg.destroy()
 }

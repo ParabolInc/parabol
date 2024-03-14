@@ -53,9 +53,7 @@ const AddNewPokerTemplate = (props: Props) => {
           id
           user {
             id
-            featureFlags {
-              noTemplateLimit
-            }
+            freeCustomPokerTemplatesRemaining
           }
         }
       }
@@ -63,6 +61,9 @@ const AddNewPokerTemplate = (props: Props) => {
     teamRef
   )
   const {id: teamId, tier, viewerTeamMember} = team
+  const {user} = viewerTeamMember || {}
+  const {freeCustomPokerTemplatesRemaining} = user || {}
+
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -71,7 +72,8 @@ const AddNewPokerTemplate = (props: Props) => {
     }
   }, [])
   const canEditTemplates =
-    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
+    tier !== 'starter' ||
+    (freeCustomPokerTemplatesRemaining && freeCustomPokerTemplatesRemaining > 0)
   const addNewTemplate = () => {
     if (submitting) return
     if (!canEditTemplates) {

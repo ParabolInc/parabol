@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - "release-please--**"
+  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -137,3 +138,12 @@ jobs:
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
             --minified-path-prefix=${{env.CDN_BUILD_URL}}
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

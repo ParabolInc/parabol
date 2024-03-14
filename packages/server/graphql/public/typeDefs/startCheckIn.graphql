@@ -7,7 +7,7 @@ type StartCheckInSuccess {
   meeting: ActionMeeting!
   meetingId: ID!
   team: Team!
-  hasGcalError: Boolean!
+  hasGcalError: Boolean
 }
 
 extend type Mutation {

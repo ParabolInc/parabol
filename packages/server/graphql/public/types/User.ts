@@ -195,12 +195,7 @@ const User: UserResolvers = {
   },
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
-  },
-  billingTier: ({tier}) => tier,
-  freeCustomRetroTemplatesRemaining: ({freeCustomRetroTemplatesRemaining}) =>
-    freeCustomRetroTemplatesRemaining,
-  freeCustomPokerTemplatesRemaining: ({freeCustomPokerTemplatesRemaining}) =>
-    freeCustomPokerTemplatesRemaining
+  }
 }
 
 export default User
