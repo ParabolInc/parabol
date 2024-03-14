@@ -5189,11 +5189,6 @@ type Mutation {
   """
   Add a new template full of prompts
   """
-  addReflectTemplate(parentTemplateId: ID, teamId: ID!): AddReflectTemplatePayload
-
-  """
-  Add a new template full of prompts
-  """
   addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload
   addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
 
@@ -6532,11 +6527,6 @@ enum ReactableEnum {
 enum GcalVideoTypeEnum {
   meet
   zoom
-}
-
-type AddReflectTemplatePayload {
-  error: StandardMutationError
-  reflectTemplate: ReflectTemplate
 }
 
 type AddReflectTemplatePromptPayload {
