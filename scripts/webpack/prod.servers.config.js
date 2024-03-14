@@ -36,8 +36,12 @@ module.exports = (config) => {
         path.join(SERVER_ROOT, 'server.ts')
       ],
       embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'embedder.ts')],
-      gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-      preDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')],
+      gqlExecutor: [DOTENV, INIT_PUBLIC_PATH, path.join(GQL_ROOT, 'gqlExecutor.ts')],
+      preDeploy: [
+        DOTENV,
+        INIT_PUBLIC_PATH,
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')
+      ],
       pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
       migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
       assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')]
@@ -120,7 +124,8 @@ module.exports = (config) => {
           test: /\.node$/,
           use: [
             {
-              loader: 'node-loader',
+              // use our fork of node-loader to exclude the public path from the script
+              loader: path.resolve(__dirname, './utils/node-loader-private/cjs.js'),
               options: {
                 // sharp's bindings.gyp is hardcoded to look for libvips 2 directories up
                 // rather than do a custom build, we just output it 2 directories down (/node/binaries)
