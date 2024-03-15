@@ -121,7 +121,7 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     analytics.templateMetrics(viewer, newTemplate, 'Template Created')
     data = {templateId}
   }
-  publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePayload', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplateSuccess', data, subOptions)
   return data
 }
 

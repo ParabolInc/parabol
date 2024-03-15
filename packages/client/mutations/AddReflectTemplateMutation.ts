@@ -62,7 +62,7 @@ const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> 
     updater: (store) => {
       const payload = store.getRootField('addReflectTemplate')
       if (!payload) return
-      addReflectTemplateTeamUpdater(payload, {atmosphere, store})
+      addReflectTemplateTeamUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {parentTemplateId, teamId} = variables

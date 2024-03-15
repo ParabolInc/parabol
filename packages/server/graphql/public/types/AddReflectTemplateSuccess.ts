@@ -1,11 +1,11 @@
 import {getUserId} from '../../../utils/authorization'
-import {AddPokerTemplateSuccessResolvers, ReflectTemplate} from '../resolverTypes'
+import {AddReflectTemplateSuccessResolvers, ReflectTemplate} from '../resolverTypes'
 
 export type AddPokerTemplateSuccessSource = {
   templateId: string
 }
 
-const AddPokerTemplateSuccess: AddPokerTemplateSuccessResolvers = {
+const AddPokerTemplateSuccess: AddReflectTemplateSuccessResolvers = {
   reflectTemplate: async ({templateId}, _args, {dataLoader}) => {
     return (await dataLoader.get('meetingTemplates').load(templateId)) as ReflectTemplate
   },

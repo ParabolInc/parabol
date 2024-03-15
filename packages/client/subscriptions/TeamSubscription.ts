@@ -17,7 +17,6 @@ import {
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
-import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
 import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
 import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
@@ -65,9 +64,6 @@ const subscription = graphql`
       }
       AddAtlassianAuthPayload {
         ...AddAtlassianAuthMutation_team @relay(mask: false)
-      }
-      AddReflectTemplatePayload {
-        ...AddReflectTemplateMutation_team @relay(mask: false)
       }
       AddReflectTemplatePromptPayload {
         ...AddReflectTemplatePromptMutation_team @relay(mask: false)
@@ -207,7 +203,6 @@ const updateHandlers = {
   RemoveAgendaItemPayload: removeAgendaItemUpdater,
   UpdateAgendaItemPayload: updateAgendaItemUpdater,
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
-  AddReflectTemplatePayload: addReflectTemplateTeamUpdater,
   AddReflectTemplatePromptPayload: addReflectTemplatePromptTeamUpdater,
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,

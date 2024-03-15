@@ -63,7 +63,7 @@ const AddPokerTemplateMutation: StandardMutation<TAddPokerTemplateMutation> = (
     updater: (store) => {
       const payload = store.getRootField('addPokerTemplate')
       if (!payload) return
-      addPokerTemplateTeamUpdater(payload, {atmosphere, store})
+      addPokerTemplateTeamUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {parentTemplateId, teamId} = variables
