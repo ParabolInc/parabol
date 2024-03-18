@@ -43,7 +43,6 @@ const UpdateMeetingTemplateMutation: StandardMutation<TUpdateMeetingTemplateMuta
   return commitMutation<TUpdateMeetingTemplateMutation>(atmosphere, {
     mutation,
     variables,
-
     onCompleted,
     onError
   })
