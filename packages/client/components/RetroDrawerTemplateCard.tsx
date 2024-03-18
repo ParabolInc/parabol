@@ -7,17 +7,24 @@ import {ActivityLibraryCard} from './ActivityLibrary/ActivityLibraryCard'
 import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {RetroDrawerTemplateCard_template$key} from '~/__generated__/RetroDrawerTemplateCard_template.graphql'
 import {CategoryID, CATEGORY_THEMES} from '././ActivityLibrary/Categories'
+import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
+import useMutationProps from '../hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   templateRef: RetroDrawerTemplateCard_template$key
+  meetingId: string
 }
 
 const RetroDrawerTemplateCard = (props: Props) => {
-  const {templateRef} = props
+  const {templateRef, meetingId} = props
+  const {onError, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
   const template = useFragment(
     graphql`
       fragment RetroDrawerTemplateCard_template on MeetingTemplate {
         ...ActivityLibraryCardDescription_template
+        id
         name
         category
         illustrationUrl
@@ -28,7 +35,14 @@ const RetroDrawerTemplateCard = (props: Props) => {
   )
 
   const handleClick = () => {
-    console.log('template clicked', template)
+    UpdateMeetingTemplateMutation(
+      atmosphere,
+      {
+        meetingId: meetingId,
+        templateId: template.id
+      },
+      {onError, onCompleted}
+    )
   }
 
   return (

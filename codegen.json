@@ -140,7 +140,7 @@
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
-          "UpdateRetrospectiveTemplateSuccess": "./types/UpdateRetrospectiveTemplateSuccess#UpdateRetrospectiveTemplateSuccessSource",
+          "UpdateMeetingTemplateSuccess": "./types/UpdateMeetingTemplateSuccess#UpdateMeetingTemplateSuccessSource",
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",

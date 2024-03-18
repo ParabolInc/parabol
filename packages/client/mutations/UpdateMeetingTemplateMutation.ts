@@ -1,0 +1,52 @@
+import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
+import {UpdateMeetingTemplateMutation as TUpdateMeetingTemplateMutation} from '../__generated__/UpdateMeetingTemplateMutation.graphql'
+
+graphql`
+  fragment UpdateMeetingTemplateMutation_meeting on UpdateMeetingTemplateSuccess {
+    meeting {
+      ... on RetrospectiveMeeting {
+        id
+        templateId
+        phases {
+          id
+          ... on ReflectPhase {
+            reflectPrompts {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+const mutation = graphql`
+  mutation UpdateMeetingTemplateMutation($meetingId: ID!, $templateId: ID!) {
+    updateMeetingTemplate(meetingId: $meetingId, templateId: $templateId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+      ...UpdateMeetingTemplateMutation_meeting @relay(mask: false)
+    }
+  }
+`
+
+const UpdateMeetingTemplateMutation: StandardMutation<TUpdateMeetingTemplateMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
+  return commitMutation<TUpdateMeetingTemplateMutation>(atmosphere, {
+    mutation,
+    variables,
+
+    onCompleted,
+    onError
+  })
+}
+
+export default UpdateMeetingTemplateMutation
