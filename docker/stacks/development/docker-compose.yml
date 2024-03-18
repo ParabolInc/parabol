@@ -4,7 +4,7 @@ services:
   datadog:
     image: gcr.io/datadoghq/agent:7
     restart: unless-stopped
-    env_file: ../../.env
+    env_file: ../../../.env
     ports:
       - "8126:8126"
     networks:
@@ -14,7 +14,7 @@ services:
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
       - ".datadog/dd-conf.d:/etc/datadog-agent/conf.d/local.d/"
-      - "../../dev/logs:/var/log/datadog/logs"
+      - "../../../dev/logs:/var/log/datadog/logs"
   rethinkdb:
     image: rethinkdb:2.4.2
     restart: unless-stopped
@@ -28,9 +28,9 @@ services:
       - parabol-network
   postgres:
     build:
-      context: "../../docker/postgres"
+      context: "../../images/postgres"
     restart: unless-stopped
-    env_file: ../../.env
+    env_file: ../../../.env
     ports:
       - "5432:5432"
     volumes:
@@ -41,7 +41,7 @@ services:
     image: dpage/pgadmin4:8.3
     depends_on:
       - postgres
-    env_file: ../../.env
+    env_file: ../../../.env
     volumes:
       - "pgadmin-data:/var/lib/pgadmin"
     ports:
