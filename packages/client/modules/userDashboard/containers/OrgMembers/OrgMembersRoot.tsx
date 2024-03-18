@@ -15,6 +15,7 @@ const OrgMembersRoot = (props: Props) => {
     orgId,
     first: 10000
   })
+
   return (
     <Suspense fallback={<Loader size={LoaderSize.PANEL} />}>
       {queryRef && <OrgMembers queryRef={queryRef} />}

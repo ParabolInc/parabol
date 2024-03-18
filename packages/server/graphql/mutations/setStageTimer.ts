@@ -1,6 +1,7 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import getKysely from '../../postgres/getKysely'
 import getRethink from '../../database/rethinkDriver'
 import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJobMetingStageTimeLimit'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -90,12 +91,13 @@ export default {
           ? new Date(now.getTime() + timeRemaining - AVG_PING)
           : newScheduledEndTime
       } else {
+        const pg = getKysely()
         stage.isAsync = true
         stage.scheduledEndTime = newScheduledEndTime
-        await r
-          .table('ScheduledJob')
-          .insert(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
-          .run()
+        await pg
+          .insertInto('ScheduledJob')
+          .values(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
+          .execute()
         IntegrationNotifier.startTimeLimit(dataLoader, newScheduledEndTime, meetingId, teamId)
       }
     } else {
