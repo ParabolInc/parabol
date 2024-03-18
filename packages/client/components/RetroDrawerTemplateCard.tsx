@@ -33,13 +33,18 @@ const RetroDrawerTemplateCard = (props: Props) => {
         className='group aspect-[256/160] flex-1 hover:cursor-pointer'
         theme={CATEGORY_THEMES[template.category as CategoryID]}
         title={template.name}
+        type='retrospective'
         badge={
           !template.isFree ? (
             <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
           ) : null
         }
       >
-        <ActivityCardImage className='group-hover/card:hidden' src={template.illustrationUrl} />
+        <ActivityCardImage
+          className='group-hover/card:hidden'
+          src={template.illustrationUrl}
+          category='retrospective'
+        />
         <ActivityLibraryCardDescription
           className='hidden group-hover/card:flex'
           templateRef={template}
