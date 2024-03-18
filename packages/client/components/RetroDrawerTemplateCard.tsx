@@ -27,8 +27,12 @@ const RetroDrawerTemplateCard = (props: Props) => {
     templateRef
   )
 
+  const handleClick = () => {
+    console.log('template clicked', template)
+  }
+
   return (
-    <div className='px-4 py-2'>
+    <form className='px-4 py-2' onClick={handleClick}>
       <ActivityLibraryCard
         className='group aspect-[256/160] flex-1 hover:cursor-pointer'
         theme={CATEGORY_THEMES[template.category as CategoryID]}
@@ -50,7 +54,7 @@ const RetroDrawerTemplateCard = (props: Props) => {
           templateRef={template}
         />
       </ActivityLibraryCard>
-    </div>
+    </form>
   )
 }
 export default RetroDrawerTemplateCard
