@@ -5,7 +5,6 @@
 ## General notes
 
 - **This stack is not meant for production use.** It is our development stack and can change at any moment, have errors and incorporate and remove components we are testing without any notice.
-- A .env file localed in the root of this repository is used as [Docker env_file](https://docs.docker.com/compose/environment-variables/set-environment-variables/#use-the-env_file-attribute). It is the same file used by our command `yarn dev` to run the application in development mode.
 - This stack is designed to be managed using `yarn db:start` and `yarn db:stop` to start the databases and `yarn dev` or `yarn start` to start and manage the application, depending on the use case.
 
 ## Components

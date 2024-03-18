@@ -1,7 +1,5 @@
 # Docker Host Single Tenant (ST)
 
-> ⚠️ **Parabol does not provide any support on this stack**. Use it under your own resposibility.
-
 To run Parabol in single tenant mode (e.g. simple docker-compose on a docker host):
 
 1. Build your Parabol UBI using instructions in `docker/parabol-ubi/README.md`

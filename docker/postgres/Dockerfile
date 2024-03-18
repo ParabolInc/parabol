@@ -1,15 +1,20 @@
 FROM postgres:15.4
+ARG PGVECTOR_VERSION=v0.6.1
+ARG PSQL_MAJOR_VERSION=15
 
 ADD extensions /extensions
 
 RUN apt-get update && apt-get install -y \
     build-essential \
     locales \
-    postgresql-server-dev-15 \
+    postgresql-server-dev-${PSQL_MAJOR_VERSION} \
     git
 
+# JSON-Schema
 RUN cd /extensions/postgres-json-schema && make install && make installcheck
-RUN git clone --branch v0.5.1 \
+
+# PGVector
+RUN git clone --branch ${PGVECTOR_VERSION} \
        https://github.com/pgvector/pgvector.git /extensions/pgvector && \
        cd extensions/pgvector && make clean && make && make install
 

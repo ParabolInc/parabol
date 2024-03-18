@@ -78,7 +78,7 @@ services:
   pre-deploy:
     container_name: pre-deploy
     profiles: ["parabol"]
-    image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
+    image: #image:tag
     command: bash -c "node dist/preDeploy.js"
     env_file: .env
     environment:
@@ -97,7 +97,7 @@ services:
   chronos:
     container_name: chronos
     profiles: ["chronos"]
-    image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
+    image: #image:tag
     restart: always
     command: bash -c "node dist/chronos.js"
     env_file: .env
@@ -119,7 +119,7 @@ services:
   web-server:
     container_name: web-server
     profiles: ["parabol"]
-    image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
+    image: #image:tag
     restart: always
     command: bash -c "node dist/web.js"
     env_file: .env
@@ -143,7 +143,7 @@ services:
   gql-executor:
     container_name: gql-executor
     profiles: ["parabol"]
-    image: us-central1-docker.pkg.dev/prbl-tooling/parabol-production/parabol:v7.15.2
+    image: #image:tag
     restart: always
     command: bash -c "node dist/gqlExecutor.js"
     env_file: .env

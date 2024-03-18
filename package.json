@@ -21,7 +21,7 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "pm2-runtime start run-it/development/pm2.config.js",
+    "start": "pm2-runtime start pm2.config.js",
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "node --max-old-space-size=8192 scripts/prod.js",
     "clean": "git clean -fdx -e .env",
@@ -35,7 +35,7 @@
     "db:migrate": "node scripts/migrate.js",
     "deduplicate": "yarn yarn-deduplicate yarn.lock",
     "predeploy": "node dist/preDeploy.js",
-    "dev": "PM2_SILENT=true pm2 start run-it/development/pm2.dev.config.js --no-daemon",
+    "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",
     "lint": "nx run-many --target=lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
     "typecheck": "nx run-many --target=typecheck",
