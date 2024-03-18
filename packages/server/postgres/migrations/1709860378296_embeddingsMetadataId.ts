@@ -5,6 +5,7 @@ export async function up() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
+    CREATE INDEX IF NOT EXISTS "idx_Discussion_createdAt" ON "Discussion"("createdAt");
     ALTER TABLE "EmbeddingsMetadata"
       DROP COLUMN "models",
       ALTER COLUMN "refId" SET NOT NULL;
@@ -28,6 +29,7 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
+    DROP INDEX IF EXISTS "idx_Discussion_createdAt";
     ALTER TABLE "EmbeddingsMetadata"
       ADD COLUMN "models" VARCHAR(255)[],
       ALTER COLUMN "refId" DROP NOT NULL;

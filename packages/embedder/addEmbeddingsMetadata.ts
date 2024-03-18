@@ -4,7 +4,7 @@ import {EmbeddingObjectType, PubSubEmbedderMessage} from './embedder'
 
 export const addEmbeddingsMetadata = async (
   redis: RedisInstance,
-  {objectType, startAt, endAt}: PubSubEmbedderMessage
+  {objectType, ...options}: PubSubEmbedderMessage
 ) => {
   const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
   const objectTypes = objectType ? [objectType] : ALL_OBJECT_TYPES
@@ -13,7 +13,7 @@ export const addEmbeddingsMetadata = async (
     objectTypes.map((type) => {
       switch (type) {
         case 'retrospectiveDiscussionTopic':
-          return addEmbeddingsMetadataForRetrospectiveDiscussionTopic(redis, startAt, endAt)
+          return addEmbeddingsMetadataForRetrospectiveDiscussionTopic(redis, options)
         default:
           throw new Error(`Invalid object type: ${type}`)
       }

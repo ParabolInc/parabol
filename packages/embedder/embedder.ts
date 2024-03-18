@@ -1,6 +1,7 @@
 import tracer from 'dd-trace'
 import EmbedderChannelId from 'parabol-client/shared/gqlIds/EmbedderChannelId'
 import 'parabol-server/initSentry'
+import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
@@ -22,17 +23,19 @@ function parseEnvBoolean(envVarValue: string | undefined): boolean {
 export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
 
 export interface PubSubEmbedderMessage {
-  jobId?: string | undefined
+  // jobId?: string
   objectType: EmbeddingObjectType
-  startAt?: Date | undefined
-  endAt: Date | undefined
+  startAt?: Date
+  endAt?: Date
+  refId?: string
 }
 
+export type EmbedderOptions = Omit<PubSubEmbedderMessage, 'objectType'>
+
 const parseEmbedderMessage = (message: string): PubSubEmbedderMessage => {
-  const {jobId, objectType, startAt, endAt} = JSON.parse(message)
+  const {startAt, endAt, ...input} = JSON.parse(message)
   return {
-    jobId,
-    objectType,
+    ...input,
     startAt: startAt ? new Date(startAt) : undefined,
     endAt: endAt ? new Date(endAt) : undefined
   }
@@ -60,6 +63,26 @@ const run = async () => {
   subscriber.subscribe(embedderChannel)
 
   console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
+
+  // add historical metadata
+  const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
+  const pg = getKysely()
+  ALL_OBJECT_TYPES.forEach(async (objectType) => {
+    switch (objectType) {
+      case 'retrospectiveDiscussionTopic':
+        pg.selectFrom('EmbeddingsMetadata')
+          .selectAll()
+          .where(({eb, selectFrom}) =>
+            eb(
+              'EmbeddingsMetadata.refId',
+              '=',
+              selectFrom('Discussion').orderBy('createdAt').limit(1)
+            )
+          )
+      default:
+        throw new Error(`Invalid object type: ${objectType}`)
+    }
+  })
   processJobQueue(modelManager)
 }
 

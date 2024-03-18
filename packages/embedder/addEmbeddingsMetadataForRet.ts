@@ -1,14 +1,33 @@
 import ms from 'ms'
 import getRethink from 'parabol-server/database/rethinkDriver'
+import {RDatum} from 'parabol-server/database/stricterR'
 import getKysely from 'parabol-server/postgres/getKysely'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import Redlock from 'redlock'
+import {EmbedderOptions} from './embedder'
 
-const insertDiscussionsIntoMetadata = async (
-  discussions: {id: string; teamId: string; createdAt: Date}[]
-) => {
+interface DiscussionMeta {
+  id: string
+  teamId: string
+  createdAt: Date
+}
+
+const validateDiscussions = async (discussions: (DiscussionMeta & {meetingId: string})[]) => {
+  const r = await getRethink()
+  if (discussions.length === 0) return discussions
+  // Exclude discussions that belong to an unfinished meeting
+  const meetingIds = discussions.map(({meetingId}) => meetingId)
+  const endedMeetingIds = await r
+    .table('NewMeeting')
+    .getAll(r.args(meetingIds), {index: 'id'})
+    .filter((row: RDatum) => row('endedAt').default(null).ne(null))('id')
+    .run()
+  const endedMeetingIdsSet = new Set(endedMeetingIds)
+  return discussions.filter(({meetingId}) => endedMeetingIdsSet.has(meetingId))
+}
+
+const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[]) => {
   const pg = getKysely()
-  if (discussions.length === 0) return
   const metadataRows = discussions.map(({id, teamId, createdAt}) => ({
     refId: id,
     objectType: 'retrospectiveDiscussionTopic' as const,
@@ -23,9 +42,9 @@ const insertDiscussionsIntoMetadata = async (
   const metadataBatchSize = Math.trunc(PG_MAX_PARAMS / metadataColParams)
   const insertBatches = Array.from(
     {length: Math.ceil(metadataRows.length / metadataBatchSize)},
-    (v, i) => metadataRows.slice(i * metadataBatchSize, i * metadataBatchSize + metadataBatchSize)
+    (_, i) => metadataRows.slice(i * metadataBatchSize, i * metadataBatchSize + metadataBatchSize)
   )
-  return Promise.all(
+  await Promise.all(
     insertBatches.map((batch) => {
       return pg
         .insertInto('EmbeddingsMetadata')
@@ -34,12 +53,12 @@ const insertDiscussionsIntoMetadata = async (
         .execute()
     })
   )
+  return
 }
 
 export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
   redis: RedisInstance,
-  startAt: Date | undefined,
-  endAt: Date | undefined
+  {startAt, endAt, refId}: EmbedderOptions
 ) => {
   const redlock = new Redlock([redis], {retryCount: 0})
   try {
@@ -49,35 +68,43 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
     return
   }
   // load up the metadata table will all discussion topics that are a part of meetings ended within the given date range
-
-  const r = await getRethink()
   const pg = getKysely()
-  const BATCH_SIZE = 1000
-  const rStartAt = startAt || r.minval
-  const rEndAt = endAt || r.maxval
 
-  let curStartAt = rStartAt
-  for (let i = 0; i < 1e6; i++) {
-    const endedMeetings = await r
-      .table('NewMeeting')
-      .between(curStartAt, rEndAt, {index: 'endedAt'})
-      .orderBy({index: 'endedAt'})
-      .filter({meetingType: 'retrospective'})
-      .limit(BATCH_SIZE)
-      .pluck('id', 'endedAt')
-      .run()
-    if (endedMeetings.length === 0) break
-    const endedMeetingIds = endedMeetings.map(({id}) => id!)
-    const endedMeetingDiscussions = await pg
+  if (refId) {
+    const discussion = await pg
       .selectFrom('Discussion')
-      .select(['id', 'teamId', 'createdAt'])
-      .where('meetingId', 'in', endedMeetingIds)
-      .execute()
-    await insertDiscussionsIntoMetadata(endedMeetingDiscussions)
+      .select(['id', 'teamId', 'createdAt', 'discussionTopicType'])
+      .where('id', '=', refId)
+      .executeTakeFirst()
+    if (!discussion || discussion.discussionTopicType !== 'reflectionGroup') {
+      console.error('invalid discussion id', refId)
+    } else {
+      await insertDiscussionsIntoMetadata([discussion])
+    }
+    return
+  }
 
-    // assumes that fewer than BATCH_SIZE meetings share the same endedAt value.
-    // If this is not safe, we need to index on `endedAt + id`
-    const lastMeeting = endedMeetings[endedMeetings.length - 1]
-    curStartAt = lastMeeting.endedAt
+  const BATCH_SIZE = 1000
+  const pgStartAt = startAt || new Date(0)
+  const pgEndAt = endAt || new Date('4000-01-01')
+
+  let curEndAt = pgEndAt
+  for (let i = 0; i < 1e6; i++) {
+    const discussions = await pg
+      .selectFrom('Discussion')
+      .select(['id', 'teamId', 'createdAt', 'meetingId'])
+      // SQL between is a closed interval, so there will be an overlap between batches
+      // as long as BATCH_SIZE > COUNT(createdAt) this isn't a problem
+      .where(({eb}) => eb.between('createdAt', pgStartAt, curEndAt))
+      .where('discussionTopicType', '=', 'reflectionGroup')
+      .orderBy('createdAt', 'desc')
+      .limit(BATCH_SIZE)
+      .execute()
+
+    const [firstDiscussion] = discussions
+    curEndAt = firstDiscussion.createdAt
+    const validDiscussions = await validateDiscussions(discussions)
+    if (validDiscussions.length === 0) break
+    await insertDiscussionsIntoMetadata(validDiscussions)
   }
 }
