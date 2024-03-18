@@ -6,7 +6,7 @@ on:
 
 jobs:
   update-snyk-pr:
-    if: contains(github.event.pull_request.title.toLowerCase(), '[snyk]')
+    if: contains(github.event.pull_request.title, '[Snyk]')
     runs-on: ubuntu-latest
 
     steps:
@@ -26,4 +26,3 @@ jobs:
           git add yarn.lock
           git commit -m "Update yarn.lock" || echo "No changes to commit"
           git push
-
