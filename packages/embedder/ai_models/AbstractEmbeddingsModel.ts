@@ -71,7 +71,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       RETURNS TRIGGER AS $$
       BEGIN
           INSERT INTO public."EmbeddingsJobQueue" ("model", "embeddingsMetadataId")
-              VALUES ('${sql.raw(this.tableName)}', NEW."embeddingsMetadataId");
+              VALUES ('${sql.raw(this.tableName)}', NEW."id");
           RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;

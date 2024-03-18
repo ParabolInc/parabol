@@ -7,13 +7,14 @@ export default class RedisStream<T> implements AsyncIterableIterator<T> {
   private stream: string
   private consumerGroup: string
   // xreadgroup blocks until a response is received, so this needs its own connection
-  private redis = new RedisInstance('gql_stream')
+  private redis: RedisInstance
   private consumer: string
 
   constructor(stream: string, consumerGroup: string, consumer: string) {
     this.stream = stream
     this.consumerGroup = consumerGroup
     this.consumer = consumer
+    this.redis = new RedisInstance(stream)
   }
 
   [Symbol.asyncIterator]() {

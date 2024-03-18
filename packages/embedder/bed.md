@@ -69,3 +69,26 @@ If the job queue is empty
 Retry any job where the retryAfter is > now and increment the retryCount by 1
 If the job fails again, increase the retryAfter
 If retryCount is too high, then just set retryAfter to years later
+
+## CONSUMERS
+
+```ts
+  // subscribe to consumer group
+  try {
+    await publisher.xgroup('CREATE', 'embedderStream', 'embedderConsumerGroup', '$', 'MKSTREAM')
+  } catch (e) {
+    // stream already exists
+  }
+  const incomingStream = new RedisStream('embedderStream', 'embedderConsumerGroup', embedderChannel)
+
+
+for await (const message of incomingStream) {
+onMessage('', message)
+}
+
+publisher.publish(
+embedderChannel,
+JSON.stringify({objectType: 'retrospectiveDiscussionTopic', endAt: new Date()})
+```
+
+)

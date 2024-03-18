@@ -1,11 +1,12 @@
 import tracer from 'dd-trace'
 import EmbedderChannelId from 'parabol-client/shared/gqlIds/EmbedderChannelId'
 import 'parabol-server/initSentry'
-import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
 import getModelManager from './ai_models/ModelManager'
+import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
+import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {processJobQueue} from './processJobQueue'
 
 tracer.init({
@@ -32,6 +33,8 @@ export interface PubSubEmbedderMessage {
 
 export type EmbedderOptions = Omit<PubSubEmbedderMessage, 'objectType'>
 
+export const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
+
 const parseEmbedderMessage = (message: string): PubSubEmbedderMessage => {
   const {startAt, endAt, ...input} = JSON.parse(message)
   return {
@@ -44,17 +47,24 @@ const parseEmbedderMessage = (message: string): PubSubEmbedderMessage => {
 const run = async () => {
   const SERVER_ID = process.env.SERVER_ID
   if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
+  const embedderChannel = EmbedderChannelId.join(SERVER_ID)
   const embedderEnabled = parseEnvBoolean(process.env.AI_EMBEDDER_ENABLED)
-  if (!embedderEnabled) console.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
+  if (!embedderEnabled) {
+    console.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
+    return
+  }
 
   const subscriber = new RedisInstance(`embedder_sub_${SERVER_ID}`)
   const publisher = new RedisInstance(`embedder_pub_${SERVER_ID}`)
-  const embedderChannel = EmbedderChannelId.join(SERVER_ID)
+  const isPrimaryEmbedder = await establishPrimaryEmbedder(publisher)
   const modelManager = getModelManager()
-  await modelManager.maybeCreateTables()
-  await modelManager.removeOldTriggers()
 
-  // subscribe to direct messages
+  if (isPrimaryEmbedder) {
+    await modelManager.maybeCreateTables()
+    await modelManager.removeOldTriggers()
+    await importHistoricalMetadata(publisher)
+  }
+
   const onMessage = async (_channel: string, message: string) => {
     const parsedMessage = parseEmbedderMessage(message)
     await addEmbeddingsMetadata(publisher, parsedMessage)
@@ -64,25 +74,6 @@ const run = async () => {
 
   console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
-  // add historical metadata
-  const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
-  const pg = getKysely()
-  ALL_OBJECT_TYPES.forEach(async (objectType) => {
-    switch (objectType) {
-      case 'retrospectiveDiscussionTopic':
-        pg.selectFrom('EmbeddingsMetadata')
-          .selectAll()
-          .where(({eb, selectFrom}) =>
-            eb(
-              'EmbeddingsMetadata.refId',
-              '=',
-              selectFrom('Discussion').orderBy('createdAt').limit(1)
-            )
-          )
-      default:
-        throw new Error(`Invalid object type: ${objectType}`)
-    }
-  })
   processJobQueue(modelManager)
 }
 

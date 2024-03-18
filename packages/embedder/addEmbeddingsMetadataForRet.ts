@@ -1,8 +1,8 @@
-import ms from 'ms'
 import getRethink from 'parabol-server/database/rethinkDriver'
 import {RDatum} from 'parabol-server/database/stricterR'
 import getKysely from 'parabol-server/postgres/getKysely'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
+import type {Lock} from 'redlock'
 import Redlock from 'redlock'
 import {EmbedderOptions} from './embedder'
 
@@ -61,15 +61,17 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
   {startAt, endAt, refId}: EmbedderOptions
 ) => {
   const redlock = new Redlock([redis], {retryCount: 0})
+  let lock: Lock | null = null
   try {
-    await redlock.acquire([`embedder_metadata_retrospectiveDiscussionTopic`], ms('10m'))
+    // use a short lock in case the server crashes (or restarts in dev mode)
+    lock = await redlock.acquire([`embedder_metadata_retrospectiveDiscussionTopic`], 500)
   } catch {
     // lock not acquired, another worker must be doing the job. abort
     return
   }
   // load up the metadata table will all discussion topics that are a part of meetings ended within the given date range
   const pg = getKysely()
-
+  lock = await lock.extend(5000)
   if (refId) {
     const discussion = await pg
       .selectFrom('Discussion')
@@ -81,6 +83,7 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
     } else {
       await insertDiscussionsIntoMetadata([discussion])
     }
+    lock.release()
     return
   }
 
@@ -100,11 +103,12 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
       .orderBy('createdAt', 'desc')
       .limit(BATCH_SIZE)
       .execute()
-
-    const [firstDiscussion] = discussions
-    curEndAt = firstDiscussion.createdAt
     const validDiscussions = await validateDiscussions(discussions)
     if (validDiscussions.length === 0) break
+    const [firstDiscussion] = discussions
+    curEndAt = firstDiscussion.createdAt
     await insertDiscussionsIntoMetadata(validDiscussions)
+    lock = await lock.extend(5000)
   }
+  lock.release()
 }

@@ -1,12 +1,11 @@
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRet'
-import {EmbeddingObjectType, PubSubEmbedderMessage} from './embedder'
+import {ALL_OBJECT_TYPES, PubSubEmbedderMessage} from './embedder'
 
 export const addEmbeddingsMetadata = async (
   redis: RedisInstance,
   {objectType, ...options}: PubSubEmbedderMessage
 ) => {
-  const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
   const objectTypes = objectType ? [objectType] : ALL_OBJECT_TYPES
 
   return Promise.all(
