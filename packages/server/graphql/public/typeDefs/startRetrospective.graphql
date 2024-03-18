@@ -27,7 +27,7 @@ type StartRetrospectiveSuccess {
   meeting: RetrospectiveMeeting!
   meetingId: ID!
   team: Team!
-  hasGcalError: Boolean!
+  hasGcalError: Boolean
 }
 
 input CreateGcalEventInput {
