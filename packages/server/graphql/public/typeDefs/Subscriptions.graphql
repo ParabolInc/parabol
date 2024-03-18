@@ -151,6 +151,7 @@ type TeamSubscriptionPayload {
   UpdateTeamNamePayload: UpdateTeamNamePayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
+  AddReflectTemplateSuccess: AddReflectTemplateSuccess
   AddPokerTemplateSuccess: AddPokerTemplateSuccess
   AddReflectTemplatePromptPayload: AddReflectTemplatePromptPayload
   AddPokerTemplateDimensionPayload: AddPokerTemplateDimensionPayload
