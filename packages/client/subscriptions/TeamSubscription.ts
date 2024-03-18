@@ -39,6 +39,7 @@ import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
+import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -64,6 +65,9 @@ const subscription = graphql`
       }
       AddAtlassianAuthPayload {
         ...AddAtlassianAuthMutation_team @relay(mask: false)
+      }
+      AddReflectTemplateSuccess {
+        ...AddReflectTemplateMutation_team @relay(mask: false)
       }
       AddReflectTemplatePromptPayload {
         ...AddReflectTemplatePromptMutation_team @relay(mask: false)
@@ -203,6 +207,7 @@ const updateHandlers = {
   RemoveAgendaItemPayload: removeAgendaItemUpdater,
   UpdateAgendaItemPayload: updateAgendaItemUpdater,
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
+  AddReflectTemplateSuccess: addReflectTemplateTeamUpdater,
   AddReflectTemplatePromptPayload: addReflectTemplatePromptTeamUpdater,
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
