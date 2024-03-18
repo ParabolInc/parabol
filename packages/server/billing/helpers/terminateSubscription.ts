@@ -1,5 +1,6 @@
 import getRethink from '../../database/rethinkDriver'
 import Organization from '../../database/types/Organization'
+import {Logger} from '../../utils/Logger'
 import {getStripeManager} from '../../utils/stripe'
 
 const terminateSubscription = async (orgId: string) => {
@@ -30,7 +31,7 @@ const terminateSubscription = async (orgId: string) => {
     try {
       await manager.deleteSubscription(stripeSubscriptionId)
     } catch (e) {
-      console.error(`cannot delete subscription ${stripeSubscriptionId}`, e)
+      Logger.error(`cannot delete subscription ${stripeSubscriptionId}`, e)
     }
   }
   return stripeSubscriptionId

@@ -30,7 +30,6 @@ import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
 import TemplateScale from './TemplateScale'
-import TierEnum from './TierEnum'
 
 const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -85,7 +84,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           .load(teamMemberId)
         const [newestInvitationToken] = invitationTokens
         // if the token is valid, return it
-        if (newestInvitationToken?.expiration ?? new Date(0) > new Date())
+        if ((newestInvitationToken?.expiration ?? new Date(0)) > new Date())
           return newestInvitationToken
         // if the token is not valid, delete it to keep the table clean of expired things
         if (newestInvitationToken) {
@@ -143,7 +142,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         return dataLoader.get('teamInvitationsByTeamId').load(teamId)
       }
     },
-    isLead: {
+    isViewerLead: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
       resolve: async (
@@ -252,10 +251,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         if (meeting && meeting.teamId === teamId) return meeting
         return null
       }
-    },
-    tier: {
-      type: new GraphQLNonNull(TierEnum),
-      description: 'The level of access to features on the parabol site'
     },
     organization: {
       type: new GraphQLNonNull(Organization),

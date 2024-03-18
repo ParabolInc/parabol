@@ -51,8 +51,12 @@ const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
   RESPONSE_MENTIONED: lazyPreload(
     () => import(/* webpackChunkName: 'ResponseMentioned' */ './ResponseMentioned')
   ),
+  MENTIONED: lazyPreload(() => import(/* webpackChunkName: 'Mentioned' */ './Mentioned')),
   RESPONSE_REPLIED: lazyPreload(
     () => import(/* webpackChunkName: 'ResponseReplied' */ './ResponseReplied')
+  ),
+  KUDOS_RECEIVED: lazyPreload(
+    () => import(/* webpackChunkName: 'KudosReceivedNotification' */ './KudosReceivedNotification')
   )
 }
 
@@ -76,11 +80,13 @@ const NotificationPicker = (props: Props) => {
         ...TeamInvitationNotification_notification
         ...MeetingStageTimeLimitEnd_notification
         ...ResponseMentioned_notification
+        ...Mentioned_notification
         ...ResponseReplied_notification
         ...TeamsLimitExceededNotification_notification
         ...TeamsLimitReminderNotification_notification
         ...PromptToJoinOrgNotification_notification
         ...RequestToJoinOrgNotification_notification
+        ...KudosReceivedNotification_notification
       }
     `,
     notificationRef

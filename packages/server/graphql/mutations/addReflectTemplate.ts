@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
@@ -12,6 +12,7 @@ import {GQLContext} from '../graphql'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -40,18 +41,19 @@ const addReflectTemplate = {
     }
 
     // VALIDATION
-    const allTemplates = await dataLoader
-      .get('meetingTemplatesByType')
-      .load({meetingType: 'retrospective', teamId})
+    const [allTemplates, viewerTeam, viewer] = await Promise.all([
+      dataLoader.get('meetingTemplatesByType').load({meetingType: 'retrospective', teamId}),
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
 
-    if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      return standardError(new Error('Too many templates'), {userId: viewerId})
-    }
-    const viewerTeam = await dataLoader.get('teams').load(teamId)
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (viewerTeam.tier === 'starter') {
+    if (
+      getFeatureTier(viewerTeam) === 'starter' &&
+      !viewer.featureFlags.includes('noTemplateLimit')
+    ) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data
@@ -102,16 +104,14 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Cloned')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
-      if (allTemplates.find((template) => template.name === '*New Template')) {
-        return standardError(new Error('Template already created'), {userId: viewerId})
-      }
       const {orgId} = viewerTeam
       // RESOLUTION
+      const templateCount = allTemplates.length
       const base = {
-        '*New Template': [
+        [`*New Template #${templateCount + 1}`]: [
           {
             question: 'New prompt',
             description: '',
@@ -131,7 +131,7 @@ const addReflectTemplate = {
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Created')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePayload', data, subOptions)

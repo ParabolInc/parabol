@@ -9,6 +9,7 @@ export type NotificationEnum =
   | 'PROMOTE_TO_BILLING_LEADER'
   | 'RESPONSE_MENTIONED'
   | 'RESPONSE_REPLIED'
+  | 'MENTIONED'
   | 'TASK_INVOLVES'
   | 'TEAM_ARCHIVED'
   | 'TEAM_INVITATION'
@@ -16,6 +17,7 @@ export type NotificationEnum =
   | 'TEAMS_LIMIT_REMINDER'
   | 'PROMPT_TO_JOIN_ORG'
   | 'REQUEST_TO_JOIN_ORG'
+  | 'KUDOS_RECEIVED'
 
 export interface NotificationInput {
   type: NotificationEnum

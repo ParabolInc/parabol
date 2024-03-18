@@ -1,7 +1,7 @@
 import getPg from '../../../../postgres/getPg'
 
 const domainFilterFields = ['createdAt', 'lastSeenAt'] as const
-type DomainFilterField = typeof domainFilterFields[number]
+type DomainFilterField = (typeof domainFilterFields)[number]
 type DomainTotal = {domain: string; total: number}
 
 const authCountByDomain = async (

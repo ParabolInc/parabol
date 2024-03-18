@@ -12,10 +12,7 @@ const TeamDashMain = lazy(
   () => import(/* webpackChunkName: 'TeamDashMainRoot' */ '../../components/TeamDashMainRoot')
 )
 const TeamSettings = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'TeamSettingsWrapper' */ '../../components/TeamSettingsWrapper/TeamSettingsWrapper'
-    )
+  () => import(/* webpackChunkName: 'TeamIntegrationsRoot' */ '../../components/TeamSettingsRoot')
 )
 const ArchivedTasks = lazy(
   () => import(/* webpackChunkName: 'ArchiveTaskRoot' */ '../../../../components/ArchiveTaskRoot')
@@ -72,7 +69,10 @@ const TeamContainer = (props: Props) => {
         <Suspense fallback={''}>
           <Switch>
             {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
-            <Route path={`${match.path}/settings`} component={TeamSettings} />
+            <Route
+              path={`${match.path}/settings`}
+              render={(p) => <TeamSettings {...p} teamId={teamId} />}
+            />
             <Route
               path={`${match.path}/archive`}
               render={(p) => (

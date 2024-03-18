@@ -7,7 +7,6 @@ import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
 import {AddNewPokerTemplate_pokerTemplates$key} from '../../../__generated__/AddNewPokerTemplate_pokerTemplates.graphql'
 import {AddNewPokerTemplate_team$key} from '../../../__generated__/AddNewPokerTemplate_team.graphql'
 
@@ -50,11 +49,20 @@ const AddNewPokerTemplate = (props: Props) => {
       fragment AddNewPokerTemplate_team on Team {
         id
         tier
+        viewerTeamMember {
+          id
+          user {
+            id
+            featureFlags {
+              noTemplateLimit
+            }
+          }
+        }
       }
     `,
     teamRef
   )
-  const {id: teamId, tier} = team
+  const {id: teamId, tier, viewerTeamMember} = team
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -62,24 +70,15 @@ const AddNewPokerTemplate = (props: Props) => {
       window.clearTimeout(errorTimerId.current)
     }
   }, [])
+  const canEditTemplates =
+    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const addNewTemplate = () => {
     if (submitting) return
-    if (tier === 'starter') {
+    if (!canEditTemplates) {
       displayUpgradeDetails()
       return
     }
-    if (pokerTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(
-        new Error(
-          `You may only have ${Threshold.MAX_RETRO_TEAM_TEMPLATES} templates per team. Please remove one first.`
-        )
-      )
-      errorTimerId.current = window.setTimeout(() => {
-        onCompleted()
-      }, 8000)
-      return
-    }
-    if (pokerTemplates.find((template) => template.name === '*New Template')) {
+    if (pokerTemplates.find((template) => template.name.startsWith('*New Template'))) {
       onError(new Error('You already have a new template. Try renaming that one first.'))
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
@@ -91,14 +90,16 @@ const AddNewPokerTemplate = (props: Props) => {
     gotoTeamTemplates()
   }
 
-  const containsNewTemplate = pokerTemplates.find((template) => template.name === '*New Template')
+  const containsNewTemplate = pokerTemplates.find((template) =>
+    template.name.startsWith('*New Template')
+  )
 
-  if (pokerTemplates.length > Threshold.MAX_POKER_TEAM_TEMPLATES || containsNewTemplate) return null
+  if (containsNewTemplate) return null
   return (
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {tier === 'starter' && '🔒'}
+        Create New Template {!canEditTemplates && '🔒'}
       </AddPokerTemplateLink>
     </div>
   )

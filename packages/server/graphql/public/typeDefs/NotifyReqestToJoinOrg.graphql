@@ -28,12 +28,12 @@ type NotifyRequestToJoinOrg implements Notification {
   """
   Name of the user who made the request
   """
-  name: String!
+  name: String
 
   """
   Picture of the user who made the request
   """
-  picture: URL!
+  picture: URL
 
   """
   Request created by userId

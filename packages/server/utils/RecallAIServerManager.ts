@@ -4,6 +4,7 @@ import {ExternalLinks} from '../../client/types/constEnums'
 import appOrigin from '../appOrigin'
 import {TranscriptBlock} from '../database/types/MeetingRetrospective'
 import sendToSentry from './sendToSentry'
+import {Logger} from './Logger'
 
 const sdk = api('@recallai/v1.6#536jnqlf7d6blh')
 
@@ -19,7 +20,7 @@ const getBase64Image = async () => {
     const base64Image = buffer.toString('base64')
     return base64Image
   } catch (error) {
-    console.error(error)
+    Logger.error(error)
     return null
   }
 }

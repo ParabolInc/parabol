@@ -7,7 +7,6 @@ import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
 import {AddNewReflectTemplate_reflectTemplates$key} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 import {AddNewReflectTemplate_team$key} from '../../../__generated__/AddNewReflectTemplate_team.graphql'
 
@@ -50,11 +49,20 @@ const AddNewReflectTemplate = (props: Props) => {
       fragment AddNewReflectTemplate_team on Team {
         id
         tier
+        viewerTeamMember {
+          id
+          user {
+            id
+            featureFlags {
+              noTemplateLimit
+            }
+          }
+        }
       }
     `,
     teamRef
   )
-  const {tier, id: teamId} = team
+  const {id: teamId, tier, viewerTeamMember} = team
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -62,20 +70,15 @@ const AddNewReflectTemplate = (props: Props) => {
       window.clearTimeout(errorTimerId.current)
     }
   }, [])
+  const canEditTemplates =
+    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
   const addNewTemplate = () => {
     if (submitting) return
-    if (tier === 'starter') {
+    if (!canEditTemplates) {
       displayUpgradeDetails()
       return
     }
-    if (reflectTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
-      errorTimerId.current = window.setTimeout(() => {
-        onCompleted()
-      }, 8000)
-      return
-    }
-    if (reflectTemplates.find((template) => template.name === '*New Template')) {
+    if (reflectTemplates.find((template) => template.name.startsWith('*New Template'))) {
       onError(new Error('You already have a new template. Try renaming that one first.'))
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
@@ -87,15 +90,16 @@ const AddNewReflectTemplate = (props: Props) => {
     gotoTeamTemplates()
   }
 
-  const containsNewTemplate = reflectTemplates.find((template) => template.name === '*New Template')
+  const containsNewTemplate = reflectTemplates.find((template) =>
+    template.name.startsWith('*New Template')
+  )
 
-  if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate)
-    return null
+  if (containsNewTemplate) return null
   return (
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddRetroTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {tier === 'starter' && '🔒'}
+        Create New Template {!canEditTemplates && '🔒'}
       </AddRetroTemplateLink>
     </div>
   )

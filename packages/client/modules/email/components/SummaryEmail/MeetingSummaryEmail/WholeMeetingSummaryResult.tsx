@@ -49,6 +49,7 @@ const WholeMeetingSummaryResult = (props: Props) => {
         summary
         team {
           tier
+          billingTier
         }
       }
     `,
@@ -60,7 +61,7 @@ const WholeMeetingSummaryResult = (props: Props) => {
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
       source: 'Meeting Summary',
-      tier: meeting.team.tier,
+      tier: meeting.team.billingTier,
       meetingId: meeting.id
     })
   }, [])

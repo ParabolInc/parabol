@@ -35,6 +35,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
     ),
+    loginWithMicrosoft: and(
+      not(isEnvVarTrue('AUTH_MICROSOFT_DISABLED')),
+      rateLimit({perMinute: 50, perHour: 500})
+    ),
     signUpWithPassword: and(
       not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
@@ -53,7 +57,8 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   Query: {
     '*': isAuthenticated,
-    getDemoEntities: rateLimit({perMinute: 5, perHour: 50})
+    getDemoEntities: rateLimit({perMinute: 5, perHour: 50}),
+    SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
   },
   Organization: {
     saml: and(isViewerBillingLeaderSource, isOrgTierSource('enterprise'))

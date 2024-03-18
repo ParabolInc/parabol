@@ -6,6 +6,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -44,7 +45,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, inactive: true})('orgId')
       .run()
-    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER, dataLoader).catch(console.log)
+    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER, dataLoader).catch(Logger.log)
     // TODO: re-identify
   }
   const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
@@ -72,7 +73,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     })
   }
 
-  analytics.websocketConnected(userId, {
+  analytics.websocketConnected(user, {
     socketCount,
     socketId,
     tms

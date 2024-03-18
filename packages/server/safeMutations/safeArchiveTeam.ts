@@ -1,11 +1,12 @@
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import {DataLoaderWorker} from '../graphql/graphql'
-import archiveTeamsByTeamIds from '../postgres/queries/archiveTeamsByTeamIds'
+import getKysely from '../postgres/getKysely'
 import removeUserTms from '../postgres/queries/removeUserTms'
 
 const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   const userIds = await r
     .table('TeamMember')
@@ -34,10 +35,15 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
         )('changes')('new_val')('id')
         .default([]) as unknown as string[]
     }).run(),
-    archiveTeamsByTeamIds(teamId)
+    pg
+      .updateTable('Team')
+      .set({isArchived: true})
+      .where('id', '=', teamId)
+      .returningAll()
+      .executeTakeFirst()
   ])
 
-  return {...rethinkResult, team: pgResult[0] ?? null, users}
+  return {...rethinkResult, team: pgResult ?? null, users}
 }
 
 export default safeArchiveTeam

@@ -9,7 +9,7 @@ async function setup() {
   // so the safety checks will eventually fail if run too much
 
   await Promise.all([
-    r.table('FailedAuthRequest').delete().run(),
+    pg.deleteFrom('FailedAuthRequest').execute(),
     r.table('PasswordResetRequest').delete().run(),
     pg.deleteFrom('SAMLDomain').where('domain', '=', 'example.com').execute()
   ])

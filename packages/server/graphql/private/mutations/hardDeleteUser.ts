@@ -6,7 +6,7 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
-import sendAccountRemovedToSegment from '../../mutations/helpers/sendAccountRemovedToSegment'
+import sendAccountRemovedEvent from '../../mutations/helpers/sendAccountRemovedEvent'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -210,7 +210,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   ])
 
   // Send metrics to HubSpot before the user is really deleted in DB
-  await sendAccountRemovedToSegment(userIdToDelete, user.email, reasonText ?? '')
+  await sendAccountRemovedEvent(userIdToDelete, user.email, reasonText ?? '')
 
   // User needs to be deleted after children
   await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])

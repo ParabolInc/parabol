@@ -94,7 +94,7 @@ const JiraIntegrationResults = (props: Props) => {
               {error?.message ? error.message : `Looks like you don’t have any issues to display.`}
             </div>
             <Link
-              to={`/team/${teamId}/settings/integrations`}
+              to={`/team/${teamId}/integrations`}
               className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
             >
               Review your Jira configuration

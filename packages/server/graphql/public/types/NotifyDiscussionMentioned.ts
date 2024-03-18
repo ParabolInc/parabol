@@ -7,7 +7,10 @@ const NotifyDiscussionMentioned: NotifyDiscussionMentionedResolvers = {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     return meeting as MeetingTeamPrompt
   },
-  author: ({authorId}, _args: unknown, {dataLoader}) => {
+  author: async ({authorId, commentId}, _args: unknown, {dataLoader}) => {
+    const comment = await dataLoader.get('comments').load(commentId)
+    if (comment.isAnonymous) return null
+
     return dataLoader.get('users').loadNonNull(authorId)
   },
   comment: ({commentId}, _args: unknown, {dataLoader}) => {

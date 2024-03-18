@@ -5,7 +5,13 @@ import {useFragment} from 'react-relay'
 import {useLocation, useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
-import {BILLING_PAGE, MEMBERS_PAGE, ORG_SETTINGS_PAGE, TEAMS_PAGE} from '../../utils/constants'
+import {
+  AUTHENTICATION_PAGE,
+  BILLING_PAGE,
+  MEMBERS_PAGE,
+  ORG_SETTINGS_PAGE,
+  TEAMS_PAGE
+} from '../../utils/constants'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
@@ -78,7 +84,6 @@ const DashSidebar = (props: Props) => {
       fragment DashSidebar_viewer on User {
         ...StandardHub_viewer
         featureFlags {
-          checkoutFlow
           retrosInDisguise
         }
         organizations {
@@ -96,9 +101,8 @@ const DashSidebar = (props: Props) => {
 
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
-  const showOrgSidebar = featureFlags.checkoutFlow && match
 
-  if (showOrgSidebar) {
+  if (match) {
     const {orgId: orgIdFromParams} = match.params
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
@@ -108,7 +112,12 @@ const DashSidebar = (props: Props) => {
         <Nav isOpen={isOpen}>
           <Contents>
             <NavItemsWrap>
-              <NavItem icon={'arrowBack'} href={'/me/organizations'} label={'Organizations'} />
+              <NavItem
+                icon={'arrowBack'}
+                href={'/me/organizations'}
+                label={'Organizations'}
+                exact
+              />
               <OrgName>{name}</OrgName>
               <NavItem
                 icon={'creditScore'}
@@ -132,6 +141,11 @@ const DashSidebar = (props: Props) => {
                 href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                 label={'Organization Settings'}
               />
+              <NavItem
+                icon={'key'}
+                href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
+                label={'Authentication'}
+              />
             </NavItemsWrap>
           </Contents>
         </Nav>
@@ -148,7 +162,7 @@ const DashSidebar = (props: Props) => {
         <Contents>
           <NavItemsWrap>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            <NavItem icon={'timeline'} href={'/me'} label={'History'} />
+            <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </NavItemsWrap>
           <DashHR />

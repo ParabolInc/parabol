@@ -154,6 +154,7 @@ export const TemplateDetails = (props: Props) => {
         teams {
           ...TeamPickerModal_teams
         }
+        ...useTemplateDescription_viewer
       }
     `,
     viewerRef
@@ -217,7 +218,7 @@ export const TemplateDetails = (props: Props) => {
 
   const isOwner = viewerLowestScope === 'TEAM'
 
-  const description = useTemplateDescription(viewerLowestScope, activity, tier)
+  const description = useTemplateDescription(viewerLowestScope, activity, tier, viewer)
 
   useEffect(() => {
     setIsEditing(!!history.location.state?.edit)
@@ -266,7 +267,7 @@ export const TemplateDetails = (props: Props) => {
                       />
                     </div>
                     <div className='rounded-full border border-solid border-slate-400'>
-                      <CloneTemplate canClone={true} onClick={toggleTeamPickerPortal} />
+                      <CloneTemplate onClick={toggleTeamPickerPortal} />
                     </div>
                   </>
                 )}

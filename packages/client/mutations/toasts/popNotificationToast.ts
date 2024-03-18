@@ -8,22 +8,26 @@ import {
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
+import mapMentionedToToast from './mapMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
 import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
 import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
+import mapKudosReceivedToToast from './mapKudosReceivedToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
 > = {
   DISCUSSION_MENTIONED: mapDiscussionMentionedToToast,
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
+  MENTIONED: mapMentionedToToast,
   RESPONSE_REPLIED: mapResponseRepliedToToast,
   TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
   PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
-  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
+  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast,
+  KUDOS_RECEIVED: mapKudosReceivedToToast
 }
 
 graphql`
@@ -33,11 +37,13 @@ graphql`
       id
       ...mapDiscussionMentionedToToast_notification @relay(mask: false)
       ...mapResponseMentionedToToast_notification @relay(mask: false)
+      ...mapMentionedToToast_notification @relay(mask: false)
       ...mapResponseRepliedToToast_notification @relay(mask: false)
       ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
       ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
       ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
       ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
+      ...mapKudosReceivedToToast_notification @relay(mask: false)
     }
   }
 `

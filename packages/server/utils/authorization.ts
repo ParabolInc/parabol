@@ -3,6 +3,8 @@ import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'
+import {RDatum} from '../database/stricterR'
+import {OrgUserRole} from '../database/types/OrganizationUser'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
@@ -33,19 +35,29 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
 //     .run()
 // }
 
-export const isTeamLead = async (userId: string, teamId: string) => {
+export const isTeamLead = async (userId: string, teamId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const teamMemberId = toTeamMemberId(teamId, userId)
-  return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run()
+  if (await r.table('TeamMember').get(teamMemberId)('isLead').default(false).run()) {
+    return true
+  }
+
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const organizationUser = await dataLoader
+    .get('organizationUsersByUserIdOrgId')
+    .load({userId, orgId: team.orgId})
+  return organizationUser?.role === 'ORG_ADMIN'
 }
 
 interface Options {
   clearCache?: boolean
 }
-export const isUserBillingLeader = async (
+
+const isUserAnyRoleIn = async (
   userId: string,
   orgId: string,
   dataLoader: DataLoaderWorker,
+  roles: OrgUserRole[],
   options?: Options
 ) => {
   const organizationUser = await dataLoader
@@ -54,7 +66,23 @@ export const isUserBillingLeader = async (
   if (options && options.clearCache) {
     dataLoader.get('organizationUsersByUserId').clear(userId)
   }
-  return organizationUser ? organizationUser.role === 'BILLING_LEADER' : false
+  return organizationUser && organizationUser.role ? roles.includes(organizationUser.role) : false
+}
+export const isUserBillingLeader = async (
+  userId: string,
+  orgId: string,
+  dataLoader: DataLoaderWorker,
+  options?: Options
+) => {
+  return isUserAnyRoleIn(userId, orgId, dataLoader, ['BILLING_LEADER', 'ORG_ADMIN'], options)
+}
+export const isUserOrgAdmin = async (
+  userId: string,
+  orgId: string,
+  dataLoader: DataLoaderWorker,
+  options?: Options
+) => {
+  return isUserAnyRoleIn(userId, orgId, dataLoader, ['ORG_ADMIN'], options)
 }
 
 export const isUserInOrg = async (userId: string, orgId: string, dataLoader: DataLoaderWorker) => {
@@ -71,7 +99,10 @@ export const isOrgLeaderOfUser = async (authToken: AuthToken, userId: string) =>
     viewerOrgIds: r
       .table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
-      .filter({removedAt: null, role: 'BILLING_LEADER'})('orgId')
+      .filter({removedAt: null})
+      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))(
+        'orgId'
+      )
       .coerceTo('array') as any as OrganizationUser[],
     userOrgIds: r
       .table('OrganizationUser')

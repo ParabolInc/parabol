@@ -1,31 +1,34 @@
-const webpack = require('webpack')
-const makeServersConfig = require('./webpack/prod.servers.config')
-const makeClientConfig = require('./webpack/prod.client.config')
 const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
+const cp = require('child_process')
 
-const compile = (config, isSilent) => {
+const runChild = (cmd) => {
   return new Promise((resolve) => {
-    const cb = (err, stats) => {
-      if (err && !isSilent) {
-        console.log('Webpack error:', err)
-      }
-      const {errors} = stats.compilation
-      if (errors.length > 0 && !isSilent) {
-        console.log('PROD COMPILATION ERRORS:', errors)
-      }
-      resolve()
-    }
-    const compiler = webpack(config)
-    compiler.run(cb)
+    const build = cp.exec(cmd).on('exit', resolve)
+    build.stderr.pipe(process.stderr)
   })
 }
 
 const prod = async (isDeploy, noDeps) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  await generateGraphQLArtifacts()
-  const serversConfig = makeServersConfig({isDeploy, noDeps})
-  const clientConfig = makeClientConfig({isDeploy: isDeploy || noDeps})
-  await Promise.all([compile(serversConfig), compile(clientConfig)])
+  try {
+    await generateGraphQLArtifacts()
+  } catch (e) {
+    console.log('ERR generating artifacts', e)
+  }
+
+  console.log('starting webpack build')
+  try {
+    await Promise.all([
+      runChild(
+        `yarn webpack --config ./scripts/webpack/prod.servers.config.js --no-stats --env=noDeps=${noDeps}`
+      ),
+      runChild(
+        `yarn webpack --config ./scripts/webpack/prod.client.config.js --no-stats --env=minimize=${isDeploy}`
+      )
+    ])
+  } catch (e) {
+    console.log('error webpackifying', e)
+  }
 }
 
 if (require.main === module) {

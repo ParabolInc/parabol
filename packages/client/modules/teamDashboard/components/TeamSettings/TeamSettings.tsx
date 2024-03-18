@@ -43,17 +43,20 @@ const query = graphql`
     viewer {
       team(teamId: $teamId) {
         ...ArchiveTeam_team
-        isLead
+        isViewerLead
         id
         name
         tier
+        billingTier
         orgId
         teamMembers(sortBy: "preferredName") {
           teamMemberId: id
           userId
           isLead
+          isOrgAdmin
           isSelf
           preferredName
+          email
         }
       }
     }
@@ -66,30 +69,50 @@ const TeamSettings = (props: Props) => {
   const {viewer} = data
   const {history} = useRouter()
   const {team} = viewer
-  const {name: teamName, orgId, teamMembers, tier} = team!
+  const {name: teamName, orgId, teamMembers, tier, billingTier} = team!
   useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
   if (!viewerTeamMember) return null
-  const {isLead: viewerIsLead} = viewerTeamMember
+  const {isLead: viewerIsLead, isOrgAdmin: viewerIsOrgAdmin} = viewerTeamMember
+  const lead = teamMembers.find((m) => m.isLead)
+  const contact = lead ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
   return (
     <TeamSettingsLayout>
       <PanelsLayout>
-        {tier === 'starter' && (
+        {billingTier === 'starter' && (
           <Panel>
             <StyledRow>
-              <div>{'This team is currently on a starter plan.'}</div>
+              <div>
+                {tier !== 'starter'
+                  ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
+                  : 'This team is currently on a starter plan.'}
+              </div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
                 {`Upgrade Team to ${TierLabel.TEAM}`}
               </PrimaryButton>
             </StyledRow>
           </Panel>
         )}
-        {viewerIsLead && (
+        {viewerIsLead || viewerIsOrgAdmin ? (
           <Panel label='Danger Zone'>
             <PanelRow>
               <ArchiveTeam team={team!} />
             </PanelRow>
+          </Panel>
+        ) : (
+          <Panel className='mt-8'>
+            <StyledRow>
+              <div>
+                This team is currently on a <b className='capitalize'>{billingTier} plan</b>. Only
+                Team Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
+                The <b>Team Lead</b> for {teamName} is{' '}
+                <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
+                  {contact.preferredName}
+                </a>
+                .
+              </div>
+            </StyledRow>
           </Panel>
         )}
       </PanelsLayout>

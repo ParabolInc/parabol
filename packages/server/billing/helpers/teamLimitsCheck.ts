@@ -2,31 +2,36 @@ import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
 // Uncomment for easier testing
 // import { ThresholdTest as Threshold } from "~/types/constEnums";
+import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
 import Organization from '../../database/types/Organization'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
+import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
+import {getFeatureTier} from '../../graphql/types/helpers/getFeatureTier'
 import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
-import getPg from '../../postgres/getPg'
-import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import getKysely from '../../postgres/getKysely'
+import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
+import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 import sendToSentry from '../../utils/sendToSentry'
 import removeTeamsLimitObjects from './removeTeamsLimitObjects'
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
-import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
-import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
-import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
+  const pg = getKysely()
   await r
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({orgId})
     .update({suggestedTier: 'team'})
     .run()
-
-  await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
+  await pg
+    .updateTable('User')
+    .set({featureFlags: sql`arr_append_uniq("featureFlags", 'insights')`})
+    .where('id', 'in', userIds)
+    .execute()
 }
 
 const sendWebsiteNotifications = async (
@@ -101,11 +106,11 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 // Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
-  const {tierLimitExceededAt, tier, featureFlags, name: orgName} = organization
+  const {tierLimitExceededAt, tier, trialStartDate, featureFlags, name: orgName} = organization
 
   if (!featureFlags?.includes('teamsLimit')) return
 
-  if (tierLimitExceededAt || tier !== 'starter') return
+  if (tierLimitExceededAt || getFeatureTier({tier, trialStartDate}) !== 'starter') return
 
   // if an org is using a free provider, e.g. gmail.com, we can't show them usage stats, so don't send notifications/emails directing them there for now. Issue to fix this here: https://github.com/ParabolInc/parabol/issues/7723
   if (!organization.activeDomain) return

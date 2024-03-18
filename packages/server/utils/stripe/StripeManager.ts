@@ -1,5 +1,6 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
+import {Logger} from '../Logger'
 import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
@@ -15,7 +16,7 @@ export default class StripeManager {
     try {
       return this.stripe.webhooks.constructEvent(rawBody, signature, StripeManager.WEBHOOK_SECRET)
     } catch (e) {
-      console.log('StripeWebhookError:', e)
+      Logger.log('StripeWebhookError:', e)
       return null
     }
   }

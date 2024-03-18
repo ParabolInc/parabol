@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
@@ -11,6 +11,7 @@ import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
 import {analytics} from '../../utils/analytics/analytics'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -39,18 +40,19 @@ const addPokerTemplate = {
     }
 
     // VALIDATION
-    const allTemplates = await dataLoader
-      .get('meetingTemplatesByType')
-      .load({meetingType: 'poker', teamId})
-    if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      return standardError(new Error('Too many templates'), {userId: viewerId})
-    }
+    const [allTemplates, viewerTeam, viewer] = await Promise.all([
+      dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
 
-    const viewerTeam = await dataLoader.get('teams').load(teamId)
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (viewerTeam.tier === 'starter') {
+    if (
+      getFeatureTier(viewerTeam) === 'starter' &&
+      !viewer.featureFlags.includes('noTemplateLimit')
+    ) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data
@@ -102,16 +104,14 @@ const addPokerTemplate = {
         r.table('TemplateDimension').insert(newTemplateDimensions).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Cloned')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
-      if (allTemplates.find((template) => template.name === '*New Template')) {
-        return standardError(new Error('Template already created'), {userId: viewerId})
-      }
       const {orgId} = viewerTeam
 
+      const templateCount = allTemplates.length
       const newTemplate = new PokerTemplate({
-        name: '*New Template',
+        name: `*New Template #${templateCount + 1}`,
         teamId,
         orgId,
         mainCategory: 'estimation',
@@ -131,7 +131,7 @@ const addPokerTemplate = {
         r.table('TemplateDimension').insert(newDimension).run(),
         insertMeetingTemplate(newTemplate)
       ])
-      analytics.templateMetrics(viewerId, newTemplate, 'Template Created')
+      analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplatePayload', data, subOptions)

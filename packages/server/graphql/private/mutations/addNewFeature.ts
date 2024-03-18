@@ -1,8 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import generateUID from '../../../generateUID'
-import getPg from '../../../postgres/getPg'
-import {addUserNewFeatureQuery} from '../../../postgres/queries/generated/addUserNewFeatureQuery'
+import getKysely from '../../../postgres/getKysely'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
@@ -15,6 +14,7 @@ const addNewFeature: MutationResolvers['addNewFeature'] = async (
 ) => {
   const r = await getRethink()
   const redis = getRedis()
+  const pg = getKysely()
 
   // AUTH
   const operationId = dataLoader.share()
@@ -30,7 +30,7 @@ const addNewFeature: MutationResolvers['addNewFeature'] = async (
   }
   await Promise.all([
     r.table('NewFeature').insert(newFeature).run(),
-    addUserNewFeatureQuery.run({newFeatureId}, getPg())
+    pg.updateTable('User').set({newFeatureId}).execute()
   ])
 
   const onlineUserIds = new Set()

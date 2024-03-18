@@ -18,9 +18,9 @@ const getProjectRoot = () => {
 const PROJECT_ROOT = getProjectRoot()
 const staticPaths = {
   [path.join(PROJECT_ROOT, 'build')]: true,
-  [path.join(PROJECT_ROOT, 'dist')]: !__PRODUCTION__,
-  [path.join(PROJECT_ROOT, 'static')]: !__PRODUCTION__,
-  [path.join(PROJECT_ROOT, 'dev', 'dll')]: !__PRODUCTION__
+  // publish server assets at /static
+  [path.join(PROJECT_ROOT, 'dist')]: __PRODUCTION__,
+  [path.join(PROJECT_ROOT, 'dev')]: !__PRODUCTION__
 }
 const staticServer = new StaticServer({staticPaths})
 
@@ -29,14 +29,12 @@ const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boole
   if (!meta) return false
   const {size, pathname, brotliFile, file, type} = meta
   if (file) {
-    res.cork(() => {
-      res.writeHeader('content-type', type)
-      if (__PRODUCTION__ && sendCompressed && brotliFile) {
-        res.writeHeader('content-encoding', 'br').end(brotliFile)
-      } else {
-        res.end(file)
-      }
-    })
+    res.writeHeader('content-type', type)
+    if (__PRODUCTION__ && sendCompressed && brotliFile) {
+      res.writeHeader('content-encoding', 'br').end(brotliFile)
+    } else {
+      res.end(file)
+    }
     return true
   }
   res.writeHeader('content-type', type)

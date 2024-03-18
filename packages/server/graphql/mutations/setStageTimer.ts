@@ -1,6 +1,7 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import getKysely from '../../postgres/getKysely'
 import getRethink from '../../database/rethinkDriver'
 import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJobMetingStageTimeLimit'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -51,7 +52,10 @@ export default {
     const now = new Date()
 
     // AUTH
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const [meeting, viewer] = await Promise.all([
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     const {endedAt, facilitatorStageId, facilitatorUserId, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -87,12 +91,13 @@ export default {
           ? new Date(now.getTime() + timeRemaining - AVG_PING)
           : newScheduledEndTime
       } else {
+        const pg = getKysely()
         stage.isAsync = true
         stage.scheduledEndTime = newScheduledEndTime
-        await r
-          .table('ScheduledJob')
-          .insert(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
-          .run()
+        await pg
+          .insertInto('ScheduledJob')
+          .values(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
+          .execute()
         IntegrationNotifier.startTimeLimit(dataLoader, newScheduledEndTime, meetingId, teamId)
       }
     } else {
@@ -117,7 +122,7 @@ export default {
     const eventName =
       scheduledEndTime && newScheduledEndTime ? `Meeting Timer Updated` : stoppedOrStarted
     publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
-    analytics.meetingTimerEvent(viewerId, eventName, {
+    analytics.meetingTimerEvent(viewer, eventName, {
       meetingId,
       phaseType,
       viewCount,

@@ -1,13 +1,16 @@
 import {HeadObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
 import mime from 'mime-types'
 import path from 'path'
-import FileStoreManager from './FileStoreManager'
+import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 
 export default class S3Manager extends FileStoreManager {
   // e.g. development, production
   private envSubDir: string
-  // e.g. action-files.parabol.co
+  // e.g. action-files.parabol.co. Usually matches CDN_BASE_URL for DNS reasons
   private bucket: string
+
+  // e.g. https://action-files.parabol.co
+  private baseUrl: string
   private s3: S3Client
   constructor() {
     super()
@@ -24,19 +27,17 @@ export default class S3Manager extends FileStoreManager {
     if (!hostname || !pathname) {
       throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
     }
+    if (pathname.endsWith('/'))
+      throw new Error('CDN_BASE_URL must end with the env, no trailing slash, e.g. /production')
 
-    this.envSubDir = pathname.replace(/^\//, '')
+    this.envSubDir = pathname.split('/').at(-1) as string
+
+    this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
+
     this.bucket = AWS_S3_BUCKET
     this.s3 = new S3Client({
       region: AWS_REGION
     })
-  }
-  private prependPath(partialPath: string) {
-    return path.join(this.envSubDir, 'store', partialPath)
-  }
-
-  private getPublicFileLocation(fullPath: string) {
-    return encodeURI(`https://${this.bucket}/${fullPath}`)
   }
 
   protected async putUserFile(file: Buffer, partialPath: string) {
@@ -54,12 +55,20 @@ export default class S3Manager extends FileStoreManager {
     return this.getPublicFileLocation(fullPath)
   }
 
+  prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
+    return path.join(this.envSubDir, assetDir, partialPath)
+  }
+
+  getPublicFileLocation(fullPath: string) {
+    return encodeURI(`${this.baseUrl}${fullPath}`)
+  }
+
   putBuildFile(file: Buffer, partialPath: string): Promise<string> {
-    const fullPath = path.join(this.envSubDir, 'build', partialPath)
+    const fullPath = this.prependPath(partialPath, 'build')
     return this.putFile(file, fullPath)
   }
-  async checkExists(key: string) {
-    const Key = this.prependPath(key)
+  async checkExists(key: string, assetDir?: FileAssetDir) {
+    const Key = this.prependPath(key, assetDir)
     try {
       await this.s3.send(new HeadObjectCommand({Bucket: this.bucket, Key}))
     } catch (e) {

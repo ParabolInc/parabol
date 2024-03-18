@@ -5,7 +5,7 @@ import {Loader} from '../../../../utils/relay/renderLoader'
 import organizationQuery, {
   OrganizationQuery
 } from '../../../../__generated__/OrganizationQuery.graphql'
-import Organization from '../../components/Organization/Organization'
+import Organization from '../../components/OrgBilling/Organization'
 
 interface Props extends RouteComponentProps<{orgId: string}> {}
 

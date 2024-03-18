@@ -9,13 +9,14 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
+import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
-import {SSORelayState} from '../../queries/SAMLIdP'
+import {SSORelayState} from '../../public/queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
-import standardError from '../../../utils/standardError'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -104,8 +105,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
   const ssoDomain = getSSODomainFromEmail(email)
   if (!ssoDomain || !domains.includes(ssoDomain)) {
-    // don't blindly trust the IdP
-    return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
+    if (!isSingleTenantSSO) {
+      // don't blindly trust the IdP unless there is only 1
+      return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
+    }
   }
 
   if (newMetadata) {

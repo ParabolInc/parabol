@@ -14,6 +14,7 @@ import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityCha
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import {Logger} from '../../utils/Logger'
 
 const maybeUpdateOrganizationActiveDomain = async (
   orgId: string,
@@ -50,7 +51,7 @@ const maybeUpdateOrganizationActiveDomain = async (
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {
   const r = await getRethink()
   const {id: userId, email} = user
-  inactive ? analytics.accountPaused(userId) : analytics.accountUnpaused(userId)
+  inactive ? analytics.accountPaused(user) : analytics.accountUnpaused(user)
   analytics.identify({
     userId,
     email,
@@ -97,10 +98,16 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
       (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
       organization.periodEnd ||
       new Date()
-    return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
+    return new OrganizationUser({
+      id: oldOrganizationUser?.id,
+      orgId,
+      userId,
+      newUserUntil,
+      tier: organization.tier
+    })
   })
 
-  await r.table('OrganizationUser').insert(docs).run()
+  await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
@@ -110,7 +117,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
 
 const deleteUser = async (orgIds: string[], user: IUser) => {
   const r = await getRethink()
-  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user.id, orgId))
+  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
   return r
     .table('OrganizationUser')
     .getAll(user.id, {index: 'userId'})
@@ -137,6 +144,9 @@ const auditEventTypeLookup = {
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
 } as {[key in InvoiceItemType]: OrganizationUserAuditEventTypeEnum}
 
+/**
+ * Also adds the organization user if not present
+ */
 export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
@@ -160,6 +170,6 @@ export default async function adjustUserCount(
     .filter((org: RDatum) => org('stripeSubscriptionId').default(null).ne(null))
     .run()
 
-  handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
-  handleTeamOrgQuantityChanges(paidOrgs).catch(console.error)
+  handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch()
+  handleTeamOrgQuantityChanges(paidOrgs).catch(Logger.error)
 }

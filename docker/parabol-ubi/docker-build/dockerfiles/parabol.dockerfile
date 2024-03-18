@@ -1,9 +1,10 @@
+# DO NOT DELETE. Legacy docker file for versions still in use. Delete only when all Parabol instances are using the newest docker image.
 ARG _NODE_VERSION=${_NODE_VERSION}
 #base build for dev deps
 FROM node:${_NODE_VERSION} as base
 
 ARG _PARABOL_GIT_REF=${_PARABOL_GIT_REF}
-ARG _BUILD_ENV_PATH=environments/buildenv
+ARG _BUILD_ENV_PATH=environments/legacy-build
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 
 WORKDIR /home/node
@@ -16,6 +17,8 @@ RUN git clone https://github.com/ParabolInc/parabol.git -b ${_PARABOL_GIT_REF} -
     mv /home/node/.env ./.env && \
     mkdir -p /home/node/parabol/node_modules && \
     mkdir -p /home/node/.npm-global && \
+    apt update -y && \
+    apt install systemtap -y && \
     NODE_OPTIONS=--max-old-space-size=20480 && \
     yarn install --frozen-lockfile && \
     yarn cache clean && \
@@ -38,12 +41,12 @@ COPY --from=base /usr/local/bin /usr/local/bin
 COPY --from=base /usr/local/include /usr/local/include
 COPY --from=base /usr/local/share/man /usr/local/share/man
 COPY --from=base /usr/local/share/doc /usr/local/share/doc
-COPY --from=base /usr/local/share/systemtap /usr/local/share/systemtap
+COPY --from=base /usr/share/systemtap /usr/local/share/systemtap
 COPY --from=base /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=base /opt /opt
 COPY --from=base /home/node/parabol/ ${HOME}/parabol
 RUN rm -rf ${HOME}/parabol/.env
-COPY entrypoints/buildenv /usr/local/bin/docker-entrypoint.sh
+COPY entrypoints/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY security /security
 
 COPY ./tools/ip-to-server_id /home/node/tools/ip-to-server_id

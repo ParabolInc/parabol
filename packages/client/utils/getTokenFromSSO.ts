@@ -12,11 +12,11 @@ type ErrorReturnType = {
 
 type ReturnType = SucessReturnType | ErrorReturnType
 
-const getTokenFromSSO = (url: string): ReturnType | Promise<ReturnType> => {
+const getTokenFromSSO = (url: string, top?: number): ReturnType | Promise<ReturnType> => {
   // It's possible we prematurely opened a popup named SSO at the URL about:blank to avoid popup blockers
   // Calling window.open again will get a reference to that popup
   // Then, we can update the href to the valid URL
-  const popup = window.open(url, 'SSO', getOAuthPopupFeatures({width: 385, height: 550, top: 64}))
+  const popup = window.open(url, 'SSO', getOAuthPopupFeatures({width: 385, height: 576, top}))
   if (!popup) return {error: 'Failed to open login popup'}
   popup.location.href = url
   let closeCheckerId: undefined | number

@@ -1,8 +1,8 @@
+import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
-import updateDomainsInOrganizationApprovedDomainToPG from '../../../postgres/queries/updateDomainsInOrganizationApprovedDomainToPG'
 import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
 import {MutationResolvers} from '../../private/resolverTypes'
 
@@ -48,7 +48,13 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
 
   const [updatedUserRes] = await Promise.all([
     updateUserEmailDomainsToPG(normalizedNewDomain, userIdsToUpdate),
-    updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
+    pg
+      .updateTable('OrganizationApprovedDomain')
+      .set({
+        domain: sql`REPLACE("domain", ${normalizedOldDomain}, ${normalizedNewDomain})`
+      })
+      .where('domain', 'like', normalizedOldDomain)
+      .execute(),
     r
       .table('Organization')
       .filter((row: RDatum) => row('activeDomain').eq(normalizedOldDomain))

@@ -1,6 +1,25 @@
 import OpenAI from 'openai'
+import JSON5 from 'json5'
 import sendToSentry from './sendToSentry'
 import Reflection from '../database/types/Reflection'
+import {ModifyType} from '../graphql/public/resolverTypes'
+import {Logger} from './Logger'
+
+type Prompt = {
+  question: string
+  description: string
+}
+
+type Template = {
+  templateId: string
+  templateName: string
+  prompts: Prompt[]
+}
+
+type AITemplateSuggestion = {
+  templateId: string
+  explanation: string
+}
 
 class OpenAIServerManager {
   private openAIApi
@@ -170,7 +189,45 @@ class OpenAIServerManager {
       return themes.split(', ')
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
-      console.error(error.message)
+      Logger.error(error.message)
+      sendToSentry(error)
+      return null
+    }
+  }
+
+  async getTemplateSuggestion(templates: Template[], userPrompt: string) {
+    if (!this.openAIApi) return null
+    const promptText = `Based on the user's input "${userPrompt}", identify the most suitable meeting template from the list below and provide a JSON response in the format: { templateId: "the chosen template ID", explanation: "reason for choosing this template" }. The explanation should be concise. Available templates are: ${templates
+      .map(
+        (template) =>
+          `ID: ${template.templateId}, Name: ${template.templateName}, Prompts: ${template.prompts
+            .map((prompt) => `${prompt.question} - ${prompt.description}`)
+            .join('; ')}`
+      )
+      .join('. ')}.`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-3.5-turbo-0125',
+        messages: [
+          {
+            role: 'user',
+            content: promptText
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const templateResponse = (response.choices[0]?.message?.content?.trim() as string) ?? null
+      const parsedResponse = JSON5.parse(templateResponse)
+      return parsedResponse as AITemplateSuggestion
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to generate the suggested template')
+      Logger.error(error.message)
       sendToSentry(error)
       return null
     }
@@ -240,6 +297,45 @@ class OpenAIServerManager {
     } catch (error) {
       const e = error instanceof Error ? error : new Error('OpenAI failed to group reflections')
       sendToSentry(e)
+      return null
+    }
+  }
+
+  async modifyCheckInQuestion(question: string, modifyType: ModifyType) {
+    if (!this.openAIApi) return null
+
+    const maxQuestionLength = 160
+    const prompt: Record<ModifyType, string> = {
+      EXCITING: `Transform the following team retrospective ice breaker question into something imaginative and unexpected, using simple and clear language suitable for an international audience. Keep it engaging and thrilling, while ensuring it's easy to understand. Ensure the modified question does not exceed ${maxQuestionLength} characters.
+      Original question: "${question}"`,
+
+      FUNNY: `Rewrite the following team retrospective ice breaker question to add humor, using straightforward and easy-to-understand language. Aim for a light-hearted, amusing twist that is accessible to an international audience. Ensure the modified question does not exceed ${maxQuestionLength} characters.
+      Original question: "${question}"`,
+
+      SERIOUS: `Modify the following team retrospective ice breaker question to make it more thought-provoking, using clear and simple language. Make it profound to stimulate insightful discussions, while ensuring it remains comprehensible to a diverse international audience. Ensure the modified question does not exceed ${maxQuestionLength} characters.
+      Original question: "${question}"`
+    }
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: prompt[modifyType]
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 256,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      return (response.choices[0]?.message?.content?.trim() as string).replaceAll(`"`, '') ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to modifyCheckInQuestion')
+      sendToSentry(error)
       return null
     }
   }

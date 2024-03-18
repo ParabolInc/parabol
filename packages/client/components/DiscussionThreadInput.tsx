@@ -29,8 +29,6 @@ import {createLocalPoll} from './Poll/local/newPoll'
 import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import AddActivityButton from '~/components/AddActivityButton'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -119,11 +117,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         discussionTopicType
         team {
           id
-          organization {
-            featureFlags {
-              meetingInception
-            }
-          }
         }
       }
     `,
@@ -133,8 +126,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: discussionId, meetingId, isAnonymousComment, team, discussionTopicType} = discussion
-  const {id: teamId, organization} = team
-  const {featureFlags} = organization
+  const {id: teamId} = team
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -301,8 +293,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
-  const allowAddActivity = featureFlags.meetingInception
-  const isActionsContainerVisible = allowTasks || allowPolls || allowAddActivity
+  const isActionsContainerVisible = allowTasks || allowPolls
   const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
 
@@ -345,15 +336,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             <AddPollButton
               dataCy={`${dataCy}-poll`}
               onClick={addPoll}
-              disabled={isActionsContainerDisabled}
-            />
-          )}
-          {allowAddActivity && (
-            <AddActivityButton
-              onClick={() => {
-                window.open(`/activity-library/category/recommended`, '_blank', 'noreferrer')
-                SendClientSideEvent(atmosphere, 'Add Activity Button Clicked')
-              }}
               disabled={isActionsContainerDisabled}
             />
           )}

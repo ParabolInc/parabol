@@ -1,5 +1,3 @@
-import {promises as fsp} from 'fs'
-import path from 'path'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
 import sleep from '../client/utils/sleep'
@@ -31,13 +29,14 @@ const getImageFromCache = async (
 let jiraPlaceholderBuffer: Buffer | undefined
 const servePlaceholderImage = async (res: HttpResponse) => {
   if (!jiraPlaceholderBuffer) {
-    jiraPlaceholderBuffer = await fsp.readFile(
-      path.join(__dirname, jiraPlaceholder.slice(__webpack_public_path__.length))
-    )
+    try {
+      const res = await fetch(jiraPlaceholder)
+      jiraPlaceholderBuffer = Buffer.from(await res.arrayBuffer())
+    } catch (e) {
+      console.error('Jira Placeholder image could not be fetched', e)
+    }
   }
-  res.cork(() => {
-    res.writeStatus('200').writeHeader('Content-Type', 'image/png').end(jiraPlaceholderBuffer)
-  })
+  res.writeStatus('200').writeHeader('Content-Type', 'image/png').end(jiraPlaceholderBuffer)
 }
 
 const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
@@ -53,12 +52,10 @@ const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpReq
     return
   }
 
-  res.cork(() => {
-    res
-      .writeStatus('200')
-      .writeHeader('Content-Type', cachedImage.contentType)
-      .end(cachedImage.imageBuffer)
-  })
+  res
+    .writeStatus('200')
+    .writeHeader('Content-Type', cachedImage.contentType)
+    .end(cachedImage.imageBuffer)
 })
 
 export default jiraImagesHandler

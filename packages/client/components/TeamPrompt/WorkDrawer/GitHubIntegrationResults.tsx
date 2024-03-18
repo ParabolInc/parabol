@@ -102,7 +102,7 @@ const GitHubIntegrationResults = (props: Props) => {
                   } to display.`}
             </div>
             <Link
-              to={`/team/${teamId}/settings/integrations`}
+              to={`/team/${teamId}/integrations`}
               className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
             >
               Review your GitHub configuration

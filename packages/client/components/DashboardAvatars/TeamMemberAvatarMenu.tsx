@@ -12,6 +12,7 @@ import MenuItemLabel from '../MenuItemLabel'
 interface Props {
   isLead: boolean
   isViewerLead: boolean
+  isViewerOrgAdmin: boolean
   teamMember: TeamMemberAvatarMenu_teamMember$key
   menuProps: MenuProps
   handleNavigate?: () => void
@@ -27,6 +28,7 @@ const StyledLabel = styled(MenuItemLabel)({
 const TeamMemberAvatarMenu = (props: Props) => {
   const {
     isViewerLead,
+    isViewerOrgAdmin,
     teamMember: teamMemberRef,
     menuProps,
     togglePromote,
@@ -48,17 +50,18 @@ const TeamMemberAvatarMenu = (props: Props) => {
   const {preferredName, userId} = teamMember
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
+  const isViewerTeamAdmin = isViewerLead || isViewerOrgAdmin
 
   return (
     <Menu ariaLabel={'Select what to do with this team member'} {...menuProps}>
-      {isViewerLead && !isSelf && (
+      {isViewerTeamAdmin && (!isSelf || !isViewerLead) && (
         <MenuItem
           key='promote'
           onClick={togglePromote}
           label={<StyledLabel>Promote {preferredName} to Team Lead</StyledLabel>}
         />
       )}
-      {isViewerLead && !isSelf && (
+      {isViewerTeamAdmin && !isSelf && (
         <MenuItem
           key='remove'
           onClick={toggleRemove}

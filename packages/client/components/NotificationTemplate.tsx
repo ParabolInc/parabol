@@ -11,8 +11,8 @@ import NotificationMessage from './NotificationMessage'
 import NotificationRow from './NotificationRow'
 
 interface Props {
-  avatar?: string
-  message: string
+  avatar?: string | null
+  message: ReactNode
   notification: NotificationTemplate_notification$key
   action?: ReactNode
   children?: ReactNode
