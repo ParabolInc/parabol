@@ -4,9 +4,6 @@ import {RDatum} from 'parabol-server/database/stricterR'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
-import RedisInstance from 'parabol-server/utils/RedisInstance'
-import type {Lock} from 'redlock'
-import Redlock from 'redlock'
 import {EmbedderOptions} from './embedder'
 
 interface DiscussionMeta {
@@ -47,23 +44,13 @@ const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[]) => {
   return
 }
 
-export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
-  redis: RedisInstance,
-  {startAt, endAt, meetingId}: EmbedderOptions
-) => {
-  const redlock = new Redlock([redis], {retryCount: 0})
-  let lock: Lock | null = null
-  try {
-    // use a short lock in case the server crashes (or restarts in dev mode)
-    lock = await redlock.acquire([`embedder_metadata_retrospectiveDiscussionTopic`], 500)
-  } catch {
-    Logger.log('Lock not acquired for embedder_metadata_retrospectiveDiscussionTopic')
-    return
-  }
-
+export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async ({
+  startAt,
+  endAt,
+  meetingId
+}: EmbedderOptions) => {
   // load up the metadata table will all discussion topics that are a part of meetings ended within the given date range
   const pg = getKysely()
-  lock = await lock.extend(5000)
   if (meetingId) {
     const discussions = await pg
       .selectFrom('Discussion')
@@ -71,7 +58,6 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
       .where('meetingId', '=', meetingId)
       .execute()
     await insertDiscussionsIntoMetadata(discussions)
-    lock.release()
     return
   }
   const PG_MAX_PARAMS = 65535
@@ -117,7 +103,5 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
     Logger.log(
       `Inserted ${validDiscussions.length}/${discussions.length} discussions in metadata ending at ${jsTime}`
     )
-    lock = await lock.extend(10000)
   }
-  lock.release()
 }

@@ -34,5 +34,5 @@ export const importHistoricalRetrospectiveDiscussionTopic = async (redis: RedisI
     .executeTakeFirst()
   const endAt = earliestImportedDiscussion?.refUpdatedAt ?? undefined
   Logger.log(`Importing discussion history up to ${endAt || 'now'}`)
-  return addEmbeddingsMetadataForRetrospectiveDiscussionTopic(redis, {endAt})
+  return addEmbeddingsMetadataForRetrospectiveDiscussionTopic({endAt})
 }

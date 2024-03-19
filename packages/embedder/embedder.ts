@@ -71,7 +71,7 @@ const run = async () => {
 
   const onMessage = async (_channel: string, message: string) => {
     const parsedMessage = parseEmbedderMessage(message)
-    await addEmbeddingsMetadata(publisher, parsedMessage)
+    await addEmbeddingsMetadata(parsedMessage)
   }
   subscriber.on('message', onMessage)
   subscriber.subscribe(embedderChannel)
