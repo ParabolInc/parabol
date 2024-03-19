@@ -65,7 +65,7 @@ const run = async () => {
     // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
     await modelManager.removeOldTriggers()
-    await importHistoricalMetadata(publisher)
+    await importHistoricalMetadata()
     resetStalledJobs()
   }
 

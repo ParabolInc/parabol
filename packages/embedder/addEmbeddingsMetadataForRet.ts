@@ -62,7 +62,7 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async ({
   }
   const PG_MAX_PARAMS = 65535
   const METADATA_COLS_PER_ROW = 4
-  const BATCH_SIZE = Math.floor(PG_MAX_PARAMS / METADATA_COLS_PER_ROW) // cannot exceed 65535 / 4
+  const BATCH_SIZE = Math.floor(PG_MAX_PARAMS / METADATA_COLS_PER_ROW)
   const pgStartAt = startAt || new Date(0)
   const pgEndAt = (endAt || new Date('4000-01-01')).getTime() / 1000
 
