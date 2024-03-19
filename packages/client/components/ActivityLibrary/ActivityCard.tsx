@@ -35,8 +35,8 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         'relative flex h-full w-full items-center justify-center overflow-hidden',
         className
       )}
-      style={{backgroundImage: `url(${backgroundSrc})`, backgroundSize: 'cover'}}
     >
+      <img className='object-contain' src={backgroundSrc} alt='' />
       <img
         className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
         src={src}
