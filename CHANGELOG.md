@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.22.3](https://github.com/ParabolInc/parabol/compare/v7.22.2...v7.22.3) (2024-03-19)
+
+
+### Fixed
+
+* Activity library illustrations in Firefox ([#9549](https://github.com/ParabolInc/parabol/issues/9549)) ([00a1ca2](https://github.com/ParabolInc/parabol/commit/00a1ca2977cd1117b030aa538f526a24ca395ac9))
+* **build-ci:** docker-build-push action fixed ([f16c21f](https://github.com/ParabolInc/parabol/commit/f16c21ffcfd99f98b49846951e561c4afeebbdf2))
+* Configure trusted proxies ([#9548](https://github.com/ParabolInc/parabol/issues/9548)) ([24df17b](https://github.com/ParabolInc/parabol/commit/24df17bf3f0979ab65f785e95711ba53158ecb42))
+* **parabol-ubi:** references to local files corrected ([41f5654](https://github.com/ParabolInc/parabol/commit/41f5654bc3046f770893c6840d4843ff58bce087))
+
+
+### Changed
+
+* Remove random team names ([#9543](https://github.com/ParabolInc/parabol/issues/9543)) ([fe128f0](https://github.com/ParabolInc/parabol/commit/fe128f017f01148ebd132fd532a771c6ab80ef16))
+* **repo-structure:** Docker images and stacks organized and clarified ([#9530](https://github.com/ParabolInc/parabol/issues/9530)) ([6fca12c](https://github.com/ParabolInc/parabol/commit/6fca12c814f471ef33954381ee562cbbb4b93d67))
+
 ## [7.22.2](https://github.com/ParabolInc/parabol/compare/v7.22.1...v7.22.2) (2024-03-18)
 
 
