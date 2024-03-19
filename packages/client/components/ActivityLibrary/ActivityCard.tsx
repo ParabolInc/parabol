@@ -36,11 +36,7 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         className
       )}
     >
-      <img
-        className='object-contain'
-        src={backgroundSrc}
-        alt=''
-      />
+      <img className='object-contain' src={backgroundSrc} alt='' />
       <img
         className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
         src={src}
