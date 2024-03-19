@@ -39,7 +39,7 @@ export default class JobQueueStream implements AsyncIterator<Job> {
             .skipLocked()
       )
       .updateTable('EmbeddingsJobQueue')
-      .set({state: 'embedding'})
+      .set({state: 'embedding', startAt: new Date()})
       .where('id', '=', sql`ANY(SELECT id FROM ids)` as any)
       .returningAll()
       .executeTakeFirst()

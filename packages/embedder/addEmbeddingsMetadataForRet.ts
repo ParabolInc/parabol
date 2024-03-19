@@ -117,7 +117,7 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
     Logger.log(
       `Inserted ${validDiscussions.length}/${discussions.length} discussions in metadata ending at ${jsTime}`
     )
-    lock = await lock.extend(5000)
+    lock = await lock.extend(10000)
   }
   lock.release()
 }

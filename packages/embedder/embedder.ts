@@ -1,7 +1,9 @@
 import tracer from 'dd-trace'
 import EmbedderChannelId from 'parabol-client/shared/gqlIds/EmbedderChannelId'
+import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import 'parabol-server/initSentry'
 import {DB} from 'parabol-server/postgres/pg'
+import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import RedisStream from '../gql-executor/RedisStream'
 import JobQueueStream from './JobQueueStream'
@@ -9,9 +11,8 @@ import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
 import getModelManager from './ai_models/ModelManager'
 import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
-import {getRootDataLoader} from './indexing/getRootDataLoader'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
-import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
+import {resetStalledJobs} from './resetStalledJobs'
 
 tracer.init({
   service: `embedder`,
@@ -52,7 +53,7 @@ const run = async () => {
   const embedderChannel = EmbedderChannelId.join(SERVER_ID)
   const embedderEnabled = parseEnvBoolean(process.env.AI_EMBEDDER_ENABLED)
   if (!embedderEnabled) {
-    console.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
+    Logger.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
     return
   }
 
@@ -61,13 +62,14 @@ const run = async () => {
   const isPrimaryEmbedder = await establishPrimaryEmbedder(publisher)
   const modelManager = getModelManager()
   if (isPrimaryEmbedder) {
+    // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
     await modelManager.removeOldTriggers()
     await importHistoricalMetadata(publisher)
+    resetStalledJobs()
   }
 
   const onMessage = async (_channel: string, message: string) => {
-    console.log('got message', message)
     const parsedMessage = parseEmbedderMessage(message)
     await addEmbeddingsMetadata(publisher, parsedMessage)
   }
@@ -85,24 +87,7 @@ const run = async () => {
   const dataLoader = new RootDataLoader({maxBatchSize: 1000})
   const jobQueueStream = new JobQueueStream(modelManager, dataLoader)
 
-  console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
-
-  // setTimeout(() => {
-  //   console.log('pub')
-  //   publisher.xadd(
-  //     'embedderStream',
-  //     'MAXLEN',
-  //     '~',
-  //     1000,
-  //     '*',
-  //     'msg',
-  //     JSON.stringify({
-  //       objectType: 'retrospectiveDiscussionTopic',
-  //       startAt: new Date(),
-  //       endAt: new Date()
-  //     })
-  //   )
-  // }, 3000)
+  Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
   // async iterables run indefinitely and we have 2 of them, so merge them
   const streams = mergeAsyncIterators([incomingStream, jobQueueStream])
@@ -112,7 +97,7 @@ const run = async () => {
         onMessage('', message)
         continue
       case 1:
-        console.log(`embedder: completed ${message.embeddingsMetadataId} -> ${message.model}`)
+        Logger.log(`Embedded ${message.embeddingsMetadataId} -> ${message.model}`)
         continue
     }
   }

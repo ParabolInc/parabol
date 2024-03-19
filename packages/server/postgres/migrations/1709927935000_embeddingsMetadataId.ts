@@ -4,7 +4,10 @@ import getPgConfig from '../getPgConfig'
 export async function up() {
   const client = new Client(getPgConfig())
   await client.connect()
+  // wipe data to ensure the non-null constraints succeed
   await client.query(`
+    DELETE FROM "EmbeddingsMetadata";
+    DELETE FROM "EmbeddingsJobQueue";
     CREATE INDEX IF NOT EXISTS "idx_Discussion_createdAt" ON "Discussion"("createdAt");
     ALTER TABLE "EmbeddingsMetadata"
       DROP COLUMN "models",
@@ -12,6 +15,7 @@ export async function up() {
     ALTER TABLE "EmbeddingsJobQueue"
       ADD COLUMN "retryAfter" TIMESTAMP WITH TIME ZONE,
       ADD COLUMN "retryCount" SMALLINT NOT NULL DEFAULT 0,
+      ADD COLUMN "startAt" TIMESTAMP WITH TIME ZONE,
       DROP CONSTRAINT IF EXISTS "EmbeddingsJobQueue_objectType_refId_model_key",
       DROP COLUMN "refId",
       DROP COLUMN "objectType",
@@ -36,10 +40,11 @@ export async function down() {
     ALTER TABLE "EmbeddingsJobQueue"
       ADD CONSTRAINT "EmbeddingsJobQueue_objectType_refId_model_key" UNIQUE("objectType", "refId", "model"),
       ADD COLUMN "refId" VARCHAR(100),
-      ADD COLUMN "objectType" "EmbeddingsObjectTypeEnum" NOT NULL,
+      ADD COLUMN "objectType" "EmbeddingsObjectTypeEnum",
       DROP COLUMN "embeddingsMetadataId",
       DROP COLUMN "retryAfter",
       DROP COLUMN "retryCount",
+      DROP COLUMN "startAt",
       DROP CONSTRAINT IF EXISTS "EmbeddingsMetadata_embeddingsMetadataId_fkey",
       DROP CONSTRAINT IF EXISTS "EmbeddingsJobQueue_embeddingsMetadataId_model_unique";
   `)
