@@ -2,7 +2,7 @@ import RedisInstance from 'parabol-server/utils/RedisInstance'
 
 type MessageValue = [prop: string, stringifiedData: string]
 type Message = [messageId: string, value: MessageValue]
-type XReadGroupRes = [streamName: string, messages: Message[]]
+type XReadGroupRes = [streamName: string, messages: [Message, ...Message[]]]
 export default class RedisStream implements AsyncIterableIterator<string> {
   private stream: string
   private consumerGroup: string
