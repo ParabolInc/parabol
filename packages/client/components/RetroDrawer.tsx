@@ -61,9 +61,13 @@ const RetroDrawer = (props: Props) => {
     setShowDrawer(!showDrawer)
   }
 
+  const handleCloseDrawer = () => {
+    setShowDrawer(false)
+  }
+
   useEffect(() => {
     if (hasReflections && showDrawer) {
-      setShowDrawer(false)
+      handleCloseDrawer()
     }
   }, [hasReflections])
 
@@ -100,8 +104,9 @@ const RetroDrawer = (props: Props) => {
             {templates.map((template) => (
               <RetroDrawerTemplateCard
                 key={template.node.id}
-                meetingId={meeting.id}
+                meetingId={meeting.id!}
                 templateRef={template.node}
+                handleCloseDrawer={handleCloseDrawer}
               />
             ))}
           </div>

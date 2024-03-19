@@ -14,10 +14,11 @@ import useAtmosphere from '../hooks/useAtmosphere'
 interface Props {
   templateRef: RetroDrawerTemplateCard_template$key
   meetingId: string
+  handleCloseDrawer: () => void
 }
 
 const RetroDrawerTemplateCard = (props: Props) => {
-  const {templateRef, meetingId} = props
+  const {templateRef, meetingId, handleCloseDrawer} = props
   const {onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const template = useFragment(
@@ -43,6 +44,7 @@ const RetroDrawerTemplateCard = (props: Props) => {
       },
       {onError, onCompleted}
     )
+    handleCloseDrawer()
   }
 
   return (
