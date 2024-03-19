@@ -144,7 +144,7 @@ export default class JobQueueStream implements AsyncIterableIterator<Job> {
         }
         await pg
           // cast to any because these types won't be available in CI
-          .insertInto(embeddingModel.tableName as EmbeddingsTable as any)
+          .insertInto(embeddingModel.tableName as EmbeddingsTable)
           .values({
             // TODO is the extra space of a null embedText really worth it?!
             embedText: isFullTextTooBig ? chunk : null,
