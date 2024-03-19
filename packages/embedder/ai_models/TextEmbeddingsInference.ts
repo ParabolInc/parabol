@@ -50,7 +50,7 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
         return new Error(`listOfTokens list length !== 1 (length: ${listOfTokens.length})`)
       return listOfTokens[0]
     } catch (e) {
-      return e instanceof Error ? e : new Error(e)
+      return e instanceof Error ? e : new Error(typeof e === 'string' ? e : 'Unknown error')
     }
   }
   public async getEmbedding(content: string) {
@@ -73,7 +73,7 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
       return listOfVectors[0]
     } catch (e) {
       console.log(`TextEmbeddingsInference.getEmbeddings() timeout: `, e)
-      return e instanceof Error ? e : new Error(e || 'Unknown Error')
+      return e instanceof Error ? e : new Error(typeof e === 'string' ? e : 'Unknown error')
     }
   }
 

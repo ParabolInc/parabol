@@ -12,8 +12,8 @@ type UnIt<T extends AsyncIterator<any>> = UnYield<Awaited<ReturnType<T['next']>>
 // Promise.race has a memory leak
 // To avoid: https://github.com/tc39/proposal-async-iterator-helpers/issues/15#issuecomment-1937011820
 export function mergeAsyncIterators<
-  T1 extends AsyncIterator<any>,
-  T2 extends AsyncIterator<any>,
+  T1 extends AsyncIterableIterator<any>,
+  T2 extends AsyncIterableIterator<any>,
   K1 = UnIt<T1>,
   K2 = UnIt<T2>
 >(iterables: [T1, T2]) {

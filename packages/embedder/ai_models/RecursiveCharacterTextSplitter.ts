@@ -50,7 +50,7 @@ which is longer than the specified ${this.chunkSize}`
           // - we have a larger chunk than in the chunk overlap
           // - or if we still have any chunks and the length is long
           while (total > this.chunkOverlap || (total + _len > this.chunkSize && total > 0)) {
-            total -= currentDoc[0].length
+            total -= currentDoc[0]!.length
             currentDoc.shift()
           }
         }
@@ -70,10 +70,10 @@ which is longer than the specified ${this.chunkSize}`
     const separators = this.separators
 
     // Get appropriate separator to use
-    let separator: string = separators[separators.length - 1]
+    let separator: string = separators[separators.length - 1]!
     let newSeparators: string[] | undefined
     for (let i = 0; i < separators.length; i += 1) {
-      const s = separators[i]
+      const s = separators[i]!
       if (s === '') {
         separator = s
         break
