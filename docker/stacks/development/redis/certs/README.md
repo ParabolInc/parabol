@@ -8,8 +8,10 @@ The certs that are checked into version control are self-signed and safe to shar
 All env vars should correspond with the vars in the redis instance.
 
 In development, that means:
-- In the `docker/dev.yml`, add a volume: `bitnami-redis-data: {}`
-- In the `docker/dev.yml`, replace the Redis container sections with the following:
+
+- In the `docker/stacks/development/docker-compose.yml`, add a volume: `bitnami-redis-data: {}`
+- In the `docker/stacks/development/docker-compose.yml`, replace the Redis container sections with the following:
+
   ```yaml
   image: bitnami/redis:7.0-debian-11
   environment:
@@ -25,9 +27,9 @@ In development, that means:
     - ../certs:/opt/bitnami/redis/certs
   ```
 
-- Vars in .env should match the vars in dev.yml
+- Vars in .env should match the vars in `docker/stacks/development/docker-compose.yml`
 
-Any changes to dev.yml require running `yarn db:start`
+Any changes to `docker/stacks/development/docker-compose.yml` require running `yarn db:start`
 
 REDIS_PASSWORD: Use this if you'd like our app to connect to redis using a password
 REDIS_TLS_CERT_FILE: The cert file used to authorize clients. Not available in GCP
