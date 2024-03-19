@@ -1,12 +1,12 @@
 import {Selectable} from 'kysely'
-import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
 import {DB} from 'parabol-server/postgres/pg'
 
+import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import {createTextFromRetrospectiveDiscussionTopic} from './retrospectiveDiscussionTopic'
 
 export const createEmbeddingTextFrom = async (
   embeddingsMetadata: Selectable<DB['EmbeddingsMetadata']>,
-  dataLoader: DataLoaderWorker
+  dataLoader: RootDataLoader
 ) => {
   switch (embeddingsMetadata.objectType) {
     case 'retrospectiveDiscussionTopic':

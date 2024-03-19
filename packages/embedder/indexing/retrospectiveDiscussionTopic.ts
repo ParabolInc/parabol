@@ -1,7 +1,7 @@
-import getRethink, {RethinkSchema} from 'parabol-server/database/rethinkDriver'
+import {RethinkSchema} from 'parabol-server/database/rethinkDriver'
 import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
-import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
+import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
 
 // Here's a generic reprentation of the text generated here:
@@ -21,14 +21,14 @@ import prettier from 'prettier'
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
-async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderWorker) {
+async function getPreferredNameByUserId(userId: string, dataLoader: RootDataLoader) {
   if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
   return !user ? 'Unknown' : user.preferredName
 }
 
 async function formatThread(
-  dataLoader: DataLoaderWorker,
+  dataLoader: RootDataLoader,
   comments: Comment[],
   parentId: string | null = null,
   depth = 0
@@ -60,13 +60,12 @@ async function formatThread(
 
 export const createTextFromRetrospectiveDiscussionTopic = async (
   discussionId: string,
-  dataLoader: DataLoaderWorker,
+  dataLoader: RootDataLoader,
   textForReranking: boolean = false
 ) => {
   const discussion = await dataLoader.get('discussions').load(discussionId)
   if (!discussion) throw new Error(`Discussion not found: ${discussionId}`)
   const {discussionTopicId: reflectionGroupId, meetingId, summary: discussionSummary} = discussion
-  const r = await getRethink()
   const [newMeeting, reflectionGroup, reflections] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
@@ -166,7 +165,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
 
 export const newRetroDiscussionTopicsFromNewMeeting = async (
   newMeeting: RethinkSchema['NewMeeting']['type'],
-  dataLoader: DataLoaderWorker
+  dataLoader: RootDataLoader
 ) => {
   const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
   const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId

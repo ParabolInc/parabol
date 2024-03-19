@@ -11,6 +11,7 @@ import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {getRootDataLoader} from './indexing/getRootDataLoader'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
+import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 
 tracer.init({
   service: `embedder`,
@@ -81,7 +82,7 @@ const run = async () => {
   }
 
   const incomingStream = new RedisStream('embedderStream', 'embedderConsumerGroup', embedderChannel)
-  const dataLoader = getRootDataLoader()
+  const dataLoader = new RootDataLoader({maxBatchSize: 1000})
   const jobQueueStream = new JobQueueStream(modelManager, dataLoader)
 
   console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)

@@ -1,7 +1,7 @@
 import {Selectable, sql} from 'kysely'
 import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
-import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
+import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
@@ -13,10 +13,10 @@ import {updateJobState} from './indexing/updateJobState'
 
 type Job = Selectable<DB['EmbeddingsJobQueue']>
 export default class JobQueueStream implements AsyncIterator<Job> {
-  private dataLoader: DataLoaderWorker
+  private dataLoader: RootDataLoader
   private modelManager: ModelManager
 
-  constructor(modelManager: ModelManager, dataLoader: DataLoaderWorker) {
+  constructor(modelManager: ModelManager, dataLoader: RootDataLoader) {
     this.modelManager = modelManager
     this.dataLoader = dataLoader
   }
@@ -92,7 +92,7 @@ export default class JobQueueStream implements AsyncIterator<Job> {
         await pg
           .updateTable('EmbeddingsMetadata')
           .set({fullText})
-          .where('id', '=', metadata.id)
+          .where('id', '=', embeddingsMetadataId)
           .execute()
       }
     } catch (e) {
@@ -128,7 +128,9 @@ export default class JobQueueStream implements AsyncIterator<Job> {
     // Cannot use summarization strategy if generation model has same context length as embedding model
     // We must split the text & not tokens because the endpoint doesn't support decoding input tokens
     const chunks = isFullTextTooBig ? embeddingModel.splitText(fullText, 0) : [fullText]
-
+    if (isFullTextTooBig) {
+      console.log('we split!', chunks)
+    }
     await Promise.all(
       chunks.map(async (chunk, chunkNumber) => {
         const embeddingVector = await embeddingModel.getEmbedding(chunk)
@@ -150,7 +152,7 @@ export default class JobQueueStream implements AsyncIterator<Job> {
             chunkNumber: isFullTextTooBig ? chunkNumber : null
           })
           .onConflict((oc) =>
-            oc.doUpdateSet((eb) => ({
+            oc.column('embeddingsMetadataId').doUpdateSet((eb) => ({
               embedText: eb.ref('excluded.embedText'),
               embedding: eb.ref('excluded.embedding')
             }))
