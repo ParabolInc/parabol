@@ -4,16 +4,20 @@ import Redlock from 'redlock'
 
 export const establishPrimaryEmbedder = async (redis: RedisInstance) => {
   const redlock = new Redlock([redis], {retryCount: 0})
-  const MAX_TIME_BETWEEN_WORKER_STARTUPS = ms('5m')
+  const MAX_TIME_BETWEEN_WORKER_STARTUPS = ms('5s')
   try {
     const primaryWorkerLock = await redlock.acquire(
       [`embedder_isPrimary_${process.env.npm_package_version}`],
       MAX_TIME_BETWEEN_WORKER_STARTUPS
     )
-    process.on('SIGTERM', async () => {
+    const kill = () => {
+      console.log('killing')
       primaryWorkerLock?.release()
       process.exit()
-    })
+    }
+    process.on('SIGTERM', kill)
+    process.on('SIGINT', kill)
+
     return true
   } catch {
     return false

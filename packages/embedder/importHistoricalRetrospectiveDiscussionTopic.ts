@@ -1,4 +1,5 @@
 import getKysely from 'parabol-server/postgres/getKysely'
+import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRet'
 
@@ -11,19 +12,25 @@ export const importHistoricalRetrospectiveDiscussionTopic = async (redis: RedisI
       eb(
         'EmbeddingsMetadata.refId',
         '=',
-        selectFrom('Discussion').select('Discussion.id').orderBy(['createdAt', 'id']).limit(1)
+        selectFrom('Discussion')
+          .select('Discussion.id')
+          .where('discussionTopicType', '=', 'reflectionGroup')
+          .orderBy(['createdAt', 'id'])
+          .limit(1)
       )
     )
     .limit(1)
     .executeTakeFirst()
 
   if (isEarliestMetadataImported) return
-  const earliestDiscussion = await pg
-    .selectFrom('Discussion')
-    .select('createdAt')
-    .orderBy('createdAt')
+  const earliestImportedDiscussion = await pg
+    .selectFrom('EmbeddingsMetadata')
+    .select(['id', 'refUpdatedAt', 'refId'])
+    .where('objectType', '=', 'retrospectiveDiscussionTopic')
+    .orderBy('refUpdatedAt')
     .limit(1)
     .executeTakeFirst()
-  const endAt = earliestDiscussion?.createdAt ?? undefined
+  const endAt = earliestImportedDiscussion?.refUpdatedAt ?? undefined
+  Logger.log(`Importing discussion history up to ${endAt || 'now'}`)
   return addEmbeddingsMetadataForRetrospectiveDiscussionTopic(redis, {endAt})
 }

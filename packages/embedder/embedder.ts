@@ -59,7 +59,6 @@ const run = async () => {
   const publisher = new RedisInstance(`embedder_pub_${SERVER_ID}`)
   const isPrimaryEmbedder = await establishPrimaryEmbedder(publisher)
   const modelManager = getModelManager()
-
   if (isPrimaryEmbedder) {
     await modelManager.maybeCreateTables()
     await modelManager.removeOldTriggers()
@@ -87,22 +86,22 @@ const run = async () => {
 
   console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
-  setTimeout(() => {
-    console.log('pub')
-    publisher.xadd(
-      'embedderStream',
-      'MAXLEN',
-      '~',
-      1000,
-      '*',
-      'msg',
-      JSON.stringify({
-        objectType: 'retrospectiveDiscussionTopic',
-        startAt: new Date(),
-        endAt: new Date()
-      })
-    )
-  }, 3000)
+  // setTimeout(() => {
+  //   console.log('pub')
+  //   publisher.xadd(
+  //     'embedderStream',
+  //     'MAXLEN',
+  //     '~',
+  //     1000,
+  //     '*',
+  //     'msg',
+  //     JSON.stringify({
+  //       objectType: 'retrospectiveDiscussionTopic',
+  //       startAt: new Date(),
+  //       endAt: new Date()
+  //     })
+  //   )
+  // }, 3000)
 
   // async iterables run indefinitely and we have 2 of them, so merge them
   const streams = mergeAsyncIterators([incomingStream, jobQueueStream])
