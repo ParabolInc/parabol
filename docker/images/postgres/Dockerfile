@@ -10,9 +10,6 @@ RUN apt-get update && apt-get install -y \
     postgresql-server-dev-${PSQL_MAJOR_VERSION} \
     git
 
-# JSON-Schema
-RUN cd /extensions/postgres-json-schema && make install && make installcheck
-
 # PGVector
 RUN git clone --branch ${PGVECTOR_VERSION} \
        https://github.com/pgvector/pgvector.git /extensions/pgvector && \
