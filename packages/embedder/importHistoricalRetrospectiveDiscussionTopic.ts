@@ -3,6 +3,8 @@ import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRet'
 
+// Check to see if the oldest discussion topic exists in the metadata table
+// If not, get the date of the oldest discussion topic in the metadata table and import all items before that date
 export const importHistoricalRetrospectiveDiscussionTopic = async (redis: RedisInstance) => {
   const pg = getKysely()
   const isEarliestMetadataImported = await pg
