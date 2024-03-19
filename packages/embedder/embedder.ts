@@ -57,9 +57,8 @@ const run = async () => {
     return
   }
 
-  const subscriber = new RedisInstance(`embedder_sub_${SERVER_ID}`)
-  const publisher = new RedisInstance(`embedder_pub_${SERVER_ID}`)
-  const isPrimaryEmbedder = await establishPrimaryEmbedder(publisher)
+  const redis = new RedisInstance(`embedder_${SERVER_ID}`)
+  const isPrimaryEmbedder = await establishPrimaryEmbedder(redis)
   const modelManager = getModelManager()
   if (isPrimaryEmbedder) {
     // only 1 worker needs to perform these on startup
@@ -73,12 +72,10 @@ const run = async () => {
     const parsedMessage = parseEmbedderMessage(message)
     await addEmbeddingsMetadata(parsedMessage)
   }
-  subscriber.on('message', onMessage)
-  subscriber.subscribe(embedderChannel)
 
   // subscribe to consumer group
   try {
-    await publisher.xgroup('CREATE', 'embedderStream', 'embedderConsumerGroup', '$', 'MKSTREAM')
+    await redis.xgroup('CREATE', 'embedderStream', 'embedderConsumerGroup', '$', 'MKSTREAM')
   } catch (e) {
     // stream already exists
   }
