@@ -109,7 +109,6 @@ const query = graphql`
       }
       featureFlags {
         azureDevOps
-        msTeams
       }
     }
   }
@@ -120,7 +119,7 @@ const ProviderList = (props: Props) => {
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
   const {
-    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
+    featureFlags: {azureDevOps: allowAzureDevOps}
   } = viewer
 
   const integrations = viewer.teamMember?.integrations
@@ -166,8 +165,7 @@ const ProviderList = (props: Props) => {
     {
       name: 'MS Teams',
       connected: !!integrations?.msTeams.auth,
-      component: <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />,
-      hidden: !allowMSTeams
+      component: <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />
     },
     {
       name: 'Gcal Integration',

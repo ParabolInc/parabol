@@ -19,9 +19,9 @@ const CreateActivityCard = (props: Props) => {
       <ActivityLibraryCard
         className={'flex-1 cursor-pointer'}
         theme={CATEGORY_THEMES[category]}
-        badge={<ActivityBadge className='mx-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>}
+        badge={<ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>}
       >
-        <div className='flex flex-1 flex-col items-center justify-center text-center font-semibold md:mx-10'>
+        <div className='flex h-full w-full flex-col items-center justify-center pb-2 font-semibold'>
           <div className='h-12 w-12'>
             <AddIcon className='h-full w-full text-slate-700' />
           </div>

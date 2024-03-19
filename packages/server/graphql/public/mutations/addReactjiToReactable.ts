@@ -7,9 +7,6 @@ import {RDatum} from '../../../database/stricterR'
 import Comment from '../../../database/types/Comment'
 import {Reactable} from '../../../database/types/Reactable'
 import Reflection from '../../../database/types/Reflection'
-import getPg from '../../../postgres/getPg'
-import {appendTeamResponseReactji} from '../../../postgres/queries/generated/appendTeamResponseReactjiQuery'
-import {removeTeamResponseReactji} from '../../../postgres/queries/generated/removeTeamResponseReactjiQuery'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import emojiIds from '../../../utils/emojiIds'
@@ -17,14 +14,15 @@ import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
 import {GQLContext} from '../../graphql'
 
-import getReactableType from '../../types/getReactableType'
-import {ReactableEnumType} from '../../types/ReactableEnum'
-import getKysely from '../../../postgres/getKysely'
-import {AnyMeeting} from '../../../postgres/types/Meeting'
+import {sql} from 'kysely'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
-import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
-import {MutationResolvers} from '../resolverTypes'
 import NotificationKudosReceived from '../../../database/types/NotificationKudosReceived'
+import getKysely from '../../../postgres/getKysely'
+import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
+import {AnyMeeting} from '../../../postgres/types/Meeting'
+import {ReactableEnumType} from '../../types/ReactableEnum'
+import getReactableType from '../../types/getReactableType'
+import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 
 const rethinkTableLookup = {
@@ -129,15 +127,19 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   if (pgLoaderName) {
     const numberReactableId = TeamPromptResponseId.split(reactableId)
     if (isRemove) {
-      await removeTeamResponseReactji.run(
-        {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
-        getPg()
-      )
+      await pg
+        .updateTable('TeamPromptResponse')
+        .set({reactjis: sql`array_remove("reactjis", (${reactji},${viewerId})::"Reactji")`})
+        .where('id', '=', numberReactableId)
+        .execute()
     } else {
-      await appendTeamResponseReactji.run(
-        {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
-        getPg()
-      )
+      await pg
+        .updateTable('TeamPromptResponse')
+        .set({
+          reactjis: sql`arr_append_uniq("reactjis", (${reactji},${viewerId})::"Reactji")`
+        })
+        .where('id', '=', numberReactableId)
+        .execute()
     }
 
     dataLoader.get(pgLoaderName).clear(reactableId)

@@ -60,10 +60,10 @@ const NewMeetingSummary = (props: Props) => {
   if (!newMeeting) {
     return null
   }
+  // eslint-disable react-hooks/rules-of-hooks -- return above violates these rules, but is just a safeguard and not normal usage
   const {id: meetingId, name: meetingName, team} = newMeeting
   const {id: teamId, name: teamName} = team
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`

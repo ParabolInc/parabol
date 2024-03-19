@@ -10,6 +10,7 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js')
+const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
 // const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 module.exports = {
@@ -26,9 +27,9 @@ module.exports = {
     __dirname: false
   },
   entry: {
-    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
-    embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'embedder.ts')],
-    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
+    web: [DOTENV, INIT_PUBLIC_PATH, path.join(SERVER_ROOT, 'server.ts')],
+    embedder: [DOTENV, INIT_PUBLIC_PATH, path.join(EMBEDDER_ROOT, 'embedder.ts')],
+    gqlExecutor: [DOTENV, INIT_PUBLIC_PATH, path.join(GQL_ROOT, 'gqlExecutor.ts')]
   },
   output: {
     filename: '[name].js',
@@ -81,7 +82,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              publicPath: `http://localhost:${process.env.PORT}/static/`
+              name: '[name].[ext]'
             }
           }
         ]

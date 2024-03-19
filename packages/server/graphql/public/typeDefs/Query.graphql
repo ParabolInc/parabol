@@ -20,9 +20,9 @@ type Query {
   ): VerifiedInvitationPayload!
   SAMLIdP(
     """
-    the email associated with a SAML login
+    the email associated with a SAML login. null if instance is SSO-only
     """
-    email: ID!
+    email: ID
 
     """
     true if the user was invited, else false

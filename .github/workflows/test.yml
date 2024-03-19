@@ -93,11 +93,12 @@ jobs:
         run: yarn predeploy
 
       - name: Start testing server in background
-        run: |
-          yarn start &
-
-      - name: Wait for testing server to be healthy
-        run: curl -4 --retry 30 --retry-connrefused --retry-delay 2 http://localhost:3000/graphql
+        uses: JarvusInnovations/background-action@v1
+        with:
+          run: |
+            yarn start &
+          wait-on: |
+            http://localhost:3000/graphql
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit
@@ -130,5 +131,14 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: test-results/
+          path: packages/integration-tests/test-results/
           retention-days: 7
+
+      - name: Report Status
+        if: ${{ failure() && github.ref_name == 'master' }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

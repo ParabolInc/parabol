@@ -11,6 +11,7 @@ import ForgotPasswordOneClick from './ForgotPasswordOneClick'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
+import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
 
 interface Props {
   invitationToken: string
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const StyledDialog = styled(InviteDialog)({
-  maxWidth: 356
+  maxWidth: AUTH_DIALOG_WIDTH
 })
 
 const TeamName = styled('span')({
