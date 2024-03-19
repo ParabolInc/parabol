@@ -1,21 +1,31 @@
-import {sql} from 'kysely'
+import {Selectable, sql} from 'kysely'
 import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
+import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
+import {DB} from 'parabol-server/postgres/pg'
 import {EmbeddingsTable} from './ai_models/AbstractEmbeddingsModel'
 import {ModelManager} from './ai_models/ModelManager'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
-import {getRootDataLoader} from './indexing/getRootDataLoader'
 import numberVectorToString from './indexing/numberVectorToString'
 import {updateJobState} from './indexing/updateJobState'
 
-export const processJobQueue = async (modelManager: ModelManager) => {
-  const pg = getKysely()
-  const dataLoader = getRootDataLoader()
+type Job = Selectable<DB['EmbeddingsJobQueue']>
+export default class JobQueueStream implements AsyncIterator<Job> {
+  private dataLoader: DataLoaderWorker
+  private modelManager: ModelManager
 
-  // use a loop here to avoid tail call recursion since this will run indefinitely
-  while (true) {
+  constructor(modelManager: ModelManager, dataLoader: DataLoaderWorker) {
+    this.modelManager = modelManager
+    this.dataLoader = dataLoader
+  }
+
+  [Symbol.asyncIterator]() {
+    return this
+  }
+  async next(): Promise<IteratorResult<Job>> {
+    const pg = getKysely()
     let job = await pg
       .with(
         (cte) => cte('ids').materialized(),
@@ -53,9 +63,10 @@ export const processJobQueue = async (modelManager: ModelManager) => {
         .returningAll()
         .executeTakeFirst()
       if (!job) {
-        // the queue is empty! wait a minute
+        console.log('JobQueueStream: no jobs found')
+        // queue is empty, so sleep for a while
         await sleep(ms('1m'))
-        continue
+        return this.next()
       }
     }
 
@@ -71,13 +82,13 @@ export const processJobQueue = async (modelManager: ModelManager) => {
         stateMessage: `unable to fetch metadata by EmbeddingsJobQueue.id = ${jobId}`,
         retryCount: retryCount + 1
       })
-      continue
+      return this.next()
     }
 
     let {fullText} = metadata
     try {
       if (!fullText) {
-        fullText = await createEmbeddingTextFrom(metadata, dataLoader)
+        fullText = await createEmbeddingTextFrom(metadata, this.dataLoader)
         await pg
           .updateTable('EmbeddingsMetadata')
           .set({fullText})
@@ -89,16 +100,16 @@ export const processJobQueue = async (modelManager: ModelManager) => {
         stateMessage: `unable to create embedding text: ${e}`,
         retryCount: retryCount + 1
       })
-      continue
+      return this.next()
     }
 
-    const embeddingModel = modelManager.embeddingModelsMapByTable[model]
+    const embeddingModel = this.modelManager.embeddingModelsMapByTable[model]
     if (!embeddingModel) {
       await updateJobState(jobId, 'failed', {
         stateMessage: `embedding model ${model} not available`,
         retryCount: retryCount + 1
       })
-      continue
+      return this.next()
     }
 
     const tokens = await embeddingModel.getTokens(fullText)
@@ -108,7 +119,7 @@ export const processJobQueue = async (modelManager: ModelManager) => {
         retryCount: retryCount + 1,
         retryAfter: retryCount < 10 ? new Date(Date.now() + ms('1m')) : null
       })
-      continue
+      return this.next()
     }
 
     const isFullTextTooBig = tokens.length > embeddingModel.maxInputTokens
@@ -147,6 +158,12 @@ export const processJobQueue = async (modelManager: ModelManager) => {
     )
 
     await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
-    console.log(`embedder: completed ${embeddingsMetadataId} -> ${model}`)
+    return {done: false, value: job}
+  }
+  return() {
+    return Promise.resolve({done: true as const, value: undefined})
+  }
+  throw(error: any) {
+    return Promise.resolve({done: true, value: error})
   }
 }

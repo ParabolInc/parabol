@@ -3,11 +3,14 @@ import EmbedderChannelId from 'parabol-client/shared/gqlIds/EmbedderChannelId'
 import 'parabol-server/initSentry'
 import {DB} from 'parabol-server/postgres/pg'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
+import RedisStream from '../gql-executor/RedisStream'
+import JobQueueStream from './JobQueueStream'
 import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
 import getModelManager from './ai_models/ModelManager'
 import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
-import {processJobQueue} from './processJobQueue'
+import {getRootDataLoader} from './indexing/getRootDataLoader'
+import {mergeAsyncIterators} from './mergeAsyncIterators'
 
 tracer.init({
   service: `embedder`,
@@ -66,15 +69,38 @@ const run = async () => {
   }
 
   const onMessage = async (_channel: string, message: string) => {
+    console.log('got message', message)
     const parsedMessage = parseEmbedderMessage(message)
     await addEmbeddingsMetadata(publisher, parsedMessage)
   }
   subscriber.on('message', onMessage)
   subscriber.subscribe(embedderChannel)
 
+  // subscribe to consumer group
+  try {
+    await publisher.xgroup('CREATE', 'embedderStream', 'embedderConsumerGroup', '$', 'MKSTREAM')
+  } catch (e) {
+    // stream already exists
+  }
+
+  const incomingStream = new RedisStream('embedderStream', 'embedderConsumerGroup', embedderChannel)
+  const dataLoader = getRootDataLoader()
+  const jobQueueStream = new JobQueueStream(modelManager, dataLoader)
+
   console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
-  processJobQueue(modelManager)
+  // async iterables run indefinitely and we have 2 of them, so merge them
+  const streams = mergeAsyncIterators([incomingStream, jobQueueStream])
+  for await (const [idx, message] of streams) {
+    switch (idx) {
+      case 0:
+        onMessage('', message)
+        continue
+      case 1:
+        console.log(`embedder: completed ${message.embeddingsMetadataId} -> ${message.model}`)
+        continue
+    }
+  }
 }
 
 run()
