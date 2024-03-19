@@ -1,8 +1,8 @@
 # Docker Host Single Tenant (ST)
 
-To run Parabol in single tenant mode (e.g. simple docker-compose on a docker host).
+To run Parabol in single tenant mode (e.g. simple docker-compose on a docker host):
 
-1. Build your Parabol UBI using instructions in `docker/ubi/docker-build/README.md`
+1. Build your Parabol UBI using instructions in `docker/images/parabol-ubi/README.md`
 2. Create a working `.env` from `.env.example`
 3. Update docker-compose.yaml `image: #image:tag` with your built image tag from `step (1.)`
 4. Run `docker compose --profile databases --profile parabol up -d` to deploy the local stack. You can run `docker compose --profile databases --profile parabol down` to terminate the local stack
@@ -31,12 +31,12 @@ This will run `pre-deploy` and thus it will recreate the `web-server` and the `g
 
 Some tools are available to debug the databases is needed:
 
-- pgadmin
-- redis-commander
+- [pgadmin](https://www.pgadmin.org/)
+- [redis-commander](https://github.com/joeferner/redis-commander)
 
 To operate them use `docker compose up --profile databases --profile database-debug`.
 
 ## Running the whole stack
 
 - Start the whole stack: `docker compose --profile databases --profile parabol --profile database-debug --profile chronos up -d`.
-- Stop the stack: `docker compose --profile databases --profile parabol --profile database-debug --profile chronos down`
+- Stop the stack: `docker compose --profile databases --profile parabol --profile database-debug --profile chronos down`.
