@@ -86,9 +86,6 @@ jobs:
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
 
-      - name: Check Code Quality
-        run: yarn codecheck
-
       - name: Run Predeploy for Testing
         run: yarn predeploy
 
@@ -99,6 +96,9 @@ jobs:
             yarn start &
           wait-on: |
             http://localhost:3000/graphql
+
+      - name: Check Code Quality
+        run: yarn codecheck
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit
@@ -139,6 +139,6 @@ jobs:
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}
-          notify_when: 'failure'
+          notify_when: "failure"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
