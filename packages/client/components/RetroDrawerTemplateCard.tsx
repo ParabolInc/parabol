@@ -39,7 +39,11 @@ const RetroDrawerTemplateCard = (props: Props) => {
           ) : null
         }
       >
-        <ActivityCardImage className='group-hover/card:hidden' src={template.illustrationUrl} />
+        <ActivityCardImage
+          category='retrospective'
+          className='group-hover/card:hidden'
+          src={template.illustrationUrl}
+        />
         <ActivityLibraryCardDescription
           className='hidden group-hover/card:flex'
           templateRef={template}
