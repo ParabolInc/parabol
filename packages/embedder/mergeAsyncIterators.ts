@@ -23,7 +23,7 @@ export function mergeAsyncIterators<
     let capability: PromiseCapability<AcceptThunk | null> | undefined
     const iterators: AsyncIterator<any>[] = []
     const queue: AcceptThunk[] = []
-    const accept = async (idx: 0 | 1 | 2, iterator: AsyncIterator<any>) => {
+    const accept = async (idx: 0 | 1, iterator: AsyncIterator<any>) => {
       try {
         const next = await iterator.next()
         if (next.done) {
@@ -55,7 +55,7 @@ export function mergeAsyncIterators<
       for (const [idx, iterable] of iterables.entries()) {
         const iterator = iterable[Symbol.asyncIterator]()
         iterators.push(iterator)
-        void accept(idx as 0 | 1 | 2, iterator)
+        void accept(idx as 0 | 1, iterator)
       }
 
       // Delegate to iterables as results complete

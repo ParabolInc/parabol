@@ -26,19 +26,17 @@ function parseEnvBoolean(envVarValue: string | undefined): boolean {
 
 export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
 
-export interface PubSubEmbedderMessage {
-  // jobId?: string
+export interface MessageToEmbedder {
   objectType: EmbeddingObjectType
   startAt?: Date
   endAt?: Date
-  refId?: string
+  meetingId?: string
 }
-
-export type EmbedderOptions = Omit<PubSubEmbedderMessage, 'objectType'>
+export type EmbedderOptions = Omit<MessageToEmbedder, 'objectType'>
 
 export const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
 
-const parseEmbedderMessage = (message: string): PubSubEmbedderMessage => {
+const parseEmbedderMessage = (message: string): MessageToEmbedder => {
   const {startAt, endAt, ...input} = JSON.parse(message)
   return {
     ...input,
@@ -88,6 +86,23 @@ const run = async () => {
   const jobQueueStream = new JobQueueStream(modelManager, dataLoader)
 
   console.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
+
+  setTimeout(() => {
+    console.log('pub')
+    publisher.xadd(
+      'embedderStream',
+      'MAXLEN',
+      '~',
+      1000,
+      '*',
+      'msg',
+      JSON.stringify({
+        objectType: 'retrospectiveDiscussionTopic',
+        startAt: new Date(),
+        endAt: new Date()
+      })
+    )
+  }, 3000)
 
   // async iterables run indefinitely and we have 2 of them, so merge them
   const streams = mergeAsyncIterators([incomingStream, jobQueueStream])

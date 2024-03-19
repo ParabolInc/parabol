@@ -36,7 +36,7 @@ const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[]) => {
     // The best solution would be a date range of min(commentUpdatedAt) to max(commentUpdatedAt)
     refUpdatedAt: createdAt
   }))
-
+  if (!metadataRows[0]) return
   const PG_MAX_PARAMS = 65535
   const metadataColParams = Object.keys(metadataRows[0]).length
   const metadataBatchSize = Math.trunc(PG_MAX_PARAMS / metadataColParams)
@@ -58,7 +58,7 @@ const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[]) => {
 
 export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
   redis: RedisInstance,
-  {startAt, endAt, refId}: EmbedderOptions
+  {startAt, endAt, meetingId}: EmbedderOptions
 ) => {
   const redlock = new Redlock([redis], {retryCount: 0})
   let lock: Lock | null = null
@@ -72,17 +72,13 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
   // load up the metadata table will all discussion topics that are a part of meetings ended within the given date range
   const pg = getKysely()
   lock = await lock.extend(5000)
-  if (refId) {
-    const discussion = await pg
+  if (meetingId) {
+    const discussions = await pg
       .selectFrom('Discussion')
-      .select(['id', 'teamId', 'createdAt', 'discussionTopicType'])
-      .where('id', '=', refId)
-      .executeTakeFirst()
-    if (!discussion || discussion.discussionTopicType !== 'reflectionGroup') {
-      console.error('invalid discussion id', refId)
-    } else {
-      await insertDiscussionsIntoMetadata([discussion])
-    }
+      .select(['id', 'teamId', 'createdAt'])
+      .where('meetingId', '=', meetingId)
+      .execute()
+    await insertDiscussionsIntoMetadata(discussions)
     lock.release()
     return
   }
@@ -103,10 +99,12 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async (
       .orderBy('createdAt', 'desc')
       .limit(BATCH_SIZE)
       .execute()
-    const validDiscussions = await validateDiscussions(discussions)
-    if (validDiscussions.length === 0) break
+    if (!discussions[0]) break
     const [firstDiscussion] = discussions
     curEndAt = firstDiscussion.createdAt
+
+    const validDiscussions = await validateDiscussions(discussions)
+    if (validDiscussions.length === 0) break
     await insertDiscussionsIntoMetadata(validDiscussions)
     lock = await lock.extend(5000)
   }

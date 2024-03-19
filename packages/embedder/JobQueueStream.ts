@@ -96,6 +96,8 @@ export default class JobQueueStream implements AsyncIterator<Job> {
           .execute()
       }
     } catch (e) {
+      // get the trace since the error message may be unobvious
+      console.trace(e)
       await updateJobState(jobId, 'failed', {
         stateMessage: `unable to create embedding text: ${e}`,
         retryCount: retryCount + 1
