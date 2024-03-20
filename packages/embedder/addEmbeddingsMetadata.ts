@@ -1,4 +1,4 @@
-import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRet'
+import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
 import {ALL_OBJECT_TYPES, MessageToEmbedder} from './embedder'
 
 export const addEmbeddingsMetadata = async ({objectType, ...options}: MessageToEmbedder) => {

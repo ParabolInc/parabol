@@ -16,11 +16,12 @@ const validateDiscussions = async (discussions: (DiscussionMeta & {meetingId: st
   const r = await getRethink()
   if (discussions.length === 0) return discussions
   // Exclude discussions that belong to an unfinished meeting
-  const meetingIds = discussions.map(({meetingId}) => meetingId)
+  const meetingIds = [...new Set(discussions.map(({meetingId}) => meetingId))]
   const endedMeetingIds = await r
     .table('NewMeeting')
     .getAll(r.args(meetingIds), {index: 'id'})
     .filter((row: RDatum) => row('endedAt').default(null).ne(null))('id')
+    .distinct()
     .run()
   const endedMeetingIdsSet = new Set(endedMeetingIds)
   return discussions.filter(({meetingId}) => endedMeetingIdsSet.has(meetingId))

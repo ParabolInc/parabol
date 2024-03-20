@@ -12,7 +12,7 @@ import numberVectorToString from './indexing/numberVectorToString'
 import {updateJobState} from './indexing/updateJobState'
 
 type Job = Selectable<DB['EmbeddingsJobQueue']>
-export default class JobQueueStream implements AsyncIterableIterator<Job> {
+export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Job> {
   private dataLoader: RootDataLoader
   private modelManager: ModelManager
 

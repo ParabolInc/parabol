@@ -6,7 +6,7 @@ import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import RedisStream from '../gql-executor/RedisStream'
-import JobQueueStream from './JobQueueStream'
+import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
 import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
 import getModelManager from './ai_models/ModelManager'
 import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
@@ -75,14 +75,24 @@ const run = async () => {
 
   // subscribe to consumer group
   try {
-    await redis.xgroup('CREATE', 'embedderStream', 'embedderConsumerGroup', '$', 'MKSTREAM')
+    await redis.xgroup(
+      'CREATE',
+      'embedMetadataStream',
+      'embedMetadataConsumerGroup',
+      '$',
+      'MKSTREAM'
+    )
   } catch (e) {
     // stream already exists
   }
 
-  const incomingStream = new RedisStream('embedderStream', 'embedderConsumerGroup', embedderChannel)
+  const incomingStream = new RedisStream(
+    'embedMetadataStream',
+    'embedMetadataConsumerGroup',
+    embedderChannel
+  )
   const dataLoader = new RootDataLoader({maxBatchSize: 1000})
-  const jobQueueStream = new JobQueueStream(modelManager, dataLoader)
+  const jobQueueStream = new EmbeddingsJobQueueStream(modelManager, dataLoader)
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 

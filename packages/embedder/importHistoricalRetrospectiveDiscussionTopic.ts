@@ -1,6 +1,6 @@
 import getKysely from 'parabol-server/postgres/getKysely'
 import {Logger} from 'parabol-server/utils/Logger'
-import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRet'
+import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
 
 // Check to see if the oldest discussion topic exists in the metadata table
 // If not, get the date of the oldest discussion topic in the metadata table and import all items before that date
