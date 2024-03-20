@@ -78,7 +78,6 @@ jobs:
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
-          yarn pg:generate
 
       - name: Build for testing
         run: yarn build
@@ -96,6 +95,9 @@ jobs:
             yarn start &
           wait-on: |
             http://localhost:3000/graphql
+
+      - name: Kysely Codegen
+        run: yarn pg:generate
 
       - name: Check Code Quality
         run: yarn codecheck
