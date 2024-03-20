@@ -324,3 +324,15 @@ export const newRetroDiscussionTopicsFromNewMeeting = async (
     return []
   }
 }
+
+export const upsertRetroDiscussionTopicFromNewMeeting = async (
+  newMeeting: MeetingRetrospective,
+  dataLoader: DataLoaderWorker
+) => {
+  const newEmbeddingsIndexItems = await newRetroDiscussionTopicsFromNewMeeting(
+    newMeeting,
+    dataLoader
+  )
+  if (!newEmbeddingsIndexItems || !newEmbeddingsIndexItems.length) return
+  return upsertEmbeddingsMetaRows(newEmbeddingsIndexItems)
+}
