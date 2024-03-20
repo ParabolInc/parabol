@@ -4,7 +4,7 @@ NODE_ENV='production'
 NODE_EXTRA_CA_CERTS=''
 PROTO='https'
 PORT='3000'
-# Database configurations must be the same used in the docker-build.yml Github workflow
+# Database configurations must be the same used in the build.yml Github workflow
 POSTGRES_PASSWORD='temppassword'
 POSTGRES_USER='tempuser'
 POSTGRES_DB='tempdb'

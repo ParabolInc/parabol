@@ -10,7 +10,6 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
-import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -60,13 +59,7 @@ export default {
       updatedAt: now
     }
     await updateTeamByTeamId(dbUpdate, teamId)
-    analytics.teamNameChanged(
-      viewer,
-      teamId,
-      oldName,
-      newName,
-      makeDefaultTeamName(teamId) === oldName
-    )
+    analytics.teamNameChanged(viewer, teamId, oldName, newName, oldName.endsWith('’s Team'))
 
     const data = {teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateTeamNamePayload', data, subOptions)
