@@ -51,14 +51,14 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
 
 export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string> = {
   [QUICK_START_CATEGORY_ID]: 'Quick Start',
+  [CUSTOM_CATEGORY_ID]: 'Custom',
   retrospective: 'Retrospective',
   estimation: 'Estimation',
   standup: 'Standup',
   feedback: 'Feedback',
   strategy: 'Strategy',
   premortem: 'Pre-Mortem',
-  postmortem: 'Post-Mortem',
-  [CUSTOM_CATEGORY_ID]: 'Custom'
+  postmortem: 'Post-Mortem'
 }
 
 export const MEETING_TYPE_TO_CATEGORY: Record<MeetingTypeEnum, CategoryID> = {

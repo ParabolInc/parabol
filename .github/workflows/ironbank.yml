@@ -1,4 +1,4 @@
-name: Ironbank S3 Upload
+name: Ironbank Image Upload
 
 on:
   workflow_dispatch:
@@ -64,3 +64,11 @@ jobs:
       - name: Upload to S3
         run: |
           aws s3 cp ${{ github.event.inputs.version_number }}.zip s3://ironbank-proving-ground-action-files.parabol.co/${{ github.event.inputs.version_number }}.zip
+
+      - name: Upload to GCS
+        uses: actions-hub/gcloud@master
+        env:
+          CLOUDSDK_AUTH_ACCESS_TOKEN: "${{ steps.auth.outputs.access_token }}"
+        with:
+          args: storage cp ${{ github.event.inputs.version_number }}.zip gs://ironbank-proving-ground/${{ github.event.inputs.version_number }}.zip
+          cli: gcloud

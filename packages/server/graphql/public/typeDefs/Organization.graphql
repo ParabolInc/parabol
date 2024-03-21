@@ -194,7 +194,6 @@ type OrganizationFeatureFlags {
   oneOnOne: Boolean!
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
-  meetingInception: Boolean!
   kudos: Boolean!
   aiIcebreakers: Boolean!
   aiTemplate: Boolean!

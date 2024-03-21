@@ -14,7 +14,6 @@ enum OrganizationFeatureFlagsEnum {
   oneOnOne
   singleColumnStandups
   publicTeams
-  meetingInception
   kudos
   aiIcebreakers
   aiTemplate

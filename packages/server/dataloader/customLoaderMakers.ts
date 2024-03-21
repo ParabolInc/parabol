@@ -481,8 +481,8 @@ export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
         .where(({or, eb}) =>
           or([
             eb('hideStartingAt', 'is', null),
-            sql<SqlBool>`make_date(2020 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`,
-            sql<SqlBool>`make_date(2019 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`
+            sql<SqlBool>`DATE '2020-01-01' + EXTRACT(DOY FROM CURRENT_DATE)::INTEGER - 1 between "hideEndingAt" and "hideStartingAt"`,
+            sql<SqlBool>`DATE '2019-01-01' + EXTRACT(DOY FROM CURRENT_DATE)::INTEGER - 1 between "hideEndingAt" and "hideStartingAt"`
           ])
         )
         .orderBy('createdAt', 'desc')

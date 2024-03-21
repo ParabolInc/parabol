@@ -112,9 +112,10 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader),
-      generateRelatedDiscussions(meeting, teamId, dataLoader)
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
     ])
+    // don't wait for this
+    generateRelatedDiscussions(meetingId, dataLoader)
     if (videoMeetingURL) {
       addRecallBot(meetingId, videoMeetingURL)
     }

@@ -14,6 +14,10 @@ jobs:
       id-token: "write"
       pull-requests: "write"
     steps:
+      - name: Checkout production
+        uses: actions/checkout@v3
+        with:
+          ref: production
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup environment variables
@@ -99,7 +103,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout -b "release/v${{ env.ACTION_VERSION }}"
-          git merge -s ours origin/production
+          git merge -s ours origin/production --allow-unrelated-histories
           git push --set-upstream origin "release/v${{ env.ACTION_VERSION }}"
           gh pr create \
             --assignee ${{ github.actor }} \

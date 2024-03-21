@@ -1,4 +1,7 @@
+import {Selectable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getKysely from '../../../postgres/getKysely'
+import {DB} from '../../../postgres/pg'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
@@ -39,11 +42,11 @@ const processMeetingStageTimeLimits = async (
 
 export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
 
-const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) => {
-  const r = await getRethink()
-  const res = await r.table('ScheduledJob').get(job.id).delete().run()
+const processJob = async (job: Selectable<DB['ScheduledJob']>, dataLoader: DataLoaderWorker) => {
+  const pg = getKysely()
+  const res = await pg.deleteFrom('ScheduledJob').where('id', '=', job.id).executeTakeFirst()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
-  if (res.deleted !== 1) return
+  if (res.numDeletedRows !== BigInt(1)) return
 
   if (job.type === 'MEETING_STAGE_TIME_LIMIT_END') {
     return processMeetingStageTimeLimits(
@@ -60,15 +63,16 @@ const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
   {seconds},
   {dataLoader}
 ) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
 
   // RESOLUTION
   const before = new Date(now.getTime() + seconds * 1000)
-  const upcomingJobs = (await r
-    .table('ScheduledJob')
-    .between(r.minval, before, {index: 'runAt'})
-    .run()) as ScheduledJobUnion[]
+  const upcomingJobs = await pg
+    .selectFrom('ScheduledJob')
+    .selectAll()
+    .where('runAt', '<', before)
+    .execute()
 
   upcomingJobs.forEach((job) => {
     const {runAt} = job

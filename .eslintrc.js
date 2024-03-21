@@ -20,6 +20,7 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/explicit-member-accessibility': 'off',
     '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/no-duplicate-enum-values': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-parameter-properties': 'off',

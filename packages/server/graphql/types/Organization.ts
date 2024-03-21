@@ -7,7 +7,12 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isUserBillingLeader,
+  isUserOrgAdmin
+} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCountByOrgIds'
 import {resolveForBillingLeaders} from '../resolvers'
@@ -45,10 +50,18 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     },
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the viewer is the billing leader for the org',
+      description: 'true if the viewer holds the billing leader role on the org',
       resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         return isUserBillingLeader(viewerId, orgId, dataLoader)
+      }
+    },
+    isOrgAdmin: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the viewer holds the the org admin role on the org',
+      resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        return isUserOrgAdmin(viewerId, orgId, dataLoader)
       }
     },
     name: {

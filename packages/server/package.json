@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "7.18.1",
+  "version": "7.22.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -39,7 +39,7 @@
     "@types/jsonwebtoken": "^8.3.0",
     "@types/mime-types": "^2.1.0",
     "@types/ms": "^0.7.30",
-    "@types/node": "^16.11.62",
+    "@types/node": "^20.11.17",
     "@types/nodemailer": "^6.4.14",
     "@types/relay-runtime": "^14.1.9",
     "@types/sharp": "^0.32.0",
@@ -67,8 +67,8 @@
     "style-loader": "2.0.0",
     "sucrase": "^3.32.0",
     "ts-jest": "^29.1.0",
-    "ts-node": "^8.6.2",
-    "typescript": "4.9.5",
+    "ts-node": "10.9.2",
+    "typescript": "^5.3.3",
     "url-loader": "4.1.1",
     "vscode-apollo-relay": "^1.5.0",
     "webpack-bundle-analyzer": "4.3.0",
@@ -87,7 +87,7 @@
     "@sentry/integrations": "^7.74.1",
     "@sentry/node": "^7.74.1",
     "adaptivecards": "^2.10.0",
-    "analytics-node": "^5.0.0",
+    "analytics-node": "^6.0.0",
     "api": "^5.0.7",
     "base64url": "^3.0.1",
     "bcryptjs": "^2.4.3",
@@ -103,7 +103,7 @@
     "fast-xml-parser": "^4.2.7",
     "googleapis": "^118.0.0",
     "graphql": "15.7.2",
-    "graphql-jit": "^0.7.4",
+    "graphql-jit": "^0.8.4",
     "graphql-middleware": "^6.1.18",
     "graphql-relay": "^0.10.0",
     "graphql-shield": "^7.5.0",
@@ -123,8 +123,8 @@
     "nodemailer": "^6.9.9",
     "oauth-1.0a": "^2.2.6",
     "openai": "^4.24.1",
-    "oy-vey": "^0.11.0",
-    "parabol-client": "7.18.1",
+    "oy-vey": "^0.12.1",
+    "parabol-client": "7.22.2",
     "pg": "^8.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -137,6 +137,6 @@
     "stripe": "^9.13.0",
     "tslib": "^2.4.0",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v20.34.0",
-    "undici": "^5.26.2"
+    "undici": "^5.28.3"
   }
 }

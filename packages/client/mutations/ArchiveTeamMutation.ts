@@ -30,6 +30,14 @@ graphql`
       activeMeetings {
         id
       }
+      organization {
+        allTeams {
+          id
+        }
+        viewerTeams {
+          id
+        }
+      }
     }
     teamTemplateIds
   }

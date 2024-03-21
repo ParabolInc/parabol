@@ -116,7 +116,7 @@ module.exports = (config) => {
         // Trying to keep GraphqlContainer out of here is difficult because there are a lot of common dependencies
         exclude: [/\.map$/, /^manifest.*\.js$/, /skeleton.html$/],
         modifyURLPrefix: {
-          '': '__PUBLIC_PATH__/'
+          '': '__PUBLIC_PATH__'
         }
       }),
       new MiniCssExtractPlugin({

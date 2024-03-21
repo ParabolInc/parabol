@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
+import getKysely from '../../postgres/getKysely'
 import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'
@@ -37,6 +38,7 @@ const resetPassword = {
       if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
         return {error: {message: 'Resetting password is disabled'}}
       }
+      const pg = getKysely()
       const r = await getRethink()
       const resetRequest = (await r
         .table('PasswordResetRequest')
@@ -73,7 +75,7 @@ const resetPassword = {
       localIdentity.isEmailVerified = true
       await Promise.all([
         updateUser({identities}, userId),
-        r.table('FailedAuthRequest').getAll(email, {index: 'email'}).delete().run()
+        pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
       ])
       context.authToken = new AuthToken({sub: userId, tms, rol})
       await blacklistJWT(userId, context.authToken.iat, context.socketId)

@@ -1,8 +1,10 @@
 import generateUID from '../generateUID'
 
+export type FileAssetDir = 'store' | 'build'
+
 export default abstract class FileStoreManager {
-  abstract checkExists(fileName: string): Promise<boolean>
-  abstract prependPath(partialPath: string): string
+  abstract checkExists(fileName: string, assetDir?: FileAssetDir): Promise<boolean>
+  abstract prependPath(partialPath: string, assetDir?: FileAssetDir): string
   abstract getPublicFileLocation(fullPath: string): string
 
   protected abstract putFile(file: Buffer, fullPath: string): Promise<string>
