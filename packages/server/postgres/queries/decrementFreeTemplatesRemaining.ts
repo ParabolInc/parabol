@@ -7,21 +7,12 @@ const decrementFreeTemplatesRemaining = async (userId: string, templateType: 're
       ? 'freeCustomRetroTemplatesRemaining'
       : 'freeCustomPokerTemplatesRemaining'
 
-  const userBeforeUpdate = await pg
-    .selectFrom('User')
-    .select(customTemplateType)
+  await pg
+    .updateTable('User')
+    .set((eb) => ({[customTemplateType]: eb(customTemplateType, '-', 1)}))
     .where('id', '=', userId)
+    .where(customTemplateType, '>', 0)
     .executeTakeFirst()
-
-  if (userBeforeUpdate && userBeforeUpdate[customTemplateType] > 0) {
-    await pg
-      .updateTable('User')
-      .set({
-        [customTemplateType]: userBeforeUpdate[customTemplateType] - 1
-      })
-      .where('id', '=', userId)
-      .execute()
-  }
 }
 
 export default decrementFreeTemplatesRemaining
