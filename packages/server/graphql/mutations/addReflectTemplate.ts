@@ -13,6 +13,7 @@ import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import {analytics} from '../../utils/analytics/analytics'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import decrementFreeCustomTemplatesRemaining from '../../postgres/queries/decrementFreeTemplatesRemaining'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -52,9 +53,11 @@ const addReflectTemplate = {
     }
     if (
       getFeatureTier(viewerTeam) === 'starter' &&
-      !viewer.featureFlags.includes('noTemplateLimit')
+      viewer.freeCustomRetroTemplatesRemaining === 0
     ) {
-      return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
+      return standardError(new Error('You have reached the limit of free custom templates.'), {
+        userId: viewerId
+      })
     }
     let data
     if (parentTemplateId) {
@@ -102,8 +105,10 @@ const addReflectTemplate = {
 
       await Promise.all([
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeCustomTemplatesRemaining(viewerId, 'retro')
       ])
+      viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
@@ -129,8 +134,10 @@ const addReflectTemplate = {
       const {id: templateId} = newTemplate
       await Promise.all([
         r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeCustomTemplatesRemaining(viewerId, 'retro')
       ])
+      viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }

@@ -12,6 +12,7 @@ import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 import getTemplateIllustrationUrl from './helpers/getTemplateIllustrationUrl'
 import {analytics} from '../../utils/analytics/analytics'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import decrementFreeTemplatesRemaining from '../../postgres/queries/decrementFreeTemplatesRemaining'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -51,9 +52,11 @@ const addPokerTemplate = {
     }
     if (
       getFeatureTier(viewerTeam) === 'starter' &&
-      !viewer.featureFlags.includes('noTemplateLimit')
+      viewer.freeCustomPokerTemplatesRemaining === 0
     ) {
-      return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
+      return standardError(new Error('You have reached the limit of free custom templates.'), {
+        userId: viewerId
+      })
     }
     let data
     if (parentTemplateId) {
@@ -102,8 +105,10 @@ const addPokerTemplate = {
 
       await Promise.all([
         r.table('TemplateDimension').insert(newTemplateDimensions).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeTemplatesRemaining(viewerId, 'poker')
       ])
+      viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
@@ -129,8 +134,10 @@ const addPokerTemplate = {
 
       await Promise.all([
         r.table('TemplateDimension').insert(newDimension).run(),
-        insertMeetingTemplate(newTemplate)
+        insertMeetingTemplate(newTemplate),
+        decrementFreeTemplatesRemaining(viewerId, 'poker')
       ])
+      viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
       analytics.templateMetrics(viewer, newTemplate, 'Template Created')
       data = {templateId}
     }

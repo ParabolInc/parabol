@@ -10,6 +10,9 @@ import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
   fragment AddPokerTemplateMutation_team on AddPokerTemplatePayload {
+    user {
+      freeCustomPokerTemplatesRemaining
+    }
     pokerTemplate {
       ...TemplateSharing_template
       ...PokerTemplateDetailsTemplate
