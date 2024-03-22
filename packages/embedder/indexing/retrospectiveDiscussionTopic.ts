@@ -1,11 +1,6 @@
-import {RethinkSchema} from 'parabol-server/database/rethinkDriver'
 import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
-import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
-import Comment from 'parabol-server/database/types/Comment'
-import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
-import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
-import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
+import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
 
 // Here's a generic reprentation of the text generated here:
@@ -25,17 +20,14 @@ import prettier from 'prettier'
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
-async function getPreferredNameByUserId(
-  userId: string,
-  dataLoader: RootDataLoader | DataLoaderWorker
-) {
+async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderInstance) {
   if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
   return !user ? 'Unknown' : user.preferredName
 }
 
 async function formatThread(
-  dataLoader: RootDataLoader | DataLoaderWorker,
+  dataLoader: DataLoaderInstance,
   comments: Comment[],
   parentId: string | null = null,
   depth = 0
@@ -67,7 +59,7 @@ async function formatThread(
 
 export const createTextFromRetrospectiveDiscussionTopic = async (
   discussionId: string,
-  dataLoader: RootDataLoader | DataLoaderWorker,
+  dataLoader: DataLoaderInstance,
   textForReranking: boolean = false
 ) => {
   const discussion = await dataLoader.get('discussions').load(discussionId)
