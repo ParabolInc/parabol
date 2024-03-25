@@ -53,9 +53,7 @@ const AddNewReflectTemplate = (props: Props) => {
           id
           user {
             id
-            featureFlags {
-              noTemplateLimit
-            }
+            freeCustomRetroTemplatesRemaining
           }
         }
       }
@@ -63,6 +61,8 @@ const AddNewReflectTemplate = (props: Props) => {
     teamRef
   )
   const {id: teamId, tier, viewerTeamMember} = team
+  const {user} = viewerTeamMember || {}
+  const {freeCustomRetroTemplatesRemaining} = user || {}
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -71,7 +71,8 @@ const AddNewReflectTemplate = (props: Props) => {
     }
   }, [])
   const canEditTemplates =
-    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
+    tier !== 'starter' ||
+    (freeCustomRetroTemplatesRemaining && freeCustomRetroTemplatesRemaining > 0)
   const addNewTemplate = () => {
     if (submitting) return
     if (!canEditTemplates) {

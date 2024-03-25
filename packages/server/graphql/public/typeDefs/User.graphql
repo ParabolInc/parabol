@@ -462,4 +462,12 @@ type User {
     """
     domain: String!
   ): ParseSAMLMetadataPayload!
+  """
+  The number of free custom retro templates remaining
+  """
+  freeCustomRetroTemplatesRemaining: Int!
+  """
+  The number of free custom poker templates remaining
+  """
+  freeCustomPokerTemplatesRemaining: Int!
 }

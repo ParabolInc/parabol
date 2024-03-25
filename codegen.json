@@ -50,6 +50,8 @@
           "ActionMeetingMember": "../../database/types/ActionMeetingMember#default as ActionMeetingMemberDB",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
           "AddReactjiToReactableSuccess": "./types/AddReactjiToReactableSuccess#AddReactjiToReactableSuccessSource",
+          "AddReflectTemplateSuccess": "./types/AddReflectTemplateSuccess#AddReflectTemplateSuccessSource",
+          "AddPokerTemplateSuccess": "./types/AddPokerTemplateSuccess#AddPokerTemplateSuccessSource",
           "AddTranscriptionBotSuccess": "./types/AddTranscriptionBotSuccess#AddTranscriptionBotSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "AgendaItem": "../../database/types/AgendaItem#default as AgendaItemDB",

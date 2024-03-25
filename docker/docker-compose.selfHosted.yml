@@ -1,6 +1,0 @@
-services:
-  app:
-    volumes:
-      - app-data:/parabol/self-hosted
-volumes:
-  app-data: {}
