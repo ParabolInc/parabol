@@ -1,13 +1,18 @@
-import getPg from '../getPg'
-import {decrementFreeRetroTemplatesRemainingQuery} from './generated/decrementFreeCustomRetroTemplatesRemainingQuery'
-import {decrementFreePokerTemplatesRemainingQuery} from './generated/decrementFreeCustomPokerTemplatesRemainingQuery'
+import getKysely from '../getKysely'
 
 const decrementFreeTemplatesRemaining = async (userId: string, templateType: 'retro' | 'poker') => {
-  const res =
+  const pg = getKysely()
+  const customTemplateType =
     templateType === 'retro'
-      ? await decrementFreeRetroTemplatesRemainingQuery.run({userId}, getPg())
-      : await decrementFreePokerTemplatesRemainingQuery.run({userId}, getPg())
-  return res
+      ? 'freeCustomRetroTemplatesRemaining'
+      : 'freeCustomPokerTemplatesRemaining'
+
+  await pg
+    .updateTable('User')
+    .set((eb) => ({[customTemplateType]: eb(customTemplateType, '-', 1)}))
+    .where('id', '=', userId)
+    .where(customTemplateType, '>', 0)
+    .executeTakeFirst()
 }
 
 export default decrementFreeTemplatesRemaining

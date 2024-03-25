@@ -8,7 +8,11 @@ import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectT
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
+<<<<<<< HEAD
   fragment AddReflectTemplateMutation_team on AddReflectTemplateSuccess {
+=======
+  fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
+>>>>>>> master
     user {
       freeCustomRetroTemplatesRemaining
     }
