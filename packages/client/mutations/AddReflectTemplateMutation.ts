@@ -8,7 +8,7 @@ import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectT
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
-  fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
+  fragment AddReflectTemplateMutation_team on AddReflectTemplateSuccess {
     user {
       freeCustomRetroTemplatesRemaining
     }
@@ -25,6 +25,11 @@ graphql`
 const mutation = graphql`
   mutation AddReflectTemplateMutation($teamId: ID!, $parentTemplateId: ID) {
     addReflectTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
       ...AddReflectTemplateMutation_team @relay(mask: false)
     }
   }
@@ -57,7 +62,7 @@ const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> 
     updater: (store) => {
       const payload = store.getRootField('addReflectTemplate')
       if (!payload) return
-      addReflectTemplateTeamUpdater(payload, {atmosphere, store})
+      addReflectTemplateTeamUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {parentTemplateId, teamId} = variables
