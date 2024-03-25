@@ -24,6 +24,7 @@ const RetroDrawer = (props: Props) => {
         viewer {
           meeting(meetingId: $meetingId) {
             ... on RetrospectiveMeeting {
+              id
               reflectionGroups {
                 id
               }
@@ -60,9 +61,13 @@ const RetroDrawer = (props: Props) => {
     setShowDrawer(!showDrawer)
   }
 
+  const handleCloseDrawer = () => {
+    setShowDrawer(false)
+  }
+
   useEffect(() => {
     if (hasReflections && showDrawer) {
-      setShowDrawer(false)
+      handleCloseDrawer()
     }
   }, [hasReflections])
 
@@ -97,7 +102,12 @@ const RetroDrawer = (props: Props) => {
               </div>
             </div>
             {templates.map((template) => (
-              <RetroDrawerTemplateCard key={template.node.id} templateRef={template.node} />
+              <RetroDrawerTemplateCard
+                key={template.node.id}
+                meetingId={meeting.id!}
+                templateRef={template.node}
+                handleCloseDrawer={handleCloseDrawer}
+              />
             ))}
           </div>
         </Drawer>

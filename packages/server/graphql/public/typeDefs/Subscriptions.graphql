@@ -54,6 +54,7 @@ type MeetingSubscriptionPayload {
   SetPokerSpectateSuccess: SetPokerSpectateSuccess
   SetTaskEstimateSuccess: SetTaskEstimateSuccess
   UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponseSuccess
+  UpdateMeetingTemplateSuccess: UpdateMeetingTemplateSuccess
 }
 
 type NotificationSubscriptionPayload {
