@@ -40,6 +40,7 @@ import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
 import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
+import {addPokerTemplateTeamUpdater} from '../mutations/AddPokerTemplateMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -68,6 +69,9 @@ const subscription = graphql`
       }
       AddReflectTemplateSuccess {
         ...AddReflectTemplateMutation_team @relay(mask: false)
+      }
+      AddPokerTemplateSuccess {
+        ...AddPokerTemplateMutation_team @relay(mask: false)
       }
       AddReflectTemplatePromptPayload {
         ...AddReflectTemplatePromptMutation_team @relay(mask: false)
@@ -208,6 +212,7 @@ const updateHandlers = {
   UpdateAgendaItemPayload: updateAgendaItemUpdater,
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
   AddReflectTemplateSuccess: addReflectTemplateTeamUpdater,
+  AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
   AddReflectTemplatePromptPayload: addReflectTemplatePromptTeamUpdater,
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
