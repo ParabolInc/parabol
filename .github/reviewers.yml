@@ -38,6 +38,8 @@ files:
     - devops
   ".env.example":
     - devops
+  "release-please-config.json":
+    - devops
 options:
   ignore_draft: true
   ignored_keywords:
