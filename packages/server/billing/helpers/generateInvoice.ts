@@ -1,5 +1,6 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
+import getKysely from '../../postgres/getKysely'
 import getRethink from '../../database/rethinkDriver'
 import Coupon from '../../database/types/Coupon'
 import Invoice, {InvoiceStatusEnum} from '../../database/types/Invoice'
@@ -303,6 +304,7 @@ export default async function generateInvoice(
   dataLoader: DataLoaderWorker
 ) {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
 
   const {itemDict, nextPeriodCharges, unknownLineItems} = makeItemDict(stripeLineItems)
@@ -376,31 +378,35 @@ export default async function generateInvoice(
       })) ||
     null
 
-  const dbInvoice = new Invoice({
-    id: invoiceId,
-    amountDue: invoice.amount_due,
-    createdAt: now,
-    coupon,
-    total: invoice.total,
-    billingLeaderEmails,
-    creditCard: organization.creditCard,
-    endAt: fromEpochSeconds(invoice.period_end),
-    invoiceDate: fromEpochSeconds(invoice.due_date!),
-    lines: invoiceLineItems,
-    nextPeriodCharges,
-    orgId,
-    orgName: organization.name,
-    paidAt,
-    payUrl: invoice.hosted_invoice_url,
-    picture: organization.picture,
-    startAt: fromEpochSeconds(invoice.period_start),
-    startingBalance: invoice.starting_balance,
-    status,
-    tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'team'
-  })
+  const dbInvoice = Invoice.toPg(
+    new Invoice({
+      id: invoiceId,
+      amountDue: invoice.amount_due,
+      createdAt: now,
+      coupon,
+      total: invoice.total,
+      billingLeaderEmails,
+      creditCard: organization.creditCard,
+      endAt: fromEpochSeconds(invoice.period_end),
+      invoiceDate: fromEpochSeconds(invoice.due_date!),
+      lines: invoiceLineItems,
+      nextPeriodCharges,
+      orgId,
+      orgName: organization.name,
+      paidAt,
+      payUrl: invoice.hosted_invoice_url,
+      picture: organization.picture,
+      startAt: fromEpochSeconds(invoice.period_start),
+      startingBalance: invoice.starting_balance,
+      status,
+      tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'team'
+    })
+  )
 
-  return r
-    .table('Invoice')
-    .insert(dbInvoice, {conflict: 'replace', returnChanges: true})('changes')(0)('new_val')
-    .run()
+  return pg
+    .insertInto('Invoice')
+    .values(dbInvoice)
+    .onConflict((oc) => oc.column('id').doUpdateSet(dbInvoice))
+    .returningAll()
+    .executeTakeFirst()
 }

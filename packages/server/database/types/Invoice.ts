@@ -96,4 +96,14 @@ export default class Invoice {
     this.status = status
     this.tier = tier
   }
+
+  static toPg(invoice: Invoice) {
+    return {
+      ...invoice,
+      coupon: JSON.stringify(invoice.coupon),
+      creditCard: JSON.stringify(invoice.creditCard),
+      lines: invoice.lines.map((line) => JSON.stringify(line)),
+      nextPeriodCharges: JSON.stringify(invoice.nextPeriodCharges)
+    }
+  }
 }

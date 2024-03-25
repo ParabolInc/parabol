@@ -58,7 +58,7 @@ export async function up() {
         'batchSize is smaller than the number of items that share the same cursor. Increase batchSize'
       )
     }
-    return nextBatch.slice(0, lastMatchingUpdatedAt + 1)
+    return nextBatch.slice(0, lastMatchingUpdatedAt)
   }
 
   await pg.tx('meetingTemplateTable', (task) => {
