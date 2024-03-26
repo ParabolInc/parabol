@@ -7,13 +7,17 @@ import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTask
 import {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
-const buildCommentContentBlock = (title: string, content: string, explainerText?: string) => {
+export const buildCommentContentBlock = (
+  title: string,
+  content: string,
+  explainerText?: string
+) => {
   const explainerBlock = explainerText ? `<i>${explainerText}</i><br>` : ''
   const html = `<html><body>${explainerBlock}<p><b>${title}</b></p><p>${content}</p></body></html>`
   return convertHtmlToTaskContent(html)
 }
 
-const createAIComment = (discussionId: string, content: string, order: number) =>
+export const createAIComment = (discussionId: string, content: string, order: number) =>
   new Comment({
     discussionId,
     content,

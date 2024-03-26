@@ -17,6 +17,7 @@ import generateGroups from './generateGroups'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 import addRecallBot from './addRecallBot'
+import generateRelatedDiscussions from './generateRelatedDiscussions'
 
 /*
  * handle side effects when a stage is completed
@@ -113,13 +114,15 @@ const handleCompletedRetrospectiveStage = async (
       insertDiscussions(discussions),
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
     ])
+    // don't wait for this
+    generateRelatedDiscussions(meetingId, dataLoader)
     if (videoMeetingURL) {
       addRecallBot(meetingId, videoMeetingURL)
     }
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
     const {discussionId} = stage as DiscussStage
-    // dont await for the OpenAI API response
+    // don't await for the OpenAI API response
     generateDiscussionSummary(discussionId, meeting, dataLoader)
   }
   return {}

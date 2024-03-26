@@ -1,7 +1,6 @@
-import {RethinkSchema} from 'parabol-server/database/rethinkDriver'
 import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
-import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
+import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
 
 // Here's a generic reprentation of the text generated here:
@@ -21,14 +20,14 @@ import prettier from 'prettier'
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 
-async function getPreferredNameByUserId(userId: string, dataLoader: RootDataLoader) {
+async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderInstance) {
   if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
   return !user ? 'Unknown' : user.preferredName
 }
 
 async function formatThread(
-  dataLoader: RootDataLoader,
+  dataLoader: DataLoaderInstance,
   comments: Comment[],
   parentId: string | null = null,
   depth = 0
@@ -60,7 +59,7 @@ async function formatThread(
 
 export const createTextFromRetrospectiveDiscussionTopic = async (
   discussionId: string,
-  dataLoader: RootDataLoader,
+  dataLoader: DataLoaderInstance,
   textForReranking: boolean = false
 ) => {
   const discussion = await dataLoader.get('discussions').load(discussionId)
@@ -161,22 +160,4 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   })
 
   return markdown
-}
-
-export const newRetroDiscussionTopicsFromNewMeeting = async (
-  newMeeting: RethinkSchema['NewMeeting']['type'],
-  dataLoader: RootDataLoader
-) => {
-  const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
-  const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
-  if (orgId && discussPhase && discussPhase.stages) {
-    return discussPhase.stages.map((stage) => ({
-      objectType: 'retrospectiveDiscussionTopic' as const,
-      teamId: newMeeting.teamId,
-      refId: `${newMeeting.id}:${stage.id}`,
-      refUpdatedAt: newMeeting.createdAt
-    }))
-  } else {
-    return []
-  }
 }
