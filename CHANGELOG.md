@@ -5,6 +5,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.23.0](https://github.com/ParabolInc/parabol/compare/v7.22.4...v7.23.0) (2024-03-26)
+
+
+### Added
+
+* add functionality to change templates during a retro ([#9544](https://github.com/ParabolInc/parabol/issues/9544)) ([e6434e1](https://github.com/ParabolInc/parabol/commit/e6434e181a864b2e61428f55a98994fb1137ac8f))
+* allow 2 custom templates for every user ([#9518](https://github.com/ParabolInc/parabol/issues/9518)) ([2352669](https://github.com/ParabolInc/parabol/commit/2352669ea516a3d764d63af77211fbb4c0a02563))
+* make invoice row title more clear to understand ([#9551](https://github.com/ParabolInc/parabol/issues/9551)) ([9be96eb](https://github.com/ParabolInc/parabol/commit/9be96eb206d367e550b97831621c8b2aee4fc355))
+* release AzureDevOps integration ([#9531](https://github.com/ParabolInc/parabol/issues/9531)) ([87c84a2](https://github.com/ParabolInc/parabol/commit/87c84a2cca1a4d94629291d1325948b3c6cfb790))
+* switch template UI ([#9093](https://github.com/ParabolInc/parabol/issues/9093)) ([2171065](https://github.com/ParabolInc/parabol/commit/21710656b6d689b286759ea495ff334b7ce86adf))
+
+
+### Fixed
+
+* **admin:** fix an issue where ORG_ADMIN cannot see members from team they are not in ([#9560](https://github.com/ParabolInc/parabol/issues/9560)) ([ef0fbc2](https://github.com/ParabolInc/parabol/commit/ef0fbc2da853e2248a16ff2a2ce37c1f85f07f1a))
+* Removed broken Rally links and fixed Youtube links ([#9332](https://github.com/ParabolInc/parabol/issues/9332)) ([5e98234](https://github.com/ParabolInc/parabol/commit/5e98234efca84e7ebcb653f3d71d229a88797a8d))
+
+
+### Changed
+
+* [Snyk] Upgrade core-js from 3.8.1 to 3.36.0 ([#9519](https://github.com/ParabolInc/parabol/issues/9519)) ([ab47ce4](https://github.com/ParabolInc/parabol/commit/ab47ce46c768f927c9d71d0a52a049df93b51ba4))
+* [Snyk] Upgrade dotenv from 8.0.0 to 8.6.0 ([#9494](https://github.com/ParabolInc/parabol/issues/9494)) ([1e22931](https://github.com/ParabolInc/parabol/commit/1e22931c25c297e4697ea0e585d888c7b2738cfc))
+* [Snyk] Upgrade graphql-typed from 0.6.1 to 0.7.2 ([#9522](https://github.com/ParabolInc/parabol/issues/9522)) ([0ce1384](https://github.com/ParabolInc/parabol/commit/0ce1384b418f2a48971b732b548b9b93f8882e6c))
+* [Snyk] Upgrade react-dom-confetti from 0.0.10 to 0.2.0 ([#9520](https://github.com/ParabolInc/parabol/issues/9520)) ([ef68915](https://github.com/ParabolInc/parabol/commit/ef6891569f468469c64041d0c97555d76c2657d3))
+* [Snyk] Upgrade react-swipeable-views-core from 0.13.1 to 0.14.0 ([#9521](https://github.com/ParabolInc/parabol/issues/9521)) ([3e42d9b](https://github.com/ParabolInc/parabol/commit/3e42d9b155e171ec54f8d4b0cfddc1ace67cb754))
+* fix update snyk pr action ([#9564](https://github.com/ParabolInc/parabol/issues/9564)) ([092e5d9](https://github.com/ParabolInc/parabol/commit/092e5d95bf75ce2db772669971e28f22e6ee8679))
+* **github:** DevOps review if docker folder is modified or release-please-config is changed ([#9562](https://github.com/ParabolInc/parabol/issues/9562)) ([d18d754](https://github.com/ParabolInc/parabol/commit/d18d75485116c883d72456ac51b817a044a38b4d))
+* refactor add template mutation to the new sdl pattern ([#9533](https://github.com/ParabolInc/parabol/issues/9533)) ([fe71841](https://github.com/ParabolInc/parabol/commit/fe718413fa2d19afa660cc944d30a1284d6c2b18))
+* Roll out AIGeneratedDiscussion to all users ([#9554](https://github.com/ParabolInc/parabol/issues/9554)) ([b8fa708](https://github.com/ParabolInc/parabol/commit/b8fa7088e610ab1a920d1b5522cd46ad28e2f715))
+
 ## [7.22.4](https://github.com/ParabolInc/parabol/compare/v7.22.3...v7.22.4) (2024-03-20)
 
 
