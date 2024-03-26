@@ -83,7 +83,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   let markdown = ''
   if (!textForReranking) {
     markdown =
-      `A topic "${reflectionGroup.title}" was discussed during ` +
+      `A topic "${reflectionGroup?.title ?? ''}" was discussed during ` +
       `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
       `\n`
   }

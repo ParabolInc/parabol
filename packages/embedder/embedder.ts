@@ -13,6 +13,7 @@ import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
 import {resetStalledJobs} from './resetStalledJobs'
+import {processJob} from './processJob'
 
 tracer.init({
   service: `embedder`,
@@ -29,14 +30,19 @@ function parseEnvBoolean(envVarValue: string | undefined): boolean {
 export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
 
 export interface MessageToEmbedder {
-  objectType: EmbeddingObjectType
+  objectTypes: EmbeddingObjectType[]
   startAt?: Date
   endAt?: Date
   meetingId?: string
 }
-export type EmbedderOptions = Omit<MessageToEmbedder, 'objectType'>
+export type EmbedderOptions = Omit<MessageToEmbedder, 'objectTypes'>
 
-export const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
+export const EMBEDDER_JOB_PRIORITY = {
+  MEETING: 40,
+  DEFAULT: 50,
+  TOPIC_HISTORY: 80,
+  NEW_MODEL: 90
+} as const
 
 const parseEmbedderMessage = (message: string): MessageToEmbedder => {
   const {startAt, endAt, ...input} = JSON.parse(message)
@@ -92,7 +98,7 @@ const run = async () => {
     embedderChannel
   )
   const dataLoader = new RootDataLoader({maxBatchSize: 1000})
-  const jobQueueStream = new EmbeddingsJobQueueStream(modelManager, dataLoader)
+  const jobQueueStream = new EmbeddingsJobQueueStream()
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
@@ -104,7 +110,7 @@ const run = async () => {
         onMessage('', message)
         continue
       case 1:
-        Logger.log(`Embedded ${message.embeddingsMetadataId} -> ${message.model}`)
+        processJob(message, dataLoader)
         continue
     }
   }

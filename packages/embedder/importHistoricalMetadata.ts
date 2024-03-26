@@ -1,9 +1,10 @@
-import {ALL_OBJECT_TYPES} from './embedder'
+import {EmbeddingObjectType} from './embedder'
 import {importHistoricalRetrospectiveDiscussionTopic} from './importHistoricalRetrospectiveDiscussionTopic'
 
 export const importHistoricalMetadata = async () => {
+  const OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
   return Promise.all(
-    ALL_OBJECT_TYPES.map(async (objectType) => {
+    OBJECT_TYPES.map(async (objectType) => {
       switch (objectType) {
         case 'retrospectiveDiscussionTopic':
           return importHistoricalRetrospectiveDiscussionTopic()

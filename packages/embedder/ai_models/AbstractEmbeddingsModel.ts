@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
+import {EMBEDDER_JOB_PRIORITY} from '../embedder'
 import {AbstractModel, ModelConfig} from './AbstractModel'
 import {RecursiveCharacterTextSplitter} from './RecursiveCharacterTextSplitter'
 
@@ -37,6 +38,25 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     return splitter.splitText(content)
   }
 
+  async createEmbeddingsForModel() {
+    console.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`)
+    const pg = getKysely()
+    await pg
+      .insertInto('EmbeddingsJobQueue')
+      .columns(['jobData', 'priority'])
+      .expression(({selectFrom}) =>
+        selectFrom('EmbeddingsMetadata').select(({fn, lit}) => [
+          fn('json_build_object', [
+            sql.lit('model'),
+            sql.lit(this.tableName),
+            sql.lit('embeddingsMetadataId'),
+            'id'
+          ]).as('jobData'),
+          lit(EMBEDDER_JOB_PRIORITY.NEW_MODEL).as('priority')
+        ])
+      )
+      .onConflict((oc) => oc.doNothing())
+  }
   async createTable() {
     const pg = getKysely()
     const hasTable =
@@ -67,34 +87,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           USING hnsw ("embedding" vector_cosine_ops);
         END
       $$;
-      CREATE OR REPLACE FUNCTION insert_metadata_in_queue_${sql.raw(this.tableName)} ()
-      RETURNS TRIGGER AS $$
-      BEGIN
-          INSERT INTO public."EmbeddingsJobQueue" ("model", "embeddingsMetadataId")
-              VALUES ('${sql.raw(this.tableName)}', NEW."id");
-          RETURN NEW;
-      END;
-      $$ LANGUAGE plpgsql;
-
-      DROP TRIGGER IF EXISTS "embeddings_metadata_to_queue_${sql.raw(
-        this.tableName
-      )}" on "EmbeddingsMetadata";
-
-      CREATE TRIGGER "embeddings_metadata_to_queue_${sql.raw(this.tableName)}"
-
-      AFTER INSERT ON "EmbeddingsMetadata"
-      FOR EACH ROW
-      EXECUTE PROCEDURE insert_metadata_in_queue_${sql.raw(this.tableName)}();
       `.execute(pg)
-
-    console.log(
-      `ModelManager: Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`
-    )
-    await sql`
-    INSERT INTO "EmbeddingsJobQueue" ("model", "embeddingsMetadataId")
-    SELECT '${sql.raw(this.tableName)}', "id"
-    FROM "EmbeddingsMetadata"
-    ON CONFLICT DO NOTHING;
-    `.execute(pg)
+    await this.createEmbeddingsForModel()
   }
 }

@@ -371,7 +371,7 @@ const safeEndRetrospective = async ({
     removedTaskIds,
     timelineEventId
   }
-  publishToEmbedder({objectType: 'retrospectiveDiscussionTopic', meetingId})
+  publishToEmbedder({objectTypes: ['retrospectiveDiscussionTopic'], meetingId})
   publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
 
   return data
