@@ -1,8 +1,6 @@
 import {Threshold} from 'parabol-client/types/constEnums'
-import generateUID from '../../generateUID'
 
 interface Input {
-  id?: string
   token: string
   email: string
   expiration?: Date
@@ -12,7 +10,6 @@ interface Input {
 }
 
 export default class EmailVerification {
-  id: string
   invitationToken?: string
   token: string
   email: string
@@ -20,8 +17,7 @@ export default class EmailVerification {
   hashedPassword?: string
   pseudoId?: string
   constructor(input: Input) {
-    const {id, invitationToken, token, email, expiration, hashedPassword, pseudoId} = input
-    this.id = id || generateUID()
+    const {invitationToken, token, email, expiration, hashedPassword, pseudoId} = input
     this.invitationToken = invitationToken || undefined
     this.token = token
     this.email = email
