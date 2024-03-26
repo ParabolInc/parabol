@@ -11168,10 +11168,10 @@ dogapi@2.8.4:
     minimist "^1.2.5"
     rc "^1.2.8"
 
-dom-confetti@~0.0.11:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/dom-confetti/-/dom-confetti-0.0.15.tgz#fd7dd6888da3dc6b54fd53326c8fa826ef25106b"
-  integrity sha512-KJKrmHcydwoS6bTD0wVM/L7LZz1rQNJA+Y3Zw9ZVYNpx5efqoVwIY2rqY/F2sEpJuGGCRff/o8bAmfQ8KO4Grw==
+dom-confetti@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/dom-confetti/-/dom-confetti-0.2.2.tgz#bdf2e7652d37b5cffb532c0a3263d108dd8a2363"
+  integrity sha512-+UVH9Y85qmpTnbmFURwLWjqLIykyIrsNSRkPX/eFlBuOURz9RDX8JoZHnajZHyFuCV0w/K3+tZK0ztfoTw6ejg==
 
 dom-converter@^0.2.0:
   version "0.2.0"
@@ -18321,12 +18321,12 @@ react-day-picker@^8.3.7:
   resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-8.3.7.tgz#35de1325376984e4dbaec1fed6888f45dc46ad1d"
   integrity sha512-sQvyJde6OKsXIB0ZFwUBmaDNb4IyKypv/uSyauQ6AUw4F6vmPijJsQNEVsxrxXQ4L3GZKIpcCD/7Pftz/sLegA==
 
-react-dom-confetti@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/react-dom-confetti/-/react-dom-confetti-0.0.10.tgz#6cde7af4af974ecf98ddf9da95c938144c68a4f0"
-  integrity sha512-EJMUmD9Z3/87wIjyQic5ZGd2beHE9K50vxouLdV+yPcBitlsVznBXKX900xEbzQ/DOMt+TycEg2CvB/V+pwJtQ==
+react-dom-confetti@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-dom-confetti/-/react-dom-confetti-0.2.0.tgz#76df26762da532057d5b1fbe38a8096f9dc33d40"
+  integrity sha512-+XRTi+WlCrcRN2dTjdEopOaPFtS7hpaHRRQ0sHiVRGqpchKz4QVh3i+6eLEEpNHYpN2VgPmhjvJ/vnjmUYhlIQ==
   dependencies:
-    dom-confetti "~0.0.11"
+    dom-confetti "0.2.2"
 
 react-dom@^17.0.2:
   version "17.0.2"
