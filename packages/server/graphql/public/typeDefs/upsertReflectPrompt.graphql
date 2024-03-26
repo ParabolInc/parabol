@@ -1,0 +1,14 @@
+extend type Mutation {
+  upsertRetrospectivePrompt (
+    promptId: ID
+    meetingId: ID!
+    question: String!
+  ): UpsertRetrospectivePromptPayload!
+}
+
+type UpsertRetrospectivePromptSuccess {
+  prompt: ReflectPrompt
+}
+
+union UpsertRetrospectivePromptPayload = UpsertRetrospectivePromptSuccess | ErrorPayload
+
