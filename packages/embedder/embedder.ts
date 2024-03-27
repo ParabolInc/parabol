@@ -12,8 +12,8 @@ import getModelManager from './ai_models/ModelManager'
 import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
-import {resetStalledJobs} from './resetStalledJobs'
 import {processJob} from './processJob'
+import {resetStalledJobs} from './resetStalledJobs'
 
 tracer.init({
   service: `embedder`,
@@ -36,13 +36,6 @@ export interface MessageToEmbedder {
   meetingId?: string
 }
 export type EmbedderOptions = Omit<MessageToEmbedder, 'objectTypes'>
-
-export const EMBEDDER_JOB_PRIORITY = {
-  MEETING: 40,
-  DEFAULT: 50,
-  TOPIC_HISTORY: 80,
-  NEW_MODEL: 90
-} as const
 
 const parseEmbedderMessage = (message: string): MessageToEmbedder => {
   const {startAt, endAt, ...input} = JSON.parse(message)
@@ -110,7 +103,7 @@ const run = async () => {
         onMessage('', message)
         continue
       case 1:
-        processJob(message, dataLoader)
+        await processJob(message, dataLoader)
         continue
     }
   }

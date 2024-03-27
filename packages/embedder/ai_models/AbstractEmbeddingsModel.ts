@@ -1,9 +1,8 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
-import {EMBEDDER_JOB_PRIORITY} from '../embedder'
+import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
 import {AbstractModel, ModelConfig} from './AbstractModel'
-import {RecursiveCharacterTextSplitter} from './RecursiveCharacterTextSplitter'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
@@ -27,15 +26,44 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.tableName = `Embeddings_${modelParams.tableSuffix}`
   }
   protected abstract constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams
-  abstract getEmbedding(content: string): Promise<number[] | Error>
+  abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
 
   abstract getTokens(content: string): Promise<number[] | Error>
-  splitText(content: string, chunkOverlap: number) {
+  splitText(content: string) {
     // it's actually 4 / 3, but don't want to chance a failed split
     const TOKENS_PER_WORD = 5 / 3
-    const wordLimit = Math.floor(this.maxInputTokens / TOKENS_PER_WORD)
-    const splitter = new RecursiveCharacterTextSplitter({chunkOverlap, chunkSize: wordLimit})
-    return splitter.splitText(content)
+    const WORD_LIMIT = Math.floor(this.maxInputTokens / TOKENS_PER_WORD)
+    const chunks: string[] = []
+    const delimiters = ['\n\n', '\n', '.', ' ']
+    const countWords = (text: string) => text.trim().split(/\s+/).length
+    const total = countWords(content)
+    console.log({total})
+    const splitOnDelimiter = (text: string, delimiter: string) => {
+      const sections = text.split(delimiter)
+      console.log('sections', sections.length)
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i]!
+        const sectionWordCount = countWords(section)
+        if (sectionWordCount < WORD_LIMIT) {
+          // try to merge this section with the last one
+          const previousSection = chunks.at(-1)
+          if (previousSection) {
+            const combinedChunks = `${previousSection}${delimiter}${section}`
+            const mergedWordCount = countWords(combinedChunks)
+            if (mergedWordCount < WORD_LIMIT) {
+              chunks[chunks.length - 1] = combinedChunks
+              continue
+            }
+          }
+          chunks.push(section)
+        } else {
+          const nextDelimiter = delimiters[delimiters.indexOf(delimiter) + 1]!
+          splitOnDelimiter(section, nextDelimiter)
+        }
+      }
+    }
+    splitOnDelimiter(content.trim(), delimiters[0]!)
+    return chunks
   }
 
   async createEmbeddingsForModel() {

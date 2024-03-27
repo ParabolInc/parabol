@@ -1,3 +1,4 @@
+import franc from 'franc-min'
 import ms from 'ms'
 import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import getKysely from 'parabol-server/postgres/getKysely'
@@ -8,7 +9,6 @@ import getModelManager from './ai_models/ModelManager'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
 import {failJob} from './indexing/failJob'
 import numberVectorToString from './indexing/numberVectorToString'
-
 export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader) => {
   const pg = getKysely()
   const {id: jobId, retryCount, jobData} = job
@@ -42,7 +42,12 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
     await failJob(jobId, `unable to create embedding text: ${e}`)
     return
   }
-
+  const detectedLanguage = franc(fullText)
+  if (detectedLanguage !== 'eng') {
+    // Do not treat like an error, exit successfully
+    await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
+    return
+  }
   const embeddingModel = modelManager.embeddingModelsMapByTable[model]
   if (!embeddingModel) {
     await failJob(jobId, `embedding model ${model} not available`)
@@ -58,14 +63,10 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
     )
     return
   }
-
   const isFullTextTooBig = tokens.length > embeddingModel.maxInputTokens
   // Cannot use summarization strategy if generation model has same context length as embedding model
   // We must split the text & not tokens because the endpoint doesn't support decoding input tokens
-  const chunks = isFullTextTooBig ? embeddingModel.splitText(fullText, 0) : [fullText]
-  if (isFullTextTooBig) {
-    console.log('we split!', chunks)
-  }
+  const chunks = isFullTextTooBig ? embeddingModel.splitText(fullText) : [fullText]
   await Promise.all(
     chunks.map(async (chunk, chunkNumber) => {
       const embeddingVector = await embeddingModel.getEmbedding(chunk)

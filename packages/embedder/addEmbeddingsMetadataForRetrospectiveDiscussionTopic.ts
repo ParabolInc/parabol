@@ -4,8 +4,9 @@ import {RDatum} from 'parabol-server/database/stricterR'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
+import {EMBEDDER_JOB_PRIORITY} from './EMBEDDER_JOB_PRIORITY'
 import getModelManager from './ai_models/ModelManager'
-import {EMBEDDER_JOB_PRIORITY, EmbedderOptions} from './embedder'
+import {EmbedderOptions} from './embedder'
 
 interface DiscussionMeta {
   id: string
