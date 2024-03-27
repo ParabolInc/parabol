@@ -49,9 +49,9 @@ const run = async () => {
   const SERVER_ID = process.env.SERVER_ID
   if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
   const embedderChannel = EmbedderChannelId.join(SERVER_ID)
-  const embedderEnabled = parseEnvBoolean(process.env.AI_EMBEDDER_ENABLED)
-  if (!embedderEnabled) {
-    Logger.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
+  const NUM_WORKERS = parseInt(process.env.AI_EMBEDDER_WORKERS!)
+  if (!(NUM_WORKERS > 0)) {
+    Logger.log('env.AI_EMBEDDER_WORKERS is < 0. Embedder will not run.')
     return
   }
 
@@ -90,10 +90,11 @@ const run = async () => {
     embedderChannel
   )
 
-  const jobQueueStreams = Array.from({length: 5}, () => new EmbeddingsJobQueueStream()) as Tuple<
-    EmbeddingsJobQueueStream,
-    5
-  >
+  // Assume 3 workers for type safety, but it doesn't really matter at runtime
+  const jobQueueStreams = Array.from(
+    {length: NUM_WORKERS},
+    () => new EmbeddingsJobQueueStream()
+  ) as Tuple<EmbeddingsJobQueueStream, 3>
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
@@ -104,7 +105,7 @@ const run = async () => {
         onMessage('', message)
         continue
       default:
-        console.log(`Worker ${idx} finished job ${message.id}`)
+        console.log(`Worker ${idx} finished job ${message.id}. Avg time: ${time / count}ms`)
         continue
     }
   }
