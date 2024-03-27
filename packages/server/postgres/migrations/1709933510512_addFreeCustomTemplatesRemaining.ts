@@ -13,8 +13,6 @@ export async function up() {
     .addColumn('freeCustomRetroTemplatesRemaining', 'int2', (col) => col.defaultTo(2).notNull())
     .addColumn('freeCustomPokerTemplatesRemaining', 'int2', (col) => col.defaultTo(2).notNull())
     .execute()
-
-  await pg.destroy()
 }
 
 export async function down() {
@@ -29,6 +27,4 @@ export async function down() {
     .dropColumn('freeCustomRetroTemplatesRemaining')
     .dropColumn('freeCustomPokerTemplatesRemaining')
     .execute()
-
-  await pg.destroy()
 }
