@@ -10,16 +10,8 @@ export const establishPrimaryEmbedder = async (redis: RedisInstance) => {
       [`embedder_isPrimary_${process.env.npm_package_version}`],
       MAX_TIME_BETWEEN_WORKER_STARTUPS
     )
-    const kill = () => {
-      console.log('killing')
-      primaryWorkerLock?.release()
-      process.exit()
-    }
-    process.on('SIGTERM', kill)
-    process.on('SIGINT', kill)
-
-    return true
+    return primaryWorkerLock
   } catch {
-    return false
+    return undefined
   }
 }

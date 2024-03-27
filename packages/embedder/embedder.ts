@@ -56,9 +56,18 @@ const run = async () => {
   }
 
   const redis = new RedisInstance(`embedder_${SERVER_ID}`)
-  const isPrimaryEmbedder = await establishPrimaryEmbedder(redis)
+  const primaryLock = await establishPrimaryEmbedder(redis)
   const modelManager = getModelManager()
-  if (isPrimaryEmbedder) {
+  let streams: AsyncIterableIterator<any> | undefined
+  const kill = () => {
+    console.log('killing')
+    primaryLock?.release()
+    streams?.return?.()
+    process.exit()
+  }
+  process.on('SIGTERM', kill)
+  process.on('SIGINT', kill)
+  if (primaryLock) {
     // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
     await modelManager.removeOldTriggers()
@@ -98,19 +107,20 @@ const run = async () => {
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
-  const streams = mergeAsyncIterators([messageStream, ...jobQueueStreams])
+  streams = mergeAsyncIterators([messageStream, ...jobQueueStreams])
   for await (const [idx, message] of streams) {
     switch (idx) {
       case 0:
         onMessage('', message)
         continue
       default:
-        console.log(`Worker ${idx} finished job ${message.id}. Avg time: ${time / count}ms`)
+        console.log(`Worker ${idx} finished job ${message.id}`)
         continue
     }
   }
-  // Should never happen
-  Logger.log('Streams have ended')
+
+  // On graceful shutdown
+  Logger.log('Streaming Complete. Goodbye!')
 }
 
 run()
