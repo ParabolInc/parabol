@@ -115,7 +115,7 @@
     "graphiql": "^3.0.0",
     "graphql-typed": "^0.7.2",
     "hoist-non-react-statics": "^3.3.0",
-    "humanize-duration": "3.29.0",
+    "humanize-duration": "3.31.0",
     "immutable": "3.8.2",
     "json2csv": "5.0.5",
     "jwt-decode": "^2.1.0",
