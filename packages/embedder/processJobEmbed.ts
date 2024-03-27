@@ -2,7 +2,6 @@ import franc from 'franc-min'
 import ms from 'ms'
 import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {Logger} from 'parabol-server/utils/Logger'
 import {EmbedJob} from './EmbeddingsJobQueueStream'
 import {EmbeddingsTable} from './ai_models/AbstractEmbeddingsModel'
 import getModelManager from './ai_models/ModelManager'
@@ -52,11 +51,8 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
     return
   }
 
-  if (!embeddingModel.languages.includes(language!)) {
-    // Exit successfully, we don't want to fail the job because the language is not supported
-    await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
-    return
-  }
+  // Exit successfully, we don't want to fail the job because the language is not supported
+  if (!embeddingModel.languages.includes(language!)) return true
 
   const tokens = await embeddingModel.getTokens(fullText)
   if (tokens instanceof Error) {
@@ -101,7 +97,6 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
         .execute()
     })
   )
-
-  await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
-  Logger.log(`Embedded ${embeddingsMetadataId} -> ${model}`)
+  // Logger.log(`Embedded ${embeddingsMetadataId} -> ${model}`)
+  return true
 }

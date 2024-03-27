@@ -1,3 +1,5 @@
+import {ParseInt} from '../client/types/generics'
+
 // can remove PromiseCapability after TS v5.4.2
 type PromiseCapability<T> = {
   resolve: (value: T) => void
@@ -5,25 +7,20 @@ type PromiseCapability<T> = {
   promise: Promise<T>
 }
 
-// typescript intrinsics for iterables don't work like the do for promises yet, please ignore hackery
 type UnYield<T> = T extends IteratorYieldResult<infer U> ? U : never
-type UnIt<T extends AsyncIterator<any>> = UnYield<Awaited<ReturnType<T['next']>>>
+type Result<T extends AsyncIterator<any>> = UnYield<Awaited<ReturnType<T['next']>>>
 
 // Promise.race has a memory leak
 // To avoid: https://github.com/tc39/proposal-async-iterator-helpers/issues/15#issuecomment-1937011820
-export function mergeAsyncIterators<
-  T1 extends AsyncIterableIterator<any>,
-  T2 extends AsyncIterableIterator<any>,
-  K1 = UnIt<T1>,
-  K2 = UnIt<T2>
->(iterables: [T1, T2]) {
+export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(
+  iterators: T
+): AsyncIterableIterator<{[P in keyof T]: [ParseInt<`${P}`>, Result<T[P]>]}[number]> {
   return (async function* () {
-    type AcceptThunk = () => [0, K1] | [1, K2]
-    let count = iterables.length as number
-    let capability: PromiseCapability<AcceptThunk | null> | undefined
-    const iterators: AsyncIterator<any>[] = []
-    const queue: AcceptThunk[] = []
-    const accept = async (idx: 0 | 1, iterator: AsyncIterator<any>) => {
+    type ResultThunk = () => [number, Result<T[number]>]
+    let count = iterators.length as number
+    let capability: PromiseCapability<ResultThunk | null> | undefined
+    const queuedResults: ResultThunk[] = []
+    const getNext = async (idx: number, iterator: T[number]) => {
       try {
         const next = await iterator.next()
         if (next.done) {
@@ -31,41 +28,39 @@ export function mergeAsyncIterators<
             capability.resolve(null)
           }
         } else {
-          push(() => {
-            void accept(idx, iterator)
-            return [idx, next.value] as any
+          resolveResult(() => {
+            void getNext(idx, iterator)
+            return [idx, next.value]
           })
         }
       } catch (error) {
-        push(() => {
+        resolveResult(() => {
           throw error
         })
       }
     }
-    const push = (acceptThunk: AcceptThunk) => {
+    const resolveResult = (resultThunk: ResultThunk) => {
       if (capability === undefined) {
-        queue.push(acceptThunk)
+        queuedResults.push(resultThunk)
       } else {
-        capability.resolve(acceptThunk)
+        capability.resolve(resultThunk)
       }
     }
 
     try {
       // Begin all iterators
-      for (const [idx, iterable] of iterables.entries()) {
-        const iterator = iterable[Symbol.asyncIterator]()
-        iterators.push(iterator)
-        void accept(idx as 0 | 1, iterator)
+      for (const [idx, iterable] of iterators.entries()) {
+        void getNext(idx, iterable)
       }
 
       // Delegate to iterables as results complete
       while (true) {
         while (true) {
-          const next = queue.shift()
-          if (next === undefined) {
+          const nextQueuedResult = queuedResults.shift()
+          if (nextQueuedResult === undefined) {
             break
           } else {
-            yield next()
+            yield nextQueuedResult()
           }
         }
         if (count === 0) {
@@ -81,12 +76,12 @@ export function mergeAsyncIterators<
             capability!.resolve = res
             capability!.reject = rej
           })
-          const next = await capability.promise
-          if (next === null) {
+          const nextResult = await capability.promise
+          if (nextResult === null) {
             break
           } else {
             capability = undefined
-            yield next()
+            yield nextResult()
           }
         }
       }
@@ -97,5 +92,5 @@ export function mergeAsyncIterators<
       } catch {}
       throw err
     }
-  })() as AsyncGenerator<[0, K1] | [1, K2]>
+  })()
 }

@@ -4,6 +4,8 @@ import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
+import RootDataLoader from '../server/dataloader/RootDataLoader'
+import {processJob} from './processJob'
 
 export type DBJob = Selectable<DB['EmbeddingsJobQueue']>
 export type EmbedJob = DBJob & {
@@ -20,51 +22,43 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Job> {
   [Symbol.asyncIterator]() {
     return this
   }
+  dataLoader = new RootDataLoader({maxBatchSize: 1000})
   async next(): Promise<IteratorResult<Job>> {
     const pg = getKysely()
-    let job = await pg
-      .with(
-        (cte) => cte('ids').materialized(),
-        (db) =>
-          db
-            .selectFrom('EmbeddingsJobQueue')
-            .select('id')
-            .where('state', '=', 'queued')
-            .orderBy(['priority'])
-            .limit(1)
-            .forUpdate()
-            .skipLocked()
-      )
-      .updateTable('EmbeddingsJobQueue')
-      .set({state: 'running', startAt: new Date()})
-      .where('id', '=', sql`ANY(SELECT id FROM ids)` as any)
-      .returningAll()
-      .executeTakeFirst()
-    if (!job) {
-      job = await pg
+    const getJob = (isFailed: boolean) => {
+      return pg
         .with(
           (cte) => cte('ids').materialized(),
           (db) =>
             db
               .selectFrom('EmbeddingsJobQueue')
               .select('id')
-              .where('state', '=', 'failed')
-              .where('retryAfter', '<', new Date())
+              .orderBy(['priority'])
+              .$if(!isFailed, (db) => db.where('state', '=', 'queued'))
+              .$if(isFailed, (db) =>
+                db.where('state', '=', 'failed').where('retryAfter', '<', new Date())
+              )
               .limit(1)
               .forUpdate()
               .skipLocked()
         )
         .updateTable('EmbeddingsJobQueue')
-        .set({state: 'running'})
-        .where('id', '=', sql`ANY(SELECT id FROM ids)` as any)
+        .set({state: 'running', startAt: new Date()})
+        .where('id', '=', sql<number>`ANY(SELECT id FROM ids)`)
         .returningAll()
         .executeTakeFirst()
-      if (!job) {
-        console.log('JobQueueStream: no jobs found')
-        // queue is empty, so sleep for a while
-        await sleep(ms('1m'))
-        return this.next()
-      }
+    }
+    const job = (await getJob(false)) || (await getJob(true))
+    if (!job) {
+      console.log('JobQueueStream: no jobs found')
+      // queue is empty, so sleep for a while
+      await sleep(ms('1m'))
+      return this.next()
+    }
+
+    const isSuccessful = await processJob(job as Job, this.dataLoader)
+    if (isSuccessful) {
+      await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', job.id).executeTakeFirstOrThrow()
     }
     return {done: false, value: job as Job}
   }
