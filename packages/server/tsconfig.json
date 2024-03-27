@@ -22,7 +22,8 @@
     "types/webpackEnv.ts",
     "types/modules.d.ts",
     "server.ts",
-    "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
+    "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
+    "../embedder/modules.d.ts"
   ],
   "include": ["graphql/**/*.ts"]
 

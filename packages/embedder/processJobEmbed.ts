@@ -9,6 +9,8 @@ import getModelManager from './ai_models/ModelManager'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
 import {failJob} from './indexing/failJob'
 import numberVectorToString from './indexing/numberVectorToString'
+import {iso6393To1} from './iso6393To1'
+
 export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader) => {
   const pg = getKysely()
   const {id: jobId, retryCount, jobData} = job
@@ -26,13 +28,14 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
     return
   }
 
-  let {fullText} = metadata
+  let {fullText, language} = metadata
   try {
     if (!fullText) {
       fullText = await createEmbeddingTextFrom(metadata, dataLoader)
+      language = iso6393To1[franc(fullText) as keyof typeof iso6393To1]
       await pg
         .updateTable('EmbeddingsMetadata')
-        .set({fullText})
+        .set({fullText, language})
         .where('id', '=', embeddingsMetadataId)
         .execute()
     }
@@ -42,15 +45,16 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
     await failJob(jobId, `unable to create embedding text: ${e}`)
     return
   }
-  const detectedLanguage = franc(fullText)
-  if (detectedLanguage !== 'eng') {
-    // Do not treat like an error, exit successfully
-    await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
-    return
-  }
+
   const embeddingModel = modelManager.embeddingModelsMapByTable[model]
   if (!embeddingModel) {
     await failJob(jobId, `embedding model ${model} not available`)
+    return
+  }
+
+  if (!embeddingModel.languages.includes(language!)) {
+    // Exit successfully, we don't want to fail the job because the language is not supported
+    await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', jobId).executeTakeFirstOrThrow()
     return
   }
 
@@ -65,7 +69,7 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
   }
   const isFullTextTooBig = tokens.length > embeddingModel.maxInputTokens
   // Cannot use summarization strategy if generation model has same context length as embedding model
-  // We must split the text & not tokens because the endpoint doesn't support decoding input tokens
+  // We must split the text & not tokens because BERT tokenizer is not trained for linebreaks e.g. \n\n
   const chunks = isFullTextTooBig ? embeddingModel.splitText(fullText) : [fullText]
   await Promise.all(
     chunks.map(async (chunk, chunkNumber) => {

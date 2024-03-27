@@ -2,12 +2,14 @@ import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
+import {ISO6391} from '../iso6393To1'
 import {AbstractModel, ModelConfig} from './AbstractModel'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
   maxInputTokens: number
   tableSuffix: string
+  languages: ISO6391[]
 }
 export type EmbeddingsTable = Extract<keyof DB, `Embeddings_${string}`>
 export interface EmbeddingModelConfig extends ModelConfig {
@@ -18,10 +20,12 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly embeddingDimensions: number
   readonly maxInputTokens: number
   readonly tableName: string
+  readonly languages: ISO6391[]
   constructor(config: EmbeddingModelConfig) {
     super(config)
     const modelParams = this.constructModelParams(config)
     this.embeddingDimensions = modelParams.embeddingDimensions
+    this.languages = modelParams.languages
     this.maxInputTokens = modelParams.maxInputTokens
     this.tableName = `Embeddings_${modelParams.tableSuffix}`
   }
@@ -73,17 +77,20 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       .insertInto('EmbeddingsJobQueue')
       .columns(['jobData', 'priority'])
       .expression(({selectFrom}) =>
-        selectFrom('EmbeddingsMetadata').select(({fn, lit}) => [
-          fn('json_build_object', [
-            sql.lit('model'),
-            sql.lit(this.tableName),
-            sql.lit('embeddingsMetadataId'),
-            'id'
-          ]).as('jobData'),
-          lit(EMBEDDER_JOB_PRIORITY.NEW_MODEL).as('priority')
-        ])
+        selectFrom('EmbeddingsMetadata')
+          .select(({fn, lit}) => [
+            fn('json_build_object', [
+              sql.lit('model'),
+              sql.lit(this.tableName),
+              sql.lit('embeddingsMetadataId'),
+              'id'
+            ]).as('jobData'),
+            lit(EMBEDDER_JOB_PRIORITY.NEW_MODEL).as('priority')
+          ])
+          .where('language', 'in', this.languages)
       )
       .onConflict((oc) => oc.doNothing())
+      .execute()
   }
   async createTable() {
     const pg = getKysely()

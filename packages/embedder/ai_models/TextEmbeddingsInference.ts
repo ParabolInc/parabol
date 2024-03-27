@@ -12,12 +12,14 @@ const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
   'BAAI/bge-large-en-v1.5': {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
-    tableSuffix: 'bge_l_en_1p5'
+    tableSuffix: 'bge_l_en_1p5',
+    languages: ['en']
   },
   'llmrails/ember-v1': {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
-    tableSuffix: 'ember_1'
+    tableSuffix: 'ember_1',
+    languages: ['en']
   }
 }
 
