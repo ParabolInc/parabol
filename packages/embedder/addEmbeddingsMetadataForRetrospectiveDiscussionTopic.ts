@@ -94,6 +94,7 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async ({
     await insertDiscussionsIntoMetadata(discussions, EMBEDDER_JOB_PRIORITY.MEETING)
     return
   }
+  // PG only accepts 65K parameters (inserted columns * number of rows + query params). Make the batches as big as possible
   const PG_MAX_PARAMS = 65535
   const QUERY_PARAMS = 10
   const METADATA_COLS_PER_ROW = 4

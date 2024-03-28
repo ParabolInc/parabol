@@ -4,6 +4,7 @@ import {DB} from 'parabol-server/postgres/pg'
 import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
 import {ISO6391} from '../iso6393To1'
 import {AbstractModel, ModelConfig} from './AbstractModel'
+import {Logger} from '../../server/utils/Logger'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
@@ -40,11 +41,8 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     const chunks: string[] = []
     const delimiters = ['\n\n', '\n', '.', ' ']
     const countWords = (text: string) => text.trim().split(/\s+/).length
-    const total = countWords(content)
-    console.log({total})
     const splitOnDelimiter = (text: string, delimiter: string) => {
       const sections = text.split(delimiter)
-      console.log('sections', sections.length)
       for (let i = 0; i < sections.length; i++) {
         const section = sections[i]!
         const sectionWordCount = countWords(section)
@@ -71,7 +69,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
 
   async createEmbeddingsForModel() {
-    console.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`)
+    Logger.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`)
     const pg = getKysely()
     await pg
       .insertInto('EmbeddingsJobQueue')
@@ -102,7 +100,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       ).rows.length > 0
     if (hasTable) return undefined
     const vectorDimensions = this.embeddingDimensions
-    console.log(`ModelManager: creating ${this.tableName} with ${vectorDimensions} dimensions`)
+    Logger.log(`ModelManager: creating ${this.tableName} with ${vectorDimensions} dimensions`)
     await sql`
       DO $$
         BEGIN

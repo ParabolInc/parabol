@@ -6,6 +6,7 @@ import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import RootDataLoader from '../server/dataloader/RootDataLoader'
 import {processJob} from './processJob'
+import {Logger} from '../server/utils/Logger'
 
 export type DBJob = Selectable<DB['EmbeddingsJobQueue']>
 export type EmbedJob = DBJob & {
@@ -50,7 +51,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Job> {
     }
     const job = (await getJob(false)) || (await getJob(true))
     if (!job) {
-      console.log('JobQueueStream: no jobs found')
+      Logger.log('JobQueueStream: no jobs found')
       // queue is empty, so sleep for a while
       await sleep(ms('1m'))
       return this.next()

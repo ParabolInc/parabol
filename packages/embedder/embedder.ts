@@ -60,7 +60,6 @@ const run = async () => {
   const modelManager = getModelManager()
   let streams: AsyncIterableIterator<any> | undefined
   const kill = () => {
-    console.log('killing')
     primaryLock?.release()
     streams?.return?.()
     process.exit()
@@ -70,7 +69,6 @@ const run = async () => {
   if (primaryLock) {
     // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
-    await modelManager.removeOldTriggers()
     await importHistoricalMetadata()
     resetStalledJobs()
   }
@@ -114,7 +112,7 @@ const run = async () => {
         onMessage('', message)
         continue
       default:
-        console.log(`Worker ${idx} finished job ${message.id}`)
+        // Logger.log(`Worker ${idx} finished job ${message.id}`)
         continue
     }
   }

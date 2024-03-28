@@ -92,35 +92,6 @@ export class ModelManager {
   async maybeCreateTables() {
     return Promise.all(this.embeddingModels.map((model) => model.createTable()))
   }
-  /*
-    Once a model is no longer used, don't schedule work for it in the job queue
-  */
-  async removeOldTriggers() {
-    const pg = getKysely()
-    const prefix = 'embeddings_metadata_to_queue_'
-    const triggers = await pg
-      .selectFrom('information_schema.triggers' as any)
-      .select('trigger_name')
-      .where('event_object_table', '=', 'EmbeddingsMetadata')
-      .where('trigger_name', 'like', `${prefix}%`)
-      .execute()
-    return Promise.all(
-      triggers.map(async ({trigger_name}) => {
-        // pgadmin lowercases triggers but PG doesn't. Lowercase it all just to be safe
-        const lowercaseTableName = trigger_name.slice(prefix.length).toLowerCase()
-        const isModelUsed = this.embeddingModels.some(
-          (model) => model.tableName.toLowerCase() === lowercaseTableName
-        )
-        if (isModelUsed) return
-        await sql`
-        DROP TRIGGER IF EXISTS ${sql.id(trigger_name)} on "EmbeddingsMetadata";
-        DROP FUNCTION IF EXISTS insert_metadata_in_queue_${sql.raw(lowercaseTableName)};`.execute(
-          pg
-        )
-        console.log(`Removed old trigger: ${trigger_name}`)
-      })
-    )
-  }
 }
 
 let modelManager: ModelManager | undefined
