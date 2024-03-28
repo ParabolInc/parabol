@@ -12,7 +12,7 @@ const UPDATE_FEATURE_FLAG = `
       users {
         id
         featureFlags {
-          azureDevOps
+          noAISummary
         }
       }
     }
@@ -27,7 +27,7 @@ test('Add feature flag by email', async () => {
     query: UPDATE_FEATURE_FLAG,
     variables: {
       emails: [email],
-      flag: 'azureDevOps',
+      flag: 'noAISummary',
       addFlag: true
     },
     authToken
@@ -41,7 +41,7 @@ test('Add feature flag by email', async () => {
           {
             id: userId,
             featureFlags: {
-              azureDevOps: true
+              noAISummary: true
             }
           }
         ]
@@ -58,7 +58,7 @@ test('Remove feature flag by email', async () => {
     query: UPDATE_FEATURE_FLAG,
     variables: {
       emails: [email],
-      flag: 'azureDevOps',
+      flag: 'noAISummary',
       addFlag: false
     },
     authToken
@@ -72,7 +72,7 @@ test('Remove feature flag by email', async () => {
           {
             id: userId,
             featureFlags: {
-              azureDevOps: false
+              noAISummary: false
             }
           }
         ]

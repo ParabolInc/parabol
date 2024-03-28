@@ -14,7 +14,7 @@ import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
 const COPIED_TOOLTIP_DURATION_MS = 2000
 
-const OptionsButton = styled(BaseButton)({
+export const OptionsButton = styled(BaseButton)({
   color: PALETTE.SKY_500,
   display: 'flex',
   flexDirection: 'column',

@@ -4,7 +4,6 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   noAISummary: ({noAISummary}) => !!noAISummary,
   standupAISummary: ({standupAISummary}) => !!standupAISummary,
   noPromptToJoinOrg: ({noPromptToJoinOrg}) => !!noPromptToJoinOrg,
-  AIGeneratedDiscussionPrompt: ({AIGeneratedDiscussionPrompt}) => !!AIGeneratedDiscussionPrompt,
   zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,
   shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,

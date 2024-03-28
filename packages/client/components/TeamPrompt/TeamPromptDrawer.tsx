@@ -13,7 +13,7 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import findStageById from '../../utils/meetings/findStageById'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
-const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
+export const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
   ({isDesktop, isMobile, isOpen}) => ({
     boxShadow: isDesktop ? desktopSidebarShadow : undefined,
     backgroundColor: '#FFFFFF',
