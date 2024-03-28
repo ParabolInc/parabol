@@ -10515,10 +10515,10 @@ core-js-pure@^3.8.1:
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.20.3.tgz#6cc4f36da06c61d95254efc54024fe4797fd5d02"
   integrity sha512-Q2H6tQ5MtPtcC7f3HxJ48i4Q7T9ybPKgvWyuH7JXIoNa2pm0KuBnycsET/qw1SLLZYfbsbrZQNMeIOClb+6WIA==
 
-core-js@3.8.1:
-  version "3.8.1"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.8.1.tgz#f51523668ac8a294d1285c3b9db44025fda66d47"
-  integrity sha512-9Id2xHY1W7m8hCl8NkhQn5CufmF/WuR30BTRewvCXc1aZd3kMECwNZ69ndLbekKfakw9Rf2Xyc+QR6E7Gg+obg==
+core-js@3.36.0:
+  version "3.36.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.36.0.tgz#e752fa0b0b462a0787d56e9d73f80b0f7c0dde68"
+  integrity sha512-mt7+TUBbTFg5+GngsAxeKBTl5/VS0guFeJacYge9OmHb+m058UwwIm41SE9T4Den7ClatV57B6TYTuJ0CX1MAw==
 
 core-util-is@~1.0.0:
   version "1.0.3"
@@ -11178,10 +11178,10 @@ dogapi@2.8.4:
     minimist "^1.2.5"
     rc "^1.2.8"
 
-dom-confetti@~0.0.11:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/dom-confetti/-/dom-confetti-0.0.15.tgz#fd7dd6888da3dc6b54fd53326c8fa826ef25106b"
-  integrity sha512-KJKrmHcydwoS6bTD0wVM/L7LZz1rQNJA+Y3Zw9ZVYNpx5efqoVwIY2rqY/F2sEpJuGGCRff/o8bAmfQ8KO4Grw==
+dom-confetti@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/dom-confetti/-/dom-confetti-0.2.2.tgz#bdf2e7652d37b5cffb532c0a3263d108dd8a2363"
+  integrity sha512-+UVH9Y85qmpTnbmFURwLWjqLIykyIrsNSRkPX/eFlBuOURz9RDX8JoZHnajZHyFuCV0w/K3+tZK0ztfoTw6ejg==
 
 dom-converter@^0.2.0:
   version "0.2.0"
@@ -11278,6 +11278,11 @@ dotenv@8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.0.0.tgz#ed310c165b4e8a97bb745b0a9d99c31bda566440"
   integrity sha512-30xVGqjLjiUOArT4+M5q9sYdvuR4riM6yK9wMcas9Vbp6zZa+ocC9dp6QoftuhTPhFAiLK/0C5Ni2nou/Bk8lg==
+
+dotenv@8.6.0:
+  version "8.6.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.6.0.tgz#061af664d19f7f4d8fc6e4ff9b584ce237adcb8b"
+  integrity sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==
 
 dotenv@^16.0.0, dotenv@^16.0.3:
   version "16.0.3"
@@ -13059,10 +13064,10 @@ graphql-typed@^0.4.1:
   resolved "https://registry.yarnpkg.com/graphql-typed/-/graphql-typed-0.4.1.tgz#d612f1a8215fc5b14b51d5a88b06c0174d6a6e47"
   integrity sha512-6a4BHG/uXMkxY+UeqmsTrwCvTy3BbFAYlKsVC2MzvAISXh+FcbBaJEfXsbcZKrydCFnVD3Xlg74Esip5O3LyLA==
 
-graphql-typed@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/graphql-typed/-/graphql-typed-0.6.1.tgz#a305bad26cc1e6a5f7cf34e720d9cbd7bc57317d"
-  integrity sha512-41J/CLton6F6tt5AGmKbroU5RSyXOSH5My2D396yXcNuQynaehP8FFG9bx/XjLukJMgLHJ8pUSHOw+fAqcGklw==
+graphql-typed@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/graphql-typed/-/graphql-typed-0.7.2.tgz#c917eb79e58f340a842b204212e29506db481c2c"
+  integrity sha512-Np+YLzDCTY92ptXN5Rxi34fMJ4dy/vx0jZWnH0IVjpLW5SSoirve4ymIBy1UbkS//uEMCdNtvX4Y6loOJ3vyvA==
 
 graphql-ws@^5.14.0:
   version "5.14.0"
@@ -18349,12 +18354,12 @@ react-day-picker@^8.3.7:
   resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-8.3.7.tgz#35de1325376984e4dbaec1fed6888f45dc46ad1d"
   integrity sha512-sQvyJde6OKsXIB0ZFwUBmaDNb4IyKypv/uSyauQ6AUw4F6vmPijJsQNEVsxrxXQ4L3GZKIpcCD/7Pftz/sLegA==
 
-react-dom-confetti@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/react-dom-confetti/-/react-dom-confetti-0.0.10.tgz#6cde7af4af974ecf98ddf9da95c938144c68a4f0"
-  integrity sha512-EJMUmD9Z3/87wIjyQic5ZGd2beHE9K50vxouLdV+yPcBitlsVznBXKX900xEbzQ/DOMt+TycEg2CvB/V+pwJtQ==
+react-dom-confetti@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-dom-confetti/-/react-dom-confetti-0.2.0.tgz#76df26762da532057d5b1fbe38a8096f9dc33d40"
+  integrity sha512-+XRTi+WlCrcRN2dTjdEopOaPFtS7hpaHRRQ0sHiVRGqpchKz4QVh3i+6eLEEpNHYpN2VgPmhjvJ/vnjmUYhlIQ==
   dependencies:
-    dom-confetti "~0.0.11"
+    dom-confetti "0.2.2"
 
 react-dom@^17.0.2:
   version "17.0.2"
@@ -18484,15 +18489,7 @@ react-style-singleton@^2.2.1:
     invariant "^2.2.4"
     tslib "^2.0.0"
 
-react-swipeable-views-core@0.13.1:
-  version "0.13.1"
-  resolved "https://registry.yarnpkg.com/react-swipeable-views-core/-/react-swipeable-views-core-0.13.1.tgz#8829a922462a8bdd701709cd1b385393d38f1527"
-  integrity sha512-EP8sCvvD7VDiZLglPt9icMuMNu8qLRLk0ab/fB1HXv7lX8ClnwF3UMCM0ZrN3sguSY7CsX3LevducGGsT1VcDg==
-  dependencies:
-    "@babel/runtime" "7.0.0"
-    warning "^4.0.1"
-
-react-swipeable-views-core@^0.14.0, react-swipeable-views-core@^0.14.0-alpha.0:
+react-swipeable-views-core@0.14.0, react-swipeable-views-core@^0.14.0, react-swipeable-views-core@^0.14.0-alpha.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/react-swipeable-views-core/-/react-swipeable-views-core-0.14.0.tgz#6ac443a7cc7bc5ea022fbd549292bb5fff361cce"
   integrity sha512-0W/e9uPweNEOSPjmYtuKSC/SvKKg1sfo+WtPdnxeLF3t2L82h7jjszuOHz9C23fzkvLfdgkaOmcbAxE9w2GEjA==

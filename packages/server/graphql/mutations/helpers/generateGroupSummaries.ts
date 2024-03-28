@@ -15,7 +15,6 @@ const generateGroupSummaries = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  const organization = await dataLoader.get('organizations').load(team.orgId)
   const isAISummaryAccessible = await canAccessAISummary(
     team,
     facilitator.featureFlags,
@@ -35,9 +34,6 @@ const generateGroupSummaries = async (
     sendToSentry(error, {userId: facilitator.id, tags: {meetingId}})
     return
   }
-  const aiGeneratedDiscussionPromptEnabled = organization.featureFlags?.includes(
-    'AIGeneratedDiscussionPrompt'
-  )
   await Promise.all(
     reflectionGroups.map(async (group) => {
       const reflectionsByGroupId = reflections.filter(
@@ -49,9 +45,7 @@ const generateGroupSummaries = async (
       )
       const [fullSummary, fullQuestion] = await Promise.all([
         manager.getSummary(reflectionTextByGroupId),
-        aiGeneratedDiscussionPromptEnabled
-          ? manager.getDiscussionPromptQuestion(group.title ?? 'Unknown', reflectionsByGroupId)
-          : undefined
+        manager.getDiscussionPromptQuestion(group.title ?? 'Unknown', reflectionsByGroupId)
       ])
       if (!fullSummary && !fullQuestion) return
       const summary = fullSummary?.slice(0, 2000)

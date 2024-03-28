@@ -433,6 +433,10 @@ type User {
     The cursor, which is the templateId
     """
     after: ID
+    """
+    An optional argument to filter by template type
+    """
+    type: MeetingTypeEnum
   ): MeetingTemplateConnection!
 
   """
@@ -458,4 +462,12 @@ type User {
     """
     domain: String!
   ): ParseSAMLMetadataPayload!
+  """
+  The number of free custom retro templates remaining
+  """
+  freeCustomRetroTemplatesRemaining: Int!
+  """
+  The number of free custom poker templates remaining
+  """
+  freeCustomPokerTemplatesRemaining: Int!
 }
