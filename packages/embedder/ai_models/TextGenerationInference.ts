@@ -3,7 +3,7 @@ import {
   GenerationModelConfig,
   GenerationModelParams,
   GenerationOptions
-} from './AbstractModel'
+} from './AbstractGenerationModel'
 import fetchWithRetry from './helpers/fetchWithRetry'
 
 const MAX_REQUEST_TIME_S = 3 * 60
@@ -51,7 +51,6 @@ export class TextGenerationInference extends AbstractGenerationModel {
     }
 
     try {
-      // console.log(`TextGenerationInference.summarize(): summarizing from ${this.url}/generate`)
       const res = await fetchWithRetry(`${this.url}/generate`, fetchOptions)
       const json = await res.json()
       if (!json || !json.generated_text)

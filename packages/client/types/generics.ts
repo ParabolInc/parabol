@@ -100,6 +100,9 @@ export type WithFieldsAsType<TObj, NType, F> = {
     : TObj[K]
 }
 
+export type Tuple<T, N, R extends T[] = []> = R['length'] extends N ? R : Tuple<T, N, [...R, T]>
+export type ParseInt<T extends string> = T extends `${infer Digit extends number}` ? Digit : never
+
 declare global {
   interface Array<T> {
     findLastIndex(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): number

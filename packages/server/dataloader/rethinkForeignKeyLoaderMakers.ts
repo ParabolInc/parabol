@@ -192,6 +192,19 @@ export const retroReflectionsByMeetingId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
+export const retroReflectionsByGroupId = new RethinkForeignKeyLoaderMaker(
+  'retroReflections',
+  'reflectionGroupId',
+  async (reflectionGroupIds) => {
+    const r = await getRethink()
+    return r
+      .table('RetroReflection')
+      .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'})
+      .filter({isActive: true})
+      .run()
+  }
+)
+
 export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
   'templateDimensions',
   'templateId',
