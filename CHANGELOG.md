@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.23.1](https://github.com/ParabolInc/parabol/compare/v7.23.0...v7.23.1) (2024-03-28)
+
+
+### Fixed
+
+* ensure pool is callable after custom template migration ([#9572](https://github.com/ParabolInc/parabol/issues/9572)) ([0d30206](https://github.com/ParabolInc/parabol/commit/0d30206b154b60f11b23708c9315e9960d4825bb))
+* remove destroyAll from add custom templates migration ([5baf3b7](https://github.com/ParabolInc/parabol/commit/5baf3b7584f8f578284baa7e47eb5e264e99ad53))
+
 ## [7.23.0](https://github.com/ParabolInc/parabol/compare/v7.22.4...v7.23.0) (2024-03-26)
 
 
