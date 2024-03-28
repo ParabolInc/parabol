@@ -1,8 +1,7 @@
-import {Insertable, Selectable, Updateable, sql} from 'kysely'
+import {Insertable, RawBuilder, Selectable, Updateable, sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import {DBInsert} from '../embedder'
-import {RawBuilder} from 'kysely'
 import numberVectorToString from './numberVectorToString'
 
 function unnestedArray<T>(maybeArray: T[] | T): RawBuilder<T> {
@@ -24,7 +23,9 @@ export const selectMetadataByJobQueueId = async (
     .selectFrom('EmbeddingsMetadata as em')
     .selectAll()
     .leftJoin('EmbeddingsJobQueue as ejq', (join) =>
-      join.onRef('em.objectType', '=', 'ejq.objectType').onRef('em.refId', '=', 'ejq.refId')
+      join
+        .onRef('em.objectType', '=', 'ejq.objectType' as any)
+        .onRef('em.refId', '=', 'ejq.refId' as any)
     )
     .where('ejq.id', '=', id)
     .executeTakeFirstOrThrow()
@@ -52,16 +53,18 @@ export async function selectMetaToQueue(
     .where(({eb, not, or, and, exists, selectFrom}) =>
       and([
         or([
-          not(eb('em.models', '@>', sql`ARRAY[${sql.ref('model')}]::varchar[]` as any) as any),
+          not(
+            eb('em.models' as any, '@>', sql`ARRAY[${sql.ref('model')}]::varchar[]` as any) as any
+          ),
           eb('em.models' as any, 'is', null)
         ]),
         not(
           exists(
             selectFrom('EmbeddingsJobQueue as ejq')
               .select('ejq.id')
-              .whereRef('em.objectType', '=', 'ejq.objectType')
-              .whereRef('em.refId', '=', 'ejq.refId')
-              .whereRef('ejq.model', '=', 'model' as any)
+              .whereRef('em.objectType', '=', 'ejq.objectType' as any)
+              .whereRef('em.refId', '=', 'ejq.refId' as any)
+              .whereRef('ejq.model' as any, '=', 'model' as any)
           )
         ),
         eb('t.orgId', 'in', orgIds)
@@ -104,7 +107,7 @@ export function insertNewJobs(ejqValues: Insertable<DB['EmbeddingsJobQueue']>[])
   return pg
     .insertInto('EmbeddingsJobQueue')
     .values(ejqValues)
-    .returning(['id', 'objectType', 'refId'])
+    .returning(['id', 'objectType', 'refId'] as any)
     .execute()
 }
 
@@ -123,11 +126,11 @@ export function completeJobTxn(
   const pg = getKysely()
   return pg.transaction().execute(async (trx) => {
     // get fields to update correct metadata row
-    const jobQueueItem = await trx
+    const jobQueueItem = (await trx
       .selectFrom('EmbeddingsJobQueue')
-      .select(['objectType', 'refId', 'model'])
+      .select(['objectType', 'refId', 'model'] as any)
       .where('id', '=', jobQueueId)
-      .executeTakeFirstOrThrow()
+      .executeTakeFirstOrThrow()) as any
 
     // (1) update metadata row
     const metadataColumnsToUpdate: {
