@@ -1,18 +1,22 @@
 /* eslint-env jest */
-import {MasterPool, r} from 'rethinkdb-ts'
-import getRedis from '../../utils/getRedis'
+import {r} from 'rethinkdb-ts'
 import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
-import isUserVerified from '../../utils/isUserVerified'
+import OrganizationUser from '../../database/types/OrganizationUser'
 import generateUID from '../../generateUID'
+import {DataLoaderWorker} from '../../graphql/graphql'
+import getRedis from '../../utils/getRedis'
+import isUserVerified from '../../utils/isUserVerified'
+import RootDataLoader from '../RootDataLoader'
 import {isOrgVerified} from '../customLoaderMakers'
 jest.mock('../../database/rethinkDriver')
 jest.mock('../../utils/isUserVerified')
 
-getRethink.mockImplementation(() => {
-  return r
+jest.mocked(getRethink).mockImplementation(() => {
+  return r as any
 })
-isUserVerified.mockImplementation(() => {
+
+jest.mocked(isUserVerified).mockImplementation(() => {
   return true
 })
 
@@ -24,7 +28,7 @@ const testConfig = {
   db: TEST_DB
 }
 
-const createTables = async (...tables: string) => {
+const createTables = async (...tables: string[]) => {
   for (const tableName of tables) {
     const structure = await r
       .db('rethinkdb')
@@ -40,9 +44,10 @@ const createTables = async (...tables: string) => {
   }
 }
 
-type TestOrganizationUser = Pick<
-  OrganizationUser,
-  'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'
+type TestOrganizationUser = Partial<
+  Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'> & {
+    domain: string
+  }
 >
 
 const userLoader = {
@@ -61,9 +66,9 @@ const dataLoader = {
       users: userLoader,
       isCompanyDomain: isCompanyDomainLoader
     }
-    return loaders[loader]
+    return loaders[loader as keyof typeof loaders]
   })
-}
+} as any as DataLoaderWorker
 
 const addOrg = async (
   activeDomain: string | null,
@@ -101,10 +106,10 @@ const addOrg = async (
   return orgId
 }
 
-const isOrgVerifiedLoader = isOrgVerified(dataLoader)
+const isOrgVerifiedLoader = isOrgVerified(dataLoader as any as RootDataLoader)
 
 beforeAll(async () => {
-  const conn = await r.connectPool(testConfig)
+  await r.connectPool(testConfig)
   try {
     await r.dbDrop(TEST_DB).run()
   } catch (e) {
@@ -121,7 +126,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
   getRedis().quit()
 })
 
@@ -203,12 +208,12 @@ test('Empty org does not throw', async () => {
 })
 
 test('Orgs with verified emails from different domains do not qualify', async () => {
-  const org1 = await addOrg('parabol.co', [
+  await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
       userId: 'founder1',
       domain: 'not-parabol.co'
-    }
+    } as any
   ])
 
   const isVerified = await isOrgVerifiedLoader.load('parabol.co')

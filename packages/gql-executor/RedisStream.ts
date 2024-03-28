@@ -2,8 +2,8 @@ import RedisInstance from 'parabol-server/utils/RedisInstance'
 
 type MessageValue = [prop: string, stringifiedData: string]
 type Message = [messageId: string, value: MessageValue]
-type XReadGroupRes = [streamName: string, messages: Message[]]
-export default class RedisStream<T> implements AsyncIterableIterator<T> {
+type XReadGroupRes = [streamName: string, messages: [Message, ...Message[]]]
+export default class RedisStream implements AsyncIterableIterator<string> {
   private stream: string
   private consumerGroup: string
   // xreadgroup blocks until a response is received, so this needs its own connection
@@ -19,7 +19,7 @@ export default class RedisStream<T> implements AsyncIterableIterator<T> {
   [Symbol.asyncIterator]() {
     return this
   }
-  async next() {
+  async next(): Promise<IteratorResult<string>> {
     const response = await this.redis.xreadgroup(
       'GROUP',
       this.consumerGroup,

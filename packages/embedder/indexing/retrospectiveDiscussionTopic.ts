@@ -1,4 +1,3 @@
-import {Selectable} from 'kysely'
 import prettier from 'prettier'
 
 import getRethink, {RethinkSchema} from 'parabol-server/database/rethinkDriver'
@@ -12,8 +11,8 @@ import MeetingRetrospective, {
   isMeetingRetrospective
 } from 'parabol-server/database/types/MeetingRetrospective'
 
-import {upsertEmbeddingsMetaRows} from './embeddingsTablesOps'
 import {AnyMeeting} from 'parabol-server/postgres/types/Meeting'
+import {upsertEmbeddingsMetaRows} from './embeddingsTablesOps'
 
 const BATCH_SIZE = 1000
 
@@ -291,10 +290,7 @@ export const createTextFromNewMeetingDiscussionStage = async (
   return markdown
 }
 
-export const createText = async (
-  item: Selectable<EmbeddingsJobQueueRetrospectiveDiscussionTopic>,
-  dataLoader: DataLoaderWorker
-): Promise<string> => {
+export const createText = async (item: any, dataLoader: DataLoaderWorker): Promise<string> => {
   if (!item.refId) throw 'refId is undefined'
   const [newMeetingId, discussionId] = item.refId.split(':')
   if (!newMeetingId) throw new Error('newMeetingId cannot be undefined')

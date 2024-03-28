@@ -1,11 +1,11 @@
 import faker from 'faker'
-import {getUserTeams, sendPublic, sendIntranet, signUp, signUpWithEmail} from './common'
 import getRethink from '../database/rethinkDriver'
 import createEmailVerification from '../email/createEmailVerification'
+import {getUserTeams, sendIntranet, sendPublic} from './common'
 
 const signUpVerified = async (email: string) => {
   const password = faker.internet.password()
-  const signUp = await sendPublic({
+  await sendPublic({
     query: `
       mutation SignUpWithPassword($email: ID!, $password: String!) {
         signUpWithPassword(email: $email, password: $password, params: "") {

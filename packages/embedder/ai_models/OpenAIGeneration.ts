@@ -6,8 +6,6 @@ import {
   GenerationOptions
 } from './AbstractModel'
 
-const MAX_REQUEST_TIME_S = 3 * 60
-
 export type ModelId = 'gpt-3.5-turbo-0125' | 'gpt-4-turbo-preview'
 
 type OpenAIGenerationOptions = Omit<GenerationOptions, 'topK'>
@@ -27,7 +25,7 @@ function isValidModelId(object: any): object is ModelId {
 
 export class OpenAIGeneration extends AbstractGenerationModel {
   private openAIApi: OpenAI | null
-  private modelId: ModelId
+  private modelId!: ModelId
 
   constructor(config: GenerationModelConfig) {
     super(config)

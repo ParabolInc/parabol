@@ -1,25 +1,25 @@
-import {Insertable} from 'kysely'
 import tracer from 'dd-trace'
+import {Insertable} from 'kysely'
 import Redlock, {RedlockAbortSignal} from 'redlock'
 
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
-import {refreshRetroDiscussionTopicsMeta as refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
-import {orgIdsWithFeatureFlag} from './indexing/orgIdsWithFeatureFlag'
 import getModelManager, {ModelManager} from './ai_models/ModelManager'
 import {countWords} from './indexing/countWords'
 import {createEmbeddingTextFrom} from './indexing/createEmbeddingTextFrom'
 import {
+  completeJobTxn,
+  insertNewJobs,
   selectJobQueueItemById,
+  selectMetaToQueue,
   selectMetadataByJobQueueId,
   updateJobState
 } from './indexing/embeddingsTablesOps'
-import {selectMetaToQueue} from './indexing/embeddingsTablesOps'
-import {insertNewJobs} from './indexing/embeddingsTablesOps'
-import {completeJobTxn} from './indexing/embeddingsTablesOps'
-import {getRootDataLoader} from './indexing/getRootDataLoader'
 import {getRedisClient} from './indexing/getRedisClient'
+import {getRootDataLoader} from './indexing/getRootDataLoader'
+import {orgIdsWithFeatureFlag} from './indexing/orgIdsWithFeatureFlag'
+import {refreshRetroDiscussionTopicsMeta} from './indexing/retrospectiveDiscussionTopic'
 
 /*
  * TODO List
@@ -91,11 +91,11 @@ const maybeQueueMetadataItems = async (modelManager: ModelManager) => {
       model: item.model,
       state: 'queued' as const
     }
-  })
+  }) as any[]
 
   const ejqRows = await insertNewJobs(ejqValues)
 
-  ejqRows.forEach((item) => {
+  ejqRows.forEach((item: any) => {
     const {refUpdatedAt} = ejqHash[makeKey(item)]!
     const score = new Date(refUpdatedAt).getTime()
     redisClient.zadd('embedder:queue', score, item.id)
@@ -117,7 +117,7 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
       continue
     }
     const jobQueueId = parseInt(id, 10)
-    const jobQueueItem = await selectJobQueueItemById(jobQueueId)
+    const jobQueueItem = (await selectJobQueueItemById(jobQueueId)) as any
     if (!jobQueueItem) {
       console.log(`embedder: unable to fetch EmbeddingsJobQueue.id = ${id}`)
       continue
@@ -131,7 +131,7 @@ const dequeueAndEmbedUntilEmpty = async (modelManager: ModelManager) => {
       continue
     }
 
-    let fullText = metadata?.fullText
+    let fullText = metadata?.fullText as string
     try {
       if (!fullText) {
         fullText = await createEmbeddingTextFrom(jobQueueItem, dataLoader)

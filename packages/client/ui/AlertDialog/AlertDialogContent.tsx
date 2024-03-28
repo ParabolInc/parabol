@@ -1,8 +1,8 @@
-import * as React from 'react'
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
 import clsx from 'clsx'
+import * as React from 'react'
 import {AlertDialogOverlay} from './AlertDialogOverlay'
-import {AlertDialogPortal} from './AlertDialog'
+import {AlertDialogPortal} from './AlertDialogPortal'
 
 const AlertDialogContent = React.forwardRef<
   HTMLDivElement,
