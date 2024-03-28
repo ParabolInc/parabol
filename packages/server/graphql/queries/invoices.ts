@@ -64,9 +64,10 @@ export default {
         .count()
         .run()
     ])
+    const org = await dataLoader.get('organizations').load(orgId)
     const upcomingInvoice = after
       ? undefined
-      : await makeUpcomingInvoice(orgId, orgUserCount, stripeId)
+      : await makeUpcomingInvoice(org, orgUserCount, stripeId)
     const extraInvoices: Invoice[] = tooManyInvoices || []
     const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
     const allInvoices = upcomingInvoice
