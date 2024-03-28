@@ -22,10 +22,6 @@ tracer.init({
 })
 tracer.use('pg')
 
-function parseEnvBoolean(envVarValue: string | undefined): boolean {
-  return envVarValue === 'true'
-}
-
 export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
 
 export interface MessageToEmbedder {
