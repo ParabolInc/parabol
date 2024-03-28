@@ -108,7 +108,7 @@ const run = async () => {
         onMessage('', message)
         continue
       default:
-        // Logger.log(`Worker ${idx} finished job ${message.id}`)
+        Logger.log(`Worker ${idx} finished job ${message.id}`)
         continue
     }
   }

@@ -1,10 +1,10 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
+import {Logger} from '../../server/utils/Logger'
 import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
 import {ISO6391} from '../iso6393To1'
 import {AbstractModel, ModelConfig} from './AbstractModel'
-import {Logger} from '../../server/utils/Logger'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number

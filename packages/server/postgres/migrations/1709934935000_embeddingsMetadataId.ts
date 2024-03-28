@@ -36,13 +36,13 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
-    DROP TYPE IF EXISTS "ISO6391Enum";
+    DROP TYPE IF EXISTS "ISO6391Enum" CASCADE;
     DROP INDEX IF EXISTS "idx_Discussion_createdAt";
     ALTER TYPE "EmbeddingsJobStateEnum" RENAME VALUE 'running' TO 'embedding';
     ALTER TYPE "EmbeddingsJobStateEnum" RENAME TO "EmbeddingsStateEnum";
     ALTER TABLE "EmbeddingsMetadata"
       ADD COLUMN "models" VARCHAR(255)[],
-      DROP COLUMN "language",
+      DROP COLUMN IF EXISTS "language",
       ALTER COLUMN "refId" DROP NOT NULL;
     ALTER TABLE "EmbeddingsJobQueue"
       ALTER COLUMN "state" TYPE "EmbeddingsStateEnum" USING "state"::text::"EmbeddingsStateEnum",

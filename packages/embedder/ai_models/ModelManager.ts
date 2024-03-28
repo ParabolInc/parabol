@@ -1,5 +1,3 @@
-import {sql} from 'kysely'
-import getKysely from 'parabol-server/postgres/getKysely'
 import {AbstractEmbeddingsModel, EmbeddingModelConfig} from './AbstractEmbeddingsModel'
 import {AbstractGenerationModel, GenerationModelConfig} from './AbstractGenerationModel'
 import {ModelConfig} from './AbstractModel'
