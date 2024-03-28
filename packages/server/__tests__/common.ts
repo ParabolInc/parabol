@@ -199,5 +199,5 @@ export const getUserTeams = async (userId: string) => {
       }
     }
   })
-  return user.data.user.teams
+  return user.data.user.teams as [{id: string}, ...{id: string}[]]
 }

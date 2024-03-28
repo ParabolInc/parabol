@@ -10,30 +10,6 @@ test.skip('SAML', async () => {
   const orgId = `${samlName}-orgId`
   const domain = 'example.com'
 
-  const _metadata = `
-    <?xml version="1.0"?>
-    <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" validUntil="2021-09-12T09:22:28Z" cacheDuration="PT1631870548S" entityID="https://idp.example.com/metadata">
-      <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-        <md:KeyDescriptor use="signing">
-          <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-            <ds:X509Data>
-              <ds:X509Certificate>MIICUDCCAbmgAwIBAgIBADANBgkqhkiG9w0BAQ0FADBFMQswCQYDVQQGEwJ1czELMAkGA1UECAwCQ0ExEzARBgNVBAoMCkV4YW1wbGUgQ28xFDASBgNVBAMMC2V4YW1wbGUuY29tMB4XDTIxMDkxMDA3NTkzMFoXDTI2MDkwOTA3NTkzMFowRTELMAkGA1UEBhMCdXMxCzAJBgNVBAgMAkNBMRMwEQYDVQQKDApFeGFtcGxlIENvMRQwEgYDVQQDDAtleGFtcGxlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArg9DZwR9v7Vok1IW+hIpYin9llPBh1MV5CxjfK596EwuadyQuko3jGv8qDlx4tG6JiGTjQfCuzJVAhYi2OKuKBqyJewKoen1uF0dRyws9n6zZl0GsVJkObdrNo5P6eib3VOsXPJ10RjxWsWx5WRur2dYdkOJFxC6zN1IbXSXYYMCAwEAAaNQME4wHQYDVR0OBBYEFKr/1y4R+kamPz623HnHM7tz6C4XMB8GA1UdIwQYMBaAFKr/1y4R+kamPz623HnHM7tz6C4XMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQENBQADgYEALKBl6QPk9HMB5V+GYu50XNFmzyuuXt3zAKMSYcyhxVSBCe6SKw1iqvvPza4rGp7DpeJI/8R3qBTuZqfl0rX624wvHGc4N9WubMLPejAn7dMu3oGfm9KUX+Um1RG0U6zsi9t3X90rroea/5SQvw/uAWUxS59U2r8massI/WFJKh8=</ds:X509Certificate>
-            </ds:X509Data>
-          </ds:KeyInfo>
-        </md:KeyDescriptor>
-        <md:KeyDescriptor use="encryption">
-          <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-            <ds:X509Data>
-              <ds:X509Certificate>MIICUDCCAbmgAwIBAgIBADANBgkqhkiG9w0BAQ0FADBFMQswCQYDVQQGEwJ1czELMAkGA1UECAwCQ0ExEzARBgNVBAoMCkV4YW1wbGUgQ28xFDASBgNVBAMMC2V4YW1wbGUuY29tMB4XDTIxMDkxMDA3NTkzMFoXDTI2MDkwOTA3NTkzMFowRTELMAkGA1UEBhMCdXMxCzAJBgNVBAgMAkNBMRMwEQYDVQQKDApFeGFtcGxlIENvMRQwEgYDVQQDDAtleGFtcGxlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArg9DZwR9v7Vok1IW+hIpYin9llPBh1MV5CxjfK596EwuadyQuko3jGv8qDlx4tG6JiGTjQfCuzJVAhYi2OKuKBqyJewKoen1uF0dRyws9n6zZl0GsVJkObdrNo5P6eib3VOsXPJ10RjxWsWx5WRur2dYdkOJFxC6zN1IbXSXYYMCAwEAAaNQME4wHQYDVR0OBBYEFKr/1y4R+kamPz623HnHM7tz6C4XMB8GA1UdIwQYMBaAFKr/1y4R+kamPz623HnHM7tz6C4XMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQENBQADgYEALKBl6QPk9HMB5V+GYu50XNFmzyuuXt3zAKMSYcyhxVSBCe6SKw1iqvvPza4rGp7DpeJI/8R3qBTuZqfl0rX624wvHGc4N9WubMLPejAn7dMu3oGfm9KUX+Um1RG0U6zsi9t3X90rroea/5SQvw/uAWUxS59U2r8massI/WFJKh8=</ds:X509Certificate>
-            </ds:X509Data>
-          </ds:KeyInfo>
-        </md:KeyDescriptor>
-        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
-        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp.example.org/sso/SingleSignOnService"/>
-      </md:IDPSSODescriptor>
-    </md:EntityDescriptor>
-  `
-
   const verifyDomain = await sendIntranet({
     query: `
       mutation VerifyDomain($slug: ID!, $addDomains: [ID!], $orgId: ID!) {

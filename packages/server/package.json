@@ -32,6 +32,7 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/cheerio": "^0.22.30",
     "@types/dotenv": "^6.1.1",
+    "@types/faker": "^5.5.9",
     "@types/graphql": "^14.5.0",
     "@types/html-minifier-terser": "5.1.2",
     "@types/jest": "^29.5.1",
