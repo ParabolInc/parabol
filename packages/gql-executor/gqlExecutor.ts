@@ -16,7 +16,7 @@ tracer.init({
 })
 tracer.use('ioredis').use('http').use('pg')
 
-const {REDIS_URL, SERVER_ID} = process.env
+const {SERVER_ID} = process.env
 interface PubSubPromiseMessage {
   jobId: string
   socketServerId: string
@@ -26,7 +26,7 @@ interface PubSubPromiseMessage {
 const run = async () => {
   const publisher = new RedisInstance('gql_pub')
   const subscriber = new RedisInstance('gql_sub')
-  const executorChannel = GQLExecutorChannelId.join(SERVER_ID)
+  const executorChannel = GQLExecutorChannelId.join(SERVER_ID!)
 
   // on shutdown, remove consumer from the group
   process.on('SIGTERM', async () => {

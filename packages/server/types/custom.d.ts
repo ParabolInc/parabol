@@ -1,3 +1,4 @@
+import '../../client/types/reactHTML4'
 export interface OAuth2Success {
   access_token: string
   token_type: string

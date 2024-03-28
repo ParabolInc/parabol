@@ -8,8 +8,6 @@
       "parabol-client/*": ["client/*"]
     },
     "outDir": "lib",
-    "lib": ["esnext"],
-    "types": ["node"]
-  },
-  "files": ["../server/types/modules.d.ts"]
+    "lib": ["esnext"]
+  }
 }
