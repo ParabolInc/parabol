@@ -1,7 +1,7 @@
 import {Client} from 'pg'
-import getPgConfig from '../getPgConfig'
 import {r} from 'rethinkdb-ts'
 import connectRethinkDB from '../../database/connectRethinkDB'
+import getPgConfig from '../getPgConfig'
 
 export async function up() {
   const client = new Client(getPgConfig())
@@ -78,8 +78,8 @@ export async function down() {
       EXECUTE 'DROP TABLE IF EXISTS "EmbeddingsJobQueue"';
       EXECUTE 'DROP TABLE IF EXISTS "EmbeddingsMetadata"';
 
-      EXECUTE 'DROP TYPE IF EXISTS "EmbeddingsStateEnum"';
-      EXECUTE 'DROP TYPE IF EXISTS "EmbeddingsObjectTypeEnum"';
+      EXECUTE 'DROP TYPE IF EXISTS "EmbeddingsStateEnum" CASCADE';
+      EXECUTE 'DROP TYPE IF EXISTS "EmbeddingsObjectTypeEnum" CASCADE';
   END $$;
   `)
   await client.end()

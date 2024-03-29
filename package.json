@@ -103,7 +103,7 @@
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
     "jscodeshift": "^0.14.0",
-    "kysely": "^0.27.2",
+    "kysely": "^0.27.3",
     "kysely-codegen": "^0.11.0",
     "lerna": "^6.4.1",
     "mini-css-extract-plugin": "^2.7.2",

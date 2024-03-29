@@ -4,7 +4,7 @@ import {
   GenerationModelConfig,
   GenerationModelParams,
   GenerationOptions
-} from './AbstractModel'
+} from './AbstractGenerationModel'
 
 export type ModelId = 'gpt-3.5-turbo-0125' | 'gpt-4-turbo-preview'
 
