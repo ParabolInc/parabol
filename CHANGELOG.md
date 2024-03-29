@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.24.0](https://github.com/ParabolInc/parabol/compare/v7.23.1...v7.24.0) (2024-03-29)
+
+
+### Added
+
+* prepare embedder for Production ([#9517](https://github.com/ParabolInc/parabol/issues/9517)) ([538c95c](https://github.com/ParabolInc/parabol/commit/538c95ce4dc7d4839b3e813006cb20e1b7d1d1c8))
+
+
+### Changed
+
+* fix tsconfig problems ([#9579](https://github.com/ParabolInc/parabol/issues/9579)) ([d1af0f1](https://github.com/ParabolInc/parabol/commit/d1af0f164c629e8fc075278cd63475e8913f4295))
+
 ## [7.23.1](https://github.com/ParabolInc/parabol/compare/v7.23.0...v7.23.1) (2024-03-28)
 
 
