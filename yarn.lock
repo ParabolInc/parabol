@@ -7565,6 +7565,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/faker@^5.5.9":
+  version "5.5.9"
+  resolved "https://registry.yarnpkg.com/@types/faker/-/faker-5.5.9.tgz#588ede92186dc557bff8341d294335d50d255f0c"
+  integrity sha512-uCx6mP3UY5SIO14XlspxsGjgaemrxpssJI0Ol+GfhxtcKpv9pgRZYsS4eeKeHVLje6Qtc8lGszuBI461+gVZBA==
+
 "@types/fbjs@^3.0.4":
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/@types/fbjs/-/fbjs-3.0.4.tgz#272faf44b6a24d24d6fdf36ed895b47436e6c125"
@@ -7675,6 +7680,14 @@
   version "29.5.1"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.1.tgz#83c818aa9a87da27d6da85d3378e5a34d2f31a47"
   integrity sha512-tEuVcHrpaixS36w7hpsfLBLpjtMRJUE09/MHXn923LOVojDwyC14cWcfc0rDs0VEfUyYmt/+iX1kxxp+gZMcaQ==
+  dependencies:
+    expect "^29.0.0"
+    pretty-format "^29.0.0"
+
+"@types/jest@^29.5.12":
+  version "29.5.12"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.12.tgz#7f7dc6eb4cf246d2474ed78744b05d06ce025544"
+  integrity sha512-eDC8bTvT/QhYdxJAulQikueigY5AsdBRH2yDKW3yveW7svY3+DzN84/2NUgkw10RTiJbWqZrTtoGVdYlvFJdLw==
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"

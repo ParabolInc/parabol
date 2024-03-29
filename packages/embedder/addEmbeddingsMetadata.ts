@@ -1,5 +1,5 @@
 import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
-import {MessageToEmbedder} from './embedder'
+import {MessageToEmbedder} from './custom'
 
 export const addEmbeddingsMetadata = async ({objectTypes, ...options}: MessageToEmbedder) => {
   return Promise.all(

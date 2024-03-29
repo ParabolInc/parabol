@@ -1,4 +1,4 @@
-import {EmbeddingObjectType} from './embedder'
+import {EmbeddingObjectType} from './custom'
 import {importHistoricalRetrospectiveDiscussionTopic} from './importHistoricalRetrospectiveDiscussionTopic'
 
 export const importHistoricalMetadata = async () => {

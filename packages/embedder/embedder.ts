@@ -1,7 +1,6 @@
 import tracer from 'dd-trace'
 import EmbedderChannelId from 'parabol-client/shared/gqlIds/EmbedderChannelId'
 import 'parabol-server/initSentry'
-import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {Tuple} from '../client/types/generics'
@@ -9,6 +8,7 @@ import RedisStream from '../gql-executor/RedisStream'
 import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
 import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
 import getModelManager from './ai_models/ModelManager'
+import {MessageToEmbedder} from './custom'
 import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
@@ -21,16 +21,6 @@ tracer.init({
   version: process.env.npm_package_version
 })
 tracer.use('pg')
-
-export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
-
-export interface MessageToEmbedder {
-  objectTypes: EmbeddingObjectType[]
-  startAt?: Date
-  endAt?: Date
-  meetingId?: string
-}
-export type EmbedderOptions = Omit<MessageToEmbedder, 'objectTypes'>
 
 const parseEmbedderMessage = (message: string): MessageToEmbedder => {
   const {startAt, endAt, ...input} = JSON.parse(message)

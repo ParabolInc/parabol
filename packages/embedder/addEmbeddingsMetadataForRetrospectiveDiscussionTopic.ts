@@ -6,7 +6,7 @@ import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
 import {EMBEDDER_JOB_PRIORITY} from './EMBEDDER_JOB_PRIORITY'
 import getModelManager from './ai_models/ModelManager'
-import {EmbedderOptions} from './embedder'
+import {EmbedderOptions} from './custom'
 
 interface DiscussionMeta {
   id: string
