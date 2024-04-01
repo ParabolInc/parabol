@@ -10,6 +10,10 @@
     "url": "git+https://github.com/ParabolInc/parabol.git"
   },
   "scripts": {
+    "lint": "eslint --fix . --ext .ts,.tsx",
+    "lint:check": "eslint . --ext .ts,.tsx",
+    "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",
+    "prettier:check": "prettier --config ../../.prettierrc --check \"**/*.{ts,tsx}\"",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "bugs": {

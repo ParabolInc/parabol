@@ -7,13 +7,14 @@ import {DB} from 'parabol-server/postgres/pg'
 import RootDataLoader from '../server/dataloader/RootDataLoader'
 import {processJob} from './processJob'
 import {Logger} from '../server/utils/Logger'
+import {EmbeddingsTableName} from './ai_models/AbstractEmbeddingsModel'
 
 export type DBJob = Selectable<DB['EmbeddingsJobQueue']>
 export type EmbedJob = DBJob & {
   jobType: 'embed'
   jobData: {
     embeddingsMetadataId: number
-    model: string
+    model: EmbeddingsTableName
   }
 }
 export type RerankJob = DBJob & {jobType: 'rerank'; jobData: {discussionIds: string[]}}

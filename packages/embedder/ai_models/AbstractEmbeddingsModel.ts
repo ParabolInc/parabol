@@ -1,10 +1,11 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
+import isValid from '../../server/graphql/isValid'
 import {Logger} from '../../server/utils/Logger'
 import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
 import {ISO6391} from '../iso6393To1'
-import {AbstractModel, ModelConfig} from './AbstractModel'
+import {AbstractModel} from './AbstractModel'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
@@ -12,32 +13,59 @@ export interface EmbeddingModelParams {
   tableSuffix: string
   languages: ISO6391[]
 }
-export type EmbeddingsTable = Extract<keyof DB, `Embeddings_${string}`>
-export interface EmbeddingModelConfig extends ModelConfig {
-  tableSuffix: string
-}
+export type EmbeddingsTableName = `Embeddings_${string}`
+export type EmbeddingsTable = Extract<keyof DB, EmbeddingsTableName>
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly embeddingDimensions: number
   readonly maxInputTokens: number
-  readonly tableName: string
+  readonly tableName: EmbeddingsTableName
   readonly languages: ISO6391[]
-  constructor(config: EmbeddingModelConfig) {
-    super(config)
-    const modelParams = this.constructModelParams(config)
+  constructor(modelId: string, url: string) {
+    super(url)
+    const modelParams = this.constructModelParams(modelId)
     this.embeddingDimensions = modelParams.embeddingDimensions
     this.languages = modelParams.languages
     this.maxInputTokens = modelParams.maxInputTokens
     this.tableName = `Embeddings_${modelParams.tableSuffix}`
   }
-  protected abstract constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams
+  protected abstract constructModelParams(modelId: string): EmbeddingModelParams
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
 
   abstract getTokens(content: string): Promise<number[] | Error>
-  splitText(content: string) {
+
+  async chunkText(content: string) {
+    const tokens = await this.getTokens(content)
+    if (tokens instanceof Error) return tokens
+    const isFullTextTooBig = tokens.length > this.maxInputTokens
+    if (!isFullTextTooBig) return [content]
+
+    for (let i = 0; i < 3; i++) {
+      const tokensPerWord = (4 + i) / 3
+      const chunks = this.splitText(content, tokensPerWord)
+      const chunkLengths = await Promise.all(
+        chunks.map(async (chunk) => {
+          const chunkTokens = await this.getTokens(chunk)
+          if (chunkTokens instanceof Error) return chunkTokens
+          return chunkTokens.length
+        })
+      )
+      const firstError = chunkLengths.find(
+        (chunkLength): chunkLength is Error => chunkLength instanceof Error
+      )
+      if (firstError) return firstError
+
+      const validChunks = chunkLengths.filter(isValid)
+      if (validChunks.every((chunkLength) => chunkLength <= this.maxInputTokens)) {
+        return chunks
+      }
+    }
+    return new Error(`Text is too long and could not be split into chunks. Is it english?`)
+  }
+  // private because result must still be too long to go into model. Must verify with getTokens
+  private splitText(content: string, tokensPerWord = 4 / 3) {
     // it's actually 4 / 3, but don't want to chance a failed split
-    const TOKENS_PER_WORD = 5 / 3
-    const WORD_LIMIT = Math.floor(this.maxInputTokens / TOKENS_PER_WORD)
+    const WORD_LIMIT = Math.floor(this.maxInputTokens / tokensPerWord)
     const chunks: string[] = []
     const delimiters = ['\n\n', '\n', '.', ' ']
     const countWords = (text: string) => text.trim().split(/\s+/).length
@@ -98,7 +126,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           'tablename'
         )} = ${this.tableName}`.execute(pg)
       ).rows.length > 0
-    if (hasTable) return undefined
+    if (hasTable) return
     const vectorDimensions = this.embeddingDimensions
     Logger.log(`ModelManager: creating ${this.tableName} with ${vectorDimensions} dimensions`)
     await sql`

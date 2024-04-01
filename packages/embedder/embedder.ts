@@ -44,7 +44,7 @@ const run = async () => {
   const redis = new RedisInstance(`embedder_${SERVER_ID}`)
   const primaryLock = await establishPrimaryEmbedder(redis)
   const modelManager = getModelManager()
-  let streams: AsyncIterableIterator<any> | undefined
+  let streams: AsyncIterableIterator<any> | undefined = undefined
   const kill = () => {
     primaryLock?.release()
     streams?.return?.()

@@ -41,7 +41,7 @@ const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[], prio
   if (!metadataRows[0]) return
 
   const modelManager = getModelManager()
-  const models = modelManager.embeddingModels.map((m) => m.tableName)
+  const tableNames = [...modelManager.embeddingModels.keys()]
   return (
     pg
       .with('Insert', (qc) =>
@@ -55,8 +55,9 @@ const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[], prio
       .with('Metadata', (qc) =>
         qc
           .selectFrom('Insert')
-          .fullJoin(sql<{model: string}>`UNNEST(ARRAY[${sql.join(models)}])`.as('model'), (join) =>
-            join.onTrue()
+          .fullJoin(
+            sql<{model: string}>`UNNEST(ARRAY[${sql.join(tableNames)}])`.as('model'),
+            (join) => join.onTrue()
           )
           .select(['id', 'model'])
       )
