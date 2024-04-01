@@ -1,18 +1,12 @@
-export interface ModelConfig {
-  model: string
-  url: string
-}
-
 export abstract class AbstractModel {
-  public readonly url?: string
+  public readonly url: string
 
-  constructor(config: ModelConfig) {
-    this.url = this.normalizeUrl(config.url)
+  constructor(url: string) {
+    this.url = this.normalizeUrl(url)
   }
 
   // removes a trailing slash from the inputUrl
-  private normalizeUrl(inputUrl: string | undefined) {
-    if (!inputUrl) return undefined
+  private normalizeUrl(inputUrl: string) {
     const regex = /[/]+$/
     return inputUrl.replace(regex, '')
   }

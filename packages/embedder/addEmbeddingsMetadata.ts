@@ -1,9 +1,7 @@
 import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
-import {ALL_OBJECT_TYPES, MessageToEmbedder} from './embedder'
+import {MessageToEmbedder} from './custom'
 
-export const addEmbeddingsMetadata = async ({objectType, ...options}: MessageToEmbedder) => {
-  const objectTypes = objectType ? [objectType] : ALL_OBJECT_TYPES
-
+export const addEmbeddingsMetadata = async ({objectTypes, ...options}: MessageToEmbedder) => {
   return Promise.all(
     objectTypes.map((type) => {
       switch (type) {

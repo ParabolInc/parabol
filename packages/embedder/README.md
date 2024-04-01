@@ -24,10 +24,9 @@ The predeploy script checks for an environment variable
 The Embedder service takes no arguments and is controlled by the following
 environment variables, here given with example configuration:
 
-- `AI_EMBEDDER_ENABLE`: enable/disable the embedder service from
-  performing work, or sleeping indefinitely
+- `AI_EMBEDDER_WORKERS`: How many workers should simultaneously pick jobs from the queue. If less than 1, disabled.
 
-`AI_EMBEDDER_ENABLED='true'`
+`AI_EMBEDDER_WORKERS='1'`
 
 - `AI_EMBEDDING_MODELS`: JSON configuration for which embedding models
   are enabled. Each model in the array will be instantiated by

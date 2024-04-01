@@ -1,3 +1,4 @@
+import {RethinkSchema} from 'parabol-server/database/rethinkDriver'
 import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
 import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
@@ -82,7 +83,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   let markdown = ''
   if (!textForReranking) {
     markdown =
-      `A topic "${reflectionGroup.title}" was discussed during ` +
+      `A topic "${reflectionGroup?.title ?? ''}" was discussed during ` +
       `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
       `\n`
   }
@@ -138,8 +139,8 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
         if (a.threadParentId === b.threadParentId) {
           return a.threadSortOrder - b.threadSortOrder
         }
-        if (a.threadParentId == null) return 1
-        if (b.threadParentId == null) return -1
+        if (!a.threadParentId) return 1
+        if (!b.threadParentId) return -1
         return a.threadParentId > b.threadParentId ? 1 : -1
       }) as Comment[]
 
@@ -160,4 +161,22 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   })
 
   return markdown
+}
+
+export const newRetroDiscussionTopicsFromNewMeeting = async (
+  newMeeting: RethinkSchema['NewMeeting']['type'],
+  dataLoader: DataLoaderInstance
+) => {
+  const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
+  const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
+  if (orgId && discussPhase && discussPhase.stages) {
+    return discussPhase.stages.map((stage) => ({
+      objectType: 'retrospectiveDiscussionTopic' as const,
+      teamId: newMeeting.teamId,
+      refId: `${newMeeting.id}:${stage.id}`,
+      refUpdatedAt: newMeeting.createdAt
+    }))
+  } else {
+    return []
+  }
 }

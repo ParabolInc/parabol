@@ -61,7 +61,7 @@ const rerankSimilarDiscussions = async (
     dataLoader,
     true // only return reflection & discussion content
   )
-  const embeddingsModel = getModelManager()?.embeddingModels[0]
+  const embeddingsModel = [...getModelManager().embeddingModels][0]?.[1]
   if (!embeddingsModel) return []
   const embeddingVector = await (embeddingsModel as AbstractEmbeddingsModel).getEmbedding(fullText)
   if (embeddingVector instanceof Error) return []
@@ -111,7 +111,7 @@ const getSimilarDiscussions = async (discussionId: string, dataLoader: DataLoade
   if (!modelManager) return []
 
   // for this demo, we're just going to use the highest priority embedding model:
-  const embeddingsModel = getModelManager()?.embeddingModels[0]
+  const embeddingsModel = [...modelManager.embeddingModels][0]?.[1]
   if (!embeddingsModel) return []
   const embeddingVector = await embeddingsModel.getEmbedding(fullText)
   if (embeddingVector instanceof Error) return []

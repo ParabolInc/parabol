@@ -1,4 +1,4 @@
-import {AbstractModel, ModelConfig} from './AbstractModel'
+import {AbstractModel} from './AbstractModel'
 
 export interface GenerationOptions {
   maxNewTokens?: number
@@ -11,16 +11,15 @@ export interface GenerationOptions {
 export interface GenerationModelParams {
   maxInputTokens: number
 }
-export interface GenerationModelConfig extends ModelConfig {}
 
 export abstract class AbstractGenerationModel extends AbstractModel {
   readonly maxInputTokens: number
-  constructor(config: GenerationModelConfig) {
-    super(config)
-    const modelParams = this.constructModelParams(config)
+  constructor(modelId: string, url: string) {
+    super(url)
+    const modelParams = this.constructModelParams(modelId)
     this.maxInputTokens = modelParams.maxInputTokens
   }
 
-  protected abstract constructModelParams(config: GenerationModelConfig): GenerationModelParams
+  protected abstract constructModelParams(modelId: string): GenerationModelParams
   abstract summarize(content: string, options: GenerationOptions): Promise<string>
 }

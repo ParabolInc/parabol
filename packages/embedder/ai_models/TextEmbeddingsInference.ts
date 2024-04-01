@@ -1,93 +1,86 @@
-import {
-  AbstractEmbeddingsModel,
-  EmbeddingModelConfig,
-  EmbeddingModelParams
-} from './AbstractEmbeddingsModel'
-import fetchWithRetry from './helpers/fetchWithRetry'
-
-const MAX_REQUEST_TIME_S = 3 * 60
-
+import createClient from 'openapi-fetch'
+import sleep from 'parabol-client/utils/sleep'
+import type {paths} from '../textEmbeddingsnterface'
+import {AbstractEmbeddingsModel, EmbeddingModelParams} from './AbstractEmbeddingsModel'
 export type ModelId = 'BAAI/bge-large-en-v1.5' | 'llmrails/ember-v1'
 
 const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
   'BAAI/bge-large-en-v1.5': {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
-    tableSuffix: 'bge_l_en_1p5'
+    tableSuffix: 'bge_l_en_1p5',
+    languages: ['en']
   },
   'llmrails/ember-v1': {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
-    tableSuffix: 'ember_1'
+    tableSuffix: 'ember_1',
+    languages: ['en']
   }
-}
-
-function isValidModelId(object: any): object is ModelId {
-  return Object.keys(modelIdDefinitions).includes(object)
 }
 
 export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
-  constructor(config: EmbeddingModelConfig) {
-    super(config)
+  client: ReturnType<typeof createClient<paths>>
+  constructor(modelId: string, url: string) {
+    super(modelId, url)
+    this.client = createClient<paths>({baseUrl: this.url})
   }
 
   async getTokens(content: string) {
-    const fetchOptions = {
-      body: JSON.stringify({inputs: content}),
-      deadline: new Date(new Date().getTime() + MAX_REQUEST_TIME_S * 1000),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      method: 'POST'
-    }
-
     try {
-      const res = await fetchWithRetry(`${this.url}/tokenize`, fetchOptions)
-      const listOfTokens = (await res.json()) as number[][]
-      if (!listOfTokens) return new Error('listOfTokens is undefined')
-      if (listOfTokens.length !== 1 || !listOfTokens[0])
-        return new Error(`listOfTokens list length !== 1 (length: ${listOfTokens.length})`)
-      return listOfTokens[0]
+      const {data, error} = await this.client.POST('/tokenize', {
+        body: {inputs: content, add_special_tokens: true},
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+      if (error) return new Error(error.error)
+      return data[0]!.map(({id}) => id)
     } catch (e) {
-      return e instanceof Error ? e : new Error(typeof e === 'string' ? e : 'Unknown error')
-    }
-  }
-  public async getEmbedding(content: string) {
-    const fetchOptions = {
-      body: JSON.stringify({inputs: content}),
-      deadline: new Date(new Date().getTime() + MAX_REQUEST_TIME_S * 1000),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      method: 'POST'
-    }
-
-    try {
-      const res = await fetchWithRetry(`${this.url}/embed`, fetchOptions)
-      const listOfVectors = (await res.json()) as number[][]
-      if (!listOfVectors) return new Error('listOfVectors is undefined')
-      if (listOfVectors.length !== 1 || !listOfVectors[0])
-        return new Error(`listOfVectors list length !== 1 (length: ${listOfVectors.length})`)
-      return listOfVectors[0]
-    } catch (e) {
-      console.log(`TextEmbeddingsInference.getEmbeddings() timeout: `, e)
-      return e instanceof Error ? e : new Error(typeof e === 'string' ? e : 'Unknown error')
+      return e instanceof Error ? e : new Error(e as string)
     }
   }
 
-  protected constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams {
-    const modelConfigStringSplit = config.model.split(':')
-    if (modelConfigStringSplit.length != 2) {
-      throw new Error('TextGenerationInference model string must be colon-delimited and len 2')
+  async decodeTokens(inputIds: number[]) {
+    try {
+      const {data, error} = await this.client.POST('/decode', {
+        body: {ids: inputIds},
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+      if (error) return new Error(error.error)
+      return data
+    } catch (e) {
+      return e instanceof Error ? e : new Error(e as string)
     }
+  }
+  public async getEmbedding(content: string, retries = 5): Promise<number[] | Error> {
+    try {
+      const {data, error, response} = await this.client.POST('/embed', {
+        body: {inputs: content},
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+      if (error) {
+        if (response.status !== 429 || retries < 1) return new Error(error.error)
+        await sleep(2000)
+        return this.getEmbedding(content, retries - 1)
+      }
+      return data[0]!
+    } catch (e) {
+      return e instanceof Error ? e : new Error(e as string)
+    }
+  }
 
-    if (!this.url) throw new Error('TextGenerationInferenceSummarizer model requires url')
-    const maybeModelId = modelConfigStringSplit[1]
-    if (!isValidModelId(maybeModelId))
-      throw new Error(`TextGenerationInference model id unknown: ${maybeModelId}`)
-    return modelIdDefinitions[maybeModelId]
+  protected constructModelParams(modelId: string): EmbeddingModelParams {
+    const modelParams = modelIdDefinitions[modelId as keyof typeof modelIdDefinitions]
+    if (!modelParams) throw new Error(`Unknown modelId ${modelId} for TextEmbeddingsInference`)
+    return modelParams
   }
 }
 

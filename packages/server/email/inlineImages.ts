@@ -20,7 +20,7 @@ const getFile = async (pathname: string) => {
     try {
       const res = await fetch(pathname)
       if (res.status !== 200) return null
-      data = await res.buffer()
+      data = await (res as any).buffer()
     } catch (e) {
       return null
     }
@@ -42,7 +42,7 @@ const inlineImages = async (html: string) => {
   $('body')
     .find('img')
     .each((_i, img) => {
-      const pathname = $(img).attr('src')
+      const pathname = $(img).attr('src') as keyof typeof cidDict
       if (!pathname) return
       cidDict[pathname] = cidDict[pathname] || generateUID() + path.extname(pathname)
       $(img).attr('src', `cid:${cidDict[pathname]}`)
@@ -51,7 +51,7 @@ const inlineImages = async (html: string) => {
   const files = await Promise.all(uniquePathnames.map(getFile))
   const options = files.map((data, idx) => {
     if (!data) return null
-    const pathname = uniquePathnames[idx]
+    const pathname = uniquePathnames[idx] as keyof typeof cidDict
     const filename = cidDict[pathname]
     return {data, filename}
   })

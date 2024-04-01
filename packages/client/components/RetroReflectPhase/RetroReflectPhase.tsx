@@ -30,6 +30,7 @@ const RetroReflectPhase = (props: Props) => {
         ...StageTimerDisplay_meeting
         ...StageTimerControl_meeting
         ...PhaseItemColumn_meeting
+        id
         endedAt
         localPhase {
           ...RetroReflectPhase_phase @relay(mask: false)
@@ -59,6 +60,7 @@ const RetroReflectPhase = (props: Props) => {
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
+          meetingId={meeting.id}
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}

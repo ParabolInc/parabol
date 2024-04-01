@@ -4,7 +4,9 @@ import {RDatum} from 'parabol-server/database/stricterR'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
-import {EmbedderOptions} from './embedder'
+import {EMBEDDER_JOB_PRIORITY} from './EMBEDDER_JOB_PRIORITY'
+import getModelManager from './ai_models/ModelManager'
+import {EmbedderOptions} from './custom'
 
 interface DiscussionMeta {
   id: string
@@ -27,7 +29,7 @@ const validateDiscussions = async (discussions: (DiscussionMeta & {meetingId: st
   return discussions.filter(({meetingId}) => endedMeetingIdsSet.has(meetingId))
 }
 
-const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[]) => {
+const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[], priority: number) => {
   const pg = getKysely()
   const metadataRows = discussions.map(({id, teamId, createdAt}) => ({
     refId: id,
@@ -37,12 +39,44 @@ const insertDiscussionsIntoMetadata = async (discussions: DiscussionMeta[]) => {
     refUpdatedAt: createdAt
   }))
   if (!metadataRows[0]) return
-  await pg
-    .insertInto('EmbeddingsMetadata')
-    .values(metadataRows)
-    .onConflict((oc) => oc.doNothing())
-    .execute()
-  return
+
+  const modelManager = getModelManager()
+  const tableNames = [...modelManager.embeddingModels.keys()]
+  return (
+    pg
+      .with('Insert', (qc) =>
+        qc
+          .insertInto('EmbeddingsMetadata')
+          .values(metadataRows)
+          .onConflict((oc) => oc.doNothing())
+          .returning('id')
+      )
+      // create n*m rows for n models & m discussions
+      .with('Metadata', (qc) =>
+        qc
+          .selectFrom('Insert')
+          .fullJoin(
+            sql<{model: string}>`UNNEST(ARRAY[${sql.join(tableNames)}])`.as('model'),
+            (join) => join.onTrue()
+          )
+          .select(['id', 'model'])
+      )
+      .insertInto('EmbeddingsJobQueue')
+      .columns(['jobType', 'priority', 'jobData'])
+      .expression(({selectFrom}) =>
+        selectFrom('Metadata').select(({lit, fn, ref}) => [
+          sql.lit('embed').as('jobType'),
+          lit(priority).as('priority'),
+          fn('json_build_object', [
+            sql.lit('embeddingsMetadataId'),
+            ref('Metadata.id'),
+            sql.lit('model'),
+            ref('Metadata.model')
+          ]).as('jobData')
+        ])
+      )
+      .execute()
+  )
 }
 
 export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async ({
@@ -58,12 +92,14 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async ({
       .select(['id', 'teamId', 'createdAt'])
       .where('meetingId', '=', meetingId)
       .execute()
-    await insertDiscussionsIntoMetadata(discussions)
+    await insertDiscussionsIntoMetadata(discussions, EMBEDDER_JOB_PRIORITY.MEETING)
     return
   }
+  // PG only accepts 65K parameters (inserted columns * number of rows + query params). Make the batches as big as possible
   const PG_MAX_PARAMS = 65535
+  const QUERY_PARAMS = 10
   const METADATA_COLS_PER_ROW = 4
-  const BATCH_SIZE = Math.floor(PG_MAX_PARAMS / METADATA_COLS_PER_ROW)
+  const BATCH_SIZE = Math.floor((PG_MAX_PARAMS - QUERY_PARAMS) / METADATA_COLS_PER_ROW)
   const pgStartAt = startAt || new Date(0)
   const pgEndAt = (endAt || new Date('4000-01-01')).getTime() / 1000
 
@@ -99,7 +135,7 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async ({
     curEndId = curEndAt === createdAtEpoch ? id : ''
     curEndAt = createdAtEpoch
     const validDiscussions = await validateDiscussions(discussions)
-    await insertDiscussionsIntoMetadata(validDiscussions)
+    await insertDiscussionsIntoMetadata(validDiscussions, EMBEDDER_JOB_PRIORITY.TOPIC_HISTORY)
     const jsTime = new Date(createdAtEpoch * 1000)
     Logger.log(
       `Inserted ${validDiscussions.length}/${discussions.length} discussions in metadata ending at ${jsTime}`

@@ -130,11 +130,6 @@ const ScopePhaseArea = (props: Props) => {
               }
             }
           }
-          user {
-            featureFlags {
-              azureDevOps
-            }
-          }
         }
       }
     `,
@@ -142,13 +137,11 @@ const ScopePhaseArea = (props: Props) => {
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  const featureFlags = viewerMeetingMember?.user.featureFlags
   const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
   const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
   const allowAzureDevOps =
-    (!!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider) &&
-    featureFlags?.azureDevOps
+    !!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )

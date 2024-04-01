@@ -1,4 +1,4 @@
-import type {MessageToEmbedder} from '../../../../embedder/embedder'
+import type {MessageToEmbedder} from 'embedder/custom'
 import getRedis from '../../../utils/getRedis'
 
 export const publishToEmbedder = (message: MessageToEmbedder) => {

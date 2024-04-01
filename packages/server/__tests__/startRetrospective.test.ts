@@ -1,14 +1,8 @@
-import ms from 'ms'
-import {RRule} from 'rrule'
 import getRethink from '../database/rethinkDriver'
-import MeetingTeamPrompt from '../database/types/MeetingTeamPrompt'
-import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
-import generateUID from '../generateUID'
-import {insertMeetingSeries as insertMeetingSeriesQuery} from '../postgres/queries/insertMeetingSeries'
-import {getUserTeams, sendIntranet, sendPublic, signUp} from './common'
+import {getUserTeams, sendPublic, signUp} from './common'
 
 test('Retro is named Retro #1 by default', async () => {
-  const r = await getRethink()
+  await getRethink()
   const {userId, authToken} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
@@ -48,7 +42,7 @@ test('Retro is named Retro #1 by default', async () => {
 })
 
 test('Recurring retro is named like RetroSeries Jan 1', async () => {
-  const r = await getRethink()
+  await getRethink()
   const {userId, authToken} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
@@ -81,7 +75,11 @@ test('Recurring retro is named like RetroSeries Jan 1', async () => {
     authToken
   })
 
-  const formattedDate = now.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}, 'UTC')
+  const formattedDate = now.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC'
+  })
   expect(newRetro).toMatchObject({
     data: {
       startRetrospective: {

@@ -1,14 +1,14 @@
 import tracer from 'dd-trace'
 import EmbedderChannelId from 'parabol-client/shared/gqlIds/EmbedderChannelId'
-import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import 'parabol-server/initSentry'
-import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
+import {Tuple} from '../client/types/generics'
 import RedisStream from '../gql-executor/RedisStream'
 import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
 import {addEmbeddingsMetadata} from './addEmbeddingsMetadata'
 import getModelManager from './ai_models/ModelManager'
+import {MessageToEmbedder} from './custom'
 import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
@@ -21,22 +21,6 @@ tracer.init({
   version: process.env.npm_package_version
 })
 tracer.use('pg')
-
-function parseEnvBoolean(envVarValue: string | undefined): boolean {
-  return envVarValue === 'true'
-}
-
-export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
-
-export interface MessageToEmbedder {
-  objectType: EmbeddingObjectType
-  startAt?: Date
-  endAt?: Date
-  meetingId?: string
-}
-export type EmbedderOptions = Omit<MessageToEmbedder, 'objectType'>
-
-export const ALL_OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic']
 
 const parseEmbedderMessage = (message: string): MessageToEmbedder => {
   const {startAt, endAt, ...input} = JSON.parse(message)
@@ -51,19 +35,26 @@ const run = async () => {
   const SERVER_ID = process.env.SERVER_ID
   if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
   const embedderChannel = EmbedderChannelId.join(SERVER_ID)
-  const embedderEnabled = parseEnvBoolean(process.env.AI_EMBEDDER_ENABLED)
-  if (!embedderEnabled) {
-    Logger.log('env.AI_EMBEDDER_ENABLED is false. Embedder will not run.')
+  const NUM_WORKERS = parseInt(process.env.AI_EMBEDDER_WORKERS!)
+  if (!(NUM_WORKERS > 0)) {
+    Logger.log('env.AI_EMBEDDER_WORKERS is < 0. Embedder will not run.')
     return
   }
 
   const redis = new RedisInstance(`embedder_${SERVER_ID}`)
-  const isPrimaryEmbedder = await establishPrimaryEmbedder(redis)
+  const primaryLock = await establishPrimaryEmbedder(redis)
   const modelManager = getModelManager()
-  if (isPrimaryEmbedder) {
+  let streams: AsyncIterableIterator<any> | undefined = undefined
+  const kill = () => {
+    primaryLock?.release()
+    streams?.return?.()
+    process.exit()
+  }
+  process.on('SIGTERM', kill)
+  process.on('SIGINT', kill)
+  if (primaryLock) {
     // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
-    await modelManager.removeOldTriggers()
     await importHistoricalMetadata()
     resetStalledJobs()
   }
@@ -86,28 +77,34 @@ const run = async () => {
     // stream already exists
   }
 
-  const incomingStream = new RedisStream(
+  const messageStream = new RedisStream(
     'embedMetadataStream',
     'embedMetadataConsumerGroup',
     embedderChannel
   )
-  const dataLoader = new RootDataLoader({maxBatchSize: 1000})
-  const jobQueueStream = new EmbeddingsJobQueueStream(modelManager, dataLoader)
+
+  // Assume 3 workers for type safety, but it doesn't really matter at runtime
+  const jobQueueStreams = Array.from(
+    {length: NUM_WORKERS},
+    () => new EmbeddingsJobQueueStream()
+  ) as Tuple<EmbeddingsJobQueueStream, 3>
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
-  // async iterables run indefinitely and we have 2 of them, so merge them
-  const streams = mergeAsyncIterators([incomingStream, jobQueueStream])
+  streams = mergeAsyncIterators([messageStream, ...jobQueueStreams])
   for await (const [idx, message] of streams) {
     switch (idx) {
       case 0:
         onMessage('', message)
         continue
-      case 1:
-        Logger.log(`Embedded ${message.embeddingsMetadataId} -> ${message.model}`)
+      default:
+        Logger.log(`Worker ${idx} finished job ${message.id}`)
         continue
     }
   }
+
+  // On graceful shutdown
+  Logger.log('Streaming Complete. Goodbye!')
 }
 
 run()
