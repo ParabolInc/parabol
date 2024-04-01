@@ -139,8 +139,8 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
         if (a.threadParentId === b.threadParentId) {
           return a.threadSortOrder - b.threadSortOrder
         }
-        if (a.threadParentId == null) return 1
-        if (b.threadParentId == null) return -1
+        if (!a.threadParentId) return 1
+        if (!b.threadParentId) return -1
         return a.threadParentId > b.threadParentId ? 1 : -1
       }) as Comment[]
 

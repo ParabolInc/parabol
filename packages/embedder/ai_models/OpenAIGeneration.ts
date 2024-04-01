@@ -75,7 +75,7 @@ export class OpenAIGeneration extends AbstractGenerationModel {
   }
   protected constructModelParams(config: GenerationModelConfig): GenerationModelParams {
     const modelConfigStringSplit = config.model.split(':')
-    if (modelConfigStringSplit.length != 2) {
+    if (modelConfigStringSplit.length !== 2) {
       throw new Error('OpenAIGeneration model string must be colon-delimited and len 2')
     }
 

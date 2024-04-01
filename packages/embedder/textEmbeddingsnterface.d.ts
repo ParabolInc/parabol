@@ -3,102 +3,105 @@
  * Do not make direct changes to the file.
  */
 
-
 /** OneOf type helpers */
-type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
-type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
-type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]> : never;
+type Without<T, U> = {[P in Exclude<keyof T, keyof U>]?: never}
+type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U
+type OneOf<T extends any[]> = T extends [infer Only]
+  ? Only
+  : T extends [infer A, infer B, ...infer Rest]
+  ? OneOf<[XOR<A, B>, ...Rest]>
+  : never
 
 export interface paths {
-  "/decode": {
+  '/decode': {
     /**
      * Decode input ids
      * @description Decode input ids
      */
-    post: operations["decode"];
-  };
-  "/embed": {
+    post: operations['decode']
+  }
+  '/embed': {
     /**
      * Get Embeddings. Returns a 424 status code if the model is not an embedding model.
      * @description Get Embeddings. Returns a 424 status code if the model is not an embedding model.
      */
-    post: operations["embed"];
-  };
-  "/embed_all": {
+    post: operations['embed']
+  }
+  '/embed_all': {
     /**
      * Get all Embeddings without Pooling.
      * @description Get all Embeddings without Pooling.
      * Returns a 424 status code if the model is not an embedding model.
      */
-    post: operations["embed_all"];
-  };
-  "/embed_sparse": {
+    post: operations['embed_all']
+  }
+  '/embed_sparse': {
     /**
      * Get Sparse Embeddings. Returns a 424 status code if the model is not an embedding model with SPLADE pooling.
      * @description Get Sparse Embeddings. Returns a 424 status code if the model is not an embedding model with SPLADE pooling.
      */
-    post: operations["embed_sparse"];
-  };
-  "/embeddings": {
+    post: operations['embed_sparse']
+  }
+  '/embeddings': {
     /**
      * OpenAI compatible route. Returns a 424 status code if the model is not an embedding model.
      * @description OpenAI compatible route. Returns a 424 status code if the model is not an embedding model.
      */
-    post: operations["openai_embed"];
-  };
-  "/health": {
+    post: operations['openai_embed']
+  }
+  '/health': {
     /**
      * Health check method
      * @description Health check method
      */
-    get: operations["health"];
-  };
-  "/info": {
+    get: operations['health']
+  }
+  '/info': {
     /**
      * Text Embeddings Inference endpoint info
      * @description Text Embeddings Inference endpoint info
      */
-    get: operations["get_model_info"];
-  };
-  "/metrics": {
+    get: operations['get_model_info']
+  }
+  '/metrics': {
     /**
      * Prometheus metrics scrape endpoint
      * @description Prometheus metrics scrape endpoint
      */
-    get: operations["metrics"];
-  };
-  "/predict": {
+    get: operations['metrics']
+  }
+  '/predict': {
     /**
      * Get Predictions. Returns a 424 status code if the model is not a Sequence Classification model
      * @description Get Predictions. Returns a 424 status code if the model is not a Sequence Classification model
      */
-    post: operations["predict"];
-  };
-  "/rerank": {
+    post: operations['predict']
+  }
+  '/rerank': {
     /**
      * Get Ranks. Returns a 424 status code if the model is not a Sequence Classification model with
      * @description Get Ranks. Returns a 424 status code if the model is not a Sequence Classification model with
      * a single class.
      */
-    post: operations["rerank"];
-  };
-  "/tokenize": {
+    post: operations['rerank']
+  }
+  '/tokenize': {
     /**
      * Tokenize inputs
      * @description Tokenize inputs
      */
-    post: operations["tokenize"];
-  };
-  "/vertex": {
+    post: operations['tokenize']
+  }
+  '/vertex': {
     /**
      * Generate embeddings from a Vertex request
      * @description Generate embeddings from a Vertex request
      */
-    post: operations["vertex_compatibility"];
-  };
+    post: operations['vertex_compatibility']
+  }
 }
 
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 
 export interface components {
   schemas: {
@@ -109,39 +112,39 @@ export interface components {
        * }
        */
       id2label: {
-        [key: string]: string;
-      };
+        [key: string]: string
+      }
       /**
        * @example {
        *   "LABEL": 0
        * }
        */
       label2id: {
-        [key: string]: number;
-      };
-    };
+        [key: string]: number
+      }
+    }
     DecodeRequest: {
-      ids: components["schemas"]["InputIds"];
+      ids: components['schemas']['InputIds']
       /**
        * @default true
        * @example true
        */
-      skip_special_tokens?: boolean;
-    };
+      skip_special_tokens?: boolean
+    }
     /**
      * @example [
      *   "test"
      * ]
      */
-    DecodeResponse: string[];
+    DecodeResponse: string[]
     EmbedAllRequest: {
-      inputs: components["schemas"]["Input"];
+      inputs: components['schemas']['Input']
       /**
        * @default false
        * @example false
        */
-      truncate?: boolean;
-    };
+      truncate?: boolean
+    }
     /**
      * @example [
      *   [
@@ -153,20 +156,20 @@ export interface components {
      *   ]
      * ]
      */
-    EmbedAllResponse: number[][][];
+    EmbedAllResponse: number[][][]
     EmbedRequest: {
-      inputs: components["schemas"]["Input"];
+      inputs: components['schemas']['Input']
       /**
        * @default true
        * @example true
        */
-      normalize?: boolean;
+      normalize?: boolean
       /**
        * @default false
        * @example false
        */
-      truncate?: boolean;
-    };
+      truncate?: boolean
+    }
     /**
      * @example [
      *   [
@@ -176,74 +179,80 @@ export interface components {
      *   ]
      * ]
      */
-    EmbedResponse: number[][];
+    EmbedResponse: number[][]
     EmbedSparseRequest: {
-      inputs: components["schemas"]["Input"];
+      inputs: components['schemas']['Input']
       /**
        * @default false
        * @example false
        */
-      truncate?: boolean;
-    };
-    EmbedSparseResponse: components["schemas"]["SparseValue"][][];
+      truncate?: boolean
+    }
+    EmbedSparseResponse: components['schemas']['SparseValue'][][]
     EmbeddingModel: {
       /** @example cls */
-      pooling: string;
-    };
+      pooling: string
+    }
     ErrorResponse: {
-      error: string;
-      error_type: components["schemas"]["ErrorType"];
-    };
+      error: string
+      error_type: components['schemas']['ErrorType']
+    }
     /** @enum {string} */
-    ErrorType: "Unhealthy" | "Backend" | "Overloaded" | "Validation" | "Tokenizer";
+    ErrorType: 'Unhealthy' | 'Backend' | 'Overloaded' | 'Validation' | 'Tokenizer'
     Info: {
       /** @example null */
-      docker_label?: string | null;
+      docker_label?: string | null
       /**
        * @default null
        * @example null
        */
-      max_batch_requests?: number | null;
+      max_batch_requests?: number | null
       /** @example 2048 */
-      max_batch_tokens: number;
+      max_batch_tokens: number
       /** @example 32 */
-      max_client_batch_size: number;
+      max_client_batch_size: number
       /**
        * @description Router Parameters
        * @example 128
        */
-      max_concurrent_requests: number;
+      max_concurrent_requests: number
       /** @example 512 */
-      max_input_length: number;
+      max_input_length: number
       /** @example float16 */
-      model_dtype: string;
+      model_dtype: string
       /**
        * @description Model info
        * @example thenlper/gte-base
        */
-      model_id: string;
+      model_id: string
       /** @example fca14538aa9956a46526bd1d0d11d69e19b5a101 */
-      model_sha?: string | null;
-      model_type: components["schemas"]["ModelType"];
+      model_sha?: string | null
+      model_type: components['schemas']['ModelType']
       /** @example null */
-      sha?: string | null;
+      sha?: string | null
       /** @example 4 */
-      tokenization_workers: number;
+      tokenization_workers: number
       /**
        * @description Router Info
        * @example 0.5.0
        */
-      version: string;
-    };
-    Input: string | string[];
-    InputIds: number[] | number[][];
-    ModelType: OneOf<[{
-      classifier: components["schemas"]["ClassifierModel"];
-    }, {
-      embedding: components["schemas"]["EmbeddingModel"];
-    }, {
-      reranker: components["schemas"]["ClassifierModel"];
-    }]>;
+      version: string
+    }
+    Input: string | string[]
+    InputIds: number[] | number[][]
+    ModelType: OneOf<
+      [
+        {
+          classifier: components['schemas']['ClassifierModel']
+        },
+        {
+          embedding: components['schemas']['EmbeddingModel']
+        },
+        {
+          reranker: components['schemas']['ClassifierModel']
+        }
+      ]
+    >
     OpenAICompatEmbedding: {
       /**
        * @example [
@@ -252,135 +261,135 @@ export interface components {
        *   2
        * ]
        */
-      embedding: number[];
+      embedding: number[]
       /** @example 0 */
-      index: number;
+      index: number
       /** @example embedding */
-      object: string;
-    };
+      object: string
+    }
     OpenAICompatErrorResponse: {
       /** Format: int32 */
-      code: number;
-      error_type: components["schemas"]["ErrorType"];
-      message: string;
-    };
+      code: number
+      error_type: components['schemas']['ErrorType']
+      message: string
+    }
     OpenAICompatRequest: {
-      input: components["schemas"]["Input"];
+      input: components['schemas']['Input']
       /** @example null */
-      model?: string | null;
+      model?: string | null
       /** @example null */
-      user?: string | null;
-    };
+      user?: string | null
+    }
     OpenAICompatResponse: {
-      data: components["schemas"]["OpenAICompatEmbedding"][];
+      data: components['schemas']['OpenAICompatEmbedding'][]
       /** @example thenlper/gte-base */
-      model: string;
+      model: string
       /** @example list */
-      object: string;
-      usage: components["schemas"]["OpenAICompatUsage"];
-    };
+      object: string
+      usage: components['schemas']['OpenAICompatUsage']
+    }
     OpenAICompatUsage: {
       /** @example 512 */
-      prompt_tokens: number;
+      prompt_tokens: number
       /** @example 512 */
-      total_tokens: number;
-    };
+      total_tokens: number
+    }
     /**
      * @description Model input. Can be either a single string, a pair of strings or a batch of mixed single and pairs of strings.
      * @example What is Deep Learning?
      */
-    PredictInput: string | string[] | string[][];
+    PredictInput: string | string[] | string[][]
     PredictRequest: {
-      inputs: components["schemas"]["PredictInput"];
+      inputs: components['schemas']['PredictInput']
       /**
        * @default false
        * @example false
        */
-      raw_scores?: boolean;
+      raw_scores?: boolean
       /**
        * @default false
        * @example false
        */
-      truncate?: boolean;
-    };
-    PredictResponse: components["schemas"]["Prediction"][] | components["schemas"]["Prediction"][][];
+      truncate?: boolean
+    }
+    PredictResponse: components['schemas']['Prediction'][] | components['schemas']['Prediction'][][]
     Prediction: {
       /** @example admiration */
-      label: string;
+      label: string
       /**
        * Format: float
        * @example 0.5
        */
-      score: number;
-    };
+      score: number
+    }
     Rank: {
       /** @example 0 */
-      index: number;
+      index: number
       /**
        * Format: float
        * @example 1.0
        */
-      score: number;
+      score: number
       /**
        * @default null
        * @example Deep Learning is ...
        */
-      text?: string | null;
-    };
+      text?: string | null
+    }
     RerankRequest: {
       /** @example What is Deep Learning? */
-      query: string;
+      query: string
       /**
        * @default false
        * @example false
        */
-      raw_scores?: boolean;
+      raw_scores?: boolean
       /**
        * @default false
        * @example false
        */
-      return_text?: boolean;
+      return_text?: boolean
       /**
        * @example [
        *   "Deep Learning is ..."
        * ]
        */
-      texts: string[];
+      texts: string[]
       /**
        * @default false
        * @example false
        */
-      truncate?: boolean;
-    };
-    RerankResponse: components["schemas"]["Rank"][];
+      truncate?: boolean
+    }
+    RerankResponse: components['schemas']['Rank'][]
     SimpleToken: {
       /**
        * Format: int32
        * @example 0
        */
-      id: number;
+      id: number
       /** @example false */
-      special: boolean;
+      special: boolean
       /** @example 0 */
-      start?: number | null;
+      start?: number | null
       /** @example 2 */
-      stop?: number | null;
+      stop?: number | null
       /** @example test */
-      text: string;
-    };
+      text: string
+    }
     SparseValue: {
-      index: number;
+      index: number
       /** Format: float */
-      value: number;
-    };
+      value: number
+    }
     TokenizeRequest: {
       /**
        * @default true
        * @example true
        */
-      add_special_tokens?: boolean;
-      inputs: components["schemas"]["Input"];
-    };
+      add_special_tokens?: boolean
+      inputs: components['schemas']['Input']
+    }
     /**
      * @example [
      *   [
@@ -394,69 +403,80 @@ export interface components {
      *   ]
      * ]
      */
-    TokenizeResponse: components["schemas"]["SimpleToken"][][];
-    VertexInstance: (components["schemas"]["EmbedRequest"] & {
-      /** @enum {string} */
-      type: "embed";
-    }) | (components["schemas"]["EmbedAllRequest"] & {
-      /** @enum {string} */
-      type: "embed_all";
-    }) | (components["schemas"]["EmbedSparseRequest"] & {
-      /** @enum {string} */
-      type: "embed_sparse";
-    }) | (components["schemas"]["PredictRequest"] & {
-      /** @enum {string} */
-      type: "predict";
-    }) | (components["schemas"]["RerankRequest"] & {
-      /** @enum {string} */
-      type: "rerank";
-    }) | (components["schemas"]["TokenizeRequest"] & {
-      /** @enum {string} */
-      type: "tokenize";
-    });
+    TokenizeResponse: components['schemas']['SimpleToken'][][]
+    VertexInstance:
+      | (components['schemas']['EmbedRequest'] & {
+          /** @enum {string} */
+          type: 'embed'
+        })
+      | (components['schemas']['EmbedAllRequest'] & {
+          /** @enum {string} */
+          type: 'embed_all'
+        })
+      | (components['schemas']['EmbedSparseRequest'] & {
+          /** @enum {string} */
+          type: 'embed_sparse'
+        })
+      | (components['schemas']['PredictRequest'] & {
+          /** @enum {string} */
+          type: 'predict'
+        })
+      | (components['schemas']['RerankRequest'] & {
+          /** @enum {string} */
+          type: 'rerank'
+        })
+      | (components['schemas']['TokenizeRequest'] & {
+          /** @enum {string} */
+          type: 'tokenize'
+        })
     VertexRequest: {
-      instances: components["schemas"]["VertexInstance"][];
-    };
-    VertexResponse: components["schemas"]["VertexResponseInstance"][];
-    VertexResponseInstance: {
-      result: components["schemas"]["EmbedResponse"];
-      /** @enum {string} */
-      type: "embed";
-    } | {
-      result: components["schemas"]["EmbedAllResponse"];
-      /** @enum {string} */
-      type: "embed_all";
-    } | {
-      result: components["schemas"]["EmbedSparseResponse"];
-      /** @enum {string} */
-      type: "embed_sparse";
-    } | {
-      result: components["schemas"]["PredictResponse"];
-      /** @enum {string} */
-      type: "predict";
-    } | {
-      result: components["schemas"]["RerankResponse"];
-      /** @enum {string} */
-      type: "rerank";
-    } | {
-      result: components["schemas"]["TokenizeResponse"];
-      /** @enum {string} */
-      type: "tokenize";
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+      instances: components['schemas']['VertexInstance'][]
+    }
+    VertexResponse: components['schemas']['VertexResponseInstance'][]
+    VertexResponseInstance:
+      | {
+          result: components['schemas']['EmbedResponse']
+          /** @enum {string} */
+          type: 'embed'
+        }
+      | {
+          result: components['schemas']['EmbedAllResponse']
+          /** @enum {string} */
+          type: 'embed_all'
+        }
+      | {
+          result: components['schemas']['EmbedSparseResponse']
+          /** @enum {string} */
+          type: 'embed_sparse'
+        }
+      | {
+          result: components['schemas']['PredictResponse']
+          /** @enum {string} */
+          type: 'predict'
+        }
+      | {
+          result: components['schemas']['RerankResponse']
+          /** @enum {string} */
+          type: 'rerank'
+        }
+      | {
+          result: components['schemas']['TokenizeResponse']
+          /** @enum {string} */
+          type: 'tokenize'
+        }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
 
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 
-export type external = Record<string, never>;
+export type external = Record<string, never>
 
 export interface operations {
-
   /**
    * Decode input ids
    * @description Decode input ids
@@ -464,24 +484,24 @@ export interface operations {
   decode: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DecodeRequest"];
-      };
-    };
+        'application/json': components['schemas']['DecodeRequest']
+      }
+    }
     responses: {
       /** @description Decoded ids */
       200: {
         content: {
-          "application/json": components["schemas"]["DecodeResponse"];
-        };
-      };
+          'application/json': components['schemas']['DecodeResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Get Embeddings. Returns a 424 status code if the model is not an embedding model.
    * @description Get Embeddings. Returns a 424 status code if the model is not an embedding model.
@@ -489,42 +509,42 @@ export interface operations {
   embed: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["EmbedRequest"];
-      };
-    };
+        'application/json': components['schemas']['EmbedRequest']
+      }
+    }
     responses: {
       /** @description Embeddings */
       200: {
         content: {
-          "application/json": components["schemas"]["EmbedResponse"];
-        };
-      };
+          'application/json': components['schemas']['EmbedResponse']
+        }
+      }
       /** @description Batch size error */
       413: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Embedding Error */
       424: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Model is overloaded */
       429: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Get all Embeddings without Pooling.
    * @description Get all Embeddings without Pooling.
@@ -533,42 +553,42 @@ export interface operations {
   embed_all: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["EmbedAllRequest"];
-      };
-    };
+        'application/json': components['schemas']['EmbedAllRequest']
+      }
+    }
     responses: {
       /** @description Embeddings */
       200: {
         content: {
-          "application/json": components["schemas"]["EmbedAllResponse"];
-        };
-      };
+          'application/json': components['schemas']['EmbedAllResponse']
+        }
+      }
       /** @description Batch size error */
       413: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Embedding Error */
       424: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Model is overloaded */
       429: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Get Sparse Embeddings. Returns a 424 status code if the model is not an embedding model with SPLADE pooling.
    * @description Get Sparse Embeddings. Returns a 424 status code if the model is not an embedding model with SPLADE pooling.
@@ -576,42 +596,42 @@ export interface operations {
   embed_sparse: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["EmbedSparseRequest"];
-      };
-    };
+        'application/json': components['schemas']['EmbedSparseRequest']
+      }
+    }
     responses: {
       /** @description Embeddings */
       200: {
         content: {
-          "application/json": components["schemas"]["EmbedSparseResponse"];
-        };
-      };
+          'application/json': components['schemas']['EmbedSparseResponse']
+        }
+      }
       /** @description Batch size error */
       413: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Embedding Error */
       424: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Model is overloaded */
       429: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * OpenAI compatible route. Returns a 424 status code if the model is not an embedding model.
    * @description OpenAI compatible route. Returns a 424 status code if the model is not an embedding model.
@@ -619,42 +639,42 @@ export interface operations {
   openai_embed: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["OpenAICompatRequest"];
-      };
-    };
+        'application/json': components['schemas']['OpenAICompatRequest']
+      }
+    }
     responses: {
       /** @description Embeddings */
       200: {
         content: {
-          "application/json": components["schemas"]["OpenAICompatResponse"];
-        };
-      };
+          'application/json': components['schemas']['OpenAICompatResponse']
+        }
+      }
       /** @description Batch size error */
       413: {
         content: {
-          "application/json": components["schemas"]["OpenAICompatErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['OpenAICompatErrorResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["OpenAICompatErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['OpenAICompatErrorResponse']
+        }
+      }
       /** @description Embedding Error */
       424: {
         content: {
-          "application/json": components["schemas"]["OpenAICompatErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['OpenAICompatErrorResponse']
+        }
+      }
       /** @description Model is overloaded */
       429: {
         content: {
-          "application/json": components["schemas"]["OpenAICompatErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['OpenAICompatErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Health check method
    * @description Health check method
@@ -663,16 +683,16 @@ export interface operations {
     responses: {
       /** @description Everything is working fine */
       200: {
-        content: never;
-      };
+        content: never
+      }
       /** @description Text embeddings Inference is down */
       503: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Text Embeddings Inference endpoint info
    * @description Text Embeddings Inference endpoint info
@@ -682,11 +702,11 @@ export interface operations {
       /** @description Served model info */
       200: {
         content: {
-          "application/json": components["schemas"]["Info"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['Info']
+        }
+      }
+    }
+  }
   /**
    * Prometheus metrics scrape endpoint
    * @description Prometheus metrics scrape endpoint
@@ -696,11 +716,11 @@ export interface operations {
       /** @description Prometheus Metrics */
       200: {
         content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+          'text/plain': string
+        }
+      }
+    }
+  }
   /**
    * Get Predictions. Returns a 424 status code if the model is not a Sequence Classification model
    * @description Get Predictions. Returns a 424 status code if the model is not a Sequence Classification model
@@ -708,42 +728,42 @@ export interface operations {
   predict: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["PredictRequest"];
-      };
-    };
+        'application/json': components['schemas']['PredictRequest']
+      }
+    }
     responses: {
       /** @description Predictions */
       200: {
         content: {
-          "application/json": components["schemas"]["PredictResponse"];
-        };
-      };
+          'application/json': components['schemas']['PredictResponse']
+        }
+      }
       /** @description Batch size error */
       413: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Prediction Error */
       424: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Model is overloaded */
       429: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Get Ranks. Returns a 424 status code if the model is not a Sequence Classification model with
    * @description Get Ranks. Returns a 424 status code if the model is not a Sequence Classification model with
@@ -752,42 +772,42 @@ export interface operations {
   rerank: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["RerankRequest"];
-      };
-    };
+        'application/json': components['schemas']['RerankRequest']
+      }
+    }
     responses: {
       /** @description Ranks */
       200: {
         content: {
-          "application/json": components["schemas"]["RerankResponse"];
-        };
-      };
+          'application/json': components['schemas']['RerankResponse']
+        }
+      }
       /** @description Batch size error */
       413: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Rerank Error */
       424: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Model is overloaded */
       429: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Tokenize inputs
    * @description Tokenize inputs
@@ -795,24 +815,24 @@ export interface operations {
   tokenize: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["TokenizeRequest"];
-      };
-    };
+        'application/json': components['schemas']['TokenizeRequest']
+      }
+    }
     responses: {
       /** @description Tokenized ids */
       200: {
         content: {
-          "application/json": components["schemas"]["TokenizeResponse"];
-        };
-      };
+          'application/json': components['schemas']['TokenizeResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   /**
    * Generate embeddings from a Vertex request
    * @description Generate embeddings from a Vertex request
@@ -820,38 +840,38 @@ export interface operations {
   vertex_compatibility: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["VertexRequest"];
-      };
-    };
+        'application/json': components['schemas']['VertexRequest']
+      }
+    }
     responses: {
       /** @description Results */
       200: {
-        content: never;
-      };
+        content: never
+      }
       /** @description Batch size error */
       413: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Tokenization error */
       422: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Error */
       424: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Model is overloaded */
       429: {
         content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
 }

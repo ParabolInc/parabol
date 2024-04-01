@@ -63,7 +63,7 @@ export class TextGenerationInference extends AbstractGenerationModel {
   }
   protected constructModelParams(config: GenerationModelConfig): GenerationModelParams {
     const modelConfigStringSplit = config.model.split(':')
-    if (modelConfigStringSplit.length != 2) {
+    if (modelConfigStringSplit.length !== 2) {
       throw new Error('TextGenerationInference model string must be colon-delimited and len 2')
     }
 

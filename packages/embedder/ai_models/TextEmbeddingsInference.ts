@@ -87,7 +87,7 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
 
   protected constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams {
     const modelConfigStringSplit = config.model.split(':')
-    if (modelConfigStringSplit.length != 2) {
+    if (modelConfigStringSplit.length !== 2) {
       throw new Error('TextGenerationInference model string must be colon-delimited and len 2')
     }
 
