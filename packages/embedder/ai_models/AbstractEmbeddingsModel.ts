@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
+import isValid from '../../server/graphql/isValid'
 import {Logger} from '../../server/utils/Logger'
 import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
 import {ISO6391} from '../iso6393To1'
@@ -34,10 +35,39 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
 
   abstract getTokens(content: string): Promise<number[] | Error>
-  splitText(content: string) {
+
+  async chunkText(content: string) {
+    const tokens = await this.getTokens(content)
+    if (tokens instanceof Error) return tokens
+    const isFullTextTooBig = tokens.length > this.maxInputTokens
+    if (!isFullTextTooBig) return [content]
+
+    for (let i = 0; i < 3; i++) {
+      const tokensPerWord = (4 + i) / 3
+      const chunks = this.splitText(content, tokensPerWord)
+      const chunkLengths = await Promise.all(
+        chunks.map(async (chunk) => {
+          const chunkTokens = await this.getTokens(chunk)
+          if (chunkTokens instanceof Error) return chunkTokens
+          return chunkTokens.length
+        })
+      )
+      const firstError = chunkLengths.find(
+        (chunkLength): chunkLength is Error => chunkLength instanceof Error
+      )
+      if (firstError) return firstError
+
+      const validChunks = chunkLengths.filter(isValid)
+      if (validChunks.every((chunkLength) => chunkLength <= this.maxInputTokens)) {
+        return chunks
+      }
+    }
+    return new Error(`Text is too long and could not be split into chunks. Is it english?`)
+  }
+  // private because result must still be too long to go into model. Must verify with getTokens
+  private splitText(content: string, tokensPerWord = 4 / 3) {
     // it's actually 4 / 3, but don't want to chance a failed split
-    const TOKENS_PER_WORD = 5 / 3
-    const WORD_LIMIT = Math.floor(this.maxInputTokens / TOKENS_PER_WORD)
+    const WORD_LIMIT = Math.floor(this.maxInputTokens / tokensPerWord)
     const chunks: string[] = []
     const delimiters = ['\n\n', '\n', '.', ' ']
     const countWords = (text: string) => text.trim().split(/\s+/).length

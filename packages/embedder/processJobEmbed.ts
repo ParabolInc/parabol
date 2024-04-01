@@ -54,20 +54,18 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
   // Exit successfully, we don't want to fail the job because the language is not supported
   if (!embeddingModel.languages.includes(language!)) return true
 
-  const tokens = await embeddingModel.getTokens(fullText)
-  if (tokens instanceof Error) {
+  const chunks = await embeddingModel.chunkText(fullText)
+  if (chunks instanceof Error) {
     await failJob(
       jobId,
-      `unable to get tokens: ${tokens.message}`,
+      `unable to get tokens: ${chunks.message}`,
       retryCount < 10 ? new Date(Date.now() + ms('1m')) : null
     )
     return
   }
-  const isFullTextTooBig = tokens.length > embeddingModel.maxInputTokens
   // Cannot use summarization strategy if generation model has same context length as embedding model
   // We must split the text & not tokens because BERT tokenizer is not trained for linebreaks e.g. \n\n
-  const chunks = isFullTextTooBig ? embeddingModel.splitText(fullText) : [fullText]
-  await Promise.all(
+  const isSuccessful = await Promise.all(
     chunks.map(async (chunk, chunkNumber) => {
       const embeddingVector = await embeddingModel.getEmbedding(chunk)
       if (embeddingVector instanceof Error) {
@@ -76,17 +74,17 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
           `unable to get embeddings: ${embeddingVector.message}`,
           retryCount < 10 ? new Date(Date.now() + ms('1m')) : null
         )
-        return
+        return false
       }
       await pg
         // cast to any because these types won't be available in CI
         .insertInto(embeddingModel.tableName as EmbeddingsTable)
         .values({
           // TODO is the extra space of a null embedText really worth it?!
-          embedText: isFullTextTooBig ? chunk : null,
+          embedText: chunks.length > 1 ? chunk : null,
           embedding: numberVectorToString(embeddingVector),
           embeddingsMetadataId,
-          chunkNumber: isFullTextTooBig ? chunkNumber : null
+          chunkNumber: chunks.length > 1 ? chunkNumber : null
         })
         .onConflict((oc) =>
           oc.column('embeddingsMetadataId').doUpdateSet((eb) => ({
@@ -95,8 +93,9 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
           }))
         )
         .execute()
+      return true
     })
   )
   // Logger.log(`Embedded ${embeddingsMetadataId} -> ${model}`)
-  return true
+  return isSuccessful
 }
