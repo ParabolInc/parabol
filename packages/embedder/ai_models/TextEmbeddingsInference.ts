@@ -1,11 +1,7 @@
 import createClient from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import type {paths} from '../textEmbeddingsnterface'
-import {
-  AbstractEmbeddingsModel,
-  EmbeddingModelConfig,
-  EmbeddingModelParams
-} from './AbstractEmbeddingsModel'
+import {AbstractEmbeddingsModel, EmbeddingModelParams} from './AbstractEmbeddingsModel'
 export type ModelId = 'BAAI/bge-large-en-v1.5' | 'llmrails/ember-v1'
 
 const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
@@ -23,14 +19,10 @@ const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
   }
 }
 
-function isValidModelId(object: any): object is ModelId {
-  return Object.keys(modelIdDefinitions).includes(object)
-}
-
 export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
   client: ReturnType<typeof createClient<paths>>
-  constructor(config: EmbeddingModelConfig) {
-    super(config)
+  constructor(modelId: string, url: string) {
+    super(modelId, url)
     this.client = createClient<paths>({baseUrl: this.url})
   }
 
@@ -85,17 +77,10 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     }
   }
 
-  protected constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams {
-    const modelConfigStringSplit = config.model.split(':')
-    if (modelConfigStringSplit.length !== 2) {
-      throw new Error('TextGenerationInference model string must be colon-delimited and len 2')
-    }
-
-    if (!this.url) throw new Error('TextGenerationInferenceSummarizer model requires url')
-    const maybeModelId = modelConfigStringSplit[1]
-    if (!isValidModelId(maybeModelId))
-      throw new Error(`TextGenerationInference model id unknown: ${maybeModelId}`)
-    return modelIdDefinitions[maybeModelId]
+  protected constructModelParams(modelId: string): EmbeddingModelParams {
+    const modelParams = modelIdDefinitions[modelId as keyof typeof modelIdDefinitions]
+    if (!modelParams) throw new Error(`Unknown modelId ${modelId} for TextEmbeddingsInference`)
+    return modelParams
   }
 }
 

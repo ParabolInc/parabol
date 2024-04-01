@@ -5,7 +5,7 @@ import isValid from '../../server/graphql/isValid'
 import {Logger} from '../../server/utils/Logger'
 import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
 import {ISO6391} from '../iso6393To1'
-import {AbstractModel, ModelConfig} from './AbstractModel'
+import {AbstractModel} from './AbstractModel'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
@@ -13,25 +13,23 @@ export interface EmbeddingModelParams {
   tableSuffix: string
   languages: ISO6391[]
 }
-export type EmbeddingsTable = Extract<keyof DB, `Embeddings_${string}`>
-export interface EmbeddingModelConfig extends ModelConfig {
-  tableSuffix: string
-}
+export type EmbeddingsTableName = `Embeddings_${string}`
+export type EmbeddingsTable = Extract<keyof DB, EmbeddingsTableName>
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly embeddingDimensions: number
   readonly maxInputTokens: number
-  readonly tableName: string
+  readonly tableName: EmbeddingsTableName
   readonly languages: ISO6391[]
-  constructor(config: EmbeddingModelConfig) {
-    super(config)
-    const modelParams = this.constructModelParams(config)
+  constructor(modelId: string, url: string) {
+    super(url)
+    const modelParams = this.constructModelParams(modelId)
     this.embeddingDimensions = modelParams.embeddingDimensions
     this.languages = modelParams.languages
     this.maxInputTokens = modelParams.maxInputTokens
     this.tableName = `Embeddings_${modelParams.tableSuffix}`
   }
-  protected abstract constructModelParams(config: EmbeddingModelConfig): EmbeddingModelParams
+  protected abstract constructModelParams(modelId: string): EmbeddingModelParams
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
 
   abstract getTokens(content: string): Promise<number[] | Error>
@@ -128,7 +126,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           'tablename'
         )} = ${this.tableName}`.execute(pg)
       ).rows.length > 0
-    if (hasTable) return undefined
+    if (hasTable) return
     const vectorDimensions = this.embeddingDimensions
     Logger.log(`ModelManager: creating ${this.tableName} with ${vectorDimensions} dimensions`)
     await sql`

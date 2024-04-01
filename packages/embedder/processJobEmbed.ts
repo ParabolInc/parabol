@@ -45,7 +45,7 @@ export const processJobEmbed = async (job: EmbedJob, dataLoader: RootDataLoader)
     return
   }
 
-  const embeddingModel = modelManager.embeddingModelsMapByTable[model]
+  const embeddingModel = modelManager.embeddingModels.get(model)
   if (!embeddingModel) {
     await failJob(jobId, `embedding model ${model} not available`)
     return
