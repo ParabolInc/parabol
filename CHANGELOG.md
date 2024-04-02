@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.24.1](https://github.com/ParabolInc/parabol/compare/v7.24.0...v7.24.1) (2024-04-02)
+
+
+### Fixed
+
+* embedder doesn't dive deep into schema ([#9582](https://github.com/ParabolInc/parabol/issues/9582)) ([8cdd901](https://github.com/ParabolInc/parabol/commit/8cdd9014c3277905605c6544de92d9ac2833a6e9))
+* embedder errors in embed length ([#9584](https://github.com/ParabolInc/parabol/issues/9584)) ([341b4b7](https://github.com/ParabolInc/parabol/commit/341b4b797ec6444066244f25916803e64c03258c))
+* Fetch CORS resources from network ([#9586](https://github.com/ParabolInc/parabol/issues/9586)) ([b6ddfa5](https://github.com/ParabolInc/parabol/commit/b6ddfa5755394633e83dadd0178234ef740454ea))
+
 ## [7.24.0](https://github.com/ParabolInc/parabol/compare/v7.23.1...v7.24.0) (2024-03-29)
 
 
