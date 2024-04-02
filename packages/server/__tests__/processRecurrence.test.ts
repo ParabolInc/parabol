@@ -1,14 +1,13 @@
 import ms from 'ms'
 import {RRule} from 'rrule'
 import getRethink from '../database/rethinkDriver'
-import MeetingTeamPrompt from '../database/types/MeetingTeamPrompt'
-import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import MeetingRetrospective from '../database/types/MeetingRetrospective'
+import MeetingTeamPrompt from '../database/types/MeetingTeamPrompt'
 import ReflectPhase from '../database/types/ReflectPhase'
+import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import generateUID from '../generateUID'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../postgres/queries/insertMeetingSeries'
 import {getUserTeams, sendIntranet, signUp} from './common'
-import createNewMeetingPhases from '../graphql/mutations/helpers/createNewMeetingPhases'
 
 const PROCESS_RECURRENCE = `
   mutation {
@@ -292,7 +291,11 @@ test('Should end the current retro meeting and start a new meeting', async () =>
     facilitatorUserId: userId,
     scheduledEndTime: new Date(Date.now() - ms('5m')),
     meetingSeriesId,
-    templateId: 'startStopContinueTemplate'
+    templateId: 'startStopContinueTemplate',
+    disableAnonymity: false,
+    totalVotes: 5,
+    name: '',
+    maxVotesPerGroup: 5
   })
 
   // The last meeting in the series was created just over 24h ago, so the next one should start

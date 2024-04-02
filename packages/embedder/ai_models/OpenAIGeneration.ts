@@ -1,12 +1,9 @@
 import OpenAI from 'openai'
 import {
   AbstractGenerationModel,
-  GenerationModelConfig,
   GenerationModelParams,
   GenerationOptions
-} from './AbstractModel'
-
-const MAX_REQUEST_TIME_S = 3 * 60
+} from './AbstractGenerationModel'
 
 export type ModelId = 'gpt-3.5-turbo-0125' | 'gpt-4-turbo-preview'
 
@@ -21,16 +18,12 @@ const modelIdDefinitions: Record<ModelId, GenerationModelParams> = {
   }
 }
 
-function isValidModelId(object: any): object is ModelId {
-  return Object.keys(modelIdDefinitions).includes(object)
-}
-
 export class OpenAIGeneration extends AbstractGenerationModel {
   private openAIApi: OpenAI | null
-  private modelId: ModelId
+  private modelId!: ModelId
 
-  constructor(config: GenerationModelConfig) {
-    super(config)
+  constructor(modelId: string, url: string) {
+    super(modelId, url)
     if (!process.env.OPEN_AI_API_KEY) {
       this.openAIApi = null
       return
@@ -75,19 +68,10 @@ export class OpenAIGeneration extends AbstractGenerationModel {
       throw e
     }
   }
-  protected constructModelParams(config: GenerationModelConfig): GenerationModelParams {
-    const modelConfigStringSplit = config.model.split(':')
-    if (modelConfigStringSplit.length != 2) {
-      throw new Error('OpenAIGeneration model string must be colon-delimited and len 2')
-    }
-
-    const maybeModelId = modelConfigStringSplit[1]
-    if (!isValidModelId(maybeModelId))
-      throw new Error(`OpenAIGeneration model id unknown: ${maybeModelId}`)
-
-    this.modelId = maybeModelId
-
-    return modelIdDefinitions[maybeModelId]
+  protected constructModelParams(modelId: string): GenerationModelParams {
+    const modelParams = modelIdDefinitions[modelId as keyof typeof modelIdDefinitions]
+    if (!modelParams) throw new Error(`Unknown modelId ${modelId} for OpenAIGeneration`)
+    return modelParams
   }
 }
 

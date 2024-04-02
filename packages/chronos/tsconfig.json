@@ -9,13 +9,6 @@
       "~/*": ["client/*"]
     },
     "outDir": "lib",
-    "lib": ["esnext"],
-    "types": ["node"]
-  },
-  "files": [
-    "chronos.ts",
-    "../server/types/webpackEnv.ts",
-    "../server/types/modules.d.ts",
-    "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
-  ]
+    "lib": ["esnext"]
+  }
 }
