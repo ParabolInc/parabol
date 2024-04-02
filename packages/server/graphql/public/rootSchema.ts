@@ -99,5 +99,4 @@ const addRequestors = (schema: GraphQLSchema) => {
 
 const rootSchema = addRequestors(resolveTypesForMutationPayloads(parabolWithNestedResolversSchema))
 
-export type RootSchema = typeof rootSchema
 export default rootSchema

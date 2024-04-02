@@ -1,35 +1,36 @@
+import {RawDraftContentState} from 'draft-js'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS, PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {RawDraftContentState} from 'draft-js'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import NotificationMentioned from '../../../database/types/NotificationMentioned'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../../postgres/getKysely'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
+import {Logger} from '../../../utils/Logger'
+import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import publishNotification from '../../public/mutations/helpers/publishNotification'
-import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
-import updateTeamInsights from './updateTeamInsights'
+import publishNotification from '../../public/mutations/helpers/publishNotification'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
+import gatherInsights from './gatherInsights'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
 import generateWholeMeetingSummary from './generateWholeMeetingSummary'
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import {publishToEmbedder} from './publishToEmbedder'
 import removeEmptyTasks from './removeEmptyTasks'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
-import gatherInsights from './gatherInsights'
-import NotificationMentioned from '../../../database/types/NotificationMentioned'
-import {Logger} from '../../../utils/Logger'
+import updateTeamInsights from './updateTeamInsights'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -370,6 +371,7 @@ const safeEndRetrospective = async ({
     removedTaskIds,
     timelineEventId
   }
+  publishToEmbedder({objectTypes: ['retrospectiveDiscussionTopic'], meetingId})
   publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
 
   return data

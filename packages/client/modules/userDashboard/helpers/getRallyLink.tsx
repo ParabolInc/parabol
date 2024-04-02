@@ -40,7 +40,7 @@ const rallyList = [
   },
   {
     phrase: 'Don’t Stop Believin’',
-    link: 'https://youtu.be/Pw3GTTYgEV8'
+    link: 'https://youtu.be/1k8craCGpgs'
   },
   {
     phrase: 'Gimme Some New',
@@ -72,7 +72,7 @@ const rallyList = [
   },
   {
     phrase: 'On With The Show',
-    link: 'https://youtu.be/4ADh8Fs3YdU'
+    link: 'https://youtu.be/NijPVAu42aI'
   },
   {
     phrase: 'Rawr, Tiger',
@@ -80,7 +80,7 @@ const rallyList = [
   },
   {
     phrase: 'Right Here, Right Now',
-    link: 'https://youtu.be/F7jSp2xmmEE'
+    link: 'https://youtu.be/ub747pprmJ8'
   },
   {
     phrase: 'Ring That Bell',
@@ -93,10 +93,6 @@ const rallyList = [
   {
     phrase: 'Serve It',
     link: 'https://youtu.be/0J2QdDbelmY'
-  },
-  {
-    phrase: 'Sharpness Without Effort',
-    link: 'https://youtu.be/hpeTLTj2tww'
   },
   {
     phrase: 'Stronger, Richer, Smarter',
@@ -127,20 +123,12 @@ const rallyList = [
     link: 'https://youtu.be/SSgp-IIgr4I'
   },
   {
-    phrase: 'You Came To Win',
-    link: 'https://youtu.be/KZaz7OqyTHQ'
-  },
-  {
     phrase: 'You’re The Smart One',
     link: 'https://youtu.be/bKQYK7PYQpQ'
   },
   {
     phrase: 'You’ve Got A Bright Future',
     link: 'https://youtu.be/kZGvnI37mxk'
-  },
-  {
-    phrase: 'You Must Go Pro',
-    link: 'https://youtu.be/9mSMTXYj7pQ'
   },
   {
     phrase: 'Time To Begin',

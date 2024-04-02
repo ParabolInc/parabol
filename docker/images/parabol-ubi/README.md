@@ -16,21 +16,21 @@ Recommended:
 
 ## Variables
 
-| Name                 | Description                                                                                                             | Possible values                                       | Recommended value                                                   |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
-| `postgresql_tag`     | PostgreSQL version from the [Docker image](https://hub.docker.com/_/postgres)                                           | `Any tag`                                             | `15.4`                                                              |
-| `rethinkdb_tag`      | RethinkDB version from the [Docker image](https://hub.docker.com/_/rethinkdb)                                           | `Any tag`                                             | `2.4.2`                                                             |
-| `redis_tag`          | Redis version from the [Docker image](https://hub.docker.com/_/redis)                                                   | `Any tag`                                             | `7.0-alpine`                                                        |
-| `_BUILD_ENV_PATH`    | File `.env` used by the application during the build process                                                            | `Relative path from the root level of the repository` | `docker/parabol-ubi/environments/basic-env`             |
-| `_NODE_VERSION`      | Node version, used by Docker to use the Docker image node:\_NODE_VERSION as base image to build                         | `Same as in root package.json`                        |                                                                     |
-| `_DOCKERFILE`        | Dockerfile used to build the image                                                                                      | `Relative path from the root level of the repository` | `./docker/parabol-ubi/dockerfiles/basic.dockerfile` |
-| `_DOCKER_REPOSITORY` | The destination repository                                                                                              | `String`                                              | `parabol`                                                           |
-| `_DOCKER_TAG`        | Tag for the produced image                                                                                              | `String`                                              |                                                                     |
+| Name                 | Description                                                                                     | Possible values                                       | Recommended value                                   |
+| -------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------- |
+| `postgresql_tag`     | PostgreSQL version from the [Docker image](https://hub.docker.com/r/pgvector/pgvector)          | `Any tag`                                             | `0.6.2-pg15`                                        |
+| `rethinkdb_tag`      | RethinkDB version from the [Docker image](https://hub.docker.com/_/rethinkdb)                   | `Any tag`                                             | `2.4.2`                                             |
+| `redis_tag`          | Redis version from the [Docker image](https://hub.docker.com/_/redis)                           | `Any tag`                                             | `7.0-alpine`                                        |
+| `_BUILD_ENV_PATH`    | File `.env` used by the application during the build process                                    | `Relative path from the root level of the repository` | `docker/parabol-ubi/environments/basic-env`         |
+| `_NODE_VERSION`      | Node version, used by Docker to use the Docker image node:\_NODE_VERSION as base image to build | `Same as in root package.json`                        |                                                     |
+| `_DOCKERFILE`        | Dockerfile used to build the image                                                              | `Relative path from the root level of the repository` | `./docker/parabol-ubi/dockerfiles/basic.dockerfile` |
+| `_DOCKER_REPOSITORY` | The destination repository                                                                      | `String`                                              | `parabol`                                           |
+| `_DOCKER_TAG`        | Tag for the produced image                                                                      | `String`                                              |                                                     |
 
 Example of variables:
 
 ```commandLine
-export postgresql_tag=15.4; \
+export postgresql_tag=0.6.2-pg15; \
 export rethinkdb_tag=2.4.2; \
 export redis_tag=7.0-alpine; \
 export _BUILD_ENV_PATH=docker/parabol-ubi/environments/basic-env; \
@@ -61,7 +61,7 @@ cp $_BUILD_ENV_PATH ./.env
 > :warning: Stop all database containers you might have running before executing the following command. If other database containers are running, some ports might be already taken.
 
 ```commandLine
-docker run --name temp-postgres -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 postgres:$postgresql_tag && \
+docker run --name temp-postgres -e POSTGRES_PASSWORD=temppassword -e POSTGRES_USER=tempuser -e POSTGRES_DB=tempdb -d -p 5432:5432 pgvector/pgvector:$postgresql_tag && \
 docker run --name temp-rethinkdb -d -p 28015:28015 -p 29015:29015 -p 8080:8080 rethinkdb:$rethinkdb_tag && \
 docker run --name temp-redis -d -p 6379:6379 redis:$redis_tag
 ```
