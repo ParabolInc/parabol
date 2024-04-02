@@ -31,6 +31,9 @@ const RetroDrawer = (props: Props) => {
               localPhase {
                 ... on ReflectPhase {
                   phaseType
+                  stages {
+                    isComplete
+                  }
                 }
               }
             }
@@ -56,6 +59,7 @@ const RetroDrawer = (props: Props) => {
   const phaseType = meeting?.localPhase?.phaseType
   const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const isPhaseComplete = meeting?.localPhase?.stages?.every((stage) => stage.isComplete) ?? false
 
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer)
@@ -77,6 +81,7 @@ const RetroDrawer = (props: Props) => {
       <MeetingOptions
         hasReflections={hasReflections}
         showDrawer={showDrawer}
+        isPhaseComplete={isPhaseComplete}
         setShowDrawer={setShowDrawer}
       />
       <ResponsiveDashSidebar
