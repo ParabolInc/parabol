@@ -9,7 +9,6 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
   teamsLimit: ({teamsLimit}) => !!teamsLimit,
   noTeamInsights: ({noTeamInsights}) => !!noTeamInsights,
-  oneOnOne: ({oneOnOne}) => !!oneOnOne,
   publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
   kudos: ({kudos}) => !!kudos,

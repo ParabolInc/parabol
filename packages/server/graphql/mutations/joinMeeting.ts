@@ -164,8 +164,7 @@ const joinMeeting = {
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    analytics.meetingJoined(viewer, meeting, team)
+    analytics.meetingJoined(viewer, meeting)
     return data
   }
 }

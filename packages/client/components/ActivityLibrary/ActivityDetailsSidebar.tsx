@@ -16,7 +16,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
@@ -33,14 +32,6 @@ import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
-import {AdhocTeamMultiSelect, Option} from '../AdhocTeamMultiSelect/AdhocTeamMultiSelect'
-import {Select} from '../../ui/Select/Select'
-import {SelectTrigger} from '../../ui/Select/SelectTrigger'
-import {SelectValue} from '../../ui/Select/SelectValue'
-import {SelectContent} from '../../ui/Select/SelectContent'
-import {SelectGroup} from '../../ui/Select/SelectGroup'
-import {SelectItem} from '../../ui/Select/SelectItem'
-import OneOnOneTeamStatus from './OneOnOneTeamStatus'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
@@ -156,37 +147,6 @@ const ActivityDetailsSidebar = (props: Props) => {
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
-  const {organizations: viewerOrganizations} = viewer
-  const [selectedUser, setSelectedUser] = React.useState<Option>()
-  const [mutualOrgsIds, setMutualOrgsIds] = React.useState<string[]>([])
-
-  const showOrgPicker = selectedUser && (mutualOrgsIds.length > 1 || !mutualOrgsIds.length)
-
-  const defaultOrgId = mutualOrgsIds[0] ?? selectedTeam.orgId
-  const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
-
-  const onUserSelected = (newUsers: Option[]) => {
-    const user = newUsers[0]
-    setSelectedUser(user)
-    if (user) {
-      SendClientSideEvent(atmosphere, 'Teammate Selected', {
-        selectionLocation: 'oneOnOneUserPicker'
-      })
-    }
-    const selectedUserOrganizationIds = new Set(user?.organizationIds ?? [])
-    const mutualOrgs = viewerOrganizations.filter((org) => selectedUserOrganizationIds.has(org.id))
-    const mutualOrgsIds = mutualOrgs.map((org) => org.id)
-    setMutualOrgsIds(mutualOrgsIds)
-    setSelectedOrgId(mutualOrgsIds[0] ?? selectedTeam.orgId)
-    onError(new Error(''))
-  }
-
-  const oneOnOneTeamInput = selectedUser
-    ? {
-        email: selectedUser.email,
-        orgId: selectedOrgId
-      }
-    : null
 
   const handleStartActivity = (
     gcalInput?: CreateGcalEventInput,
@@ -210,20 +170,9 @@ const ActivityDetailsSidebar = (props: Props) => {
         {history, onError, onCompleted}
       )
     } else if (type === 'action') {
-      const variables =
-        selectedTemplate.id !== 'oneOnOneAction'
-          ? {
-              teamId: selectedTeam.id,
-              gcalInput
-            }
-          : {
-              oneOnOneTeamInput,
-              gcalInput
-            }
-
-      if (selectedTemplate.id === 'oneOnOneAction' && !oneOnOneTeamInput) {
-        onError(new Error('Please select a teammate'))
-        return
+      const variables = {
+        teamId: selectedTeam.id,
+        gcalInput
       }
 
       StartCheckInMutation(atmosphere, variables, {history, onError, onCompleted})
@@ -337,55 +286,14 @@ const ActivityDetailsSidebar = (props: Props) => {
             )}
           >
             <div className='mt-6 flex grow flex-col gap-2'>
-              {/* TODO: move one-on-one logic to its own component */}
-              {selectedTemplate.id === 'oneOnOneAction' ? (
-                <div className='rounded-lg bg-slate-200 p-3'>
-                  <div className='text-gray-700 pb-3 text-lg font-semibold'>Teammate</div>
-                  <AdhocTeamMultiSelect
-                    viewerRef={viewer}
-                    onChange={onUserSelected}
-                    value={selectedUser ? [selectedUser] : []}
-                    multiple={false}
-                  />
-
-                  {showOrgPicker && (
-                    <>
-                      <div className='text-gray-700 my-4 text-sm font-semibold'>Organization</div>
-                      <Select
-                        onValueChange={(orgId) => setSelectedOrgId(orgId)}
-                        value={selectedOrgId}
-                      >
-                        <SelectTrigger className='bg-white'>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {viewerOrganizations
-                              .filter((org) =>
-                                mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true
-                              )
-                              .map((org) => (
-                                <SelectItem value={org.id} key={org.id}>
-                                  {org.name}
-                                </SelectItem>
-                              ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <NewMeetingTeamPicker
-                  positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
-                  onSelectTeam={onSelectTeam}
-                  selectedTeamRef={selectedTeam}
-                  teamsRef={availableTeams}
-                  customPortal={teamScopePopover}
-                  allowAddTeam={viewer.featureFlags.adHocTeams}
-                />
-              )}
-
+              <NewMeetingTeamPicker
+                positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
+                onSelectTeam={onSelectTeam}
+                selectedTeamRef={selectedTeam}
+                teamsRef={availableTeams}
+                customPortal={teamScopePopover}
+                allowAddTeam={viewer.featureFlags.adHocTeams}
+              />
               {type === 'retrospective' && (
                 <>
                   <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
@@ -407,27 +315,16 @@ const ActivityDetailsSidebar = (props: Props) => {
         </div>
 
         <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
-          {oneOnOneTeamInput && (
-            <OneOnOneTeamStatus
-              email={oneOnOneTeamInput.email}
-              orgId={oneOnOneTeamInput.orgId}
-              name={(selectedUser?.id ? selectedUser?.label : selectedUser?.email) ?? ''}
-            />
-          )}
           {error && <StyledError>{error.message}</StyledError>}
-          {selectedTemplate.id !== 'oneOnOneAction' && (
-            <>
-              <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-              {/* TODO: scheduling meeting does not work with one-on-one https://github.com/ParabolInc/parabol/issues/8820  */}
-              <ScheduleMeetingButton
-                handleStartActivity={handleStartActivity}
-                mutationProps={mutationProps}
-                teamRef={selectedTeam}
-                placeholder={meetingNamePlaceholder}
-                withRecurrence={withRecurrence}
-              />
-            </>
-          )}
+          <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+          {/* TODO: scheduling meeting does not work with one-on-one https://github.com/ParabolInc/parabol/issues/8820  */}
+          <ScheduleMeetingButton
+            handleStartActivity={handleStartActivity}
+            mutationProps={mutationProps}
+            teamRef={selectedTeam}
+            placeholder={meetingNamePlaceholder}
+            withRecurrence={withRecurrence}
+          />
           <FlatPrimaryButton
             onClick={() => handleStartActivity()}
             waiting={submitting}
