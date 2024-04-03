@@ -164,7 +164,7 @@ export const PARABOL_AI_USER_ID = 'parabolAIUser'
 export const StarterBenefits = [
   `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
   'Retrospectives, Sprint Poker, Standups, Check-Ins',
-  'Unlimited templates',
+  'Unlimited meeting templates',
   'Unlimited team members'
 ]
 
