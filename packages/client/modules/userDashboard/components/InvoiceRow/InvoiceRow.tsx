@@ -104,7 +104,9 @@ const InvoiceRow = (props: Props) => {
         <InvoiceInfo>
           <InfoRow>
             <InvoiceTitle>
-              {makeDateString(endAt)} to {makeDateString(nextPeriodEnd)}
+              {status === 'UPCOMING'
+                ? `Due on ${makeDateString(endAt)}`
+                : `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`}
             </InvoiceTitle>
             <InfoRowRight>
               <InvoiceAmount>
