@@ -1,7 +1,7 @@
 import {Content, Portal} from '@radix-ui/react-tooltip'
 import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
-import {forwardRadix} from '../fordwardRadix'
+import {forwardRadix} from '../forwardRadix'
 
 export const TooltipContent = forwardRadix<typeof Content>(
   ({className, children, ...props}, ref) => (

@@ -20,19 +20,19 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import {
+  CreateGcalEventInput,
+  RecurrenceSettingsInput
+} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import sortByTier from '../../utils/sortByTier'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import {RecurrenceSettings} from '../Recurrence/RecurrenceSettings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
-import RaisedButton from '../RaisedButton'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
-import {ActivityDetailsRecurrenceSettings} from './ActivityDetailsRecurrenceSettings'
 import {AdhocTeamMultiSelect, Option} from '../AdhocTeamMultiSelect/AdhocTeamMultiSelect'
 import {Select} from '../../ui/Select/Select'
 import {SelectTrigger} from '../../ui/Select/SelectTrigger'
@@ -77,7 +77,6 @@ const ActivityDetailsSidebar = (props: Props) => {
       fragment ActivityDetailsSidebar_viewer on User {
         featureFlags {
           adHocTeams
-          noTemplateLimit
         }
         ...AdhocTeamMultiSelect_viewer
         organizations {
@@ -119,17 +118,13 @@ const ActivityDetailsSidebar = (props: Props) => {
         ...NewMeetingTeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
         ...ScheduleMeetingButton_team
+        ...ScheduleDialog_team
       }
     `,
     teamsRef
   )
 
   const atmosphere = useAtmosphere()
-  const [recurrenceSettings, setRecurrenceSettings] = useState<RecurrenceSettings>({
-    name: '',
-    rrule: null
-  })
-
   const templateTeam = teams.find((team) => team.id === selectedTemplate.teamId)
 
   const availableTeams =
@@ -193,7 +188,10 @@ const ActivityDetailsSidebar = (props: Props) => {
       }
     : null
 
-  const handleStartActivity = (gcalInput?: CreateGcalEventInput) => {
+  const handleStartActivity = (
+    gcalInput?: CreateGcalEventInput,
+    recurrenceSettings?: RecurrenceSettingsInput
+  ) => {
     if (submitting) return
     submitMutation()
     if (type === 'teamPrompt') {
@@ -201,10 +199,12 @@ const ActivityDetailsSidebar = (props: Props) => {
         atmosphere,
         {
           teamId: selectedTeam.id,
-          recurrenceSettings: {
-            rrule: recurrenceSettings.rrule?.toString(),
-            name: recurrenceSettings.name
-          },
+          recurrenceSettings: recurrenceSettings
+            ? {
+                rrule: recurrenceSettings.rrule?.toString(),
+                name: recurrenceSettings.name
+              }
+            : undefined,
           gcalInput
         },
         {history, onError, onCompleted}
@@ -238,10 +238,12 @@ const ActivityDetailsSidebar = (props: Props) => {
                 atmosphere,
                 {
                   teamId: selectedTeam.id,
-                  recurrenceSettings: {
-                    rrule: recurrenceSettings.rrule?.toString(),
-                    name: recurrenceSettings.name
-                  },
+                  recurrenceSettings: recurrenceSettings
+                    ? {
+                        rrule: recurrenceSettings.rrule?.toString(),
+                        name: recurrenceSettings.name
+                      }
+                    : undefined,
                   gcalInput
                 },
                 {history, onError, onCompleted}
@@ -291,13 +293,19 @@ const ActivityDetailsSidebar = (props: Props) => {
     </div>
   )
 
-  const handleUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'publicTemplate',
-      meetingType: type
-    })
-    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
-  }
+  const meetingNamePlaceholder =
+    type === 'retrospective'
+      ? 'Retro'
+      : type === 'teamPrompt'
+      ? 'Standup'
+      : type === 'poker'
+      ? 'Poker'
+      : type === 'action'
+      ? 'Check-in'
+      : 'Meeting'
+  const withRecurrence =
+    type === 'teamPrompt' ||
+    (selectedTeam.organization.featureFlags.recurringRetros && type === 'retrospective')
 
   return (
     <>
@@ -378,55 +386,21 @@ const ActivityDetailsSidebar = (props: Props) => {
                 />
               )}
 
-              {selectedTeam.tier === 'starter' &&
-              !viewer.featureFlags.noTemplateLimit &&
-              !selectedTemplate.isFree ? (
-                <div className='flex grow flex-col'>
-                  <div className='my-auto text-center'>
-                    Upgrade to the <b>Team Plan</b> to create custom activities unlocking your
-                    team’s ideal workflow.
-                  </div>
-                  <RaisedButton
-                    palette='pink'
-                    className='h-12 w-full text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
-                    onClick={handleUpgrade}
-                  >
-                    Upgrade to Team Plan
-                  </RaisedButton>
-                </div>
-              ) : (
+              {type === 'retrospective' && (
                 <>
-                  {type === 'retrospective' && (
-                    <>
-                      <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                      <NewMeetingSettingsToggleTeamHealth
-                        settingsRef={selectedTeam.retroSettings}
-                        teamRef={selectedTeam}
-                      />
-                      <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-                      {selectedTeam.organization.featureFlags.recurringRetros && (
-                        <ActivityDetailsRecurrenceSettings
-                          onRecurrenceSettingsUpdated={setRecurrenceSettings}
-                          recurrenceSettings={recurrenceSettings}
-                          placeholder='Retro'
-                        />
-                      )}
-                    </>
-                  )}
-                  {type === 'poker' && (
-                    <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
-                  )}
-                  {type === 'action' && (
-                    <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
-                  )}
-                  {type === 'teamPrompt' && (
-                    <ActivityDetailsRecurrenceSettings
-                      onRecurrenceSettingsUpdated={setRecurrenceSettings}
-                      recurrenceSettings={recurrenceSettings}
-                      placeholder='Standup'
-                    />
-                  )}
+                  <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+                  <NewMeetingSettingsToggleTeamHealth
+                    settingsRef={selectedTeam.retroSettings}
+                    teamRef={selectedTeam}
+                  />
+                  <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
                 </>
+              )}
+              {type === 'poker' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+              )}
+              {type === 'action' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
               )}
             </div>
           </div>
@@ -449,6 +423,8 @@ const ActivityDetailsSidebar = (props: Props) => {
                 handleStartActivity={handleStartActivity}
                 mutationProps={mutationProps}
                 teamRef={selectedTeam}
+                placeholder={meetingNamePlaceholder}
+                withRecurrence={withRecurrence}
               />
             </>
           )}

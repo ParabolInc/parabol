@@ -14,7 +14,6 @@ import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
-import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 import {DataLoaderWorker} from '../../graphql'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import isValid from '../../isValid'
@@ -137,7 +136,7 @@ const bootstrapNewUser = async (
     const validNewTeam = {
       id: teamId,
       orgId,
-      name: makeDefaultTeamName(teamId),
+      name: `${preferredName}’s Team`,
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`

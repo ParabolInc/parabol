@@ -34,7 +34,11 @@ files:
     - data
   "**/analytics/**":
     - data
+  "docker/**":
+    - devops
   ".env.example":
+    - devops
+  "release-please-config.json":
     - devops
 options:
   ignore_draft: true

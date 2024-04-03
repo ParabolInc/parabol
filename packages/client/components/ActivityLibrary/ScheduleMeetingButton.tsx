@@ -1,26 +1,35 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import SecondaryButton from '../SecondaryButton'
-import GcalModal from '../../modules/userDashboard/components/GcalModal/GcalModal'
-import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
-import GcalClientManager from '../../utils/GcalClientManager'
-import useAtmosphere from '../../hooks/useAtmosphere'
+import {
+  CreateGcalEventInput,
+  RecurrenceSettingsInput
+} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import {useFragment} from 'react-relay'
 import {ScheduleMeetingButton_team$key} from '~/__generated__/ScheduleMeetingButton_team.graphql'
 import {MenuMutationProps} from '../../hooks/useMutationProps'
 import useModal from '../../hooks/useModal'
+import {ScheduleDialog} from '../ScheduleDialog'
+import DialogContainer from '../DialogContainer'
 
 type Props = {
   mutationProps: MenuMutationProps
-  handleStartActivity: (gcalInput?: CreateGcalEventInput) => void
+  handleStartActivity: (
+    gcalInput?: CreateGcalEventInput,
+    recurrenceInput?: RecurrenceSettingsInput
+  ) => void
   teamRef: ScheduleMeetingButton_team$key
+  placeholder: string
+  withRecurrence?: boolean
 }
 
 const ScheduleMeetingButton = (props: Props) => {
-  const {mutationProps, handleStartActivity, teamRef} = props
-  const atmosphere = useAtmosphere()
-  const [hasStartedGcalAuthTeamId, setHasStartedGcalAuthTeamId] = useState<null | string>(null)
-  const {togglePortal: toggleModal, modalPortal} = useModal({
+  const {mutationProps, handleStartActivity, teamRef, placeholder, withRecurrence} = props
+  const {
+    togglePortal: toggleModal,
+    closePortal: closeModal,
+    modalPortal
+  } = useModal({
     id: 'createGcalEventModal'
   })
   const {submitting} = mutationProps
@@ -43,32 +52,26 @@ const ScheduleMeetingButton = (props: Props) => {
             }
           }
         }
-        ...GcalModal_team
+        ...ScheduleDialog_team
       }
     `,
     teamRef
   )
-  const {id: teamId, viewerTeamMember} = team
-  const hasStartedGcalAuth = hasStartedGcalAuthTeamId === teamId
+  const {viewerTeamMember} = team
 
   const viewerGcalIntegration = viewerTeamMember?.integrations.gcal
   const cloudProvider = viewerGcalIntegration?.cloudProvider
 
   const handleClick = () => {
-    if (viewerGcalIntegration?.auth) {
-      toggleModal()
-    } else if (cloudProvider) {
-      const {clientId, id: providerId} = cloudProvider
-      GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
-      setHasStartedGcalAuthTeamId(teamId)
-    }
+    toggleModal()
   }
-
-  useEffect(() => {
-    if (hasStartedGcalAuth && viewerGcalIntegration?.auth) {
-      toggleModal()
-    }
-  }, [hasStartedGcalAuth, viewerGcalIntegration])
+  const onStartActivity = (
+    gcalInput?: CreateGcalEventInput,
+    recurrenceInput?: RecurrenceSettingsInput
+  ) => {
+    handleStartActivity(gcalInput, recurrenceInput)
+    closeModal()
+  }
 
   if (!cloudProvider) return null
   return (
@@ -77,11 +80,16 @@ const ScheduleMeetingButton = (props: Props) => {
         <div className='text-lg'>Schedule</div>
       </SecondaryButton>
       {modalPortal(
-        <GcalModal
-          closeModal={toggleModal}
-          handleStartActivityWithGcalEvent={handleStartActivity}
-          teamRef={team}
-        />
+        <DialogContainer className='bg-white'>
+          <ScheduleDialog
+            teamRef={team}
+            placeholder={placeholder}
+            onStartActivity={onStartActivity}
+            onCancel={closeModal}
+            mutationProps={mutationProps}
+            withRecurrence={withRecurrence}
+          />
+        </DialogContainer>
       )}
     </>
   )

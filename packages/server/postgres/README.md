@@ -1,18 +1,5 @@
 # PostgreSQL
 
-## Setup
-
-- pgadmin is at [http://localhost:5050](http://localhost:5050)
-- Connect using the values of `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` from your `.env`
-- Click "Add New Server" and fill out the forms with your `.env` values
-
-  - General.name = POSTGRES_DB
-  - Connection.host = 'postgres' (hardcoded from docker-compose dev.yml, not from .env!)
-  - Connection.username = POSTGRES_USER
-  - Connection.password = POSTGRES_PASSWORD
-  - Connection.maintenanceDatabase = POSTGRES_DB
-  - Connection.port = POSTGRES_PORT
-
 ## Migrations
 
 This folder contains all the postgres migrations that have been run on the database.
@@ -56,13 +43,3 @@ Parameters are capped at 16-bit, so if you're doing a bulk insert, you'll need t
 In other words, if `# rows * columns per row > 65,535` you need to do it in batches.
 `pg-protocol` shows this here: <https://github.com/brianc/node-postgres/blob/master/packages/pg-protocol/src/serializer.ts#L155>
 Issue here: <https://github.com/brianc/node-postgres/issues/581>
-
-#### Too many connections
-
-Sometimes pg pool will hit its connection limit. This should never happen in prod, but happens on occassion in dev.
-You'll know it's happening because PG will say there are too many connections.
-To fix, you can run the following SQL to remove all the connections except the one that is running the script
-
-```sql
-select pg_terminate_backend(pid) from pg_stat_activity where datname='parabol-saas' AND pid <> pg_backend_pid();
-```

@@ -107,10 +107,6 @@ const query = graphql`
           }
         }
       }
-      featureFlags {
-        azureDevOps
-        msTeams
-      }
     }
   }
 `
@@ -119,10 +115,6 @@ const ProviderList = (props: Props) => {
   const {queryRef, retry, teamId} = props
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
-  const {
-    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
-  } = viewer
-
   const integrations = viewer.teamMember?.integrations
 
   const allIntegrations = [
@@ -160,14 +152,12 @@ const ProviderList = (props: Props) => {
     {
       name: 'Azure DevOps',
       connected: !!integrations?.azureDevOps.auth?.accessToken,
-      component: <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />,
-      hidden: !allowAzureDevOps
+      component: <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />
     },
     {
       name: 'MS Teams',
       connected: !!integrations?.msTeams.auth,
-      component: <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />,
-      hidden: !allowMSTeams
+      component: <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />
     },
     {
       name: 'Gcal Integration',
@@ -177,12 +167,12 @@ const ProviderList = (props: Props) => {
   ]
 
   const connectedIntegrations = allIntegrations
-    .filter((integration) => integration.connected && !integration.hidden)
+    .filter((integration) => integration.connected)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((integration) => integration.component)
 
   const availableIntegrations = allIntegrations
-    .filter((integration) => !integration.connected && !integration.hidden)
+    .filter((integration) => !integration.connected)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((integration) => integration.component)
 

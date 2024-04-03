@@ -5,7 +5,6 @@ const UserFlagEnum = new GraphQLEnumType({
   description: 'A flag to give an individual user super powers',
   values: {
     azureDevOps: {},
-    msTeams: {},
     noAISummary: {},
     noMeetingHistoryLimit: {},
     adHocTeams: {},

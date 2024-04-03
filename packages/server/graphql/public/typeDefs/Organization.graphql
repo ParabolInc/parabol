@@ -183,7 +183,6 @@ The types of flags that give an individual organization super powers
 """
 type OrganizationFeatureFlags {
   noAISummary: Boolean!
-  AIGeneratedDiscussionPrompt: Boolean!
   standupAISummary: Boolean!
   noPromptToJoinOrg: Boolean!
   suggestGroups: Boolean!
@@ -194,7 +193,6 @@ type OrganizationFeatureFlags {
   oneOnOne: Boolean!
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
-  meetingInception: Boolean!
   kudos: Boolean!
   aiIcebreakers: Boolean!
   aiTemplate: Boolean!

@@ -36,20 +36,6 @@ const pagePadding = {
   paddingTop: 24
 }
 
-declare module 'react' {
-  interface TdHTMLAttributes<T> {
-    height?: string | number
-    width?: string | number
-    bgcolor?: string
-  }
-  interface TableHTMLAttributes<T> {
-    align?: 'center' | 'left' | 'right'
-    bgcolor?: string
-    height?: string | number
-    width?: string | number
-  }
-}
-
 const PagePadding = () => {
   return (
     <table align='center' width='100%'>

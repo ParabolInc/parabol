@@ -1,16 +1,16 @@
 /* eslint-env jest */
-import {MasterPool, r} from 'rethinkdb-ts'
-import getRedis from '../getRedis'
-import RedisLockQueue from '../RedisLockQueue'
-import sleep from 'parabol-client/utils/sleep'
+import {r} from 'rethinkdb-ts'
 import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
-import {getEligibleOrgIdsByDomain} from '../isRequestToJoinDomainAllowed'
+import OrganizationUser from '../../database/types/OrganizationUser'
 import generateUID from '../../generateUID'
+import {DataLoaderWorker} from '../../graphql/graphql'
+import getRedis from '../getRedis'
+import {getEligibleOrgIdsByDomain} from '../isRequestToJoinDomainAllowed'
 jest.mock('../../database/rethinkDriver')
 
-getRethink.mockImplementation(() => {
-  return r
+jest.mocked(getRethink).mockImplementation(() => {
+  return r as any
 })
 
 const TEST_DB = 'isRequestToJoinDomainAllowedTest'
@@ -21,7 +21,7 @@ const testConfig = {
   db: TEST_DB
 }
 
-const createTables = async (...tables: string) => {
+const createTables = async (...tables: string[]) => {
   for (const tableName of tables) {
     const structure = await r
       .db('rethinkdb')
@@ -37,9 +37,8 @@ const createTables = async (...tables: string) => {
   }
 }
 
-type TestOrganizationUser = Pick<
-  OrganizationUser,
-  'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'
+type TestOrganizationUser = Partial<
+  Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
 >
 
 const addOrg = async (
@@ -88,12 +87,12 @@ const dataLoader = {
       users: userLoader,
       isCompanyDomain: isCompanyDomainLoader
     }
-    return loaders[loader]
+    return loaders[loader as keyof typeof loaders]
   })
-}
+} as any as DataLoaderWorker
 
 beforeAll(async () => {
-  const conn = await r.connectPool(testConfig)
+  await r.connectPool(testConfig)
   try {
     await r.dbDrop(TEST_DB).run()
   } catch (e) {
@@ -109,7 +108,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
   getRedis().quit()
 })
 
@@ -126,7 +125,7 @@ test('Founder is billing lead', async () => {
     }
   ])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
 })
@@ -148,7 +147,7 @@ test('Org with noPromptToJoinOrg feature flag is ignored', async () => {
     {featureFlags: ['noPromptToJoinOrg']}
   )
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
@@ -170,7 +169,7 @@ test('Inactive founder is ignored', async () => {
     }
   ])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   // implementation detail, important is only that no user was loaded
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
   expect(userLoader.loadMany).toHaveBeenCalledWith([])
@@ -195,7 +194,7 @@ test('Non-founder billing lead is checked', async () => {
     }
   ])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
   expect(userLoader.loadMany).toHaveBeenCalledWith(['billing1'])
 })
@@ -212,7 +211,7 @@ test('Founder is checked even when not billing lead', async () => {
     }
   ])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(1)
   expect(userLoader.loadMany).toHaveBeenCalledWith(['user1'])
 })
@@ -239,7 +238,7 @@ test('All matching orgs are checked', async () => {
     }
   ])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   // implementation detail, important is only that both users were loaded
   expect(userLoader.loadMany).toHaveBeenCalledTimes(2)
   expect(userLoader.loadMany).toHaveBeenCalledWith(['founder1'])
@@ -249,12 +248,12 @@ test('All matching orgs are checked', async () => {
 test('Empty org does not throw', async () => {
   await addOrg('parabol.co', [])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
 test('No org does not throw', async () => {
-  const orgIds = await getEligibleOrgIdsByDomain('example.com', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('example.com', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
@@ -267,7 +266,7 @@ test('1 person orgs are ignored', async () => {
     }
   ])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
@@ -283,12 +282,12 @@ test('Org matching the user are ignored', async () => {
     }
   ])
 
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(userLoader.loadMany).toHaveBeenCalledTimes(0)
 })
 
 test('Only the biggest org with verified emails qualify', async () => {
-  const org = await addOrg('parabol.co', [
+  await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
       userId: 'founder1'
@@ -350,7 +349,7 @@ test('Only the biggest org with verified emails qualify', async () => {
         ]
       }
     }
-    return userIds.map((id) => ({
+    return userIds.map((id: keyof typeof users) => ({
       id,
       ...users[id]
     }))
@@ -423,7 +422,7 @@ test('All the biggest orgs with verified emails qualify', async () => {
         ]
       }
     }
-    return userIds.map((id) => ({
+    return userIds.map((id: keyof typeof users) => ({
       id,
       ...users[id]
     }))
@@ -452,7 +451,7 @@ test('Team trumps starter tier with more users org', async () => {
     ],
     {tier: 'team'}
   )
-  const biggerStarterOrg = await addOrg('parabol.co', [
+  await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
       userId: 'founder2'
@@ -504,7 +503,7 @@ test('Team trumps starter tier with more users org', async () => {
         ]
       }
     }
-    return userIds.map((id) => ({
+    return userIds.map((id: keyof typeof users) => ({
       id,
       ...users[id]
     }))
@@ -533,7 +532,7 @@ test('Enterprise trumps team tier with more users org', async () => {
     ],
     {tier: 'enterprise'}
   )
-  const starterOrg = await addOrg(
+  await addOrg(
     'parabol.co',
     [
       {
@@ -589,7 +588,7 @@ test('Enterprise trumps team tier with more users org', async () => {
         ]
       }
     }
-    return userIds.map((id) => ({
+    return userIds.map((id: keyof typeof users) => ({
       id,
       ...users[id]
     }))
@@ -604,7 +603,7 @@ test('Enterprise trumps team tier with more users org', async () => {
 })
 
 test('Orgs with verified emails from different domains do not qualify', async () => {
-  const org1 = await addOrg('parabol.co', [
+  await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
       userId: 'founder1'
