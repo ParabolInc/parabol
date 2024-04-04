@@ -9,15 +9,15 @@ export class RelatedDiscussionsWorkflow implements Workflow {
   steps = {
     start: {
       run: relatedDiscussionsStart,
-      getNextStep: () => 'embed' as const
+      getNextStep: () => 'embed'
     },
     embed: {
       run: embedMetadata,
-      getNextStep: () => 'getSimilarRetroTopics' as const
+      getNextStep: () => 'getSimilarRetroTopics'
     },
     getSimilarRetroTopics: {
       run: getSimilarRetroTopics,
-      getNextStep: () => 'rerank' as const
+      getNextStep: () => 'rerank'
     },
     rerank: {
       run: rerankRetroTopics

@@ -10,6 +10,7 @@ import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
 import {resetStalledJobs} from './resetStalledJobs'
+import {EmbedWorkflow} from './workflows/EmbedWorkflow'
 import {RelatedDiscussionsWorkflow} from './workflows/RelatedDiscussionsWorkflow'
 
 tracer.init({
@@ -32,14 +33,6 @@ const run = async () => {
   const redis = new RedisInstance(`embedder_${SERVER_ID}`)
   const primaryLock = await establishPrimaryEmbedder(redis)
   const modelManager = getModelManager()
-  let streams: AsyncIterableIterator<any> | undefined = undefined
-  const kill = () => {
-    primaryLock?.release()
-    streams?.return?.()
-    process.exit()
-  }
-  process.on('SIGTERM', kill)
-  process.on('SIGINT', kill)
   if (primaryLock) {
     // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
@@ -47,17 +40,27 @@ const run = async () => {
     resetStalledJobs()
   }
 
-  const orchestrator = new WorkflowOrchestrator([new RelatedDiscussionsWorkflow()])
-
+  const orchestrator = new WorkflowOrchestrator([
+    new EmbedWorkflow(),
+    new RelatedDiscussionsWorkflow()
+  ])
   // Assume 3 workers for type safety, but it doesn't really matter at runtime
   const jobQueueStreams = Array.from(
     {length: NUM_WORKERS},
     () => new EmbeddingsJobQueueStream(orchestrator)
   ) as Tuple<EmbeddingsJobQueueStream, 3>
+  const streams = mergeAsyncIterators(jobQueueStreams)
+
+  const kill: NodeJS.SignalsListener = (signal) => {
+    Logger.log(`Kill signal received: ${signal}`)
+    primaryLock?.release()
+    streams.return?.()
+    process.exit()
+  }
+  process.on('SIGTERM', kill)
+  process.on('SIGINT', kill)
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
-
-  streams = mergeAsyncIterators(jobQueueStreams)
   for await (const [idx, message] of streams) {
     Logger.log(`Worker ${idx} finished job ${message.id}`)
   }

@@ -1,8 +1,9 @@
 import isValid from 'parabol-server/graphql/isValid'
 import getKysely from 'parabol-server/postgres/getKysely'
 import getPhase from 'parabol-server/utils/getPhase'
+import {MessageToEmbedderRelatedDiscussions} from '../../server/graphql/mutations/helpers/publishToEmbedder'
 import getModelManager from '../ai_models/ModelManager'
-import {JobQueueStepRun, MessageToEmbedderRelatedDiscussions, ParentJob} from '../custom'
+import {JobQueueStepRun, ParentJob} from '../custom'
 import {embedMetadata} from './embedMetadata'
 
 export const relatedDiscussionsStart: JobQueueStepRun<

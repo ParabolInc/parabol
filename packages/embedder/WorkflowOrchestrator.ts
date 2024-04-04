@@ -1,8 +1,8 @@
-import {sql} from 'kysely'
 import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import getKysely from 'parabol-server/postgres/getKysely'
+import {EmbedderJobType} from './EmbedderJobType'
 import {JobQueueError} from './JobQueueError'
-import {DBJob, JobType, StepName, Workflow, WorkflowName} from './custom'
+import {DBJob, JobType, Workflow} from './custom'
 
 export class WorkflowOrchestrator {
   workflows: Record<string, Workflow> = {}
@@ -13,6 +13,7 @@ export class WorkflowOrchestrator {
   }
 
   private failJob = async (jobId: number, retryCount: number, error: JobQueueError) => {
+    console.log('job failed', jobId, error)
     const pg = getKysely()
     const {message, retryDelay} = error
     const maxRetries = error.maxRetries ?? 1e6
@@ -36,7 +37,6 @@ export class WorkflowOrchestrator {
   private addNextJob = async (
     jobType: JobType,
     priority: number,
-    flowId: number,
     data: Record<string, any> | Record<string, any>[]
   ) => {
     const pg = getKysely()
@@ -46,18 +46,15 @@ export class WorkflowOrchestrator {
           jobType,
           // increment by idx so the first item goes first
           priority: priority + idx,
-          jobData: JSON.stringify(data),
-          flowId: pg.selectNoFrom(({fn}) =>
-            fn<number>('NEXTVAL', [sql.lit('"EmbeddingsJobQueue_flowId_seq"')]).as('flowId')
-          )
+          jobData: JSON.stringify(data)
         }))
-      : {jobType, priority, jobData: JSON.stringify(data), flowId}
+      : {jobType, priority, jobData: JSON.stringify(data)}
     await pg.insertInto('EmbeddingsJobQueue').values(values).execute()
   }
 
   runStep = async (job: DBJob) => {
-    const {id: jobId, jobData, jobType, priority, flowId, retryCount} = job
-    const [workflowName, stepName] = jobType.split(':') as [WorkflowName, StepName]
+    const {id: jobId, jobData, jobType, priority, retryCount} = job
+    const {workflowName, stepName} = EmbedderJobType.split(jobType)
     const workflow = this.workflows[workflowName]
     if (!workflow)
       return this.failJob(
@@ -70,7 +67,7 @@ export class WorkflowOrchestrator {
       return this.failJob(jobId, retryCount, new JobQueueError(`Step ${stepName} not found`))
     const {run, getNextStep} = step
     const dataLoader = new RootDataLoader()
-    let result: Awaited<ReturnType<typeof run>> | false = false
+    let result: Awaited<ReturnType<typeof run>> = false
     try {
       result = await run({dataLoader, data: jobData})
     } catch (e) {
@@ -81,9 +78,9 @@ export class WorkflowOrchestrator {
     }
     if (result instanceof JobQueueError) return this.failJob(jobId, retryCount, result)
     if (result === false) return this.finishJob(jobId)
-    const nextStepName = await getNextStep?.(result)
+    const nextStepName = await getNextStep?.({dataLoader, data: result})
     if (!nextStepName) return this.finishJob(jobId)
-    const nextJobType = `${workflowName}:${nextStepName}` as JobType
-    await this.addNextJob(nextJobType, priority, flowId, result)
+    const nextJobType = EmbedderJobType.join(workflowName, nextStepName)
+    await this.addNextJob(nextJobType, priority, result)
   }
 }
