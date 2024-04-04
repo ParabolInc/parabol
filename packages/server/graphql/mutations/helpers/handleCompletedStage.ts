@@ -10,14 +10,14 @@ import getKysely from '../../../postgres/getKysely'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
-import addDiscussionTopics from './addDiscussionTopics'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
-import generateDiscussionSummary from './generateDiscussionSummary'
-import generateGroups from './generateGroups'
-import generateGroupSummaries from './generateGroupSummaries'
-import removeEmptyReflections from './removeEmptyReflections'
+import addDiscussionTopics from './addDiscussionTopics'
 import addRecallBot from './addRecallBot'
-import generateRelatedDiscussions from './generateRelatedDiscussions'
+import generateDiscussionSummary from './generateDiscussionSummary'
+import generateGroupSummaries from './generateGroupSummaries'
+import generateGroups from './generateGroups'
+import {publishToEmbedder} from './publishToEmbedder'
+import removeEmptyReflections from './removeEmptyReflections'
 
 /*
  * handle side effects when a stage is completed
@@ -112,10 +112,9 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader),
+      publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})
     ])
-    // don't wait for this
-    generateRelatedDiscussions(meetingId, dataLoader)
     if (videoMeetingURL) {
       addRecallBot(meetingId, videoMeetingURL)
     }

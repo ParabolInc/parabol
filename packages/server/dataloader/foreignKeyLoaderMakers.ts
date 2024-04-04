@@ -14,3 +14,12 @@ export const discussionsByMeetingId = foreignKeyLoaderMaker(
     return pg.selectFrom('Discussion').selectAll().where('meetingId', 'in', meetingIds).execute()
   }
 )
+
+export const embeddingsMetadataByRefId = foreignKeyLoaderMaker(
+  'embeddingsMetadata',
+  'refId',
+  async (refId) => {
+    const pg = getKysely()
+    return pg.selectFrom('EmbeddingsMetadata').selectAll().where('refId', 'in', refId).execute()
+  }
+)

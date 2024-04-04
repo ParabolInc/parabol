@@ -3,7 +3,7 @@ import getKysely from 'parabol-server/postgres/getKysely'
 import {DB} from 'parabol-server/postgres/pg'
 import isValid from '../../server/graphql/isValid'
 import {Logger} from '../../server/utils/Logger'
-import {EMBEDDER_JOB_PRIORITY} from '../EMBEDDER_JOB_PRIORITY'
+import {getEmbedderPriority} from '../getEmbedderPriority'
 import {ISO6391} from '../iso6393To1'
 import {AbstractModel} from './AbstractModel'
 
@@ -99,6 +99,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   async createEmbeddingsForModel() {
     Logger.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`)
     const pg = getKysely()
+    const priority = getEmbedderPriority(10)
     await pg
       .insertInto('EmbeddingsJobQueue')
       .columns(['jobData', 'priority'])
@@ -111,7 +112,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
               sql.lit('embeddingsMetadataId'),
               'id'
             ]).as('jobData'),
-            lit(EMBEDDER_JOB_PRIORITY.NEW_MODEL).as('priority')
+            lit(priority).as('priority')
           ])
           .where('language', 'in', this.languages)
       )

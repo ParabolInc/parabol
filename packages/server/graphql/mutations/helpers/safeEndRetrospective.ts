@@ -27,7 +27,6 @@ import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentS
 import generateWholeMeetingSummary from './generateWholeMeetingSummary'
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
-import {publishToEmbedder} from './publishToEmbedder'
 import removeEmptyTasks from './removeEmptyTasks'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import updateTeamInsights from './updateTeamInsights'
@@ -371,7 +370,6 @@ const safeEndRetrospective = async ({
     removedTaskIds,
     timelineEventId
   }
-  publishToEmbedder({objectTypes: ['retrospectiveDiscussionTopic'], meetingId})
   publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
 
   return data

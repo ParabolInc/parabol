@@ -1,14 +1,13 @@
 import type {MessageToEmbedder} from 'embedder/custom'
-import getRedis from '../../../utils/getRedis'
+import {getEmbedderPriority} from '../../../../embedder/getEmbedderPriority'
+import getKysely from '../../../postgres/getKysely'
 
-export const publishToEmbedder = (message: MessageToEmbedder) => {
-  return getRedis().xadd(
-    'embedMetadataStream',
-    'MAXLEN',
-    '~',
-    1000,
-    '*',
-    'msg',
-    JSON.stringify(message)
-  )
+export const publishToEmbedder = ({jobType, data, priority}: MessageToEmbedder) => {
+  return getKysely()
+    .insertInto('EmbeddingsJobQueue')
+    .values({
+      jobType,
+      priority: getEmbedderPriority(priority),
+      jobData: JSON.stringify(data)
+    })
 }
