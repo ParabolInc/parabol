@@ -1,8 +1,9 @@
-import {RethinkSchema} from 'parabol-server/database/rethinkDriver'
+import franc from 'franc-min'
 import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
 import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
+import {iso6393To1} from '../iso6393To1'
 
 // Here's a generic reprentation of the text generated here:
 
@@ -76,15 +77,16 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
 
   const promptIds = [...new Set(reflections.map((r) => r.promptId))]
   const [template, ...prompts] = await Promise.all([
-    dataLoader.get('meetingTemplates').loadNonNull(templateId),
+    dataLoader.get('meetingTemplates').load(templateId),
     ...promptIds.map((promptId) => dataLoader.get('reflectPrompts').load(promptId))
   ])
 
   let markdown = ''
+  const templateName = template?.name ?? 'Unknown'
   if (!textForReranking) {
     markdown =
       `A topic "${reflectionGroup?.title ?? ''}" was discussed during ` +
-      `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
+      `the meeting "${newMeeting.name}" that followed the "${templateName}" template.\n` +
       `\n`
   }
 
@@ -148,35 +150,24 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       (c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy)
     )
     if (filteredComments.length) {
-      markdown += `Futher discussion was made:\n`
+      markdown += `Further discussion was made:\n`
       markdown += await formatThread(dataLoader, filteredComments)
       // TODO: if the discussion threads are too long, summarize them
     }
   }
 
-  markdown = prettier.format(markdown, {
+  const body = prettier.format(markdown, {
     parser: 'markdown',
     proseWrap: 'always',
     printWidth: 72
   })
 
-  return markdown
-}
-
-export const newRetroDiscussionTopicsFromNewMeeting = async (
-  newMeeting: RethinkSchema['NewMeeting']['type'],
-  dataLoader: DataLoaderInstance
-) => {
-  const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
-  const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
-  if (orgId && discussPhase && discussPhase.stages) {
-    return discussPhase.stages.map((stage) => ({
-      objectType: 'retrospectiveDiscussionTopic' as const,
-      teamId: newMeeting.teamId,
-      refId: `${newMeeting.id}:${stage.id}`,
-      refUpdatedAt: newMeeting.createdAt
-    }))
-  } else {
-    return []
-  }
+  const reflectionText = reflections
+    .map((r) => r.plaintextContent)
+    .join(' ')
+    // URLs make foreign languages look English
+    .replaceAll(/https?:\/\/.*[\r\n]*/g, '')
+  // minLength of 100 eliminates a lot of junk topics
+  const language = iso6393To1[franc(reflectionText, {minLength: 100}) as keyof typeof iso6393To1]
+  return {body, language}
 }

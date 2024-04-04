@@ -1,11 +1,15 @@
 import getKysely from 'parabol-server/postgres/getKysely'
-import {JobQueueStepRun} from '../custom'
 import {EmbeddingsTable, EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
+import {JobQueueStepRun, ParentJob} from '../custom'
+import {rerankRetroTopics} from './rerankRetroTopics'
 
-export const getSimilarRetroTopics: JobQueueStepRun<{
-  embeddingsMetadataId: number
-  model: EmbeddingsTableName
-}> = async (context) => {
+export const getSimilarRetroTopics: JobQueueStepRun<
+  {
+    embeddingsMetadataId: number
+    model: EmbeddingsTableName
+  },
+  ParentJob<typeof rerankRetroTopics>
+> = async (context) => {
   const {data, dataLoader} = context
   const {embeddingsMetadataId, model} = data
   const MAX_CANDIDATES = 10
@@ -48,7 +52,6 @@ export const getSimilarRetroTopics: JobQueueStepRun<{
   return {
     embeddingsMetadataId,
     model,
-    similarEmbeddings,
-    isRerank: true
+    similarEmbeddings
   }
 }

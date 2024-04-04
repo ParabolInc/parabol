@@ -8,6 +8,7 @@ import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 import getModelManager from './ai_models/ModelManager'
 import {establishPrimaryEmbedder} from './establishPrimaryEmbedder'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
+import {logPerformance} from './logPerformance'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
 import {resetStalledJobs} from './resetStalledJobs'
 import {EmbedWorkflow} from './workflows/EmbedWorkflow'
@@ -61,8 +62,12 @@ const run = async () => {
   process.on('SIGINT', kill)
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
+
+  const counter = logPerformance(3, 60)
+
   for await (const [idx, message] of streams) {
-    Logger.log(`Worker ${idx} finished job ${message.id}`)
+    // Logger.log(`Worker ${idx} finished job ${message.id}`)
+    counter.i++
   }
 
   // On graceful shutdown

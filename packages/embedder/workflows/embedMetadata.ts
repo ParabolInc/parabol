@@ -1,4 +1,3 @@
-import franc from 'franc-min'
 import ms from 'ms'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {JobQueueError} from '../JobQueueError'
@@ -7,7 +6,6 @@ import getModelManager from '../ai_models/ModelManager'
 import {JobQueueStepRun, ParentJob} from '../custom'
 import {createEmbeddingTextFrom} from '../indexing/createEmbeddingTextFrom'
 import numberVectorToString from '../indexing/numberVectorToString'
-import {iso6393To1} from '../iso6393To1'
 import {getSimilarRetroTopics} from './getSimilarRetroTopics'
 
 export const embedMetadata: JobQueueStepRun<
@@ -23,26 +21,26 @@ export const embedMetadata: JobQueueStepRun<
   const modelManager = getModelManager()
 
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
-  dataLoader.get('embeddingsMetadata').clear(embeddingsMetadataId)
 
   if (!metadata) return new JobQueueError(`Invalid embeddingsMetadataId: ${embeddingsMetadataId}`)
 
-  let {fullText, language} = metadata
-  try {
-    if (!fullText) {
-      fullText = await createEmbeddingTextFrom(metadata, dataLoader)
-      language = iso6393To1[franc(fullText) as keyof typeof iso6393To1]
+  if (!metadata.fullText || !metadata.language) {
+    try {
+      const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader)
+      metadata.fullText = fullText
+      metadata.language = language
       await pg
         .updateTable('EmbeddingsMetadata')
         .set({fullText, language})
         .where('id', '=', embeddingsMetadataId)
         .execute()
+    } catch (e) {
+      // get the trace since the error message may be unobvious
+      console.trace(e)
+      return new JobQueueError(`unable to create embedding text: ${e}`)
     }
-  } catch (e) {
-    // get the trace since the error message may be unobvious
-    console.trace(e)
-    return new JobQueueError(`unable to create embedding text: ${e}`)
   }
+  const {fullText, language} = metadata
 
   const embeddingModel = modelManager.embeddingModels.get(model)
   if (!embeddingModel) {
@@ -50,7 +48,7 @@ export const embedMetadata: JobQueueStepRun<
   }
 
   // Exit successfully, we don't want to fail the job because the language is not supported
-  if (!embeddingModel.languages.includes(language!)) return false
+  if (!embeddingModel.languages.includes(language)) return false
 
   const chunks = await embeddingModel.chunkText(fullText)
   if (chunks instanceof Error) {

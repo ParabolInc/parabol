@@ -1,8 +1,8 @@
 import ms from 'ms'
 import {JobQueueError} from '../JobQueueError'
-import {JobQueueStepRun} from '../custom'
 import {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
+import {JobQueueStepRun} from '../custom'
 import {createEmbeddingTextFrom} from '../indexing/createEmbeddingTextFrom'
 import {
   SimilarEmbedding,
@@ -21,7 +21,8 @@ export const rerankRetroTopics: JobQueueStepRun<{
 
   let rerankText: string = ''
   try {
-    rerankText = await createEmbeddingTextFrom(metadata, dataLoader, true)
+    const {body} = await createEmbeddingTextFrom(metadata, dataLoader, true)
+    rerankText = body
   } catch (e) {
     // get the trace since the error message may be unobvious
     console.trace(e)
