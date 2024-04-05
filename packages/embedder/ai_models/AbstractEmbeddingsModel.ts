@@ -34,15 +34,25 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
 
   abstract getTokens(content: string): Promise<number[] | Error>
 
+  private normalizeContent = (content: string, truncateUrls: boolean) => {
+    if (!truncateUrls) return content.trim()
+    return content.trim().replaceAll(/https?:\/\/.*[\r\n]*/g, (match) => {
+      const url = new URL(match)
+      url.search = ''
+      return url.toString()
+    })
+  }
+
   async chunkText(content: string) {
     const tokens = await this.getTokens(content)
     if (tokens instanceof Error) return tokens
     const isFullTextTooBig = tokens.length > this.maxInputTokens
     if (!isFullTextTooBig) return [content]
-
+    const normalizedContent = this.normalizeContent(content, true)
     for (let i = 0; i < 3; i++) {
+      // Error if we exceed 2 tokensPerWord so we can adjust our strategy
       const tokensPerWord = (4 + i) / 3
-      const chunks = this.splitText(content, tokensPerWord)
+      const chunks = this.splitText(normalizedContent, tokensPerWord)
       const chunkLengths = await Promise.all(
         chunks.map(async (chunk) => {
           const chunkTokens = await this.getTokens(chunk)
@@ -67,7 +77,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     // it's actually 4 / 3, but don't want to chance a failed split
     const WORD_LIMIT = Math.floor(this.maxInputTokens / tokensPerWord)
     const chunks: string[] = []
-    const delimiters = ['\n\n', '\n', '.', ' ']
+    const delimiters = ['\n\n', '\n', '.', ' '] as const
     const countWords = (text: string) => text.trim().split(/\s+/).length
     const splitOnDelimiter = (text: string, delimiter: string) => {
       const sections = text.split(delimiter)
@@ -92,7 +102,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         }
       }
     }
-    splitOnDelimiter(content.trim(), delimiters[0]!)
+    splitOnDelimiter(content, delimiters[0])
     return chunks
   }
 

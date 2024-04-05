@@ -92,6 +92,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   }
 
   for (const prompt of prompts) {
+    if (!prompt) continue // RethinkDB bad data integrity
     if (!textForReranking) {
       markdown += `Participants were prompted with, "${prompt.question}`
       if (prompt.description) markdown += `: ${prompt.description}`
