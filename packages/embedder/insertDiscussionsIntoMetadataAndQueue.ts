@@ -42,17 +42,13 @@ export const insertDiscussionsIntoMetadataAndQueue = async (
           .select(['id', 'model'])
       )
       .insertInto('EmbeddingsJobQueue')
-      .columns(['jobType', 'priority', 'jobData'])
+      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model', 'jobData'])
       .expression(({selectFrom}) =>
-        selectFrom('Metadata').select(({lit, fn, ref}) => [
+        selectFrom('Metadata').select(({lit, ref}) => [
           sql.lit('embed:start').as('jobType'),
           lit(priority).as('priority'),
-          fn('json_build_object', [
-            sql.lit('embeddingsMetadataId'),
-            ref('Metadata.id'),
-            sql.lit('model'),
-            ref('Metadata.model')
-          ]).as('jobData')
+          ref('Metadata.id').as('embeddingsMetadataId'),
+          ref('Metadata.model').as('model')
         ])
       )
       .execute()

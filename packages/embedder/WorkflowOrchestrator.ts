@@ -40,20 +40,23 @@ export class WorkflowOrchestrator {
     data: Record<string, any> | Record<string, any>[]
   ) => {
     const pg = getKysely()
-    // If this step creates many next steps, treat each as a new flow. Else, keep the same flow
-    const values = Array.isArray(data)
-      ? data.map((data, idx) => ({
-          jobType,
-          // increment by idx so the first item goes first
-          priority: priority + idx,
-          jobData: JSON.stringify(data)
-        }))
-      : {jobType, priority, jobData: JSON.stringify(data)}
+    const getValues = (datum: any, idx = 0) => {
+      const {embeddingsMetadataId, model, ...jobData} = datum
+      return {
+        jobType,
+        // increment by idx so the first item goes first
+        priority: priority + idx,
+        embeddingsMetadataId,
+        model,
+        jobData: JSON.stringify(jobData)
+      }
+    }
+    const values = Array.isArray(data) ? data.map(getValues) : getValues(data)
     await pg.insertInto('EmbeddingsJobQueue').values(values).execute()
   }
 
   runStep = async (job: DBJob) => {
-    const {id: jobId, jobData, jobType, priority, retryCount} = job
+    const {id: jobId, jobData, jobType, priority, retryCount, embeddingsMetadataId, model} = job
     const {workflowName, stepName} = EmbedderJobType.split(jobType)
     const workflow = this.workflows[workflowName]
     if (!workflow)
@@ -69,7 +72,7 @@ export class WorkflowOrchestrator {
     const dataLoader = new RootDataLoader()
     let result: Awaited<ReturnType<typeof run>> = false
     try {
-      result = await run({dataLoader, data: jobData})
+      result = await run({dataLoader, data: {...jobData, embeddingsMetadataId, model}})
     } catch (e) {
       if (e instanceof Error) {
         result = new JobQueueError(`Uncaught error: ${e.message}`)
