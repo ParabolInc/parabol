@@ -3,7 +3,7 @@ import TeamInvite, {TeamInviteProps} from 'parabol-client/modules/email/componen
 import {headCSS} from 'parabol-client/modules/email/styles'
 import React from 'react'
 
-const subject = (inviterEmail: string) => `${inviterEmail} has invited you to Parabol`
+const subject = (inviterEmail: string) : string => `${inviterEmail} has invited you to Parabol`
 
 const teamInviteText = (props: TeamInviteProps) => {
   const {inviteeName, inviteeEmail, inviterName, inviterEmail, inviteLink, teamName} = props
