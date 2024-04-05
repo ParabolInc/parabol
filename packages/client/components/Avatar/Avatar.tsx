@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useState} from 'react'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import AvatarBadge from '../AvatarBadge/AvatarBadge'
 
@@ -7,7 +7,7 @@ type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'si
 
 const ImageBlock = styled('div')<ImageBlockProps>(
   ({sansRadius, sansShadow, picture, size, onClick}) => ({
-    backgroundImage: `url(${picture ?? defaultUserAvatar})`,
+    backgroundImage: `url(${picture})`,
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
@@ -62,7 +62,10 @@ const Avatar = forwardRef((props: Props, ref: any) => {
     sansShadow,
     size
   } = props
-
+  const [imageUrl, setImageUrl] = useState(picture || defaultUserAvatar)
+  const onError = () => {
+    setImageUrl(defaultUserAvatar)
+  }
   return (
     <ImageBlock
       onTransitionEnd={onTransitionEnd}
@@ -72,9 +75,10 @@ const Avatar = forwardRef((props: Props, ref: any) => {
       onMouseEnter={onMouseEnter}
       sansRadius={sansRadius}
       sansShadow={sansShadow}
-      picture={picture}
+      picture={imageUrl}
       size={size}
     >
+      <img src={imageUrl} className='hidden' onError={onError} />
       {hasBadge && (
         <BadgeBlock>
           <BadgeBlockInner>
