@@ -77,7 +77,7 @@ export const embedMetadata: JobQueueStepRun<
           chunkNumber: chunks.length > 1 ? chunkNumber : null
         })
         .onConflict((oc) =>
-          oc.column('embeddingsMetadataId').doUpdateSet((eb) => ({
+          oc.columns(['embeddingsMetadataId', 'chunkNumber']).doUpdateSet((eb) => ({
             embedText: eb.ref('excluded.embedText'),
             embedding: eb.ref('excluded.embedding')
           }))

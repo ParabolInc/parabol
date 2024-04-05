@@ -63,9 +63,9 @@ const run = async () => {
 
   Logger.log(`\n⚡⚡⚡️️ Server ID: ${SERVER_ID}. Embedder is ready ⚡⚡⚡️️️`)
 
-  const counter = logPerformance(3, 60)
+  const counter = logPerformance(3, 20)
 
-  for await (const [idx, message] of streams) {
+  for await (const _ of streams) {
     // Logger.log(`Worker ${idx} finished job ${message.id}`)
     counter.i++
   }

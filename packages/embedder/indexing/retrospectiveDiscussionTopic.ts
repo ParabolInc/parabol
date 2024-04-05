@@ -73,7 +73,8 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId)
   ])
   if (!isMeetingRetrospective(newMeeting)) throw new Error('Meeting is not a retro')
-  const {templateId} = newMeeting
+  // It should never be undefined, but our data integrity in RethinkDB is bad
+  const templateId = newMeeting?.templateId ?? ''
 
   const promptIds = [...new Set(reflections.map((r) => r.promptId))]
   const [template, ...prompts] = await Promise.all([
