@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.25.1](https://github.com/ParabolInc/parabol/compare/v7.25.0...v7.25.1) (2024-04-08)
+
+
+### Fixed
+
+* fallback for missing avatar images ([#9603](https://github.com/ParabolInc/parabol/issues/9603)) ([1a7e298](https://github.com/ParabolInc/parabol/commit/1a7e298a6fbd4c6a06acdfdca4d815029811178f))
+* fix an issue where upcoming invoice doesn't have the nextPeriodCharges field ([#9580](https://github.com/ParabolInc/parabol/issues/9580)) ([cb52596](https://github.com/ParabolInc/parabol/commit/cb52596c2f69b4b6e1641654610bb2335cefd0f2))
+* fix the issue where timer doesn't work in TEAM_HEALTH phase ([#9597](https://github.com/ParabolInc/parabol/issues/9597)) ([96f29b5](https://github.com/ParabolInc/parabol/commit/96f29b56e7a5bd63cb8ec5c879a7c2fb80ef803d))
+* type error in invite email ([#9606](https://github.com/ParabolInc/parabol/issues/9606)) ([6ead321](https://github.com/ParabolInc/parabol/commit/6ead321741734cff47a953b3b1ac1e8999f16594))
+
+
+### Changed
+
+* Add inviter name to invite email subject ([#9604](https://github.com/ParabolInc/parabol/issues/9604)) ([cd5a3a8](https://github.com/ParabolInc/parabol/commit/cd5a3a844a90d5160f11ff38ee63b3db87894b20))
+* update ironbank GH action to copy ip-to-server-id script ([#9594](https://github.com/ParabolInc/parabol/issues/9594)) ([89aeea3](https://github.com/ParabolInc/parabol/commit/89aeea362ac46d365cb2ff9ab9971c30f816103c))
+
 ## [7.25.0](https://github.com/ParabolInc/parabol/compare/v7.24.1...v7.25.0) (2024-04-04)
 
 
