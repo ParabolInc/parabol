@@ -28,7 +28,7 @@ export const embedMetadata: JobQueueStepRun<
     try {
       const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader)
       metadata.fullText = fullText
-      metadata.language = language
+      metadata.language = language!
       await pg
         .updateTable('EmbeddingsMetadata')
         .set({fullText, language})

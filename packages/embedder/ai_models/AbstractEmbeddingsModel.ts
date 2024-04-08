@@ -5,6 +5,7 @@ import isValid from '../../server/graphql/isValid'
 import {Logger} from '../../server/utils/Logger'
 import {getEmbedderPriority} from '../getEmbedderPriority'
 import {ISO6391} from '../iso6393To1'
+import {URLRegex} from '../regex'
 import {AbstractModel} from './AbstractModel'
 
 export interface EmbeddingModelParams {
@@ -36,11 +37,8 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
 
   private normalizeContent = (content: string, truncateUrls: boolean) => {
     if (!truncateUrls) return content.trim()
-    return content.trim().replaceAll(/https?:\/\/.*[\r\n]*/g, (match) => {
-      const url = new URL(match)
-      url.search = ''
-      return url.toString()
-    })
+    // pathname & search can include a lot of garbage that doesn't help the meaning
+    return content.trim().replaceAll(URLRegex, (match) => new URL(match).origin)
   }
 
   async chunkText(content: string) {
@@ -49,10 +47,12 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     const isFullTextTooBig = tokens.length > this.maxInputTokens
     if (!isFullTextTooBig) return [content]
     const normalizedContent = this.normalizeContent(content, true)
-    for (let i = 0; i < 3; i++) {
-      // Error if we exceed 2 tokensPerWord so we can adjust our strategy
+    // writeFileSync('n.json', JSON.stringify(normalizedContent))
+    for (let i = 0; i < 5; i++) {
+      // Error if we hit 3 tokensPerWord we should adjust our strategy
       const tokensPerWord = (4 + i) / 3
       const chunks = this.splitText(normalizedContent, tokensPerWord)
+      // writeFileSync(`n${i}.json`, JSON.stringify(chunks))
       const chunkLengths = await Promise.all(
         chunks.map(async (chunk) => {
           const chunkTokens = await this.getTokens(chunk)
@@ -69,17 +69,17 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       if (validChunks.every((chunkLength) => chunkLength <= this.maxInputTokens)) {
         return chunks
       }
+      // console.log('invalid chunk', this.maxInputTokens, {chunkLengths})
     }
     return new Error(`Text is too long and could not be split into chunks. Is it english?`)
   }
   // private because result must still be too long to go into model. Must verify with getTokens
   private splitText(content: string, tokensPerWord = 4 / 3) {
-    // it's actually 4 / 3, but don't want to chance a failed split
     const WORD_LIMIT = Math.floor(this.maxInputTokens / tokensPerWord)
     const chunks: string[] = []
     const delimiters = ['\n\n', '\n', '.', ' '] as const
     const countWords = (text: string) => text.trim().split(/\s+/).length
-    const splitOnDelimiter = (text: string, delimiter: string) => {
+    const splitOnDelimiter = (text: string, delimiter: (typeof delimiters)[number]) => {
       const sections = text.split(delimiter)
       for (let i = 0; i < sections.length; i++) {
         const section = sections[i]!

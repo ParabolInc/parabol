@@ -1,9 +1,10 @@
-import franc from 'franc-min'
 import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
 import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
-import {iso6393To1} from '../iso6393To1'
+import {inferLanguage} from '../inferLanguage'
+import {ISO6391} from '../iso6393To1'
+import {URLRegex} from '../regex'
 
 // Here's a generic reprentation of the text generated here:
 
@@ -124,6 +125,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
    * objectType: 'retrospectiveDiscussionNoSummary' or something and do a bit of testing.
    */
 
+  let language: ISO6391 | undefined = undefined
   if (discussionSummary) {
     markdown += `Further discussion was made. ` + ` ${discussionSummary}`
   } else {
@@ -154,7 +156,12 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     if (filteredComments.length) {
       markdown += `Further discussion was made:\n`
       markdown += await formatThread(dataLoader, filteredComments)
-      // TODO: if the discussion threads are too long, summarize them
+      const commentBlob = filteredComments
+        .map((c) => c.plaintextContent)
+        .join(' ')
+        .replaceAll(URLRegex, '')
+      // it's common to reflect in english and comment in a native tongue
+      language = inferLanguage(commentBlob)
     }
   }
 
@@ -164,12 +171,6 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     printWidth: 72
   })
 
-  const reflectionText = reflections
-    .map((r) => r.plaintextContent)
-    .join(' ')
-    // URLs make foreign languages look English
-    .replaceAll(/https?:\/\/.*[\r\n]*/g, '')
-  // minLength of 100 eliminates a lot of junk topics
-  const language = iso6393To1[franc(reflectionText, {minLength: 100}) as keyof typeof iso6393To1]
+  language = language || inferLanguage(reflections.map((r) => r.plaintextContent).join(' '))
   return {body, language}
 }
