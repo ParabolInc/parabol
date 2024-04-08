@@ -70,7 +70,7 @@ jobs:
               --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
             PIPELINE_ID=$(echo $PIPELINES | jq ".[] | select(.sha == \"${{ env.COMMIT_ID }}\")" | jq .id)
             [ -z "$PIPELINE_ID" ] && exit 1
-            JOBS=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines/$PIPELINE_ID/jobs" \
+            JOBS=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines/$PIPELINE_ID/jobs?per_page=100" \
               --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
             JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.STAGING_JOB }}")' | jq .id)
             PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
