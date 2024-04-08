@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.25.2](https://github.com/ParabolInc/parabol/compare/v7.25.1...v7.25.2) (2024-04-08)
+
+
+### Fixed
+
+* return 100 gitlab pipeline jobs ([#9607](https://github.com/ParabolInc/parabol/issues/9607)) ([7a26009](https://github.com/ParabolInc/parabol/commit/7a26009931fdb55d298390eb7871937d3a09eca7))
+
 ## [7.25.1](https://github.com/ParabolInc/parabol/compare/v7.25.0...v7.25.1) (2024-04-08)
 
 
