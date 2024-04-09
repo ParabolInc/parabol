@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.25.3](https://github.com/ParabolInc/parabol/compare/v7.25.2...v7.25.3) (2024-04-09)
+
+
+### Fixed
+
+* Add AuthIdentityMicrosoft ([#9612](https://github.com/ParabolInc/parabol/issues/9612)) ([e3d8b38](https://github.com/ParabolInc/parabol/commit/e3d8b3899845b565e91259217e96f222d116b70c))
+* remove top level graphql-relay dependency ([#9611](https://github.com/ParabolInc/parabol/issues/9611)) ([72fc294](https://github.com/ParabolInc/parabol/commit/72fc2940bb912f9c81056d2d3ac539602a6aa8b2))
+
+
+### Changed
+
+* **segment:** remove Segment ([#9599](https://github.com/ParabolInc/parabol/issues/9599)) ([537a8af](https://github.com/ParabolInc/parabol/commit/537a8afce7702251337bc8946a6703c25d668133))
+
 ## [7.25.2](https://github.com/ParabolInc/parabol/compare/v7.25.1...v7.25.2) (2024-04-08)
 
 
