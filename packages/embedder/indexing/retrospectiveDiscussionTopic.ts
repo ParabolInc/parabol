@@ -165,7 +165,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     }
   }
 
-  const body = prettier.format(markdown, {
+  const body = await prettier.format(markdown, {
     parser: 'markdown',
     proseWrap: 'always',
     printWidth: 72

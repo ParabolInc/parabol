@@ -1,12 +1,30 @@
 // call with yarn sucrase-node billing/debug.ts
 import '../../scripts/webpack/utils/dotenv'
-import getModelManager from './ai_models/ModelManager'
+import getKysely from '../server/postgres/getKysely'
+import {WorkflowOrchestrator} from './WorkflowOrchestrator'
+import {EmbedWorkflow} from './workflows/EmbedWorkflow'
 
 const debugFailedJob = async () => {
-  const man = getModelManager()
-  const model = man.embeddingModels.get('Embeddings_ember_1')!
-  const res = await model?.chunkText(text)
-  console.log({res})
+  const pg = getKysely()
+  const failedJob = await pg
+    .selectFrom('EmbeddingsJobQueue')
+    .selectAll()
+    .orderBy(['priority'])
+    .where('state', '=', 'failed')
+    .limit(1)
+    .executeTakeFirst()
+
+  if (!failedJob) {
+    console.log('No failed jobs found')
+    return
+  }
+
+  console.log('Debugging job:', failedJob.id)
+  const orch = new WorkflowOrchestrator([new EmbedWorkflow()])
+  await orch.runStep(failedJob as any)
+  // const man = getModelManager()
+  // const model = man.embeddingModels.get('Embeddings_ember_1')
+  // const res = await model?.chunkText('hey there')
 }
 
 debugFailedJob()

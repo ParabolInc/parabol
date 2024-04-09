@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {EmbedderJobType} from './EmbedderJobType'
@@ -15,7 +16,7 @@ export class WorkflowOrchestrator {
   private failJob = async (jobId: number, retryCount: number, error: JobQueueError) => {
     console.log('job failed', jobId, error)
     const pg = getKysely()
-    const {message, retryDelay} = error
+    const {message, retryDelay, jobData} = error
     const maxRetries = error.maxRetries ?? 1e6
     await pg
       .updateTable('EmbeddingsJobQueue')
@@ -23,7 +24,9 @@ export class WorkflowOrchestrator {
         state: 'failed',
         stateMessage: message,
         retryCount: eb('retryCount', '+', 1),
-        retryAfter: retryDelay && retryCount < maxRetries ? new Date(Date.now() + retryDelay) : null
+        retryAfter:
+          retryDelay && retryCount < maxRetries ? new Date(Date.now() + retryDelay) : null,
+        jobData: jobData ? sql`jsonb_concat("jobData", ${JSON.stringify({jobData})})` : undefined
       }))
       .where('id', '=', jobId)
       .executeTakeFirstOrThrow()

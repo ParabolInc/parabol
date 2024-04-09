@@ -12,19 +12,20 @@ export const embedMetadata: JobQueueStepRun<
   {
     embeddingsMetadataId: number
     model: EmbeddingsTableName
+    forceBuildText?: boolean
   },
   ParentJob<typeof getSimilarRetroTopics>
 > = async (context) => {
   const {data, dataLoader} = context
   const pg = getKysely()
-  const {embeddingsMetadataId, model} = data
+  const {embeddingsMetadataId, model, forceBuildText} = data
   const modelManager = getModelManager()
 
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
 
   if (!metadata) return new JobQueueError(`Invalid embeddingsMetadataId: ${embeddingsMetadataId}`)
 
-  if (!metadata.fullText || !metadata.language) {
+  if (!metadata.fullText || !metadata.language || forceBuildText) {
     try {
       const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader)
       metadata.fullText = fullText
@@ -37,7 +38,9 @@ export const embedMetadata: JobQueueStepRun<
     } catch (e) {
       // get the trace since the error message may be unobvious
       console.trace(e)
-      return new JobQueueError(`unable to create embedding text: ${e}`)
+      return new JobQueueError(`unable to create embedding text: ${e}`, undefined, 0, {
+        forceBuildText: true
+      })
     }
   }
   const {fullText, language} = metadata
@@ -46,13 +49,13 @@ export const embedMetadata: JobQueueStepRun<
   if (!embeddingModel) {
     return new JobQueueError(`embedding model ${model} not available`)
   }
-
   // Exit successfully, we don't want to fail the job because the language is not supported
   if (!embeddingModel.languages.includes(language)) return false
-
   const chunks = await embeddingModel.chunkText(fullText)
   if (chunks instanceof Error) {
-    return new JobQueueError(`unable to get tokens: ${chunks.message}`, ms('1m'), 10)
+    return new JobQueueError(`unable to get tokens: ${chunks.message}`, ms('1m'), 10, {
+      forceBuildText: true
+    })
   }
   // Cannot use summarization strategy if generation model has same context length as embedding model
   // We must split the text & not tokens because BERT tokenizer is not trained for linebreaks e.g. \n\n
@@ -63,7 +66,8 @@ export const embedMetadata: JobQueueStepRun<
         return new JobQueueError(
           `unable to get embeddings: ${embeddingVector.message}`,
           ms('1m'),
-          10
+          10,
+          {forceBuildText: true}
         )
       }
       await pg
