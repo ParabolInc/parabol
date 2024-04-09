@@ -4,7 +4,6 @@ import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
 import {inferLanguage} from '../inferLanguage'
 import {ISO6391} from '../iso6393To1'
-import {URLRegex} from '../regex'
 
 // Here's a generic reprentation of the text generated here:
 
@@ -159,10 +158,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     if (filteredComments.length) {
       markdown += `Further discussion was made:\n`
       markdown += await formatThread(dataLoader, filteredComments)
-      const commentBlob = filteredComments
-        .map((c) => c.plaintextContent)
-        .join(' ')
-        .replaceAll(URLRegex, '')
+      const commentBlob = filteredComments.map((c) => c.plaintextContent).join(' ')
       // it's common to reflect in english and comment in a native tongue
       language = inferLanguage(commentBlob)
     }
@@ -174,13 +170,6 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     printWidth: 72
   })
 
-  language =
-    language ||
-    inferLanguage(
-      reflections
-        .map((r) => r.plaintextContent)
-        .join(' ')
-        .replaceAll(URLRegex, '')
-    )
+  language = language || inferLanguage(reflections.map((r) => r.plaintextContent).join(' '))
   return {body, language}
 }

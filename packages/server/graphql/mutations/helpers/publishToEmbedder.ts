@@ -8,7 +8,9 @@ export interface MessageToEmbedderRelatedDiscussions {
 
 export type MessageToEmbedder = {priority: number} & MessageToEmbedderRelatedDiscussions
 
+const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
 export const publishToEmbedder = ({jobType, data, priority}: MessageToEmbedder) => {
+  if (!IS_EMBEDDER_ENALBED) return
   return getKysely()
     .insertInto('EmbeddingsJobQueue')
     .values({
