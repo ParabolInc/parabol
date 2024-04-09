@@ -90,7 +90,7 @@ const RetroTopic = (props: Props) => {
           reflections {
             ...EmailReflectionCard_reflection
           }
-          topicSummary: summary
+          discussionPromptQuestion
         }
         discussion {
           commentCount
@@ -121,7 +121,7 @@ const RetroTopic = (props: Props) => {
 
   const {reflectionGroup, discussion, id: stageId} = stage
   const {commentCount, discussionSummary} = discussion
-  const {reflections, title, voteCount, topicSummary} = reflectionGroup!
+  const {reflections, title, voteCount, discussionPromptQuestion} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -130,8 +130,8 @@ const RetroTopic = (props: Props) => {
     commentCount === 0
       ? 'No Comments'
       : commentCount >= 101
-      ? 'See 100+ Comments'
-      : `See ${commentCount} ${plural(commentCount, 'Comment')}`
+        ? 'See 100+ Comments'
+        : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   const corsOptions = isEmail ? EMAIL_CORS_OPTIONS : APP_CORS_OPTIONS
   return (
@@ -143,16 +143,16 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {(topicSummary || discussionSummary) && (
+      {(discussionPromptQuestion || discussionSummary) && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            {topicSummary && (
+            {discussionPromptQuestion && (
               <>
                 <tr>
-                  <td style={topicTitleStyle}>{'🤖 Topic Summary'}</td>
+                  <td style={topicTitleStyle}>{'🤖 Discussion Question'}</td>
                 </tr>
                 <tr>
-                  <td style={textStyle}>{topicSummary}</td>
+                  <td style={textStyle}>{discussionPromptQuestion}</td>
                 </tr>
               </>
             )}

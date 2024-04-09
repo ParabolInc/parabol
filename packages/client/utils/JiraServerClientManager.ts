@@ -4,6 +4,7 @@ import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import CreateOAuth1AuthorizeUrlMutation from '../mutations/CreateOAuth1AuthorizeUrlMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+
 class JiraServerClientManager {
   static SCOPES = 'read_api'
   static openOAuth(

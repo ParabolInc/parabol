@@ -5,7 +5,7 @@ const TRUSTED_PROXY_COUNT = Number(process.env.TRUSTED_PROXY_COUNT)
 const CLIENT_IP_POS = isNaN(TRUSTED_PROXY_COUNT) ? 0 : -1 - TRUSTED_PROXY_COUNT
 
 const uwsGetIP = (res: HttpResponse, req: HttpRequest) => {
-  const clientIp = req.getHeader('x-forwarded-for')?.split(',').at(CLIENT_IP_POS)
+  const clientIp = req.getHeader('x-forwarded-for')?.split(',').at(CLIENT_IP_POS)?.trim()
   if (clientIp) return clientIp
   // returns ipv6 e.g. '0000:0000:0000:0000:0000:ffff:ac11:0001'
   return Buffer.from(res.getRemoteAddressAsText()).toString()

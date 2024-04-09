@@ -95,9 +95,8 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
 const query = graphql`
   query CreateNewActivityQuery {
     viewer {
-      featureFlags {
-        noTemplateLimit
-      }
+      freeCustomRetroTemplatesRemaining
+      freeCustomPokerTemplatesRemaining
       preferredTeamId
       teams {
         id
@@ -135,12 +134,21 @@ export const CreateNewActivity = (props: Props) => {
     return selectedActivity
   })
   const {viewer} = data
-  const {teams, preferredTeamId, featureFlags} = viewer
+  const {
+    teams,
+    preferredTeamId,
+    freeCustomRetroTemplatesRemaining,
+    freeCustomPokerTemplatesRemaining
+  } = viewer
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const history = useHistory()
+  const freeCustomTemplatesRemaining =
+    selectedActivity.type === 'retrospective'
+      ? freeCustomRetroTemplatesRemaining
+      : freeCustomPokerTemplatesRemaining
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {
@@ -284,16 +292,15 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          {selectedTeam.tier === 'starter' && !featureFlags.noTemplateLimit ? (
-            <div className='mx-auto flex h-12 items-center gap-24'>
-              <div className='w-96'>
-                Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
-                ideal workflow.
-              </div>
+          {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
+            <div className='flex w-full items-center justify-center gap-4'>
+              <span className='pr-4 text-center'>
+                Upgrade to the <b>Team Plan</b> to create more custom activities
+              </span>
 
               <RaisedButton
                 palette='pink'
-                className='mx-auto h-12 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                className='h-12 px-4 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
                 onClick={handleUpgrade}
               >
                 Upgrade to Team Plan

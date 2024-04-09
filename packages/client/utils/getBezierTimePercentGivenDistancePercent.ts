@@ -10,7 +10,12 @@ const bezierLookup = [] as {x: number; y: number}[]
 const getBezierTimePercentGivenDistancePercent = (threshold: number, bezierCurve: string) => {
   if (bezierLookup.length === 0) {
     const re = /\(([^)]+)\)/
-    const [x1, y1, x2, y2] = re.exec(bezierCurve)![1].split(',').map(Number)
+    const [x1, y1, x2, y2] = re.exec(bezierCurve)![1]!.split(',').map(Number) as [
+      number,
+      number,
+      number,
+      number
+    ]
     // css bezier-curves imply a start of 0,0 and end of 1,1
     const x0 = 0
     const y0 = 0
@@ -32,9 +37,9 @@ const getBezierTimePercentGivenDistancePercent = (threshold: number, bezierCurve
   }
   let x
   for (let i = 1; i < bezierLookup.length; i++) {
-    const point = bezierLookup[i]
+    const point = bezierLookup[i]!
     if (point.y > threshold) {
-      x = bezierLookup[i - 1].x
+      x = bezierLookup[i - 1]!.x
       break
     }
   }

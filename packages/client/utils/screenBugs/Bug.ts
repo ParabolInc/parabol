@@ -183,7 +183,7 @@ export default class Bug {
     this.bug.classList.remove('bug-dead')
   }
 
-  animate = (t) => {
+  animate = (t: any) => {
     if (!this.animating || !this.alive || !this.active) return
     this.going = requestAnimationFrame((t) => {
       this.animate(t)
@@ -217,9 +217,9 @@ export default class Bug {
       this.angle_deg %= 360
       if (this.angle_deg < 0) this.angle_deg += 360
 
-      if (Math.abs(this.directions[this.near_edge] - this.angle_deg) > 15) {
-        const angle1 = this.directions[this.near_edge] - this.angle_deg
-        const angle2 = 360 - this.angle_deg + this.directions[this.near_edge]
+      if (Math.abs(this.directions[this.near_edge]! - this.angle_deg) > 15) {
+        const angle1 = this.directions[this.near_edge]! - this.angle_deg
+        const angle2 = 360 - this.angle_deg + this.directions[this.near_edge]!
         this.large_turn_angle_deg = Math.abs(angle1) < Math.abs(angle2) ? angle1 : angle2
 
         this.edge_test_counter = 10
@@ -399,7 +399,7 @@ export default class Bug {
     let side = Math.round(Math.random() * 4 - 0.5)
     const d = document
     const e = d.documentElement
-    const g = d.getElementsByTagName('body')[0]
+    const g = d.getElementsByTagName('body')[0]!
     const windowX = window.innerWidth || e.clientWidth || g.clientWidth
     const windowY = window.innerHeight || e.clientHeight || g.clientHeight
     if (side > 3) side = 3
@@ -455,7 +455,7 @@ export default class Bug {
     let side = Math.round(Math.random() * 4 - 0.5)
     const d = document
     const e = d.documentElement
-    const g = d.getElementsByTagName('body')[0]
+    const g = d.getElementsByTagName('body')[0]!
     const windowX = window.innerWidth || e.clientWidth || g.clientWidth
     const windowY = window.innerHeight || e.clientHeight || g.clientHeight
     if (side > 3) side = 3
@@ -496,7 +496,7 @@ export default class Bug {
     const style = {} as Pos
     const d = document
     const e = d.documentElement
-    const g = d.getElementsByTagName('body')[0]
+    const g = d.getElementsByTagName('body')[0]!
     const windowX = window.innerWidth || e.clientWidth || g.clientWidth
     const windowY = window.innerHeight || e.clientHeight || g.clientHeight
 
@@ -529,11 +529,11 @@ export default class Bug {
     this.drop(deathType)
   }
 
-  drop = (deathType) => {
+  drop = (deathType: any) => {
     const startPos = this.bug.top
     const d = document
     const e = d.documentElement
-    const g = d.getElementsByTagName('body')[0]
+    const g = d.getElementsByTagName('body')[0]!
     const pos = window.innerHeight || e.clientHeight || g.clientHeight
     const finalPos = pos - this.options.bugHeight
     const rotationRate = this.random(0, 20, true)
@@ -545,7 +545,7 @@ export default class Bug {
     })
   }
 
-  dropping = (t, startPos, finalPos, rotationRate, deathType) => {
+  dropping = (t: number, startPos: any, finalPos: any, rotationRate: any, deathType: any) => {
     const elapsedTime = t - this._lastTimestamp!
     const deltaPos = 0.002 * (elapsedTime * elapsedTime)
     let newPos = startPos + deltaPos
@@ -586,16 +586,22 @@ export default class Bug {
   twitch = (deathType: number, _legPos?: number) => {
     let legPos = _legPos || 0
     if (deathType === 0 || deathType === 1) {
-      this.twitchTimer = window.setTimeout(() => {
-        this.bug.style.backgroundPosition =
-          '-' + (deathType * 2 + (legPos % 2)) * this.options.bugWidth + 'px 100%'
-        this.twitchTimer = window.setTimeout(() => {
-          legPos++
+      this.twitchTimer = window.setTimeout(
+        () => {
           this.bug.style.backgroundPosition =
             '-' + (deathType * 2 + (legPos % 2)) * this.options.bugWidth + 'px 100%'
-          this.twitch(deathType, ++legPos)
-        }, this.random(300, 800))
-      }, this.random(1000, 10000))
+          this.twitchTimer = window.setTimeout(
+            () => {
+              legPos++
+              this.bug.style.backgroundPosition =
+                '-' + (deathType * 2 + (legPos % 2)) * this.options.bugWidth + 'px 100%'
+              this.twitch(deathType, ++legPos)
+            },
+            this.random(300, 800)
+          )
+        },
+        this.random(1000, 10000)
+      )
     }
   }
 

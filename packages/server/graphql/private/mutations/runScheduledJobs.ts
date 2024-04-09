@@ -40,8 +40,6 @@ const processMeetingStageTimeLimits = async (
   })
 }
 
-export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
-
 const processJob = async (job: Selectable<DB['ScheduledJob']>, dataLoader: DataLoaderWorker) => {
   const pg = getKysely()
   const res = await pg.deleteFrom('ScheduledJob').where('id', '=', job.id).executeTakeFirst()

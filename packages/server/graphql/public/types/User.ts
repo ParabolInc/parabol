@@ -114,7 +114,7 @@ const User: UserResolvers = {
     const invoice = await manager.retrieveInvoice(invoiceId)
     return generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader)
   },
-  availableTemplates: async ({id: userId}, {first, after}, {authToken, dataLoader}) => {
+  availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const user = await dataLoader.get('users').loadNonNull(userId)
     const teamIds =
@@ -175,6 +175,7 @@ const User: UserResolvers = {
         ...activity,
         sortOrder: getScore(activity, teamIds)
       }))
+      .filter((activity) => !type || activity.type === type)
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
 
     return connectionFromTemplateArray(allActivities, first, after)

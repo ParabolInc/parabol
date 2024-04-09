@@ -5,6 +5,8 @@ This repo was created to build a Parabol base image that is **agnostic to config
 ## Building the image
 
 See [build.yml](../../../.github/workflows/build.yml) to see how we build production images.
+To build an image ad-hoc, trigger the build workflow from GitHub Actions.
+To build it locally (unsupported), use [act](https://github.com/nektos/act) to run the GitHub Action locally.
 
 ## Run the application using a docker image
 

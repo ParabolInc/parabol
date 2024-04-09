@@ -90,7 +90,6 @@ const query = graphql`
       }
       organizations {
         featureFlags {
-          oneOnOne
           aiTemplate
         }
       }
@@ -174,19 +173,22 @@ const mapRetroSubCategories = (templates: readonly Template[]) => {
 const mapTeamCategories = (templates: readonly Template[]) => {
   // list public templates last
   const publicTemplates = [] as Template[]
-  const mapped = templates.reduce((acc, template) => {
-    const {team, scope} = template
-    if (scope === 'PUBLIC') {
-      publicTemplates.push(template)
-    } else {
-      const {name} = team
-      if (!acc[name]) {
-        acc[name] = []
+  const mapped = templates.reduce(
+    (acc, template) => {
+      const {team, scope} = template
+      if (scope === 'PUBLIC') {
+        publicTemplates.push(template)
+      } else {
+        const {name} = team
+        if (!acc[name]) {
+          acc[name] = []
+        }
+        acc[name]!.push(template)
       }
-      acc[name]!.push(template)
-    }
-    return acc
-  }, {} as Record<string, Template[]>)
+      return acc
+    },
+    {} as Record<string, Template[]>
+  )
 
   mapped['Parabol'] = publicTemplates
   return mapped
@@ -198,7 +200,6 @@ export const ActivityLibrary = (props: Props) => {
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
   const {featureFlags, availableTemplates, organizations} = viewer
-  const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
   const setSearch = (value: string) => {
@@ -211,9 +212,6 @@ export const ActivityLibrary = (props: Props) => {
 
   const templates = useMemo(() => {
     const templatesMap = availableTemplates.edges.map((edge) => edge.node)
-    if (!hasOneOnOneFeatureFlag) {
-      return templatesMap.filter((template) => template.id !== 'oneOnOneAction')
-    }
     return templatesMap
   }, [availableTemplates])
 
@@ -250,8 +248,8 @@ export const ActivityLibrary = (props: Props) => {
       categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
         : categoryId === CUSTOM_CATEGORY_ID
-        ? template.scope !== 'PUBLIC'
-        : template.category === categoryId
+          ? template.scope !== 'PUBLIC'
+          : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
 
