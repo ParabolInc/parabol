@@ -42,9 +42,11 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
 
   async chunkText(content: string) {
-    const tokens = await this.getTokens(content)
+    const AVG_CHARS_PER_TOKEN = 20
+    const maxContentLength = this.maxInputTokens * AVG_CHARS_PER_TOKEN
+    const tokens = content.length < maxContentLength ? await this.getTokens(content) : -1
     if (tokens instanceof Error) return tokens
-    const isFullTextTooBig = tokens.length > this.maxInputTokens
+    const isFullTextTooBig = tokens === -1 || tokens.length > this.maxInputTokens
     if (!isFullTextTooBig) return [content]
     const normalizedContent = this.normalizeContent(content, true)
     // writeFileSync('n.json', JSON.stringify(normalizedContent))
@@ -76,6 +78,8 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   // private because result must still be too long to go into model. Must verify with getTokens
   private splitText(content: string, tokensPerWord = 4 / 3) {
     const WORD_LIMIT = Math.floor(this.maxInputTokens / tokensPerWord)
+    // account for junk data with excessively long words
+    const charLimit = WORD_LIMIT * 100
     const chunks: string[] = []
     const delimiters = ['\n\n', '\n', '.', ' '] as const
     const countWords = (text: string) => text.trim().split(/\s+/).length
@@ -83,14 +87,16 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       const sections = text.split(delimiter)
       for (let i = 0; i < sections.length; i++) {
         const section = sections[i]!
+        // account for multiple delimiters in a row
+        if (section.length === 0) continue
         const sectionWordCount = countWords(section)
-        if (sectionWordCount < WORD_LIMIT) {
+        if (sectionWordCount < WORD_LIMIT && section.length < charLimit) {
           // try to merge this section with the last one
           const previousSection = chunks.at(-1)
           if (previousSection) {
             const combinedChunks = `${previousSection}${delimiter}${section}`
             const mergedWordCount = countWords(combinedChunks)
-            if (mergedWordCount < WORD_LIMIT) {
+            if (mergedWordCount < WORD_LIMIT && combinedChunks.length < charLimit) {
               chunks[chunks.length - 1] = combinedChunks
               continue
             }

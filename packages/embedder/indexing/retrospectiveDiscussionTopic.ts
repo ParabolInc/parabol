@@ -22,7 +22,7 @@ import {URLRegex} from '../regex'
 // </END IF DISCUSSION>
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
-
+const MAX_TEXT_LENGTH = 10000
 async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderInstance) {
   if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
@@ -47,7 +47,7 @@ async function formatThread(
       ? 'Anonymous'
       : await getPreferredNameByUserId(comment.createdBy, dataLoader)
     const how = depth === 0 ? 'wrote' : 'replied'
-    const content = comment.plaintextContent
+    const content = comment.plaintextContent.slice(0, MAX_TEXT_LENGTH)
     const formattedPost = `${indent}- ${author} ${how}, "${content}"\n`
 
     // Recursively format child threads
@@ -103,7 +103,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       const author = newMeeting.disableAnonymity
         ? await getPreferredNameByUserId(reflection.creatorId, dataLoader)
         : 'Anonymous'
-      markdown += `   - ${author} wrote, "${reflection.plaintextContent}"\n`
+      markdown += `   - ${author} wrote, "${reflection.plaintextContent.slice(0, MAX_TEXT_LENGTH)}"\n`
     }
     markdown += `\n`
   }
@@ -171,6 +171,13 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     printWidth: 72
   })
 
-  language = language || inferLanguage(reflections.map((r) => r.plaintextContent).join(' '))
+  language =
+    language ||
+    inferLanguage(
+      reflections
+        .map((r) => r.plaintextContent)
+        .join(' ')
+        .replaceAll(URLRegex, '')
+    )
   return {body, language}
 }
