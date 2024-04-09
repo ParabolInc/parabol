@@ -85,9 +85,6 @@ const query = graphql`
           }
         }
       }
-      featureFlags {
-        retrosInDisguise
-      }
       organizations {
         featureFlags {
           aiTemplate
@@ -196,7 +193,7 @@ export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {featureFlags, availableTemplates, organizations} = viewer
+  const {availableTemplates, organizations} = viewer
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
   const setSearch = (value: string) => {
@@ -268,10 +265,6 @@ export const ActivityLibrary = (props: Props) => {
     }
     return undefined
   }, [categoryId, templatesToRender])
-
-  if (!featureFlags.retrosInDisguise) {
-    return <Redirect to='/404' />
-  }
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
