@@ -12,19 +12,24 @@ type Props = {
   setShowDrawer: (showDrawer: boolean) => void
   showDrawer: boolean
   hasReflections: boolean
+  isPhaseComplete: boolean
 }
 
 const MeetingOptions = (props: Props) => {
-  const {setShowDrawer, showDrawer, hasReflections} = props
+  const {setShowDrawer, showDrawer, hasReflections, isPhaseComplete} = props
   const [isOpen, setIsOpen] = useState(false)
+  const isDisabled = hasReflections || isPhaseComplete
+  const tooltipCopy = hasReflections
+    ? 'You can only change the template if no reflections have been added.'
+    : 'You can only change the template if the phase is not complete.'
 
   const handleClick = () => {
-    if (hasReflections) return
+    if (isDisabled) return
     setShowDrawer(!showDrawer)
   }
 
   const handleMouseEnter = () => {
-    if (hasReflections) {
+    if (isDisabled) {
       setIsOpen(true)
     }
   }
@@ -45,15 +50,13 @@ const MeetingOptions = (props: Props) => {
       <Tooltip open={isOpen}>
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <TooltipTrigger asChild>
-            <MenuItem onClick={handleClick} isDisabled={hasReflections}>
+            <MenuItem onClick={handleClick} isDisabled={isDisabled}>
               <div className='mr-3 flex text-slate-700'>{<SwapHorizIcon />}</div>
               Change template
             </MenuItem>
           </TooltipTrigger>
         </div>
-        <TooltipContent>
-          {'You can only change the template if no reflections have been added.'}
-        </TooltipContent>
+        <TooltipContent>{tooltipCopy}</TooltipContent>
       </Tooltip>
     </Menu>
   )

@@ -2,6 +2,7 @@ import ActionMeetingMember from './types/ActionMeetingMember'
 import ActionMeetingSettings from './types/ActionMeetingSettings'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
+import AuthIdentityMicrosoft from './types/AuthIdentityMicrosoft'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
 import AzureDevOpsWorkItem from './types/AzureDevOpsWorkItem'
 import CheckInPhase from './types/CheckInPhase'
@@ -40,6 +41,7 @@ const rootTypes = [
   IntegrationProviderOAuth2,
   IntegrationProviderWebhook,
   AuthIdentityGoogle,
+  AuthIdentityMicrosoft,
   AuthIdentityLocal,
   CheckInPhase,
   ReflectPhase,

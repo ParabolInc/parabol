@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "7.25.1",
+  "version": "7.25.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -101,7 +101,6 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "graphql": "15.7.2",
-    "graphql-relay": "^0.10.0",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
     "jscodeshift": "^0.14.0",
@@ -116,8 +115,8 @@
     "postcss": "^8.4.21",
     "postcss-loader": "^7.0.2",
     "prettier": "^3.2.5",
-    "prettier-plugin-organize-imports": "^2.3.4",
-    "prettier-plugin-tailwindcss": "^0.2.1",
+    "prettier-plugin-organize-imports": "^3.2.4",
+    "prettier-plugin-tailwindcss": "^0.5.13",
     "raw-loader": "^4.0.2",
     "relay-compiler": "^14.1.0",
     "relay-config": "^12.0.0",
