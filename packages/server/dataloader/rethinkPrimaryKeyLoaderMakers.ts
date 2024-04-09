@@ -6,7 +6,6 @@ import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 export const agendaItems = new RethinkPrimaryKeyLoaderMaker('AgendaItem')
 export const atlassianAuths = new RethinkPrimaryKeyLoaderMaker('AtlassianAuth')
 export const comments = new RethinkPrimaryKeyLoaderMaker('Comment')
-export const reflectPrompts = new RethinkPrimaryKeyLoaderMaker('ReflectPrompt')
 export const massInvitations = new RethinkPrimaryKeyLoaderMaker('MassInvitation')
 export const meetingSettings = new RethinkPrimaryKeyLoaderMaker('MeetingSettings')
 export const meetingMembers = new RethinkPrimaryKeyLoaderMaker('MeetingMember')

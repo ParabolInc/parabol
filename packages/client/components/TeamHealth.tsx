@@ -14,6 +14,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SetTeamHealthVoteMutation from '../mutations/SetTeamHealthVoteMutation'
 import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMutation'
+import UpsertRetrospectivePromptMutation from '../mutations/UpsertRetrospectivePromptMutation'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import clsx from 'clsx'
 import RaisedButton from './RaisedButton'
@@ -75,6 +76,12 @@ const TeamHealth = (props: Props) => {
     RevealTeamHealthVotesMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
   }
 
+  const onAddReflectPrompt = () => {
+    if (!isRevealed || submitting) return
+    submitMutation()
+    UpsertRetrospectivePromptMutation(atmosphere, {meetingId, question: 'Healthy?'}, {onError, onCompleted})
+  }
+
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -105,6 +112,15 @@ const TeamHealth = (props: Props) => {
                     </div>
                   ))}
                 </div>
+                {isFacilitator && (
+                  <RaisedButton
+                    palette='white'
+                    onClick={onAddReflectPrompt}
+                    className='mt-4 h-14 w-44 rounded-full text-slate-600 disabled:bg-slate-300 disabled:text-slate-600'
+                  >
+                    Add retro prompt
+                  </RaisedButton>
+                )}
               </>
             ) : (
               <>
