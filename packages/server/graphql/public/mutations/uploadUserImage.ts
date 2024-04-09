@@ -36,10 +36,7 @@ const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
     r
       .table('TeamMember')
       .getAll(userId, {index: 'userId'})
-      .update(
-        {picture: publicLocation},
-        {returnChanges: true}
-      )('changes')('new_val')
+      .update({picture: publicLocation}, {returnChanges: true})('changes')('new_val')
       .default([])
       .run() as unknown as TeamMember[],
     updateUser({picture: publicLocation}, userId)

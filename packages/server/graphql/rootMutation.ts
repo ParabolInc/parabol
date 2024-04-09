@@ -243,5 +243,5 @@ export default new GraphQLObjectType<any, GQLContext>({
       removeTeamMemberIntegrationAuth,
       endTeamPrompt,
       updateAzureDevOpsDimensionField
-    } as any)
+    }) as any
 })

@@ -25,8 +25,8 @@ const PeekingAvatar = styled(AvatarListUser)<{status?: TransitionStatus}>(({stat
     status === TransitionStatus.MOUNTED
       ? `translate(64px)`
       : status === TransitionStatus.EXITING
-      ? 'scale(0)'
-      : undefined
+        ? 'scale(0)'
+        : undefined
 }))
 
 interface Props {

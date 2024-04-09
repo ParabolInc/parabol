@@ -19,7 +19,7 @@ const CheckInStage: GraphQLObjectType<CheckInStageDB, GQLContext> = new GraphQLO
     ({
       ...newMeetingStageFields(),
       ...newMeetingTeamMemberStageFields()
-    } as any)
+    }) as any
 })
 
 export default CheckInStage
