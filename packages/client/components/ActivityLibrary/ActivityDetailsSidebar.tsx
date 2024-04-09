@@ -122,9 +122,9 @@ const ActivityDetailsSidebar = (props: Props) => {
     selectedTemplate.scope === 'PUBLIC'
       ? teams
       : selectedTemplate.scope === 'ORGANIZATION'
-      ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
-      : // it is a team-scoped template, templateTeam  must exist
-        [templateTeam!]
+        ? teams.filter((team) => team.orgId === selectedTemplate.orgId)
+        : // it is a team-scoped template, templateTeam  must exist
+          [templateTeam!]
 
   const availableTeamsRef = useRef(availableTeams)
 
@@ -246,12 +246,12 @@ const ActivityDetailsSidebar = (props: Props) => {
     type === 'retrospective'
       ? 'Retro'
       : type === 'teamPrompt'
-      ? 'Standup'
-      : type === 'poker'
-      ? 'Poker'
-      : type === 'action'
-      ? 'Check-in'
-      : 'Meeting'
+        ? 'Standup'
+        : type === 'poker'
+          ? 'Poker'
+          : type === 'action'
+            ? 'Check-in'
+            : 'Meeting'
   const withRecurrence =
     type === 'teamPrompt' ||
     (selectedTeam.organization.featureFlags.recurringRetros && type === 'retrospective')

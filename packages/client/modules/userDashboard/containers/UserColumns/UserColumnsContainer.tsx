@@ -77,8 +77,8 @@ const UserColumnsContainer = (props: Props) => {
         return teamFiltered && inTeam
       })
     : teamIds
-    ? teams.filter(({id}) => teamIds.includes(id))
-    : teams
+      ? teams.filter(({id}) => teamIds.includes(id))
+      : teams
 
   const firstTeam = filteredTeams[0]
   if (firstTeam) {

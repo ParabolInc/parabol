@@ -55,8 +55,8 @@ const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean): React.CSSP
         ? '12px 8px 0'
         : '4px 4px 0'
       : isDesktop
-      ? '8px 40px 0'
-      : '8px 16px 0',
+        ? '8px 40px 0'
+        : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }

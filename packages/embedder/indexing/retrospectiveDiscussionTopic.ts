@@ -103,7 +103,10 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       const author = newMeeting.disableAnonymity
         ? await getPreferredNameByUserId(reflection.creatorId, dataLoader)
         : 'Anonymous'
-      markdown += `   - ${author} wrote, "${reflection.plaintextContent.slice(0, MAX_TEXT_LENGTH)}"\n`
+      markdown += `   - ${author} wrote, "${reflection.plaintextContent.slice(
+        0,
+        MAX_TEXT_LENGTH
+      )}"\n`
     }
     markdown += `\n`
   }

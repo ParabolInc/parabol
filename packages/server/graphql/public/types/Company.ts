@@ -89,14 +89,17 @@ const Company: CompanyResolvers = {
       .flat()
       .filter(isValid)
     // group by teamId
-    const teamMembersByTeamId = teamMembers.reduce((obj, teamMember) => {
-      if (obj[teamMember.teamId]) {
-        obj[teamMember.teamId]!.push(teamMember)
-      } else {
-        obj[teamMember.teamId] = [teamMember]
-      }
-      return obj
-    }, {} as Record<string, [TeamMember, ...TeamMember[]]>)
+    const teamMembersByTeamId = teamMembers.reduce(
+      (obj, teamMember) => {
+        if (obj[teamMember.teamId]) {
+          obj[teamMember.teamId]!.push(teamMember)
+        } else {
+          obj[teamMember.teamId] = [teamMember]
+        }
+        return obj
+      },
+      {} as Record<string, [TeamMember, ...TeamMember[]]>
+    )
 
     // filter out teams that have less than 2 unremoved team members
     const teamsWithSufficientTeamMembers = Object.values(teamMembersByTeamId)

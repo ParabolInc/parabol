@@ -84,8 +84,8 @@ export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
       LoaderName extends ForeignLoaders
         ? TypeFromForeign<LoaderName>[]
         : LoaderName extends PrimaryLoaders
-        ? TypeFromPrimary<LoaderName>
-        : never
+          ? TypeFromPrimary<LoaderName>
+          : never
     >
 
 /**

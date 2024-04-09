@@ -19,7 +19,7 @@ const statLabel = (idx: number, len: number) =>
     fontSize: 36,
     lineHeight: '40px',
     paddingTop: 12
-  } as React.CSSProperties)
+  }) as React.CSSProperties
 
 const descriptionLabel = (idx: number, len: number) =>
   ({
@@ -31,7 +31,7 @@ const descriptionLabel = (idx: number, len: number) =>
     fontWeight: 600,
     paddingBottom: 12,
     textTransform: 'uppercase'
-  } as React.CSSProperties)
+  }) as React.CSSProperties
 
 const tableStyle = {
   borderSpacing: '2px 0',

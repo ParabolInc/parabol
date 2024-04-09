@@ -76,8 +76,8 @@ export default {
         task.integration?.service === 'jira'
           ? await Promise.all(authKeys.map((key) => dataLoader.get('freshAtlassianAuth').load(key)))
           : task.integration?.service === 'github'
-          ? await Promise.all(authKeys.map((key) => dataLoader.get('githubAuth').load(key)))
-          : authKeys.map(() => null)
+            ? await Promise.all(authKeys.map((key) => dataLoader.get('githubAuth').load(key)))
+            : authKeys.map(() => null)
 
       if (!targetTeamAuth && !sourceTeamAuth && !accessUsersTargetTeamAuth) {
         return standardError(new Error('No valid integration found'), {

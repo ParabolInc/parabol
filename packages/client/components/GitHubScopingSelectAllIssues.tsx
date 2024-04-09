@@ -72,7 +72,7 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
           service: 'github',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
 
     const variables = {

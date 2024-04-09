@@ -9,10 +9,10 @@ const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]
     tierVal(a) < tierVal(b)
       ? -1
       : tierVal(a) > tierVal(b)
-      ? 1
-      : a.name.toLowerCase() < b.name.toLowerCase()
-      ? -1
-      : 1
+        ? 1
+        : a.name.toLowerCase() < b.name.toLowerCase()
+          ? -1
+          : 1
   )
   return teamsSlice as unknown as T
 }

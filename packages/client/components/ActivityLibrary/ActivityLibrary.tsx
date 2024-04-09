@@ -173,19 +173,22 @@ const mapRetroSubCategories = (templates: readonly Template[]) => {
 const mapTeamCategories = (templates: readonly Template[]) => {
   // list public templates last
   const publicTemplates = [] as Template[]
-  const mapped = templates.reduce((acc, template) => {
-    const {team, scope} = template
-    if (scope === 'PUBLIC') {
-      publicTemplates.push(template)
-    } else {
-      const {name} = team
-      if (!acc[name]) {
-        acc[name] = []
+  const mapped = templates.reduce(
+    (acc, template) => {
+      const {team, scope} = template
+      if (scope === 'PUBLIC') {
+        publicTemplates.push(template)
+      } else {
+        const {name} = team
+        if (!acc[name]) {
+          acc[name] = []
+        }
+        acc[name]!.push(template)
       }
-      acc[name]!.push(template)
-    }
-    return acc
-  }, {} as Record<string, Template[]>)
+      return acc
+    },
+    {} as Record<string, Template[]>
+  )
 
   mapped['Parabol'] = publicTemplates
   return mapped
@@ -245,8 +248,8 @@ export const ActivityLibrary = (props: Props) => {
       categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
         : categoryId === CUSTOM_CATEGORY_ID
-        ? template.scope !== 'PUBLIC'
-        : template.category === categoryId
+          ? template.scope !== 'PUBLIC'
+          : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
 

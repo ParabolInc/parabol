@@ -261,8 +261,8 @@ const useDragAndDrop = (
       targetGroupId && reflectionGroupId !== targetGroupId
         ? 'REFLECTION_GROUP'
         : !targetGroupId && reflectionCount > 0 && !isReflectionInSpotlightResults
-        ? 'REFLECTION_GRID'
-        : null
+          ? 'REFLECTION_GRID'
+          : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
     if (spotlightGroup?.id) {
       const event = isReflectionInSpotlightResults
