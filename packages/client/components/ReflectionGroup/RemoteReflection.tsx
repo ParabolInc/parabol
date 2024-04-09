@@ -58,8 +58,8 @@ const RemoteReflectionModal = styled('div')<{
   animation: animation
     ? animation
     : isSpotlight && !isDropping
-    ? `${circleAnimation(transform)} 3s ease infinite;`
-    : undefined,
+      ? `${circleAnimation(transform)} 3s ease infinite;`
+      : undefined,
   zIndex: isInViewerSpotlightResults
     ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
     : ZIndex.REFLECTION_IN_FLIGHT
@@ -117,10 +117,10 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
     headerTop === maxTop
       ? 'arrow_downward'
       : headerLeft === maxLeft
-      ? 'arrow_forward'
-      : headerLeft === minLeft
-      ? 'arrow_back'
-      : ('arrow_upward' as RemoteReflectionArrow)
+        ? 'arrow_forward'
+        : headerLeft === minLeft
+          ? 'arrow_back'
+          : ('arrow_upward' as RemoteReflectionArrow)
   return {
     arrow,
     headerTransform: `translate(${headerLeft}px,${headerTop}px)`
@@ -234,8 +234,8 @@ const RemoteReflection = (props: Props) => {
       remoteDrag?.isSpotlight
         ? Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT
         : localPhase.phaseType === VOTE
-        ? 0
-        : Times.REFLECTION_DRAG_STALE_TIMEOUT
+          ? 0
+          : Times.REFLECTION_DRAG_STALE_TIMEOUT
     )
     return () => {
       window.clearTimeout(timeoutRef.current)

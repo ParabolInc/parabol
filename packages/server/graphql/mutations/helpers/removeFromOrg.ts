@@ -48,10 +48,7 @@ const removeFromOrg = async (
       .getAll(userId, {index: 'userId'})
       .filter({orgId, removedAt: null})
       .nth(0)
-      .update(
-        {removedAt: now},
-        {returnChanges: true}
-      )('changes')(0)('new_val')
+      .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
       .default(null)
       .run() as unknown as OrganizationUser,
     dataLoader.get('users').loadNonNull(userId)

@@ -63,8 +63,8 @@ const Votes = styled('span')<{voteCount: number; isExpanded: boolean}>(
         ? PALETTE.SLATE_200
         : '#fff'
       : voteCount === 0
-      ? PALETTE.SLATE_700
-      : PALETTE.SKY_500,
+        ? PALETTE.SLATE_700
+        : PALETTE.SKY_500,
     fontWeight: 600,
     padding: '0 4px',
     display: 'flex',

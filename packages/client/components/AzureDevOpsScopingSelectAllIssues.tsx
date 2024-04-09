@@ -86,7 +86,7 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
           service: 'azureDevOps',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
 
     const variables = {
