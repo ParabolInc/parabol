@@ -73,12 +73,15 @@ interface DetailedLineItemDict {
 
 const getEmailLookup = async (userIds: string[], dataLoader: DataLoaderWorker) => {
   const usersAndEmails = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
-  return usersAndEmails.reduce((dict, doc) => {
-    if (doc) {
-      dict[doc.id] = doc.email
-    }
-    return dict
-  }, {} as {[key: string]: string}) as EmailLookup
+  return usersAndEmails.reduce(
+    (dict, doc) => {
+      if (doc) {
+        dict[doc.id] = doc.email
+      }
+      return dict
+    },
+    {} as {[key: string]: string}
+  ) as EmailLookup
 }
 
 const reduceItemsByType = (typesDict: TypesDict, email: string) => {

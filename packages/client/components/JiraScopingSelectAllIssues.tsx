@@ -67,7 +67,7 @@ const JiraScopingSelectAllIssues = (props: Props) => {
           service: 'jira',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
 
     const variables = {

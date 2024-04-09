@@ -122,8 +122,8 @@ export const UnstyledTemplateSharing = (props: Props) => {
     scope === 'TEAM'
       ? `Only visible to ${teamName}`
       : scope === 'ORGANIZATION'
-      ? `Sharing with ${orgName}`
-      : 'Sharing publicly'
+        ? `Sharing with ${orgName}`
+        : 'Sharing publicly'
   return (
     <>
       <DropdownBlock

@@ -56,7 +56,7 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
           service: 'PARABOL',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
     const variables = {
       meetingId,

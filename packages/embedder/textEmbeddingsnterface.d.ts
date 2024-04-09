@@ -9,8 +9,8 @@ type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T
 type OneOf<T extends any[]> = T extends [infer Only]
   ? Only
   : T extends [infer A, infer B, ...infer Rest]
-  ? OneOf<[XOR<A, B>, ...Rest]>
-  : never
+    ? OneOf<[XOR<A, B>, ...Rest]>
+    : never
 
 export interface paths {
   '/decode': {

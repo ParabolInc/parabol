@@ -586,16 +586,22 @@ export default class Bug {
   twitch = (deathType: number, _legPos?: number) => {
     let legPos = _legPos || 0
     if (deathType === 0 || deathType === 1) {
-      this.twitchTimer = window.setTimeout(() => {
-        this.bug.style.backgroundPosition =
-          '-' + (deathType * 2 + (legPos % 2)) * this.options.bugWidth + 'px 100%'
-        this.twitchTimer = window.setTimeout(() => {
-          legPos++
+      this.twitchTimer = window.setTimeout(
+        () => {
           this.bug.style.backgroundPosition =
             '-' + (deathType * 2 + (legPos % 2)) * this.options.bugWidth + 'px 100%'
-          this.twitch(deathType, ++legPos)
-        }, this.random(300, 800))
-      }, this.random(1000, 10000))
+          this.twitchTimer = window.setTimeout(
+            () => {
+              legPos++
+              this.bug.style.backgroundPosition =
+                '-' + (deathType * 2 + (legPos % 2)) * this.options.bugWidth + 'px 100%'
+              this.twitch(deathType, ++legPos)
+            },
+            this.random(300, 800)
+          )
+        },
+        this.random(1000, 10000)
+      )
     }
   }
 

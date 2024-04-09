@@ -13,28 +13,33 @@ interface Root {
   size: 'small' | 'medium' | 'large'
 }
 
-const ButtonRoot = styled(PlainButton)<Root>(
-  ({disabled, elevationResting, elevationHovered, elevationPressed, pressedDown, size}) => {
-    return {
-      // size is easy to override, it adds: fontSize, lineHeight, padding
-      ...(ui.buttonSizeStyles[size] as any),
-      alignItems: 'center',
-      border: '1px solid transparent',
-      boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationResting,
-      display: 'flex',
-      flexShrink: 0,
-      justifyContent: 'center',
-      textAlign: 'center',
-      transition: `box-shadow 100ms ease-in`,
-      userSelect: 'none',
-      whiteSpace: 'nowrap',
-      ':hover,:focus,:active': {
-        boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationHovered,
-        outline: pressedDown && 0
-      }
+const ButtonRoot = styled(PlainButton)<Root>(({
+  disabled,
+  elevationResting,
+  elevationHovered,
+  elevationPressed,
+  pressedDown,
+  size
+}) => {
+  return {
+    // size is easy to override, it adds: fontSize, lineHeight, padding
+    ...(ui.buttonSizeStyles[size] as any),
+    alignItems: 'center',
+    border: '1px solid transparent',
+    boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationResting,
+    display: 'flex',
+    flexShrink: 0,
+    justifyContent: 'center',
+    textAlign: 'center',
+    transition: `box-shadow 100ms ease-in`,
+    userSelect: 'none',
+    whiteSpace: 'nowrap',
+    ':hover,:focus,:active': {
+      boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationHovered,
+      outline: pressedDown && 0
     }
   }
-)
+})
 
 export interface BaseButtonProps extends PlainButtonProps {
   'aria-label'?: string

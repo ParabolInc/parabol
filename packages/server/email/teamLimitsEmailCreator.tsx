@@ -76,8 +76,8 @@ const teamLimitsEmailCreator = (props: Props) => {
     emailType === 'locked'
       ? LockedEmail
       : emailType === 'sevenDayWarning'
-      ? SevenDayWarningEmail
-      : ThirtyDayWarningEmail
+        ? SevenDayWarningEmail
+        : ThirtyDayWarningEmail
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
     <Email preferredName={preferredName} orgId={orgId} orgName={orgName} appOrigin={appOrigin} />
   )
@@ -86,8 +86,8 @@ const teamLimitsEmailCreator = (props: Props) => {
     emailType === 'locked'
       ? `Parabol Account Deactivated`
       : emailType === 'sevenDayWarning'
-      ? `Parabol Account - Action Required`
-      : `Parabol Account - Team Limit Reached`
+        ? `Parabol Account - Action Required`
+        : `Parabol Account - Team Limit Reached`
 
   const html = emailTemplate({
     bodyContent,

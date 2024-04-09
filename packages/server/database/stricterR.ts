@@ -9,8 +9,8 @@ type DeepPartial<T> =
       [P in keyof T]?: T[P] extends Array<infer U1>
         ? Array<DeepPartial<U1>>
         : T[P] extends ReadonlyArray<infer U2>
-        ? ReadonlyArray<DeepPartial<U2>>
-        : DeepPartial<T[P]>
+          ? ReadonlyArray<DeepPartial<U2>>
+          : DeepPartial<T[P]>
     }
 
 // User defined schemas
@@ -421,8 +421,8 @@ export interface RQuery<T = any> {
   ): T extends Array<infer T1>
     ? Promise<RCursor<T1>>
     : T extends RCursor<unknown>
-    ? Promise<T>
-    : Promise<RCursor<T>>
+      ? Promise<T>
+      : Promise<RCursor<T>>
   then(): never
 }
 export interface RDatum<T = any> extends RQuery<T> {

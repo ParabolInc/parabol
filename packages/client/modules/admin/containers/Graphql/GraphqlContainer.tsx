@@ -35,8 +35,8 @@ const GraphqlContainer = () => {
       setMode === 'dark'
         ? true
         : setMode === 'light'
-        ? false
-        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? false
+          : window.matchMedia('(prefers-color-scheme: dark)').matches
     setIsDarkMode(nextTheme)
   })
 
