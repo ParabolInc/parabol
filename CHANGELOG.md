@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.25.4](https://github.com/ParabolInc/parabol/compare/v7.25.3...v7.25.4) (2024-04-09)
+
+
+### Fixed
+
+* Revert "[Snyk] Upgrade graphql from 15.7.2 to 15.8.0 ([#9569](https://github.com/ParabolInc/parabol/issues/9569))" ([#9614](https://github.com/ParabolInc/parabol/issues/9614)) ([ecc2cdc](https://github.com/ParabolInc/parabol/commit/ecc2cdc4b67e1788763af601984e1cbf76f02235))
+
 ## [7.25.3](https://github.com/ParabolInc/parabol/compare/v7.25.2...v7.25.3) (2024-04-09)
 
 
