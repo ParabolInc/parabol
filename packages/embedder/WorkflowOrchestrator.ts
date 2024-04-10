@@ -75,8 +75,9 @@ export class WorkflowOrchestrator {
     const {run, getNextStep} = step
     const dataLoader = new RootDataLoader()
     let result: Awaited<ReturnType<typeof run>> = false
+    const data = {...jobData, embeddingsMetadataId, model}
     try {
-      result = await run({dataLoader, data: {...jobData, embeddingsMetadataId, model}})
+      result = await run({dataLoader, data})
     } catch (e) {
       if (e instanceof Error) {
         result = new JobQueueError(`Uncaught error: ${e.message}`)
@@ -86,7 +87,7 @@ export class WorkflowOrchestrator {
     if (result instanceof JobQueueError) return this.failJob(jobId, retryCount, result)
     await this.finishJob(jobId)
     if (result === false) return
-    const nextStepName = await getNextStep?.({dataLoader, data: result})
+    const nextStepName = await getNextStep?.({dataLoader, data: {...data, ...result}})
     if (!nextStepName) return
     const nextJobType = EmbedderJobType.join(workflowName, nextStepName)
     await this.addNextJob(nextJobType, priority, result)

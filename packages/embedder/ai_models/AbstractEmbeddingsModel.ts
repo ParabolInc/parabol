@@ -152,7 +152,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           "embedding" vector(${sql.raw(vectorDimensions.toString())}),
           "embeddingsMetadataId" INTEGER NOT NULL,
           "chunkNumber" SMALLINT,
-          UNIQUE("embeddingsMetadataId", "chunkNumber"),
+          UNIQUE NULLS NOT DISTINCT("embeddingsMetadataId", "chunkNumber"),
           FOREIGN KEY ("embeddingsMetadataId")
             REFERENCES "EmbeddingsMetadata"("id")
             ON DELETE CASCADE

@@ -59,13 +59,13 @@ export const getRerankedEmbeddingsFromChunks = async (
         .select(({eb, val, parens}) => [
           'id as embeddingId',
           eb(val(1), '-', parens('embedding' as any, '<=>' as any, embeddingVectorStr)).as(
-            'similarity'
+            'rerankSimilarity'
           )
         ])
         .where('id', 'in', similarEmbeddingIds)
         .execute()
       embeddingsWithSimilarities.forEach((e) => {
-        const {embeddingId, similarity} = e
+        const {embeddingId, rerankSimilarity} = e
         const similarDiscussion = similarEmbeddings.find((se) => se.embeddingId === embeddingId)!
         const weightedSimilarity = Math.min(
           // Limit the upper bound to 0.999..
@@ -73,7 +73,7 @@ export const getRerankedEmbeddingsFromChunks = async (
           // Limit the lower bound to -0.999..
           Math.max(
             -0.999999999,
-            similarDiscussion.similarity + (similarity - RERANK_THRESHOLD) * RERANK_MULTIPLE
+            similarDiscussion.similarity + (rerankSimilarity - RERANK_THRESHOLD) * RERANK_MULTIPLE
           )
         )
         similarityScores[embeddingId] = similarityScores[embeddingId] || []
@@ -103,7 +103,7 @@ export const getRerankedEmbeddingsFromChunks = async (
   const topResults = weightedSimilarities
     // SIMILARITY THRESHOLD will be too high if chunks.length > 1
     .filter((sd) => sd.similarity >= SIMILARITY_THRESHOLD)
-    .sort((a, b) => (a.similarity < b.similarity ? -1 : 1))
+    .sort((a, b) => (a.similarity > b.similarity ? -1 : 1))
     .slice(0, MAX_RESULTS)
   if (!topResults.length) {
     const similarities = weightedSimilarities.map((ws) => ws.similarity).join(',')
