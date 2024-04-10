@@ -4,14 +4,6 @@ import {JobQueueError} from './JobQueueError'
 import type {EmbedWorkflow} from './workflows/EmbedWorkflow'
 import type {RelatedDiscussionsWorkflow} from './workflows/RelatedDiscussionsWorkflow'
 
-type TDist<T> = [T] extends [any] ? T : never
-
-type Workflows = EmbedWorkflow | RelatedDiscussionsWorkflow
-
-// keyof (A | B) = keyof A & keyof B, so we use a conditional type to make it distributive
-type ExtractJobTypes<T> = T extends any ? `${T['name']}:${keyof T['steps']}` : never
-
-export type JobType = ExtractJobTypes<Workflows>
 export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
 
 type GetInputData<T> = T extends JobQueueStepRun<infer U> ? U : never
@@ -34,10 +26,8 @@ interface JobQueueStep<TData, TResult = StepResult> {
   getNextStep?: (result: StepContext<TResult>) => string | Promise<string>
 }
 
-export interface Workflow {
-  name: string
-  steps: Record<string, JobQueueStep<any>>
-}
+export type JobType = `${string}:${string}`
+export type Workflow = Record<string, JobQueueStep<any>>
 export type DBJob = Omit<Selectable<DB['EmbeddingsJobQueue']>, 'jobType'> & {
   jobType: JobType
 }

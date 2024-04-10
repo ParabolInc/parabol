@@ -2,7 +2,6 @@
 import '../../scripts/webpack/utils/dotenv'
 import getKysely from '../server/postgres/getKysely'
 import {WorkflowOrchestrator} from './WorkflowOrchestrator'
-import {EmbedWorkflow} from './workflows/EmbedWorkflow'
 
 const debugFailedJob = async () => {
   const pg = getKysely()
@@ -20,7 +19,7 @@ const debugFailedJob = async () => {
   }
 
   console.log('Debugging job:', failedJob.id)
-  const orch = new WorkflowOrchestrator([new EmbedWorkflow()])
+  const orch = new WorkflowOrchestrator()
   await orch.runStep(failedJob as any)
   // const man = getModelManager()
   // const model = man.embeddingModels.get('Embeddings_ember_1')

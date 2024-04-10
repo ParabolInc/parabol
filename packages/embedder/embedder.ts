@@ -11,8 +11,6 @@ import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {logPerformance} from './logPerformance'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
 import {resetStalledJobs} from './resetStalledJobs'
-import {EmbedWorkflow} from './workflows/EmbedWorkflow'
-import {RelatedDiscussionsWorkflow} from './workflows/RelatedDiscussionsWorkflow'
 
 tracer.init({
   service: `embedder`,
@@ -41,10 +39,7 @@ const run = async () => {
     resetStalledJobs()
   }
 
-  const orchestrator = new WorkflowOrchestrator([
-    new EmbedWorkflow(),
-    new RelatedDiscussionsWorkflow()
-  ])
+  const orchestrator = new WorkflowOrchestrator()
   // Assume 3 workers for type safety, but it doesn't really matter at runtime
   const jobQueueStreams = Array.from(
     {length: NUM_WORKERS},

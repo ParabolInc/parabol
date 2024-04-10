@@ -5,13 +5,35 @@ import {Logger} from '../server/utils/Logger'
 import {EmbedderJobType} from './EmbedderJobType'
 import {JobQueueError} from './JobQueueError'
 import {DBJob, JobType, Workflow} from './custom'
+import {embedMetadata} from './workflows/embedMetadata'
+import {getSimilarRetroTopics} from './workflows/getSimilarRetroTopics'
+import {relatedDiscussionsStart} from './workflows/relatedDiscussionsStart'
+import {rerankRetroTopics} from './workflows/rerankRetroTopics'
 
 export class WorkflowOrchestrator {
-  workflows: Record<string, Workflow> = {}
-  constructor(workflows: Workflow[]) {
-    workflows.forEach((workflow) => {
-      this.workflows[workflow.name] = workflow
-    })
+  workflows: Record<string, Workflow> = {
+    embed: {
+      start: {
+        run: embedMetadata
+      }
+    },
+    relatedDiscussions: {
+      start: {
+        run: relatedDiscussionsStart,
+        getNextStep: () => 'embed'
+      },
+      embed: {
+        run: embedMetadata,
+        getNextStep: () => 'getSimilarRetroTopics'
+      },
+      getSimilarRetroTopics: {
+        run: getSimilarRetroTopics,
+        getNextStep: () => 'rerank'
+      },
+      rerank: {
+        run: rerankRetroTopics
+      }
+    }
   }
 
   private failJob = async (jobId: number, retryCount: number, error: JobQueueError) => {
@@ -69,7 +91,7 @@ export class WorkflowOrchestrator {
         retryCount,
         new JobQueueError(`Workflow ${workflowName} not found`)
       )
-    const step = workflow.steps[stepName]
+    const step = workflow[stepName]
     if (!step)
       return this.failJob(jobId, retryCount, new JobQueueError(`Step ${stepName} not found`))
     const {run, getNextStep} = step
