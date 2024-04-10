@@ -1,7 +1,7 @@
 import ms from 'ms'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {JobQueueError} from '../JobQueueError'
-import {EmbeddingsTable, EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
+import {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
 import {JobQueueStepRun, ParentJob} from '../custom'
 import {createEmbeddingTextFrom} from '../indexing/createEmbeddingTextFrom'

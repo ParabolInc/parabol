@@ -1,7 +1,7 @@
 import ms from 'ms'
 import getKysely from '../../../server/postgres/getKysely'
 import {JobQueueError} from '../../JobQueueError'
-import {AbstractEmbeddingsModel, EmbeddingsTable} from '../../ai_models/AbstractEmbeddingsModel'
+import {AbstractEmbeddingsModel} from '../../ai_models/AbstractEmbeddingsModel'
 import numberVectorToString from '../../indexing/numberVectorToString'
 
 /*
