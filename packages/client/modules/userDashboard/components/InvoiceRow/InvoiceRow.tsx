@@ -9,7 +9,6 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import {PALETTE} from '../../../../styles/paletteV3'
 import makeDateString from '../../../../utils/makeDateString'
-import makeMonthDateString from '../../../../utils/makeMonthDateString'
 import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
 
 const InvoiceAmount = styled('span')({
@@ -105,7 +104,9 @@ const InvoiceRow = (props: Props) => {
         <InvoiceInfo>
           <InfoRow>
             <InvoiceTitle>
-              {makeMonthDateString(endAt)} to {makeMonthDateString(nextPeriodEnd)}
+              {status === 'UPCOMING'
+                ? `Due on ${makeDateString(endAt)}`
+                : `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`}
             </InvoiceTitle>
             <InfoRowRight>
               <InvoiceAmount>

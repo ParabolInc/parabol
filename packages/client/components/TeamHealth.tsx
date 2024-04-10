@@ -18,6 +18,7 @@ import * as RadioGroup from '@radix-ui/react-radio-group'
 import clsx from 'clsx'
 import RaisedButton from './RaisedButton'
 import getTeamHealthVoteColor from '../utils/getTeamHealthVoteColor'
+import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props {
   avatarGroup: ReactElement
@@ -32,6 +33,8 @@ const TeamHealth = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamHealth_meeting on NewMeeting {
+        ...StageTimerDisplay_meeting
+        ...StageTimerControl_meeting
         id
         endedAt
         showSidebar
@@ -83,6 +86,7 @@ const TeamHealth = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
+          <StageTimerDisplay meeting={meeting} />
           <div className='flex h-[300px] flex-col items-center'>
             <div className='text-center text-2xl'>{question}</div>
             {isRevealed && votes ? (

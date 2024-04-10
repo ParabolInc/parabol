@@ -90,7 +90,6 @@ const query = graphql`
       }
       organizations {
         featureFlags {
-          oneOnOne
           aiTemplate
         }
       }
@@ -198,7 +197,6 @@ export const ActivityLibrary = (props: Props) => {
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
   const {featureFlags, availableTemplates, organizations} = viewer
-  const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
   const setSearch = (value: string) => {
@@ -211,9 +209,6 @@ export const ActivityLibrary = (props: Props) => {
 
   const templates = useMemo(() => {
     const templatesMap = availableTemplates.edges.map((edge) => edge.node)
-    if (!hasOneOnOneFeatureFlag) {
-      return templatesMap.filter((template) => template.id !== 'oneOnOneAction')
-    }
     return templatesMap
   }, [availableTemplates])
 

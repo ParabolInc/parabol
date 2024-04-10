@@ -10,7 +10,6 @@ enum OrganizationFeatureFlagsEnum {
   shareSummary
   teamsLimit
   noTeamInsights
-  oneOnOne
   singleColumnStandups
   publicTeams
   kudos
