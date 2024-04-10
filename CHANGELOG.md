@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.26.0](https://github.com/ParabolInc/parabol/compare/v7.25.4...v7.26.0) (2024-04-10)
+
+
+### Added
+
+* related discussions refactor ([#9557](https://github.com/ParabolInc/parabol/issues/9557)) ([15a54fb](https://github.com/ParabolInc/parabol/commit/15a54fbbb24ece533c8d20422950b0839969500b))
+
+
+### Fixed
+
+* bump prettier version ([#9618](https://github.com/ParabolInc/parabol/issues/9618)) ([82ac337](https://github.com/ParabolInc/parabol/commit/82ac337949e6767728a695a7c60f14b4257c5334))
+
+
+### Changed
+
+* disable change template ui if phase complete ([#9592](https://github.com/ParabolInc/parabol/issues/9592)) ([fc1b9e7](https://github.com/ParabolInc/parabol/commit/fc1b9e7e364c15fafa19d502b061c96cc1e07837))
+* remove build steps from readme and reference build.yml ([#9558](https://github.com/ParabolInc/parabol/issues/9558)) ([0e06d1f](https://github.com/ParabolInc/parabol/commit/0e06d1fcabaf563583a0c4776857ec1b0d07cf7b))
+
 ## [7.25.4](https://github.com/ParabolInc/parabol/compare/v7.25.3...v7.25.4) (2024-04-09)
 
 
