@@ -20,7 +20,7 @@ export type EmbeddingsTable = Extract<keyof DB, EmbeddingsTableName>
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly embeddingDimensions: number
   readonly maxInputTokens: number
-  readonly tableName: EmbeddingsTableName
+  readonly tableName: EmbeddingsTable
   readonly languages: ISO6391[]
   constructor(modelId: string, url: string) {
     super(url)
@@ -28,7 +28,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.embeddingDimensions = modelParams.embeddingDimensions
     this.languages = modelParams.languages
     this.maxInputTokens = modelParams.maxInputTokens
-    this.tableName = `Embeddings_${modelParams.tableSuffix}`
+    this.tableName = `Embeddings_${modelParams.tableSuffix}` as EmbeddingsTable
   }
   protected abstract constructModelParams(modelId: string): EmbeddingModelParams
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
@@ -49,12 +49,9 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     const isFullTextTooBig = tokens === -1 || tokens.length > this.maxInputTokens
     if (!isFullTextTooBig) return [content]
     const normalizedContent = this.normalizeContent(content, true)
-    // writeFileSync('n.json', JSON.stringify(normalizedContent))
     for (let i = 0; i < 5; i++) {
-      // Error if we hit 3 tokensPerWord we should adjust our strategy
       const tokensPerWord = (4 + i) / 3
       const chunks = this.splitText(normalizedContent, tokensPerWord)
-      // writeFileSync(`n${i}.json`, JSON.stringify(chunks))
       const chunkLengths = await Promise.all(
         chunks.map(async (chunk) => {
           const chunkTokens = await this.getTokens(chunk)
@@ -71,9 +68,8 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       if (validChunks.every((chunkLength) => chunkLength <= this.maxInputTokens)) {
         return chunks
       }
-      // console.log('invalid chunk', this.maxInputTokens, {chunkLengths})
     }
-    return new Error(`Text is too long and could not be split into chunks. Is it english?`)
+    return new Error(`Text could not be chunked. The tokenizer cannot support this content.`)
   }
   // private because result must still be too long to go into model. Must verify with getTokens
   private splitText(content: string, tokensPerWord = 4 / 3) {

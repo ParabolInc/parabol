@@ -1,8 +1,6 @@
 import {DataLoaderInstance} from '../server/dataloader/RootDataLoader'
 import type {DB} from '../server/postgres/pg'
 import {JobQueueError} from './JobQueueError'
-import type {EmbedWorkflow} from './workflows/EmbedWorkflow'
-import type {RelatedDiscussionsWorkflow} from './workflows/RelatedDiscussionsWorkflow'
 
 export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
 
@@ -28,6 +26,4 @@ interface JobQueueStep<TData, TResult = StepResult> {
 
 export type JobType = `${string}:${string}`
 export type Workflow = Record<string, JobQueueStep<any>>
-export type DBJob = Omit<Selectable<DB['EmbeddingsJobQueue']>, 'jobType'> & {
-  jobType: JobType
-}
+export type DBJob = Selectable<DB['EmbeddingsJobQueue']>

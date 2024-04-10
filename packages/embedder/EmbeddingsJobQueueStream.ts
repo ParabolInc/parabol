@@ -39,7 +39,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
         .set({state: 'running', startAt: new Date()})
         .where('id', '=', sql<number>`ANY(SELECT id FROM ids)`)
         .returningAll()
-        .executeTakeFirst() as Promise<DBJob | undefined>
+        .executeTakeFirst()
     }
     const job = (await getJob(false)) || (await getJob(true))
     if (!job) {

@@ -44,11 +44,11 @@ export const relatedDiscussionsStart: JobQueueStepRun<
     .execute()
 
   const modelManager = getModelManager()
-  const models = [...modelManager.embeddingModels.keys()]
-  return models.flatMap((model) =>
-    inserts.map(({id}) => ({
-      embeddingsMetadataId: id,
-      model: model
-    }))
-  )
+  // Only get 1 embedder since we only want to publish 1 message to the user
+  const {tableName} = modelManager.getEmbedder()
+
+  return inserts.map(({id}) => ({
+    embeddingsMetadataId: id,
+    model: tableName
+  }))
 }

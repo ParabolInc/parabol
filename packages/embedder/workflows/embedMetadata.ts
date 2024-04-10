@@ -45,7 +45,7 @@ export const embedMetadata: JobQueueStepRun<
   }
   const {fullText, language} = metadata
 
-  const embeddingModel = modelManager.embeddingModels.get(model)
+  const embeddingModel = modelManager.getEmbedder(model)
   if (!embeddingModel) {
     return new JobQueueError(`embedding model ${model} not available`)
   }
@@ -72,7 +72,7 @@ export const embedMetadata: JobQueueStepRun<
       }
       await pg
         // cast to any because these types won't be available in CI
-        .insertInto(embeddingModel.tableName as EmbeddingsTable)
+        .insertInto(embeddingModel.tableName)
         .values({
           // TODO is the extra space of a null embedText really worth it?!
           embedText: chunks.length > 1 ? chunk : null,

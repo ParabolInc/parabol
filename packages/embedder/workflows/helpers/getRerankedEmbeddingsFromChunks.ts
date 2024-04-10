@@ -55,7 +55,7 @@ export const getRerankedEmbeddingsFromChunks = async (
       }
       const embeddingVectorStr = numberVectorToString(embeddingVector)
       const embeddingsWithSimilarities = await pg
-        .selectFrom(embeddingModel.tableName as EmbeddingsTable)
+        .selectFrom(embeddingModel.tableName)
         .select(({eb, val, parens}) => [
           'id as embeddingId',
           eb(val(1), '-', parens('embedding' as any, '<=>' as any, embeddingVectorStr)).as(
