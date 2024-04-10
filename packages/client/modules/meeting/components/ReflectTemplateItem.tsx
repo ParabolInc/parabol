@@ -12,7 +12,7 @@ import {PALETTE} from '../../../styles/paletteV3'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateItem_template$key} from '../../../__generated__/ReflectTemplateItem_template.graphql'
-import {TierEnum} from '../../../__generated__/NewMeetingQuery.graphql'
+import {TierEnum} from '../../../__generated__/OrganizationSubscription.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,

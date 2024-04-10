@@ -1,6 +1,6 @@
 import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
+import {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
 import isTempId from '../utils/relay/isTempId'
 import {setActiveTemplate} from '../utils/relay/setActiveTemplate'
 import useAtmosphere from './useAtmosphere'
