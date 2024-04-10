@@ -58,7 +58,7 @@
     "react-refresh": "^0.9.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "^5.3.3",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.2.3",
