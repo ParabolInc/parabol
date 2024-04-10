@@ -11,7 +11,8 @@ export const getSimilarRetroTopics: JobQueueStepRun<
   ParentJob<typeof rerankRetroTopics>
 > = async (context) => {
   const {data, dataLoader} = context
-  const {embeddingsMetadataId, model} = data
+  const {embeddingsMetadataId} = data
+  const model = data.model as EmbeddingsTable
   const MAX_CANDIDATES = 10
   const SIMILARITY_THRESHOLD = 0.67
   const pg = getKysely()
@@ -20,27 +21,34 @@ export const getSimilarRetroTopics: JobQueueStepRun<
   const similarEmbeddings = await pg
     .with('Vector', (qc) =>
       qc
-        .selectFrom(model as EmbeddingsTable)
+        .selectFrom(model)
         .select('embedding')
         .where('embeddingsMetadataId', '=', embeddingsMetadataId)
         .orderBy('chunkNumber')
         // truncate strategy: only get discussions similar to the first chunk
         .limit(1)
     )
+    .with('Model', (qc) =>
+      qc
+        .selectFrom(model)
+        .select([`${model}.id`, 'embeddingsMetadataId', 'embedding'])
+        .innerJoin('EmbeddingsMetadata', 'EmbeddingsMetadata.id', `${model}.embeddingsMetadataId`)
+        .where('teamId', '=', teamId)
+        .where('objectType', '=', 'retrospectiveDiscussionTopic')
+        .where('embeddingsMetadataId', '!=', embeddingsMetadataId)
+    )
     .with('CosineSimilarity', (pg) =>
       pg
-        .selectFrom([model as EmbeddingsTable, 'Vector', 'EmbeddingsMetadata'])
-        .select(({eb, val, parens}) => [
-          'id as embeddingId',
-          'refId as discussionId',
-          'embeddingsMetadataId',
-          eb(val(1), '-', parens('embedding' as any, '<=>' as any, 'Vector.embedding')).as(
-            'similarity'
-          )
+        .selectFrom(['Model', 'Vector'])
+        .select(({eb, val, parens, ref}) => [
+          ref('Model.id').as('embeddingId'),
+          ref('Model.embeddingsMetadataId').as('embeddingsMetadataId'),
+          eb(
+            val(1),
+            '-',
+            parens('Model.embedding' as any, '<=>' as any, ref('Vector.embedding') as any)
+          ).as('similarity')
         ])
-        .innerJoin('EmbeddingsMetadata', `embeddingsMetadataId`, 'EmbeddingsMetadata.id')
-        .where('objectType', '=', 'retrospectiveDiscussionTopic')
-        .where('teamId', '=', teamId)
     )
     .selectFrom('CosineSimilarity')
     .select(['embeddingId', 'similarity', 'embeddingsMetadataId'])

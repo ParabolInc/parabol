@@ -18,4 +18,5 @@ export const publishToEmbedder = ({jobType, data, priority}: MessageToEmbedder) 
       priority: getEmbedderPriority(priority),
       jobData: JSON.stringify(data)
     })
+    .execute()
 }

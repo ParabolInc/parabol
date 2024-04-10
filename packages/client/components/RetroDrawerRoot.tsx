@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import retroDrawerQuery, {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import RetroDrawer from './RetroDrawer'
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 const RetroDrawerRoot = (props: Props) => {
   const {showDrawer, setShowDrawer, meetingId} = props
   const queryRef = useQueryLoaderNow<RetroDrawerQuery>(retroDrawerQuery, {
-    first: 200,
+    first: 2000,
     type: 'retrospective',
     meetingId
   })

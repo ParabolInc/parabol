@@ -34,7 +34,12 @@ export const relatedDiscussionsStart: JobQueueStepRun<
   const inserts = await pg
     .insertInto('EmbeddingsMetadata')
     .values(metadataRows)
-    .onConflict((oc) => oc.doNothing())
+    .onConflict((oc) =>
+      // trigger an update in order to return the ID of the existing row
+      oc.columns(['refId', 'objectType']).doUpdateSet((eb) => ({
+        objectType: eb.ref('excluded.objectType')
+      }))
+    )
     .returning('id')
     .execute()
 
