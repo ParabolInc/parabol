@@ -45,7 +45,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
     if (!job) {
       Logger.log('JobQueueStream: no jobs found')
       // queue is empty, so sleep for a while
-      await sleep(ms('1m'))
+      await sleep(ms('10s'))
       return this.next()
     }
 
