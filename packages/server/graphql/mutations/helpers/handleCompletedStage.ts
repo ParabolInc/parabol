@@ -10,13 +10,14 @@ import getKysely from '../../../postgres/getKysely'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
-import addDiscussionTopics from './addDiscussionTopics'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
-import generateDiscussionSummary from './generateDiscussionSummary'
-import generateGroups from './generateGroups'
-import generateGroupSummaries from './generateGroupSummaries'
-import removeEmptyReflections from './removeEmptyReflections'
+import addDiscussionTopics from './addDiscussionTopics'
 import addRecallBot from './addRecallBot'
+import generateDiscussionSummary from './generateDiscussionSummary'
+import generateGroupSummaries from './generateGroupSummaries'
+import generateGroups from './generateGroups'
+import {publishToEmbedder} from './publishToEmbedder'
+import removeEmptyReflections from './removeEmptyReflections'
 
 /*
  * handle side effects when a stage is completed
@@ -111,7 +112,8 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader),
+      publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})
     ])
     if (videoMeetingURL) {
       addRecallBot(meetingId, videoMeetingURL)
@@ -119,7 +121,7 @@ const handleCompletedRetrospectiveStage = async (
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
     const {discussionId} = stage as DiscussStage
-    // dont await for the OpenAI API response
+    // don't await for the OpenAI API response
     generateDiscussionSummary(discussionId, meeting, dataLoader)
   }
   return {}

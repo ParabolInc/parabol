@@ -1,6 +1,0 @@
-export const EMBEDDER_JOB_PRIORITY = {
-  MEETING: 40,
-  DEFAULT: 50,
-  TOPIC_HISTORY: 80,
-  NEW_MODEL: 90
-} as const

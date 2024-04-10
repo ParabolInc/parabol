@@ -191,4 +191,5 @@ type OrganizationFeatureFlags {
   aiIcebreakers: Boolean!
   aiTemplate: Boolean!
   recurringRetros: Boolean!
+  relatedDiscussions: Boolean!
 }
