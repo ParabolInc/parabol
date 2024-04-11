@@ -22,8 +22,7 @@ import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 const bootstrapNewUser = async (
   newUser: User,
   isOrganic: boolean,
-  dataLoader: DataLoaderWorker,
-  searchParams?: string
+  dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
   const {
@@ -48,17 +47,6 @@ const bootstrapNewUser = async (
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
   const experimentalFlags = [...featureFlags]
-
-  // Retros in disguise
-  const domainUserHasRidFlag = usersWithDomain.some((user) =>
-    user.featureFlags.includes('retrosInDisguise')
-  )
-  const params = new URLSearchParams(searchParams)
-  if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
-    experimentalFlags.push('retrosInDisguise')
-  } else if (usersWithDomain.length === 0) {
-    experimentalFlags.push('retrosInDisguise')
-  }
 
   // Add signUpDestinationTeam feature flag to 50% of new accounts
   if (Math.random() < 0.5) {

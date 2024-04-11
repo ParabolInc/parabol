@@ -32,9 +32,6 @@ const TeamDashMain = (props: Props) => {
             ...TeamTasksHeaderContainer_team
             ...TeamDashActivityTab_team
           }
-          featureFlags {
-            retrosInDisguise
-          }
           ...TeamDashTasksTab_viewer
           ...TeamDrawer_viewer
         }
@@ -67,7 +64,7 @@ const TeamDashMain = (props: Props) => {
             <TeamDashActivityTab teamRef={team} />
           </Route>
         </Switch>
-        <AbsoluteFab hasRid={viewer.featureFlags.retrosInDisguise} />
+        <AbsoluteFab />
       </div>
       <TeamDrawer viewer={viewer} />
     </div>

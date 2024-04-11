@@ -94,9 +94,6 @@ const MobileDashSidebar = (props: Props) => {
     graphql`
       fragment MobileDashSidebar_viewer on User {
         ...StandardHub_viewer
-        featureFlags {
-          retrosInDisguise
-        }
         organizations {
           ...DashNavList_organization
           id
@@ -108,7 +105,7 @@ const MobileDashSidebar = (props: Props) => {
     viewerRef
   )
   if (!viewer) return null
-  const {featureFlags, organizations} = viewer
+  const {organizations} = viewer
 
   if (match) {
     const {orgId: orgIdFromParams} = match.params
@@ -179,14 +176,12 @@ const MobileDashSidebar = (props: Props) => {
               href={'/meetings'}
               label={'Meetings'}
             />
-            {featureFlags.retrosInDisguise && (
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'magic'}
-                href={'/activity-library'}
-                label={'Activity Library'}
-              />
-            )}
+            <LeftDashNavItem
+              onClick={handleMenuClick}
+              icon={'magic'}
+              href={'/activity-library'}
+              label={'Activity Library'}
+            />
             <LeftDashNavItem
               onClick={handleMenuClick}
               icon={'timeline'}

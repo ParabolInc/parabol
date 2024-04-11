@@ -15,7 +15,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   _source,
-  {code, invitationToken, pseudoId, params},
+  {code, invitationToken, pseudoId},
   context
 ) => {
   const {dataLoader} = context
@@ -98,7 +98,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     identities: [identity],
     pseudoId
   })
-  context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader, params)
+  context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader)
   return {
     userId,
     authToken: encodeAuthToken(context.authToken),
