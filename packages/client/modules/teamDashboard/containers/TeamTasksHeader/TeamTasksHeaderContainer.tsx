@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import filterTeamMember from '~/utils/relay/filterTeamMember'
 import {TeamTasksHeaderContainer_team$key} from '~/__generated__/TeamTasksHeaderContainer_team.graphql'
+import filterTeamMember from '~/utils/relay/filterTeamMember'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import TeamTasksHeader from '../../components/TeamDashHeader/TeamDashHeader'
 

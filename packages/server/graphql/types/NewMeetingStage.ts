@@ -10,8 +10,8 @@ import AuthToken from '../../database/types/AuthToken'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum as NewMeetingPhaseTypeEnumType
 } from '../../database/types/GenericMeetingPhase'
-import {getUserId} from '../../utils/authorization'
 import {Logger} from '../../utils/Logger'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NewMeeting from './NewMeeting'

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {Providers} from '../types/constEnums'
 import {ScopePhaseAreaGitHub_meeting$key} from '../__generated__/ScopePhaseAreaGitHub_meeting.graphql'
+import {Providers} from '../types/constEnums'
 import ScopePhaseAreaAddGitHub from './ScopePhaseAreaAddGitHub'
 import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
 

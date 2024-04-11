@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {EditablePollOption_option$key} from '../../__generated__/EditablePollOption_option.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {PALETTE} from '../../styles/paletteV3'
 import {Polls, PollsAriaLabels} from '../../types/constEnums'
-import {EditablePollOption_option$key} from '../../__generated__/EditablePollOption_option.graphql'
 import {updateLocalPollOption} from './local/newPoll'
 
 const PollOptionInputRoot = styled('div')({

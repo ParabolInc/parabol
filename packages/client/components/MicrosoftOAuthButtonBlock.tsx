@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
+import clsx from 'clsx'
 import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
+import logo from '../styles/theme/images/graphics/microsoft.svg'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
+import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
-import logo from '../styles/theme/images/graphics/microsoft.svg'
-import RaisedButton from './RaisedButton'
-import clsx from 'clsx'
 
 interface Props {
   invitationToken?: string

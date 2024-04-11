@@ -6,7 +6,6 @@ import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegration
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import AzureDevOpsServerManager, {
   ProjectRes,
   Resource,
@@ -14,6 +13,7 @@ import AzureDevOpsServerManager, {
   WorkItem
 } from '../utils/AzureDevOpsServerManager'
 import {Logger} from '../utils/Logger'
+import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
 

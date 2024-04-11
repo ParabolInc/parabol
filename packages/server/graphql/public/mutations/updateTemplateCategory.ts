@@ -1,8 +1,8 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {CategoryID, MAIN_CATEGORIES} from '../../../../client/components/ActivityLibrary/Categories'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
-import {CategoryID, MAIN_CATEGORIES} from '../../../../client/components/ActivityLibrary/Categories'
 
 const updateTemplateCategory: MutationResolvers['updateTemplateCategory'] = async (
   _source,

@@ -1,5 +1,5 @@
-import catchAndLog from '../utils/catchAndLog'
 import getPg from '../getPg'
+import catchAndLog from '../utils/catchAndLog'
 import {IUpdateUserTiersQueryParams, updateUserTiersQuery} from './generated/updateUserTiersQuery'
 
 const updateUserTiers = async ({users}: IUpdateUserTiersQueryParams) => {

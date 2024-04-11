@@ -1,6 +1,7 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import Coupon from '../../database/types/Coupon'
 import Invoice, {InvoiceStatusEnum} from '../../database/types/Invoice'
 import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
@@ -15,7 +16,6 @@ import isValid from '../../graphql/isValid'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import sendToSentry from '../../utils/sendToSentry'
 import {getStripeManager} from '../../utils/stripe'
-import {RDatum} from '../../database/stricterR'
 
 interface InvoicesByStartTime {
   [start: string]: {

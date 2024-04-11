@@ -4,12 +4,12 @@ import {Editor} from 'draft-js'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
+import {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
 import useEditorState from '../hooks/useEditorState'
 import useRouter from '../hooks/useRouter'
 import {cardShadow} from '../styles/elevation'
-import {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
-import NotificationTemplate from './NotificationTemplate'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import NotificationTemplate from './NotificationTemplate'
 
 const EditorWrapper = styled('div')({
   backgroundColor: '#fff',

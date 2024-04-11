@@ -1,11 +1,11 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
-import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
 import {ChevronRight} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {Link} from 'react-router-dom'
 
-import plural from '../../../../utils/plural'
 import {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
+import plural from '../../../../utils/plural'
 
 type Props = {
   teamRef: OrgTeamsRow_team$key

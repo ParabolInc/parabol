@@ -3,8 +3,8 @@ import axios from 'axios'
 import {ExternalLinks} from '../../client/types/constEnums'
 import appOrigin from '../appOrigin'
 import {TranscriptBlock} from '../database/types/MeetingRetrospective'
-import sendToSentry from './sendToSentry'
 import {Logger} from './Logger'
+import sendToSentry from './sendToSentry'
 
 const sdk = api('@recallai/v1.6#536jnqlf7d6blh')
 

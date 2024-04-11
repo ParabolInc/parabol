@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import {AuthIdentityTypeEnum as EAuthIdentityTypeEnum} from '../../../client/types/constEnums'
-import AuthIdentityMicrosoft from './AuthIdentityMicrosoft'
 import AuthIdentityGoogle from './AuthIdentityGoogle'
 import AuthIdentityLocal from './AuthIdentityLocal'
+import AuthIdentityMicrosoft from './AuthIdentityMicrosoft'
 import AuthIdentityTypeEnum from './AuthIdentityTypeEnum'
 
 export const authStrategyFields = () => ({

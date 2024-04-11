@@ -3,9 +3,9 @@ import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
+import {UserColumnsContainer_viewer$key} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import getSafeRegex from '../../../../utils/getSafeRegex'
-import {UserColumnsContainer_viewer$key} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 
 interface Props {
   viewerRef: UserColumnsContainer_viewer$key

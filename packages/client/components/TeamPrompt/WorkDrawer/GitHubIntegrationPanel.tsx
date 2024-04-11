@@ -1,15 +1,15 @@
-import React, {useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
-import clsx from 'clsx'
-import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
-import GitHubClientManager from '../../../utils/GitHubClientManager'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
+import GitHubClientManager from '../../../utils/GitHubClientManager'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
   {

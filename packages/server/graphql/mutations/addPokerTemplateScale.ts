@@ -4,12 +4,12 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import TemplateScale from '../../database/types/TemplateScale'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplateScalePayload from '../types/AddPokerTemplateScalePayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 const addPokerTemplateScale = {
   description: 'Add a new scale for the poker template',

@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {GitHubProviderRow_viewer$key} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 import GitHubConfigMenu from '../../../../components/GitHubConfigMenu'
 import GitHubProviderLogo from '../../../../components/GitHubProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -9,7 +10,6 @@ import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import GitHubClientManager from '../../../../utils/GitHubClientManager'
-import {GitHubProviderRow_viewer$key} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
 
 interface Props {

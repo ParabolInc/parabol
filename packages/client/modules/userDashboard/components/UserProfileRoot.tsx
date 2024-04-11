@@ -1,9 +1,9 @@
 import React, {Suspense} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
+import userProfileQuery, {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useSubscription from '../../../hooks/useSubscription'
 import NotificationSubscription from '../../../subscriptions/NotificationSubscription'
-import userProfileQuery, {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import UserProfile from './UserProfile'
 
 interface Props extends RouteComponentProps<{teamId: string}> {}

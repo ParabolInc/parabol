@@ -1,7 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndSprintPokerMutation_team$data} from '~/__generated__/EndSprintPokerMutation_team.graphql'
+import onMeetingRoute from '~/utils/onMeetingRoute'
+import {EndSprintPokerMutation as TEndSprintPokerMutation} from '../__generated__/EndSprintPokerMutation.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -9,7 +10,6 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import {EndSprintPokerMutation as TEndSprintPokerMutation} from '../__generated__/EndSprintPokerMutation.graphql'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 

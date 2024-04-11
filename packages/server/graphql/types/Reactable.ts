@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import resolveReactjis from '../resolvers/resolveReactjis'
-import getReactableType from './getReactableType'
 import Reactji from './Reactji'
+import getReactableType from './getReactableType'
 
 export const reactableFields = () => ({
   id: {

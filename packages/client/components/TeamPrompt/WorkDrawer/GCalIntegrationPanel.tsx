@@ -1,14 +1,14 @@
-import React, {useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GCalIntegrationPanel_meeting$key} from '../../../__generated__/GCalIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
-import GcalClientManager from '../../../utils/GcalClientManager'
 import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
-import clsx from 'clsx'
+import GcalClientManager from '../../../utils/GcalClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
 
 const GCAL_QUERY_TABS = [
   {

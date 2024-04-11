@@ -4,14 +4,14 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsToggleTeamHealth_settings$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_settings.graphql'
 import {NewMeetingSettingsToggleTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_team.graphql'
-import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
 import {PALETTE} from '../styles/paletteV3'
+import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
 import Checkbox from './Checkbox'
-import PlainButton from './PlainButton/PlainButton'
 import NewMeetingSettingsUpgradeForTeamHealth from './NewMeetingSettingsUpgradeForTeamHealth'
+import PlainButton from './PlainButton/PlainButton'
 
 const ButtonRow = styled(PlainButton)({
   background: PALETTE.SLATE_200,

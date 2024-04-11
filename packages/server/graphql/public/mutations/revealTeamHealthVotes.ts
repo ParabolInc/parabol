@@ -1,9 +1,9 @@
-import {MutationResolvers} from '../resolverTypes'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import updateStage from '../../../database/updateStage'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import updateStage from '../../../database/updateStage'
+import {MutationResolvers} from '../resolverTypes'
 
 const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async (
   _source,

@@ -1,17 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useFragment} from 'react-relay'
+import {TimelineHeader_viewer$key} from '../__generated__/TimelineHeader_viewer.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {FilterLabels} from '../types/constEnums'
+import {timelineEventTypeMenuLabels} from '../utils/constants'
 import lazyPreload from '../utils/lazyPreload'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
+import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
-import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
-import {useQueryParameterParser} from '../utils/useQueryParameterParser'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {timelineEventTypeMenuLabels} from '../utils/constants'
-import {useFragment} from 'react-relay'
-import {TimelineHeader_viewer$key} from '../__generated__/TimelineHeader_viewer.graphql'
 
 const TeamFilterMenu = lazyPreload(
   () =>

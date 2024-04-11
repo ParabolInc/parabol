@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TimelineEventCompletedRetroMeeting_timelineEvent$key} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import plural from '../utils/plural'
-import {TimelineEventCompletedRetroMeeting_timelineEvent$key} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import StyledLink from './StyledLink'
+import TimelineEventTitle from './TImelineEventTitle'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
-import TimelineEventTitle from './TImelineEventTitle'
 
 interface Props {
   timelineEvent: TimelineEventCompletedRetroMeeting_timelineEvent$key

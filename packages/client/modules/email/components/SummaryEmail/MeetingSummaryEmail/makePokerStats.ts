@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import plural from 'parabol-client/utils/plural'
 import {makePokerStats_meeting$key} from 'parabol-client/__generated__/makePokerStats_meeting.graphql'
+import plural from 'parabol-client/utils/plural'
 import {readInlineData} from 'react-relay'
 
 const makePokerStats = (meetingRef: makePokerStats_meeting$key) => {

@@ -1,6 +1,6 @@
-import * as React from 'react'
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
 import clsx from 'clsx'
+import * as React from 'react'
 
 const AlertDialogCancel = React.forwardRef<
   HTMLButtonElement,

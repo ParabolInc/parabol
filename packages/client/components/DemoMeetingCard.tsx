@@ -4,10 +4,10 @@ import {Link} from 'react-router-dom'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const CardWrapper = styled('div')<{
   maybeTabletPlus: boolean

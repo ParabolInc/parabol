@@ -1,11 +1,11 @@
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
-import isUserVerified from './isUserVerified'
+import Organization from '../database/types/Organization'
+import TeamMember from '../database/types/TeamMember'
 import User from '../database/types/User'
 import {DataLoaderWorker} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
-import TeamMember from '../database/types/TeamMember'
-import Organization from '../database/types/Organization'
+import isUserVerified from './isUserVerified'
 
 export const getEligibleOrgIdsByDomain = async (
   activeDomain: string,

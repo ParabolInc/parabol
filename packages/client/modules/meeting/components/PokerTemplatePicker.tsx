@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {PokerTemplatePicker_settings$key} from '../../../__generated__/PokerTemplatePicker_settings.graphql'
 import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import lazyPreload from '../../../utils/lazyPreload'
-import {PokerTemplatePicker_settings$key} from '../../../__generated__/PokerTemplatePicker_settings.graphql'
 
 interface Props {
   settingsRef: PokerTemplatePicker_settings$key

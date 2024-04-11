@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {LimitExceededWarning_organization$key} from '../__generated__/LimitExceededWarning_organization.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'
-import {LimitExceededWarning_organization$key} from '../__generated__/LimitExceededWarning_organization.graphql'
 
 const WarningMsg = styled('div')({
   background: PALETTE.GOLD_100,
