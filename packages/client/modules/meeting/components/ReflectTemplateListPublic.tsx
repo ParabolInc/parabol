@@ -4,8 +4,8 @@ import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import {PALETTE} from '~/styles/paletteV3'
-import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {ReflectTemplateListPublicQuery} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
+import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({

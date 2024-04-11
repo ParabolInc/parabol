@@ -1,15 +1,14 @@
-import {ActivityBadge} from './ActivityLibrary/ActivityBadge'
-import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {ActivityCard} from './ActivityLibrary/ActivityCard'
-import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {RetroDrawerTemplateCard_template$key} from '~/__generated__/RetroDrawerTemplateCard_template.graphql'
-import {CategoryID, CATEGORY_THEMES} from '././ActivityLibrary/Categories'
-import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
-import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
+import {CATEGORY_THEMES, CategoryID} from '././ActivityLibrary/Categories'
+import {ActivityBadge} from './ActivityLibrary/ActivityBadge'
+import {ActivityCard, ActivityCardImage} from './ActivityLibrary/ActivityCard'
+import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 
 interface Props {
   templateRef: RetroDrawerTemplateCard_template$key
@@ -49,7 +48,7 @@ const RetroDrawerTemplateCard = (props: Props) => {
 
   return (
     <form className='px-4 py-2' onClick={handleClick}>
-      <div className='flex focus:rounded-2xl focus:outline-sky-500 hover:rounded-2xl hover:bg-slate-100'>
+      <div className='flex hover:rounded-2xl hover:bg-slate-100 focus:rounded-2xl focus:outline-sky-500'>
         <ActivityCard
           className='group aspect-[256/160] flex-1 hover:cursor-pointer'
           theme={CATEGORY_THEMES[template.category as CategoryID]}

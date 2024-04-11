@@ -9,13 +9,13 @@ import {
 } from 'graphql'
 import db from '../../db'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../utils/getTemplateScore'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
 import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import ReflectTemplate, {ReflectTemplateConnection} from './ReflectTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
-import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../utils/getTemplateScore'
 
 const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<
   any,

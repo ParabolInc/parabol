@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TopBarAvatar_viewer$key} from '~/__generated__/TopBarAvatar_viewer.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-import {TopBarAvatar_viewer$key} from '~/__generated__/TopBarAvatar_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
 import Avatar from './Avatar/Avatar'
@@ -16,7 +16,7 @@ const AvatarWrapper = styled('button')({
   borderRadius: 100,
   marginLeft: 8,
   padding: 4,
-  ':focus': {
+  ':focus-visible': {
     boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
     cursor: 'pointer',
     outline: 'none'
@@ -55,9 +55,8 @@ const TopBarAvatar = (props: Props) => {
         <Avatar
           onMouseEnter={StandardHubUserMenu.preload}
           ref={originRef}
-          hasBadge={false}
           picture={userAvatar}
-          size={40}
+          className='h-10 w-10 cursor-pointer'
         />
         {viewer && menuPortal(<StandardHubUserMenu menuProps={menuProps} viewerRef={viewer} />)}
       </AvatarWrapper>

@@ -1,11 +1,11 @@
 import {google} from 'googleapis'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../../../appOrigin'
-import {DataLoaderWorker} from '../../graphql'
-import standardError from '../../../utils/standardError'
-import {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
-import {RRule} from 'rrule'
 import {pick} from 'lodash'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {RRule} from 'rrule'
+import appOrigin from '../../../appOrigin'
+import standardError from '../../../utils/standardError'
+import {DataLoaderWorker} from '../../graphql'
+import {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
 
 const emailRemindMinsBeforeMeeting = 24 * 60
 const popupRemindMinsBeforeMeeting = 10

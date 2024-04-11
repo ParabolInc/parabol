@@ -3,10 +3,10 @@ import {convertFromRaw} from 'draft-js'
 import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
-import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
 import NullCard from '../NullCard/NullCard'
 
 interface Props {

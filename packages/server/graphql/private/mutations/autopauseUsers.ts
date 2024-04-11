@@ -2,8 +2,8 @@ import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
-import {MutationResolvers} from '../resolverTypes'
 import {Logger} from '../../../utils/Logger'
+import {MutationResolvers} from '../resolverTypes'
 
 const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
   _source,

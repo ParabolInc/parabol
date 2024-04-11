@@ -5,15 +5,15 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
+import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
+import {SelectTemplate_template$key} from '../../../__generated__/SelectTemplate_template.graphql'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {BezierCurve} from '../../../types/constEnums'
-import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
-import {SelectTemplate_template$key} from '../../../__generated__/SelectTemplate_template.graphql'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const fadein = keyframes`
 0% { opacity: 0; }

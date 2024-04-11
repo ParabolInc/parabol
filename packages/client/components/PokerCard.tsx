@@ -4,11 +4,11 @@ import React, {RefObject, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
+import {PokerCard_scaleValue$key} from '../__generated__/PokerCard_scaleValue.graphql'
 import usePokerZIndexOverride from '../hooks/usePokerZIndexOverride'
 import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
 import {BezierCurve, Breakpoint, PokerCards} from '../types/constEnums'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
-import {PokerCard_scaleValue$key} from '../__generated__/PokerCard_scaleValue.graphql'
 
 const COLLAPSE_DUR = 700
 const EXPAND_DUR = 300

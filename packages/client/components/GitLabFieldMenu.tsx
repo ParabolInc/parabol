@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {GitLabFieldMenu_stage$key} from '../__generated__/GitLabFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateGitLabDimensionFieldMutation from '../mutations/UpdateGitLabDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
-import {GitLabFieldMenu_stage$key} from '../__generated__/GitLabFieldMenu_stage.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 

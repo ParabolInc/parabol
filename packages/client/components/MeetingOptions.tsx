@@ -1,12 +1,12 @@
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import React, {useState} from 'react'
-import IconLabel from './IconLabel'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuItem} from '../ui/Menu/MenuItem'
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
-import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
-import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
+import IconLabel from './IconLabel'
+import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
 
 type Props = {
   setShowDrawer: (showDrawer: boolean) => void

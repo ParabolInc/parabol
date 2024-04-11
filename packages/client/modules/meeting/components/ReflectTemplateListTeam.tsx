@@ -4,15 +4,15 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import useFilteredItems from '~/hooks/useFilteredItems'
+import {ReflectTemplateListTeam_team$key} from '../../../__generated__/ReflectTemplateListTeam_team.graphql'
+import {
+  ReflectTemplateListTeam_teamTemplates$data,
+  ReflectTemplateListTeam_teamTemplates$key
+} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {PALETTE} from '../../../styles/paletteV3'
-import {
-  ReflectTemplateListTeam_teamTemplates$key,
-  ReflectTemplateListTeam_teamTemplates$data
-} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
-import {ReflectTemplateListTeam_team$key} from '../../../__generated__/ReflectTemplateListTeam_team.graphql'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({

@@ -1,11 +1,11 @@
 import dayjs from 'dayjs'
 import Stripe from 'stripe'
+import Invoice from '../../../database/types/Invoice'
+import Organization from '../../../database/types/Organization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
 import {getStripeManager} from '../../../utils/stripe'
 import StripeManager from '../../../utils/stripe/StripeManager'
-import Invoice from '../../../database/types/Invoice'
-import Organization from '../../../database/types/Organization'
 
 export default async function makeUpcomingInvoice(
   org: Organization,

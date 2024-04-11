@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemoveAgendaItemMutation as TRemoveAgendaItemMutation} from '../__generated__/RemoveAgendaItemMutation.graphql'
 import {RemoveAgendaItemMutation_team$data} from '../__generated__/RemoveAgendaItemMutation_team.graphql'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemoveAgendaItems from './handlers/handleRemoveAgendaItems'
 graphql`
   fragment RemoveAgendaItemMutation_team on RemoveAgendaItemPayload {

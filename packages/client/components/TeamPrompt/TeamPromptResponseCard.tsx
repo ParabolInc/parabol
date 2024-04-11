@@ -1,10 +1,12 @@
 import styled from '@emotion/styled'
+import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
 import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
@@ -13,9 +15,13 @@ import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve, Card} from '~/types/constEnums'
 import plural from '~/utils/plural'
-import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
+import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
+import useTooltip from '../../hooks/useTooltip'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import makeAppURL from '../../utils/makeAppURL'
+import {mergeRefs} from '../../utils/react/mergeRefs'
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
@@ -23,12 +29,6 @@ import {ResponseCardDimensions, ResponsesGridBreakpoints} from './TeamPromptGrid
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 import {TeamPromptResponseEmojis} from './TeamPromptResponseEmojis'
-import makeAppURL from '../../utils/makeAppURL'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
-import {mergeRefs} from '../../utils/react/mergeRefs'
-import useTooltip from '../../hooks/useTooltip'
-import {MenuPosition} from '../../hooks/useCoords'
-import {Link} from '@mui/icons-material'
 
 const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
 const threeColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.THREE_RESPONSE_COLUMNS}px)`
@@ -254,7 +254,7 @@ const TeamPromptResponseCard = (props: Props) => {
       isSingleColumn={isSingleColumn}
     >
       <ResponseHeader>
-        <Avatar picture={picture} size={48} />
+        <Avatar picture={picture} className='h-12 w-12' />
         <TeamMemberName>
           {preferredName}
           {response && (

@@ -1,6 +1,6 @@
-import React from 'react'
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
 import clsx from 'clsx'
+import React from 'react'
 
 export const AvatarImage = React.forwardRef<
   HTMLImageElement,

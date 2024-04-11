@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import myDashboardTasksAndHeaderQuery, {
   MyDashboardTasksAndHeaderQuery
 } from '../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import ErrorBoundary from './ErrorBoundary'
 import MyDashboardTasksAndHeader from './MyDashboardTasksAndHeader'
 

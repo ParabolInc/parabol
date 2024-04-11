@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
+import newMeetingSummaryQuery, {
+  NewMeetingSummaryQuery
+} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useRouter from '../../../hooks/useRouter'
 import {LoaderSize} from '../../../types/constEnums'
 import {Loader} from '../../../utils/relay/renderLoader'
-import newMeetingSummaryQuery, {
-  NewMeetingSummaryQuery
-} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import NewMeetingSummary from './NewMeetingSummary'
 
 const NewMeetingSummaryRoot = () => {

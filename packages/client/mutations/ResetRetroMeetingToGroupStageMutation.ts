@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {ResetRetroMeetingToGroupStageMutation as TResetRetroMeetingToGroupStageMutation} from '../__generated__/ResetRetroMeetingToGroupStageMutation.graphql'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 
 graphql`

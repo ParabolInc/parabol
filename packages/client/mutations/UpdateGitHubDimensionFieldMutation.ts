@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {GitHubFieldMenu_stage$data} from '../__generated__/GitHubFieldMenu_stage.graphql'
+import {UpdateGitHubDimensionFieldMutation as TUpdateGitHubDimensionFieldMutation} from '../__generated__/UpdateGitHubDimensionFieldMutation.graphql'
 import {DiscriminateProxy} from '../types/generics'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {GitHubFieldMenu_stage$data} from '../__generated__/GitHubFieldMenu_stage.graphql'
-import {UpdateGitHubDimensionFieldMutation as TUpdateGitHubDimensionFieldMutation} from '../__generated__/UpdateGitHubDimensionFieldMutation.graphql'
 
 graphql`
   fragment UpdateGitHubDimensionFieldMutation_team on UpdateGitHubDimensionFieldSuccess {

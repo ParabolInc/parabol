@@ -1,6 +1,6 @@
-import React from 'react'
 import {Slot} from '@radix-ui/react-slot'
 import clsx from 'clsx'
+import React from 'react'
 
 type Variant = 'primary' | 'secondary' | 'destructive' | 'ghost' | 'link' | 'outline'
 type Size = 'sm' | 'md' | 'lg' | 'default'

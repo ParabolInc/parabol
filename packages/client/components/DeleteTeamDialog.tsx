@@ -1,15 +1,15 @@
 import React, {useState} from 'react'
-import FlatPrimaryButton from './FlatPrimaryButton'
-import {Input} from '../ui/Input/Input'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import useRouter from '../hooks/useRouter'
+import ArchiveTeamMutation from '../mutations/ArchiveTeamMutation'
 import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
-import {DialogActions} from '../ui/Dialog/DialogActions'
-import useMutationProps from '../hooks/useMutationProps'
+import {Input} from '../ui/Input/Input'
+import FlatPrimaryButton from './FlatPrimaryButton'
 import SecondaryButton from './SecondaryButton'
-import ArchiveTeamMutation from '../mutations/ArchiveTeamMutation'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
 
 interface Props {
   isOpen: boolean

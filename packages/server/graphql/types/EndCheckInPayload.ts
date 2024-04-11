@@ -5,10 +5,10 @@ import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
 import {resolveNewMeeting} from '../resolvers'
 import ActionMeeting from './ActionMeeting'
-import makeMutationPayload from './makeMutationPayload'
 import Task from './Task'
 import Team from './Team'
 import TimelineEvent from './TimelineEvent'
+import makeMutationPayload from './makeMutationPayload'
 
 export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndCheckInSuccess',

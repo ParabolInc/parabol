@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {MenuProps} from '../hooks/useMenu'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import gitlabScopingSearchFilterMenuQuery, {
   GitLabScopingSearchFilterMenuQuery
 } from '../__generated__/GitLabScopingSearchFilterMenuQuery.graphql'
 import {GitLabScopingSearchFilterMenuRoot_meeting$key} from '../__generated__/GitLabScopingSearchFilterMenuRoot_meeting.graphql'
+import {MenuProps} from '../hooks/useMenu'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import GitLabScopingSearchFilterMenu from './GitLabScopingSearchFilterMenu'
 import MockFieldList from './MockFieldList'
 

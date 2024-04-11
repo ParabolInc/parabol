@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {ExpandMore as ExpandMoreIcon, KeyboardArrowRight} from '@mui/icons-material'
-import React, {forwardRef, ReactNode, Ref} from 'react'
+import React, {ReactNode, Ref, forwardRef} from 'react'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 

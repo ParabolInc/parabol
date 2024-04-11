@@ -1,7 +1,7 @@
 import React from 'react'
-import {MenuProps} from '../../../../hooks/useMenu'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
+import {MenuProps} from '../../../../hooks/useMenu'
 
 interface OrgTeamMembersMenuProps {
   menuProps: MenuProps

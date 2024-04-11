@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {UpdateFeatureFlagMutation as TUpdateFeatureFlagMutation} from '../__generated__/UpdateFeatureFlagMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateFeatureFlagMutation_notification on UpdateFeatureFlagPayload {

@@ -1,9 +1,10 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import getKysely from '../../postgres/getKysely'
 import getRethink from '../../database/rethinkDriver'
 import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJobMetingStageTimeLimit'
+import getKysely from '../../postgres/getKysely'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -12,7 +13,6 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import SetStageTimerPayload from '../types/SetStageTimerPayload'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
-import {analytics} from '../../utils/analytics/analytics'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150

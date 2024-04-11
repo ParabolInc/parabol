@@ -1,10 +1,10 @@
-import React from 'react'
-import {ActivityCard} from './ActivityCard'
-import {ActivityBadge} from './ActivityBadge'
 import {Add as AddIcon} from '@mui/icons-material'
 import clsx from 'clsx'
+import React from 'react'
 import {Link} from 'react-router-dom'
-import {CATEGORY_THEMES, CATEGORY_ID_TO_NAME, AllCategoryID} from './Categories'
+import {ActivityBadge} from './ActivityBadge'
+import {ActivityCard} from './ActivityCard'
+import {AllCategoryID, CATEGORY_ID_TO_NAME, CATEGORY_THEMES} from './Categories'
 
 interface Props {
   className?: string
@@ -16,7 +16,7 @@ const CreateActivityCard = (props: Props) => {
 
   return (
     <Link
-      className={clsx('flex rounded-2xl focus:outline-sky-500 hover:bg-slate-100', className)}
+      className={clsx('flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500', className)}
       to={`/activity-library/new-activity/${category}`}
     >
       <ActivityCard

@@ -8,11 +8,15 @@ import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {toEpochSeconds} from '../../../../utils/epochTime'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
+import {analytics} from '../../../../utils/analytics/analytics'
+import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
+import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
+import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
 import {
   Field,
@@ -20,10 +24,6 @@ import {
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
-import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
-import {createNotifier} from './Notifier'
-import {analytics} from '../../../../utils/analytics/analytics'
-import IUser from '../../../../postgres/types/IUser'
 
 const notifyMattermost = async (
   event: EventEnum,

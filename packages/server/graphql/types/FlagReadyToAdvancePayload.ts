@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import {resolveGQLStageFromId} from '../resolvers'
-import makeMutationPayload from './makeMutationPayload'
 import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'
+import makeMutationPayload from './makeMutationPayload'
 
 export const FlagReadyToAdvanceSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'FlagReadyToAdvanceSuccess',

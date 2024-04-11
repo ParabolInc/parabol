@@ -15,14 +15,14 @@ import {
   isUserBillingLeader
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
-import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
-import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 declare const __PRODUCTION__: string
 

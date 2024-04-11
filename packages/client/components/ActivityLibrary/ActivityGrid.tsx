@@ -1,11 +1,10 @@
 import React from 'react'
-import {ActivityBadge} from './ActivityBadge'
-import {ActivityCardImage} from './ActivityCard'
-import {Template} from './ActivityLibrary'
-import {ActivityCard} from './ActivityCard'
 import {Link} from 'react-router-dom'
-import {CategoryID, CATEGORY_THEMES} from './Categories'
+import {ActivityBadge} from './ActivityBadge'
+import {ActivityCard, ActivityCardImage} from './ActivityCard'
+import {Template} from './ActivityLibrary'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
+import {CATEGORY_THEMES, CategoryID} from './Categories'
 
 interface ActivityGridProps {
   templates: Template[]
@@ -23,7 +22,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               pathname: `/activity-library/details/${template.id}`,
               state: {prevCategory: selectedCategory}
             }}
-            className='flex rounded-2xl focus:outline-sky-500 hover:bg-slate-100'
+            className='flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500'
           >
             <ActivityCard
               className='group aspect-[256/160] flex-1'

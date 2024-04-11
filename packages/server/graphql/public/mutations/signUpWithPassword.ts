@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
+import {URLSearchParams} from 'url'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import createEmailVerification from '../../../email/createEmailVerification'
@@ -10,7 +11,6 @@ import isEmailVerificationRequired from '../../../utils/isEmailVerificationRequi
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {MutationResolvers} from '../resolverTypes'
-import {URLSearchParams} from 'url'
 
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,

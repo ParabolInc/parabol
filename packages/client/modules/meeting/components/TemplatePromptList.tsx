@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
+import {TemplatePromptList_prompts$key} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
 import {TEMPLATE_PROMPT} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
-import {TemplatePromptList_prompts$key} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props {

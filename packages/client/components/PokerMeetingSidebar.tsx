@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment} from 'react'
 import {useFragment} from 'react-relay'
-import useRouter from '~/hooks/useRouter'
 import {
   NewMeetingPhaseTypeEnum,
   PokerMeetingSidebar_meeting$key
 } from '~/__generated__/PokerMeetingSidebar_meeting.graphql'
+import useRouter from '~/hooks/useRouter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
 import getSidebarItemStage from '../utils/getSidebarItemStage'

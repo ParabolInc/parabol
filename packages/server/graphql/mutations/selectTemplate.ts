@@ -2,13 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import {Logger} from '../../utils/Logger'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SelectTemplatePayload from '../types/SelectTemplatePayload'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
-import {Logger} from '../../utils/Logger'
 
 const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
