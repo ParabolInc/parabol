@@ -5,6 +5,7 @@ import {TopRetroTemplatesCard_insights$key} from '~/__generated__/TopRetroTempla
 import SimpleTooltip from '../../../../components/SimpleTooltip'
 import TeamInsightsCard from './TeamInsightsCard'
 import plural from '../../../../utils/plural'
+import {useHistory} from 'react-router'
 
 interface Props {
   teamInsightsRef: TopRetroTemplatesCard_insights$key
@@ -12,6 +13,7 @@ interface Props {
 
 const TopRetroTemplatesCard = (props: Props) => {
   const {teamInsightsRef} = props
+  const history = useHistory()
   const insights = useFragment(
     graphql`
       fragment TopRetroTemplatesCard_insights on TeamInsights {
@@ -35,6 +37,10 @@ const TopRetroTemplatesCard = (props: Props) => {
     return null
   }
 
+  const onClick = (templateId: string) => {
+    history.push(`/activity-library/details/${templateId}`)
+  }
+
   return (
     <TeamInsightsCard
       teamInsightsRef={insights}
@@ -42,18 +48,19 @@ const TopRetroTemplatesCard = (props: Props) => {
       tooltip='The most used retro templates on your team in the last 12 months'
     >
       <div className='flex w-full flex-col'>
-        {topRetroTemplates.map((template, index) => {
+        {topRetroTemplates.map((template) => {
           const {reflectTemplate, count} = template
-          const {name, illustrationUrl} = reflectTemplate
+          const {id, name, illustrationUrl} = reflectTemplate
           return (
-            <SimpleTooltip
-              text={`Used ${plural(count, 'once', `${count} times`)} in the last 12 months`}
-              className='my-2 flex items-center rounded border-2 border-grape-500 bg-fuscia-100 text-sm font-semibold text-slate-700'
-              key={index}
-            >
-              <img className='m-1 h-10 w-10' src={illustrationUrl} />
-              {name}
-            </SimpleTooltip>
+            <div key={id} onClick={() => onClick(id)}>
+              <SimpleTooltip
+                text={`Used ${plural(count, 'once', `${count} times`)} in the last 12 months`}
+                className='my-2 flex items-center rounded border-2 border-grape-500 bg-fuscia-100 text-sm font-semibold text-slate-700'
+              >
+                <img className='m-1 h-10 w-10' src={illustrationUrl} />
+                {name}
+              </SimpleTooltip>
+            </div>
           )
         })}
         {topRetroTemplates.length === 1 && (
