@@ -1,9 +1,9 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import {BBox} from '../types/animations'
 import suggestMentionableUsersQuery, {
   SuggestMentionableUsersQuery
 } from '../__generated__/SuggestMentionableUsersQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {BBox} from '../types/animations'
 import SuggestMentionableUsers from './SuggestMentionableUsers'
 import {MentionSuggestion} from './TaskEditor/useSuggestions'
 

@@ -1,12 +1,12 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import {JiraIntegrationPanel_meeting$key} from '../../../__generated__/JiraIntegrationPanel_meeting.graphql'
-import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
+import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
 
 interface Props {
   meetingRef: JiraIntegrationPanel_meeting$key

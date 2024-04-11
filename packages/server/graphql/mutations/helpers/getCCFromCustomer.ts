@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
+import {Logger} from '../../../utils/Logger'
 import {getStripeManager} from '../../../utils/stripe'
 import {stripeCardToDBCard} from './stripeCardToDBCard'
-import {Logger} from '../../../utils/Logger'
 
 export default async function getCCFromCustomer(
   customer: Stripe.Customer | Stripe.DeletedCustomer

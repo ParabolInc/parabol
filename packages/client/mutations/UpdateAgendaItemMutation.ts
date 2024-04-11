@@ -4,9 +4,9 @@ import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {ActionMeeting_meeting$data} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {AgendaItem_agendaItem$data} from '~/__generated__/AgendaItem_agendaItem.graphql'
 import {UpdateAgendaItemMutation_team$data} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
+import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
 import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
 
 graphql`

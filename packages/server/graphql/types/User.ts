@@ -16,11 +16,13 @@ import {
 } from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import MeetingMemberType from '../../database/types/MeetingMember'
 import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
+import TimelineEvent from '../../database/types/TimelineEvent'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
@@ -46,8 +48,6 @@ import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
-import TimelineEvent from '../../database/types/TimelineEvent'
-import {RDatum} from '../../database/stricterR'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',

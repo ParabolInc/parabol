@@ -1,6 +1,6 @@
+import {Threshold} from '~/types/constEnums'
 import getRethink from '../../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../../database/stricterR'
-import {Threshold} from '~/types/constEnums'
 // Uncomment for easier testing
 //import { ThresholdTest as Threshold } from "~/types/constEnums";
 

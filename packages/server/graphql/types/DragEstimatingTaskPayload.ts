@@ -4,8 +4,8 @@ import getPhase from '../../utils/getPhase'
 import {GQLContext} from '../graphql'
 import {augmentDBStage} from '../resolvers'
 import EstimateStage from './EstimateStage'
-import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
+import makeMutationPayload from './makeMutationPayload'
 
 export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'DragEstimatingTaskSuccess',

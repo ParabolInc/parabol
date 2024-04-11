@@ -1,6 +1,6 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
 import {handleRemoveReply} from '~/mutations/DeleteCommentMutation'
+import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
 import {parseQueryParams} from '~/utils/useQueryParameterParser'
 import ITask from '../../../server/database/types/Task'
 import IUser from '../../../server/database/types/User'

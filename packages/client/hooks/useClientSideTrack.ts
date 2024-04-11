@@ -1,6 +1,6 @@
 import {useEffect, useRef} from 'react'
-import useAtmosphere from './useAtmosphere'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
+import useAtmosphere from './useAtmosphere'
 
 // certain users keep sending this non-stop. not sure why.
 // include an eventId so we know if it's the component. if it's not here, then in must be in trebuchet

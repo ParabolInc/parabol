@@ -2,10 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import getSafeRegex from '~/utils/getSafeRegex'
+import {TeamColumnsContainer_viewer$key} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-import {TeamColumnsContainer_viewer$key} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
 
 interface Props {
   viewer: TeamColumnsContainer_viewer$key

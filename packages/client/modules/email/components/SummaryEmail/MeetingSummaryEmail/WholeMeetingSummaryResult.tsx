@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {WholeMeetingSummaryResult_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummaryResult_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {WholeMeetingSummaryResult_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummaryResult_meeting.graphql'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import {AIExplainer} from '../../../../../types/constEnums'
+import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const topicTitleStyle = {

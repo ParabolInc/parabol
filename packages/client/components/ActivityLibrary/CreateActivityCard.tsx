@@ -1,10 +1,10 @@
-import React from 'react'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
-import {ActivityBadge} from './ActivityBadge'
 import {Add as AddIcon} from '@mui/icons-material'
 import clsx from 'clsx'
+import React from 'react'
 import {Link} from 'react-router-dom'
-import {CATEGORY_THEMES, CATEGORY_ID_TO_NAME, AllCategoryID} from './Categories'
+import {ActivityBadge} from './ActivityBadge'
+import {ActivityLibraryCard} from './ActivityLibraryCard'
+import {AllCategoryID, CATEGORY_ID_TO_NAME, CATEGORY_THEMES} from './Categories'
 
 interface Props {
   className?: string

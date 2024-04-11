@@ -1,8 +1,8 @@
 import {FirstParam} from 'parabol-client/types/generics'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
-import getPgConfig from '../getPgConfig'
 import connectRethinkDB from '../../database/connectRethinkDB'
+import getPgConfig from '../getPgConfig'
 import getPgp from '../getPgp'
 
 export async function up() {

@@ -2,12 +2,12 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import getRethink from '../../../database/rethinkDriver'
+import {RDatum} from '../../../database/stricterR'
 import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
 import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
-import {RDatum} from '../../../database/stricterR'
 
 export type StripeFailPaymentPayloadSource =
   | {

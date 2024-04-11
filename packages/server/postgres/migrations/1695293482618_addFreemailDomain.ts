@@ -1,5 +1,5 @@
-import {Client} from 'pg'
 import {Kysely, PostgresDialect, sql} from 'kysely'
+import {Client} from 'pg'
 import getPg from '../getPg'
 import getPgConfig from '../getPgConfig'
 

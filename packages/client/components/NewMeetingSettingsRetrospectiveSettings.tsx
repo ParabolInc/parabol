@@ -2,16 +2,16 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {NewMeetingSettingsRetrospectiveSettings_team$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_team.graphql'
 import {NewMeetingSettingsRetrospectiveSettings_organization$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_organization.graphql'
+import {NewMeetingSettingsRetrospectiveSettings_team$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_team.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
-import NewMeetingSettingsToggleTranscription from './NewMeetingSettingsToggleTranscription'
 import NewMeetingSettingsToggleTeamHealth from './NewMeetingSettingsToggleTeamHealth'
+import NewMeetingSettingsToggleTranscription from './NewMeetingSettingsToggleTranscription'
 
 const NewMeetingSettingsToggleCheckInMenuEntry = styled(NewMeetingSettingsToggleCheckIn)({
   background: 'none',

@@ -1,7 +1,7 @@
 /* eslint-env jest */
-import getRedis from '../getRedis'
-import RedisLockQueue from '../RedisLockQueue'
 import sleep from 'parabol-client/utils/sleep'
+import RedisLockQueue from '../RedisLockQueue'
+import getRedis from '../getRedis'
 
 afterAll(async () => {
   getRedis().quit()

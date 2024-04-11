@@ -1,12 +1,12 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {useFragment} from 'react-relay'
-import OrgTeamsRow from './OrgTeamsRow'
 import {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_organization.graphql'
 import AddTeamDialogRoot from '../../../../components/AddTeamDialogRoot'
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import plural from '../../../../utils/plural'
+import OrgTeamsRow from './OrgTeamsRow'
 
 type Props = {
   organizationRef: OrgTeams_organization$key

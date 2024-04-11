@@ -5,11 +5,11 @@ import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
 import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(

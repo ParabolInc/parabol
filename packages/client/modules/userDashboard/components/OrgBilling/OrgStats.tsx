@@ -3,11 +3,11 @@ import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {OrgStats_organization$key} from '../../../../__generated__/OrgStats_organization.graphql'
 import {tooltipTextLookup} from '../../../../components/InsightsDomainPanel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {OrgStats_organization$key} from '../../../../__generated__/OrgStats_organization.graphql'
 
 const StatBlocks = styled('div')({
   display: 'flex',

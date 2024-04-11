@@ -1,12 +1,12 @@
 import React, {Suspense} from 'react'
 import {withRouter} from 'react-router-dom'
+import dashboardQuery, {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import dashboardQuery, {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import Dashboard from './Dashboard'
 
 const DashboardRoot = () => {

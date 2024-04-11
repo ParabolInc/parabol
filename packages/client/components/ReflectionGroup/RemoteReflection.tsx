@@ -4,6 +4,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
+import {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
+import {
+  RemoteReflection_reflection$data,
+  RemoteReflection_reflection$key
+} from '../../__generated__/RemoteReflection_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEditorState from '../../hooks/useEditorState'
 import {Elevation} from '../../styles/elevation'
@@ -11,11 +16,6 @@ import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../typ
 import {DeepNonNullable} from '../../types/generics'
 import {VOTE} from '../../utils/constants'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
-import {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
-import {
-  RemoteReflection_reflection$key,
-  RemoteReflection_reflection$data
-} from '../../__generated__/RemoteReflection_reflection.graphql'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'

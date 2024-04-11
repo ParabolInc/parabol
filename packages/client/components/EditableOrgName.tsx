@@ -3,10 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {EditableOrgName_organization$key} from '../__generated__/EditableOrgName_organization.graphql'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import Legitity from '../validation/Legitity'
-import {EditableOrgName_organization$key} from '../__generated__/EditableOrgName_organization.graphql'
 import EditableText from './EditableText'
 
 interface Props extends WithMutationProps {

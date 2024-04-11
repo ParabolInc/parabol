@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemoveReflectTemplateMutation as TRemoveReflectTemplateMutation} from '../__generated__/RemoveReflectTemplateMutation.graphql'
 import {RemoveReflectTemplateMutation_team$data} from '../__generated__/RemoveReflectTemplateMutation_team.graphql'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 
 graphql`

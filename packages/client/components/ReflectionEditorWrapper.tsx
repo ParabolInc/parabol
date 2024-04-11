@@ -9,7 +9,8 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
-import {Card, Gutters, ElementHeight} from '../types/constEnums'
+import {PALETTE} from '~/styles/paletteV3'
+import {Card, ElementHeight, Gutters} from '../types/constEnums'
 import {textTags} from '../utils/constants'
 import completeEntity from '../utils/draftjs/completeEntity'
 import entitizeText from '../utils/draftjs/entitizeText'
@@ -19,7 +20,6 @@ import lazyPreload from '../utils/lazyPreload'
 import linkify from '../utils/linkify'
 import './TaskEditor/Draft.css'
 import useCommentPlugins from './TaskEditor/useCommentPlugins'
-import {PALETTE} from '~/styles/paletteV3'
 
 const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) => ({
   color: PALETTE.SLATE_700,

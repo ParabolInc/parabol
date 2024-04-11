@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import clientTempId from '~/utils/relay/clientTempId'
 import {UpsertTeamPromptResponseMutation_meeting$data} from '~/__generated__/UpsertTeamPromptResponseMutation_meeting.graphql'
-import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import clientTempId from '~/utils/relay/clientTempId'
 import {UpsertTeamPromptResponseMutation as TUpsertTeamPromptResponseMutation} from '../__generated__/UpsertTeamPromptResponseMutation.graphql'
+import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`

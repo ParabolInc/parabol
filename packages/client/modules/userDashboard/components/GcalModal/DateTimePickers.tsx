@@ -1,8 +1,8 @@
-import React from 'react'
-import {Dayjs} from 'dayjs'
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {DatePicker, TimePicker} from '@mui/x-date-pickers'
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
+import {Dayjs} from 'dayjs'
+import React from 'react'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const customStyles = {

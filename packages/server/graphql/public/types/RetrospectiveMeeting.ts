@@ -1,4 +1,5 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import ReflectionGroupType from '../../../database/types/ReflectionGroup'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
@@ -6,7 +7,6 @@ import getPhase from '../../../utils/getPhase'
 import {GQLContext} from '../../graphql'
 import {resolveForSU} from '../../resolvers'
 import {RetrospectiveMeetingResolvers} from '../resolverTypes'
-import ReflectionGroupType from '../../../database/types/ReflectionGroup'
 
 const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   autoGroupThreshold: resolveForSU('autoGroupThreshold'),

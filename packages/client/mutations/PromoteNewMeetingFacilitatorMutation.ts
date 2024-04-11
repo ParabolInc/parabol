@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '../__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
 import {PromoteNewMeetingFacilitatorMutation_meeting$data} from '../__generated__/PromoteNewMeetingFacilitatorMutation_meeting.graphql'
+import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_meeting on PromoteNewMeetingFacilitatorPayload {

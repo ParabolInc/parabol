@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import RetroReflection from './RetroReflection'
+import makeMutationPayload from './makeMutationPayload'
 
 export const AddReactjiToReflectionSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'AddReactjiToReflectionSuccess',

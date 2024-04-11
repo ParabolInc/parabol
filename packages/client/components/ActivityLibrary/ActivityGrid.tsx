@@ -1,11 +1,11 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityCardImage} from './ActivityCard'
 import {Template} from './ActivityLibrary'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
-import {Link} from 'react-router-dom'
-import {CategoryID, CATEGORY_THEMES} from './Categories'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
+import {CATEGORY_THEMES, CategoryID} from './Categories'
 
 interface ActivityGridProps {
   templates: Template[]

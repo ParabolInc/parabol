@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
-import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddReflectTemplatePromptMutation as TAddReflectTemplatePromptMutation} from '../__generated__/AddReflectTemplatePromptMutation.graphql'
 import {AddReflectTemplatePromptMutation_team$data} from '../__generated__/AddReflectTemplatePromptMutation_team.graphql'
+import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
 
 interface Handlers extends BaseLocalHandlers {

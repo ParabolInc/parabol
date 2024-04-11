@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState, useMemo} from 'react'
-import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
+import React, {useMemo, useState} from 'react'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
+import {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
+import useAcceptRequestToJoinDomainMutation from '../mutations/useAcceptRequestToJoinDomainMutation'
+import Checkbox from './Checkbox'
 import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
-import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
-import {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
-import Checkbox from './Checkbox'
-import useAcceptRequestToJoinDomainMutation from '../mutations/useAcceptRequestToJoinDomainMutation'
 
 const ReviewRequestToJoinOrgModalViewerFragment = graphql`
   fragment ReviewRequestToJoinOrgModal_viewer on User

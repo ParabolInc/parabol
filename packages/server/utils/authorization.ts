@@ -1,10 +1,9 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
-import AuthToken from '../database/types/AuthToken'
-import OrganizationUser from '../database/types/OrganizationUser'
-import {DataLoaderWorker} from '../graphql/graphql'
 import {RDatum} from '../database/stricterR'
-import {OrgUserRole} from '../database/types/OrganizationUser'
+import AuthToken from '../database/types/AuthToken'
+import OrganizationUser, {OrgUserRole} from '../database/types/OrganizationUser'
+import {DataLoaderWorker} from '../graphql/graphql'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''

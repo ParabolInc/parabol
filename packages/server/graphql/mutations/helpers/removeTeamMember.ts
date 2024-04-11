@@ -10,11 +10,11 @@ import UpdatesStage from '../../../database/types/UpdatesStage'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
-import errorFilter from '../../errorFilter'
 
 interface Options {
   evictorUserId?: string

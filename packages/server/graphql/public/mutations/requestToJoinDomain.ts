@@ -1,14 +1,14 @@
 import ms from 'ms'
-import {getUserId} from '../../../utils/authorization'
-import {MutationResolvers} from '../resolverTypes'
-import getKysely from '../../../postgres/getKysely'
-import {getEligibleOrgIdsByDomain} from '../../../utils/isRequestToJoinDomainAllowed'
-import getTeamIdsByOrgIds from '../../../postgres/queries/getTeamIdsByOrgIds'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationRequestToJoinOrg from '../../../database/types/NotificationRequestToJoinOrg'
-import publishNotification from './helpers/publishNotification'
+import getKysely from '../../../postgres/getKysely'
+import getTeamIdsByOrgIds from '../../../postgres/queries/getTeamIdsByOrgIds'
+import {getUserId} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import {getEligibleOrgIdsByDomain} from '../../../utils/isRequestToJoinDomainAllowed'
 import standardError from '../../../utils/standardError'
+import {MutationResolvers} from '../resolverTypes'
+import publishNotification from './helpers/publishNotification'
 
 const REQUEST_EXPIRATION_DAYS = 30
 
