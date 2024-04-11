@@ -29,8 +29,6 @@ graphql`
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
-    ...ReflectTemplateDetailsTemplate @relay(mask: false)
-    ...PokerTemplateDetailsTemplate @relay(mask: false)
     ...useTemplateDescription_template
   }
 `
