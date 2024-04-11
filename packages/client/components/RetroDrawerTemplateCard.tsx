@@ -3,7 +3,7 @@ import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryC
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {ActivityLibraryCard} from './ActivityLibrary/ActivityLibraryCard'
+import {ActivityCard} from './ActivityLibrary/ActivityCard'
 import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {RetroDrawerTemplateCard_template$key} from '~/__generated__/RetroDrawerTemplateCard_template.graphql'
 import {CategoryID, CATEGORY_THEMES} from '././ActivityLibrary/Categories'
@@ -49,27 +49,29 @@ const RetroDrawerTemplateCard = (props: Props) => {
 
   return (
     <form className='px-4 py-2' onClick={handleClick}>
-      <ActivityLibraryCard
-        className='group aspect-[256/160] flex-1 hover:cursor-pointer'
-        theme={CATEGORY_THEMES[template.category as CategoryID]}
-        title={template.name}
-        type='retrospective'
-        badge={
-          !template.isFree ? (
-            <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
-          ) : null
-        }
-      >
-        <ActivityCardImage
-          className='group-hover/card:hidden'
-          src={template.illustrationUrl}
-          category='retrospective'
-        />
-        <ActivityLibraryCardDescription
-          className='hidden group-hover/card:flex'
-          templateRef={template}
-        />
-      </ActivityLibraryCard>
+      <div className='flex focus:rounded-2xl focus:outline-sky-500 hover:rounded-2xl hover:bg-slate-100'>
+        <ActivityCard
+          className='group aspect-[256/160] flex-1 hover:cursor-pointer'
+          theme={CATEGORY_THEMES[template.category as CategoryID]}
+          title={template.name}
+          type='retrospective'
+          badge={
+            !template.isFree ? (
+              <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
+            ) : null
+          }
+        >
+          <ActivityCardImage
+            className='group-hover/card:hidden'
+            src={template.illustrationUrl}
+            category='retrospective'
+          />
+          <ActivityLibraryCardDescription
+            className='hidden group-hover/card:flex'
+            templateRef={template}
+          />
+        </ActivityCard>
+      </div>
     </form>
   )
 }

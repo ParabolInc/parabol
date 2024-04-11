@@ -94,7 +94,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
 
   return (
     <div
-      className='flex w-full flex-col'
+      className='flex w-full flex-col p-2 rounded-xl'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

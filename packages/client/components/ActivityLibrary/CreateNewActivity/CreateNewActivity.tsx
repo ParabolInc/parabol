@@ -245,11 +245,11 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500 hover:bg-slate-100'
                 value={activity.type}
               >
                 <ActivityCard
-                  className='aspect-[320/190] w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
+                  className='aspect-[320/190] w-80'
                   theme={DEFAULT_CARD_THEME}
                   title={activity.title}
                   type={activity.type}
