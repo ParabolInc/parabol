@@ -8,13 +8,11 @@ import getCachedRecord from '../utils/relay/getCachedRecord'
 import getNodeById from '../utils/relay/getNodeById'
 import {insertEdgeAfter} from '../utils/relay/insertEdge'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import {UpdatePokerTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdatePokerTemplateScopeMutation.graphql'
 import {
   SharingScopeEnum,
   UpdatePokerTemplateScopeMutation_organization$data
 } from '../__generated__/UpdatePokerTemplateScopeMutation_organization.graphql'
-import getPokerTemplateOrgConn from './connections/getPokerTemplateOrgConn'
 
 graphql`
   fragment UpdatePokerTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
@@ -55,9 +53,6 @@ const removeTemplateFromCurrentScope = (
 ) => {
   if (scopeList === 'TEAM') {
     safeRemoveNodeFromArray(templateId, meetingSettings, 'teamTemplates')
-  } else if (scopeList === 'ORGANIZATION') {
-    const orgTemplatesConn = getPokerTemplateOrgConn(meetingSettings)
-    safeRemoveNodeFromConn(templateId, orgTemplatesConn)
   }
   // not possible for the public list to get mutated because this is an org subscription
 }
@@ -78,14 +73,10 @@ export const putTemplateInConnection = (
 const addTemplateToScope = (
   template: RecordProxy,
   scope: SharingScopeEnum,
-  meetingSettings: RecordProxy,
-  store: RecordSourceSelectorProxy
+  meetingSettings: RecordProxy
 ) => {
   if (scope === 'TEAM') {
     addNodeToArray(template, meetingSettings, 'teamTemplates')
-  } else if (scope === 'ORGANIZATION') {
-    const orgTemplatesConn = getPokerTemplateOrgConn(meetingSettings)
-    putTemplateInConnection(template, orgTemplatesConn, store)
   }
 }
 
@@ -117,13 +108,13 @@ const handleUpdateTemplateScope = (
     if (scopeList === 'TEAM') {
       if (clonedTemplate) {
         removeTemplateFromCurrentScope(templateId, scopeList, meetingSettings)
-        addTemplateToScope(nextTemplate, scopeList, meetingSettings, store)
+        addTemplateToScope(nextTemplate, scopeList, meetingSettings)
       }
     } else if (scopeList === 'ORGANIZATION') {
       if (isDecreasing) {
         removeTemplateFromCurrentScope(templateId, scopeList, meetingSettings)
       } else {
-        addTemplateToScope(nextTemplate, scopeList, meetingSettings, store)
+        addTemplateToScope(nextTemplate, scopeList, meetingSettings)
       }
     }
   })
