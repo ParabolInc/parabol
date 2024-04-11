@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Comment} from '@mui/icons-material'
-import React, {ReactElement, ReactNode} from 'react'
+import React, {ReactElement, ReactNode, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import hasToken from '../utils/hasToken'
@@ -8,6 +8,7 @@ import isDemoRoute from '../utils/isDemoRoute'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
 import PlainButton from './PlainButton/PlainButton'
+import RetroDrawerRoot from './RetroDrawerRoot'
 import SidebarToggle from './SidebarToggle'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
@@ -148,6 +149,7 @@ interface Props {
   isRightDrawerOpen?: boolean
   toggleSidebar: () => void
   toggleDrawer?: () => void
+  meetingId?: string
 }
 
 const MeetingTopBar = (props: Props) => {
@@ -158,10 +160,14 @@ const MeetingTopBar = (props: Props) => {
     isMeetingSidebarCollapsed,
     isRightDrawerOpen,
     toggleDrawer,
-    toggleSidebar
+    toggleSidebar,
+    meetingId
   } = props
   const showButton = isDemoRoute() && !hasToken()
   const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
+  const [showDrawer, setShowDrawer] = useState(false)
+  const isOptionsVisible = !!meetingId && !isDemoRoute()
+
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
@@ -177,6 +183,13 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
+        {isOptionsVisible && (
+          <RetroDrawerRoot
+            meetingId={meetingId}
+            setShowDrawer={setShowDrawer}
+            showDrawer={showDrawer}
+          />
+        )}
         {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
             <Badge>

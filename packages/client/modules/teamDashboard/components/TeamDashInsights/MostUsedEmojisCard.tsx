@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {MostUsedEmojisCard_insights$key} from '~/__generated__/MostUsedEmojisCard_insights.graphql'
-import Tooltip from '../../../../components/Tooltip'
+import SimpleTooltip from '../../../../components/SimpleTooltip'
 import getReactji from '../../../../utils/getReactji'
 import TeamInsightsCard from './TeamInsightsCard'
 
@@ -41,9 +41,9 @@ const MostUsedEmojisCard = (props: Props) => {
           const {unicode, shortName} = getReactji(emoji.id)
           return (
             <div key={emoji.id} className='flex h-24 w-1/4 flex-col items-center justify-center'>
-              <Tooltip text={`:${shortName}:`}>
+              <SimpleTooltip text={`:${shortName}:`}>
                 <div className='text-2xl'>{unicode}</div>
-              </Tooltip>
+              </SimpleTooltip>
               <div className='p-2 font-semibold'>{emoji.count}</div>
             </div>
           )

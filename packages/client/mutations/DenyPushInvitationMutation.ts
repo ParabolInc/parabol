@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 import {DenyPushInvitationMutation as TDenyPushInvitationMutation} from '../__generated__/DenyPushInvitationMutation.graphql'
 import {DenyPushInvitationMutation_team$data} from '../__generated__/DenyPushInvitationMutation_team.graphql'
+import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment DenyPushInvitationMutation_team on DenyPushInvitationPayload {

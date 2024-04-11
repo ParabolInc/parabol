@@ -5,21 +5,19 @@ import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {Reactable} from '../../database/types/Reactable'
+import {Reactable, ReactableEnum} from '../../database/types/Reactable'
+import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import {TaskServiceEnum} from '../../database/types/Task'
-import {ReactableEnum} from '../../graphql/private/resolverTypes'
+import TemplateScale from '../../database/types/TemplateScale'
+import {DataLoaderWorker} from '../../graphql/graphql'
+import {ModifyType} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
-import {Team} from '../../postgres/queries/getTeamsByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
-import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
-import TemplateScale from '../../database/types/TemplateScale'
-import {DataLoaderWorker} from '../../graphql/graphql'
-import {ModifyType} from '../../graphql/public/resolverTypes'
 
 export type AnalyticsUser = {
   id: string
@@ -229,7 +227,6 @@ class Analytics {
   checkInEnd = async (
     completedMeeting: Meeting,
     meetingMembers: MeetingMember[],
-    team: Team,
     dataLoader: DataLoaderWorker
   ) =>
     Promise.all(
@@ -240,8 +237,7 @@ class Analytics {
           completedMeeting,
           meetingMembers,
           undefined,
-          undefined,
-          team
+          undefined
         )
       )
     )
@@ -294,24 +290,18 @@ class Analytics {
     completedMeeting: Meeting,
     meetingMembers: MeetingMember[],
     template?: MeetingTemplate,
-    meetingSpecificProperties?: any,
-    team?: Team
+    meetingSpecificProperties?: any
   ) => {
     const user = await dataloader.get('users').load(userId)
     this.track({id: userId, email: user?.email}, 'Meeting Completed', {
       wasFacilitator: completedMeeting.facilitatorUserId === userId,
-      ...createMeetingProperties(completedMeeting, meetingMembers, template, team),
+      ...createMeetingProperties(completedMeeting, meetingMembers, template),
       ...meetingSpecificProperties
     })
   }
 
-  meetingStarted = (
-    user: AnalyticsUser,
-    meeting: Meeting,
-    template?: MeetingTemplate,
-    team?: Team
-  ) => {
-    this.track(user, 'Meeting Started', createMeetingProperties(meeting, undefined, template, team))
+  meetingStarted = (user: AnalyticsUser, meeting: Meeting, template?: MeetingTemplate) => {
+    this.track(user, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
   }
 
   recurrenceStarted = (user: AnalyticsUser, meetingSeries: MeetingSeriesAnalyticsProperties) => {
@@ -322,8 +312,8 @@ class Analytics {
     this.track(user, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
-  meetingJoined = (user: AnalyticsUser, meeting: Meeting, team: Team) => {
-    this.track(user, 'Meeting Joined', createMeetingProperties(meeting, undefined, undefined, team))
+  meetingJoined = (user: AnalyticsUser, meeting: Meeting) => {
+    this.track(user, 'Meeting Joined', createMeetingProperties(meeting, undefined, undefined))
   }
 
   meetingSettingsChanged = (
@@ -671,14 +661,8 @@ class Analytics {
     this.track(user, 'New Org', {orgId, teamId, fromSignup})
   }
 
-  newTeam = (
-    user: AnalyticsUser,
-    orgId: string,
-    teamId: string,
-    teamNumber: number,
-    isOneOnOneTeam = false
-  ) => {
-    this.track(user, 'New Team', {orgId, teamId, teamNumber, isOneOnOneTeam})
+  newTeam = (user: AnalyticsUser, orgId: string, teamId: string, teamNumber: number) => {
+    this.track(user, 'New Team', {orgId, teamId, teamNumber})
   }
 
   pollAdded = (user: AnalyticsUser, teamId: string, meetingId: string) => {

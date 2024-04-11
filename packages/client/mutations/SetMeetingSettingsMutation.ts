@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {SetMeetingSettingsMutation as TSetMeetingSettingsMutation} from '../__generated__/SetMeetingSettingsMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment SetMeetingSettingsMutation_team on SetMeetingSettingsPayload {

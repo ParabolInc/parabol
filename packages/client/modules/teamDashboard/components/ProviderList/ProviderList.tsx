@@ -2,18 +2,18 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
+import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
-import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
+import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
-import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 
 interface Props {
   queryRef: PreloadedQuery<ProviderListQuery>
@@ -107,9 +107,6 @@ const query = graphql`
           }
         }
       }
-      featureFlags {
-        azureDevOps
-      }
     }
   }
 `
@@ -118,10 +115,6 @@ const ProviderList = (props: Props) => {
   const {queryRef, retry, teamId} = props
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
-  const {
-    featureFlags: {azureDevOps: allowAzureDevOps}
-  } = viewer
-
   const integrations = viewer.teamMember?.integrations
 
   const allIntegrations = [
@@ -159,8 +152,7 @@ const ProviderList = (props: Props) => {
     {
       name: 'Azure DevOps',
       connected: !!integrations?.azureDevOps.auth?.accessToken,
-      component: <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />,
-      hidden: !allowAzureDevOps
+      component: <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />
     },
     {
       name: 'MS Teams',
@@ -175,12 +167,12 @@ const ProviderList = (props: Props) => {
   ]
 
   const connectedIntegrations = allIntegrations
-    .filter((integration) => integration.connected && !integration.hidden)
+    .filter((integration) => integration.connected)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((integration) => integration.component)
 
   const availableIntegrations = allIntegrations
-    .filter((integration) => !integration.connected && !integration.hidden)
+    .filter((integration) => !integration.connected)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((integration) => integration.component)
 

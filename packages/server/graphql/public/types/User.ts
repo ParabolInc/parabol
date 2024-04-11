@@ -15,14 +15,14 @@ import {
   isUserBillingLeader
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {UserResolvers} from '../resolverTypes'
-import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
-import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 declare const __PRODUCTION__: string
 
@@ -114,7 +114,7 @@ const User: UserResolvers = {
     const invoice = await manager.retrieveInvoice(invoiceId)
     return generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader)
   },
-  availableTemplates: async ({id: userId}, {first, after}, {authToken, dataLoader}) => {
+  availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const user = await dataLoader.get('users').loadNonNull(userId)
     const teamIds =
@@ -175,6 +175,7 @@ const User: UserResolvers = {
         ...activity,
         sortOrder: getScore(activity, teamIds)
       }))
+      .filter((activity) => !type || activity.type === type)
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
 
     return connectionFromTemplateArray(allActivities, first, after)

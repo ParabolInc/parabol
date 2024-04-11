@@ -1,21 +1,21 @@
-import React, {forwardRef, useMemo} from 'react'
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
-import MenuItemLabel from '../../../../components/MenuItemLabel'
-import {MenuProps} from '../../../../hooks/useMenu'
-import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {forwardRef, useMemo} from 'react'
+import {useFragment} from 'react-relay'
 import {
   NewBillingLeaderMenu_organization$data,
   NewBillingLeaderMenu_organization$key
 } from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
-import TypeAheadLabel from '../../../../components/TypeAheadLabel'
-import useFilteredItems from '../../../../hooks/useFilteredItems'
 import {EmptyDropdownMenuItemLabel} from '../../../../components/EmptyDropdownMenuItemLabel'
-import SetOrgUserRoleMutation from '../../../../mutations/SetOrgUserRoleMutation'
+import Menu from '../../../../components/Menu'
+import MenuItem from '../../../../components/MenuItem'
+import MenuItemLabel from '../../../../components/MenuItemLabel'
+import TypeAheadLabel from '../../../../components/TypeAheadLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useFilteredItems from '../../../../hooks/useFilteredItems'
+import {MenuProps} from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import SetOrgUserRoleMutation from '../../../../mutations/SetOrgUserRoleMutation'
 
 interface Props {
   menuProps: MenuProps
@@ -96,7 +96,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
             label={
               <MenuItemLabel>
                 <div className='pr-8'>
-                  <Avatar picture={picture} size={32} />
+                  <Avatar picture={picture} className='h-8 w-8' />
                 </div>
                 <TypeAheadLabel query={newLeaderSearchQuery} label={preferredName} />
               </MenuItemLabel>

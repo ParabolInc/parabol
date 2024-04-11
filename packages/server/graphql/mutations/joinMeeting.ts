@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import rMapIf from '../../database/rMapIf'
+import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
@@ -164,8 +164,7 @@ const joinMeeting = {
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    analytics.meetingJoined(viewer, meeting, team)
+    analytics.meetingJoined(viewer, meeting)
     return data
   }
 }

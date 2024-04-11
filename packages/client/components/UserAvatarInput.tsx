@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
+import {Close} from '@mui/icons-material'
 import React from 'react'
 import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -9,7 +10,6 @@ import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
-import {Close} from '@mui/icons-material'
 import FlatButton from './FlatButton'
 
 const AvatarBlock = styled('div')({
@@ -75,7 +75,7 @@ const UserAvatarInput = (props: Props) => {
       <div>
         {/* upload */}
         <AvatarBlock>
-          <Avatar picture={picture} size={96} />
+          <Avatar picture={picture} className='h-24 w-24' />
         </AvatarBlock>
         <AvatarInput error={error?.message} onSubmit={onSubmit} />
       </div>

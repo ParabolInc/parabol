@@ -1,7 +1,7 @@
 import {matchPath} from 'react-router-dom'
+import {TaskInvolves_notification$data} from '../../__generated__/TaskInvolves_notification.graphql'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import {MENTIONEE} from '../../utils/constants'
-import {TaskInvolves_notification$data} from '../../__generated__/TaskInvolves_notification.graphql'
 
 const popInvolvementToast: OnNextHandler<TaskInvolves_notification$data, OnNextHistoryContext> = (
   notification,

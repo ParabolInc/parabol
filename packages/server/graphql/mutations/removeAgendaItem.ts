@@ -39,10 +39,7 @@ export default {
     const agendaItem = await r
       .table('AgendaItem')
       .get(agendaItemId)
-      .update(
-        {isActive: false},
-        {returnChanges: true}
-      )('changes')(0)('old_val')
+      .update({isActive: false}, {returnChanges: true})('changes')(0)('old_val')
       .default(null)
       .run()
     if (!agendaItem) {

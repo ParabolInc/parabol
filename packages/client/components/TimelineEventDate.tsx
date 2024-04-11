@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import ms from 'ms'
 import React, {Component} from 'react'
 import {PALETTE} from '../styles/paletteV3'
+import absoluteDate from '../utils/date/absoluteDate'
 import relativeDate from '../utils/date/relativeDate'
+import SimpleTooltip from './SimpleTooltip'
 
 const StyledSpan = styled('span')({
   color: PALETTE.SLATE_600,
@@ -41,7 +43,11 @@ class TimelineEventDate extends Component<Props, State> {
 
   render() {
     const {fromNow} = this.state
-    return <StyledSpan>{fromNow}</StyledSpan>
+    return (
+      <StyledSpan>
+        <SimpleTooltip text={absoluteDate(this.props.createdAt)}>{fromNow}</SimpleTooltip>
+      </StyledSpan>
+    )
   }
 }
 

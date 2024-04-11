@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {UpdateTaskDueDateMutation as TUpdateTaskDueDateMutation} from '../__generated__/UpdateTaskDueDateMutation.graphql'
 import {WithFieldsAsType} from '../types/generics'
 import {StandardMutation} from '../types/relayMutations'
-import {UpdateTaskDueDateMutation as TUpdateTaskDueDateMutation} from '../__generated__/UpdateTaskDueDateMutation.graphql'
 graphql`
   fragment UpdateTaskDueDateMutation_task on UpdateTaskDueDatePayload {
     task {

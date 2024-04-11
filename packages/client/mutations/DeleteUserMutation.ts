@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SimpleMutation} from '../types/relayMutations'
 import {DeleteUserMutation as TDeleteUserMutation} from '../__generated__/DeleteUserMutation.graphql'
+import {SimpleMutation} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation DeleteUserMutation($userId: ID!, $reason: String) {

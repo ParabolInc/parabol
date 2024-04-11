@@ -1,14 +1,14 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
+import {RDatum} from '../../../database/stricterR'
 import OrganizationUser from '../../../database/types/OrganizationUser'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
+import {Logger} from '../../../utils/Logger'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToStarter from './resolveDowngradeToStarter'
-import {RDatum} from '../../../database/stricterR'
-import {Logger} from '../../../utils/Logger'
 
 const removeFromOrg = async (
   userId: string,
@@ -48,10 +48,7 @@ const removeFromOrg = async (
       .getAll(userId, {index: 'userId'})
       .filter({orgId, removedAt: null})
       .nth(0)
-      .update(
-        {removedAt: now},
-        {returnChanges: true}
-      )('changes')(0)('new_val')
+      .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
       .default(null)
       .run() as unknown as OrganizationUser,
     dataLoader.get('users').loadNonNull(userId)

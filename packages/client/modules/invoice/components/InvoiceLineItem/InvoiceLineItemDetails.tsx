@@ -3,8 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {
-  InvoiceLineItemDetails_details$key,
-  InvoiceLineItemDetails_details$data
+  InvoiceLineItemDetails_details$data,
+  InvoiceLineItemDetails_details$key
 } from '~/__generated__/InvoiceLineItemDetails_details.graphql'
 import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'

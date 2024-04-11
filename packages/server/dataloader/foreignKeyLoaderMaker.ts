@@ -1,18 +1,13 @@
 import DataLoader from 'dataloader'
-import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 import RootDataLoader from './RootDataLoader'
 import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
+import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 
 type LoaderMakers = typeof primaryKeyLoaderMakers
 type LoaderKeys = keyof LoaderMakers
 type Loader<LoaderName extends LoaderKeys> = ReturnType<LoaderMakers[LoaderName]>
-type LoaderType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends DataLoader<
-  any,
-  infer T,
-  any
->
-  ? NonNullable<T>
-  : any
+type LoaderType<LoaderName extends LoaderKeys> =
+  Loader<LoaderName> extends DataLoader<any, infer T, any> ? NonNullable<T> : any
 
 /**
  * Used to register loaders for types by foreign key.

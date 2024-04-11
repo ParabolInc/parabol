@@ -1,7 +1,7 @@
 import {AcceptTeamInvitationMutationReply$data} from '~/__generated__/AcceptTeamInvitationMutationReply.graphql'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
-import getValidRedirectParam from '../../utils/getValidRedirectParam'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import getValidRedirectParam from '../../utils/getValidRedirectParam'
 
 interface OnNextMeetingId extends OnNextHistoryContext {
   meetingId?: string | null

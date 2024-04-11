@@ -13,14 +13,14 @@ import getJiraDimensionFieldMap, {
 } from '../postgres/queries/getJiraDimensionFieldMap'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
+import AtlassianServerManager, {
+  JiraGQLFields,
+  JiraGetIssueRes,
+  JiraProject
+} from '../utils/AtlassianServerManager'
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
-import AtlassianServerManager, {
-  JiraGetIssueRes,
-  JiraGQLFields,
-  JiraProject
-} from '../utils/AtlassianServerManager'
 import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
@@ -263,8 +263,8 @@ export const jiraIssue = (
               hasDefaultEstimationField(possibleEstimationFields.map(({fieldName}) => fieldName))
                 ? undefined
                 : simplified
-                ? 'teamManagedStoryPoints'
-                : 'companyManagedStoryPoints'
+                  ? 'teamManagedStoryPoints'
+                  : 'companyManagedStoryPoints'
 
             return {
               ...fields,

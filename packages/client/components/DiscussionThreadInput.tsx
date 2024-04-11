@@ -3,6 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw, EditorState} from 'draft-js'
 import React, {forwardRef, RefObject, useEffect, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
+import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
@@ -13,8 +15,6 @@ import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import {convertStateToRaw} from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
-import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import {useBeforeUnload} from '../hooks/useBeforeUnload'
 import useInitialLocalState from '../hooks/useInitialLocalState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
@@ -47,11 +47,6 @@ const CommentContainer = styled('div')({
   display: 'flex',
   flex: 1,
   padding: 4
-})
-
-const CommentAvatar = styled(Avatar)({
-  margin: 8,
-  transition: 'all 150ms'
 })
 
 const EditorWrap = styled('div')({
@@ -300,7 +295,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentContainer>
-        <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
+        <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
         <EditorWrap>
           <CommentEditor
             dataCy={`${dataCy}`}

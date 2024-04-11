@@ -3,7 +3,6 @@ A flag to give an individual organization super powers
 """
 enum OrganizationFeatureFlagsEnum {
   noAISummary
-  AIGeneratedDiscussionPrompt
   standupAISummary
   noPromptToJoinOrg
   suggestGroups
@@ -11,13 +10,12 @@ enum OrganizationFeatureFlagsEnum {
   shareSummary
   teamsLimit
   noTeamInsights
-  oneOnOne
   singleColumnStandups
   publicTeams
   kudos
   aiIcebreakers
   aiTemplate
-  recurringRetros
+  relatedDiscussions
 }
 
 extend type Mutation {

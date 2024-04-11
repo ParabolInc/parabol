@@ -4,5 +4,8 @@ export type ScheduledJobType =
   | 'WARN_ORGANIZATION'
 
 export default abstract class ScheduledJob {
-  protected constructor(public type: ScheduledJobType, public runAt: Date) {}
+  protected constructor(
+    public type: ScheduledJobType,
+    public runAt: Date
+  ) {}
 }

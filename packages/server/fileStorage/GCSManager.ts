@@ -64,9 +64,12 @@ export default class GCSManager extends FileStoreManager {
     // refresh the token every hour
     // do this on an interval vs. on demand to reduce request latency
     // unref it so things like pushToCDN can exit
-    setInterval(async () => {
-      this.accessToken = await this.getFreshAccessToken()
-    }, (GCSManager.GOOGLE_EXPIRY - 100) * 1000).unref()
+    setInterval(
+      async () => {
+        this.accessToken = await this.getFreshAccessToken()
+      },
+      (GCSManager.GOOGLE_EXPIRY - 100) * 1000
+    ).unref()
   }
 
   private async getFreshAccessToken() {

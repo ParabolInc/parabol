@@ -2,8 +2,8 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
-import makeMutationPayload from './makeMutationPayload'
 import Task from './Task'
+import makeMutationPayload from './makeMutationPayload'
 
 export const SetTaskEstimateSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetTaskEstimateSuccess',

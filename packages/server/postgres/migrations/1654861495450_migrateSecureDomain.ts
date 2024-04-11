@@ -1,7 +1,7 @@
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
-import getPgConfig from '../getPgConfig'
 import connectRethinkDB from '../../database/connectRethinkDB'
+import getPgConfig from '../getPgConfig'
 
 export async function up() {
   await connectRethinkDB()

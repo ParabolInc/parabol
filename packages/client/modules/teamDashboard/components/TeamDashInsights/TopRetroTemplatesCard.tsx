@@ -1,10 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import {TopRetroTemplatesCard_insights$key} from '~/__generated__/TopRetroTemplatesCard_insights.graphql'
-import Tooltip from '../../../../components/Tooltip'
-import TeamInsightsCard from './TeamInsightsCard'
+import SimpleTooltip from '../../../../components/SimpleTooltip'
 import plural from '../../../../utils/plural'
+import TeamInsightsCard from './TeamInsightsCard'
 
 interface Props {
   teamInsightsRef: TopRetroTemplatesCard_insights$key
@@ -12,6 +13,7 @@ interface Props {
 
 const TopRetroTemplatesCard = (props: Props) => {
   const {teamInsightsRef} = props
+  const history = useHistory()
   const insights = useFragment(
     graphql`
       fragment TopRetroTemplatesCard_insights on TeamInsights {
@@ -35,6 +37,10 @@ const TopRetroTemplatesCard = (props: Props) => {
     return null
   }
 
+  const onClick = (templateId: string) => {
+    history.push(`/activity-library/details/${templateId}`)
+  }
+
   return (
     <TeamInsightsCard
       teamInsightsRef={insights}
@@ -42,18 +48,19 @@ const TopRetroTemplatesCard = (props: Props) => {
       tooltip='The most used retro templates on your team in the last 12 months'
     >
       <div className='flex w-full flex-col'>
-        {topRetroTemplates.map((template, index) => {
+        {topRetroTemplates.map((template) => {
           const {reflectTemplate, count} = template
-          const {name, illustrationUrl} = reflectTemplate
+          const {id, name, illustrationUrl} = reflectTemplate
           return (
-            <Tooltip
-              text={`Used ${plural(count, 'once', `${count} times`)} in the last 12 months`}
-              className='my-2 flex items-center rounded border-2 border-grape-500 bg-fuscia-100 text-sm font-semibold text-slate-700'
-              key={index}
-            >
-              <img className='m-1 h-10 w-10' src={illustrationUrl} />
-              {name}
-            </Tooltip>
+            <div key={id} onClick={() => onClick(id)}>
+              <SimpleTooltip
+                text={`Used ${plural(count, 'once', `${count} times`)} in the last 12 months`}
+                className='my-2 flex items-center rounded border-2 border-grape-500 bg-fuscia-100 text-sm font-semibold text-slate-700'
+              >
+                <img className='m-1 h-10 w-10' src={illustrationUrl} />
+                {name}
+              </SimpleTooltip>
+            </div>
           )
         })}
         {topRetroTemplates.length === 1 && (

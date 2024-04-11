@@ -4,9 +4,9 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {TimelineEventJoinedParabol_timelineEvent$key} from '../__generated__/TimelineEventJoinedParabol_timelineEvent.graphql'
 import StyledLink from './StyledLink'
+import TimelineEventTitle from './TImelineEventTitle'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
-import TimelineEventTitle from './TImelineEventTitle'
 
 interface Props {
   timelineEvent: TimelineEventJoinedParabol_timelineEvent$key

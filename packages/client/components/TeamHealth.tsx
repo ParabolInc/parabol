@@ -1,23 +1,24 @@
+import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React, {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
-import useGotoStageId from '~/hooks/useGotoStageId'
 import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
+import useGotoStageId from '~/hooks/useGotoStageId'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMutation'
+import SetTeamHealthVoteMutation from '../mutations/SetTeamHealthVoteMutation'
+import getTeamHealthVoteColor from '../utils/getTeamHealthVoteColor'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import TeamHealthVotingRow from './TeamHealthVotingRow'
-import useMutationProps from '../hooks/useMutationProps'
-import useAtmosphere from '../hooks/useAtmosphere'
-import SetTeamHealthVoteMutation from '../mutations/SetTeamHealthVoteMutation'
-import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMutation'
-import * as RadioGroup from '@radix-ui/react-radio-group'
-import clsx from 'clsx'
 import RaisedButton from './RaisedButton'
-import getTeamHealthVoteColor from '../utils/getTeamHealthVoteColor'
+import StageTimerDisplay from './StageTimerDisplay'
+import TeamHealthVotingRow from './TeamHealthVotingRow'
 
 interface Props {
   avatarGroup: ReactElement
@@ -32,6 +33,8 @@ const TeamHealth = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamHealth_meeting on NewMeeting {
+        ...StageTimerDisplay_meeting
+        ...StageTimerControl_meeting
         id
         endedAt
         showSidebar
@@ -83,6 +86,7 @@ const TeamHealth = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
+          <StageTimerDisplay meeting={meeting} />
           <div className='flex h-[300px] flex-col items-center'>
             <div className='text-center text-2xl'>{question}</div>
             {isRevealed && votes ? (

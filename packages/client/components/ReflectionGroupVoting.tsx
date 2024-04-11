@@ -6,14 +6,14 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import Atmosphere from '../Atmosphere'
+import {ReflectionGroupVoting_meeting$key} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
+import {ReflectionGroupVoting_reflectionGroup$key} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {CompletedHandler} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import isTempId from '../utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import {ReflectionGroupVoting_meeting$key} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
-import {ReflectionGroupVoting_reflectionGroup$key} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import FlatButton from './FlatButton'
 
 interface Props extends WithMutationProps {
@@ -63,8 +63,8 @@ const Votes = styled('span')<{voteCount: number; isExpanded: boolean}>(
         ? PALETTE.SLATE_200
         : '#fff'
       : voteCount === 0
-      ? PALETTE.SLATE_700
-      : PALETTE.SKY_500,
+        ? PALETTE.SLATE_700
+        : PALETTE.SKY_500,
     fontWeight: 600,
     padding: '0 4px',
     display: 'flex',

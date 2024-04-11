@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {AddNewReflectTemplate_reflectTemplates$key} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
+import {AddNewReflectTemplate_team$key} from '../../../__generated__/AddNewReflectTemplate_team.graphql'
 import LinkButton from '../../../components/LinkButton'
 import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {AddNewReflectTemplate_reflectTemplates$key} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
-import {AddNewReflectTemplate_team$key} from '../../../__generated__/AddNewReflectTemplate_team.graphql'
 
 const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'
@@ -53,9 +53,7 @@ const AddNewReflectTemplate = (props: Props) => {
           id
           user {
             id
-            featureFlags {
-              noTemplateLimit
-            }
+            freeCustomRetroTemplatesRemaining
           }
         }
       }
@@ -63,6 +61,8 @@ const AddNewReflectTemplate = (props: Props) => {
     teamRef
   )
   const {id: teamId, tier, viewerTeamMember} = team
+  const {user} = viewerTeamMember || {}
+  const {freeCustomRetroTemplatesRemaining} = user || {}
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -71,7 +71,8 @@ const AddNewReflectTemplate = (props: Props) => {
     }
   }, [])
   const canEditTemplates =
-    tier !== 'starter' || viewerTeamMember?.user?.featureFlags?.noTemplateLimit
+    tier !== 'starter' ||
+    (freeCustomRetroTemplatesRemaining && freeCustomRetroTemplatesRemaining > 0)
   const addNewTemplate = () => {
     if (submitting) return
     if (!canEditTemplates) {

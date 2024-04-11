@@ -1,8 +1,8 @@
+import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import canAccessAISummary from './canAccessAISummary'
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 
 const generateStandupMeetingSummary = async (
   meeting: MeetingTeamPrompt,

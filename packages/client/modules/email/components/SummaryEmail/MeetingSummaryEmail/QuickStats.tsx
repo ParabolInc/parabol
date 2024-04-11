@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
+import {QuickStats_meeting$key} from 'parabol-client/__generated__/QuickStats_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
-import {QuickStats_meeting$key} from 'parabol-client/__generated__/QuickStats_meeting.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import makeActionStats from './makeActionStats'
@@ -19,7 +19,7 @@ const statLabel = (idx: number, len: number) =>
     fontSize: 36,
     lineHeight: '40px',
     paddingTop: 12
-  } as React.CSSProperties)
+  }) as React.CSSProperties
 
 const descriptionLabel = (idx: number, len: number) =>
   ({
@@ -31,7 +31,7 @@ const descriptionLabel = (idx: number, len: number) =>
     fontWeight: 600,
     paddingBottom: 12,
     textTransform: 'uppercase'
-  } as React.CSSProperties)
+  }) as React.CSSProperties
 
 const tableStyle = {
   borderSpacing: '2px 0',

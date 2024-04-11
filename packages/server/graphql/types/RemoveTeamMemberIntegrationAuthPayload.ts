@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
+import makeMutationPayload from './makeMutationPayload'
 
 export const RemoveTeamMemberIntegrationAuthSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveTeamMemberIntegrationAuthSuccess',

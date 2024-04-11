@@ -1,7 +1,7 @@
 import {ExecutionResult} from 'graphql'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 import SocketServerChannelId from '../../client/shared/gqlIds/SocketServerChannelId'
-import {GQLRequest} from '../graphql/executeGraphQL'
+import type {GQLRequest} from '../types/custom'
 import PubSubPromise from './PubSubPromise'
 
 let pubsub: PubSubPromise<GQLRequest & {executorServerId?: string}, ExecutionResult>

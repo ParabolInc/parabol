@@ -1,88 +1,34 @@
-import styled from '@emotion/styled'
+import clsx from 'clsx'
 import React, {forwardRef} from 'react'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import AvatarBadge from '../AvatarBadge/AvatarBadge'
-
-type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick'>
-
-const ImageBlock = styled('div')<ImageBlockProps>(
-  ({sansRadius, sansShadow, picture, size, onClick}) => ({
-    backgroundImage: `url(${picture ?? defaultUserAvatar})`,
-    backgroundPosition: 'center center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    borderRadius: sansRadius ? 0 : '100%',
-    boxShadow: sansShadow ? 'none' : undefined,
-    cursor: onClick ? 'pointer' : 'default',
-    display: 'block',
-    flexShrink: 0,
-    width: size,
-    height: size
-  })
-)
-
-const BadgeBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  height: '25%',
-  justifyContent: 'center',
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  width: '25%'
-})
-
-const BadgeBlockInner = styled('div')({
-  flexShrink: 0
-})
+import {Avatar as AvatarRoot} from '../../ui/Avatar/Avatar'
+import {AvatarFallback} from '../../ui/Avatar/AvatarFallback'
+import {AvatarImage} from '../../ui/Avatar/AvatarImage'
 
 interface Props {
+  alt?: string
   className?: string
-  hasBadge?: boolean
-  isConnected?: boolean
   onClick?: (e?: React.MouseEvent) => void
   onMouseEnter?: () => void
   onTransitionEnd?: () => void
-  picture: string
-  sansRadius?: boolean
-  sansShadow?: boolean
-  size: number
+  picture?: string | null
 }
 
-const Avatar = forwardRef((props: Props, ref: any) => {
-  const {
-    className,
-    hasBadge,
-    isConnected,
-    onClick,
-    onMouseEnter,
-    onTransitionEnd,
-    picture,
-    sansRadius,
-    sansShadow,
-    size
-  } = props
-
+const Avatar = forwardRef<HTMLDivElement, Props>((props, ref) => {
+  const {alt, className, onClick, onTransitionEnd, onMouseEnter, picture} = props
   return (
-    <ImageBlock
-      onTransitionEnd={onTransitionEnd}
-      className={className}
-      ref={ref}
+    <AvatarRoot
       onClick={onClick}
+      onTransitionEnd={onTransitionEnd}
       onMouseEnter={onMouseEnter}
-      sansRadius={sansRadius}
-      sansShadow={sansShadow}
-      picture={picture}
-      size={size}
+      ref={ref}
+      className={clsx(`${onClick && 'cursor-pointer'}`, className)}
     >
-      {hasBadge && (
-        <BadgeBlock>
-          <BadgeBlockInner>
-            <AvatarBadge isConnected={isConnected || false} />
-          </BadgeBlockInner>
-        </BadgeBlock>
-      )}
-    </ImageBlock>
+      <AvatarImage src={picture || defaultUserAvatar} alt={alt || 'Avatar'} />
+      <AvatarFallback>
+        <img src={defaultUserAvatar} alt={alt || 'Avatar not found'} />
+      </AvatarFallback>
+    </AvatarRoot>
   )
 })
 

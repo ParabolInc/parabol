@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
+import {URLSearchParams} from 'url'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import createEmailVerification from '../../../email/createEmailVerification'
@@ -10,7 +11,6 @@ import isEmailVerificationRequired from '../../../utils/isEmailVerificationRequi
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {MutationResolvers} from '../resolverTypes'
-import {URLSearchParams} from 'url'
 
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,
@@ -65,7 +65,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
   const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, pseudoId})
   // MUTATIVE
-  context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader, params)
+  context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader)
   return {
     userId: newUser.id,
     authToken: encodeAuthToken(context.authToken),

@@ -4,6 +4,7 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import startStage_ from 'parabol-client/utils/startStage_'
 import unlockNextStages from 'parabol-client/utils/unlockNextStages'
 import getRethink from '../../database/rethinkDriver'
+import {Logger} from '../../utils/Logger'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -11,7 +12,6 @@ import {GQLContext} from '../graphql'
 import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
-import {Logger} from '../../utils/Logger'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),

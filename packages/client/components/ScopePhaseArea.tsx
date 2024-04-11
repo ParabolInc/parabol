@@ -3,16 +3,16 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
+import {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
-import JiraServerSVG from './JiraServerSVG'
 import JiraSVG from './JiraSVG'
+import JiraServerSVG from './JiraServerSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaAzureDevOps from './ScopePhaseAreaAzureDevOps'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
@@ -130,11 +130,6 @@ const ScopePhaseArea = (props: Props) => {
               }
             }
           }
-          user {
-            featureFlags {
-              azureDevOps
-            }
-          }
         }
       }
     `,
@@ -142,13 +137,11 @@ const ScopePhaseArea = (props: Props) => {
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  const featureFlags = viewerMeetingMember?.user.featureFlags
   const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
   const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
   const allowAzureDevOps =
-    (!!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider) &&
-    featureFlags?.azureDevOps
+    !!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )

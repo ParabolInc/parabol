@@ -3,12 +3,10 @@ A flag to give an individual user super powers
 """
 enum UserFlagEnum {
   standups
-  azureDevOps
   insights
   recurrence
   noAISummary
   noMeetingHistoryLimit
-  retrosInDisguise
   adHocTeams
   noTemplateLimit
   signUpDestinationTeam
@@ -19,12 +17,10 @@ The types of flags that give an individual user super powers
 """
 type UserFeatureFlags {
   standups: Boolean!
-  azureDevOps: Boolean!
   insights: Boolean!
   recurrence: Boolean!
   noAISummary: Boolean!
   noMeetingHistoryLimit: Boolean!
-  retrosInDisguise: Boolean!
   adHocTeams: Boolean!
   noTemplateLimit: Boolean!
   signUpDestinationTeam: Boolean!

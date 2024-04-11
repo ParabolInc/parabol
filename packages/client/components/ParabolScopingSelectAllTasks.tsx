@@ -6,9 +6,9 @@ import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
+import {ParabolScopingSelectAllTasks_tasks$key} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {ParabolScopingSelectAllTasks_tasks$key} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -56,7 +56,7 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
           service: 'PARABOL',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
     const variables = {
       meetingId,

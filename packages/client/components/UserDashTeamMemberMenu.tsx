@@ -7,11 +7,11 @@ import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import {MenuProps} from '../hooks/useMenu'
 import {
-  UserDashTeamMemberMenu_viewer$key,
-  UserDashTeamMemberMenu_viewer$data
+  UserDashTeamMemberMenu_viewer$data,
+  UserDashTeamMemberMenu_viewer$key
 } from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
+import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'

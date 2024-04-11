@@ -1,15 +1,17 @@
 import dayjs from 'dayjs'
 import Stripe from 'stripe'
+import Invoice from '../../../database/types/Invoice'
+import Organization from '../../../database/types/Organization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
 import {getStripeManager} from '../../../utils/stripe'
 import StripeManager from '../../../utils/stripe/StripeManager'
 
 export default async function makeUpcomingInvoice(
-  orgId: string,
+  org: Organization,
   quantity: number,
   stripeId?: string | null
-) {
+): Promise<Invoice | undefined> {
   if (!stripeId) return undefined
   const manager = getStripeManager()
   let stripeInvoice: Stripe.Invoice
@@ -41,6 +43,10 @@ export default async function makeUpcomingInvoice(
     stripeInvoice = await manager.retrieveUpcomingInvoice(stripeId)
   }
 
+  const {id: orgId, tier, name: orgName, picture} = org
+  const unitPrice = subscription?.plan?.amount ?? 0
+  const amount = unitPrice * quantity
+
   return {
     id: getUpcomingInvoiceId(orgId),
     amountDue: stripeInvoice.amount_due,
@@ -51,6 +57,22 @@ export default async function makeUpcomingInvoice(
     orgId,
     startAt: fromEpochSeconds(stripeInvoice.period_start),
     startingBalance: stripeInvoice.starting_balance,
-    status: 'UPCOMING'
+    status: 'UPCOMING',
+    createdAt: fromEpochSeconds(stripeInvoice.period_start),
+    billingLeaderEmails: [],
+    lines: [],
+    orgName,
+    tier,
+    paidAt: null,
+    picture: picture ?? null,
+    nextPeriodCharges: {
+      amount,
+      quantity,
+      nextPeriodEnd: fromEpochSeconds(
+        stripeInvoice.period_end - stripeInvoice.period_start + stripeInvoice.period_end
+      ),
+      unitPrice,
+      interval: subscription?.plan?.interval ?? 'month'
+    }
   }
 }

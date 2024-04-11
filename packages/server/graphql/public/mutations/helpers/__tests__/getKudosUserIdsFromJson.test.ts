@@ -1,5 +1,5 @@
-import {getKudosUserIdsFromJson} from '../getKudosUserIdsFromJson'
 import {JSONContent} from '@tiptap/core'
+import {getKudosUserIdsFromJson} from '../getKudosUserIdsFromJson'
 
 describe('findMentionsByEmoji', () => {
   let doc: JSONContent

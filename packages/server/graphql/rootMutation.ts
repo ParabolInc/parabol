@@ -6,11 +6,9 @@ import addComment from './mutations/addComment'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addOrg from './mutations/addOrg'
-import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
 import addTeam from './mutations/addTeam'
@@ -76,9 +74,9 @@ import removePokerTemplate from './mutations/removePokerTemplate'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
-import removeReflection from './mutations/removeReflection'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
+import removeReflection from './mutations/removeReflection'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
 import removeTeamMemberIntegrationAuth from './mutations/removeTeamMemberIntegrationAuth'
@@ -129,11 +127,9 @@ export default new GraphQLObjectType<any, GQLContext>({
       addAgendaItem,
       addAtlassianAuth,
       addComment,
-      addPokerTemplate,
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReflectTemplate,
       addReflectTemplatePrompt,
       addSlackAuth,
       addGitHubAuth,
@@ -247,5 +243,5 @@ export default new GraphQLObjectType<any, GQLContext>({
       removeTeamMemberIntegrationAuth,
       endTeamPrompt,
       updateAzureDevOpsDimensionField
-    } as any)
+    }) as any
 })

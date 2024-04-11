@@ -4,6 +4,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
+import {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
+import {
+  RemoteReflection_reflection$data,
+  RemoteReflection_reflection$key
+} from '../../__generated__/RemoteReflection_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEditorState from '../../hooks/useEditorState'
 import {Elevation} from '../../styles/elevation'
@@ -11,11 +16,6 @@ import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../typ
 import {DeepNonNullable} from '../../types/generics'
 import {VOTE} from '../../utils/constants'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
-import {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
-import {
-  RemoteReflection_reflection$key,
-  RemoteReflection_reflection$data
-} from '../../__generated__/RemoteReflection_reflection.graphql'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
@@ -58,8 +58,8 @@ const RemoteReflectionModal = styled('div')<{
   animation: animation
     ? animation
     : isSpotlight && !isDropping
-    ? `${circleAnimation(transform)} 3s ease infinite;`
-    : undefined,
+      ? `${circleAnimation(transform)} 3s ease infinite;`
+      : undefined,
   zIndex: isInViewerSpotlightResults
     ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
     : ZIndex.REFLECTION_IN_FLIGHT
@@ -117,10 +117,10 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
     headerTop === maxTop
       ? 'arrow_downward'
       : headerLeft === maxLeft
-      ? 'arrow_forward'
-      : headerLeft === minLeft
-      ? 'arrow_back'
-      : ('arrow_upward' as RemoteReflectionArrow)
+        ? 'arrow_forward'
+        : headerLeft === minLeft
+          ? 'arrow_back'
+          : ('arrow_upward' as RemoteReflectionArrow)
   return {
     arrow,
     headerTransform: `translate(${headerLeft}px,${headerTop}px)`
@@ -234,8 +234,8 @@ const RemoteReflection = (props: Props) => {
       remoteDrag?.isSpotlight
         ? Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT
         : localPhase.phaseType === VOTE
-        ? 0
-        : Times.REFLECTION_DRAG_STALE_TIMEOUT
+          ? 0
+          : Times.REFLECTION_DRAG_STALE_TIMEOUT
     )
     return () => {
       window.clearTimeout(timeoutRef.current)

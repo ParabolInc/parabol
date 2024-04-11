@@ -2,21 +2,21 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
+import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
+import {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
+import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
-import {ElementWidth, Threshold} from '../../../../types/constEnums'
-import {TierEnum} from '../../../../__generated__/NewMeetingQuery.graphql'
-import OrgStats from './OrgStats'
-import useModal from '../../../../hooks/useModal'
-import DowngradeModal from './DowngradeModal'
-import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import LimitExceededWarning from '../../../../components/LimitExceededWarning'
-import {Breakpoint} from '~/types/constEnums'
-import useBreakpoint from '~/hooks/useBreakpoint'
+import useModal from '../../../../hooks/useModal'
+import {ElementWidth} from '../../../../types/constEnums'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
+import {EnterpriseBenefits, StarterBenefits, TeamBenefits} from '../../../../utils/constants'
+import DowngradeModal from './DowngradeModal'
 import OrgPlan from './OrgPlan'
+import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -91,12 +91,7 @@ const OrgPlans = (props: Props) => {
     {
       tier: 'starter',
       subtitle: 'Free',
-      details: [
-        `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
-        'Essential templates',
-        'Retrospectives, Sprint Poker, Standups, Check-Ins',
-        'Unlimited team members'
-      ],
+      details: [...StarterBenefits],
       buttonStyle: getButtonStyle(billingTier, 'starter'),
       buttonLabel: getButtonLabel(billingTier, 'starter'),
       isActive: !hasSelectedTeamPlan && billingTier === 'starter'

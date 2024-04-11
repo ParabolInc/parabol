@@ -1,6 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -11,7 +12,6 @@ import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
-import getKysely from '../../../postgres/getKysely'
 
 // included here to codegen has access to it
 export type UpgradeToTeamTierSuccessSource = {

@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
 import {mergeRefs} from '~/utils/react/mergeRefs'
-import {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
 import useTooltip from '../../hooks/useTooltip'
 import BaseButton from '../BaseButton'
 import IconLabel from '../IconLabel'
@@ -14,7 +14,7 @@ import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
 const COPIED_TOOLTIP_DURATION_MS = 2000
 
-const OptionsButton = styled(BaseButton)({
+export const OptionsButton = styled(BaseButton)({
   color: PALETTE.SKY_500,
   display: 'flex',
   flexDirection: 'column',

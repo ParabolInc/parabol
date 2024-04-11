@@ -1,8 +1,9 @@
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {DraggableReflectionCard_meeting$data} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
+import {DraggableReflectionCard_reflection$data} from '../__generated__/DraggableReflectionCard_reflection.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
@@ -23,7 +24,6 @@ import updateClonePosition, {
   getDroppingStyles,
   getSpotlightAnimation
 } from '../utils/retroGroup/updateClonePosition'
-import {DraggableReflectionCard_reflection$data} from '../__generated__/DraggableReflectionCard_reflection.graphql'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 import useSpotlightResults from './useSpotlightResults'
@@ -261,8 +261,8 @@ const useDragAndDrop = (
       targetGroupId && reflectionGroupId !== targetGroupId
         ? 'REFLECTION_GROUP'
         : !targetGroupId && reflectionCount > 0 && !isReflectionInSpotlightResults
-        ? 'REFLECTION_GRID'
-        : null
+          ? 'REFLECTION_GRID'
+          : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
     if (spotlightGroup?.id) {
       const event = isReflectionInSpotlightResults

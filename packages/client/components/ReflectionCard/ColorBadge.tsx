@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {MenuPosition} from '~/hooks/useCoords'
-import useTooltip from '~/hooks/useTooltip'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {ColorBadge_reflection$key} from '~/__generated__/ColorBadge_reflection.graphql'
+import {MenuPosition} from '~/hooks/useCoords'
+import useTooltip from '~/hooks/useTooltip'
 
 const DROP_SIZE = 32
 const DROP_SIZE_HALF = DROP_SIZE / 2

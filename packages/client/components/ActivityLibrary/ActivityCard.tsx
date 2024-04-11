@@ -4,7 +4,7 @@ import React, {PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {twMerge} from 'tailwind-merge'
 import {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
-import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
@@ -35,8 +35,8 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         'relative flex h-full w-full items-center justify-center overflow-hidden',
         className
       )}
-      style={{backgroundImage: `url(${backgroundSrc})`, backgroundSize: 'cover'}}
     >
+      <img className='object-contain' src={backgroundSrc} alt='' />
       <img
         className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
         src={src}

@@ -8,8 +8,8 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import lazyPreload from '../../../../utils/lazyPreload'
 import SlackClientManager from '../../../../utils/SlackClientManager'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 interface Props {
   isTokenValid: boolean
@@ -42,13 +42,13 @@ const SlackChannelPicker = (props: Props) => {
   const channelState = activeChannel
     ? ChannelState.ready
     : localChannelId && isTokenValid
-    ? ChannelState.loading
-    : ChannelState.error
+      ? ChannelState.loading
+      : ChannelState.error
   const activeText = activeChannel
     ? activeChannel.name
     : channelState === ChannelState.loading
-    ? ''
-    : 'Token Expired! Click to renew'
+      ? ''
+      : 'Token Expired! Click to renew'
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {

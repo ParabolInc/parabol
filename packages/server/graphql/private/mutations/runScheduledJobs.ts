@@ -1,17 +1,17 @@
 import {Selectable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getKysely from '../../../postgres/getKysely'
-import {DB} from '../../../postgres/pg'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
-import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJob'
+import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
+import getKysely from '../../../postgres/getKysely'
+import {DB} from '../../../postgres/pg'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
-import {Logger} from '../../../utils/Logger'
 
 const processMeetingStageTimeLimits = async (
   job: ScheduledJobMeetingStageTimeLimit,
@@ -39,8 +39,6 @@ const processMeetingStageTimeLimits = async (
     notification
   })
 }
-
-export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
 
 const processJob = async (job: Selectable<DB['ScheduledJob']>, dataLoader: DataLoaderWorker) => {
   const pg = getKysely()

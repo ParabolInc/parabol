@@ -5,28 +5,28 @@ import React, {Fragment, useEffect, useMemo} from 'react'
 import {PreloadedQuery, commitLocalUpdate, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
+import {useDebounce} from 'use-debounce'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
+import AISearch from './AISearch'
+import ActivityGrid from './ActivityGrid'
 import {
-  CategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
   CUSTOM_CATEGORY_ID,
+  CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import AISearch from './AISearch'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
-import {useDebounce} from 'use-debounce'
-import ActivityGrid from './ActivityGrid'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -85,12 +85,8 @@ const query = graphql`
           }
         }
       }
-      featureFlags {
-        retrosInDisguise
-      }
       organizations {
         featureFlags {
-          oneOnOne
           aiTemplate
         }
       }
@@ -174,19 +170,22 @@ const mapRetroSubCategories = (templates: readonly Template[]) => {
 const mapTeamCategories = (templates: readonly Template[]) => {
   // list public templates last
   const publicTemplates = [] as Template[]
-  const mapped = templates.reduce((acc, template) => {
-    const {team, scope} = template
-    if (scope === 'PUBLIC') {
-      publicTemplates.push(template)
-    } else {
-      const {name} = team
-      if (!acc[name]) {
-        acc[name] = []
+  const mapped = templates.reduce(
+    (acc, template) => {
+      const {team, scope} = template
+      if (scope === 'PUBLIC') {
+        publicTemplates.push(template)
+      } else {
+        const {name} = team
+        if (!acc[name]) {
+          acc[name] = []
+        }
+        acc[name]!.push(template)
       }
-      acc[name]!.push(template)
-    }
-    return acc
-  }, {} as Record<string, Template[]>)
+      return acc
+    },
+    {} as Record<string, Template[]>
+  )
 
   mapped['Parabol'] = publicTemplates
   return mapped
@@ -197,8 +196,7 @@ export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {featureFlags, availableTemplates, organizations} = viewer
-  const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
+  const {availableTemplates, organizations} = viewer
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
   const setSearch = (value: string) => {
@@ -211,9 +209,6 @@ export const ActivityLibrary = (props: Props) => {
 
   const templates = useMemo(() => {
     const templatesMap = availableTemplates.edges.map((edge) => edge.node)
-    if (!hasOneOnOneFeatureFlag) {
-      return templatesMap.filter((template) => template.id !== 'oneOnOneAction')
-    }
     return templatesMap
   }, [availableTemplates])
 
@@ -250,8 +245,8 @@ export const ActivityLibrary = (props: Props) => {
       categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
         : categoryId === CUSTOM_CATEGORY_ID
-        ? template.scope !== 'PUBLIC'
-        : template.category === categoryId
+          ? template.scope !== 'PUBLIC'
+          : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
 
@@ -273,10 +268,6 @@ export const ActivityLibrary = (props: Props) => {
     }
     return undefined
   }, [categoryId, templatesToRender])
-
-  if (!featureFlags.retrosInDisguise) {
-    return <Redirect to='/404' />
-  }
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />

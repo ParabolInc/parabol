@@ -1,16 +1,16 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {GcalProviderRow_viewer$key} from '../../../../__generated__/GcalProviderRow_viewer.graphql'
+import GcalConfigMenu from '../../../../components/GcalConfigMenu'
 import GcalProviderLogo from '../../../../components/GcalProviderLogo'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
-import ProviderRow from './ProviderRow'
-import GcalConfigMenu from '../../../../components/GcalConfigMenu'
-import {useFragment} from 'react-relay'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {GcalProviderRow_viewer$key} from '../../../../__generated__/GcalProviderRow_viewer.graphql'
 import GcalClientManager from '../../../../utils/GcalClientManager'
+import ProviderRow from './ProviderRow'
 
 type Props = {
   teamId: string

@@ -1,5 +1,5 @@
-import {UpsertTeamPromptResponseSuccessResolvers} from '../resolverTypes'
 import isValid from '../../../graphql/isValid'
+import {UpsertTeamPromptResponseSuccessResolvers} from '../resolverTypes'
 
 export type UpsertTeamPromptResponseSuccessSource = {
   teamPromptResponseId: string

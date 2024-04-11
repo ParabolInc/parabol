@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import {updateNotificationToast_notification$data} from '../../__generated__/updateNotificationToast_notification.graphql'
+import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`

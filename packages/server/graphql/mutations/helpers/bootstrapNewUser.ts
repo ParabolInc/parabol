@@ -6,25 +6,23 @@ import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTr
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
+import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import insertUser from '../../../postgres/queries/insertUser'
 import IUser from '../../../postgres/types/IUser'
+import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
+import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
+import {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
-import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
-import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
-import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
-import {DataLoaderWorker} from '../../graphql'
-import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
-import isValid from '../../isValid'
-import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 
 const bootstrapNewUser = async (
   newUser: User,
   isOrganic: boolean,
-  dataLoader: DataLoaderWorker,
-  searchParams?: string
+  dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
   const {
@@ -49,17 +47,6 @@ const bootstrapNewUser = async (
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
   const experimentalFlags = [...featureFlags]
-
-  // Retros in disguise
-  const domainUserHasRidFlag = usersWithDomain.some((user) =>
-    user.featureFlags.includes('retrosInDisguise')
-  )
-  const params = new URLSearchParams(searchParams)
-  if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
-    experimentalFlags.push('retrosInDisguise')
-  } else if (usersWithDomain.length === 0) {
-    experimentalFlags.push('retrosInDisguise')
-  }
 
   // Add signUpDestinationTeam feature flag to 50% of new accounts
   if (Math.random() < 0.5) {
@@ -137,7 +124,7 @@ const bootstrapNewUser = async (
     const validNewTeam = {
       id: teamId,
       orgId,
-      name: makeDefaultTeamName(teamId),
+      name: `${preferredName}’s Team`,
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`

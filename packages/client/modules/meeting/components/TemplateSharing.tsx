@@ -3,11 +3,11 @@ import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-mater
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
 import lazyPreload from '../../../utils/lazyPreload'
-import {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 
 const SelectSharingScopeDropdown = lazyPreload(
   () =>
@@ -122,8 +122,8 @@ export const UnstyledTemplateSharing = (props: Props) => {
     scope === 'TEAM'
       ? `Only visible to ${teamName}`
       : scope === 'ORGANIZATION'
-      ? `Sharing with ${orgName}`
-      : 'Sharing publicly'
+        ? `Sharing with ${orgName}`
+        : 'Sharing publicly'
   return (
     <>
       <DropdownBlock

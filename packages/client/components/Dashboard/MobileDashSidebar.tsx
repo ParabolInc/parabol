@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
+import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
 import {
@@ -12,7 +13,6 @@ import {
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../utils/constants'
-import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
 import LeftDashNavItem from './LeftDashNavItem'
@@ -94,9 +94,6 @@ const MobileDashSidebar = (props: Props) => {
     graphql`
       fragment MobileDashSidebar_viewer on User {
         ...StandardHub_viewer
-        featureFlags {
-          retrosInDisguise
-        }
         organizations {
           ...DashNavList_organization
           id
@@ -108,7 +105,7 @@ const MobileDashSidebar = (props: Props) => {
     viewerRef
   )
   if (!viewer) return null
-  const {featureFlags, organizations} = viewer
+  const {organizations} = viewer
 
   if (match) {
     const {orgId: orgIdFromParams} = match.params
@@ -179,14 +176,12 @@ const MobileDashSidebar = (props: Props) => {
               href={'/meetings'}
               label={'Meetings'}
             />
-            {featureFlags.retrosInDisguise && (
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'magic'}
-                href={'/activity-library'}
-                label={'Activity Library'}
-              />
-            )}
+            <LeftDashNavItem
+              onClick={handleMenuClick}
+              icon={'magic'}
+              href={'/activity-library'}
+              label={'Activity Library'}
+            />
             <LeftDashNavItem
               onClick={handleMenuClick}
               icon={'timeline'}

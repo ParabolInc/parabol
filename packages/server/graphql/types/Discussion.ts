@@ -21,9 +21,9 @@ import resolveThreadableConnection from '../resolvers/resolveThreadableConnectio
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NewMeetingStage from './NewMeetingStage'
+import Team from './Team'
 import {ThreadableConnection} from './Threadable'
 import User from './User'
-import Team from './Team'
 
 const Discussion = new GraphQLObjectType<any, GQLContext>({
   name: 'Discussion',

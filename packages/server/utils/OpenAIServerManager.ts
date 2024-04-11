@@ -1,9 +1,9 @@
-import OpenAI from 'openai'
 import JSON5 from 'json5'
-import sendToSentry from './sendToSentry'
+import OpenAI from 'openai'
 import Reflection from '../database/types/Reflection'
 import {ModifyType} from '../graphql/public/resolverTypes'
 import {Logger} from './Logger'
+import sendToSentry from './sendToSentry'
 
 type Prompt = {
   question: string
