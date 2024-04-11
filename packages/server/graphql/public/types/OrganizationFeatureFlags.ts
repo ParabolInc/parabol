@@ -14,7 +14,6 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   kudos: ({kudos}) => !!kudos,
   aiIcebreakers: ({aiIcebreakers}) => !!aiIcebreakers,
   aiTemplate: ({aiTemplate}) => !!aiTemplate,
-  recurringRetros: ({recurringRetros}) => !!recurringRetros,
   relatedDiscussions: ({relatedDiscussions}) => !!relatedDiscussions
 }
 
