@@ -18,7 +18,7 @@ import {
   StandardMutation
 } from '../../types/relayMutations'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
-import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import DialogContainer from '../DialogContainer'
 
 export const EndMeetingMutationLookup = {

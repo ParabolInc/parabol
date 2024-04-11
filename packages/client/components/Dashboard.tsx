@@ -150,7 +150,7 @@ const Dashboard = (props: Props) => {
         <DashMain id='main' ref={meetingsDashRef}>
           <Switch>
             <Route
-              path='(/meetings|/new-meeting)'
+              path='(/meetings)'
               render={(routeProps) => (
                 <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
               )}

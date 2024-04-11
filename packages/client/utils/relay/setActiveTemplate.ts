@@ -1,6 +1,6 @@
 import {commitLocalUpdate} from 'react-relay'
 import {RecordSourceProxy} from 'relay-runtime'
-import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
+import {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
 import Atmosphere from '../../Atmosphere'
 
 const setActiveTemplateInRelayStore = (

@@ -31,9 +31,7 @@ const SuggestedActionTryRetroMeeting = (props: Props) => {
 
   const onClick = () => {
     const {history} = props
-    const {team} = suggestedAction
-    const {id: teamId} = team
-    history.push(`/new-meeting/${teamId}`)
+    history.push(`/activity-library/category/retrospective`)
   }
 
   return (
