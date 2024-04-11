@@ -67,12 +67,6 @@ const DeckActivityAvatars = (props: Props) => {
         const {id: userId} = child
         const visibleScoreIdx = peekingUsers.findIndex((user) => user.id === userId)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
-        const classLookup = {
-          [TransitionStatus.EXITING]: 'opacity-0 scale(0)',
-          [TransitionStatus.MOUNTED]: 'translate(64px)'
-        }
-
-        const avatarStatus = classLookup[status as keyof typeof classLookup] || ''
         return (
           <AvatarListUser
             key={userId}
@@ -82,7 +76,7 @@ const DeckActivityAvatars = (props: Props) => {
             offset={(PokerCards.AVATAR_WIDTH - 10) * displayIdx}
             isColumn
             isAnimated
-            className={`h-11.5 w-11.5 border-[3px] opacity-100 ${avatarStatus}`}
+            className={`h-[46px] w-[46px] border-[3px] opacity-100 ${status === TransitionStatus.EXITING ? 'scale-0 opacity-0' : status === TransitionStatus.MOUNTED ? 'translate-x-64' : ''}`}
           />
         )
       })}

@@ -117,7 +117,7 @@ const AvatarList = (props: Props) => {
             onTransitionEnd={onTransitionEnd}
             status={status}
             offset={offsetSize * displayIdx}
-            className={`h-[${size}px] w-[${size}px]`}
+            className={`${size === 28 ? 'h-7 w-7' : size === 46 ? 'h-[46px] w-[46px]' : ''}`}
             borderColor={borderColor}
           />
         )
