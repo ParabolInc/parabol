@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {GitHubScopingSearchFilterToggle_meeting$key} from '../__generated__/GitHubScopingSearchFilterToggle_meeting.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import lazyPreload from '../utils/lazyPreload'
-import {GitHubScopingSearchFilterToggle_meeting$key} from '../__generated__/GitHubScopingSearchFilterToggle_meeting.graphql'
 import FilterButton from './FilterButton'
 
 const GitHubScopingSearchFilterMenuRoot = lazyPreload(

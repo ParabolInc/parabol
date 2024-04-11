@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {UpdateMeetingPromptMutation as TUpdateMeetingPromptMutation} from '../__generated__/UpdateMeetingPromptMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateMeetingPromptMutation_meeting on UpdateMeetingPromptSuccess {

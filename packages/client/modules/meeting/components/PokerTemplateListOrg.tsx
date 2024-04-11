@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useHistory} from 'react-router'
+import {PokerTemplateListOrgQuery} from '../../../__generated__/PokerTemplateListOrgQuery.graphql'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {PALETTE} from '../../../styles/paletteV3'
-import {PokerTemplateListOrgQuery} from '../../../__generated__/PokerTemplateListOrgQuery.graphql'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import PokerTemplateItem from './PokerTemplateItem'
 
 const TemplateList = styled('ul')({

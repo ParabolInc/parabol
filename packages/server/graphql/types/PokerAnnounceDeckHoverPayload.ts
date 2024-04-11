@@ -2,8 +2,8 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'grap
 import {GQLContext} from '../graphql'
 import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
-import makeMutationPayload from './makeMutationPayload'
 import User from './User'
+import makeMutationPayload from './makeMutationPayload'
 
 export const PokerAnnounceDeckHoverSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerAnnounceDeckHoverSuccess',

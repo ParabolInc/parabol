@@ -1,5 +1,5 @@
-import * as React from 'react'
 import * as RadixSelect from '@radix-ui/react-select'
+import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
 
 export const SelectContent = React.forwardRef<

@@ -3,14 +3,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {
   BarElement,
   CategoryScale,
-  Chart as ChartJS,
   ChartData,
   ChartDataset,
+  Chart as ChartJS,
   ChartOptions,
   Filler,
   Legend,
-  LinearScale,
   LineElement,
+  LinearScale,
   PointElement,
   SubTitle,
   TimeScale,
@@ -23,14 +23,14 @@ import 'chartjs-adapter-dayjs-3'
 import React, {useMemo} from 'react'
 import {Bar, Line} from 'react-chartjs-2'
 import {useFragment} from 'react-relay'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
-import {FONT_FAMILY} from '../styles/typographyV2'
-import {ElementWidth} from '../types/constEnums'
 import {
   InsightsCharts_domain$key,
   MeetingTypeEnum
 } from '../__generated__/InsightsCharts_domain.graphql'
+import {Elevation} from '../styles/elevation'
+import {PALETTE} from '../styles/paletteV3'
+import {FONT_FAMILY} from '../styles/typographyV2'
+import {ElementWidth} from '../types/constEnums'
 
 ChartJS.register(
   BarElement,

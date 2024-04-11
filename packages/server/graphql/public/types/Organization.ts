@@ -1,6 +1,6 @@
 import {isSuperUser} from '../../../utils/authorization'
-import {OrganizationResolvers} from '../resolverTypes'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import {OrganizationResolvers} from '../resolverTypes'
 
 const Organization: OrganizationResolvers = {
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {

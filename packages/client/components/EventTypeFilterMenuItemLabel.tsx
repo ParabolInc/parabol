@@ -1,14 +1,14 @@
 import React from 'react'
+import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
+import {FilterLabels} from '../types/constEnums'
 import {
   CUSTOMIZED_SVG,
   timelineEventTypeMenuIcons,
   timelineEventTypeMenuLabels
 } from '../utils/constants'
-import TimelineEventTypeIcon from './TimelineEventTypeIcon'
-import MenuItemLabel from './MenuItemLabel'
-import {FilterLabels} from '../types/constEnums'
-import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import CardsSVG from './CardsSVG'
+import MenuItemLabel from './MenuItemLabel'
+import TimelineEventTypeIcon from './TimelineEventTypeIcon'
 
 interface Props {
   eventType?: TimelineEventEnum

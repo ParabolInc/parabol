@@ -1,13 +1,13 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import {Loader} from '~/utils/relay/renderLoader'
 import parabolTasksResultsQuery, {
   ParabolTasksResultsQuery,
   TaskStatusEnum
 } from '../../../__generated__/ParabolTasksResultsQuery.graphql'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import ErrorBoundary from '../../ErrorBoundary'
 import ParabolTasksResults from './ParabolTasksResults'
-import {Loader} from '~/utils/relay/renderLoader'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 
 interface Props {
   selectedStatus: TaskStatusEnum

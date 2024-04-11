@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
+import makeMutationPayload from './makeMutationPayload'
 
 export const SetDefaultSlackChannelSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetDefaultSlackChannelSuccess',

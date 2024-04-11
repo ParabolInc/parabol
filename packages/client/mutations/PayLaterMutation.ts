@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'relay-runtime'
-import {SimpleMutation} from '../types/relayMutations'
 import {PayLaterMutation as TPayLaterMutation} from '../__generated__/PayLaterMutation.graphql'
+import {SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment PayLaterMutation_organization on PayLaterPayload {

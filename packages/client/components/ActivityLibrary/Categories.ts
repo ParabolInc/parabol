@@ -1,4 +1,4 @@
-import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import {CardTheme} from './ActivityCard'
 
 export const MAIN_CATEGORIES = [

@@ -1,9 +1,7 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import React from 'react'
-import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
-import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
 import {BezierCurve} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 
@@ -30,17 +28,11 @@ const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
   opacity: isOpen ? 1 : 0
 }))
 
-const SideBarStartMeetingButton = ({isOpen, hasRid}: {isOpen: boolean; hasRid: boolean}) => {
-  const location = useLocation()
-  const teamId = getTeamIdFromPathname()
+const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   const {history} = useRouter()
 
   const onClick = () => {
-    if (hasRid) {
-      history.push('/activity-library')
-    } else {
-      history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
-    }
+    history.push('/activity-library')
   }
   return (
     <Button isOpen={isOpen} onClick={onClick}>

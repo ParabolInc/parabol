@@ -1,5 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {ArchiveOrganizationMutation as TArchiveOrganizationMutation} from '../__generated__/ArchiveOrganizationMutation.graphql'
+import {ArchiveOrganizationMutation_organization$data} from '../__generated__/ArchiveOrganizationMutation_organization.graphql'
 import {
   HistoryLocalHandler,
   OnNextHandler,
@@ -10,8 +12,6 @@ import {
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import {ArchiveOrganizationMutation as TArchiveOrganizationMutation} from '../__generated__/ArchiveOrganizationMutation.graphql'
-import {ArchiveOrganizationMutation_organization$data} from '../__generated__/ArchiveOrganizationMutation_organization.graphql'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`

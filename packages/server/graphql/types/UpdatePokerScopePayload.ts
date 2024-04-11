@@ -3,8 +3,8 @@ import getPhase from '../../utils/getPhase'
 import {GQLContext} from '../graphql'
 import {resolveGQLStagesFromPhase} from '../resolvers'
 import EstimateStage from './EstimateStage'
-import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
+import makeMutationPayload from './makeMutationPayload'
 
 export const UpdatePokerScopeSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdatePokerScopeSuccess',

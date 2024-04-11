@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
-import {PALETTE} from 'parabol-client/styles/paletteV3'
-import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {
   MeetingMembersWithoutTasks_meeting$key,
   MeetingTypeEnum
 } from 'parabol-client/__generated__/MeetingMembersWithoutTasks_meeting.graphql'
+import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import EmailBorderBottom from './EmailBorderBottom'

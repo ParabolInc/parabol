@@ -19,8 +19,8 @@ import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import OrganizationUser, {OrganizationUserConnection} from './OrganizationUser'
 import OrgUserCount from './OrgUserCount'
+import OrganizationUser, {OrganizationUserConnection} from './OrganizationUser'
 import Team from './Team'
 
 const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({

@@ -1,7 +1,7 @@
+import toArray from 'lodash.toarray'
 import palettePickerOptions from '../../../../client/styles/palettePickerOptions'
 import {Threshold} from '../../../../client/types/constEnums'
 import TemplateScaleValue from '../../../database/types/TemplateScaleValue'
-import toArray from 'lodash.toarray'
 
 const validateColorValue = (color: string) => {
   const validHexes = palettePickerOptions.map(({hex}) => hex)

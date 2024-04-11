@@ -3,11 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingCheckInPrompt_meeting$key} from '~/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
-import Avatar from '../../../../components/Avatar/Avatar'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
-import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
-import {Breakpoint} from '../../../../types/constEnums'
 import {NewMeetingCheckInPrompt_teamMember$key} from '../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import Avatar from '../../../../components/Avatar/Avatar'
 import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
 import NewCheckInQuestion from './NewCheckInQuestion'
 
@@ -73,15 +70,13 @@ const NewMeetingCheckinPrompt = (props: Props) => {
     `,
     teamMemberRef
   )
-  const isLargeViewport = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {picture} = teamMember
   const {localPhase} = meeting
   const {checkInGreeting} = localPhase
-  const size = isLargeViewport ? 160 : 128
   return (
     <PromptBlock>
       <AvatarBlock>
-        <Avatar picture={picture || defaultUserAvatar} size={size} />
+        <Avatar picture={picture} className={`h-32 w-32 sidebar-left:h-40 sidebar-left:w-40`} />
       </AvatarBlock>
       <CheckInBlock>
         <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting!} teamMember={teamMember} />

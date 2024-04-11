@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {PokerResetDimensionMutation as TPokerResetDimensionMutation} from '../__generated__/PokerResetDimensionMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment PokerResetDimensionMutation_meeting on PokerResetDimensionSuccess {

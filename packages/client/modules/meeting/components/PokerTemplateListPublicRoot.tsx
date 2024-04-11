@@ -1,8 +1,8 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import pokerTemplateListPublicQuery, {
   PokerTemplateListPublicQuery
 } from '../../../__generated__/PokerTemplateListPublicQuery.graphql'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import MockTemplateList from './MockTemplateList'
 import PokerTemplateListPublic from './PokerTemplateListPublic'
 

@@ -1,40 +1,40 @@
 import {LockOpen} from '@mui/icons-material'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import {useHistory} from 'react-router'
-import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
-import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
+import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import {ActivityDetailsSidebar_viewer$key} from '~/__generated__/ActivityDetailsSidebar_viewer.graphql'
-import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
+import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
+import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
+import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
+import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
+import {
+  CreateGcalEventInput,
+  RecurrenceSettingsInput
+} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useBreakpoint from '../../hooks/useBreakpoint'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import {
-  CreateGcalEventInput,
-  RecurrenceSettingsInput
-} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import {Breakpoint} from '../../types/constEnums'
 import sortByTier from '../../utils/sortByTier'
-import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
-import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
-import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
-import StyledError from '../StyledError'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
+import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
+import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
+import StyledError from '../StyledError'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import {Breakpoint} from '../../types/constEnums'
 
 interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
@@ -89,9 +89,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         orgId
         organization {
           name
-          featureFlags {
-            recurringRetros
-          }
         }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
@@ -252,9 +249,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           : type === 'action'
             ? 'Check-in'
             : 'Meeting'
-  const withRecurrence =
-    type === 'teamPrompt' ||
-    (selectedTeam.organization.featureFlags.recurringRetros && type === 'retrospective')
+  const withRecurrence = type === 'teamPrompt' || type === 'retrospective'
 
   return (
     <>

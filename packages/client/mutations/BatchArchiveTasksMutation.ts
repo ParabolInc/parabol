@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {BatchArchiveTasksMutation_tasks$data} from '~/__generated__/BatchArchiveTasksMutation_tasks.graphql'
 import ITask from '../../server/database/types/Task'
 import {BatchArchiveTasksMutation as TBatchArchiveTasksMutation} from '../__generated__/BatchArchiveTasksMutation.graphql'
-import {BatchArchiveTasksMutation_tasks$data} from '~/__generated__/BatchArchiveTasksMutation_tasks.graphql'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
-import handleUpsertTasks from './handlers/handleUpsertTasks'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
   fragment BatchArchiveTasksMutation_tasks on BatchArchiveTasksSuccess {

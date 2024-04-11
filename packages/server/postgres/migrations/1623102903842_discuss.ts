@@ -1,6 +1,6 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
-import {r, RValue} from 'rethinkdb-ts'
+import {RValue, r} from 'rethinkdb-ts'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import EstimatePhase from '../../database/types/EstimatePhase'

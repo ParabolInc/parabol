@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {
+  ThreadedCommentHeader_comment$data,
+  ThreadedCommentHeader_comment$key
+} from '~/__generated__/ThreadedCommentHeader_comment.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import relativeDate from '~/utils/date/relativeDate'
-import {
-  ThreadedCommentHeader_comment$key,
-  ThreadedCommentHeader_comment$data
-} from '~/__generated__/ThreadedCommentHeader_comment.graphql'
 import {PARABOL_AI_USER_ID} from '../utils/constants'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'

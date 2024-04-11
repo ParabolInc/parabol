@@ -1,4 +1,6 @@
+import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import IUser from '../../../postgres/types/IUser'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -10,8 +12,6 @@ import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
-import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import getKysely from '../../../postgres/getKysely'
 
 const getBillingLeaderUser = async (
   email: string | null | undefined,

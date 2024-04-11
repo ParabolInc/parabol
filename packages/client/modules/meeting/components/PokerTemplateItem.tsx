@@ -2,15 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {PokerTemplateItem_template$key} from '../../../__generated__/PokerTemplateItem_template.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
-import useTemplateDescription from '../../../utils/useTemplateDescription'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
-import {PokerTemplateItem_template$key} from '../../../__generated__/PokerTemplateItem_template.graphql'
+import useTemplateDescription from '../../../utils/useTemplateDescription'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,

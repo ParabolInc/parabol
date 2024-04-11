@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {StageTimerDisplay_meeting$key} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import PhaseCompleteTag from '~/components/Tag/PhaseCompleteTag'
 import UndoableGroupPhaseControl from '~/components/UndoableGroupPhaseControl'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Breakpoint} from '~/types/constEnums'
 import isDemoRoute from '~/utils/isDemoRoute'
-import {StageTimerDisplay_meeting$key} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 
 interface Props {

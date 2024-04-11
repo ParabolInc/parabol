@@ -2,11 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
-import useRouter from '../hooks/useRouter'
-import {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
-import NotificationTemplate from './NotificationTemplate'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
+import useRouter from '../hooks/useRouter'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
+import NotificationTemplate from './NotificationTemplate'
 
 interface Props {
   notification: ResponseMentioned_notification$key

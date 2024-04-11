@@ -1,8 +1,8 @@
-import * as React from 'react'
 import * as RadixDialog from '@radix-ui/react-dialog'
+import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
-import {DialogOverlay} from './DialogOverlay'
 import {DialogClose} from './DialogClose'
+import {DialogOverlay} from './DialogOverlay'
 
 export const DialogContent = React.forwardRef<
   HTMLDivElement,

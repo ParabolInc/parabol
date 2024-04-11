@@ -1,8 +1,8 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import reflectTemplateListOrgQuery, {
   ReflectTemplateListOrgQuery
 } from '../../../__generated__/ReflectTemplateListOrgQuery.graphql'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import MockTemplateList from './MockTemplateList'
 import ReflectTemplateListOrg from './ReflectTemplateListOrg'
 

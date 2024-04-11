@@ -4,12 +4,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
+import {AddPokerTemplateDimension_dimensions$key} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'
 import LinkButton from '../../../components/LinkButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimensionMutation from '../../../mutations/AddPokerTemplateDimensionMutation'
 import dndNoise from '../../../utils/dndNoise'
-import {AddPokerTemplateDimension_dimensions$key} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'
 
 const AddDimensionLink = styled(LinkButton)({
   alignItems: 'center',

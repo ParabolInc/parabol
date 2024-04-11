@@ -2,14 +2,14 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import getRethink from '../../../database/rethinkDriver'
 import PokerTemplate from '../../../database/types/PokerTemplate'
 import TemplateDimension from '../../../database/types/TemplateDimension'
+import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
 import insertMeetingTemplate from '../../../postgres/queries/insertMeetingTemplate'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import getTemplateIllustrationUrl from '../../mutations/helpers/getTemplateIllustrationUrl'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
-import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
 import {MutationResolvers} from '../resolverTypes'
 
 const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (

@@ -1,8 +1,8 @@
 import getRethink from '../../database/rethinkDriver'
-import {getStripeManager} from '../../utils/stripe'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
-import sendToSentry from '../../utils/sendToSentry'
 import RedisLockQueue from '../../utils/RedisLockQueue'
+import sendToSentry from '../../utils/sendToSentry'
+import {getStripeManager} from '../../utils/stripe'
 
 /**
  * Check and update if necessary the subscription quantity

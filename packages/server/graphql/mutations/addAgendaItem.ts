@@ -4,6 +4,7 @@ import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem, {AgendaItemInput} from '../../database/types/AgendaItem'
 import generateUID from '../../generateUID'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -11,7 +12,6 @@ import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput, {CreateAgendaItemInputType} from '../types/CreateAgendaItemInput'
 import {GQLContext} from './../graphql'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: AddAgendaItemPayload,

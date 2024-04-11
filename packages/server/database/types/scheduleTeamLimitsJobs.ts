@@ -1,6 +1,6 @@
 import ms from 'ms'
-import getKysely from '../../postgres/getKysely'
 import {Threshold} from '../../../client/types/constEnums'
+import getKysely from '../../postgres/getKysely'
 import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
 const scheduleTeamLimitsJobs = async (scheduledLockAt: Date, orgId: string) => {

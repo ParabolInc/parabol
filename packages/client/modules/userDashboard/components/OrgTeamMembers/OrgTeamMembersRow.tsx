@@ -1,19 +1,17 @@
-import React from 'react'
+import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrgTeamMembersRow_teamMember$key} from '../../../../__generated__/OrgTeamMembersRow_teamMember.graphql'
-import {Avatar} from '../../../../ui/Avatar/Avatar'
-import {AvatarFallback} from '../../../../ui/Avatar/AvatarFallback'
-import {AvatarImage} from '../../../../ui/Avatar/AvatarImage'
-import {Button} from '../../../../ui/Button/Button'
-import {MoreVert} from '@mui/icons-material'
-import {OrgTeamMemberMenu} from './OrgTeamMemberMenu'
+import Avatar from '../../../../components/Avatar/Avatar'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import useModal from '../../../../hooks/useModal'
+import {Button} from '../../../../ui/Button/Button'
 import PromoteTeamMemberModal from '../../../teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal'
 import RemoveTeamMemberModal from '../../../teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
-import useModal from '../../../../hooks/useModal'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {OrgTeamMemberMenu} from './OrgTeamMemberMenu'
 
 type Props = {
   teamMemberRef: OrgTeamMembersRow_teamMember$key
@@ -65,10 +63,7 @@ export const OrgTeamMembersRow = (props: Props) => {
   return (
     <div className='flex w-full items-center justify-center gap-4 p-4'>
       <div>
-        <Avatar className='h-8 w-8'>
-          <AvatarImage src={teamMember.picture} alt={teamMember.preferredName} />
-          <AvatarFallback>{teamMember.preferredName.substring(0, 2)}</AvatarFallback>
-        </Avatar>
+        <Avatar className='h-8 w-8' picture={teamMember.picture} alt={teamMember.preferredName} />
       </div>
       <div className='flex w-full flex-col gap-y-1 py-1'>
         <div className='text-gray-700 inline-flex items-center gap-x-2 text-lg font-bold'>

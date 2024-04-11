@@ -13,7 +13,7 @@ const MentionUser = (props: MentionUserProps) => {
   const {active, preferredName, picture} = props
   return (
     <DraftMentionRow active={active}>
-      <Avatar picture={picture} size={24} />
+      <Avatar picture={picture} className='h-6 w-6' />
       <DraftMentionDescription>{preferredName}</DraftMentionDescription>
     </DraftMentionRow>
   )

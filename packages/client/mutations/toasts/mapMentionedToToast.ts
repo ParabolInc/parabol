@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
+import {mapMentionedToToast_notification$data} from '../../__generated__/mapMentionedToToast_notification.graphql'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import {mapMentionedToToast_notification$data} from '../../__generated__/mapMentionedToToast_notification.graphql'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 

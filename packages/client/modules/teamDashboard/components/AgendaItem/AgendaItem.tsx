@@ -3,9 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {
-  AgendaItem_meeting$key,
-  AgendaItem_meeting$data
+  AgendaItem_meeting$data,
+  AgendaItem_meeting$key
 } from '~/__generated__/AgendaItem_meeting.graphql'
+import {AgendaItem_agendaItem$key} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
@@ -20,7 +21,6 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import findStageAfterId from '../../../../utils/meetings/findStageAfterId'
-import {AgendaItem_agendaItem$key} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -199,7 +199,7 @@ const AgendaItem = (props: Props) => {
 
   const getIcon = () => {
     if (pinned && isHovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-    else if (!pinned && !isHovering) return <Avatar hasBadge={false} picture={picture} size={24} />
+    else if (!pinned && !isHovering) return <Avatar picture={picture} className='h-6 w-6' />
     else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
   }
 

@@ -1,10 +1,8 @@
 import styled from '@emotion/styled'
 import {Add as AddIcon} from '@mui/icons-material'
 import React, {useEffect, useRef, useState} from 'react'
-import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
-import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
@@ -51,14 +49,11 @@ const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 
 interface Props {
   className?: string
-  hasRid: boolean
 }
 
 const StartMeetingFAB = (props: Props) => {
-  const location = useLocation()
-  const {className, hasRid} = props
+  const {className} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
   const [isExpanded, setIsExpanded] = useState(true)
   const hoverTimerId = useRef<number | undefined>()
@@ -92,11 +87,7 @@ const StartMeetingFAB = (props: Props) => {
     }
   }
   const onClick = () => {
-    if (hasRid) {
-      history.push('/activity-library')
-    } else {
-      history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
-    }
+    history.push('/activity-library')
   }
   // We use the SideBarStartMeetingButton in this case
   if (isDesktop) {

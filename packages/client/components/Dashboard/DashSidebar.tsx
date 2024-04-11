@@ -2,7 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation, useRouteMatch} from 'react-router'
+import {useRouteMatch} from 'react-router'
+import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
 import {
@@ -12,11 +13,9 @@ import {
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../utils/constants'
-import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
-import getTeamIdFromPathname from '../../utils/getTeamIdFromPathname'
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   // 78px is total height of 'Add meeting' block
@@ -83,9 +82,6 @@ const DashSidebar = (props: Props) => {
     graphql`
       fragment DashSidebar_viewer on User {
         ...StandardHub_viewer
-        featureFlags {
-          retrosInDisguise
-        }
         organizations {
           ...DashNavList_organization
           id
@@ -97,10 +93,8 @@ const DashSidebar = (props: Props) => {
     viewerRef
   )
 
-  const location = useLocation()
-
   if (!viewer) return null
-  const {featureFlags, organizations} = viewer
+  const {organizations} = viewer
 
   if (match) {
     const {orgId: orgIdFromParams} = match.params
@@ -108,7 +102,7 @@ const DashSidebar = (props: Props) => {
     const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
     return (
       <Wrapper>
-        <SideBarStartMeetingButton isOpen={isOpen} hasRid={featureFlags.retrosInDisguise} />
+        <SideBarStartMeetingButton isOpen={isOpen} />
         <Nav isOpen={isOpen}>
           <Contents>
             <NavItemsWrap>
@@ -153,11 +147,9 @@ const DashSidebar = (props: Props) => {
     )
   }
 
-  const teamId = getTeamIdFromPathname()
-
   return (
     <Wrapper>
-      <SideBarStartMeetingButton isOpen={isOpen} hasRid={featureFlags.retrosInDisguise} />
+      <SideBarStartMeetingButton isOpen={isOpen} />
       <Nav isOpen={isOpen}>
         <Contents>
           <NavItemsWrap>
@@ -174,16 +166,6 @@ const DashSidebar = (props: Props) => {
             <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
           </NavItemsWrap>
           <DashHR />
-          <NavItemsWrap>
-            {featureFlags.retrosInDisguise && (
-              <NavItem
-                icon={'magic'}
-                href={`/new-meeting/${teamId}`}
-                navState={{backgroundLocation: location}}
-                label={'Add meeting (legacy)'}
-              />
-            )}
-          </NavItemsWrap>
         </Contents>
       </Nav>
     </Wrapper>

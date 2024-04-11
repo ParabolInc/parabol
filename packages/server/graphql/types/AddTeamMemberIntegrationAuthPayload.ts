@@ -2,10 +2,10 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
-import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import TeamMemberIntegrationAuth from './TeamMemberIntegrationAuth'
 import User from './User'
+import makeMutationPayload from './makeMutationPayload'
 
 export const AddTeamMemberIntegrationAuthSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'AddTeamMemberIntegrationAuthSuccess',

@@ -5,28 +5,28 @@ import React, {Fragment, useEffect, useMemo} from 'react'
 import {PreloadedQuery, commitLocalUpdate, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
+import {useDebounce} from 'use-debounce'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
+import AISearch from './AISearch'
+import ActivityGrid from './ActivityGrid'
 import {
-  CategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
   CUSTOM_CATEGORY_ID,
+  CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import AISearch from './AISearch'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
-import {useDebounce} from 'use-debounce'
-import ActivityGrid from './ActivityGrid'
 
 graphql`
   fragment ActivityLibrary_templateSearchDocument on MeetingTemplate {
@@ -84,9 +84,6 @@ const query = graphql`
             ...ActivityLibrary_template @relay(mask: false)
           }
         }
-      }
-      featureFlags {
-        retrosInDisguise
       }
       organizations {
         featureFlags {
@@ -199,7 +196,7 @@ export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {featureFlags, availableTemplates, organizations} = viewer
+  const {availableTemplates, organizations} = viewer
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
   const setSearch = (value: string) => {
@@ -271,10 +268,6 @@ export const ActivityLibrary = (props: Props) => {
     }
     return undefined
   }, [categoryId, templatesToRender])
-
-  if (!featureFlags.retrosInDisguise) {
-    return <Redirect to='/404' />
-  }
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />

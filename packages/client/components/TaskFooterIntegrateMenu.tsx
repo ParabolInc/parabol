@@ -1,16 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {MenuProps} from '../hooks/useMenu'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 import {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
 import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
-import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
-import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
-import {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
-import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
+import {MenuProps} from '../hooks/useMenu'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
+import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
+import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
 interface Props {
   menuProps: MenuProps

@@ -1,6 +1,6 @@
 import {Kysely, PostgresDialect, sql} from 'kysely'
 import {Client} from 'pg'
-import {r, RDatum} from 'rethinkdb-ts'
+import {RDatum, r} from 'rethinkdb-ts'
 import getPg from '../getPg'
 import getPgConfig from '../getPgConfig'
 

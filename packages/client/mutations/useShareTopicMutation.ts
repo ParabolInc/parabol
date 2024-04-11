@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation, UseMutationConfig} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {useShareTopicMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/useShareTopicMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 graphql`
   fragment useShareTopicMutation_meeting on ShareTopicSuccess {

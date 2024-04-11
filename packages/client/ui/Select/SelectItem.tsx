@@ -1,6 +1,6 @@
-import * as React from 'react'
-import * as RadixSelect from '@radix-ui/react-select'
 import {Check} from '@mui/icons-material'
+import * as RadixSelect from '@radix-ui/react-select'
+import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
 
 interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Item> {

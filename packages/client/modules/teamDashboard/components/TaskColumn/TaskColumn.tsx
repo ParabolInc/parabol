@@ -5,15 +5,15 @@ import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beauti
 import {useFragment} from 'react-relay'
 import {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
+import useModal from '../../../../hooks/useModal'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {DONE, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
-import {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
+import ArchiveAllDoneTasksModal from './ArchiveAllDoneTasksModal'
 import TaskColumnAddTask from './TaskColumnAddTask'
 import TaskColumnInner from './TaskColumnInner'
-import useModal from '../../../../hooks/useModal'
-import ArchiveAllDoneTasksModal from './ArchiveAllDoneTasksModal'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
   background: isDragging ? PALETTE.SLATE_300 : undefined,

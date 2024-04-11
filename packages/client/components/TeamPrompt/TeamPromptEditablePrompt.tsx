@@ -3,12 +3,12 @@ import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPromptEditablePrompt_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useModal from '~/hooks/useModal'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
-import {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPromptEditablePrompt_meeting.graphql'
 import TeamPromptEditablePromptModal from './TeamPromptEditablePromptModal'
 
 const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({

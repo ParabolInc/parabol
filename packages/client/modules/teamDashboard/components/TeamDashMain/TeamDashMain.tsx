@@ -2,16 +2,16 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {Route, Switch} from 'react-router-dom'
 import {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import getTeamIdFromPathname from '../../../../utils/getTeamIdFromPathname'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
-import TeamDrawer from './TeamDrawer'
-import TeamDashTasksTab from '../TeamDashTasksTab/TeamDashTasksTab'
 import TeamDashActivityTab from '../TeamDashActivityTab/TeamDashActivityTab'
 import TeamDashIntegrationsTab from '../TeamDashIntegrationsTab/TeamDashIntegrationsTab'
-import {Route, Switch} from 'react-router-dom'
-import getTeamIdFromPathname from '../../../../utils/getTeamIdFromPathname'
+import TeamDashTasksTab from '../TeamDashTasksTab/TeamDashTasksTab'
+import TeamDrawer from './TeamDrawer'
 
 const AbsoluteFab = styled(StartMeetingFAB)({
   position: 'absolute'
@@ -31,9 +31,6 @@ const TeamDashMain = (props: Props) => {
             name
             ...TeamTasksHeaderContainer_team
             ...TeamDashActivityTab_team
-          }
-          featureFlags {
-            retrosInDisguise
           }
           ...TeamDashTasksTab_viewer
           ...TeamDrawer_viewer
@@ -67,7 +64,7 @@ const TeamDashMain = (props: Props) => {
             <TeamDashActivityTab teamRef={team} />
           </Route>
         </Switch>
-        <AbsoluteFab hasRid={viewer.featureFlags.retrosInDisguise} />
+        <AbsoluteFab />
       </div>
       <TeamDrawer viewer={viewer} />
     </div>

@@ -36,4 +36,4 @@ const sendEncodedMessage = (context: ConnectionContext, object: any, syn = false
   }
 }
 
-export {sendEncodedMessage, sendAndPushToReliableQueue}
+export {sendAndPushToReliableQueue, sendEncodedMessage}
