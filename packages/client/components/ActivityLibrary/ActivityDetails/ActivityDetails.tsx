@@ -23,7 +23,6 @@ graphql`
     orgId
     teamId
     illustrationUrl
-    isFree
     scope
     viewerLowestScope
     ...TemplateDetails_activity
@@ -78,7 +77,6 @@ const ActivityDetails = (props: Props) => {
       meetingType: activity.type,
       scope: activity.scope,
       templateName: activity.name,
-      isFree: activity.isFree,
       queryString: activityLibrarySearch
     })
   }, [])
