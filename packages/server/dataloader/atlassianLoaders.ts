@@ -263,8 +263,8 @@ export const jiraIssue = (
               hasDefaultEstimationField(possibleEstimationFields.map(({fieldName}) => fieldName))
                 ? undefined
                 : simplified
-                ? 'teamManagedStoryPoints'
-                : 'companyManagedStoryPoints'
+                  ? 'teamManagedStoryPoints'
+                  : 'companyManagedStoryPoints'
 
             return {
               ...fields,

@@ -57,10 +57,7 @@ const generateGroups = async (
   const meetingRes = await r
     .table('NewMeeting')
     .get(meetingId)
-    .update(
-      {autogroupReflectionGroups},
-      {returnChanges: true}
-    )('changes')(0)('new_val')
+    .update({autogroupReflectionGroups}, {returnChanges: true})('changes')(0)('new_val')
     .run()
   const {facilitatorUserId} = meetingRes
   const data = {meetingId}

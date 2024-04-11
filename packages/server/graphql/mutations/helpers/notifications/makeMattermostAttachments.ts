@@ -53,4 +53,4 @@ export const makeHackedFieldButtonValue = (spec: ButtonSpec): string => `
 ||`
 
 export const makeHackedButtonPairFields = (button1: ButtonSpec, button2: ButtonSpec) =>
-  [button1, button2].map((i) => ({short: true, value: makeHackedFieldButtonValue(i)} as Field))
+  [button1, button2].map((i) => ({short: true, value: makeHackedFieldButtonValue(i)}) as Field)

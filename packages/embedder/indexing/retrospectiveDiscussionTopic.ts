@@ -1,8 +1,9 @@
-import {RethinkSchema} from 'parabol-server/database/rethinkDriver'
 import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
-import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
+import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
+import {inferLanguage} from '../inferLanguage'
+import {ISO6391} from '../iso6393To1'
 
 // Here's a generic reprentation of the text generated here:
 
@@ -20,15 +21,15 @@ import prettier from 'prettier'
 // </END IF DISCUSSION>
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
-
-async function getPreferredNameByUserId(userId: string, dataLoader: RootDataLoader) {
+const MAX_TEXT_LENGTH = 10000
+async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderInstance) {
   if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
   return !user ? 'Unknown' : user.preferredName
 }
 
 async function formatThread(
-  dataLoader: RootDataLoader,
+  dataLoader: DataLoaderInstance,
   comments: Comment[],
   parentId: string | null = null,
   depth = 0
@@ -45,7 +46,7 @@ async function formatThread(
       ? 'Anonymous'
       : await getPreferredNameByUserId(comment.createdBy, dataLoader)
     const how = depth === 0 ? 'wrote' : 'replied'
-    const content = comment.plaintextContent
+    const content = comment.plaintextContent.slice(0, MAX_TEXT_LENGTH)
     const formattedPost = `${indent}- ${author} ${how}, "${content}"\n`
 
     // Recursively format child threads
@@ -60,7 +61,7 @@ async function formatThread(
 
 export const createTextFromRetrospectiveDiscussionTopic = async (
   discussionId: string,
-  dataLoader: RootDataLoader,
+  dataLoader: DataLoaderInstance,
   textForReranking: boolean = false
 ) => {
   const discussion = await dataLoader.get('discussions').load(discussionId)
@@ -72,23 +73,26 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId)
   ])
   if (!isMeetingRetrospective(newMeeting)) throw new Error('Meeting is not a retro')
-  const {templateId} = newMeeting
+  // It should never be undefined, but our data integrity in RethinkDB is bad
+  const templateId = newMeeting?.templateId ?? ''
 
   const promptIds = [...new Set(reflections.map((r) => r.promptId))]
   const [template, ...prompts] = await Promise.all([
-    dataLoader.get('meetingTemplates').loadNonNull(templateId),
+    dataLoader.get('meetingTemplates').load(templateId),
     ...promptIds.map((promptId) => dataLoader.get('reflectPrompts').load(promptId))
   ])
 
   let markdown = ''
+  const templateName = template?.name ?? 'Unknown'
   if (!textForReranking) {
     markdown =
       `A topic "${reflectionGroup?.title ?? ''}" was discussed during ` +
-      `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
+      `the meeting "${newMeeting.name}" that followed the "${templateName}" template.\n` +
       `\n`
   }
 
   for (const prompt of prompts) {
+    if (!prompt) continue // RethinkDB bad data integrity
     if (!textForReranking) {
       markdown += `Participants were prompted with, "${prompt.question}`
       if (prompt.description) markdown += `: ${prompt.description}`
@@ -98,7 +102,10 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       const author = newMeeting.disableAnonymity
         ? await getPreferredNameByUserId(reflection.creatorId, dataLoader)
         : 'Anonymous'
-      markdown += `   - ${author} wrote, "${reflection.plaintextContent}"\n`
+      markdown += `   - ${author} wrote, "${reflection.plaintextContent.slice(
+        0,
+        MAX_TEXT_LENGTH
+      )}"\n`
     }
     markdown += `\n`
   }
@@ -120,6 +127,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
    * objectType: 'retrospectiveDiscussionNoSummary' or something and do a bit of testing.
    */
 
+  let language: ISO6391 | undefined = undefined
   if (discussionSummary) {
     markdown += `Further discussion was made. ` + ` ${discussionSummary}`
   } else {
@@ -148,35 +156,20 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       (c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy)
     )
     if (filteredComments.length) {
-      markdown += `Futher discussion was made:\n`
+      markdown += `Further discussion was made:\n`
       markdown += await formatThread(dataLoader, filteredComments)
-      // TODO: if the discussion threads are too long, summarize them
+      const commentBlob = filteredComments.map((c) => c.plaintextContent).join(' ')
+      // it's common to reflect in english and comment in a native tongue
+      language = inferLanguage(commentBlob)
     }
   }
 
-  markdown = prettier.format(markdown, {
+  const body = await prettier.format(markdown, {
     parser: 'markdown',
     proseWrap: 'always',
     printWidth: 72
   })
 
-  return markdown
-}
-
-export const newRetroDiscussionTopicsFromNewMeeting = async (
-  newMeeting: RethinkSchema['NewMeeting']['type'],
-  dataLoader: RootDataLoader
-) => {
-  const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
-  const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
-  if (orgId && discussPhase && discussPhase.stages) {
-    return discussPhase.stages.map((stage) => ({
-      objectType: 'retrospectiveDiscussionTopic' as const,
-      teamId: newMeeting.teamId,
-      refId: `${newMeeting.id}:${stage.id}`,
-      refUpdatedAt: newMeeting.createdAt
-    }))
-  } else {
-    return []
-  }
+  language = language || inferLanguage(reflections.map((r) => r.plaintextContent).join(' '))
+  return {body, language}
 }

@@ -70,7 +70,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
           service: 'gitlab',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
 
     const variables = {

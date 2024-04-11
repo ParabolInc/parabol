@@ -1,5 +1,8 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
+import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
+import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
+import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
@@ -12,12 +15,9 @@ import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
-import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
-import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
-import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -72,6 +72,11 @@ type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
 
+// Use this if you don't need the dataloader to be shareable
+export interface DataLoaderInstance {
+  get<LoaderName extends Loaders>(loaderName: LoaderName): TypedDataLoader<LoaderName>
+}
+
 export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
   ? TypeFromCustom<LoaderName>
   : UpdatableCacheDataLoader<
@@ -79,14 +84,14 @@ export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
       LoaderName extends ForeignLoaders
         ? TypeFromForeign<LoaderName>[]
         : LoaderName extends PrimaryLoaders
-        ? TypeFromPrimary<LoaderName>
-        : never
+          ? TypeFromPrimary<LoaderName>
+          : never
     >
 
 /**
  * This is the main dataloader
  */
-export default class RootDataLoader {
+export default class RootDataLoader implements DataLoaderInstance {
   dataLoaderOptions: DataLoader.Options<any, any>
   // casted to any because access to the loaders will results in a creation if needed
   loaders: LoaderDict = {} as any

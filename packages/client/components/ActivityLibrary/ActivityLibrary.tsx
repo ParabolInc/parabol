@@ -85,9 +85,6 @@ const query = graphql`
           }
         }
       }
-      featureFlags {
-        retrosInDisguise
-      }
       organizations {
         featureFlags {
           aiTemplate
@@ -173,19 +170,22 @@ const mapRetroSubCategories = (templates: readonly Template[]) => {
 const mapTeamCategories = (templates: readonly Template[]) => {
   // list public templates last
   const publicTemplates = [] as Template[]
-  const mapped = templates.reduce((acc, template) => {
-    const {team, scope} = template
-    if (scope === 'PUBLIC') {
-      publicTemplates.push(template)
-    } else {
-      const {name} = team
-      if (!acc[name]) {
-        acc[name] = []
+  const mapped = templates.reduce(
+    (acc, template) => {
+      const {team, scope} = template
+      if (scope === 'PUBLIC') {
+        publicTemplates.push(template)
+      } else {
+        const {name} = team
+        if (!acc[name]) {
+          acc[name] = []
+        }
+        acc[name]!.push(template)
       }
-      acc[name]!.push(template)
-    }
-    return acc
-  }, {} as Record<string, Template[]>)
+      return acc
+    },
+    {} as Record<string, Template[]>
+  )
 
   mapped['Parabol'] = publicTemplates
   return mapped
@@ -196,7 +196,7 @@ export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {featureFlags, availableTemplates, organizations} = viewer
+  const {availableTemplates, organizations} = viewer
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
   const setSearch = (value: string) => {
@@ -245,8 +245,8 @@ export const ActivityLibrary = (props: Props) => {
       categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
         : categoryId === CUSTOM_CATEGORY_ID
-        ? template.scope !== 'PUBLIC'
-        : template.category === categoryId
+          ? template.scope !== 'PUBLIC'
+          : template.category === categoryId
     )
   }, [searchQuery, filteredTemplates, categoryId])
 
@@ -268,10 +268,6 @@ export const ActivityLibrary = (props: Props) => {
     }
     return undefined
   }, [categoryId, templatesToRender])
-
-  if (!featureFlags.retrosInDisguise) {
-    return <Redirect to='/404' />
-  }
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />

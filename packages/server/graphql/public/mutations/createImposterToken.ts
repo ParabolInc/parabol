@@ -14,8 +14,8 @@ const createImposterToken: MutationResolvers['createImposterToken'] = async (
   const user = userId
     ? await dataLoader.get('users').load(userId)
     : email
-    ? await getUserByEmail(email)
-    : null
+      ? await getUserByEmail(email)
+      : null
 
   if (!user) {
     return standardError(new Error('User not found'), {userId: viewerId})

@@ -50,8 +50,8 @@ export const insertEdgeAfter = (
   const nextIdx = sortValue
     ? idxFinder(newName, nodes, sortValue)
     : isAscending
-    ? edges.length - 1
-    : 0
+      ? edges.length - 1
+      : 0
   const nextEdges = [...edges.slice(0, nextIdx), newEdge, ...edges.slice(nextIdx)]
   connection.setLinkedRecords(nextEdges, 'edges')
 }

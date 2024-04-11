@@ -130,8 +130,8 @@ const RetroTopic = (props: Props) => {
     commentCount === 0
       ? 'No Comments'
       : commentCount >= 101
-      ? 'See 100+ Comments'
-      : `See ${commentCount} ${plural(commentCount, 'Comment')}`
+        ? 'See 100+ Comments'
+        : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   const corsOptions = isEmail ? EMAIL_CORS_OPTIONS : APP_CORS_OPTIONS
   return (

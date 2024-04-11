@@ -14,14 +14,18 @@ const resolve = async (orgId: string, {authToken, dataLoader}: GQLContext) => {
   return true
 }
 
-export const isViewerBillingLeader = rule({cache: 'strict'})(
-  async (_source, {orgId}, context: GQLContext) => {
-    return resolve(orgId, context)
-  }
-)
+export const isViewerBillingLeader = rule({cache: 'strict'})(async (
+  _source,
+  {orgId},
+  context: GQLContext
+) => {
+  return resolve(orgId, context)
+})
 
-export const isViewerBillingLeaderSource = rule({cache: 'strict'})(
-  async ({id: orgId}, _args, context: GQLContext) => {
-    return resolve(orgId, context)
-  }
-)
+export const isViewerBillingLeaderSource = rule({cache: 'strict'})(async (
+  {id: orgId},
+  _args,
+  context: GQLContext
+) => {
+  return resolve(orgId, context)
+})

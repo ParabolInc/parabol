@@ -13,12 +13,14 @@ const publish = <T>(
   channel: string,
   type: string,
   payload: {[key: string]: any},
-  subOptions: SubOptions = {}
+  subOptions: SubOptions = {},
+  sendToSelf: boolean = true
 ) => {
   const subName = `${topic}Subscription`
   const rootValue = {[subName]: {fieldName: type, [type]: payload}}
+  const executorServerId = sendToSelf ? SERVER_ID! : undefined
   getPubSub()
-    .publish(`${topic}.${channel}`, {rootValue, executorServerId: SERVER_ID!, ...subOptions})
+    .publish(`${topic}.${channel}`, {rootValue, executorServerId, ...subOptions})
     .catch(Logger.error)
 }
 

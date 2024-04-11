@@ -1,31 +1,22 @@
-import {Selectable, sql} from 'kysely'
+import {sql} from 'kysely'
 import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {DB} from 'parabol-server/postgres/pg'
-import RootDataLoader from '../server/dataloader/RootDataLoader'
-import {processJob} from './processJob'
 import {Logger} from '../server/utils/Logger'
-import {EmbeddingsTableName} from './ai_models/AbstractEmbeddingsModel'
+import {WorkflowOrchestrator} from './WorkflowOrchestrator'
+import {DBJob} from './custom'
 
-export type DBJob = Selectable<DB['EmbeddingsJobQueue']>
-export type EmbedJob = DBJob & {
-  jobType: 'embed'
-  jobData: {
-    embeddingsMetadataId: number
-    model: EmbeddingsTableName
-  }
-}
-export type RerankJob = DBJob & {jobType: 'rerank'; jobData: {discussionIds: string[]}}
-export type Job = EmbedJob | RerankJob
-
-export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Job> {
+export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
   [Symbol.asyncIterator]() {
     return this
   }
-  dataLoader = new RootDataLoader({maxBatchSize: 1000})
-  async next(): Promise<IteratorResult<Job>> {
+
+  orchestrator: WorkflowOrchestrator
+  constructor(orchestrator: WorkflowOrchestrator) {
+    this.orchestrator = orchestrator
+  }
+  async next(): Promise<IteratorResult<DBJob>> {
     const pg = getKysely()
     const getJob = (isFailed: boolean) => {
       return pg
@@ -54,20 +45,17 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Job> {
     if (!job) {
       Logger.log('JobQueueStream: no jobs found')
       // queue is empty, so sleep for a while
-      await sleep(ms('1m'))
+      await sleep(ms('10s'))
       return this.next()
     }
 
-    const isSuccessful = await processJob(job as Job, this.dataLoader)
-    if (isSuccessful) {
-      await pg.deleteFrom('EmbeddingsJobQueue').where('id', '=', job.id).executeTakeFirstOrThrow()
-    }
-    return {done: false, value: job as Job}
+    await this.orchestrator.runStep(job)
+    return {done: false, value: job}
   }
   return() {
     return Promise.resolve({done: true as const, value: undefined})
   }
   throw(error: any) {
-    return Promise.resolve({done: true, value: error})
+    return Promise.resolve({done: true as const, value: error})
   }
 }

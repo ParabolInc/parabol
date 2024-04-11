@@ -1,4 +1,4 @@
-import createClient from 'openapi-fetch'
+import createClient, {ClientMethod} from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import type {paths} from '../textEmbeddingsnterface'
 import {AbstractEmbeddingsModel, EmbeddingModelParams} from './AbstractEmbeddingsModel'
@@ -19,62 +19,68 @@ const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
   }
 }
 
+const openAPIWithTimeout =
+  (client: ClientMethod<any, any>, toError: (error: unknown) => any, timeout: number) =>
+  async (...args: Parameters<ClientMethod<any, any>>) => {
+    const controller = new AbortController()
+    const {signal} = controller
+    const timeoutId = setTimeout(() => {
+      controller.abort(new Error('Timeout'))
+    }, timeout)
+    const [route, requestInit] = args
+    let response: any
+    try {
+      response = await client(route, {
+        signal,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        ...requestInit
+      })
+      clearTimeout(timeoutId)
+      return response
+    } catch (e) {
+      const error = toError(e)
+      return {error}
+    }
+  }
+
 export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
   client: ReturnType<typeof createClient<paths>>
   constructor(modelId: string, url: string) {
     super(modelId, url)
-    this.client = createClient<paths>({baseUrl: this.url})
+    const client = createClient<paths>({baseUrl: this.url})
+    const toError = (e: unknown) => ({error: e instanceof Error ? e.message : e})
+    client.GET = openAPIWithTimeout(client.GET, toError, 10000)
+    client.POST = openAPIWithTimeout(client.POST, toError, 10000)
+    this.client = client
   }
-
   async getTokens(content: string) {
-    try {
-      const {data, error} = await this.client.POST('/tokenize', {
-        body: {inputs: content, add_special_tokens: true},
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-      if (error) return new Error(error.error)
-      return data[0]!.map(({id}) => id)
-    } catch (e) {
-      return e instanceof Error ? e : new Error(e as string)
-    }
+    const {data, error} = await this.client.POST('/tokenize', {
+      body: {add_special_tokens: true, inputs: content}
+    })
+    if (error) return new Error(error.error)
+    return data[0]!.map(({id}) => id)
   }
 
   async decodeTokens(inputIds: number[]) {
-    try {
-      const {data, error} = await this.client.POST('/decode', {
-        body: {ids: inputIds},
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-      if (error) return new Error(error.error)
-      return data
-    } catch (e) {
-      return e instanceof Error ? e : new Error(e as string)
-    }
+    const {data, error} = await this.client.POST('/decode', {
+      body: {ids: inputIds}
+    })
+    if (error) return new Error(error.error)
+    return data
   }
   public async getEmbedding(content: string, retries = 5): Promise<number[] | Error> {
-    try {
-      const {data, error, response} = await this.client.POST('/embed', {
-        body: {inputs: content},
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-      if (error) {
-        if (response.status !== 429 || retries < 1) return new Error(error.error)
-        await sleep(2000)
-        return this.getEmbedding(content, retries - 1)
-      }
-      return data[0]!
-    } catch (e) {
-      return e instanceof Error ? e : new Error(e as string)
+    const {data, error, response} = await this.client.POST('/embed', {
+      body: {inputs: content}
+    })
+    if (error) {
+      if (response.status !== 429 || retries < 1) return new Error(error.error)
+      await sleep(2000)
+      return this.getEmbedding(content, retries - 1)
     }
+    return data[0]!
   }
 
   protected constructModelParams(modelId: string): EmbeddingModelParams {

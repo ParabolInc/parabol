@@ -66,8 +66,8 @@ abstract class MattermostManager {
       typeof textOrAttachmentsArray === 'string'
         ? 'text'
         : Array.isArray(textOrAttachmentsArray)
-        ? 'attachments'
-        : null
+          ? 'attachments'
+          : null
     if (!prop) return new Error('Invalid mattermost message')
     const defaultPayload = {
       [prop]: textOrAttachmentsArray

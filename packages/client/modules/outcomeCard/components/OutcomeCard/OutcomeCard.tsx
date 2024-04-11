@@ -38,12 +38,12 @@ const RootCard = styled('div')<{
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
     : isTaskHighlighted
-    ? cardHoverShadow
-    : isTaskFocused
-    ? cardFocusShadow
-    : isTaskHovered
-    ? cardHoverShadow
-    : cardShadow
+      ? cardHoverShadow
+      : isTaskFocused
+        ? cardFocusShadow
+        : isTaskHovered
+          ? cardHoverShadow
+          : cardShadow
 }))
 
 const ContentBlock = styled('div')({
