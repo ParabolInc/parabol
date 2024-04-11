@@ -3,10 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useLayoutEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useResizeObserver from '~/hooks/useResizeObserver'
+import {AvatarList_users$key} from '../__generated__/AvatarList_users.graphql'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
 import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
-import {AvatarList_users$key} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
 import OverflowAvatar from './OverflowAvatar'
 
@@ -117,7 +117,7 @@ const AvatarList = (props: Props) => {
             onTransitionEnd={onTransitionEnd}
             status={status}
             offset={offsetSize * displayIdx}
-            width={size}
+            className={`h-[${size}px] w-[${size}px]`}
             borderColor={borderColor}
           />
         )

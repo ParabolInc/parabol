@@ -3,6 +3,14 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, Ref} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {
+  OrgMemberRow_organization$data,
+  OrgMemberRow_organization$key
+} from '../../../../__generated__/OrgMemberRow_organization.graphql'
+import {
+  OrgMemberRow_organizationUser$data,
+  OrgMemberRow_organizationUser$key
+} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton, {FlatButtonProps} from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -12,6 +20,7 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import RowInfoLink from '../../../../components/Row/RowInfoLink'
+import BaseTag from '../../../../components/Tag/BaseTag'
 import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
@@ -22,15 +31,6 @@ import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {
-  OrgMemberRow_organization$key,
-  OrgMemberRow_organization$data
-} from '../../../../__generated__/OrgMemberRow_organization.graphql'
-import {
-  OrgMemberRow_organizationUser$key,
-  OrgMemberRow_organizationUser$data
-} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
-import BaseTag from '../../../../components/Tag/BaseTag'
 
 const AvatarBlock = styled('div')({
   display: 'none',
@@ -113,7 +113,7 @@ interface UserAvatarProps {
 const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
   <AvatarBlock>
     {picture ? (
-      <Avatar hasBadge={false} picture={picture} size={44} />
+      <Avatar picture={picture} className='h-11 w-11' />
     ) : (
       <img alt='default avatar' src={defaultUserAvatar} />
     )}

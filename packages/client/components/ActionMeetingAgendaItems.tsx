@@ -93,7 +93,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <AgendaVerbatim>
-            <Avatar picture={picture} size={64} />
+            <Avatar picture={picture} className={'h-16 w-16'} />
             <StyledHeading>{content}</StyledHeading>
           </AgendaVerbatim>
           <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>

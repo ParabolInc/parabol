@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {DeckActivityAvatars_stage$key} from '../__generated__/DeckActivityAvatars_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTransition, {TransitionStatus} from '../hooks/useTransition'
 import {PokerCards} from '../types/constEnums'
-import {DeckActivityAvatars_stage$key} from '../__generated__/DeckActivityAvatars_stage.graphql'
 import AvatarListUser from './AvatarListUser'
 
 const DeckActivityPanel = styled('div')({
@@ -18,16 +18,6 @@ const DeckActivityPanel = styled('div')({
   width: 64,
   zIndex: 100 // show above dimension column
 })
-
-const PeekingAvatar = styled(AvatarListUser)<{status?: TransitionStatus}>(({status}) => ({
-  opacity: status === TransitionStatus.EXITING ? 0 : 1,
-  transform:
-    status === TransitionStatus.MOUNTED
-      ? `translate(64px)`
-      : status === TransitionStatus.EXITING
-        ? 'scale(0)'
-        : undefined
-}))
 
 interface Props {
   stage: DeckActivityAvatars_stage$key
@@ -77,8 +67,14 @@ const DeckActivityAvatars = (props: Props) => {
         const {id: userId} = child
         const visibleScoreIdx = peekingUsers.findIndex((user) => user.id === userId)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
+        const classLookup = {
+          [TransitionStatus.EXITING]: 'opacity-0 scale(0)',
+          [TransitionStatus.MOUNTED]: 'translate(64px)'
+        }
+
+        const avatarStatus = classLookup[status as keyof typeof classLookup] || ''
         return (
-          <PeekingAvatar
+          <AvatarListUser
             key={userId}
             status={status}
             onTransitionEnd={onTransitionEnd}
@@ -86,7 +82,7 @@ const DeckActivityAvatars = (props: Props) => {
             offset={(PokerCards.AVATAR_WIDTH - 10) * displayIdx}
             isColumn
             isAnimated
-            width={PokerCards.AVATAR_WIDTH as number}
+            className={`h-11.5 w-11.5 border-[3px] opacity-100 ${avatarStatus}`}
           />
         )
       })}
