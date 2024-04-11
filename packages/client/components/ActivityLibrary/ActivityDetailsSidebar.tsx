@@ -89,9 +89,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         orgId
         organization {
           name
-          featureFlags {
-            recurringRetros
-          }
         }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
@@ -252,9 +249,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           : type === 'action'
             ? 'Check-in'
             : 'Meeting'
-  const withRecurrence =
-    type === 'teamPrompt' ||
-    (selectedTeam.organization.featureFlags.recurringRetros && type === 'retrospective')
+  const withRecurrence = type === 'teamPrompt' || type === 'retrospective'
 
   return (
     <>
