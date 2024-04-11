@@ -6,6 +6,7 @@ import {AvatarFallback} from '../../ui/Avatar/AvatarFallback'
 import {AvatarImage} from '../../ui/Avatar/AvatarImage'
 
 interface Props {
+  alt?: string
   className?: string
   onClick?: (e?: React.MouseEvent) => void
   onMouseEnter?: () => void
@@ -14,7 +15,7 @@ interface Props {
 }
 
 const Avatar = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  const {className, onClick, onTransitionEnd, onMouseEnter, picture} = props
+  const {alt, className, onClick, onTransitionEnd, onMouseEnter, picture} = props
   return (
     <AvatarRoot
       onClick={onClick}
@@ -23,9 +24,9 @@ const Avatar = forwardRef<HTMLDivElement, Props>((props, ref) => {
       ref={ref}
       className={clsx(`${onClick && 'cursor-pointer'}`, className)}
     >
-      <AvatarImage src={picture || defaultUserAvatar} alt={'Avatar'} />
+      <AvatarImage src={picture || defaultUserAvatar} alt={alt || 'Avatar'} />
       <AvatarFallback>
-        <img src={defaultUserAvatar} alt={'Avatar not found'} />
+        <img src={defaultUserAvatar} alt={alt || 'Avatar not found'} />
       </AvatarFallback>
     </AvatarRoot>
   )

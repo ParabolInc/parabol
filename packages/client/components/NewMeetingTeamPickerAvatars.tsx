@@ -69,7 +69,7 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
             <AvatarWrapper count={randomAvatars.length}>
               <Avatar
                 picture={picture}
-                className={`border-2 border-solid border-slate-200 h-7 w-7`}
+                className={`h-7 w-7 border-2 border-solid border-slate-200`}
               />
             </AvatarWrapper>
           </ErrorBoundary>

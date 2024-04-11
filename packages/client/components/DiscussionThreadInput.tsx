@@ -295,7 +295,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentContainer>
-        <Avatar picture={avatar} onClick={toggleAnonymous} className='transition-all m-2 h-8 w-8' />
+        <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
         <EditorWrap>
           <CommentEditor
             dataCy={`${dataCy}`}
