@@ -1,5 +1,5 @@
+import {RSelection} from 'rethinkdb-ts'
 import getRethink from '../../database/rethinkDriver'
-import {RTable, TableSchema} from '../../database/stricterR'
 import getPg from '../getPg'
 
 interface DBDoc {
@@ -33,7 +33,7 @@ export const checkRowCount = async (tableName: string) => {
 }
 
 export async function checkTableEq(
-  rethinkQuery: RTable<TableSchema>,
+  rethinkQuery: (updatedAt: Date, id: string | number) => RSelection,
   pgQuery: (ids: string[]) => Promise<PGDoc[] | null>,
   equalityMap: Record<string, (a: unknown, b: unknown) => boolean>,
   maxErrors = 10
@@ -41,11 +41,17 @@ export async function checkTableEq(
   const batchSize = 3000
   const errors = [] as Diff[]
   const propsToCheck = Object.keys(equalityMap)
-
+  const r = await getRethink()
+  let curUpdatedDate = r.minval
+  let curId = r.minval
   for (let i = 0; i < 1e6; i++) {
-    const offset = batchSize * i
-    const rethinkRows = (await rethinkQuery.skip(offset).limit(batchSize).run()) as RethinkDoc[]
-    if (!rethinkRows.length) break
+    const rethinkRows = (await rethinkQuery(curUpdatedDate, curId)
+      .limit(batchSize)
+      .run()) as RethinkDoc[]
+    if (rethinkRows.length === 0) break
+    const lastRow = rethinkRows[rethinkRows.length - 1]!
+    curUpdatedDate = lastRow.updatedAt
+    curId = lastRow.id
     const ids = rethinkRows.map((t) => t.id)
     const pgRows = (await pgQuery(ids)) ?? []
     const pgRowsById = {} as {[key: string]: PGDoc}
