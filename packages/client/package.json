@@ -98,7 +98,7 @@
     "chartjs-adapter-dayjs-3": "^1.2.3",
     "cleave.js": "^1.6.0",
     "clsx": "^1.2.1",
-    "core-js": "3.36.0",
+    "core-js": "3.36.1",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.3",
     "dompurify": "^2.4.1",
