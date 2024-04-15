@@ -245,7 +245,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 hover:bg-slate-100 focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
+                className='group flex cursor-pointer flex-col items-start space-y-3 pb-4 rounded-2xl bg-transparent p-1 hover:bg-slate-100 focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
                 value={activity.type}
               >
                 <ActivityCard
