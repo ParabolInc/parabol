@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.27.0](https://github.com/ParabolInc/parabol/compare/v7.26.0...v7.27.0) (2024-04-11)
+
+
+### Added
+
+* Make top team templates clickable ([#9630](https://github.com/ParabolInc/parabol/issues/9630)) ([e4f8d49](https://github.com/ParabolInc/parabol/commit/e4f8d49c544be1d37388596b1afa086d9eb30a5c))
+* Release activity library for everyone ([#9617](https://github.com/ParabolInc/parabol/issues/9617)) ([92a1dbd](https://github.com/ParabolInc/parabol/commit/92a1dbd18dc25c0046f573a3e46158f5cecdbf17))
+* release recurring retros ([#9625](https://github.com/ParabolInc/parabol/issues/9625)) ([a4f10d1](https://github.com/ParabolInc/parabol/commit/a4f10d193bb38990d8400183c6d320522d2db71e))
+
+
+### Fixed
+
+* Only list available categories in edit template ([#9628](https://github.com/ParabolInc/parabol/issues/9628)) ([fba3b80](https://github.com/ParabolInc/parabol/commit/fba3b80bfdbdb5ab368117a4f3f6bbe4742d1607))
+* use radix-ui for avatars ([#9633](https://github.com/ParabolInc/parabol/issues/9633)) ([38c8e61](https://github.com/ParabolInc/parabol/commit/38c8e61bcc6a199abf0165f49bb0dd7d693962e3))
+
+
+### Changed
+
+* Add absolute date tooltip in history ([#9629](https://github.com/ParabolInc/parabol/issues/9629)) ([65f3119](https://github.com/ParabolInc/parabol/commit/65f311920432416f547e83831cfcdfef2dc570af))
+* remove old new meeting dialog ([#9621](https://github.com/ParabolInc/parabol/issues/9621)) ([b337d17](https://github.com/ParabolInc/parabol/commit/b337d17ff41c4ab4179073ed2eb59a1244998180))
+
 ## [7.26.0](https://github.com/ParabolInc/parabol/compare/v7.25.4...v7.26.0) (2024-04-10)
 
 

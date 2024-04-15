@@ -5,7 +5,7 @@ import React, {ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamInsightsCard_insights$key} from '../../../../__generated__/TeamInsightsCard_insights.graphql'
 import FlatButton from '../../../../components/FlatButton'
-import Tooltip from '../../../../components/Tooltip'
+import SimpleTooltip from '../../../../components/SimpleTooltip'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import TeamInsightsId from '../../../../shared/gqlIds/TeamInsightsId'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
@@ -50,9 +50,9 @@ const TeamInsightsCard = (props: Props) => {
     <div className='relative m-2 flex w-[320px] flex-col overflow-hidden rounded bg-white drop-shadow'>
       <div className='flex items-center justify-between'>
         <div className='p-4 text-sm font-semibold text-slate-600'>{title}</div>
-        <Tooltip text={tooltip} className='pr-3 text-slate-600'>
+        <SimpleTooltip text={tooltip} className='pr-3 text-slate-600'>
           <InfoIcon />
-        </Tooltip>
+        </SimpleTooltip>
       </div>
       <div className='flex flex-grow flex-col justify-center p-4 pt-0'>{children}</div>
       <div className='flex items-center justify-center bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600'>

@@ -70,7 +70,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
                 onTransitionEnd={onTransitionEnd}
                 status={status}
                 offset={offsetSize * displayIdx}
-                width={AVATAR_SIZE}
+                className='h-6 w-6'
               />
               <TeamPromptOverflowAvatar
                 key={`${userId}:overflowCount`}
@@ -92,7 +92,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
             onTransitionEnd={onTransitionEnd}
             status={status}
             offset={offsetSize * displayIdx}
-            width={AVATAR_SIZE}
+            className='h-6 w-6'
           />
         )
       })}

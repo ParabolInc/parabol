@@ -12,10 +12,10 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
-import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 export default {
   type: UpdateReflectionContentPayload,

@@ -199,7 +199,7 @@ const AgendaItem = (props: Props) => {
 
   const getIcon = () => {
     if (pinned && isHovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-    else if (!pinned && !isHovering) return <Avatar hasBadge={false} picture={picture} size={24} />
+    else if (!pinned && !isHovering) return <Avatar picture={picture} className='h-6 w-6' />
     else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
   }
 

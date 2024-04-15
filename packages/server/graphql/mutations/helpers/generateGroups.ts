@@ -1,12 +1,12 @@
-import getRethink from '../../../database/rethinkDriver'
-import Reflection from '../../../database/types/Reflection'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import {DataLoaderWorker} from '../../graphql'
-import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import publish from '../../../utils/publish'
-import {analytics} from '../../../utils/analytics/analytics'
+import getRethink from '../../../database/rethinkDriver'
+import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
+import Reflection from '../../../database/types/Reflection'
 import {Logger} from '../../../utils/Logger'
+import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import {analytics} from '../../../utils/analytics/analytics'
+import publish from '../../../utils/publish'
+import {DataLoaderWorker} from '../../graphql'
 
 const generateGroups = async (
   reflections: Reflection[],

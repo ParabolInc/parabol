@@ -6,7 +6,6 @@ import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
@@ -15,6 +14,7 @@ import {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../integrations/TaskIntegrationManagerFactory'
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'

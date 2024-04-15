@@ -16,7 +16,7 @@ const AvatarWrapper = styled('button')({
   borderRadius: 100,
   marginLeft: 8,
   padding: 4,
-  ':focus': {
+  ':focus-visible': {
     boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
     cursor: 'pointer',
     outline: 'none'
@@ -55,9 +55,8 @@ const TopBarAvatar = (props: Props) => {
         <Avatar
           onMouseEnter={StandardHubUserMenu.preload}
           ref={originRef}
-          hasBadge={false}
           picture={userAvatar}
-          size={40}
+          className='h-10 w-10 cursor-pointer'
         />
         {viewer && menuPortal(<StandardHubUserMenu menuProps={menuProps} viewerRef={viewer} />)}
       </AvatarWrapper>

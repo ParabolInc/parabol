@@ -254,7 +254,7 @@ const TeamPromptResponseCard = (props: Props) => {
       isSingleColumn={isSingleColumn}
     >
       <ResponseHeader>
-        <Avatar picture={picture} size={48} />
+        <Avatar picture={picture} className='h-12 w-12' />
         <TeamMemberName>
           {preferredName}
           {response && (

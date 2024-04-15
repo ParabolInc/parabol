@@ -10,12 +10,12 @@ import TemplateDimension from '../../database/types/TemplateDimension'
 import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
 import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import updateMeetingTemplateScope from '../../postgres/queries/updateMeetingTemplateScope'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SharingScopeEnum, {SharingScopeEnumType} from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 const updateTemplateScope = {
   type: new GraphQLNonNull(UpdateTemplateScopePayload),

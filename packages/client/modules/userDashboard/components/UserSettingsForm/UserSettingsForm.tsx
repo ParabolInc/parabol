@@ -84,7 +84,7 @@ function UserSettings(props: UserSettingsProps) {
   return (
     <SettingsForm onSubmit={onSubmit}>
       <div onClick={togglePortal}>
-        <EditableAvatar picture={pictureOrDefault} size={96} />
+        <EditableAvatar picture={pictureOrDefault} className='h-24 w-24' />
       </div>
       {modalPortal(<UserAvatarInput closeModal={togglePortal} picture={pictureOrDefault} />)}
       <InfoBlock>

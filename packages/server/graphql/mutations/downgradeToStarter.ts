@@ -5,9 +5,9 @@ import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authoriza
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
 import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
 import ReasonToDowngradeEnum from '../types/ReasonToDowngrade'
-import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
 import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
 
 export default {

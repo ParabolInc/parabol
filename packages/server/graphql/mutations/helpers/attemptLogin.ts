@@ -4,10 +4,10 @@ import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
-import getKysely from '../../../postgres/getKysely'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
+import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const logFailedLogin = async (ip: string, email: string) => {

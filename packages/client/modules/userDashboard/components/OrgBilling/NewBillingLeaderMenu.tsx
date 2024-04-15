@@ -96,7 +96,7 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
             label={
               <MenuItemLabel>
                 <div className='pr-8'>
-                  <Avatar picture={picture} size={32} />
+                  <Avatar picture={picture} className='h-8 w-8' />
                 </div>
                 <TypeAheadLabel query={newLeaderSearchQuery} label={preferredName} />
               </MenuItemLabel>

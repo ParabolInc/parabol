@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import Team from './Team'
+import makeMutationPayload from './makeMutationPayload'
 
 const CreateMassInvitationSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateMassInvitationSuccess',

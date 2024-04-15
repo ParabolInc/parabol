@@ -2,11 +2,11 @@ import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEn
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import updateUser from '../../../postgres/queries/updateUser'
+import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
-import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
@@ -15,26 +16,6 @@ const Wrapper = styled('div')<{offset: number; isColumn?: boolean}>(({offset, is
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 
-const StyledAvatar = styled(Avatar)<{
-  status?: TransitionStatus
-  isAnimated: boolean
-  borderColor?: string
-  width: number
-}>(({status, isAnimated, borderColor = '#fff', width}) => ({
-  border: `${width >= 40 ? '3px' : '2px'} solid ${borderColor}`,
-  opacity: !isAnimated
-    ? undefined
-    : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
-      ? 0
-      : 1,
-  transform: !isAnimated
-    ? undefined
-    : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
-      ? 'scale(0)'
-      : 'scale(1)',
-  transition: `all 300ms ${BezierCurve.DECELERATE}`
-}))
-
 interface Props {
   className?: string
   offset: number
@@ -43,7 +24,6 @@ interface Props {
   onTransitionEnd?: () => void
   status?: TransitionStatus
   user: AvatarListUser_user$key
-  width: number
   onClick?: () => void
   borderColor?: string
 }
@@ -57,7 +37,6 @@ const AvatarListUser = (props: Props) => {
     status,
     offset,
     isAnimated,
-    width,
     onClick,
     borderColor
   } = props
@@ -74,6 +53,9 @@ const AvatarListUser = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
+  const isAnimating =
+    isAnimated && (status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED)
+
   return (
     <Wrapper
       ref={originRef}
@@ -83,15 +65,13 @@ const AvatarListUser = (props: Props) => {
       onMouseOver={openTooltip}
       onMouseLeave={closeTooltip}
     >
-      <StyledAvatar
-        className={className}
-        status={status}
+      <Avatar
+        className={clsx(
+          `border-solid border-[${borderColor || '#fff'}] duration-300 ease-out ${isAnimating ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`,
+          className
+        )}
         onTransitionEnd={onTransitionEnd}
         picture={picture}
-        size={width}
-        isAnimated={isAnimated}
-        borderColor={borderColor}
-        width={width}
       />
       {tooltipPortal(preferredName)}
     </Wrapper>

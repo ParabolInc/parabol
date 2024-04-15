@@ -6,13 +6,13 @@ import Team from '../../database/types/Team'
 import User from '../../database/types/User'
 import IUser from '../../postgres/types/IUser'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(ArchiveOrganizationPayload),

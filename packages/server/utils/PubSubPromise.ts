@@ -1,11 +1,11 @@
 import ms from 'ms'
 import GQLExecutorChannelId from '../../client/shared/gqlIds/GQLExecutorChannelId'
-import numToBase64 from './numToBase64'
 import RedisInstance from './RedisInstance'
+import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
 const STANDARD_TIMEOUT = ms('10s')
-const ADHOC_TIMEOUT = ms('1m')
+const ADHOC_TIMEOUT = ms('10m')
 
 interface Job {
   resolve: (payload: any) => void

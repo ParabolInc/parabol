@@ -1,9 +1,9 @@
 import {
   GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLString,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLString
 } from 'graphql'
 import GcalVideoTypeEnum from '../../types/GcalVideoTypeEnum'
 import GraphQLEmailType from '../../types/GraphQLEmailType'

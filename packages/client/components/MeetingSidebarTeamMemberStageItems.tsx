@@ -94,7 +94,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
               key={stageId}
               metaContent={
                 <AvatarBlock>
-                  <Avatar hasBadge={false} picture={picture} size={24} />
+                  <Avatar picture={picture} className='h-6 w-6' />
                 </AvatarBlock>
               }
               isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}

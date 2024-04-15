@@ -4,12 +4,12 @@ import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
 import getPg from '../../postgres/getPg'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import PayLaterPayload from '../types/PayLaterPayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(PayLaterPayload),

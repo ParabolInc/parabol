@@ -49,11 +49,6 @@ const CommentContainer = styled('div')({
   padding: 4
 })
 
-const CommentAvatar = styled(Avatar)({
-  margin: 8,
-  transition: 'all 150ms'
-})
-
 const EditorWrap = styled('div')({
   flex: 1,
   margin: '14px 0',
@@ -300,7 +295,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentContainer>
-        <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
+        <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
         <EditorWrap>
           <CommentEditor
             dataCy={`${dataCy}`}

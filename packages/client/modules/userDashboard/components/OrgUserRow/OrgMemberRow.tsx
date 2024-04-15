@@ -113,7 +113,7 @@ interface UserAvatarProps {
 const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
   <AvatarBlock>
     {picture ? (
-      <Avatar hasBadge={false} picture={picture} size={44} />
+      <Avatar picture={picture} className='h-11 w-11' />
     ) : (
       <img alt='default avatar' src={defaultUserAvatar} />
     )}

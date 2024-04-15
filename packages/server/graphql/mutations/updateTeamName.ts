@@ -8,8 +8,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
+import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 
 export default {
   type: UpdateTeamNamePayload,

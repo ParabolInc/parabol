@@ -157,7 +157,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, onToggleDrawer}: Props) => {
       <DiscussionResponseCard>
         <Header>
           <div className='flex items-center'>
-            <Avatar picture={teamMember.picture} size={48} />
+            <Avatar picture={teamMember.picture} className={'h-12 w-12'} />
             <TeamMemberName>
               {teamMember.preferredName}
               {response && (

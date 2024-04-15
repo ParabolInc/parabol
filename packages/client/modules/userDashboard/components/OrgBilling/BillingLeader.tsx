@@ -18,7 +18,6 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
 import useTooltip from '../../../../hooks/useTooltip'
-import {ElementWidth} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
@@ -112,7 +111,7 @@ const BillingLeader = (props: Props) => {
 
   return (
     <StyledRow isFirstRow={isFirstRow}>
-      <Avatar hasBadge={false} picture={picture} size={ElementWidth.BILLING_AVATAR} />
+      <Avatar picture={picture} className='h-11 w-11' />
       <RowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>

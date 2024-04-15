@@ -75,7 +75,7 @@ const UserAvatarInput = (props: Props) => {
       <div>
         {/* upload */}
         <AvatarBlock>
-          <Avatar picture={picture} size={96} />
+          <Avatar picture={picture} className='h-24 w-24' />
         </AvatarBlock>
         <AvatarInput error={error?.message} onSubmit={onSubmit} />
       </div>

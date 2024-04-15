@@ -5,8 +5,8 @@ import {isMeetingAction} from '../../../../database/types/MeetingAction'
 import {isMeetingPoker} from '../../../../database/types/MeetingPoker'
 import {isMeetingRetrospective} from '../../../../database/types/MeetingRetrospective'
 import {isMeetingTeamPrompt} from '../../../../database/types/MeetingTeamPrompt'
-import sendToSentry from '../../../../utils/sendToSentry'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import sendToSentry from '../../../../utils/sendToSentry'
 
 const getSummaryText = async (meeting: Meeting) => {
   if (isMeetingRetrospective(meeting)) {

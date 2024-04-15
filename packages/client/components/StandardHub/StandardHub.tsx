@@ -32,10 +32,6 @@ const User = styled('div')({
   position: 'relative'
 })
 
-const StyledAvatar = styled(Avatar)({
-  cursor: 'pointer'
-})
-
 const NameAndEmail = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -120,7 +116,7 @@ const StandardHub = (props: Props) => {
   return (
     <StandardHubRoot>
       <User onClick={gotoUserSettings}>
-        <StyledAvatar hasBadge={false} picture={userAvatar} size={48} />
+        <Avatar picture={userAvatar} className='h-12 w-12' />
         <NameAndEmail>
           <PreferredName>{preferredName}</PreferredName>
           <Email>{email}</Email>
