@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {AddAgendaItemMutation as TAddAgendaItemMutation} from '../__generated__/AddAgendaItemMutation.graphql'
+import {AddAgendaItemMutation_team$data} from '../__generated__/AddAgendaItemMutation_team.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {AddAgendaItemMutation as TAddAgendaItemMutation} from '../__generated__/AddAgendaItemMutation.graphql'
-import {AddAgendaItemMutation_team$data} from '../__generated__/AddAgendaItemMutation_team.graphql'
 import handleAddAgendaItems from './handlers/handleAddAgendaItems'
 graphql`
   fragment AddAgendaItemMutation_team on AddAgendaItemPayload {

@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import OrgAvatarInput from '../../../../components/OrgAvatarInput'
-import useModal from '../../../../hooks/useModal'
 import {OrgDetails_organization$key} from '../../../../__generated__/OrgDetails_organization.graphql'
-import OrgBillingDangerZone from './OrgBillingDangerZone'
-import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import EditableOrgName from '../../../../components/EditableOrgName'
-import OrganizationDetails from '../Organization/OrganizationDetails'
 import Avatar from '../../../../components/Avatar/Avatar'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
+import EditableOrgName from '../../../../components/EditableOrgName'
+import OrgAvatarInput from '../../../../components/OrgAvatarInput'
+import useModal from '../../../../hooks/useModal'
+import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
+import OrganizationDetails from '../Organization/OrganizationDetails'
+import OrgBillingDangerZone from './OrgBillingDangerZone'
 
 type Props = {
   organizationRef: OrgDetails_organization$key

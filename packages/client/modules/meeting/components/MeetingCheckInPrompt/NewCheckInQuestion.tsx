@@ -1,27 +1,27 @@
 import styled from '@emotion/styled'
 import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {ContentState, convertToRaw, EditorState, SelectionState} from 'draft-js'
+import {ContentState, EditorState, SelectionState, convertToRaw} from 'draft-js'
 import React, {useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
+import {
+  ModifyType,
+  useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data
+} from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import '../../../../components/TaskEditor/Draft.css'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useEditorState from '../../../../hooks/useEditorState'
+import useMutationProps from '../../../../hooks/useMutationProps'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import {
-  useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data,
-  ModifyType
-} from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'
-import {Button} from '../../../../ui/Button/Button'
 import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Button} from '../../../../ui/Button/Button'
+import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 
 const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,

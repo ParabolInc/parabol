@@ -7,9 +7,9 @@ import WaveWhiteSVG from 'static/images/waveWhite.svg'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import TierTag from '~/components/Tag/TierTag'
 import useRouter from '~/hooks/useRouter'
+import {StandardHub_viewer$key, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {StandardHub_viewer$key, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
 import Avatar from '../Avatar/Avatar'
 
 const StandardHubRoot = styled('div')({

@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {ChangeTaskTeamMutation_task$data} from '~/__generated__/ChangeTaskTeamMutation_task.graphql'
+import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '../__generated__/ChangeTaskTeamMutation.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import safeRemoveNodeFromUnknownConn from '../utils/relay/safeRemoveNodeFromUnknownConn'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '../__generated__/ChangeTaskTeamMutation.graphql'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`

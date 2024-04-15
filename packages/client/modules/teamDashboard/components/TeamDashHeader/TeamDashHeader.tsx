@@ -8,6 +8,7 @@ import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 import Tab from '../../../../components/Tab/Tab'
@@ -15,7 +16,6 @@ import Tabs from '../../../../components/Tabs/Tabs'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
-import {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 

@@ -1,15 +1,15 @@
-import {ActivityBadge} from './ActivityLibrary/ActivityBadge'
-import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {ActivityLibraryCard} from './ActivityLibrary/ActivityLibraryCard'
-import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {RetroDrawerTemplateCard_template$key} from '~/__generated__/RetroDrawerTemplateCard_template.graphql'
-import {CategoryID, CATEGORY_THEMES} from '././ActivityLibrary/Categories'
-import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
-import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
+import {CATEGORY_THEMES, CategoryID} from '././ActivityLibrary/Categories'
+import {ActivityBadge} from './ActivityLibrary/ActivityBadge'
+import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
+import {ActivityLibraryCard} from './ActivityLibrary/ActivityLibraryCard'
+import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 
 interface Props {
   templateRef: RetroDrawerTemplateCard_template$key

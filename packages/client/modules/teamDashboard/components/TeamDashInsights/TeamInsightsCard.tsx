@@ -1,15 +1,14 @@
+import {Info as InfoIcon, ThumbDown, ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React, {ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
-import Tooltip from '../../../../components/Tooltip'
-import {Info as InfoIcon} from '@mui/icons-material'
-import {ThumbUp, ThumbDown} from '@mui/icons-material'
-import FlatButton from '../../../../components/FlatButton'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {TeamInsightsCard_insights$key} from '../../../../__generated__/TeamInsightsCard_insights.graphql'
+import FlatButton from '../../../../components/FlatButton'
+import Tooltip from '../../../../components/Tooltip'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import TeamInsightsId from '../../../../shared/gqlIds/TeamInsightsId'
-import clsx from 'clsx'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
 interface Props {
   title: string

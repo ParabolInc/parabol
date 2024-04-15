@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {OldUpgradeToTeamTierMutation as TOldUpgradeToTeamTierMutation} from '../__generated__/OldUpgradeToTeamTierMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment OldUpgradeToTeamTierMutation_organization on OldUpgradeToTeamTierPayload {

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SimpleMutation} from '../types/relayMutations'
 import {DragEstimatingTaskMutation as IDragEstimatingTaskMutation} from '../__generated__/DragEstimatingTaskMutation.graphql'
+import {SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment DragEstimatingTaskMutation_meeting on DragEstimatingTaskSuccess {

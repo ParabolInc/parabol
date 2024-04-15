@@ -16,8 +16,8 @@ import isAndroid from '../../utils/draftjs/isAndroid'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
 import lazyPreload from '../../utils/lazyPreload'
 import linkify from '../../utils/linkify'
-import blockStyleFn from './blockStyleFn'
 import './Draft.css'
+import blockStyleFn from './blockStyleFn'
 import useCommentPlugins from './useCommentPlugins'
 
 const RootEditor = styled('div')({

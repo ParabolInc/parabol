@@ -5,10 +5,10 @@ import clsx from 'clsx'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
-import PlainButton from '../../PlainButton/PlainButton'
-import ActivityDetailsBadge from './ActivityDetailsBadge'
-import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID} from '../Categories'
 import useTemplateCategoryMutation from '../../../mutations/UpdateTemplateCategoryMutation'
+import PlainButton from '../../PlainButton/PlainButton'
+import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID} from '../Categories'
+import ActivityDetailsBadge from './ActivityDetailsBadge'
 
 interface Props {
   isEditing: boolean

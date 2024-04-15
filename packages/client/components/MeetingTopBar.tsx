@@ -8,8 +8,8 @@ import isDemoRoute from '../utils/isDemoRoute'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
 import PlainButton from './PlainButton/PlainButton'
-import SidebarToggle from './SidebarToggle'
 import RetroDrawerRoot from './RetroDrawerRoot'
+import SidebarToggle from './SidebarToggle'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Event, HelpOutline, PersonPinCircleOutlined, TimerOutlined} from '@mui/icons-material'
-import React, {forwardRef, ReactNode, Ref} from 'react'
+import React, {ReactNode, Ref, forwardRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 const paletteColors = {

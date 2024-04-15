@@ -1,10 +1,10 @@
-import React from 'react'
-import GitHubSVG from '../../../GitHubSVG'
-import JiraSVG from '../../../JiraSVG'
-import GitLabSVG from '../../../GitLabSVG'
-import AzureDevOpsSVG from '../../../AzureDevOpsSVG'
-import JiraServerSVG from '../../../JiraServerSVG'
 import clsx from 'clsx'
+import React from 'react'
+import AzureDevOpsSVG from '../../../AzureDevOpsSVG'
+import GitHubSVG from '../../../GitHubSVG'
+import GitLabSVG from '../../../GitLabSVG'
+import JiraSVG from '../../../JiraSVG'
+import JiraServerSVG from '../../../JiraServerSVG'
 
 interface Props {
   className?: string

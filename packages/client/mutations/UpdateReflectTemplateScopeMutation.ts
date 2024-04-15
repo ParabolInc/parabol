@@ -1,6 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {UpdateReflectTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateReflectTemplateScopeMutation.graphql'
+import {
+  SharingScopeEnum,
+  UpdateReflectTemplateScopeMutation_organization$data
+} from '../__generated__/UpdateReflectTemplateScopeMutation_organization.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import getBaseRecord from '../utils/relay/getBaseRecord'
@@ -9,11 +14,6 @@ import getNodeById from '../utils/relay/getNodeById'
 import {insertEdgeAfter} from '../utils/relay/insertEdge'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
-import {UpdateReflectTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateReflectTemplateScopeMutation.graphql'
-import {
-  SharingScopeEnum,
-  UpdateReflectTemplateScopeMutation_organization$data
-} from '../__generated__/UpdateReflectTemplateScopeMutation_organization.graphql'
 import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 
 graphql`

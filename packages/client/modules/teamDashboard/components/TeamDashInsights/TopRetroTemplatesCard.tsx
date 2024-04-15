@@ -3,8 +3,8 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {TopRetroTemplatesCard_insights$key} from '~/__generated__/TopRetroTemplatesCard_insights.graphql'
 import Tooltip from '../../../../components/Tooltip'
-import TeamInsightsCard from './TeamInsightsCard'
 import plural from '../../../../utils/plural'
+import TeamInsightsCard from './TeamInsightsCard'
 
 interface Props {
   teamInsightsRef: TopRetroTemplatesCard_insights$key

@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {Link} from 'react-router-dom'
+import {commitLocalUpdate} from 'relay-runtime'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import Atmosphere from '../Atmosphere'
-import {commitLocalUpdate} from 'relay-runtime'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 const maybeTabletPlusMediaQuery = makeMinWidthMediaQuery(Breakpoint.FUZZY_TABLET)

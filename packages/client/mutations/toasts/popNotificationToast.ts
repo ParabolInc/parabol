@@ -1,20 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Snack} from '../../components/Snackbar'
-import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import {
   NotificationEnum,
   popNotificationToast_notification$data
 } from '../../__generated__/popNotificationToast_notification.graphql'
+import {Snack} from '../../components/Snackbar'
+import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
-import mapResponseMentionedToToast from './mapResponseMentionedToToast'
+import mapKudosReceivedToToast from './mapKudosReceivedToToast'
 import mapMentionedToToast from './mapMentionedToToast'
+import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
+import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
+import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
-import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
-import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
-import mapKudosReceivedToToast from './mapKudosReceivedToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>

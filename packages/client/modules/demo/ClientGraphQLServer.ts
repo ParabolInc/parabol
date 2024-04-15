@@ -5,17 +5,17 @@ import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
-import {PALETTE} from '~/styles/paletteV3'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import {PALETTE} from '~/styles/paletteV3'
 import DiscussPhase from '../../../server/database/types/DiscussPhase'
 import DiscussStage from '../../../server/database/types/DiscussStage'
 import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
 import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
 import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
+import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import Reflection from '../../../server/database/types/Reflection'
 import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
-import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import ITask from '../../../server/database/types/Task'
 import {
   ExternalLinks,
@@ -36,6 +36,7 @@ import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
 import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
+import LocalAtmosphere from './LocalAtmosphere'
 import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
@@ -43,13 +44,12 @@ import initBotScript from './initBotScript'
 import initDB, {
   DemoComment,
   DemoDiscussion,
-  demoTeamId,
   DemoThreadableEdge,
-  demoViewerId,
   JiraProjectKeyLookup,
-  RetroDemoDB
+  RetroDemoDB,
+  demoTeamId,
+  demoViewerId
 } from './initDB'
-import LocalAtmosphere from './LocalAtmosphere'
 
 export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'updatedAt'> & {
   __typename: string

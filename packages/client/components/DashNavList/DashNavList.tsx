@@ -5,11 +5,11 @@ import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 import {
-  DashNavList_organization$key,
-  DashNavList_organization$data
+  DashNavList_organization$data,
+  DashNavList_organization$key
 } from '../../__generated__/DashNavList_organization.graphql'
+import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
 const DashNavListStyles = styled('div')({
   paddingRight: 8,

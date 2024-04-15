@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
+import {
+  MeetingSubscription$variables,
+  MeetingSubscription as TMeetingSubscription
+} from '~/__generated__/MeetingSubscription.graphql'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
-import {
-  MeetingSubscription as TMeetingSubscription,
-  MeetingSubscription$variables
-} from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
 import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'

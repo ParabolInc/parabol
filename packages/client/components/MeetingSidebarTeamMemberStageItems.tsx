@@ -3,12 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingSidebarTeamMemberStageItems_meeting$key} from '~/__generated__/MeetingSidebarTeamMemberStageItems_meeting.graphql'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
 import Avatar from '../components/Avatar/Avatar'
 import MeetingSubnavItem from '../components/MeetingSubnavItem'
 import useAnimatedPhaseListChildren from '../hooks/useAnimatedPhaseListChildren'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
-import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 const AvatarBlock = styled('div')({

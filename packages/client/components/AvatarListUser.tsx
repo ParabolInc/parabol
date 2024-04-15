@@ -3,10 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
+import {AvatarListUser_user$key} from '../__generated__/AvatarListUser_user.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {BezierCurve} from '../types/constEnums'
-import {AvatarListUser_user$key} from '../__generated__/AvatarListUser_user.graphql'
 import Avatar from './Avatar/Avatar'
 
 const Wrapper = styled('div')<{offset: number; isColumn?: boolean}>(({offset, isColumn}) => ({

@@ -2,6 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {
+  UserTasksHeader_viewer$data,
+  UserTasksHeader_viewer$key
+} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import Checkbox from '~/components/Checkbox'
 import LinkButton from '~/components/LinkButton'
 import useRouter from '~/hooks/useRouter'
@@ -11,13 +15,9 @@ import {Breakpoint, FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import {
-  UserTasksHeader_viewer$data,
-  UserTasksHeader_viewer$key
-} from '~/__generated__/UserTasksHeader_viewer.graphql'
+import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
-import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'

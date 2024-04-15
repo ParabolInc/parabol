@@ -16,8 +16,8 @@ import entitizeText from '../utils/draftjs/entitizeText'
 import isAndroid from '../utils/draftjs/isAndroid'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
-import blockStyleFn from './TaskEditor/blockStyleFn'
 import './TaskEditor/Draft.css'
+import blockStyleFn from './TaskEditor/blockStyleFn'
 
 type Handlers = Pick<
   EditorProps,

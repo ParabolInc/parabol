@@ -3,12 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {EditableTeamName_team$key} from '../../../../__generated__/EditableTeamName_team.graphql'
 import EditableText from '../../../../components/EditableText'
 import UpdateTeamNameMutation from '../../../../mutations/UpdateTeamNameMutation'
 import {FONT_FAMILY} from '../../../../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import teamNameValidation from '../../../../validation/teamNameValidation'
-import {EditableTeamName_team$key} from '../../../../__generated__/EditableTeamName_team.graphql'
 
 interface Props extends WithMutationProps {
   team: EditableTeamName_team$key

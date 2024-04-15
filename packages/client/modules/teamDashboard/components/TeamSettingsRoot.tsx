@@ -1,10 +1,10 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import {LoaderSize} from '../../../types/constEnums'
-import {Loader} from '../../../utils/relay/renderLoader'
 import teamSettingsQuery, {
   TeamSettingsQuery
 } from '../../../__generated__/TeamSettingsQuery.graphql'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import {LoaderSize} from '../../../types/constEnums'
+import {Loader} from '../../../utils/relay/renderLoader'
 import TeamSettings from './TeamSettings/TeamSettings'
 
 interface Props {

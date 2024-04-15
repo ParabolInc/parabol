@@ -2,15 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import plural from '../utils/plural'
-import {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
+import CardsSVG from './CardsSVG'
 import StyledLink from './StyledLink'
+import TimelineEventTitle from './TImelineEventTitle'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
-import TimelineEventTitle from './TImelineEventTitle'
-import CardsSVG from './CardsSVG'
 
 interface Props {
   timelineEvent: TimelineEventPokerComplete_timelineEvent$key

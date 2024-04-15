@@ -1,7 +1,7 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
-import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getAzureWorkItemsConn from '../connections/getAzureWorkItemsConn'
 
 const handleAzureCreateIssue = (

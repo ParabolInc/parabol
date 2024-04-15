@@ -1,14 +1,14 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {
   ParabolTasksResultsQuery,
   TaskStatusEnum
 } from '../../../__generated__/ParabolTasksResultsQuery.graphql'
-import NullableTask from '../../NullableTask/NullableTask'
-import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {taskStatusLabels} from '../../../utils/taskStatus'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {taskStatusLabels} from '../../../utils/taskStatus'
+import NullableTask from '../../NullableTask/NullableTask'
 
 interface Props {
   queryRef: PreloadedQuery<ParabolTasksResultsQuery>
