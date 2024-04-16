@@ -15,7 +15,7 @@ export const IntegrationsTip = (props: Props) => {
   const {className, children} = props
 
   return (
-    <div className={clsx('flex min-w-max items-center', className)}>
+    <div className={clsx('flex items-center', className)}>
       <div className='flex items-center gap-3'>
         <JiraSVG />
         <GitHubSVG />

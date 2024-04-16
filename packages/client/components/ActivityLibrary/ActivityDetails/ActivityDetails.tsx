@@ -93,7 +93,7 @@ const ActivityDetails = (props: Props) => {
   const MOBILE_SETTINGS_HEIGHT = 208
 
   return (
-    <div className='flex h-full flex-col bg-white'>
+    <div className='flex h-full w-full flex-col bg-white'>
       <div className={clsx(`flex grow pb-[${MOBILE_SETTINGS_HEIGHT}px]`)}>
         <div className='mt-4 grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center'>
@@ -104,21 +104,23 @@ const ActivityDetails = (props: Props) => {
             </div>
             <div className='w-max text-xl font-semibold'>Start Activity</div>
           </div>
-          <div className='mx-auto w-min'>
+          <div className='mx-auto'>
             <div
               className={clsx(
-                'flex w-full flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14',
+                'flex flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14',
                 isEditing && 'lg:flex-row lg:justify-center lg:pl-14'
               )}
             >
-              <ActivityCard
-                className='ml-14 mb-8 max-h-[200px] w-80 xl:ml-0 xl:mb-0'
-                theme={CATEGORY_THEMES[category as CategoryID]}
-                badge={null}
-                type={type}
-              >
-                <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
-              </ActivityCard>
+              <div>
+                <ActivityCard
+                  className='ml-14 mb-8 max-h-[200px] w-80 xl:ml-0 xl:mb-0'
+                  theme={CATEGORY_THEMES[category as CategoryID]}
+                  badge={null}
+                  type={type}
+                >
+                  <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
+                </ActivityCard>
+              </div>
               <div className='pb-20'>
                 <div className='mb-10 space-y-2 pl-14'>
                   <div className='flex min-h-[40px] items-center'>

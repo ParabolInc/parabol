@@ -253,10 +253,9 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   return (
     <>
-      {isOpen && <div className='w-96' />}
       <div
         className={clsx(
-          'fixed bottom-0 flex  w-full flex-col overflow-hidden border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:w-96 lg:border-l lg:pt-14',
+          'bottom-0 flex h-full w-full flex-col overflow-hidden border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:w-96 lg:border-l lg:pt-14',
           isOpen ? 'translate-y-0' : 'translate-y-full lg:translate-x-0 lg:translate-y-0',
           isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'
         )}
