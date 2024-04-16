@@ -40,7 +40,7 @@ const RetroDrawer = (props: Props) => {
     queryRef
   )
 
-  const templates = viewer?.availableTemplates?.edges ?? []
+  const templates = viewer.availableTemplates.edges
   const meeting = viewer.meeting
   const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
