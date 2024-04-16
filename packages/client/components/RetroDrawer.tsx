@@ -1,42 +1,29 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
-import MeetingOptions from './MeetingOptions'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroDrawerTemplateCard from './RetroDrawerTemplateCard'
 import {Drawer} from './TeamPrompt/TeamPromptDrawer'
 
 interface Props {
-  setShowDrawer: (showDrawer: boolean) => void
-  showDrawer: boolean
   queryRef: PreloadedQuery<RetroDrawerQuery>
+  showDrawer: boolean
+  setShowDrawer: (showDrawer: boolean) => void
 }
 
 const RetroDrawer = (props: Props) => {
   const {queryRef, showDrawer, setShowDrawer} = props
+
   const {viewer} = usePreloadedQuery<RetroDrawerQuery>(
     graphql`
       query RetroDrawerQuery($first: Int!, $type: MeetingTypeEnum!, $meetingId: ID!) {
         viewer {
           meeting(meetingId: $meetingId) {
-            ... on RetrospectiveMeeting {
-              id
-              reflectionGroups {
-                id
-              }
-              localPhase {
-                ... on ReflectPhase {
-                  phaseType
-                  stages {
-                    isComplete
-                  }
-                }
-              }
-            }
+            id
           }
           availableTemplates(first: $first, type: $type)
             @connection(key: "RetroDrawer_availableTemplates") {
@@ -53,13 +40,10 @@ const RetroDrawer = (props: Props) => {
     queryRef
   )
 
-  const templates = viewer.availableTemplates.edges
+  const templates = viewer?.availableTemplates?.edges ?? []
   const meeting = viewer.meeting
-  const hasReflections = !!(meeting?.reflectionGroups && meeting.reflectionGroups.length > 0)
-  const phaseType = meeting?.localPhase?.phaseType
   const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const isPhaseComplete = meeting?.localPhase?.stages?.every((stage) => stage.isComplete) ?? false
 
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer)
@@ -69,21 +53,8 @@ const RetroDrawer = (props: Props) => {
     setShowDrawer(false)
   }
 
-  useEffect(() => {
-    if (hasReflections && showDrawer) {
-      handleCloseDrawer()
-    }
-  }, [hasReflections])
-
-  if (!phaseType || phaseType !== 'reflect') return null
   return (
     <>
-      <MeetingOptions
-        hasReflections={hasReflections}
-        showDrawer={showDrawer}
-        isPhaseComplete={isPhaseComplete}
-        setShowDrawer={setShowDrawer}
-      />
       <ResponsiveDashSidebar
         isOpen={showDrawer}
         isRightDrawer
@@ -109,7 +80,7 @@ const RetroDrawer = (props: Props) => {
             {templates.map((template) => (
               <RetroDrawerTemplateCard
                 key={template.node.id}
-                meetingId={meeting.id!}
+                meetingId={meeting!.id}
                 templateRef={template.node}
                 handleCloseDrawer={handleCloseDrawer}
               />

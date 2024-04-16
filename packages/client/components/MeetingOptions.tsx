@@ -1,5 +1,8 @@
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
-import React, {useState} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useEffect, useState} from 'react'
+import {useLazyLoadQuery} from 'react-relay'
+import {MeetingOptionsQuery} from '../__generated__/MeetingOptionsQuery.graphql'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
@@ -11,13 +14,43 @@ import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
 type Props = {
   setShowDrawer: (showDrawer: boolean) => void
   showDrawer: boolean
-  hasReflections: boolean
-  isPhaseComplete: boolean
+  handleOpenMenu: () => void
+  meetingId: string
 }
 
 const MeetingOptions = (props: Props) => {
-  const {setShowDrawer, showDrawer, hasReflections, isPhaseComplete} = props
-  const [isOpen, setIsOpen] = useState(false)
+  const {setShowDrawer, showDrawer, meetingId, handleOpenMenu} = props
+  const {viewer} = useLazyLoadQuery<MeetingOptionsQuery>(
+    graphql`
+      query MeetingOptionsQuery($meetingId: ID!) {
+        viewer {
+          meeting(meetingId: $meetingId) {
+            ... on RetrospectiveMeeting {
+              id
+              reflectionGroups {
+                id
+              }
+              localPhase {
+                ... on ReflectPhase {
+                  phaseType
+                  stages {
+                    isComplete
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {meetingId}
+  )
+  const meeting = viewer?.meeting
+  const [openTooltip, setOpenTooltip] = useState(false)
+  const hasReflections = !!meeting?.reflectionGroups?.length
+  const isPhaseComplete = !!meeting?.localPhase?.stages?.every((stage) => stage.isComplete)
+  const phaseType = meeting?.localPhase?.phaseType
+
   const isDisabled = hasReflections || isPhaseComplete
   const tooltipCopy = hasReflections
     ? 'You can only change the template if no reflections have been added.'
@@ -30,16 +63,28 @@ const MeetingOptions = (props: Props) => {
 
   const handleMouseEnter = () => {
     if (isDisabled) {
-      setIsOpen(true)
+      setOpenTooltip(true)
     }
   }
 
   const handleMouseLeave = () => {
-    setIsOpen(false)
+    setOpenTooltip(false)
   }
 
+  const handleCloseDrawer = () => {
+    setShowDrawer(false)
+  }
+
+  useEffect(() => {
+    if (hasReflections && showDrawer) {
+      handleCloseDrawer()
+    }
+  }, [hasReflections])
+
+  if (!phaseType || phaseType !== 'reflect') return null
   return (
     <Menu
+      onOpenChange={handleOpenMenu}
       trigger={
         <OptionsButton>
           <IconLabel icon='tune' iconLarge />
@@ -47,7 +92,7 @@ const MeetingOptions = (props: Props) => {
         </OptionsButton>
       }
     >
-      <Tooltip open={isOpen}>
+      <Tooltip open={openTooltip}>
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <TooltipTrigger asChild>
             <MenuItem onClick={handleClick} isDisabled={isDisabled}>
