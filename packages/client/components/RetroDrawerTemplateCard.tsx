@@ -7,8 +7,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
 import {CATEGORY_THEMES, CategoryID} from '././ActivityLibrary/Categories'
 import {ActivityBadge} from './ActivityLibrary/ActivityBadge'
-import {ActivityCardImage} from './ActivityLibrary/ActivityCard'
-import {ActivityLibraryCard} from './ActivityLibrary/ActivityLibraryCard'
+import {ActivityCard, ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 
 interface Props {
@@ -49,27 +48,29 @@ const RetroDrawerTemplateCard = (props: Props) => {
 
   return (
     <form className='px-4 py-2' onClick={handleClick}>
-      <ActivityLibraryCard
-        className='group aspect-[256/160] flex-1 hover:cursor-pointer'
-        theme={CATEGORY_THEMES[template.category as CategoryID]}
-        title={template.name}
-        type='retrospective'
-        badge={
-          !template.isFree ? (
-            <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
-          ) : null
-        }
-      >
-        <ActivityCardImage
-          className='group-hover/card:hidden'
-          src={template.illustrationUrl}
-          category='retrospective'
-        />
-        <ActivityLibraryCardDescription
-          className='hidden group-hover/card:flex'
-          templateRef={template}
-        />
-      </ActivityLibraryCard>
+      <div className='flex hover:rounded-2xl hover:bg-slate-100 focus:rounded-2xl focus:outline-sky-500'>
+        <ActivityCard
+          className='group aspect-[256/160] flex-1 hover:cursor-pointer'
+          theme={CATEGORY_THEMES[template.category as CategoryID]}
+          title={template.name}
+          type='retrospective'
+          badge={
+            !template.isFree ? (
+              <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
+            ) : null
+          }
+        >
+          <ActivityCardImage
+            className='group-hover/card:hidden'
+            src={template.illustrationUrl}
+            category='retrospective'
+          />
+          <ActivityLibraryCardDescription
+            className='hidden group-hover/card:flex'
+            templateRef={template}
+          />
+        </ActivityCard>
+      </div>
     </form>
   )
 }

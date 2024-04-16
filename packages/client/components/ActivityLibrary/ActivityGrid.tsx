@@ -1,9 +1,8 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import {ActivityBadge} from './ActivityBadge'
-import {ActivityCardImage} from './ActivityCard'
+import {ActivityCard, ActivityCardImage} from './ActivityCard'
 import {Template} from './ActivityLibrary'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {CATEGORY_THEMES, CategoryID} from './Categories'
 
@@ -23,9 +22,9 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               pathname: `/activity-library/details/${template.id}`,
               state: {prevCategory: selectedCategory}
             }}
-            className='flex focus:rounded-md focus:outline-primary'
+            className='flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500'
           >
-            <ActivityLibraryCard
+            <ActivityCard
               className='group aspect-[256/160] flex-1'
               key={template.id}
               theme={CATEGORY_THEMES[template.category as CategoryID]}
@@ -47,7 +46,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
                 className='hidden group-hover/card:flex'
                 templateRef={template}
               />
-            </ActivityLibraryCard>
+            </ActivityCard>
           </Link>
         )
       })}
