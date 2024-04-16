@@ -105,12 +105,7 @@ const ActivityDetails = (props: Props) => {
             <div className='w-max text-xl font-semibold'>Start Activity</div>
           </div>
           <div className='mx-auto'>
-            <div
-              className={clsx(
-                'flex flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14',
-                isEditing && 'lg:flex-row lg:justify-center lg:pl-14'
-              )}
-            >
+            <div className='flex flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14'>
               <div>
                 <ActivityCard
                   className='ml-14 mb-8 max-h-[200px] w-80 xl:ml-0 xl:mb-0'
@@ -146,7 +141,7 @@ const ActivityDetails = (props: Props) => {
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}
-            isOpen
+            isOpen={!isEditing}
             type={activity.type}
             preferredTeamId={preferredTeamId}
             viewerRef={viewer}
