@@ -21,7 +21,6 @@ graphql`
     template {
       # these fragments are needed for listening org members
       ...TemplateSharing_template
-      ...ReflectTemplateDetailsTemplate
       id
       orgId
       scope
@@ -29,7 +28,6 @@ graphql`
     }
     clonedTemplate {
       ...TemplateSharing_template
-      ...ReflectTemplateDetailsTemplate
       orgId
     }
   }

@@ -14,7 +14,6 @@ graphql`
     }
     reflectTemplate {
       ...TemplateSharing_template
-      ...ReflectTemplateDetailsTemplate
       ...ActivityDetails_template
       id
       teamId

@@ -15,7 +15,6 @@ graphql`
     }
     pokerTemplate {
       ...TemplateSharing_template
-      ...PokerTemplateDetailsTemplate
       ...ActivityDetails_template
       id
       teamId
