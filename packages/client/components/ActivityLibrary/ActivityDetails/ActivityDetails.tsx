@@ -144,7 +144,7 @@ const ActivityDetails = (props: Props) => {
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}
-            isOpen={!isEditing}
+            isOpen
             type={activity.type}
             preferredTeamId={preferredTeamId}
             viewerRef={viewer}
