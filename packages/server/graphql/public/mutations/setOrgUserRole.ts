@@ -39,7 +39,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     return standardError(new Error('Invalid role to set'), {userId: viewerId})
   }
 
-  const [organizationUser, viewer] = await Promise.all([
+  const [organizationUser, viewer, viewerOrgUser] = await Promise.all([
     r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
@@ -47,7 +47,14 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
       .nth(0)
       .default(null)
       .run(),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('users').loadNonNull(viewerId),
+    r
+      .table('OrganizationUser')
+      .getAll(viewerId, {index: 'userId'})
+      .filter({orgId, removedAt: null})
+      .nth(0)
+      .default(null)
+      .run()
   ])
 
   if (!organizationUser) {
@@ -57,16 +64,14 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   }
 
   if (
-    roleToSet === 'ORG_ADMIN' &&
-    organizationUser.role !== 'ORG_ADMIN' &&
-    !isSuperUser(authToken)
+    roleToSet === 'ORG_ADMIN' || // promoting someone to ORG_ADMIN
+    organizationUser.role === 'ORG_ADMIN' // the user is already an ORG_ADMIN so the mutation is intended to change their role
   ) {
-    return standardError(
-      new Error('Only super user or user who hold org_admin role can promote/demote user to admin'),
-      {
+    if (!isSuperUser(authToken) && (!viewerOrgUser || viewerOrgUser.role !== 'ORG_ADMIN')) {
+      return standardError(new Error('Only super user or org admin can perform this action'), {
         userId: viewerId
-      }
-    )
+      })
+    }
   }
 
   // if someone is leaving, make sure there is someone else to take their place
