@@ -275,9 +275,9 @@ export const TemplateDetails = (props: Props) => {
         </div>
         {activityDescription}
       </div>
-      <IntegrationsTip>{integrationsTip}</IntegrationsTip>
+      <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
 
-      <div className='-ml-14 pt-4'>
+      <div className='pt-4 sm:-ml-14'>
         {prompts && (
           <>
             <TemplatePromptList

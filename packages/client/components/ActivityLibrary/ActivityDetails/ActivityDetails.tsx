@@ -94,7 +94,7 @@ const ActivityDetails = (props: Props) => {
   return (
     <div className='flex h-full w-full flex-col bg-white'>
       <div className='flex grow'>
-        <div className='mt-4 grow'>
+        <div className='mt-4 w-full grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center'>
             <div className='mr-4'>
               <Link to={categoryLink}>
@@ -104,10 +104,10 @@ const ActivityDetails = (props: Props) => {
             <div className='w-max text-xl font-semibold'>Start Activity</div>
           </div>
           <div className='mx-auto'>
-            <div className='flex flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14'>
+            <div className='flex flex-col justify-start pl-4 pr-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>
               <div>
                 <ActivityCard
-                  className='ml-14 mb-8 max-h-[200px] w-80 xl:ml-0 xl:mb-0'
+                  className='mb-8 w-80 max-sm:mx-auto sm:ml-14 xl:ml-0 xl:mb-0'
                   theme={CATEGORY_THEMES[category as CategoryID]}
                   badge={null}
                   type={type}
@@ -115,27 +115,24 @@ const ActivityDetails = (props: Props) => {
                   <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
                 </ActivityCard>
               </div>
-              <div className='pb-20'>
-                <div className='mb-10 space-y-2 pl-14'>
-                  <div className='flex min-h-[40px] items-center'>
-                    <EditableTemplateName
-                      className='text-[32px] leading-9'
-                      name={activity.name}
-                      templateId={activity.id}
-                      isOwner={isOwner && isEditing}
-                    />
-                  </div>
-                  <TemplateDetails
-                    activityRef={activity}
-                    viewerRef={viewer}
-                    isEditing={isEditing}
-                    setIsEditing={setIsEditing}
+              <div className='mb-10 space-y-2 sm:pl-14'>
+                <div className='flex min-h-[40px] items-center'>
+                  <EditableTemplateName
+                    className='text-[32px] leading-9'
+                    name={activity.name}
+                    templateId={activity.id}
+                    isOwner={isOwner && isEditing}
                   />
                 </div>
+                <TemplateDetails
+                  activityRef={activity}
+                  viewerRef={viewer}
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing}
+                />
               </div>
             </div>
           </div>
-          {!isEditing && <div className='h-48 lg:hidden' />}
         </div>
         <div className='hidden lg:block'>
           <ActivityDetailsSidebar
@@ -147,7 +144,7 @@ const ActivityDetails = (props: Props) => {
           />
         </div>
       </div>
-      <div className={clsx('fixed bottom-0 w-full lg:hidden', isEditing && 'hidden')}>
+      <div className={clsx('lg:hidden', isEditing && 'hidden')}>
         <ActivityDetailsSidebar
           selectedTemplateRef={activity}
           teamsRef={teams}
