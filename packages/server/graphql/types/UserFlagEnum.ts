@@ -8,7 +8,6 @@ const UserFlagEnum = new GraphQLEnumType({
     noAISummary: {},
     noMeetingHistoryLimit: {},
     adHocTeams: {},
-    noTemplateLimit: {},
     signUpDestinationTeam: {}
   }
 })

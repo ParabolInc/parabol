@@ -8,7 +8,6 @@ enum UserFlagEnum {
   noAISummary
   noMeetingHistoryLimit
   adHocTeams
-  noTemplateLimit
   signUpDestinationTeam
 }
 
@@ -22,7 +21,6 @@ type UserFeatureFlags {
   noAISummary: Boolean!
   noMeetingHistoryLimit: Boolean!
   adHocTeams: Boolean!
-  noTemplateLimit: Boolean!
   signUpDestinationTeam: Boolean!
 }
 
