@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
@@ -134,24 +135,22 @@ const ActivityDetails = (props: Props) => {
               </div>
             </div>
           </div>
-          <div className='h-48 lg:hidden' />
+          {!isEditing && <div className='h-48 lg:hidden' />}
         </div>
         <div className='hidden lg:block'>
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}
-            isOpen={!isEditing}
             type={activity.type}
             preferredTeamId={preferredTeamId}
             viewerRef={viewer}
           />
         </div>
       </div>
-      <div className={`fixed bottom-0 w-full lg:hidden`}>
+      <div className={clsx('fixed bottom-0 w-full lg:hidden', isEditing && 'hidden')}>
         <ActivityDetailsSidebar
           selectedTemplateRef={activity}
           teamsRef={teams}
-          isOpen={!isEditing}
           type={activity.type}
           preferredTeamId={preferredTeamId}
           viewerRef={viewer}

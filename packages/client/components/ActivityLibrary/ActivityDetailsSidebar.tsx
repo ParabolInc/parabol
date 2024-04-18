@@ -40,13 +40,12 @@ interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
-  isOpen: boolean
   preferredTeamId: string | null
   viewerRef: ActivityDetailsSidebar_viewer$key
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId, viewerRef} = props
+  const {selectedTemplateRef, teamsRef, type, preferredTeamId, viewerRef} = props
   const [isMinimized, setIsMinimized] = useState(false)
   const isMobile = !useBreakpoint(Breakpoint.INVOICE)
   const selectedTemplate = useFragment(
@@ -252,80 +251,76 @@ const ActivityDetailsSidebar = (props: Props) => {
   const withRecurrence = type === 'teamPrompt' || type === 'retrospective'
 
   return (
-    <div
-      className={clsx(
-        'bottom-0 flex h-full w-full flex-col overflow-hidden border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:w-96 lg:border-l lg:pt-14',
-        isOpen ? 'translate-y-0' : 'translate-y-full lg:translate-x-0 lg:translate-y-0',
-        isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'
-      )}
-    >
-      <div className='flex-grow'>
-        <div className='flex items-center justify-between pt-2 text-xl font-semibold lg:pt-0'>
-          Settings
-          <span
-            className='hover:cursor-pointer lg:hidden'
-            onClick={() => setIsMinimized(!isMinimized)}
-          >
-            {isMinimized ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </span>
-        </div>
+    <>
+      <div className='bottom-0 flex w-full flex-col border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:sticky lg:right-0 lg:top-0 lg:min-h-screen lg:w-96 lg:border-l lg:pt-14'>
+        <div className='flex-grow'>
+          <div className='flex items-center justify-between pt-2 text-xl font-semibold lg:pt-0'>
+            Settings
+            <span
+              className='hover:cursor-pointer lg:hidden'
+              onClick={() => setIsMinimized(!isMinimized)}
+            >
+              {isMinimized ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </span>
+          </div>
 
-        <div
-          className={clsx(
-            'transition-max-height duration-300 ease-in-out',
-            isMinimized
-              ? 'max-h-0 opacity-0 lg:max-h-[100vh] lg:opacity-100'
-              : 'max-h-[100vh] pb-4 lg:pb-0'
-          )}
-        >
-          <div className='mt-6 flex grow flex-col gap-2'>
-            <NewMeetingTeamPicker
-              positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
-              onSelectTeam={onSelectTeam}
-              selectedTeamRef={selectedTeam}
-              teamsRef={availableTeams}
-              customPortal={teamScopePopover}
-              allowAddTeam={viewer.featureFlags.adHocTeams}
-            />
-            {type === 'retrospective' && (
-              <>
-                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                <NewMeetingSettingsToggleTeamHealth
-                  settingsRef={selectedTeam.retroSettings}
-                  teamRef={selectedTeam}
-                />
-                <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
-              </>
+          <div
+            className={clsx(
+              'transition-max-height duration-300 ease-in-out',
+              isMinimized
+                ? 'max-h-0 opacity-0 lg:max-h-[100vh] lg:opacity-100'
+                : 'max-h-[100vh] pb-4 lg:pb-0'
             )}
-            {type === 'poker' && (
-              <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
-            )}
-            {type === 'action' && (
-              <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
-            )}
+          >
+            <div className='mt-6 flex grow flex-col gap-2'>
+              <NewMeetingTeamPicker
+                positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
+                onSelectTeam={onSelectTeam}
+                selectedTeamRef={selectedTeam}
+                teamsRef={availableTeams}
+                customPortal={teamScopePopover}
+                allowAddTeam={viewer.featureFlags.adHocTeams}
+              />
+              {type === 'retrospective' && (
+                <>
+                  <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
+                  <NewMeetingSettingsToggleTeamHealth
+                    settingsRef={selectedTeam.retroSettings}
+                    teamRef={selectedTeam}
+                  />
+                  <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
+                </>
+              )}
+              {type === 'poker' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.pokerSettings} />
+              )}
+              {type === 'action' && (
+                <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.actionSettings} />
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
-        {error && <StyledError>{error.message}</StyledError>}
-        <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-        <ScheduleMeetingButton
-          handleStartActivity={handleStartActivity}
-          mutationProps={mutationProps}
-          teamRef={selectedTeam}
-          placeholder={meetingNamePlaceholder}
-          withRecurrence={withRecurrence}
-        />
-        <FlatPrimaryButton
-          onClick={() => handleStartActivity()}
-          waiting={submitting}
-          className='h-14'
-        >
-          <div className='text-lg'>Start Activity</div>
-        </FlatPrimaryButton>
+        <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
+          {error && <StyledError>{error.message}</StyledError>}
+          <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+          <ScheduleMeetingButton
+            handleStartActivity={handleStartActivity}
+            mutationProps={mutationProps}
+            teamRef={selectedTeam}
+            placeholder={meetingNamePlaceholder}
+            withRecurrence={withRecurrence}
+          />
+          <FlatPrimaryButton
+            onClick={() => handleStartActivity()}
+            waiting={submitting}
+            className='h-14'
+          >
+            <div className='text-lg'>Start Activity</div>
+          </FlatPrimaryButton>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
