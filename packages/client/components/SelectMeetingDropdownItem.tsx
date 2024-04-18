@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   ArrowForward as ArrowForwardIcon,
   ChangeHistory,
@@ -11,53 +10,9 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
 import useRouter from '~/hooks/useRouter'
-import {PALETTE} from '~/styles/paletteV3'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%'
-})
-
-const MeetingIcon = styled('div')({
-  color: PALETTE.SLATE_600,
-  height: 24,
-  width: 24,
-  margin: 16
-})
-
-const MeetingSVG = styled('div')({
-  padding: 16
-})
-
-const MeetingInfo = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
-})
-
-const Title = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  lineHeight: '24px',
-  fontWeight: 600
-})
-
-const Subtitle = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 12
-})
-
-const Action = styled('div')({
-  flex: 1,
-  display: 'flex',
-  justifyContent: 'end',
-  alignItems: 'center',
-  height: 24,
-  marginRight: 16,
-  width: 24
-})
+import {MenuItem} from '../ui/Menu/MenuItem'
 
 interface Props {
   meeting: SelectMeetingDropdownItem_meeting$key
@@ -105,9 +60,10 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
   return (
-    <Wrapper onClick={gotoMeeting}>
+    <MenuItem
+      onClick={gotoMeeting}>
       {typeof IconOrSVG === 'string' ? (
-        <MeetingIcon>
+        <div className='text-slate-600 size-6 m-2'>
           {
             {
               group_work: <GroupWork />,
@@ -115,22 +71,24 @@ const SelectMeetingDropdownItem = (props: Props) => {
               history: <History />
             }[IconOrSVG]
           }
-        </MeetingIcon>
+        </div>
       ) : (
-        <MeetingSVG>
+        <div className='p-2'>
           <IconOrSVG />
-        </MeetingSVG>
+        </div>
       )}
-      <MeetingInfo>
-        <Title>{name}</Title>
-        <Subtitle>
+      <div className='flex flex-col px-2'>
+        <div className='text-slate-700 text-base font-semibold'>
+          {name}
+        </div>
+        <div className='text-slate-600 text-xs'>
           {meetingPhaseLabel} • {teamName}
-        </Subtitle>
-      </MeetingInfo>
-      <Action>
+        </div>
+      </div>
+      <div className='flex flex-grow justify-end items-center size-6'>
         <ArrowForwardIcon />
-      </Action>
-    </Wrapper>
+      </div>
+    </MenuItem>
   )
 }
 
