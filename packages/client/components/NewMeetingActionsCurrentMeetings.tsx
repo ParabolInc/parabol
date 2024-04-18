@@ -7,9 +7,9 @@ import {NewMeetingActionsCurrentMeetings_team$key} from '~/__generated__/NewMeet
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {PALETTE} from '~/styles/paletteV3'
 import plural from '~/utils/plural'
+import {Menu} from '../ui/Menu/Menu'
 import FlatButton from './FlatButton'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
-import {Menu} from '../ui/Menu/Menu'
 
 const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings}) => ({
   color: PALETTE.ROSE_500,
@@ -48,15 +48,14 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   if (!meetingCount) return null
   return (
-    <Menu trigger={
-      <CurrentButton
-        hasMeetings={meetingCount > 0}
-        size={'large'}
-      >
-        <ForumIcon />
-        {label}
-      </CurrentButton>
-      }>
+    <Menu
+      trigger={
+        <CurrentButton hasMeetings={meetingCount > 0} size={'large'}>
+          <ForumIcon />
+          {label}
+        </CurrentButton>
+      }
+    >
       <SelectMeetingDropdown meetings={activeMeetings!} />
     </Menu>
   )

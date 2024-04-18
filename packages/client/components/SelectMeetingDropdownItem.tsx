@@ -60,10 +60,9 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
   return (
-    <MenuItem
-      onClick={gotoMeeting}>
+    <MenuItem onClick={gotoMeeting}>
       {typeof IconOrSVG === 'string' ? (
-        <div className='text-slate-600 size-6 m-2'>
+        <div className='size-6 m-2 text-slate-600'>
           {
             {
               group_work: <GroupWork />,
@@ -78,14 +77,12 @@ const SelectMeetingDropdownItem = (props: Props) => {
         </div>
       )}
       <div className='flex flex-col px-2'>
-        <div className='text-slate-700 text-base font-semibold'>
-          {name}
-        </div>
-        <div className='text-slate-600 text-xs'>
+        <div className='text-base font-semibold text-slate-700'>{name}</div>
+        <div className='text-xs text-slate-600'>
           {meetingPhaseLabel} • {teamName}
         </div>
       </div>
-      <div className='flex flex-grow justify-end items-center size-6'>
+      <div className='size-6 flex flex-grow items-center justify-end'>
         <ArrowForwardIcon />
       </div>
     </MenuItem>
