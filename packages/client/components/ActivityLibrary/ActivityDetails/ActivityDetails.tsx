@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
@@ -90,11 +89,10 @@ const ActivityDetails = (props: Props) => {
   }`
 
   const isOwner = viewerLowestScope === 'TEAM'
-  const MOBILE_SETTINGS_HEIGHT = 208
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
-      <div className={clsx(`flex grow pb-[${MOBILE_SETTINGS_HEIGHT}px]`)}>
+      <div className='flex grow'>
         <div className='mt-4 grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center'>
             <div className='mr-4'>
@@ -136,6 +134,7 @@ const ActivityDetails = (props: Props) => {
               </div>
             </div>
           </div>
+          <div className='h-48 lg:hidden' />
         </div>
         <div className='hidden lg:block'>
           <ActivityDetailsSidebar
@@ -148,7 +147,7 @@ const ActivityDetails = (props: Props) => {
           />
         </div>
       </div>
-      <div className={`fixed min-h-[${MOBILE_SETTINGS_HEIGHT}px] bottom-0 w-full lg:hidden`}>
+      <div className={`fixed bottom-0 w-full lg:hidden`}>
         <ActivityDetailsSidebar
           selectedTemplateRef={activity}
           teamsRef={teams}
