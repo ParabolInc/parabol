@@ -227,7 +227,7 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const hideAiIcebreaker = featureFlags?.noAISummary && !isFacilitating
+  const hideAiIcebreaker = featureFlags.noAISummary || !isFacilitating
 
   return (
     <>
