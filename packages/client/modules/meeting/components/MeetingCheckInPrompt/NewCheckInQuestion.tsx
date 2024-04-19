@@ -228,7 +228,6 @@ const NewCheckInQuestion = (props: Props) => {
     })
   }
   const hideAiIcebreaker = featureFlags?.noAISummary && !isFacilitating
-  console.log('🚀 ~ hideAiIcebreaker:', hideAiIcebreaker)
 
   return (
     <>
@@ -299,7 +298,7 @@ const NewCheckInQuestion = (props: Props) => {
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('FUNNY')}
             >
-              More funny
+              Funnier
             </Button>
             <Button
               variant='outline'
