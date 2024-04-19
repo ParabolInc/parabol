@@ -188,7 +188,6 @@ type OrganizationFeatureFlags {
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
   kudos: Boolean!
-  aiIcebreakers: Boolean!
   aiTemplate: Boolean!
   relatedDiscussions: Boolean!
 }

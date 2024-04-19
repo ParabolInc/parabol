@@ -87,7 +87,7 @@ const NewCheckInQuestion = (props: Props) => {
         team {
           organization {
             featureFlags {
-              aiIcebreakers
+              noAISummary
             }
           }
         }
@@ -227,7 +227,8 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const shouldShowAiIcebreakers = featureFlags?.aiIcebreakers && isFacilitating
+  const hideAiIcebreaker = featureFlags?.noAISummary && !isFacilitating
+  console.log('🚀 ~ hideAiIcebreaker:', hideAiIcebreaker)
 
   return (
     <>
@@ -269,8 +270,8 @@ const NewCheckInQuestion = (props: Props) => {
           </div>
         )}
       </QuestionBlock>
-      {shouldShowAiIcebreakers && (
-        <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-3'>
+      {!hideAiIcebreaker && (
+        <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>
               <div className='font-semibold'>Modify current icebreaker with AI</div>
