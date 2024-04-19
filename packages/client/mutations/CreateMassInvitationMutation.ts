@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {CreateMassInvitationMutation as TCreateMassInvitationMutation} from '../__generated__/CreateMassInvitationMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment CreateMassInvitationMutation_team on CreateMassInvitationSuccess {

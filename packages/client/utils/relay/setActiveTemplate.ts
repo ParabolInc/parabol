@@ -32,4 +32,4 @@ const setActiveTemplate = (
   })
 }
 
-export {setActiveTemplateInRelayStore, setActiveTemplate}
+export {setActiveTemplate, setActiveTemplateInRelayStore}

@@ -1,8 +1,8 @@
 import {ExecutionResult} from 'graphql'
+import SubscriptionIterator from '../utils/SubscriptionIterator'
 import {getUserId} from '../utils/authorization'
 import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import sendToSentry from '../utils/sendToSentry'
-import SubscriptionIterator from '../utils/SubscriptionIterator'
 import {SubscribeRequest} from './subscribeGraphQL'
 
 export default class ResponseStream implements AsyncIterableIterator<ExecutionResult> {

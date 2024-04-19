@@ -1,18 +1,18 @@
+import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
 import updateMeetingSeriesQuery from '../../../postgres/queries/updateMeetingSeries'
+import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
+import {MutationResolvers} from '../resolverTypes'
 
 export const startNewMeetingSeries = async (
   meeting: {

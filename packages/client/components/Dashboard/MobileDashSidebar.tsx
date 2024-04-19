@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
+import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
 import {
@@ -12,7 +13,6 @@ import {
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../utils/constants'
-import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
 import LeftDashNavItem from './LeftDashNavItem'

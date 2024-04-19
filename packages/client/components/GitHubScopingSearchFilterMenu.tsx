@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {GitHubScopingSearchFilterMenuQuery} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
-import {GitHubScopingSearchFilterMenuQuery} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import GitHubRepoSearchFilterMenu from './GitHubRepoSearchFilterMenu'
 
 interface Props {

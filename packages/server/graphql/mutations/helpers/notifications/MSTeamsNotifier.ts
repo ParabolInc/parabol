@@ -7,15 +7,15 @@ import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
+import {analytics} from '../../../../utils/analytics/analytics'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
-import getSummaryText from './getSummaryText'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
-import {analytics} from '../../../../utils/analytics/analytics'
-import IUser from '../../../../postgres/types/IUser'
+import getSummaryText from './getSummaryText'
 
 const notifyMSTeams = async (
   event: EventEnum,

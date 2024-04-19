@@ -2,12 +2,12 @@ import {GraphQLNonNull} from 'graphql'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import insertPollWithOptions from '../../postgres/queries/insertPollWithOptions'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import CreatePollInput from '../types/CreatePollInput'
 import CreatePollPayload from '../types/CreatePollPayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 type PollOptionsInputVariables = {
   title: string

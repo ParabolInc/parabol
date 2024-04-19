@@ -2,13 +2,13 @@ import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
-import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import MeetingOptions from './MeetingOptions'
-import RetroDrawerTemplateCard from './RetroDrawerTemplateCard'
-import {Drawer} from './TeamPrompt/TeamPromptDrawer'
 import {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
+import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
+import MeetingOptions from './MeetingOptions'
+import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import RetroDrawerTemplateCard from './RetroDrawerTemplateCard'
+import {Drawer} from './TeamPrompt/TeamPromptDrawer'
 
 interface Props {
   setShowDrawer: (showDrawer: boolean) => void

@@ -51,17 +51,13 @@ const OrgDetails = (props: Props) => {
       <div className='mb-4 flex w-full items-center'>
         {modalPortal(<OrgAvatarInput picture={pictureOrDefault} orgId={orgId} />)}
         {isBillingLeader ? (
-          <EditableAvatar
-            onClick={togglePortal}
-            picture={pictureOrDefault}
-            className='mr-4 h-16 w-16'
-          />
+          <EditableAvatar onClick={togglePortal} picture={pictureOrDefault} className='h-16 w-16' />
         ) : (
-          <div className='mr-4 w-16'>
+          <div className='w-16'>
             <Avatar picture={pictureOrDefault} />
           </div>
         )}
-        <div className='text-gray-600 ml-2 flex flex-grow flex-col items-start'>
+        <div className='text-gray-600 ml-6 flex flex-grow flex-col items-start'>
           {isBillingLeader ? (
             <EditableOrgName organization={organization} />
           ) : (

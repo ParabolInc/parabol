@@ -3,13 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
+import {EditableTemplateDimension_dimensions$key} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
 import Legitity from '../../../validation/Legitity'
-import {EditableTemplateDimension_dimensions$key} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
 
 const StyledEditableText = styled(EditableText)({
   fontFamily: PALETTE.SLATE_700,

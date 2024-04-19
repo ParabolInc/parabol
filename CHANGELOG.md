@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.27.2](https://github.com/ParabolInc/parabol/compare/v7.27.1...v7.27.2) (2024-04-17)
+
+
+### Fixed
+
+* change retro group schema to allow for rethinkdb table migration ([#9653](https://github.com/ParabolInc/parabol/issues/9653)) ([0092d0b](https://github.com/ParabolInc/parabol/commit/0092d0baf6852e820384ae114f59e23294fed0e9))
+
+## [7.27.1](https://github.com/ParabolInc/parabol/compare/v7.27.0...v7.27.1) (2024-04-16)
+
+
+### Fixed
+
+* add prettier-plugin-organize-imports ([#9637](https://github.com/ParabolInc/parabol/issues/9637)) ([7d1086d](https://github.com/ParabolInc/parabol/commit/7d1086d4c1e5b0466617b007bb96c6642b4d5015))
+* margin spacing on hover ([#9635](https://github.com/ParabolInc/parabol/issues/9635)) ([4f25cba](https://github.com/ParabolInc/parabol/commit/4f25cba7393f28bb2f0269db1b1916e9792df4a7))
+* Migrate webpack dev server settings to v5 ([#9644](https://github.com/ParabolInc/parabol/issues/9644)) ([a21f1d0](https://github.com/ParabolInc/parabol/commit/a21f1d0895aaf987299104891e2b9c2e343a1635))
+* vuln patch for undici ([#9622](https://github.com/ParabolInc/parabol/issues/9622)) ([c2a3a43](https://github.com/ParabolInc/parabol/commit/c2a3a4300c94da8c3dcf5edc33c2e2b38df8686f))
+
+
+### Changed
+
+* add ip-to-server script dir to zip file ([#9645](https://github.com/ParabolInc/parabol/issues/9645)) ([19a6689](https://github.com/ParabolInc/parabol/commit/19a66898f841905b801161a9576385d6480d631e))
+* **docker:** delete all files used by old PPMIs and old Docker images ([#9648](https://github.com/ParabolInc/parabol/issues/9648)) ([a01cf2b](https://github.com/ParabolInc/parabol/commit/a01cf2bd2324fe62fa4af3044f06c94d6f14b087))
+* fix ironbank action file copy ([#9638](https://github.com/ParabolInc/parabol/issues/9638)) ([e3635ee](https://github.com/ParabolInc/parabol/commit/e3635ee335f59c1be0ca43c254a15e126e6e24d5))
+* Improve Activity Library focus and hover states ([#9626](https://github.com/ParabolInc/parabol/issues/9626)) ([6f1c1d9](https://github.com/ParabolInc/parabol/commit/6f1c1d9378536bd212032c84e0f35e074cca0941))
+* migration reflection groups to pg ([#9514](https://github.com/ParabolInc/parabol/issues/9514)) ([ddb4244](https://github.com/ParabolInc/parabol/commit/ddb424480b7bb45c0aaae65afb0264c7b9a30091))
+* Remove old template editing logic ([#9627](https://github.com/ParabolInc/parabol/issues/9627)) ([8552d43](https://github.com/ParabolInc/parabol/commit/8552d43e63fa1cf548da54460c49947d5772ae61))
+
 ## [7.27.0](https://github.com/ParabolInc/parabol/compare/v7.26.0...v7.27.0) (2024-04-11)
 
 

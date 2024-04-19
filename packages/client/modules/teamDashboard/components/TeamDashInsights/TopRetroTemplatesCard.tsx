@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import {TopRetroTemplatesCard_insights$key} from '~/__generated__/TopRetroTemplatesCard_insights.graphql'
 import SimpleTooltip from '../../../../components/SimpleTooltip'
-import TeamInsightsCard from './TeamInsightsCard'
 import plural from '../../../../utils/plural'
-import {useHistory} from 'react-router'
+import TeamInsightsCard from './TeamInsightsCard'
 
 interface Props {
   teamInsightsRef: TopRetroTemplatesCard_insights$key

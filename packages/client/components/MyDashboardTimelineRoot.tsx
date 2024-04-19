@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import myDashboardTimelineQuery, {
   MyDashboardTimelineQuery
 } from '../__generated__/MyDashboardTimelineQuery.graphql'
-import MyDashboardTimeline from './MyDashboardTimeline'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {useQueryParameterParser} from '../utils/useQueryParameterParser'
+import MyDashboardTimeline from './MyDashboardTimeline'
 
 const MyDashboardTimelineRoot = () => {
   const atmosphere = useAtmosphere()

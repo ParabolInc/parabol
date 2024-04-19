@@ -17,9 +17,12 @@ import {
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
+import {addPokerTemplateTeamUpdater} from '../mutations/AddPokerTemplateMutation'
+import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
 import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
 import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
+import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 import {
   endSprintPokerTeamOnNext,
@@ -38,9 +41,6 @@ import {
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
-import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
-import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
-import {addPokerTemplateTeamUpdater} from '../mutations/AddPokerTemplateMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {

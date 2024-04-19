@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import AtlassianServerManager, {JiraProject} from '../../utils/AtlassianServerManager'
 import {
   createImageUrlHash,
   createParabolImageUrl,
   downloadAndCacheImage
 } from '../../utils/atlassian/jiraImages'
-import AtlassianServerManager, {JiraProject} from '../../utils/AtlassianServerManager'
 import {GQLContext} from '../graphql'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'

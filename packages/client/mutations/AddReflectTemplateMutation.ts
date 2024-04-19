@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {AddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
+import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
-import {AddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
-import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
@@ -14,7 +14,6 @@ graphql`
     }
     reflectTemplate {
       ...TemplateSharing_template
-      ...ReflectTemplateDetailsTemplate
       ...ActivityDetails_template
       id
       teamId

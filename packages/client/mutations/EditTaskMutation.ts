@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {EditTaskMutation as TEditTaskMutation} from '../__generated__/EditTaskMutation.graphql'
+import {EditTaskMutation_task$data} from '../__generated__/EditTaskMutation_task.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import isTempId from '../utils/relay/isTempId'
-import {EditTaskMutation as TEditTaskMutation} from '../__generated__/EditTaskMutation.graphql'
-import {EditTaskMutation_task$data} from '../__generated__/EditTaskMutation_task.graphql'
 import handleEditTask from './handlers/handleEditTask'
 
 graphql`

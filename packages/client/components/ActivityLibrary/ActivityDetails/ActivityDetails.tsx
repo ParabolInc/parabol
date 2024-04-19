@@ -5,14 +5,14 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
-import {CategoryID, CATEGORY_THEMES, QUICK_START_CATEGORY_ID} from '../Categories'
+import {CATEGORY_THEMES, CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -29,8 +29,6 @@ graphql`
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
-    ...ReflectTemplateDetailsTemplate @relay(mask: false)
-    ...PokerTemplateDetailsTemplate @relay(mask: false)
     ...useTemplateDescription_template
   }
 `

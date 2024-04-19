@@ -13,11 +13,11 @@ import PlainButton from './PlainButton/PlainButton'
 import {AddPollOptionButton} from './Poll/AddPollOptionButton'
 import EditablePollOption from './Poll/EditablePollOption'
 import EditablePollTitle from './Poll/EditablePollTitle'
-import {addLocalPollOption} from './Poll/local/newPoll'
 import Poll from './Poll/Poll'
 import PollOption from './Poll/PollOption'
 import {getPollState} from './Poll/PollState'
 import PollTitle from './Poll/PollTitle'
+import {addLocalPollOption} from './Poll/local/newPoll'
 
 const PollOptions = styled('div')({
   fontSize: '14px',

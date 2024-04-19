@@ -1,8 +1,8 @@
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
-import {GQLContext} from '../../graphql'
 import {getUserId} from '../../../utils/authorization'
+import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 

@@ -1,5 +1,5 @@
-import {ReactableEnumType} from '../../types/ReactableEnum'
 import {AddReactjiToReactableSuccessResolvers} from '../../public/resolverTypes'
+import {ReactableEnumType} from '../../types/ReactableEnum'
 
 export type AddReactjiToReactableSuccessSource = {
   reactableId: string

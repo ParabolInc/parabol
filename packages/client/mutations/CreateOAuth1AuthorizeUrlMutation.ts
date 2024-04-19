@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import Atmosphere from '../Atmosphere'
-import {OptionalHandlers, StandardMutation} from '../types/relayMutations'
 import {CreateOAuth1AuthorizeUrlMutation as TCreateOAuth1AuthorizeUrlMutation} from '../__generated__/CreateOAuth1AuthorizeUrlMutation.graphql'
+import {OptionalHandlers, StandardMutation} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation CreateOAuth1AuthorizeUrlMutation($providerId: ID!, $teamId: ID!) {

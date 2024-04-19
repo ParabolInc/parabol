@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Link} from 'react-router-dom'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import {Link} from 'react-router-dom'
 import {KudosReceivedNotification_notification$key} from '~/__generated__/KudosReceivedNotification_notification.graphql'
-import NotificationTemplate from './NotificationTemplate'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
+import NotificationTemplate from './NotificationTemplate'
 
 interface Props {
   notification: KudosReceivedNotification_notification$key

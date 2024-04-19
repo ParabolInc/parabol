@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {getUserId} from '../../utils/authorization'
 import {Logger} from '../../utils/Logger'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'

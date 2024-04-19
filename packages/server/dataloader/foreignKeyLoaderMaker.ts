@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
-import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 import RootDataLoader from './RootDataLoader'
 import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
+import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 
 type LoaderMakers = typeof primaryKeyLoaderMakers
 type LoaderKeys = keyof LoaderMakers

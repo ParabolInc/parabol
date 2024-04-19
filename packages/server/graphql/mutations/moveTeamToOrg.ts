@@ -4,16 +4,16 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import Notification from '../../database/types/Notification'
+import getKysely from '../../postgres/getKysely'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateMeetingTemplateOrgId from '../../postgres/queries/updateMeetingTemplateOrgId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import safeArchiveEmptyStarterOrganization from '../../safeMutations/safeArchiveEmptyStarterOrganization'
+import {Logger} from '../../utils/Logger'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
-import getKysely from '../../postgres/getKysely'
-import {Logger} from '../../utils/Logger'
 
 const MAX_NUM_TEAMS = 40
 

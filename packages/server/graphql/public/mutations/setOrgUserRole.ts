@@ -1,12 +1,12 @@
-import {MutationResolvers} from '../resolverTypes'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import {RDatum} from '../../../database/stricterR'
 import NotificationPromoteToBillingLeader from '../../../database/types/NotificationPromoteToBillingLeader'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {RDatum} from '../../../database/stricterR'
+import {MutationResolvers} from '../resolverTypes'
 
 const addNotifications = async (orgId: string, userId: string) => {
   const r = await getRethink()

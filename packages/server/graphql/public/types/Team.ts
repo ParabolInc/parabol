@@ -1,8 +1,8 @@
-import {TeamResolvers} from '../resolverTypes'
 import TeamInsightsId from 'parabol-client/shared/gqlIds/TeamInsightsId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import {TeamResolvers} from '../resolverTypes'
 
 const Team: TeamResolvers = {
   insights: async (

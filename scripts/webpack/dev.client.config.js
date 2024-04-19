@@ -59,12 +59,10 @@ module.exports = {
       'self-hosted',
       // important terminating / so saml-redirect doesn't get targeted, too
       'saml/'
-    ].reduce((obj, name) => {
-      obj[`/${name}`] = {
-        target: `http://localhost:${SOCKET_PORT}`
-      }
-      return obj
-    }, {})
+    ].map((name) => ({
+        context: [`/${name}`],
+        target: `http://localhost:${SOCKET_PORT}`,
+      }))
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {

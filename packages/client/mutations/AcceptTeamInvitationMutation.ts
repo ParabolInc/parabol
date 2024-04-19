@@ -1,8 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {InvitationTokenError, LOCKED_MESSAGE} from '~/types/constEnums'
 import {AcceptTeamInvitationMutation_notification$data} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
+import {InvitationTokenError, LOCKED_MESSAGE} from '~/types/constEnums'
 import Atmosphere from '../Atmosphere'
+import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
+import {AcceptTeamInvitationMutation_team$data} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -11,8 +13,6 @@ import {
 } from '../types/relayMutations'
 import fromTeamMemberId from '../utils/relay/fromTeamMemberId'
 import getGraphQLError from '../utils/relay/getGraphQLError'
-import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
-import {AcceptTeamInvitationMutation_team$data} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'

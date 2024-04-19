@@ -1,9 +1,9 @@
-import {DomainJoinRequestResolvers} from '../resolverTypes'
-import {getUserId} from '../../../utils/authorization'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
-import {GQLContext} from '../../graphql'
 import getRethink from '../../../database/rethinkDriver'
+import {getUserId} from '../../../utils/authorization'
+import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
+import {DomainJoinRequestResolvers} from '../resolverTypes'
 
 const DomainJoinRequest: DomainJoinRequestResolvers = {
   id: ({id}) => {

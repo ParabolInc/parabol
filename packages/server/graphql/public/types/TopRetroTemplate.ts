@@ -1,6 +1,6 @@
-import {TopRetroTemplateResolvers} from '../resolverTypes'
 import TopRetroTemplateId from 'parabol-client/shared/gqlIds/TopRetroTemplateId'
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
+import {TopRetroTemplateResolvers} from '../resolverTypes'
 
 export type TopRetroTemplateSource = {
   teamId: string

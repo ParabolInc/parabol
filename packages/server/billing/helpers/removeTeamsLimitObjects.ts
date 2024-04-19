@@ -1,8 +1,8 @@
-import getKysely from '../../postgres/getKysely'
 import {r} from 'rethinkdb-ts'
 import {RValue} from '../../database/stricterR'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import updateNotification from '../../graphql/public/mutations/helpers/updateNotification'
+import getKysely from '../../postgres/getKysely'
 
 const removeTeamsLimitObjects = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const removeJobTypes = ['LOCK_ORGANIZATION', 'WARN_ORGANIZATION'] as const

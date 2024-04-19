@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
-import {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
-import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useFragment} from 'react-relay'
+import {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
+import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
-import BillingForm from './BillingForm'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
-import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
+import BillingForm from './BillingForm'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH

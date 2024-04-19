@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import MeetingTemplate from './MeetingTemplate'
 import TeamMeetingSettings from './TeamMeetingSettings'
+import makeMutationPayload from './makeMutationPayload'
 
 export const UpdateTemplateScopeSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateTemplateScopeSuccess',

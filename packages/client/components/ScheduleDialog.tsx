@@ -1,34 +1,34 @@
-import React, {ChangeEvent, useState} from 'react'
-import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
-import * as Collapsible from '@radix-ui/react-collapsible'
 import {EventRepeat, ExpandMore} from '@mui/icons-material'
-import PrimaryButton from './PrimaryButton'
-import {DialogActions} from '../ui/Dialog/DialogActions'
-import SecondaryButton from './SecondaryButton'
-import GcalSettings, {
-  GcalEventInput
-} from '../modules/userDashboard/components/GcalModal/GcalSettings'
-import logo from '../styles/theme/images/graphics/google.svg'
-import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
-import useForm from '../hooks/useForm'
-import StyledError from './StyledError'
-import GcalClientManager from '../utils/GcalClientManager'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
+import * as Collapsible from '@radix-ui/react-collapsible'
 import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
+import dayjs from 'dayjs'
+import React, {ChangeEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {RRule} from 'rrule'
 import {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuMutationProps} from '../hooks/useMutationProps'
-import Legitity from '../validation/Legitity'
 import {
   CreateGcalEventInput,
   RecurrenceSettingsInput
 } from '../__generated__/StartRetrospectiveMutation.graphql'
-import {RRule} from 'rrule'
-import dayjs from 'dayjs'
-import {toHumanReadable} from './Recurrence/HumanReadableRecurrenceRule'
-import clsx from 'clsx'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useForm from '../hooks/useForm'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import GcalSettings, {
+  GcalEventInput
+} from '../modules/userDashboard/components/GcalModal/GcalSettings'
+import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
+import logo from '../styles/theme/images/graphics/google.svg'
+import {DialogActions} from '../ui/Dialog/DialogActions'
+import GcalClientManager from '../utils/GcalClientManager'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import plural from '../utils/plural'
+import Legitity from '../validation/Legitity'
+import PrimaryButton from './PrimaryButton'
+import {toHumanReadable} from './Recurrence/HumanReadableRecurrenceRule'
+import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
+import SecondaryButton from './SecondaryButton'
+import StyledError from './StyledError'
 
 const validateTitle = (title: string) =>
   new Legitity(title).trim().min(2, `C’mon, you call that a title?`)

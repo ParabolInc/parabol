@@ -1,13 +1,13 @@
-import React, {useState} from 'react'
-import {Info} from '@mui/icons-material'
-import {Elevation} from '../../../../styles/elevation'
-import BaseButton from '../../../../components/BaseButton'
-import {Radius} from '../../../../types/constEnums'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
 import styled from '@emotion/styled'
-import useTooltip from '../../../../hooks/useTooltip'
+import {Info} from '@mui/icons-material'
+import React, {useState} from 'react'
+import {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
+import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
+import useTooltip from '../../../../hooks/useTooltip'
+import {Elevation} from '../../../../styles/elevation'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Radius} from '../../../../types/constEnums'
 
 const PlanTitle = styled('h6')({
   color: PALETTE.SLATE_700,

@@ -7,8 +7,8 @@ import AzureDevOpsIntegration from './AzureDevOpsIntegration'
 import GitHubIntegration from './GitHubIntegration'
 import GitLabIntegration from './GitLabIntegration'
 import JiraServerIntegration from './JiraServerIntegration'
-import MattermostIntegration from './MattermostIntegration'
 import MSTeamsIntegration from './MSTeamsIntegration'
+import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
 
 const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({

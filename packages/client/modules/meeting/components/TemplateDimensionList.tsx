@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
+import {TemplateDimensionList_dimensions$key} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
 import {TEMPLATE_DIMENSION} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
-import {TemplateDimensionList_dimensions$key} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
 import TemplateDimensionItem from './TemplateDimensionItem'
 
 interface Props {

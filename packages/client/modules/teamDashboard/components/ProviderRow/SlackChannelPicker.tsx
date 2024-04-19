@@ -8,8 +8,8 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import lazyPreload from '../../../../utils/lazyPreload'
 import SlackClientManager from '../../../../utils/SlackClientManager'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 interface Props {
   isTokenValid: boolean

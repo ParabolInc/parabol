@@ -1,9 +1,9 @@
+import DiscussStage from '../../../database/types/DiscussStage'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import getPhase from '../../../utils/getPhase'
 import standardError from '../../../utils/standardError'
 import {SlackNotifier} from '../../mutations/helpers/notifications/SlackNotifier'
 import {MutationResolvers} from '../resolverTypes'
-import DiscussStage from '../../../database/types/DiscussStage'
-import getPhase from '../../../utils/getPhase'
 
 const shareTopic: MutationResolvers['shareTopic'] = async (
   _source,
