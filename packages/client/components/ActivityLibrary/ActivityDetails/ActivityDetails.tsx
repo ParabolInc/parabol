@@ -95,7 +95,7 @@ const ActivityDetails = (props: Props) => {
     <div className='flex h-full w-full flex-col bg-white'>
       <div className='flex grow'>
         <div className='mt-4 w-full grow'>
-          <div className='mb-14 ml-4 flex h-min w-max items-center'>
+          <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
             <div className='mr-4'>
               <Link to={categoryLink}>
                 <IconLabel icon={'arrow_back'} iconLarge />
@@ -107,7 +107,7 @@ const ActivityDetails = (props: Props) => {
             <div className='flex flex-col justify-start pl-4 pr-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>
               <div>
                 <ActivityCard
-                  className='mb-8 w-80 max-sm:mx-auto sm:ml-14 xl:ml-0 xl:mb-0'
+                  className='mb-8 w-80 max-md:hidden sm:ml-14 xl:ml-0 xl:mb-0'
                   theme={CATEGORY_THEMES[category as CategoryID]}
                   badge={null}
                   type={type}

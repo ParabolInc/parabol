@@ -252,7 +252,7 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   return (
     <>
-      <div className='sticky bottom-0 flex w-screen flex-col border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:min-h-screen lg:w-full lg:w-96 lg:border-l lg:pt-14'>
+      <div className='sticky bottom-0 flex w-full flex-col border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:min-h-screen lg:w-full lg:w-96 lg:border-l lg:pt-14'>
         <div className='flex-grow'>
           <div className='flex items-center justify-between pt-2 text-xl font-semibold lg:pt-0'>
             Settings
