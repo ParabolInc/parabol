@@ -12,6 +12,18 @@ const ActivityLibraryEmptyState = (props: Props) => {
   const {categoryId, searchQuery} = props
   const showResultsNotFound = categoryId !== 'custom' || searchQuery !== ''
 
+  // improve empty state with image
+  if (categoryId === 'favorite') {
+    return (
+      <div className='mx-auto flex p-2 text-slate-700'>
+        <div className='ml-10'>
+          <div className='mb-4 text-xl font-semibold'>No favorites yet!</div>
+          <div className='mb-6 max-w-[360px]'>Actvities you mark as favorite will show up here</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className='mx-auto flex p-2 text-slate-700'>
       <div className='ml-10'>

@@ -13,10 +13,12 @@ export const MAIN_CATEGORIES = [
 
 export const QUICK_START_CATEGORY_ID = 'recommended'
 export const CUSTOM_CATEGORY_ID = 'custom'
+export const FAVORITE_CATEGORY_ID = 'favorite'
 
 export const ALL_CATEGORIES = [
   QUICK_START_CATEGORY_ID,
   ...MAIN_CATEGORIES,
+  FAVORITE_CATEGORY_ID,
   CUSTOM_CATEGORY_ID
 ] as const
 
@@ -46,11 +48,17 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     primary: 'bg-fuscia-400',
     secondary: 'bg-slate-200',
     text: 'text-slate-500'
+  },
+  [FAVORITE_CATEGORY_ID]: {
+    primary: 'bg-slate-500',
+    secondary: 'bg-slate-200',
+    text: 'text-slate-500'
   }
 }
 
 export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string> = {
   [QUICK_START_CATEGORY_ID]: 'Quick Start',
+  [FAVORITE_CATEGORY_ID]: 'Favorite',
   [CUSTOM_CATEGORY_ID]: 'Custom',
   retrospective: 'Retrospective',
   estimation: 'Estimation',
