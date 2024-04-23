@@ -29,6 +29,14 @@ type ActivityCardImageProps = {
 export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProps>) => {
   const {className, src, category} = props
   const backgroundSrc = backgroundImgMap[category]
+  const [isSelected, setIsSelected] = useState(false)
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('yayayya')
+    e.stopPropagation()
+    e.preventDefault()
+    setIsSelected((prev) => !prev)
+  }
 
   return (
     <div
@@ -44,7 +52,12 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         alt='Card Illustration'
       />
       <div className='absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white'>
-        <Favorite className='text-slate-600' />
+        <button
+          onClick={handleClick}
+          className='flex h-10 w-10 cursor-pointer items-center justify-center bg-transparent'
+        >
+          <Favorite className={isSelected ? 'text-rose-600' : 'text-slate-600'} />
+        </button>
       </div>
     </div>
   )
