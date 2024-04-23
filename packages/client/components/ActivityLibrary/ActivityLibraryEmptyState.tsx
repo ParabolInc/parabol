@@ -10,12 +10,12 @@ type Props = {
 
 const ActivityLibraryEmptyState = (props: Props) => {
   const {categoryId, searchQuery} = props
-  const hideResultsNotFound = categoryId === 'custom' && searchQuery === ''
+  const showResultsNotFound = categoryId !== 'custom' || searchQuery !== ''
 
   return (
     <div className='mx-auto flex p-2 text-slate-700'>
       <div className='ml-10'>
-        {!hideResultsNotFound && (
+        {showResultsNotFound && (
           <>
             <img className='w-32' src={halloweenRetrospectiveTemplate} />
             <div className='mb-4 text-xl font-semibold'>No results found!</div>
