@@ -1,3 +1,4 @@
+import {Favorite} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {PropsWithChildren, useEffect, useRef, useState} from 'react'
@@ -42,6 +43,9 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         src={src}
         alt='Card Illustration'
       />
+      <div className='absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white'>
+        <Favorite className='text-slate-600' />
+      </div>
     </div>
   )
 }
