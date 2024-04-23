@@ -67,7 +67,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     roleToSet === 'ORG_ADMIN' || // promoting someone to ORG_ADMIN
     organizationUser.role === 'ORG_ADMIN' // the user is already an ORG_ADMIN so the mutation is intended to change their role
   ) {
-    if (!isSuperUser(authToken) && (!viewerOrgUser || viewerOrgUser.role !== 'ORG_ADMIN')) {
+    if (!isSuperUser(authToken) && viewerOrgUser?.role !== 'ORG_ADMIN') {
       return standardError(new Error('Only super user or org admin can perform this action'), {
         userId: viewerId
       })
