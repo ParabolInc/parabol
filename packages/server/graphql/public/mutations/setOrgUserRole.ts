@@ -18,7 +18,7 @@ const addNotifications = async (orgId: string, userId: string) => {
 
 const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   _source,
-  {orgId, userId, role},
+  {orgId, userId, role: roleToSet},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
@@ -35,11 +35,11 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     })
   }
 
-  if (role && role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN') {
-    return standardError(new Error('Invalid role'), {userId: viewerId})
+  if (roleToSet && roleToSet !== 'BILLING_LEADER' && roleToSet !== 'ORG_ADMIN') {
+    return standardError(new Error('Invalid role to set'), {userId: viewerId})
   }
 
-  const [organizationUser, viewer] = await Promise.all([
+  const [organizationUser, viewer, viewerOrgUser] = await Promise.all([
     r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
@@ -47,7 +47,14 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
       .nth(0)
       .default(null)
       .run(),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('users').loadNonNull(viewerId),
+    r
+      .table('OrganizationUser')
+      .getAll(viewerId, {index: 'userId'})
+      .filter({orgId, removedAt: null})
+      .nth(0)
+      .default(null)
+      .run()
   ])
 
   if (!organizationUser) {
@@ -56,10 +63,15 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     })
   }
 
-  if ((role === 'ORG_ADMIN' || organizationUser.role === 'ORG_ADMIN') && !isSuperUser(authToken)) {
-    return standardError(new Error('Must be super user to promote/demote user to admin'), {
-      userId: viewerId
-    })
+  if (
+    roleToSet === 'ORG_ADMIN' || // promoting someone to ORG_ADMIN
+    organizationUser.role === 'ORG_ADMIN' // the user is already an ORG_ADMIN so the mutation is intended to change their role
+  ) {
+    if (!isSuperUser(authToken) && viewerOrgUser?.role !== 'ORG_ADMIN') {
+      return standardError(new Error('Only super user or org admin can perform this action'), {
+        userId: viewerId
+      })
+    }
   }
 
   // if someone is leaving, make sure there is someone else to take their place
@@ -71,7 +83,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
       .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
       .count()
       .run()
-    if (leaderCount === 1) {
+    if (leaderCount === 1 && !roleToSet) {
       return standardError(new Error('You’re the last leader, you can’t give that up'), {
         userId: viewerId
       })
@@ -80,23 +92,23 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
 
   // no change required
   const {id: organizationUserId} = organizationUser
-  if (organizationUser.role === role) {
+  if (organizationUser.role === roleToSet) {
     return {
       orgId,
       organizationUserId,
       notificationIdsAdded: []
     }
   }
-  await r.table('OrganizationUser').get(organizationUserId).update({role}).run()
+  await r.table('OrganizationUser').get(organizationUserId).update({role: roleToSet}).run()
 
-  if (role !== 'ORG_ADMIN') {
-    const modificationType = role === 'BILLING_LEADER' ? 'add' : 'remove'
+  if (roleToSet !== 'ORG_ADMIN') {
+    const modificationType = roleToSet === 'BILLING_LEADER' ? 'add' : 'remove'
     analytics.billingLeaderModified(viewer, userId, orgId, modificationType)
   }
 
   // Don't add notification when promoting to org admin.
   const notificationIdsAdded =
-    role === 'BILLING_LEADER' ? await addNotifications(orgId, userId) : []
+    roleToSet === 'BILLING_LEADER' ? await addNotifications(orgId, userId) : []
 
   const data = {orgId, organizationUserId, notificationIdsAdded}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'SetOrgUserRoleSuccess', data, subOptions)
