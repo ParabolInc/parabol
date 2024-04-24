@@ -127,6 +127,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
     .table('NewMeeting')
     .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
     .run()
+  // 500ms
 
   const res = await Promise.all(
     meetingsToEnd.map((meeting) => {
@@ -148,6 +149,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
 
   // For each active meeting series, get the meeting start times (according to rrule) after the most
   // recent meeting start time and before now.
+  // 500ms
   const activeMeetingSeries = await getActiveMeetingSeries()
   await Promise.allSettled(
     activeMeetingSeries.map(async (meetingSeries) => {
@@ -156,14 +158,14 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
         return
       }
 
-      const seriesOrg = await dataLoader.get('organizations').load(seriesTeam.orgId)
+      const [seriesOrg, lastMeeting] = await Promise.all([
+        dataLoader.get('organizations').load(seriesTeam.orgId),
+        dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeries.id)
+      ])
+
       if (seriesOrg.lockedAt) {
         return
       }
-
-      const lastMeeting = await dataLoader
-        .get('lastMeetingByMeetingSeriesId')
-        .load(meetingSeries.id)
 
       // For meetings that should still be active, start the meeting and set its end time.
       // Any subscriptions are handled by the shared meeting start code

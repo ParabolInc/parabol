@@ -33,6 +33,7 @@ import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
+import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
 
 export interface MeetingSettingsKey {
@@ -611,17 +612,13 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
   return new DataLoader<number, AnyMeeting[], string>(
     async (keys) => {
       const r = await getRethink()
-      const res = await Promise.all(
-        keys.map((key) => {
-          return r
-            .table('NewMeeting')
-            .getAll(key, {index: 'meetingSeriesId'})
-            .filter({endedAt: null}, {default: true})
-            .orderBy(r.asc('createdAt'))
-            .run()
-        })
-      )
-      return res
+      const res = await r
+        .table('NewMeeting')
+        .getAll(r.args(keys), {index: 'meetingSeriesId'})
+        .filter({endedAt: null}, {default: true})
+        .orderBy(r.asc('createdAt'))
+        .run()
+      return normalizeArrayResults(keys, res, 'meetingSeriesId')
     },
     {
       ...parent.dataLoaderOptions
@@ -633,18 +630,18 @@ export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
   return new DataLoader<number, AnyMeeting | null, string>(
     async (keys) => {
       const r = await getRethink()
-      const res = await Promise.all(
-        keys.map((key) => {
-          return r
-            .table('NewMeeting')
-            .getAll(key, {index: 'meetingSeriesId'})
-            .orderBy(r.desc('createdAt'))
-            .nth(0)
-            .default(null)
-            .run()
-        })
+      const res = await (
+        r
+          .table('NewMeeting')
+          .getAll(r.args(keys), {index: 'meetingSeriesId'})
+          .group('meetingSeriesId') as RDatum
       )
-      return res
+        .orderBy(r.desc('createdAt'))
+        .nth(0)
+        .default(null)
+        .ungroup()('reduction')
+        .run()
+      return normalizeResults(keys, res as AnyMeeting[], 'meetingSeriesId')
     },
     {
       ...parent.dataLoaderOptions
