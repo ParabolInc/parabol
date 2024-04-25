@@ -1,6 +1,5 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import {ActivityBadge} from './ActivityBadge'
 import {ActivityCard, ActivityCardImage} from './ActivityCard'
 import {Template} from './ActivityLibrary'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
@@ -31,11 +30,6 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               title={template.name}
               type={template.type}
               templateRef={template}
-              badge={
-                !template.isFree ? (
-                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
-                ) : null
-              }
             >
               <ActivityCardImage
                 className='group-hover/card:hidden'
