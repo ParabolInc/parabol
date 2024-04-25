@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.28.0](https://github.com/ParabolInc/parabol/compare/v7.27.2...v7.28.0) (2024-04-25)
+
+
+### Added
+
+* **orgAdmin:** org admin can promote others to org admin ([#9655](https://github.com/ParabolInc/parabol/issues/9655)) ([01372bc](https://github.com/ParabolInc/parabol/commit/01372bc29b14681db8094c0b55cc3d3f2f2418ea))
+* roll out ai icebreakers ([#9660](https://github.com/ParabolInc/parabol/issues/9660)) ([898e1fd](https://github.com/ParabolInc/parabol/commit/898e1fddfa342014d8db162215babe8079652f84))
+
+
+### Fixed
+
+* can update gcal start datetime ([#9668](https://github.com/ParabolInc/parabol/issues/9668)) ([42c432e](https://github.com/ParabolInc/parabol/commit/42c432eb0ea9112ef28652d75cc784c3b3dd79fd))
+* Increase process recurrence timeout ([#9665](https://github.com/ParabolInc/parabol/issues/9665)) ([f4e0cda](https://github.com/ParabolInc/parabol/commit/f4e0cda947c5407a651a73f6675cca27a2ea55dd))
+* remove premium badges from activity library cards ([#9669](https://github.com/ParabolInc/parabol/issues/9669)) ([f3f0588](https://github.com/ParabolInc/parabol/commit/f3f058803b16ec06840a0b673d8299663ff3d533))
+* support PG reconnects ([#9663](https://github.com/ParabolInc/parabol/issues/9663)) ([32574a6](https://github.com/ParabolInc/parabol/commit/32574a650697a3ee5e43aac33478c9ac7eab6966))
+* Threaded reply input does not immediately close ([#9652](https://github.com/ParabolInc/parabol/issues/9652)) ([9944ac0](https://github.com/ParabolInc/parabol/commit/9944ac046c0ea2186be149147ca630190d92faef))
+
+
+### Changed
+
+* remove noTemplateLimit flag ([#9631](https://github.com/ParabolInc/parabol/issues/9631)) ([fb76d9a](https://github.com/ParabolInc/parabol/commit/fb76d9a3ec977e886dcc778b96fc2a5abfd4716c))
+* update activity library custom tab empty state ([#9666](https://github.com/ParabolInc/parabol/issues/9666)) ([240e78d](https://github.com/ParabolInc/parabol/commit/240e78d9c7003b748a4c31353e869278c2bb528c))
+
 ## [7.27.2](https://github.com/ParabolInc/parabol/compare/v7.27.1...v7.27.2) (2024-04-17)
 
 
