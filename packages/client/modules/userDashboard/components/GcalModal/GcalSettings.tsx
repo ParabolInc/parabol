@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import dayjs from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import React, {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
@@ -35,7 +35,6 @@ const GcalSettings = (props: Props) => {
   const {invitees, start, end, videoType} = settings
   const [rawInvitees, setRawInvitees] = useState(invitees.join(', '))
   const [inviteAll, setInviteAll] = useState(true)
-
   const [inviteError, setInviteError] = useState<null | string>(null)
 
   const setInvitees = (invitees: string[]) => {
@@ -45,11 +44,24 @@ const GcalSettings = (props: Props) => {
     onSettingsChanged({...settings, videoType})
   }
 
-  const setStart = (start: dayjs.Dayjs) => {
-    onSettingsChanged({...settings, start})
+  const handleChangeStart = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const newStart = date.hour(time.hour()).minute(time.minute())
+      const newEnd = newStart.add(1, 'hour')
+      onSettingsChanged({...settings, start: newStart, end: newEnd})
+    }
   }
-  const setEnd = (end: dayjs.Dayjs) => {
-    onSettingsChanged({...settings, end})
+
+  const handleChangeEnd = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const startValue = settings.start
+      const newEnd = date.hour(time.hour()).minute(time.minute())
+      let newStart = startValue
+      if (newEnd.isBefore(startValue) || newEnd.isSame(startValue)) {
+        newStart = newEnd.subtract(1, 'hour')
+      }
+      onSettingsChanged({...settings, start: newStart, end: newEnd})
+    }
   }
 
   const team = useFragment(
@@ -135,7 +147,12 @@ const GcalSettings = (props: Props) => {
   return (
     <div className='space-y-4 p-4'>
       <div className='pt-1'>
-        <DateTimePickers startValue={start} endValue={end} setStart={setStart} setEnd={setEnd} />
+        <DateTimePickers
+          startValue={start}
+          endValue={end}
+          handleChangeStart={handleChangeStart}
+          handleChangeEnd={handleChangeEnd}
+        />
       </div>
       <VideoConferencing
         videoType={videoType ?? null}

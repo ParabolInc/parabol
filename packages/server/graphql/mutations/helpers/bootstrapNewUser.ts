@@ -53,16 +53,6 @@ const bootstrapNewUser = async (
     experimentalFlags.push('signUpDestinationTeam')
   }
 
-  // No template limit
-  const domainUserHasNoTemplateLimitFlag = usersWithDomain.some((user) =>
-    user.featureFlags.includes('noTemplateLimit')
-  )
-  if (domainUserHasNoTemplateLimitFlag) {
-    experimentalFlags.push('noTemplateLimit')
-  } else if (Math.random() < 0.5) {
-    experimentalFlags.push('noTemplateLimit')
-  }
-
   const isVerified = identities.some((identity) => identity.isEmailVerified)
   const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
   const isQualifiedForAutoJoin = (isVerified || hasSAMLURL) && isCompanyDomain

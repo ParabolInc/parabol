@@ -41,16 +41,20 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
         .returningAll()
         .executeTakeFirst()
     }
-    const job = (await getJob(false)) || (await getJob(true))
-    if (!job) {
-      Logger.log('JobQueueStream: no jobs found')
-      // queue is empty, so sleep for a while
-      await sleep(ms('10s'))
+    try {
+      const job = (await getJob(false)) || (await getJob(true))
+      if (!job) {
+        Logger.log('JobQueueStream: no jobs found')
+        // queue is empty, so sleep for a while
+        await sleep(ms('10s'))
+        return this.next()
+      }
+      await this.orchestrator.runStep(job)
+      return {done: false, value: job}
+    } catch (e) {
+      await sleep(1000)
       return this.next()
     }
-
-    await this.orchestrator.runStep(job)
-    return {done: false, value: job}
   }
   return() {
     return Promise.resolve({done: true as const, value: undefined})

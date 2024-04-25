@@ -57,7 +57,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         teamId
         orgId
         scope
-        isFree
       }
     `,
     selectedTemplateRef

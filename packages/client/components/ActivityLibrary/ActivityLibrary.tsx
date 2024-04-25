@@ -9,7 +9,6 @@ import {useDebounce} from 'use-debounce'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
-import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
@@ -18,14 +17,15 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
 import AISearch from './AISearch'
 import ActivityGrid from './ActivityGrid'
+import ActivityLibraryEmptyState from './ActivityLibraryEmptyState'
 import {
+  AllCategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
   CUSTOM_CATEGORY_ID,
   CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
-import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
 
 graphql`
@@ -359,19 +359,10 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           )}
           {templatesToRender.length === 0 ? (
-            <div className='mx-auto flex p-2 text-slate-700'>
-              <div className='ml-10'>
-                <img className='w-32' src={halloweenRetrospectiveTemplate} />
-                <div className='mb-4 text-xl font-semibold'>No results found!</div>
-                <div className='mb-6 max-w-[360px]'>
-                  Try tapping a category above, using a different search, or creating exactly what
-                  you have in mind.
-                </div>
-                <div className='h-40 w-64'>
-                  <CreateActivityCard category={QUICK_START_CATEGORY_ID} className='h-full' />
-                </div>
-              </div>
-            </div>
+            <ActivityLibraryEmptyState
+              searchQuery={searchQuery}
+              categoryId={categoryId as AllCategoryID}
+            />
           ) : (
             <>
               {sectionedTemplates ? (
