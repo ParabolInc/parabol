@@ -19,10 +19,7 @@ const CreateActivityCard = (props: Props) => {
       className={clsx('flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500', className)}
       to={`/activity-library/new-activity/${category}`}
     >
-      <ActivityCard
-        className={'flex-1 cursor-pointer'}
-        theme={CATEGORY_THEMES[category]}
-      >
+      <ActivityCard className={'flex-1 cursor-pointer'} theme={CATEGORY_THEMES[category]}>
         <div className='flex h-full w-full flex-col items-center justify-center pb-2 font-semibold'>
           <div className='h-12 w-12'>
             <AddIcon className='h-full w-full text-slate-700' />
