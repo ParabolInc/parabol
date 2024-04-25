@@ -12,6 +12,7 @@ import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeeting
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
+import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {DataLoaderWorker} from '../../graphql'
 import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
@@ -160,6 +161,18 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
         dataLoader.get('organizations').load(seriesTeam.orgId),
         dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeries.id)
       ])
+
+      // remove this check after 2024-05-05
+      if (
+        lastMeeting?.meetingSeriesId !== meetingSeries.id ||
+        lastMeeting.teamId !== meetingSeries.teamId
+      ) {
+        const error = new Error(
+          'lastMeetingByMeetingSeriesId returned a meeting that does not match the series'
+        )
+        sendToSentry(error)
+        throw error
+      }
 
       if (seriesOrg.lockedAt) {
         return
