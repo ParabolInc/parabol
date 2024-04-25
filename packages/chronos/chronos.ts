@@ -102,16 +102,16 @@ const chronos = () => {
     processRecurrence: {
       onTick: () => {
         const query = `
-        mutation ProcessRecurrence{
-          processRecurrence{
-            ... on ProcessRecurrenceSuccess {
-              meetingsStarted
-              meetingsEnded
+          mutation ProcessRecurrence {
+            processRecurrence{
+              ... on ProcessRecurrenceSuccess {
+                meetingsStarted
+                meetingsEnded
+              }
             }
           }
-        }
-      `
-        publishWebhookGQL(query, {})
+        `
+        publishWebhookGQL(query, {}, {longRunning: true})
       },
       cronTime: CHRONOS_PROCESS_RECURRENCE
     }
