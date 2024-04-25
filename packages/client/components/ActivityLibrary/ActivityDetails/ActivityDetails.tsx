@@ -134,7 +134,7 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className='hidden lg:block'>
+        <div className='hidden w-[385px] shrink-0 lg:block'>
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}
