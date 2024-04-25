@@ -127,7 +127,6 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
     .table('NewMeeting')
     .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
     .run()
-  // 500ms
 
   const res = await Promise.all(
     meetingsToEnd.map((meeting) => {
@@ -149,7 +148,6 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
 
   // For each active meeting series, get the meeting start times (according to rrule) after the most
   // recent meeting start time and before now.
-  // 500ms
   const activeMeetingSeries = await getActiveMeetingSeries()
   await Promise.allSettled(
     activeMeetingSeries.map(async (meetingSeries) => {
