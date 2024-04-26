@@ -11,6 +11,7 @@ import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import MicrosoftServerManager from '../../../utils/MicrosoftServerManager'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
+import {generateIdenticon} from '../../private/mutations/helpers/generateIdenticon'
 import {MutationResolvers} from '../resolverTypes'
 
 const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
@@ -96,6 +97,7 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
   const newUser = new User({
     id: userId,
     preferredName,
+    picture: await generateIdenticon(userId, preferredName),
     email,
     identities: [identity],
     pseudoId
