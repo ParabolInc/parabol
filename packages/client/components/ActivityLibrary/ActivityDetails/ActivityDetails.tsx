@@ -66,9 +66,8 @@ const ActivityDetails = (props: Props) => {
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
   const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
-  const history = useHistory<{prevCategory?: string}>()
+  const history = useHistory<{prevCategory?: string; edit?: boolean}>()
   const [isEditing, setIsEditing] = useState(false)
-
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
@@ -90,28 +89,25 @@ const ActivityDetails = (props: Props) => {
   }`
 
   const isOwner = viewerLowestScope === 'TEAM'
-  const MOBILE_SETTINGS_HEIGHT = 208
 
   console.log({isEditing})
   return (
-    <div className='flex h-full w-full flex-col overflow-hidden bg-white lg:flex-row'>
-      <div className='fixed top-4 left-4 flex items-center'>
+    <div className='flex w-full flex-col overflow-hidden bg-white lg:flex-row'>
+      <div className='flex items-center p-4 pb-2'>
         <div className='mr-4'>
           <Link to={categoryLink}>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
         </div>
         <div className='w-max text-xl font-semibold'>Start Activity</div>
+        <div></div>
       </div>
       <div
-        className={clsx(
-          'flex flex-col justify-center pt-14 xl:flex-row',
-          isEditing && 'lg:flex-row lg:justify-center'
-        )}
+        className={clsx('flex flex-col overflow-auto px-4 xl:flex-row', isEditing && 'lg:flex-row')}
       >
-        <div className='w-min'>
+        <div className='aspect-video w-full'>
           <ActivityCard
-            className='w- w- max-h-[200px]'
+            className='w-80'
             theme={CATEGORY_THEMES[category as CategoryID]}
             badge={null}
             type={type}
@@ -119,7 +115,7 @@ const ActivityDetails = (props: Props) => {
             <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
           </ActivityCard>
         </div>
-        <div className='flex min-h-[40px] items-center'>
+        <div className='flex items-center pb-4'>
           <EditableTemplateName
             className='text-[32px] leading-9'
             name={activity.name}

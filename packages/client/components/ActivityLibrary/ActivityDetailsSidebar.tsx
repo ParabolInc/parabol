@@ -251,6 +251,41 @@ const ActivityDetailsSidebar = (props: Props) => {
             : 'Meeting'
   const withRecurrence = type === 'teamPrompt' || type === 'retrospective'
 
+  if (isMobile) {
+    return (
+      <div className='flex w-full flex-col bg-white lg:hidden'>
+        <div className='flex'>
+          <div className='flex-1'>
+            <NewMeetingTeamPicker
+              positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
+              onSelectTeam={onSelectTeam}
+              selectedTeamRef={selectedTeam}
+              teamsRef={availableTeams}
+              customPortal={teamScopePopover}
+              allowAddTeam={viewer.featureFlags.adHocTeams}
+            />
+          </div>
+          <NewMeetingActionsCurrentMeetings team={selectedTeam} />
+        </div>
+        <div className='flex gap-x-2 p-2'>
+          <ScheduleMeetingButton
+            handleStartActivity={handleStartActivity}
+            mutationProps={mutationProps}
+            teamRef={selectedTeam}
+            placeholder={meetingNamePlaceholder}
+            withRecurrence={withRecurrence}
+          />
+          <FlatPrimaryButton
+            onClick={() => handleStartActivity()}
+            waiting={submitting}
+            className='h-14 flex-1'
+          >
+            <div className='text-lg'>Start Activity</div>
+          </FlatPrimaryButton>
+        </div>
+      </div>
+    )
+  }
   return (
     <div
       className={clsx(

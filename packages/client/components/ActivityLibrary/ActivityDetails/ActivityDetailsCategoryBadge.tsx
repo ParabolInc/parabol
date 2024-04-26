@@ -47,30 +47,35 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
         </PlainButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className='border-rad rounded bg-white shadow-lg' sideOffset={5}>
-          <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>
-            {MAIN_CATEGORIES.map((c) => {
-              const categoryId = c as CategoryID
-              return (
-                <DropdownMenu.RadioItem
-                  key={categoryId}
-                  className='flex cursor-pointer select-none py-3 px-4 outline-none data-[state=checked]:bg-slate-200
+        <DropdownMenu.Content
+          className='border-rad animate-slideDown origin-top rounded bg-white shadow-lg'
+          sideOffset={5}
+        >
+          <div className='h-full'>
+            <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>
+              {MAIN_CATEGORIES.map((c) => {
+                const categoryId = c as CategoryID
+                return (
+                  <DropdownMenu.RadioItem
+                    key={categoryId}
+                    className='flex cursor-pointer select-none py-3 px-4 outline-none data-[state=checked]:bg-slate-200
                 data-[highlighted]:bg-slate-100'
-                  value={categoryId}
-                >
-                  <span
-                    className={clsx(
-                      `${CATEGORY_THEMES[categoryId].primary}`,
-                      'h-5 w-5 rounded-full'
-                    )}
-                  ></span>
-                  <span className='pl-5 pr-10 text-xs font-semibold'>
-                    {CATEGORY_ID_TO_NAME[categoryId]}
-                  </span>
-                </DropdownMenu.RadioItem>
-              )
-            })}
-          </DropdownMenu.RadioGroup>
+                    value={categoryId}
+                  >
+                    <span
+                      className={clsx(
+                        `${CATEGORY_THEMES[categoryId].primary}`,
+                        'h-5 w-5 rounded-full'
+                      )}
+                    ></span>
+                    <span className='pl-5 pr-10 text-xs font-semibold'>
+                      {CATEGORY_ID_TO_NAME[categoryId]}
+                    </span>
+                  </DropdownMenu.RadioItem>
+                )
+              })}
+            </DropdownMenu.RadioGroup>
+          </div>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

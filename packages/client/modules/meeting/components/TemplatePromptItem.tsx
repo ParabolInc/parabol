@@ -35,7 +35,7 @@ const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
     display: 'flex',
     fontSize: 14,
     lineHeight: '24px',
-    padding: '4px 16px',
+    padding: '4px 0',
     width: '100%'
   })
 )

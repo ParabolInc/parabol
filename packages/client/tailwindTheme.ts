@@ -168,12 +168,18 @@ export default {
           opacity: 0,
           transform: 'scale(0)'
         }
+      },
+      slideDown: {
+        from: {
+          transform: 'scaleY(0)'
+        }
       }
     },
     animation: {
       overlayShow: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
       contentShow: 'contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
-      scaleIn: 'scaleIn 150ms cubic-bezier(0, 0, .2, 1)'
+      scaleIn: 'scaleIn 150ms cubic-bezier(0, 0, .2, 1)',
+      slideDown: 'slideDown 150ms cubic-bezier(0, 0, .2, 1)'
     }
   }
 } as const

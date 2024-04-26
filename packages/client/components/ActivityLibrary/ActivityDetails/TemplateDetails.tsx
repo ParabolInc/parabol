@@ -277,7 +277,7 @@ export const TemplateDetails = (props: Props) => {
       </div>
       <IntegrationsTip>{integrationsTip}</IntegrationsTip>
 
-      <div className='-ml-14 pt-4'>
+      <div className=''>
         {prompts && (
           <>
             <TemplatePromptList
