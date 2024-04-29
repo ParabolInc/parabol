@@ -17,6 +17,7 @@ import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
 import {SSORelayState} from '../../public/queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
+import {generateIdenticon} from './helpers/generateIdenticon'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -135,10 +136,12 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
 
   const userId = `sso|${generateUID()}`
+  const picture = await generateIdenticon(userId, preferredName)
   const tempUser = new User({
     id: userId,
     email,
     preferredName,
+    picture,
     tier: 'enterprise'
   })
 
