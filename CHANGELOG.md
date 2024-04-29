@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.28.1](https://github.com/ParabolInc/parabol/compare/v7.28.0...v7.28.1) (2024-04-29)
+
+
+### Fixed
+
+* handle 0 discussions ([#9682](https://github.com/ParabolInc/parabol/issues/9682)) ([cedc91c](https://github.com/ParabolInc/parabol/commit/cedc91c9febb47d7b2fa5c24b7a6012b06a4cf95))
+* Sidebar in start custom activity ([#9647](https://github.com/ParabolInc/parabol/issues/9647)) ([a1658d8](https://github.com/ParabolInc/parabol/commit/a1658d8e02534e90a5da1a30860995c4aa714fe2))
+
+
+### Changed
+
+* Remove adhoc teams ([#9678](https://github.com/ParabolInc/parabol/issues/9678)) ([b28ccc2](https://github.com/ParabolInc/parabol/commit/b28ccc2f62614d903c1f268d98d5923de5d6e1f8))
+
 ## [7.28.0](https://github.com/ParabolInc/parabol/compare/v7.27.2...v7.28.0) (2024-04-25)
 
 
