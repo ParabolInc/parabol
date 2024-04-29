@@ -326,7 +326,7 @@ export const ActivityLibrary = (props: Props) => {
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
           <div className='flex gap-2 px-4 pt-6 md:flex-wrap md:pb-4 lg:mx-[15%]'>
-            {(availableCategoryIds as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>).map(
+            {(availableCategoryIds as Array<AllCategoryID | typeof QUICK_START_CATEGORY_ID>).map(
               (category) => (
                 <Link
                   className={clsx(
@@ -341,6 +341,14 @@ export const ActivityLibrary = (props: Props) => {
                   to={`/activity-library/category/${category}`}
                   onClick={() => resetQuery()}
                   key={category}
+                  style={{
+                    color:
+                      category === 'favorite'
+                        ? category === categoryId
+                          ? 'white'
+                          : 'red'
+                        : undefined
+                  }}
                 >
                   {CATEGORY_ID_TO_NAME[category]}
                 </Link>

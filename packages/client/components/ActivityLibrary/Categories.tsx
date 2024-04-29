@@ -1,3 +1,5 @@
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import React from 'react'
 import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import {CardTheme} from './ActivityCard'
 
@@ -50,15 +52,24 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     text: 'text-slate-500'
   },
   [FAVORITE_CATEGORY_ID]: {
-    primary: 'bg-slate-500',
+    primary: 'bg-grape-700',
     secondary: 'bg-slate-200',
     text: 'text-slate-500'
   }
 }
 
-export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string> = {
+export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string | JSX.Element> = {
   [QUICK_START_CATEGORY_ID]: 'Quick Start',
-  [FAVORITE_CATEGORY_ID]: '❤️',
+  [FAVORITE_CATEGORY_ID]: (
+    <FavoriteIcon
+      style={{
+        color: 'inherit',
+        display: 'flex',
+        alignItems: 'center',
+        fontSize: '18px'
+      }}
+    />
+  ),
   [CUSTOM_CATEGORY_ID]: 'Custom',
   retrospective: 'Retrospective',
   estimation: 'Estimation',
