@@ -17,14 +17,11 @@ import {
   RecurrenceSettingsInput
 } from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import {Breakpoint} from '../../types/constEnums'
 import sortByTier from '../../utils/sortByTier'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
@@ -45,7 +42,6 @@ interface Props {
 const ActivityDetailsSidebar = (props: Props) => {
   const {selectedTemplateRef, teamsRef, type, preferredTeamId} = props
   const [isMinimized, setIsMinimized] = useState(false)
-  const isMobile = !useBreakpoint(Breakpoint.INVOICE)
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -188,37 +184,6 @@ const ActivityDetailsSidebar = (props: Props) => {
     }
   }
 
-  const handleShareToOrg = () => {
-    selectedTemplate &&
-      UpdateReflectTemplateScopeMutation(
-        atmosphere,
-        {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
-        {onError, onCompleted}
-      )
-  }
-
-  const teamScopePopover = templateTeam && selectedTemplate.scope === 'TEAM' && (
-    <div className='w-[352px] p-4'>
-      <div>
-        This custom activity is private to the <b>{templateTeam.name}</b> team.
-      </div>
-      <br />
-      <div>
-        As a member of the team you can share this activity with other teams at the{' '}
-        <b>{templateTeam.organization.name}</b> organization so that they can also use the activity.
-      </div>
-      <button
-        onClick={handleShareToOrg}
-        className={
-          'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-sm font-semibold text-slate-700 hover:bg-slate-100'
-        }
-      >
-        <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
-        Allow other teams to use this activity
-      </button>
-    </div>
-  )
-
   const meetingNamePlaceholder =
     type === 'retrospective'
       ? 'Retro'
@@ -255,11 +220,9 @@ const ActivityDetailsSidebar = (props: Props) => {
           >
             <div className='mt-6 flex grow flex-col gap-2'>
               <NewMeetingTeamPicker
-                positionOverride={isMobile ? MenuPosition.UPPER_RIGHT : MenuPosition.UPPER_LEFT} // refactor this: https://github.com/ParabolInc/parabol/issues/9274
                 onSelectTeam={onSelectTeam}
                 selectedTeamRef={selectedTeam}
                 teamsRef={availableTeams}
-                customPortal={teamScopePopover}
               />
               {type === 'retrospective' && (
                 <>
