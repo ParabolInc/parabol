@@ -3007,85 +3007,6 @@
   resolved "https://registry.yarnpkg.com/@datadog/sketches-js/-/sketches-js-2.1.0.tgz#8c7e8028a5fc22ad102fa542b0a446c956830455"
   integrity sha512-smLocSfrt3s53H/XSVP3/1kP42oqvrkjUPtyaFd1F79ux24oE31BKt+q0c6lsa6hOYrFzsIwyc5GXAI5JmfOew==
 
-"@dicebear/adventurer-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/adventurer-neutral/-/adventurer-neutral-8.0.1.tgz#bf20718f2970fc96c01c4913eb74c54a0fc49d59"
-  integrity sha512-NgSz01T/K6MJn93Lk8rKPGKTx6cJe4/lNKMKjRM+4mez8S56WNdGDGUn/QY5GL3P1p01QAOMFF3hygJk3WAr3g==
-
-"@dicebear/adventurer@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/adventurer/-/adventurer-8.0.1.tgz#f30a120d274f0e76b890f0e432ff6861fa9e845e"
-  integrity sha512-dlEycOH+yETbNo3EtswFJCnG02OEgpyPpOFmSgUuRhcRKsqbMlcsiYV4wKeRvq6VvudJXp8UiHwWszLjCHTvKA==
-
-"@dicebear/avataaars-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/avataaars-neutral/-/avataaars-neutral-8.0.1.tgz#d3d5ccdef9a1295d4eeb0c41d507ef9f045d29a9"
-  integrity sha512-vMV1Htaqpnz+qAVyn2tJWbRQIa6mpO/bu7dD0dumuIb45+LIpNwdUuCvkIQw2qf5ODhn1WAfYX3HEJaxRZc4lA==
-
-"@dicebear/avataaars@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/avataaars/-/avataaars-8.0.1.tgz#8429794f711b97e49b13a569e201ed7f4999caf4"
-  integrity sha512-TYXqP9mq3yHOdLlJr8saXnvxj14eY2YAmoVVbT15Rp5+kPzGDyfblNsM838sP5K6JyCNeojZsGE/sPJKk/G+mA==
-
-"@dicebear/big-ears-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/big-ears-neutral/-/big-ears-neutral-8.0.1.tgz#009e2a6e8e73c4011cd8f9095f7881edd3345941"
-  integrity sha512-2FPvNpLI/ald3P8iWhX7SR986B8/DQlvrTNK/v+V0HRJvG1t6/7f9qfUL7OLf6plL7EgSUmKfMKacdiR5skZkA==
-
-"@dicebear/big-ears@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/big-ears/-/big-ears-8.0.1.tgz#d9c6566950d484bca2b4282ca9cbad5b20f720b8"
-  integrity sha512-lnPRFbXsHv2EXJR2OLqJdoUIrSVUpf1z4GkCOfAi01sYNYVpfnzg3kNF77QUhkXUhaONF7d4Wz8rUduBHRtjaA==
-
-"@dicebear/big-smile@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/big-smile/-/big-smile-8.0.1.tgz#76b102c63c70fe9156f0aa20ebb5805ed8dcf9ed"
-  integrity sha512-uh7FP0RgX8Qtr5zpeKUSNq028IQ3srF5LHJfQGjf4wA8R+ln/Sq0gPRJk6qMCCvPFV42b7A6f7rO7mHGnQ+qDA==
-
-"@dicebear/bottts-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/bottts-neutral/-/bottts-neutral-8.0.1.tgz#22f2547cd74669f5fc38ffd5298f083b049daaba"
-  integrity sha512-krbD3U+UvzlY+kfQDpg9Hql1xJmmu3y9ensiU+XZXiuNw/ZavgGqpJtzpbYeF3J5GsggQlbBh/ZAK9AIKz7S3Q==
-
-"@dicebear/bottts@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/bottts/-/bottts-8.0.1.tgz#8dc04b66e7fab6084fd814cf911e1571cb0269cf"
-  integrity sha512-WmaGZnKAT90EP/pzfUox22RshCk3GLB/p+6SsjD0ZIBNjcMXhaJroSoGVcHmPgQVzZBDIdW9C0qDKhkCNVVizg==
-
-"@dicebear/collection@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/collection/-/collection-8.0.1.tgz#2f73264dc12d71c2a104da8b5c6dece571775930"
-  integrity sha512-RlWvOOXTxqP1llNzWhrnm6wCMKFAku/Ty0YJNv+4LYA1YIDpyLNN2PwxxCuj7hU244qUwQcVPQPPPr0XQ+rA/g==
-  dependencies:
-    "@dicebear/adventurer" "8.0.1"
-    "@dicebear/adventurer-neutral" "8.0.1"
-    "@dicebear/avataaars" "8.0.1"
-    "@dicebear/avataaars-neutral" "8.0.1"
-    "@dicebear/big-ears" "8.0.1"
-    "@dicebear/big-ears-neutral" "8.0.1"
-    "@dicebear/big-smile" "8.0.1"
-    "@dicebear/bottts" "8.0.1"
-    "@dicebear/bottts-neutral" "8.0.1"
-    "@dicebear/croodles" "8.0.1"
-    "@dicebear/croodles-neutral" "8.0.1"
-    "@dicebear/fun-emoji" "8.0.1"
-    "@dicebear/icons" "8.0.1"
-    "@dicebear/identicon" "8.0.1"
-    "@dicebear/initials" "8.0.1"
-    "@dicebear/lorelei" "8.0.1"
-    "@dicebear/lorelei-neutral" "8.0.1"
-    "@dicebear/micah" "8.0.1"
-    "@dicebear/miniavs" "8.0.1"
-    "@dicebear/notionists" "8.0.1"
-    "@dicebear/notionists-neutral" "8.0.1"
-    "@dicebear/open-peeps" "8.0.1"
-    "@dicebear/personas" "8.0.1"
-    "@dicebear/pixel-art" "8.0.1"
-    "@dicebear/pixel-art-neutral" "8.0.1"
-    "@dicebear/rings" "8.0.1"
-    "@dicebear/shapes" "8.0.1"
-    "@dicebear/thumbs" "8.0.1"
-
 "@dicebear/converter@8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@dicebear/converter/-/converter-8.0.1.tgz#c037c1404f73a994ee4f943928edb367029425e1"
@@ -3102,100 +3023,10 @@
     "@dicebear/converter" "8.0.1"
     "@types/json-schema" "^7.0.11"
 
-"@dicebear/croodles-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/croodles-neutral/-/croodles-neutral-8.0.1.tgz#13e510df03fe65f72212402be0ae2471a87345a5"
-  integrity sha512-DlR1wxzacRc3GhkMRg4MJ4CBfci/Z96SUl3YpvhHQ4ZtPldaQmdxs3jzOlnG1cuNRkqmiB1D66EXj5146V5WMA==
-
-"@dicebear/croodles@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/croodles/-/croodles-8.0.1.tgz#2c2c8f818d64fd6c0e9a394f158d18eea0f5d39a"
-  integrity sha512-4si6gm61hEI8uDk+7OhSX+0qSPfotYx1dbdBphgGgiP9KTOgipnXzNtz8YnGzNf+V89nV4twHa6Bl6Wna4kFYA==
-
-"@dicebear/fun-emoji@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/fun-emoji/-/fun-emoji-8.0.1.tgz#4013b4e3ef3bafc4faa69d2bb1bae0d24c678c6f"
-  integrity sha512-s2zXyZ7Rp3E2OHxAghhKIYmTtQ64D1VU+/p0VNaIQTPnyfxgpdrKlBMAlp4fXHyirhtAWCHSWgXcU9UFvlmr+w==
-
-"@dicebear/icons@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/icons/-/icons-8.0.1.tgz#9650b302004f6c62856e3a5d595833892ea566fd"
-  integrity sha512-uInO34VW1etgMsbarXIeYULTk+dlj0L9vW7nUinWqwwEbimgXT4iqzNSjQyogmQ3wmaahI1zNwrGUkfkQojouw==
-
-"@dicebear/identicon@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/identicon/-/identicon-8.0.1.tgz#3bde5847637f8bd0394597dd5c1ffe85354af322"
-  integrity sha512-mIHBuUlTs1RNZg+9k4NIjYXYjZBh08ksK/7Pmb+5twsoIPuAPjZ+FbQsfc27Wga/IuJfgf9mYBq6Sxc8/LQxjg==
-
-"@dicebear/initials@8.0.1":
+"@dicebear/initials@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@dicebear/initials/-/initials-8.0.1.tgz#0e9686abd67af452f650373ab1156104aecb37ed"
   integrity sha512-ctO1f92XAms72qkhiKI/vvS/E6mco1RiTEACPJGv6hDPfdjR1vxpkzFpo3jm3RohfwOPCN5fH2l3BSinnlbzzw==
-
-"@dicebear/lorelei-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/lorelei-neutral/-/lorelei-neutral-8.0.1.tgz#930ce6f7910380454385672dbf795e62e86794a7"
-  integrity sha512-vC5M7jg6UByJyFjBitLB3xKr435FdH8BHD8oVzf9A2MXi/ovQ0bEak9MnxVcrxUufJx7bsgS/XCRYNLUwaQKyw==
-
-"@dicebear/lorelei@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/lorelei/-/lorelei-8.0.1.tgz#92d8038858825d814ce232b8f758e0224b0467cd"
-  integrity sha512-AY9XDeV7pIojDziiT/9flPWvH/5dswlVvezHQljmLa1H6EIQAIRWj9INeDaS2u2hRTFQKVeYQ1kuP3Omb+t26A==
-
-"@dicebear/micah@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/micah/-/micah-8.0.1.tgz#d2590006d054e47c3921ce2a72e56e864a208dc3"
-  integrity sha512-B7+YCX62CqnjLlJNY6+NXy+HJlyGMzCbrnE38bGdmnH7PZ1IrEnmJny41AcopKziE02h65kdwCZFXy/v7piT4g==
-
-"@dicebear/miniavs@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/miniavs/-/miniavs-8.0.1.tgz#724d0198078252bfb3ec57ebbdf6cd623372aeca"
-  integrity sha512-mzNAa2cIvsyeRuSnWoQ6l23yiw4BhmzrwdmfJZuDLloh/UNJjyiiCItYSTBmhtxcJrWX8YQTd/2hPdXjsdceTA==
-
-"@dicebear/notionists-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/notionists-neutral/-/notionists-neutral-8.0.1.tgz#49f107b744475b79137f89ff0a5f07bbe8cd6339"
-  integrity sha512-j70iiLZPpLw9JfyziRC8jUaVnbz2NPTZFMd+O08ba3FcTsG0H5+bYimTWL+6fxZ/psN1S3NS/onVvgPkvBWTjg==
-
-"@dicebear/notionists@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/notionists/-/notionists-8.0.1.tgz#ead8a789b93cb817edb6e88939b2d6c72b7c567a"
-  integrity sha512-wOZPSj7lKIJkxiJHysGUVehPmaisWV9dUNhs4jDApiit3u6cbspDEOXvlAn/68cpGP8LfjsdyCp8yhZ9Wvk15Q==
-
-"@dicebear/open-peeps@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/open-peeps/-/open-peeps-8.0.1.tgz#cd6949f7bae0057a70108837d1ea1e3aedc6fe30"
-  integrity sha512-NQbXmnPjyz3YZOAIEzQY6OFXg3sCIIDZgQZjl3qzTqsmUtZVMRnX8Sk53ig1SIM1kxIAyJ908wplwIYV16zxsw==
-
-"@dicebear/personas@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/personas/-/personas-8.0.1.tgz#165eb3f779fcfa762ee255f833fa50c6b64c3ad0"
-  integrity sha512-qxivUbnx4xvE1PvqCg6pBQadVDJVjXaXnxtIUxIRJyDeYIJUxkeBr2A5JOIiNLdypqXoYwhURy5r3NCmesaAWg==
-
-"@dicebear/pixel-art-neutral@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/pixel-art-neutral/-/pixel-art-neutral-8.0.1.tgz#629c4312e3f6e428b79f48a4cfa69b3812679903"
-  integrity sha512-jrbwMNjLk8hlOm+hMTT43z2DqXEFtv6/8hhms7VZE9FjcB1GrQy8j6tSClTq/ktkZlWofEGfvD8BrG5HsbKvaw==
-
-"@dicebear/pixel-art@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/pixel-art/-/pixel-art-8.0.1.tgz#7aaae244e1391b3a4d74d0598a2c5aa46aa758d4"
-  integrity sha512-WMRKdxP8/PL2UGiLAP7CdgTNaIRpFyLdr+u6RyXAUmWiI25ltnZQjctzCfUrO/Nxywc6L6lBkApZtTaP+X+UHg==
-
-"@dicebear/rings@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/rings/-/rings-8.0.1.tgz#a4a269c218785f270d5e56e8c8aa5a7489573e1d"
-  integrity sha512-RcSXPJDdDiyAscUhJMI6pgOgk4or0nzjKndur44U6I+6s0qS3c74zfT//whLUnDnSO2ZTaUGAjQ5gGJtzp5fqQ==
-
-"@dicebear/shapes@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/shapes/-/shapes-8.0.1.tgz#6108ed07d35cecc0da13d6619dba31e6f51498cb"
-  integrity sha512-Duhe3bcKmcYt7GcUsNP4/OIbcHzgb4L7rfuMpUgqjXKATLYq1Wizsw9/y9wrwII8h7wIMxG6RDSndNbd7ISTtA==
-
-"@dicebear/thumbs@8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dicebear/thumbs/-/thumbs-8.0.1.tgz#e7197088b9acf3a3f38ab83fda3d35d1b66dfc69"
-  integrity sha512-cK3UeVVWtiGbStpYeKJrCw3Wy+LGNS5sFja2O3ogc/qpjiL7WFX7kYJXOE2neqOUxVItDxg7dfGatxFrsgUTYA==
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.6"
@@ -6651,84 +6482,6 @@
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/@repeaterjs/repeater/-/repeater-3.0.4.tgz#a04d63f4d1bf5540a41b01a921c9a7fddc3bd1ca"
   integrity sha512-AW8PKd6iX3vAZ0vA43nOUOnbq/X5ihgU+mSXXqunMkeQADGiqw/PY0JNeYtD5sr0PAy51YPgAPbDoeapv9r8WA==
-
-"@resvg/resvg-js-android-arm-eabi@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-android-arm-eabi/-/resvg-js-android-arm-eabi-2.6.2.tgz#e761e0b688127db64879f455178c92468a9aeabe"
-  integrity sha512-FrJibrAk6v29eabIPgcTUMPXiEz8ssrAk7TXxsiZzww9UTQ1Z5KAbFJs+Z0Ez+VZTYgnE5IQJqBcoSiMebtPHA==
-
-"@resvg/resvg-js-android-arm64@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-android-arm64/-/resvg-js-android-arm64-2.6.2.tgz#b8cb564d7f6b3f37d9b43129f5dc5fe171e249e4"
-  integrity sha512-VcOKezEhm2VqzXpcIJoITuvUS/fcjIw5NA/w3tjzWyzmvoCdd+QXIqy3FBGulWdClvp4g+IfUemigrkLThSjAQ==
-
-"@resvg/resvg-js-darwin-arm64@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-darwin-arm64/-/resvg-js-darwin-arm64-2.6.2.tgz#49bd3faeda5c49f53302d970e6e79d006de18e7d"
-  integrity sha512-nmok2LnAd6nLUKI16aEB9ydMC6Lidiiq2m1nEBDR1LaaP7FGs4AJ90qDraxX+CWlVuRlvNjyYJTNv8qFjtL9+A==
-
-"@resvg/resvg-js-darwin-x64@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-darwin-x64/-/resvg-js-darwin-x64-2.6.2.tgz#e1344173aa27bfb4d880ab576d1acf1c1648faca"
-  integrity sha512-GInyZLjgWDfsVT6+SHxQVRwNzV0AuA1uqGsOAW+0th56J7Nh6bHHKXHBWzUrihxMetcFDmQMAX1tZ1fZDYSRsw==
-
-"@resvg/resvg-js-linux-arm-gnueabihf@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-linux-arm-gnueabihf/-/resvg-js-linux-arm-gnueabihf-2.6.2.tgz#34c445eba45efd68f6130b2ab426d76a7424253d"
-  integrity sha512-YIV3u/R9zJbpqTTNwTZM5/ocWetDKGsro0SWp70eGEM9eV2MerWyBRZnQIgzU3YBnSBQ1RcxRZvY/UxwESfZIw==
-
-"@resvg/resvg-js-linux-arm64-gnu@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-linux-arm64-gnu/-/resvg-js-linux-arm64-gnu-2.6.2.tgz#30da47087dd8153182198b94fe9f8d994890dae5"
-  integrity sha512-zc2BlJSim7YR4FZDQ8OUoJg5holYzdiYMeobb9pJuGDidGL9KZUv7SbiD4E8oZogtYY42UZEap7dqkkYuA91pg==
-
-"@resvg/resvg-js-linux-arm64-musl@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-linux-arm64-musl/-/resvg-js-linux-arm64-musl-2.6.2.tgz#5d75b8ff5c83103729c1ca3779987302753c50d4"
-  integrity sha512-3h3dLPWNgSsD4lQBJPb4f+kvdOSJHa5PjTYVsWHxLUzH4IFTJUAnmuWpw4KqyQ3NA5QCyhw4TWgxk3jRkQxEKg==
-
-"@resvg/resvg-js-linux-x64-gnu@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-linux-x64-gnu/-/resvg-js-linux-x64-gnu-2.6.2.tgz#411abedfaee5edc57cbb7701736cecba522e26f3"
-  integrity sha512-IVUe+ckIerA7xMZ50duAZzwf1U7khQe2E0QpUxu5MBJNao5RqC0zwV/Zm965vw6D3gGFUl7j4m+oJjubBVoftw==
-
-"@resvg/resvg-js-linux-x64-musl@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-linux-x64-musl/-/resvg-js-linux-x64-musl-2.6.2.tgz#fe4984038f0372f279e3ff570b72934dd7eb2a5c"
-  integrity sha512-UOf83vqTzoYQO9SZ0fPl2ZIFtNIz/Rr/y+7X8XRX1ZnBYsQ/tTb+cj9TE+KHOdmlTFBxhYzVkP2lRByCzqi4jQ==
-
-"@resvg/resvg-js-win32-arm64-msvc@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-win32-arm64-msvc/-/resvg-js-win32-arm64-msvc-2.6.2.tgz#d3a053cf7ff687087a2106330c0fdaae706254d1"
-  integrity sha512-7C/RSgCa+7vqZ7qAbItfiaAWhyRSoD4l4BQAbVDqRRsRgY+S+hgS3in0Rxr7IorKUpGE69X48q6/nOAuTJQxeQ==
-
-"@resvg/resvg-js-win32-ia32-msvc@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-win32-ia32-msvc/-/resvg-js-win32-ia32-msvc-2.6.2.tgz#7cdda1ce29ef7209e28191d917fa5bef0624a4ad"
-  integrity sha512-har4aPAlvjnLcil40AC77YDIk6loMawuJwFINEM7n0pZviwMkMvjb2W5ZirsNOZY4aDbo5tLx0wNMREp5Brk+w==
-
-"@resvg/resvg-js-win32-x64-msvc@2.6.2":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js-win32-x64-msvc/-/resvg-js-win32-x64-msvc-2.6.2.tgz#cb0ad04525d65f3def4c8d346157a57976d5b388"
-  integrity sha512-ZXtYhtUr5SSaBrUDq7DiyjOFJqBVL/dOBN7N/qmi/pO0IgiWW/f/ue3nbvu9joWE5aAKDoIzy/CxsY0suwGosQ==
-
-"@resvg/resvg-js@^2.0.0":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@resvg/resvg-js/-/resvg-js-2.6.2.tgz#3e92a907d88d879256c585347c5b21a7f3bb5b46"
-  integrity sha512-xBaJish5OeGmniDj9cW5PRa/PtmuVU3ziqrbr5xJj901ZDN4TosrVaNZpEiLZAxdfnhAe7uQ7QFWfjPe9d9K2Q==
-  optionalDependencies:
-    "@resvg/resvg-js-android-arm-eabi" "2.6.2"
-    "@resvg/resvg-js-android-arm64" "2.6.2"
-    "@resvg/resvg-js-darwin-arm64" "2.6.2"
-    "@resvg/resvg-js-darwin-x64" "2.6.2"
-    "@resvg/resvg-js-linux-arm-gnueabihf" "2.6.2"
-    "@resvg/resvg-js-linux-arm64-gnu" "2.6.2"
-    "@resvg/resvg-js-linux-arm64-musl" "2.6.2"
-    "@resvg/resvg-js-linux-x64-gnu" "2.6.2"
-    "@resvg/resvg-js-linux-x64-musl" "2.6.2"
-    "@resvg/resvg-js-win32-arm64-msvc" "2.6.2"
-    "@resvg/resvg-js-win32-ia32-msvc" "2.6.2"
-    "@resvg/resvg-js-win32-x64-msvc" "2.6.2"
 
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
@@ -10499,9 +10252,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001426, caniuse-lite@^1.0.30001517, caniuse-lite@^1.0.30001580, caniuse-lite@~1.0.0:
-  version "1.0.30001612"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001612.tgz#d34248b4ec1f117b70b24ad9ee04c90e0b8a14ae"
-  integrity sha512-lFgnZ07UhaCcsSZgWW0K5j4e69dK1u/ltrL9lTUiFOwNHs12S3UMIEYgBV0Z6C6hRDev7iRnMzzYmKabYdXF9g==
+  version "1.0.30001614"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001614.tgz#f894b4209376a0bf923d67d9c361d96b1dfebe39"
+  integrity sha512-jmZQ1VpmlRwHgdP1/uiKzgiAuGOfLEJsYFP4+GBou/QQ4U6IOJCB4NP1c+1p9RGLpwObcT94jA5/uO+F1vBbog==
 
 capital-case@^1.0.4:
   version "1.0.4"

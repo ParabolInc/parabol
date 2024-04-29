@@ -1,11 +1,11 @@
+import {createAvatar} from '@dicebear/core'
+import * as initials from '@dicebear/initials'
+import sharp from 'sharp'
 import tailwindPreset from '../../../../../client/tailwindTheme'
 import getFileStoreManager from '../../../../fileStorage/getFileStoreManager'
 
 export const generateIdenticon = async (userId: string, name: string) => {
   const letters = 'abcdefghijklmnopqrstuvwxyz'
-  // package is ESM only so we must async import as a workaround
-  const {initials} = await eval("import('@dicebear/collection')")
-  const {createAvatar} = await eval("import('@dicebear/core')")
   const {colors} = tailwindPreset.theme
   const backgroundColor = Object.values(colors)
     .map((color) => {
@@ -24,8 +24,8 @@ export const generateIdenticon = async (userId: string, name: string) => {
     seed,
     backgroundColor
   })
-  const png = await avatar.png()
-  const pngBuffer = await png.toArrayBuffer()
+  const svgBuffer = await avatar.toArrayBuffer()
+  const pngBuffer = await sharp(svgBuffer).png().toBuffer()
   const manager = getFileStoreManager()
   const publicLocation = await manager.putUserAvatar(pngBuffer, userId, 'png')
   return publicLocation

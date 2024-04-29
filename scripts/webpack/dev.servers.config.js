@@ -34,8 +34,7 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs'
+    path: path.join(PROJECT_ROOT, 'dev')
   },
   resolve: {
     alias: {
@@ -54,13 +53,19 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/]
+      allowlist: [/parabol-client/, /parabol-server/, /@dicebear/]
     })
   ],
   plugins: [
     new webpack.DefinePlugin({
       __PRODUCTION__: false
-    })
+    }),
+    // if we need canvas for SSR we can just install it to our own package.json
+    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
+    // native bindings might be faster, but abandonware & not currently used
+    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^exiftool-vendored$/, contextRegExp: /@dicebear/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/})
   ],
   module: {
     rules: [
