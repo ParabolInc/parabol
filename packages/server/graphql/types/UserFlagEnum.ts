@@ -7,7 +7,6 @@ const UserFlagEnum = new GraphQLEnumType({
     azureDevOps: {},
     noAISummary: {},
     noMeetingHistoryLimit: {},
-    adHocTeams: {},
     signUpDestinationTeam: {}
   }
 })

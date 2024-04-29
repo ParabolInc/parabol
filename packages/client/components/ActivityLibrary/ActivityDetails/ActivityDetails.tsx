@@ -35,7 +35,6 @@ graphql`
 export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
-      ...ActivityDetailsSidebar_viewer
       activityLibrarySearch
       preferredTeamId
       activity(activityId: $activityId) {
