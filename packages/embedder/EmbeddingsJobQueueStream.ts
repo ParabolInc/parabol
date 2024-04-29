@@ -29,7 +29,10 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
               .orderBy(['priority'])
               .$if(!isFailed, (db) => db.where('state', '=', 'queued'))
               .$if(isFailed, (db) =>
-                db.where('state', '=', 'failed').where('retryAfter', '<', new Date())
+                db
+                  .where('state', '=', 'failed')
+                  .where('retryAfter', 'is not', null)
+                  .where('retryAfter', '<', new Date())
               )
               .limit(1)
               .forUpdate()
