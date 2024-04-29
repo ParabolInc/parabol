@@ -8,7 +8,6 @@ import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
-import {ActivityDetailsSidebar_viewer$key} from '~/__generated__/ActivityDetailsSidebar_viewer.graphql'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
@@ -41,11 +40,10 @@ interface Props {
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
   preferredTeamId: string | null
-  viewerRef: ActivityDetailsSidebar_viewer$key
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, preferredTeamId, viewerRef} = props
+  const {selectedTemplateRef, teamsRef, type, preferredTeamId} = props
   const [isMinimized, setIsMinimized] = useState(false)
   const isMobile = !useBreakpoint(Breakpoint.INVOICE)
   const selectedTemplate = useFragment(
@@ -59,22 +57,6 @@ const ActivityDetailsSidebar = (props: Props) => {
       }
     `,
     selectedTemplateRef
-  )
-
-  const viewer = useFragment(
-    graphql`
-      fragment ActivityDetailsSidebar_viewer on User {
-        featureFlags {
-          adHocTeams
-        }
-        ...AdhocTeamMultiSelect_viewer
-        organizations {
-          id
-          name
-        }
-      }
-    `,
-    viewerRef
   )
 
   const teams = useFragment(
@@ -278,7 +260,6 @@ const ActivityDetailsSidebar = (props: Props) => {
                 selectedTeamRef={selectedTeam}
                 teamsRef={availableTeams}
                 customPortal={teamScopePopover}
-                allowAddTeam={viewer.featureFlags.adHocTeams}
               />
               {type === 'retrospective' && (
                 <>
