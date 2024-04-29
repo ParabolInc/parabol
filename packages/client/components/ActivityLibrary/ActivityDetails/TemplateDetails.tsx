@@ -211,7 +211,7 @@ export const TemplateDetails = (props: Props) => {
   return (
     <div className='space-y-6'>
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
-      <div className='w-[480px]'>
+      <div className='max-w-[480px]'>
         <div className='mb-6'>
           {__typename === 'FixedActivity' && (
             <div className='text-base font-semibold text-slate-600'>Created by Parabol</div>
@@ -277,9 +277,9 @@ export const TemplateDetails = (props: Props) => {
         </div>
         {activityDescription}
       </div>
-      <IntegrationsTip>{integrationsTip}</IntegrationsTip>
+      <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
 
-      <div className='-ml-14 pt-4'>
+      <div className='pt-4 sm:-ml-14'>
         {prompts && (
           <>
             <TemplatePromptList

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import dayjs from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import React, {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
@@ -204,6 +204,27 @@ const GcalModal = (props: Props) => {
     setVideoType(option)
   }
 
+  const handleChangeStart = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const newValue = date.hour(time.hour()).minute(time.minute())
+      setStart(newValue)
+      setEnd(newValue.add(1, 'hour'))
+    }
+  }
+
+  const handleChangeEnd = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const newValue = date.hour(time.hour()).minute(time.minute())
+      if (newValue.isAfter(start)) {
+        setEnd(newValue)
+      } else {
+        const newStartValue = newValue.subtract(1, 'hour')
+        setStart(newStartValue)
+        setEnd(newValue)
+      }
+    }
+  }
+
   return (
     <StyledDialogContainer>
       <DialogTitle>
@@ -234,8 +255,8 @@ const GcalModal = (props: Props) => {
             <DateTimePickers
               startValue={start}
               endValue={end}
-              setStart={setStart}
-              setEnd={setEnd}
+              handleChangeStart={handleChangeStart}
+              handleChangeEnd={handleChangeEnd}
             />
           </div>
           <VideoConferencing videoType={videoType} handleChangeVideoType={handleChangeVideoType} />
