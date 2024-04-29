@@ -40,7 +40,7 @@ export class WorkflowOrchestrator {
     Logger.error(error)
     const pg = getKysely()
     const {message, retryDelay, jobData} = error
-    const maxRetries = error.maxRetries ?? 1e6
+    const maxRetries = error.maxRetries ?? 10
     await pg
       .updateTable('EmbeddingsJobQueue')
       .set((eb) => ({
