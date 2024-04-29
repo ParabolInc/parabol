@@ -40,13 +40,12 @@ interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
-  isOpen: boolean
   preferredTeamId: string | null
   viewerRef: ActivityDetailsSidebar_viewer$key
 }
 
 const ActivityDetailsSidebar = (props: Props) => {
-  const {selectedTemplateRef, teamsRef, type, isOpen, preferredTeamId, viewerRef} = props
+  const {selectedTemplateRef, teamsRef, type, preferredTeamId, viewerRef} = props
   const [isMinimized, setIsMinimized] = useState(false)
   const isMobile = !useBreakpoint(Breakpoint.INVOICE)
   const selectedTemplate = useFragment(
@@ -252,14 +251,7 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   return (
     <>
-      {isOpen && <div className='w-96' />}
-      <div
-        className={clsx(
-          'fixed bottom-0 flex  w-full flex-col overflow-hidden border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:w-96 lg:border-l lg:pt-14',
-          isOpen ? 'translate-y-0' : 'translate-y-full lg:translate-x-0 lg:translate-y-0',
-          isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'
-        )}
-      >
+      <div className='sticky bottom-0 flex w-full flex-col border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:min-h-screen lg:w-full lg:w-96 lg:border-l lg:pt-14'>
         <div className='flex-grow'>
           <div className='flex items-center justify-between pt-2 text-xl font-semibold lg:pt-0'>
             Settings
@@ -311,7 +303,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
           {error && <StyledError>{error.message}</StyledError>}
           <NewMeetingActionsCurrentMeetings team={selectedTeam} />
-          {/* TODO: scheduling meeting does not work with one-on-one https://github.com/ParabolInc/parabol/issues/8820  */}
           <ScheduleMeetingButton
             handleStartActivity={handleStartActivity}
             mutationProps={mutationProps}
