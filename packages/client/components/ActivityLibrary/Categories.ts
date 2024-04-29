@@ -58,7 +58,7 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
 
 export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string> = {
   [QUICK_START_CATEGORY_ID]: 'Quick Start',
-  [FAVORITE_CATEGORY_ID]: 'Favorite',
+  [FAVORITE_CATEGORY_ID]: '❤️',
   [CUSTOM_CATEGORY_ID]: 'Custom',
   retrospective: 'Retrospective',
   estimation: 'Estimation',

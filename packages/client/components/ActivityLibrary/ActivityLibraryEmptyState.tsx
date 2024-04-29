@@ -1,4 +1,5 @@
 import React from 'react'
+import favoritePlaceholder from '../../../../static/images/illustrations/favourite-empty-state.png'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {AllCategoryID, QUICK_START_CATEGORY_ID} from './Categories'
 import CreateActivityCard from './CreateActivityCard'
@@ -12,11 +13,11 @@ const ActivityLibraryEmptyState = (props: Props) => {
   const {categoryId, searchQuery} = props
   const showResultsNotFound = categoryId !== 'custom' || searchQuery !== ''
 
-  // improve empty state with image
   if (categoryId === 'favorite') {
     return (
       <div className='mx-auto flex p-2 text-slate-700'>
         <div className='ml-10'>
+          <img className='w-32' src={favoritePlaceholder} />
           <div className='mb-4 text-xl font-semibold'>No favorites yet!</div>
           <div className='mb-6 max-w-[360px]'>Actvities you mark as favorite will show up here</div>
         </div>
