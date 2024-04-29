@@ -137,7 +137,6 @@ const ActivityDetails = (props: Props) => {
             teamsRef={teams}
             type={activity.type}
             preferredTeamId={preferredTeamId}
-            viewerRef={viewer}
           />
         </div>
       </div>
@@ -147,7 +146,6 @@ const ActivityDetails = (props: Props) => {
           teamsRef={teams}
           type={activity.type}
           preferredTeamId={preferredTeamId}
-          viewerRef={viewer}
         />
       </div>
     </div>
