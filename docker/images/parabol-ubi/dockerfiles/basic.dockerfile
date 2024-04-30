@@ -2,22 +2,17 @@ ARG _NODE_VERSION=${_NODE_VERSION}
 FROM node:${_NODE_VERSION}-bookworm-slim as base
 
 # Install Fontconfig for SVG rendering
-RUN apt-get update && apt-get install -y fontconfig unzip
-
-# Create a directory to store fonts
-RUN mkdir -p /usr/share/fonts/plex
-
-# Download and install the IBM Plex font
-ADD https://github.com/IBM/plex/releases/download/v5.0.1/IBM-Plex-Sans.zip /tmp/plex.zip
-RUN unzip /tmp/plex.zip -d /usr/share/fonts/plex && rm /tmp/plex.zip
+RUN apt-get update && apt-get install -y fontconfig
 
 ENV HOME=/home/node \
     USER=node \
-    FONTCONFIG_PATH=/etc/fonts
+    FONTCONFIG_PATH=/etc/fonts \
+    NPM_CONFIG_PREFIX=/home/node/.npm-global \
+    PORT=3000
 
-ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
-ENV PORT=3000
-
+# Create a directory to store fonts
+RUN mkdir -p /usr/share/fonts
+COPY --chown=node ${HOME}/parabol/static/fonts /usr/share/fonts
 COPY --chown=node --chmod=755 docker/images/parabol-ubi/entrypoints/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --chown=node docker/images/parabol-ubi/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
 
