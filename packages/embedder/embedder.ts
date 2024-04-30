@@ -52,8 +52,6 @@ const run = async () => {
       `Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
     )
     primaryLock?.release().catch(() => {})
-    // close streams manually, streams.return only works if any of the stream retruns a datum, if these are idle, it will wait forever
-    jobQueueStreams.forEach((s) => s.return())
     streams.return?.()
   }
   process.on('SIGTERM', kill)
