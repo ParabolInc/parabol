@@ -20,7 +20,8 @@ const RetroDrawerRoot = (props: Props) => {
   const queryRef = useQueryLoaderNow<RetroDrawerQuery>(retroDrawerQuery, {
     first: 2000,
     type: 'retrospective',
-    meetingId
+    meetingId,
+    isMenuOpen
   })
   return (
     <>
@@ -31,7 +32,7 @@ const RetroDrawerRoot = (props: Props) => {
         meetingId={meetingId}
       />
       <Suspense fallback={''}>
-        {queryRef && isMenuOpen && (
+        {queryRef && (
           <RetroDrawer queryRef={queryRef} showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
         )}
       </Suspense>

@@ -20,13 +20,19 @@ const RetroDrawer = (props: Props) => {
 
   const {viewer} = usePreloadedQuery<RetroDrawerQuery>(
     graphql`
-      query RetroDrawerQuery($first: Int!, $type: MeetingTypeEnum!, $meetingId: ID!) {
+      query RetroDrawerQuery(
+        $first: Int!
+        $type: MeetingTypeEnum!
+        $meetingId: ID!
+        $isMenuOpen: Boolean!
+      ) {
         viewer {
           meeting(meetingId: $meetingId) {
             id
           }
           availableTemplates(first: $first, type: $type)
-            @connection(key: "RetroDrawer_availableTemplates") {
+            @connection(key: "RetroDrawer_availableTemplates")
+            @include(if: $isMenuOpen) {
             edges {
               node {
                 ...RetroDrawerTemplateCard_template
@@ -40,7 +46,7 @@ const RetroDrawer = (props: Props) => {
     queryRef
   )
 
-  const templates = viewer.availableTemplates.edges
+  const templates = viewer.availableTemplates?.edges
   const meeting = viewer.meeting
   const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -77,7 +83,7 @@ const RetroDrawer = (props: Props) => {
                 <Close />
               </div>
             </div>
-            {templates.map((template) => (
+            {templates?.map((template) => (
               <RetroDrawerTemplateCard
                 key={template.node.id}
                 meetingId={meeting!.id}
