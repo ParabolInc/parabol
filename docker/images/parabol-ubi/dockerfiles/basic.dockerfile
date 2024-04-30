@@ -1,8 +1,19 @@
 ARG _NODE_VERSION=${_NODE_VERSION}
 FROM node:${_NODE_VERSION}-bookworm-slim as base
 
+# Install Fontconfig for SVG rendering
+RUN apt-get update && apt-get install -y fontconfig unzip
+
+# Create a directory to store fonts
+RUN mkdir -p /usr/share/fonts/plex
+
+# Download and install the IBM Plex font
+ADD https://github.com/IBM/plex/releases/download/v5.0.1/IBM-Plex-Sans.zip /tmp/plex.zip
+RUN unzip /tmp/plex.zip -d /usr/share/fonts/plex && rm /tmp/plex.zip
+
 ENV HOME=/home/node \
-    USER=node
+    USER=node \
+    FONTCONFIG_PATH=/etc/fonts
 
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PORT=3000

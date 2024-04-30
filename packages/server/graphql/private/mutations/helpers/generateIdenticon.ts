@@ -22,7 +22,8 @@ export const generateIdenticon = async (userId: string, name: string) => {
       .join('') || 'pa'
   const avatar = createAvatar(initials, {
     seed,
-    backgroundColor
+    backgroundColor,
+    fontFamily: ['IBM Plex Sans']
   })
   const svgBuffer = await avatar.toArrayBuffer()
   const pngBuffer = await sharp(svgBuffer).png().toBuffer()
