@@ -85,6 +85,12 @@ const User: UserResolvers = {
     }
     return request
   },
+  favoriteTemplates: async ({id, favoriteTemplateIds}, _args, {dataLoader}) => {
+    const templates = await Promise.all(
+      favoriteTemplateIds.map((templateId) => dataLoader.get('meetingTemplates').load(templateId))
+    )
+    return templates.filter(isNotNull)
+  },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },

@@ -9,6 +9,7 @@ interface Input {
   id?: string
   preferredName: string
   email: string
+  favoriteTemplateIds?: string[]
   featureFlags?: string[]
   lastSeenAt?: Date
   lastSeenAtURLs?: string[]
@@ -31,6 +32,7 @@ export default class User {
   id: string
   preferredName: string
   email: string
+  favoriteTemplateIds: string[]
   featureFlags: string[]
   lastSeenAt: Date
   lastSeenAtURLs: string[] | null
@@ -58,6 +60,7 @@ export default class User {
       createdAt,
       picture,
       updatedAt,
+      favoriteTemplateIds,
       featureFlags,
       lastSeenAt,
       lastSeenAtURLs,
@@ -83,6 +86,7 @@ export default class User {
     this.createdAt = createdAt || now
     this.picture = picture || `${AVATAR_BUCKET}/${avatarName}.png`
     this.updatedAt = updatedAt || now
+    this.favoriteTemplateIds = favoriteTemplateIds || []
     this.featureFlags = featureFlags || []
     this.identities = identities || []
     this.inactive = inactive || false
