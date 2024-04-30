@@ -48,7 +48,9 @@ const run = async () => {
   const streams = mergeAsyncIterators(jobQueueStreams)
 
   const kill: NodeJS.SignalsListener = (signal) => {
-    Logger.log(`Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`)
+    Logger.log(
+      `Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
+    )
     primaryLock?.release().catch(() => {})
     // close streams manually, streams.return only works if any of the stream retruns a datum, if these are idle, it will wait forever
     jobQueueStreams.forEach((s) => s.return())
@@ -72,4 +74,3 @@ const run = async () => {
 }
 
 run()
-
