@@ -6,5 +6,5 @@ export const logMemoryUse = () => {
     const {rss} = memoryUsage
     const usedMB = Math.floor(rss / MB)
     console.log('Memory use:', usedMB, 'MB')
-  }, 10000)
+  }, 10000).unref()
 }

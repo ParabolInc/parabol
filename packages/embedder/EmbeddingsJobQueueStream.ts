@@ -13,10 +13,16 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
   }
 
   orchestrator: WorkflowOrchestrator
+  done: boolean
+
   constructor(orchestrator: WorkflowOrchestrator) {
     this.orchestrator = orchestrator
+    this.done = false
   }
   async next(): Promise<IteratorResult<DBJob>> {
+    if (this.done) {
+      return {done: true as const, value: undefined}
+    }
     const pg = getKysely()
     const getJob = (isFailed: boolean) => {
       return pg
@@ -57,9 +63,11 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
     }
   }
   return() {
+    this.done = true
     return Promise.resolve({done: true as const, value: undefined})
   }
   throw(error: any) {
+    this.done = true
     return Promise.resolve({done: true as const, value: error})
   }
 }

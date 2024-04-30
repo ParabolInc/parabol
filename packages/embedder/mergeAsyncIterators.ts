@@ -87,10 +87,12 @@ export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(
       }
     } catch (err) {
       // Unwind remaining iterators on failure
-      try {
-        await Promise.all(iterators.map((iterator) => iterator.return?.()))
-      } catch {}
+      await Promise.allSettled(iterators.map((iterator) => iterator.return?.()))
       throw err
+    }
+    finally {
+      // Unwind remaining iterators on success
+      await Promise.allSettled(iterators.map((iterator) => iterator.return?.()))
     }
   })()
 }
