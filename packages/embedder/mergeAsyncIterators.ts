@@ -14,7 +14,7 @@ type Result<T extends AsyncIterator<any>> = UnYield<Awaited<ReturnType<T['next']
 // To avoid: https://github.com/tc39/proposal-async-iterator-helpers/issues/15#issuecomment-1937011820
 export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(
   iterators: T
-): AsyncIterableIterator<{[P in keyof T]: [ParseInt<`${P}`>, Result<T[P]>]}[number]> {
+) {
   type ResultThunk = () => [number, Result<T[number]>]
   let count = iterators.length as number
   let capability: PromiseCapability<ResultThunk | null> | undefined
@@ -51,7 +51,7 @@ export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(
     void getNext(idx, iterable)
   }
 
-  const it = {
+  const it: AsyncIterableIterator<{[P in keyof T]: [ParseInt<`${P}`>, Result<T[P]>]}[number]> = {
     [Symbol.asyncIterator]: () => it,
     next: async () => {
       const nextQueuedResult = queuedResults.shift()
@@ -84,7 +84,7 @@ export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(
       await Promise.allSettled(iterators.map((iterator) => iterator.return?.()))
       return {done: true as const, value: undefined}
     },
-    throw: async (error) => {
+    throw: async () => {
       await Promise.allSettled(iterators.map((iterator) => iterator.return?.()))
       return {done: true as const, value: undefined}
     }
