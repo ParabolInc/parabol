@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "7.28.1",
+  "version": "7.29.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -98,7 +98,6 @@
     "chartjs-adapter-dayjs-3": "^1.2.3",
     "cleave.js": "^1.6.0",
     "clsx": "^1.2.1",
-    "core-js": "3.36.0",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.3",
     "dompurify": "^2.4.1",
@@ -112,7 +111,7 @@
     "graphiql": "^3.0.0",
     "graphql-typed": "^0.7.2",
     "hoist-non-react-statics": "^3.3.0",
-    "humanize-duration": "3.31.0",
+    "humanize-duration": "^3.32.0",
     "immutable": "3.8.2",
     "json2csv": "5.0.7",
     "jwt-decode": "^2.1.0",

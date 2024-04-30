@@ -34,8 +34,7 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs'
+    path: path.join(PROJECT_ROOT, 'dev')
   },
   resolve: {
     alias: {
@@ -54,13 +53,15 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/]
+      allowlist: [/parabol-client/, /parabol-server/, /@dicebear/]
     })
   ],
   plugins: [
     new webpack.DefinePlugin({
       __PRODUCTION__: false
-    })
+    }),
+    new webpack.IgnorePlugin({resourceRegExp: /^exiftool-vendored$/, contextRegExp: /@dicebear/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/})
   ],
   module: {
     rules: [

@@ -40,13 +40,13 @@ export default class S3Manager extends FileStoreManager {
     })
   }
 
-  protected async putUserFile(file: Buffer, partialPath: string) {
+  protected async putUserFile(file: ArrayBufferLike, partialPath: string) {
     const fullPath = this.prependPath(partialPath)
     return this.putFile(file, fullPath)
   }
-  protected async putFile(file: Buffer, fullPath: string) {
+  protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const s3Params = {
-      Body: file,
+      Body: Buffer.from(file),
       Bucket: this.bucket,
       Key: fullPath,
       ContentType: mime.lookup(fullPath) || 'application/octet-stream'
@@ -63,7 +63,7 @@ export default class S3Manager extends FileStoreManager {
     return encodeURI(`${this.baseUrl}${fullPath}`)
   }
 
-  putBuildFile(file: Buffer, partialPath: string): Promise<string> {
+  putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
     return this.putFile(file, fullPath)
   }

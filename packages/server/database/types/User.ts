@@ -13,7 +13,7 @@ interface Input {
   lastSeenAt?: Date
   lastSeenAtURLs?: string[]
   updatedAt?: Date
-  picture?: string
+  picture: string
   inactive?: boolean
   identities?: AuthIdentity[]
   isWatched?: boolean
@@ -23,9 +23,6 @@ interface Input {
   tier?: TierEnum
   tms?: string[]
 }
-
-const letters = 'abcdefghijklmnopqrstuvwxyz'
-const AVATAR_BUCKET = `https://${process.env.AWS_S3_BUCKET}/static/avatars`
 
 export default class User {
   id: string
@@ -69,19 +66,12 @@ export default class User {
       sendSummaryEmail,
       tier
     } = input
-    const avatarName =
-      preferredName
-        .toLowerCase()
-        .split('')
-        .filter((letter) => letters.includes(letter))
-        .slice(0, 2)
-        .join('') || 'pa'
     const now = new Date()
     this.id = id ?? `local|${generateUID()}`
     this.tms = tms || []
     this.email = email
     this.createdAt = createdAt || now
-    this.picture = picture || `${AVATAR_BUCKET}/${avatarName}.png`
+    this.picture = picture
     this.updatedAt = updatedAt || now
     this.featureFlags = featureFlags || []
     this.identities = identities || []
