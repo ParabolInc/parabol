@@ -9,6 +9,10 @@ const NotifyMentioned: NotifyMentionedResolvers = {
       return null
     }
     return retroReflection
+  },
+  senderPicture: async ({senderPicture}, _args, {dataLoader}) => {
+    if (!senderPicture) return null
+    return dataLoader.get('fileStoreAsset').load(senderPicture)
   }
 }
 

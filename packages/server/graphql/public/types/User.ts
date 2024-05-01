@@ -194,6 +194,14 @@ const User: UserResolvers = {
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
   },
+  picture: async ({picture}, _args, {dataLoader}) => {
+    return dataLoader.get('fileStoreAsset').load(picture)
+  },
+  rasterPicture: async ({picture}, _args, {dataLoader}) => {
+    const rasterPicture =
+      picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
+    return dataLoader.get('fileStoreAsset').load(rasterPicture)
+  },
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },

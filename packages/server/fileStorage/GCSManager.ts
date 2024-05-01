@@ -19,7 +19,7 @@ export default class GCSManager extends FileStoreManager {
   private accessToken: string | undefined
 
   // The CDN_BASE_URL without the env, e.g. storage.google.com/:bucket
-  private baseUrl: string
+  baseUrl: string
   private cloudKey: CloudKey
   constructor() {
     super()
@@ -159,5 +159,9 @@ export default class GCSManager extends FileStoreManager {
     const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}`
     const res = await fetch(url)
     return res.status !== 404
+  }
+  async presignUrl(url: string): Promise<string> {
+    // not implemented yet!
+    return url
   }
 }
