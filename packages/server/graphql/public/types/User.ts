@@ -194,6 +194,9 @@ const User: UserResolvers = {
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
   },
+  picture: async ({picture}, _args, {dataLoader}) => {
+    return dataLoader.get('fileStoreAsset').load(picture)
+  },
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },

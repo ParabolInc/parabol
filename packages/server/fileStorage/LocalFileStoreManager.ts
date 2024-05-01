@@ -3,7 +3,8 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import FileStoreManager from './FileStoreManager'
-export default class LocalFileSystemManager extends FileStoreManager {
+export default class LocalFileStoreManager extends FileStoreManager {
+  baseUrl = makeAppURL(appOrigin, 'self-hosted')
   constructor() {
     super()
     const {PROTO, HOST} = process.env
@@ -46,5 +47,8 @@ export default class LocalFileSystemManager extends FileStoreManager {
     } catch (e) {
       return false
     }
+  }
+  async presignUrl(url: string) {
+    return url
   }
 }

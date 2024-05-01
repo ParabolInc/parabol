@@ -9,6 +9,7 @@ import Organization from '../database/types/Organization'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
+import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import isValid from '../graphql/isValid'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
@@ -29,6 +30,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {Team} from '../postgres/queries/getTeamsByIds'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
+import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
@@ -831,6 +833,33 @@ export const isCompanyDomain = (parent: RootDataLoader) => {
         .execute()
       const freemailDomains = new Set(res.map(({domain}) => domain))
       return domains.map((domain) => !freemailDomains.has(domain))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const fileStoreAsset = (parent: RootDataLoader) => {
+  return new DataLoader<string, string, string>(
+    async (urls) => {
+      // Our cloud saas has a public file store, so no need to make a presigned url
+      // if (process.env.IS_ENTERPRISE !== 'true') return urls
+      const manager = getFileStoreManager()
+      const {baseUrl} = manager
+      const presignedUrls = await Promise.all(
+        urls.map(async (url) => {
+          // if the image is not hosted by us, ignore it
+          if (!url.startsWith(baseUrl)) return url
+          try {
+            return await manager.presignUrl(url)
+          } catch (e) {
+            Logger.log('Unable to presign url', url, e)
+            return url
+          }
+        })
+      )
+      return presignedUrls
     },
     {
       ...parent.dataLoaderOptions

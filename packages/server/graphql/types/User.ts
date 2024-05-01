@@ -312,10 +312,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
       }
     },
-    picture: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'url of user’s profile picture'
-    },
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The application-specific name, defaults to email before the tld',
