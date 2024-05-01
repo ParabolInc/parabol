@@ -3,6 +3,7 @@ import generateUID from '../generateUID'
 export type FileAssetDir = 'store' | 'build'
 
 export default abstract class FileStoreManager {
+  abstract baseUrl: string
   abstract checkExists(fileName: string, assetDir?: FileAssetDir): Promise<boolean>
   abstract prependPath(partialPath: string, assetDir?: FileAssetDir): string
   abstract getPublicFileLocation(fullPath: string): string
@@ -10,6 +11,8 @@ export default abstract class FileStoreManager {
   protected abstract putFile(file: ArrayBufferLike, fullPath: string): Promise<string>
   protected abstract putUserFile(file: ArrayBufferLike, partialPath: string): Promise<string>
   abstract putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string>
+
+  abstract presignUrl(url: string): Promise<string>
   async putUserAvatar(file: ArrayBufferLike, userId: string, ext: string, name?: string) {
     const filename = name ?? generateUID()
     // replace the first dot, if there is one, but not any other dots

@@ -36,7 +36,6 @@ import AuthIdentity from './AuthIdentity'
 import Discussion from './Discussion'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import GraphQLURLType from './GraphQLURLType'
 import MeetingMember from './MeetingMember'
 import NewFeatureBroadcast from './NewFeatureBroadcast'
 import Organization from './Organization'
@@ -312,23 +311,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
       }
     },
-    picture: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'url of user’s profile picture'
-    },
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The application-specific name, defaults to email before the tld',
       resolve: ({preferredName, name}: {preferredName: string; name: string}) => {
         return preferredName || name
-      }
-    },
-    rasterPicture: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description:
-        'url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)',
-      resolve: ({picture}: {picture: string}) => {
-        return picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
       }
     },
     lastSeenAt: {

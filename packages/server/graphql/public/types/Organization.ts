@@ -20,6 +20,10 @@ const Organization: OrganizationResolvers = {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
+  picture: async ({picture}, _args, {dataLoader}) => {
+    if (!picture) return null
+    return dataLoader.get('fileStoreAsset').load(picture)
+  },
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },

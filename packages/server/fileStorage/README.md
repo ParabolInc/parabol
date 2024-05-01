@@ -39,7 +39,6 @@ After setting the `FILE_STORE_PROVIDER` env var, there are a couple other env va
 - `AWS_ACCESS_KEY_ID="XXXXXXXXXXXXXXXXXXXX"`
 - `AWS_REGION="some-region-1"`
 - `AWS_SECRET_ACCESS_KEY="YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"`
-- `AWS_S3_BUCKET="some-bucket-name"`
 - `CDN_BASE_URL="//some.url.com/instance"`
 
 After these vars are set correctly, all should be good to go to begin uploading images to the configured S3 bucket.

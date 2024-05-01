@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.30.0](https://github.com/ParabolInc/parabol/compare/v7.29.1...v7.30.0) (2024-05-01)
+
+
+### Added
+
+* support private S3 buckets ([#9697](https://github.com/ParabolInc/parabol/issues/9697)) ([db17c9d](https://github.com/ParabolInc/parabol/commit/db17c9dfdbf3dfa01dfc06087eda686792d8d63b))
+
+
+### Fixed
+
+* remove oneOnOne column in Team table ([#9696](https://github.com/ParabolInc/parabol/issues/9696)) ([aa97e05](https://github.com/ParabolInc/parabol/commit/aa97e05df97f9592d5a6366b298d1cb99c1533e3))
+
 ## [7.29.1](https://github.com/ParabolInc/parabol/compare/v7.29.0...v7.29.1) (2024-04-30)
 
 

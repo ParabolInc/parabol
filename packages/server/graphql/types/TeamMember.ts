@@ -22,7 +22,6 @@ import {default as sortRepoIntegrations} from '../queries/helpers/sortRepoIntegr
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import GraphQLURLType from './GraphQLURLType'
 import RepoIntegrationQueryPayload from './RepoIntegrationQueryPayload'
 import {TaskConnection} from './Task'
 import Team from './Team'
@@ -64,10 +63,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The user email'
-    },
-    picture: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'url of user’s profile picture'
     },
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
