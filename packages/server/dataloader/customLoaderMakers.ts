@@ -844,7 +844,7 @@ export const fileStoreAsset = (parent: RootDataLoader) => {
   return new DataLoader<string, string, string>(
     async (urls) => {
       // Our cloud saas has a public file store, so no need to make a presigned url
-      // if (process.env.IS_ENTERPRISE !== 'true') return urls
+      if (process.env.IS_ENTERPRISE !== 'true') return urls
       const manager = getFileStoreManager()
       const {baseUrl} = manager
       const presignedUrls = await Promise.all(

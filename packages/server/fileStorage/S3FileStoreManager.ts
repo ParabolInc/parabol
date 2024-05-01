@@ -80,6 +80,7 @@ export default class S3Manager extends FileStoreManager {
   }
 
   async presignUrl(url: string) {
+    // Important to decodeURI so `getSignedUrl` doesn't double encode e.g. local|123/avatars/123.jpg
     const key = decodeURI(url.slice(this.baseUrl.length))
     const command = new GetObjectCommand({Bucket: this.baseUrl, Key: key})
     const encodedUri = await getSignedUrl(this.s3, command, {expiresIn: 604800})
