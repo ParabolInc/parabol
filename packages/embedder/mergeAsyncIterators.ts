@@ -12,9 +12,7 @@ type Result<T extends AsyncIterator<any>> = UnYield<Awaited<ReturnType<T['next']
 
 // Promise.race has a memory leak
 // To avoid: https://github.com/tc39/proposal-async-iterator-helpers/issues/15#issuecomment-1937011820
-export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(
-  iterators: T
-) {
+export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(iterators: T) {
   type ResultThunk = () => [number, Result<T[number]>]
   let count = iterators.length as number
   let capability: PromiseCapability<ResultThunk | null> | undefined
