@@ -1,22 +1,30 @@
 import {Favorite} from '@mui/icons-material'
 import clsx from 'clsx'
 import React, {useState} from 'react'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useMutationProps from '../../hooks/useMutationProps'
+import ToggleFavoriteTemplateMutation from '../../mutations/ToggleFavoriteTemplateMutation'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 
 type Props = {
   className?: string
+  templateId: string
 }
 
 const ActivityCardFavorite = (props: Props) => {
-  const {className} = props
+  const {className, templateId} = props
+  const atmosphere = useAtmosphere()
   const [isSelected, setIsSelected] = useState(false)
   const tooltipCopy = isSelected ? 'Remove from favorites' : 'Add to favorites'
+  const {onError, onCompleted} = useMutationProps()
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     setIsSelected((prev) => !prev)
+
+    ToggleFavoriteTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
   }
 
   return (

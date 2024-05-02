@@ -1,4 +1,4 @@
-import {Kysely, PostgresDialect} from 'kysely'
+import {Kysely, PostgresDialect, sql} from 'kysely'
 import getPg from '../getPg'
 
 export async function up() {
@@ -8,10 +8,10 @@ export async function up() {
     })
   })
 
-  await pg.schema
-    .alterTable('User')
-    .addColumn('favoriteTemplateIds', 'jsonb', (col) => col.notNull())
-    .execute()
+  await sql`
+  ALTER TABLE "User"
+  ADD COLUMN "favoriteTemplateIds" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+`.execute(pg)
 }
 
 export async function down() {
@@ -21,5 +21,8 @@ export async function down() {
     })
   })
 
-  await pg.schema.alterTable('User').dropColumn('favoriteTemplateIds').execute()
+  await sql`
+  ALTER TABLE "User"
+  DROP COLUMN "favoriteTemplateIds";
+`.execute(pg)
 }

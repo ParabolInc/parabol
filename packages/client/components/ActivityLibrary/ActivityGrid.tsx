@@ -37,7 +37,10 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
                 src={template.illustrationUrl}
                 category={template.category as CategoryID}
               />
-              <ActivityCardFavorite className='absolute bottom-3 right-3' />
+              <ActivityCardFavorite
+                templateId={template.id}
+                className='absolute bottom-3 right-3'
+              />
               <ActivityLibraryCardDescription
                 className='hidden group-hover/card:flex'
                 templateRef={template}

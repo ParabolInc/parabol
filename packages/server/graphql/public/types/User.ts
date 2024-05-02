@@ -85,7 +85,7 @@ const User: UserResolvers = {
     }
     return request
   },
-  favoriteTemplates: async ({id, favoriteTemplateIds}, _args, {dataLoader}) => {
+  favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
     const templates = await Promise.all(
       favoriteTemplateIds.map((templateId) => dataLoader.get('meetingTemplates').load(templateId))
     )
