@@ -7,35 +7,28 @@ const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = asyn
   {templateId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  console.log('yeppp')
   const pg = getKysely()
   const userId = getUserId(authToken)
 
   const user = await pg
     .selectFrom('User')
-    // .selectAll()
     .select('favoriteTemplateIds')
     .where('id', '=', userId)
     .executeTakeFirst()
-  console.log('🚀 ~ user:', user)
-
-  const favs = user?.favoriteTemplateIds
-  const typeFav = typeof favs
-  console.log('🚀 ~ favs:', favs)
-  console.log('🚀 ~ typeFav:', typeFav)
 
   if (!user) {
     throw new Error('User not found')
   }
+  const favoriteTemplateIds = user.favoriteTemplateIds
 
   let updatedFavoriteTemplateIds
 
-  const isCurrentlyFavorite = user.favoriteTemplateIds.includes(templateId)
+  const isCurrentlyFavorite = favoriteTemplateIds.includes(templateId)
 
   if (isCurrentlyFavorite) {
-    updatedFavoriteTemplateIds = user.favoriteTemplateIds.filter((id) => id !== templateId)
+    updatedFavoriteTemplateIds = favoriteTemplateIds.filter((id) => id !== templateId)
   } else {
-    updatedFavoriteTemplateIds = [...user.favoriteTemplateIds, templateId]
+    updatedFavoriteTemplateIds = [...favoriteTemplateIds, templateId]
   }
 
   await pg
