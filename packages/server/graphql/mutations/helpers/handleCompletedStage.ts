@@ -13,8 +13,8 @@ import {DataLoaderWorker} from '../../graphql'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import addDiscussionTopics from './addDiscussionTopics'
 import addRecallBot from './addRecallBot'
+import generateDiscussionPrompt from './generateDiscussionPrompt'
 import generateDiscussionSummary from './generateDiscussionSummary'
-import generateGroupSummaries from './generateGroupSummaries'
 import generateGroups from './generateGroups'
 import {publishToEmbedder} from './publishToEmbedder'
 import removeEmptyReflections from './removeEmptyReflections'
@@ -92,7 +92,7 @@ const handleCompletedRetrospectiveStage = async (
         .run()
       data.meeting = meeting
       // dont await for the OpenAI API response
-      generateGroupSummaries(meeting.id, teamId, dataLoader, facilitatorUserId)
+      generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId)
     }
 
     return {[stage.phaseType]: data}

@@ -5,7 +5,7 @@ import sendToSentry from '../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../graphql'
 import canAccessAISummary from './canAccessAISummary'
 
-const generateGroupSummaries = async (
+const generateDiscussionPrompt = async (
   meetingId: string,
   teamId: string,
   dataLoader: DataLoaderWorker,
@@ -30,7 +30,7 @@ const generateGroupSummaries = async (
   const pg = getKysely()
   const manager = new OpenAIServerManager()
   if (!reflectionGroups.length) {
-    const error = new Error('No reflection groups in generateGroupSummaries')
+    const error = new Error('No reflection groups in generateDiscussionPrompt')
     sendToSentry(error, {userId: facilitator.id, tags: {meetingId}})
     return
   }
@@ -40,30 +40,21 @@ const generateGroupSummaries = async (
         ({reflectionGroupId}) => reflectionGroupId === group.id
       )
       if (reflectionsByGroupId.length <= 1) return
-      const reflectionTextByGroupId = reflectionsByGroupId.map(
-        ({plaintextContent}) => plaintextContent
-      )
-      const [fullSummary, fullQuestion] = await Promise.all([
-        manager.getSummary(reflectionTextByGroupId),
+      const [fullQuestion] = await Promise.all([
         manager.getDiscussionPromptQuestion(group.title ?? 'Unknown', reflectionsByGroupId)
       ])
-      if (!fullSummary && !fullQuestion) return
-      const summary = fullSummary?.slice(0, 2000)
+      if (!fullQuestion) return
       const discussionPromptQuestion = fullQuestion?.slice(0, 2000)
       return Promise.all([
         pg
           .updateTable('RetroReflectionGroup')
-          .set({summary, discussionPromptQuestion})
+          .set({discussionPromptQuestion})
           .where('id', '=', group.id)
           .execute(),
-        r
-          .table('RetroReflectionGroup')
-          .get(group.id)
-          .update({summary, discussionPromptQuestion})
-          .run()
+        r.table('RetroReflectionGroup').get(group.id).update({discussionPromptQuestion}).run()
       ])
     })
   )
 }
 
-export default generateGroupSummaries
+export default generateDiscussionPrompt
