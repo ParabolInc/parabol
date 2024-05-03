@@ -26,16 +26,8 @@ const WholeMeetingSummary = (props: Props) => {
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
-            summary
-          }
-          phases {
-            phaseType
-            ... on DiscussPhase {
-              stages {
-                discussion {
-                  summary
-                }
-              }
+            reflections {
+              id
             }
           }
         }
@@ -49,14 +41,12 @@ const WholeMeetingSummary = (props: Props) => {
     meetingRef
   )
   if (meeting.__typename === 'RetrospectiveMeeting') {
-    const {summary: wholeMeetingSummary, reflectionGroups, phases} = meeting
-    const discussPhase = phases!.find((phase) => phase.phaseType === 'discuss')
-    const {stages} = discussPhase ?? {}
-    const hasTopicSummary = reflectionGroups!.some((group) => group.summary)
-    const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
-    const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
-    if (!hasOpenAISummary) return null
-    if (hasOpenAISummary && !wholeMeetingSummary) return <WholeMeetingSummaryLoading />
+    const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
+    const hasMoreThanOneReflection =
+      (reflectionGroups?.length && reflectionGroups.length > 1) ||
+      reflectionGroups?.some((group) => group.reflections.length > 1)
+    if (!hasMoreThanOneReflection || organization.featureFlags.noAISummary) return null
+    if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
     const {summary: wholeMeetingSummary, responses, organization} = meeting
