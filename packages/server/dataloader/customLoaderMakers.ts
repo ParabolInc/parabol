@@ -840,3 +840,24 @@ export const isCompanyDomain = (parent: RootDataLoader) => {
     }
   )
 }
+
+export const favoriteTemplateIds = (parent: RootDataLoader) => {
+  return new DataLoader<string, string[], string>(
+    async (userIds) => {
+      const pg = getKysely()
+      const users = await pg
+        .selectFrom('User')
+        .select(['id', 'favoriteTemplateIds'])
+        .where('id', 'in', userIds)
+        .execute()
+
+      const userIdToFavoriteTemplateIds = new Map(
+        users.map((user) => [user.id, user.favoriteTemplateIds])
+      )
+      return userIds.map((userId) => userIdToFavoriteTemplateIds.get(userId) || [])
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}

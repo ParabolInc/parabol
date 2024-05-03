@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
+import {ActivityGrid_user$key} from '../../__generated__/ActivityGrid_user.graphql'
 import {ActivityCard, ActivityCardImage} from './ActivityCard'
 import ActivityCardFavorite from './ActivityCardFavorite'
 import {Template} from './ActivityLibrary'
@@ -11,7 +12,7 @@ import {CATEGORY_THEMES, CategoryID} from './Categories'
 interface ActivityGridProps {
   templates: Template[]
   selectedCategory: string
-  viewerRef?: any
+  viewerRef?: ActivityGrid_user$key
 }
 
 const ActivityGrid = (props: ActivityGridProps) => {
@@ -22,7 +23,7 @@ const ActivityGrid = (props: ActivityGridProps) => {
         ...ActivityCardFavorite_user
       }
     `,
-    viewerRef
+    viewerRef ?? null
   )
   return (
     <>
@@ -49,11 +50,13 @@ const ActivityGrid = (props: ActivityGridProps) => {
                 src={template.illustrationUrl}
                 category={template.category as CategoryID}
               />
-              <ActivityCardFavorite
-                templateId={template.id}
-                className='absolute bottom-3 right-3'
-                viewerRef={viewer}
-              />
+              {viewer && (
+                <ActivityCardFavorite
+                  templateId={template.id}
+                  className='absolute bottom-3 right-3'
+                  viewerRef={viewer}
+                />
+              )}
               <ActivityLibraryCardDescription
                 className='hidden group-hover/card:flex'
                 templateRef={template}

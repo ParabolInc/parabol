@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {ActivityCardFavorite_user$key} from '../../__generated__/ActivityCardFavorite_user.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleFavoriteTemplateMutation from '../../mutations/ToggleFavoriteTemplateMutation'
@@ -13,7 +14,7 @@ import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 type Props = {
   className?: string
   templateId: string
-  viewerRef: any
+  viewerRef: ActivityCardFavorite_user$key
 }
 
 const ActivityCardFavorite = (props: Props) => {

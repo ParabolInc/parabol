@@ -5,21 +5,13 @@ import {MutationResolvers} from '../resolverTypes'
 const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = async (
   _source,
   {templateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader}
 ) => {
+  const viewerId = getUserId(authToken)
   const pg = getKysely()
   const userId = getUserId(authToken)
 
-  const user = await pg
-    .selectFrom('User')
-    .select('favoriteTemplateIds')
-    .where('id', '=', userId)
-    .executeTakeFirst()
-
-  if (!user) {
-    throw new Error('User not found')
-  }
-  const favoriteTemplateIds = user.favoriteTemplateIds
+  const favoriteTemplateIds = await dataLoader.get('favoriteTemplateIds').load(viewerId)
 
   let updatedFavoriteTemplateIds
 
@@ -39,9 +31,7 @@ const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = asyn
     .where('id', '=', userId)
     .execute()
 
-  // RESOLUTION
-  const data = {}
-  return data
+  return true
 }
 
 export default toggleFavoriteTemplate
