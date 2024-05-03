@@ -1,4 +1,6 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {ActivityCard, ActivityCardImage} from './ActivityCard'
 import ActivityCardFavorite from './ActivityCardFavorite'
@@ -9,9 +11,19 @@ import {CATEGORY_THEMES, CategoryID} from './Categories'
 interface ActivityGridProps {
   templates: Template[]
   selectedCategory: string
+  viewerRef?: any
 }
 
-const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
+const ActivityGrid = (props: ActivityGridProps) => {
+  const {templates, selectedCategory, viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment ActivityGrid_user on User {
+        ...ActivityCardFavorite_user
+      }
+    `,
+    viewerRef
+  )
   return (
     <>
       {templates.map((template) => {
@@ -40,6 +52,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               <ActivityCardFavorite
                 templateId={template.id}
                 className='absolute bottom-3 right-3'
+                viewerRef={viewer}
               />
               <ActivityLibraryCardDescription
                 className='hidden group-hover/card:flex'

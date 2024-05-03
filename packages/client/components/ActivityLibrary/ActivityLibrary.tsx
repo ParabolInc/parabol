@@ -78,6 +78,7 @@ graphql`
 const query = graphql`
   query ActivityLibraryQuery {
     viewer {
+      ...ActivityGrid_user
       favoriteTemplates {
         ...ActivityLibrary_template @relay(mask: false)
       }
@@ -394,6 +395,7 @@ export const ActivityLibrary = (props: Props) => {
                             <ActivityGrid
                               templates={subCategoryTemplates}
                               selectedCategory={categoryId}
+                              viewerRef={viewer}
                             />
                           </div>
                         </Fragment>
@@ -406,6 +408,7 @@ export const ActivityLibrary = (props: Props) => {
                     <ActivityGrid
                       templates={templatesToRender as Template[]}
                       selectedCategory={categoryId}
+                      viewerRef={viewer}
                     />
                   </div>
                 </>

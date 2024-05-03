@@ -7,6 +7,7 @@ graphql`
   fragment ToggleFavoriteTemplateMutation_viewer on ToggleFavoriteTemplateSuccess {
     user {
       id
+      ...ActivityCardFavorite_user
     }
   }
 `
@@ -32,9 +33,6 @@ const ToggleFavoriteTemplateMutation: StandardMutation<TToggleFavoriteTemplateMu
   return commitMutation<TToggleFavoriteTemplateMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {} = variables
-    },
     onCompleted,
     onError
   })
