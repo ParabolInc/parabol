@@ -61,7 +61,6 @@ const run = async () => {
   const counter = logPerformance(10, 6)
 
   for await (const _ of streams) {
-    // Logger.log(`Worker ${idx} finished job ${message.id}`)
     counter.i++
   }
 
