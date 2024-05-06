@@ -14,6 +14,6 @@ export const logPerformance = (logEvery: number, resetEvery: number) => {
       logs = 0
       start = performance.now()
     }
-  }, logEvery * 1000)
+  }, logEvery * 1000).unref()
   return counter
 }
