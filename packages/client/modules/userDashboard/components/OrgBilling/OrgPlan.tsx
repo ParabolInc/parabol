@@ -8,6 +8,7 @@ import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Radius} from '../../../../types/constEnums'
+import {MONTHLY_PRICE} from '../../../../utils/constants'
 
 const PlanTitle = styled('h6')({
   color: PALETTE.SLATE_700,
@@ -187,7 +188,7 @@ const OrgPlan = (props: Props) => {
         {planTier === 'team' ? (
           <>
             <PlanSubtitle>
-              {'$8 per active user '}
+              {`$${MONTHLY_PRICE} per active user `}
               <StyledIcon ref={originRef} onMouseOver={openTooltip} onMouseOut={closeTooltip}>
                 {<Info />}
               </StyledIcon>
