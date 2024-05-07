@@ -14,5 +14,5 @@ export const resetStalledJobs = () => {
       }))
       .where('startAt', '<', new Date(Date.now() - ms('5m')))
       .execute()
-  }, ms('5m'))
+  }, ms('5m')).unref()
 }
