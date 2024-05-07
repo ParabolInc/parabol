@@ -128,7 +128,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
     } else {
       const reflections = reflectionGroups.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
       const hasMoreThanOneReflection = reflections.length > 1
-      const hasOpenAISummary = hasMoreThanOneReflection || !organization.featureFlags.noAISummary
+      const hasOpenAISummary = hasMoreThanOneReflection && !organization.featureFlags.noAISummary
       const hasTeamHealth = phases.some((phase) => phase.phaseType === 'TEAM_HEALTH')
       const pathname = `/new-summary/${meetingId}`
       const search = new URLSearchParams()

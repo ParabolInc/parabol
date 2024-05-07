@@ -40,9 +40,10 @@ const generateDiscussionPrompt = async (
         ({reflectionGroupId}) => reflectionGroupId === group.id
       )
       if (reflectionsByGroupId.length <= 1) return
-      const [fullQuestion] = await Promise.all([
-        manager.getDiscussionPromptQuestion(group.title ?? 'Unknown', reflectionsByGroupId)
-      ])
+      const fullQuestion = await manager.getDiscussionPromptQuestion(
+        group.title ?? 'Unknown',
+        reflectionsByGroupId
+      )
       if (!fullQuestion) return
       const discussionPromptQuestion = fullQuestion?.slice(0, 2000)
       return Promise.all([
