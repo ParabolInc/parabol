@@ -1,3 +1,4 @@
+import tracer from 'dd-trace'
 import ms from 'ms'
 import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -129,18 +130,20 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
     .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
     .run()
 
-  const res = await Promise.all(
-    meetingsToEnd.map((meeting) => {
-      if (isMeetingTeamPrompt(meeting)) {
-        return safeEndTeamPrompt({meeting, now, context, r, subOptions})
-      } else if (isMeetingRetrospective(meeting)) {
-        return safeEndRetrospective({meeting, now, context})
-      } else {
-        return standardError(new Error('Unhandled recurring meeting type'), {
-          tags: {meetingId: meeting.id, meetingType: meeting.meetingType}
-        })
-      }
-    })
+  const res = await tracer.trace('processRecurrence.endMeetings', async () =>
+    Promise.all(
+      meetingsToEnd.map((meeting) => {
+        if (isMeetingTeamPrompt(meeting)) {
+          return safeEndTeamPrompt({meeting, now, context, r, subOptions})
+        } else if (isMeetingRetrospective(meeting)) {
+          return safeEndRetrospective({meeting, now, context})
+        } else {
+          return standardError(new Error('Unhandled recurring meeting type'), {
+            tags: {meetingId: meeting.id, meetingType: meeting.meetingType}
+          })
+        }
+      })
+    )
   )
 
   const meetingsEnded = res.filter((res) => !('error' in res)).length
@@ -149,64 +152,71 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
 
   // For each active meeting series, get the meeting start times (according to rrule) after the most
   // recent meeting start time and before now.
-  const activeMeetingSeries = await getActiveMeetingSeries()
-  await Promise.allSettled(
-    activeMeetingSeries.map(async (meetingSeries) => {
-      const seriesTeam = await dataLoader.get('teams').loadNonNull(meetingSeries.teamId)
-      if (seriesTeam.isArchived || !seriesTeam.isPaid) {
-        return
-      }
+  const activeMeetingSeries = await tracer.trace(
+    'processRecurrence.getActiveMeetingSeries',
+    getActiveMeetingSeries
+  )
+  await tracer.trace('processRecurrence.startActiveMeetingSeries', async () =>
+    Promise.allSettled(
+      activeMeetingSeries.map(async (meetingSeries) => {
+        const seriesTeam = await dataLoader.get('teams').loadNonNull(meetingSeries.teamId)
+        if (seriesTeam.isArchived || !seriesTeam.isPaid) {
+          return
+        }
 
-      const [seriesOrg, lastMeeting] = await Promise.all([
-        dataLoader.get('organizations').load(seriesTeam.orgId),
-        dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeries.id)
-      ])
+        const [seriesOrg, lastMeeting] = await Promise.all([
+          dataLoader.get('organizations').load(seriesTeam.orgId),
+          dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeries.id)
+        ])
 
-      // remove this check after 2024-05-05
-      if (
-        lastMeeting?.meetingSeriesId !== meetingSeries.id ||
-        lastMeeting.teamId !== meetingSeries.teamId
-      ) {
-        const error = new Error(
-          'lastMeetingByMeetingSeriesId returned a meeting that does not match the series'
+        // remove this check after 2024-05-05
+        if (
+          lastMeeting?.meetingSeriesId !== meetingSeries.id ||
+          lastMeeting.teamId !== meetingSeries.teamId
+        ) {
+          const error = new Error(
+            'lastMeetingByMeetingSeriesId returned a meeting that does not match the series'
+          )
+          sendToSentry(error)
+          throw error
+        }
+
+        if (seriesOrg.lockedAt) {
+          return
+        }
+
+        // For meetings that should still be active, start the meeting and set its end time.
+        // Any subscriptions are handled by the shared meeting start code
+        const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+        // technically, RRULE should never return NaN here but there's a bug in the library
+        // https://github.com/jakubroztocil/rrule/issues/321
+        if (isNaN(rrule.options.interval)) {
+          return
+        }
+
+        // Only get meetings that should currently be active, i.e. meetings that should have started
+        // within the last 24 hours, started after the last meeting in the series, and started before
+        // 'now'.
+        const fromDate = lastMeeting
+          ? new Date(
+              Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h'))
+            )
+          : new Date(0)
+        const newMeetingsStartTimes = rrule.between(
+          getRRuleDateFromJSDate(fromDate),
+          getRRuleDateFromJSDate(now)
         )
-        sendToSentry(error)
-        throw error
-      }
-
-      if (seriesOrg.lockedAt) {
-        return
-      }
-
-      // For meetings that should still be active, start the meeting and set its end time.
-      // Any subscriptions are handled by the shared meeting start code
-      const rrule = RRule.fromString(meetingSeries.recurrenceRule)
-      // technically, RRULE should never return NaN here but there's a bug in the library
-      // https://github.com/jakubroztocil/rrule/issues/321
-      if (isNaN(rrule.options.interval)) {
-        return
-      }
-
-      // Only get meetings that should currently be active, i.e. meetings that should have started
-      // within the last 24 hours, started after the last meeting in the series, and started before
-      // 'now'.
-      const fromDate = lastMeeting
-        ? new Date(Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h')))
-        : new Date(0)
-      const newMeetingsStartTimes = rrule.between(
-        getRRuleDateFromJSDate(fromDate),
-        getRRuleDateFromJSDate(now)
-      )
-      for (const startTime of newMeetingsStartTimes) {
-        const err = await startRecurringMeeting(
-          meetingSeries,
-          getJSDateFromRRuleDate(startTime),
-          dataLoader,
-          subOptions
-        )
-        if (!err) meetingsStarted++
-      }
-    })
+        for (const startTime of newMeetingsStartTimes) {
+          const err = await startRecurringMeeting(
+            meetingSeries,
+            getJSDateFromRRuleDate(startTime),
+            dataLoader,
+            subOptions
+          )
+          if (!err) meetingsStarted++
+        }
+      })
+    )
   )
 
   const data = {meetingsStarted, meetingsEnded}
