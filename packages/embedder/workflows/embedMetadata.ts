@@ -36,9 +36,7 @@ export const embedMetadata: JobQueueStepRun<
         .where('id', '=', embeddingsMetadataId)
         .execute()
     } catch (e) {
-      // get the trace since the error message may be unobvious
-      console.trace(e)
-      return new JobQueueError(`unable to create embedding text: ${e}`, undefined, 0, {
+      return new JobQueueError(e as Error, undefined, 0, {
         forceBuildText: true
       })
     }

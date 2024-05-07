@@ -46,7 +46,8 @@ async function formatThread(
       ? 'Anonymous'
       : await getPreferredNameByUserId(comment.createdBy, dataLoader)
     const how = depth === 0 ? 'wrote' : 'replied'
-    const content = comment.plaintextContent.slice(0, MAX_TEXT_LENGTH)
+    const content = comment.plaintextContent?.slice(0, MAX_TEXT_LENGTH)
+    if (!content) return ''
     const formattedPost = `${indent}- ${author} ${how}, "${content}"\n`
 
     // Recursively format child threads
@@ -98,14 +99,14 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       if (prompt.description) markdown += `: ${prompt.description}`
       markdown += `".\n`
     }
-    for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
+    const matchingReflections = reflections.filter((r) => r.promptId === prompt.id)
+    for (const reflection of matchingReflections) {
+      const content = reflection.plaintextContent?.slice(0, MAX_TEXT_LENGTH)
+      if (!content) continue
       const author = newMeeting.disableAnonymity
         ? await getPreferredNameByUserId(reflection.creatorId, dataLoader)
         : 'Anonymous'
-      markdown += `   - ${author} wrote, "${reflection.plaintextContent.slice(
-        0,
-        MAX_TEXT_LENGTH
-      )}"\n`
+      markdown += `   - ${author} wrote, "${content}"\n`
     }
     markdown += `\n`
   }

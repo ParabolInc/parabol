@@ -3,7 +3,6 @@ import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {Logger} from '../server/utils/Logger'
 import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 import {DBJob} from './custom'
 
@@ -53,7 +52,6 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
     try {
       const job = (await getJob(false)) || (await getJob(true))
       if (!job) {
-        Logger.log('JobQueueStream: no jobs found')
         // queue is empty, so sleep for a while
         await sleep(ms('10s'))
         return this.next()
