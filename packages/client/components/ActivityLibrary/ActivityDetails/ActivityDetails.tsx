@@ -35,7 +35,6 @@ graphql`
 export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
-      ...ActivityDetailsSidebar_viewer
       activityLibrarySearch
       preferredTeamId
       activity(activityId: $activityId) {
@@ -138,7 +137,6 @@ const ActivityDetails = (props: Props) => {
             teamsRef={teams}
             type={activity.type}
             preferredTeamId={preferredTeamId}
-            viewerRef={viewer}
           />
         </div>
       </div>
@@ -148,7 +146,6 @@ const ActivityDetails = (props: Props) => {
           teamsRef={teams}
           type={activity.type}
           preferredTeamId={preferredTeamId}
-          viewerRef={viewer}
         />
       </div>
     </div>

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "7.28.0",
+  "version": "7.30.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -100,7 +100,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
-    "graphql": "15.7.2",
+    "graphql": "15.8.0",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
     "jscodeshift": "^0.14.0",

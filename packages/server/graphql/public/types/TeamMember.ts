@@ -7,6 +7,9 @@ const TeamMember: TeamMemberResolvers = {
       .get('organizationUsersByUserIdOrgId')
       .load({userId, orgId: team.orgId})
     return organizationUser?.role === 'ORG_ADMIN'
+  },
+  picture: async ({picture}, _args, {dataLoader}) => {
+    return dataLoader.get('fileStoreAsset').load(picture)
   }
 }
 

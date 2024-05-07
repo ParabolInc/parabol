@@ -30,13 +30,15 @@ const run = async () => {
   const executorChannel = GQLExecutorChannelId.join(SERVER_ID!)
 
   // on shutdown, remove consumer from the group
-  process.on('SIGTERM', async () => {
+  process.on('SIGTERM', async (signal) => {
+    console.log(`Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`)
     await publisher.xgroup(
       'DELCONSUMER',
       ServerChannel.GQL_EXECUTOR_STREAM,
       ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
       executorChannel
     )
+    console.log(`Server ID: ${SERVER_ID}. Graceful shutdown complete, exiting.`)
     process.exit()
   })
 

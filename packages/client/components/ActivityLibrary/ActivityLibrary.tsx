@@ -68,7 +68,7 @@ graphql`
     category
     illustrationUrl
     isRecommended
-    isFree
+    scope
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
     ...ActivityCard_template
     ...ActivityLibraryCardDescription_template
