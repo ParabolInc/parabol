@@ -35,7 +35,7 @@ export default async function makeUpcomingInvoice(
     : undefined
 
   const subscription = stripeInvoice.lines.data.find(
-    ({plan}) => plan?.id === StripeManager.PARABOL_TEAM_600
+    ({plan}) => plan?.id === StripeManager.PARABOL_TEAM_800
   )
   if (subscription && subscription.quantity !== quantity) {
     const {subscription_item: lineitemId} = subscription

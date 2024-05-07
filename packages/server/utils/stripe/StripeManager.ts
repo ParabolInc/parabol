@@ -4,7 +4,7 @@ import {Logger} from '../Logger'
 import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
-  static PARABOL_TEAM_600 = 'parabol-pro-600' // $6/seat/mo
+  static PARABOL_TEAM_800 = 'parabol-pro-800' // $8/seat/mo
   static PARABOL_ENTERPRISE_2021_LOW = 'plan_2021_ann_low'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -141,7 +141,7 @@ export default class StripeManager {
       },
       items: [
         {
-          plan: StripeManager.PARABOL_TEAM_600,
+          plan: StripeManager.PARABOL_TEAM_800,
           quantity
         }
       ]
@@ -164,7 +164,7 @@ export default class StripeManager {
       },
       items: [
         {
-          plan: StripeManager.PARABOL_TEAM_600,
+          plan: StripeManager.PARABOL_TEAM_800,
           quantity
         }
       ]

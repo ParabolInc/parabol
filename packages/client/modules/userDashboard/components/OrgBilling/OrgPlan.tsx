@@ -187,7 +187,7 @@ const OrgPlan = (props: Props) => {
         {planTier === 'team' ? (
           <>
             <PlanSubtitle>
-              {'$6 per active user '}
+              {'$8 per active user '}
               <StyledIcon ref={originRef} onMouseOver={openTooltip} onMouseOut={closeTooltip}>
                 {<Info />}
               </StyledIcon>
