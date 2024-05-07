@@ -31,8 +31,12 @@ graphql`
       autogroupReflectionGroups {
         groupTitle
       }
+      organization {
+        featureFlags {
+          noAISummary
+        }
+      }
       reflectionGroups(sortBy: voteCount) {
-        summary
         reflections {
           id
         }
@@ -43,13 +47,6 @@ graphql`
       }
       phases {
         phaseType
-        ... on DiscussPhase {
-          stages {
-            discussion {
-              summary
-            }
-          }
-        }
       }
     }
     team {
@@ -109,7 +106,14 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId, teamId, reflectionGroups, phases, autogroupReflectionGroups} = meeting
+  const {
+    id: meetingId,
+    teamId,
+    reflectionGroups,
+    phases,
+    autogroupReflectionGroups,
+    organization
+  } = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -122,12 +126,9 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
     } else {
-      const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
-      const {stages} = discussPhase ?? {}
-      const hasTopicSummary = reflectionGroups.some((group) => group.summary)
       const reflections = reflectionGroups.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
-      const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
-      const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+      const hasMoreThanOneReflection = reflections.length > 1
+      const hasOpenAISummary = hasMoreThanOneReflection || !organization.featureFlags.noAISummary
       const hasTeamHealth = phases.some((phase) => phase.phaseType === 'TEAM_HEALTH')
       const pathname = `/new-summary/${meetingId}`
       const search = new URLSearchParams()

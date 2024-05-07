@@ -42,9 +42,8 @@ const WholeMeetingSummary = (props: Props) => {
   )
   if (meeting.__typename === 'RetrospectiveMeeting') {
     const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
-    const hasMoreThanOneReflection =
-      (reflectionGroups?.length && reflectionGroups.length > 1) ||
-      reflectionGroups?.some((group) => group.reflections.length > 1)
+    const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
+    const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
     if (!hasMoreThanOneReflection || organization.featureFlags.noAISummary) return null
     if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
