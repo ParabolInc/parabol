@@ -19,6 +19,7 @@ import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
+import isValid from '../../isValid'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
@@ -86,10 +87,7 @@ const User: UserResolvers = {
     return request
   },
   favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
-    const templates = await Promise.all(
-      favoriteTemplateIds.map((templateId) => dataLoader.get('meetingTemplates').load(templateId))
-    )
-    return templates.filter(isNotNull)
+    return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))

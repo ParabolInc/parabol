@@ -53,7 +53,7 @@ const ActivityGrid = (props: ActivityGridProps) => {
               {viewer && (
                 <ActivityCardFavorite
                   templateId={template.id}
-                  className='absolute bottom-3 right-3'
+                  className='absolute bottom-2 right-2'
                   viewerRef={viewer}
                 />
               )}

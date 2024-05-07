@@ -851,10 +851,7 @@ export const favoriteTemplateIds = (parent: RootDataLoader) => {
         .where('id', 'in', userIds)
         .execute()
 
-      const userIdToFavoriteTemplateIds = new Map(
-        users.map((user) => [user.id, user.favoriteTemplateIds])
-      )
-      return userIds.map((userId) => userIdToFavoriteTemplateIds.get(userId) || [])
+      return normalizeResults(userIds, users).map((user) => user.favoriteTemplateIds)
     },
     {
       ...parent.dataLoaderOptions
