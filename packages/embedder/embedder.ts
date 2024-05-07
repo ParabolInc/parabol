@@ -48,10 +48,11 @@ const run = async () => {
   const streams = mergeAsyncIterators(jobQueueStreams)
 
   const kill: NodeJS.SignalsListener = (signal) => {
-    Logger.log(`Kill signal received: ${signal}`)
-    primaryLock?.release()
+    Logger.log(
+      `Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
+    )
+    primaryLock?.release().catch(() => {})
     streams.return?.()
-    process.exit()
   }
   process.on('SIGTERM', kill)
   process.on('SIGINT', kill)
@@ -61,12 +62,12 @@ const run = async () => {
   const counter = logPerformance(10, 6)
 
   for await (const _ of streams) {
-    // Logger.log(`Worker ${idx} finished job ${message.id}`)
     counter.i++
   }
 
   // On graceful shutdown
-  Logger.log('Streaming Complete. Goodbye!')
+  Logger.log(`Server ID: ${SERVER_ID}. Graceful shutdown complete, exiting.`)
+  process.exit()
 }
 
 run()

@@ -57,6 +57,7 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     this.client = client
   }
   async getTokens(content: string) {
+    if (!content) return []
     const {data, error} = await this.client.POST('/tokenize', {
       body: {add_special_tokens: true, inputs: content}
     })
