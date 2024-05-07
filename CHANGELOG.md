@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.30.4](https://github.com/ParabolInc/parabol/compare/v7.30.3...v7.30.4) (2024-05-07)
+
+
+### Changed
+
+* add more granular process recurrence tracing ([#9728](https://github.com/ParabolInc/parabol/issues/9728)) ([85d4e22](https://github.com/ParabolInc/parabol/commit/85d4e22576083e89a655ac507f744cb1482e1506))
+* Remove deprecated userId from Atmosphere ([#9720](https://github.com/ParabolInc/parabol/issues/9720)) ([b4f21d6](https://github.com/ParabolInc/parabol/commit/b4f21d6db7ee0d0b17815d1a0d7b7c86ac0ef3bb))
+
 ## [7.30.3](https://github.com/ParabolInc/parabol/compare/v7.30.2...v7.30.3) (2024-05-07)
 
 
