@@ -5,6 +5,8 @@ const upgradeToTeamTierSuccessUpdater = (payload: RecordProxy) => {
   if (organization) {
     organization.setValue(true, 'showConfetti')
     organization.setValue(true, 'showDrawer')
+    organization.setValue('team', 'billingTier')
+    organization.setValue('team', 'tier')
   }
 }
 export default upgradeToTeamTierSuccessUpdater

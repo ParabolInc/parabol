@@ -8,7 +8,6 @@ import {
 } from '@stripe/react-stripe-js'
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import React, {useState} from 'react'
-import {commitLocalUpdate} from 'react-relay'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -126,19 +125,11 @@ const BillingForm = (props: Props) => {
         setErrorMsg(newErrMsg)
         return
       }
-      const {error, paymentIntent} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
+      const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
       if (error) {
         setErrorMsg(error.message)
         setIsLoading(false)
         return
-      }
-      if (paymentIntent.status === 'succeeded') {
-        commitLocalUpdate(atmosphere, (store) => {
-          const organization = store.get(orgId)
-          if (!organization) return
-          organization.setValue('team', 'billingTier')
-          organization.setValue('team', 'tier')
-        })
       }
       onCompleted()
     }
