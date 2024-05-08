@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.31.0](https://github.com/ParabolInc/parabol/compare/v7.30.4...v7.31.0) (2024-05-08)
+
+
+### Added
+
+* increase team subscription to $8 ([#9727](https://github.com/ParabolInc/parabol/issues/9727)) ([9d2fa5f](https://github.com/ParabolInc/parabol/commit/9d2fa5f4a53cecb3748406012ca1bd0eeaa6800c))
+
+
+### Fixed
+
+* Handle invitation links with invalid auth token ([#9741](https://github.com/ParabolInc/parabol/issues/9741)) ([162de5e](https://github.com/ParabolInc/parabol/commit/162de5e87865faa190e5bbe16e25432aeb29e58b))
+* only query templates when a user clicks the options menu ([#9651](https://github.com/ParabolInc/parabol/issues/9651)) ([7c75eb1](https://github.com/ParabolInc/parabol/commit/7c75eb1816162394dd2362e32d985521e860fd54))
+* org admin can change team lead ([#9742](https://github.com/ParabolInc/parabol/issues/9742)) ([d5520ae](https://github.com/ParabolInc/parabol/commit/d5520aebc6b518382510eb1ef2c5c4c10dad70e6))
+
+
+### Changed
+
+* More processRecurrence tracing ([#9736](https://github.com/ParabolInc/parabol/issues/9736)) ([881546c](https://github.com/ParabolInc/parabol/commit/881546c2240edb5be399e2b25e2d3e108d61f9fc))
+* remove ai summary from discussion thread ([#9708](https://github.com/ParabolInc/parabol/issues/9708)) ([2123159](https://github.com/ParabolInc/parabol/commit/2123159e718395a63589ce4f76578e271d1b2c9b))
+* remove discussion prompt from summary ([#9711](https://github.com/ParabolInc/parabol/issues/9711)) ([a02c935](https://github.com/ParabolInc/parabol/commit/a02c935d1f16f1ec6e4be410ac826fd239f36179))
+
 ## [7.30.4](https://github.com/ParabolInc/parabol/compare/v7.30.3...v7.30.4) (2024-05-07)
 
 
