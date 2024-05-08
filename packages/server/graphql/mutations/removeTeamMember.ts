@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
-import {getUserId, isTeamLead} from '../../utils/authorization'
+import {getUserId, isTeamLead, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -30,10 +30,15 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const {userId, teamId} = fromTeamMemberId(teamMemberId)
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const [isOrgAdmin, isViewerTeamLead] = await Promise.all([
+      isUserOrgAdmin(viewerId, team.orgId, dataLoader),
+      isTeamLead(viewerId, teamId, dataLoader)
+    ])
     const isSelf = viewerId === userId
     if (!isSelf) {
-      if (!(await isTeamLead(viewerId, teamId, dataLoader))) {
-        return standardError(new Error('Not team lead'), {userId: viewerId})
+      if (!isOrgAdmin && !isViewerTeamLead) {
+        return standardError(new Error('Not team lead or org admin'), {userId: viewerId})
       }
     }
 
