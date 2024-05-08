@@ -87,6 +87,7 @@ const DashSidebar = (props: Props) => {
           id
           name
           isBillingLeader
+          isTeamLead
         }
       }
     `,
@@ -99,7 +100,7 @@ const DashSidebar = (props: Props) => {
   if (match) {
     const {orgId: orgIdFromParams} = match.params
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
-    const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
+    const {id: orgId, name, isBillingLeader, isTeamLead} = currentOrg ?? {}
     return (
       <Wrapper>
         <SideBarStartMeetingButton isOpen={isOpen} />
@@ -118,7 +119,7 @@ const DashSidebar = (props: Props) => {
                 href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
                 label={'Plans & Billing'}
               />
-              {isBillingLeader && (
+              {(isBillingLeader || isTeamLead) && (
                 <NavItem
                   icon={'groups'}
                   href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}

@@ -10,6 +10,7 @@ import {
 import {
   getUserId,
   isSuperUser,
+  isTeamLead,
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../utils/authorization'
@@ -104,6 +105,14 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         return allTeamsOnOrg
           .filter((team) => authToken.tms.includes(team.id))
           .sort((a, b) => a.name.localeCompare(b.name))
+      }
+    },
+    isTeamLead: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the viewer is a team lead for a team in the organization',
+      resolve: async (_, _args: unknown, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        return authToken.tms.some((teamId) => isTeamLead(viewerId, teamId, dataLoader))
       }
     },
     periodEnd: {

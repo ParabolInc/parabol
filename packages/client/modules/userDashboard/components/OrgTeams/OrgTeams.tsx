@@ -19,6 +19,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         isBillingLeader
+        isTeamLead
         allTeams {
           id
           ...OrgTeamsRow_team
@@ -33,8 +34,8 @@ const OrgTeams = (props: Props) => {
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, isBillingLeader} = organization
-  if (!isBillingLeader) return null
+  const {allTeams, isBillingLeader, isTeamLead} = organization
+  if (!isBillingLeader && !isTeamLead) return null
 
   return (
     <div className='max-w-4xl pb-4'>

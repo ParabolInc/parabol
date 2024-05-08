@@ -47,6 +47,7 @@ const query = graphql`
         ...OrgDetails_organization
         ...OrgTeams_organization
         isBillingLeader
+        isTeamLead
       }
     }
   }
@@ -58,7 +59,7 @@ const Organization = (props: Props) => {
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
   const {organization} = viewer
   if (!organization) return null
-  const {id: orgId, isBillingLeader} = organization
+  const {id: orgId, isBillingLeader, isTeamLead} = organization
 
   return (
     <section className={'px-4 md:px-8'}>
@@ -90,7 +91,7 @@ const Organization = (props: Props) => {
           path={`${match.url}/${AUTHENTICATION_PAGE}`}
           render={(p) => <Authentication {...p} orgId={orgId} />}
         />
-        {isBillingLeader && (
+        {(isBillingLeader || isTeamLead) && (
           <>
             <Route
               exact
