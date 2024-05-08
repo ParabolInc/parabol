@@ -112,7 +112,7 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader),
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
       publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})
     ])
     if (videoMeetingURL) {
