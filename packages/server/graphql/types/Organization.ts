@@ -110,9 +110,14 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     isTeamLead: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is a team lead for a team in the organization',
-      resolve: async (_, _args: unknown, {authToken, dataLoader}) => {
+      resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        return authToken.tms.some((teamId) => isTeamLead(viewerId, teamId, dataLoader))
+        const allTeamsInOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
+        const teamIds = allTeamsInOrg.map(({id}) => id)
+        const teamLeadStatuses = await Promise.all(
+          teamIds.map((teamId) => isTeamLead(viewerId, teamId, dataLoader))
+        )
+        return teamLeadStatuses.some((status) => status)
       }
     },
     periodEnd: {
