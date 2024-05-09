@@ -90,7 +90,6 @@ const RetroTopic = (props: Props) => {
           reflections {
             ...EmailReflectionCard_reflection
           }
-          discussionPromptQuestion
         }
         discussion {
           commentCount
@@ -121,7 +120,7 @@ const RetroTopic = (props: Props) => {
 
   const {reflectionGroup, discussion, id: stageId} = stage
   const {commentCount, discussionSummary} = discussion
-  const {reflections, title, voteCount, discussionPromptQuestion} = reflectionGroup!
+  const {reflections, title, voteCount} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -143,29 +142,15 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {(discussionPromptQuestion || discussionSummary) && (
+      {discussionSummary && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            {discussionPromptQuestion && (
-              <>
-                <tr>
-                  <td style={topicTitleStyle}>{'🤖 Discussion Question'}</td>
-                </tr>
-                <tr>
-                  <td style={textStyle}>{discussionPromptQuestion}</td>
-                </tr>
-              </>
-            )}
-            {discussionSummary && (
-              <>
-                <tr>
-                  <td style={topicTitleStyle}>{'🤖 Discussion Summary'}</td>
-                </tr>
-                <tr>
-                  <td style={textStyle}>{discussionSummary}</td>
-                </tr>
-              </>
-            )}
+            <tr>
+              <td style={topicTitleStyle}>{'🤖 Discussion Summary'}</td>
+            </tr>
+            <tr>
+              <td style={textStyle}>{discussionSummary}</td>
+            </tr>
           </td>
         </tr>
       )}
