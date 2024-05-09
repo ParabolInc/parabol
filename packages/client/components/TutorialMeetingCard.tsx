@@ -107,7 +107,7 @@ const TUTORIAL_MAP = {
   poker: {
     label: 'Starting a Sprint Poker Meeting',
     thumbnail: pokerTutorialThumb,
-    url: 'https://www.youtube.com/embed/X_i60AMxPBU?modestbranding=1&rel=0'
+    url: 'https://www.youtube.com/embed/RJGnNXvvShY?modestbranding=1&rel=0'
   },
   standup: {
     label: 'Starting a Standup Meeting',
