@@ -63,7 +63,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
   },
   Organization: {
-    saml: and(isViewerBillingLeader('source.orgId'), isOrgTier('source.orgId', 'enterprise'))
+    saml: and(isViewerBillingLeader('source.id'), isOrgTier('source.id', 'enterprise'))
   },
   User: {
     domains: or(isSuperUser, isUserViewer)

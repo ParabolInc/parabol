@@ -9,7 +9,6 @@ import {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgA
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useEventCallback from '../../../../hooks/useEventCallback'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {useUploadIdPMetadata} from '../../../../mutations/useUploadIdPMetadataMutation'
 import {Button} from '../../../../ui/Button/Button'
@@ -53,7 +52,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
   const [metadataURL, setMetadataURL] = useState(saml?.metadataURL ?? '')
   const isMetadataURLSaved = saml ? saml.metadataURL === metadataURL : false
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const submitMetadataURL = useEventCallback(async () => {
+  const submitMetadataURL = async () => {
     if (submitting || !metadataURL) return
     submitMutation()
     const domain = saml?.id
@@ -103,7 +102,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
       autoDismiss: 5,
       key: 'submitMetadata'
     })
-  })
+  }
 
   const uploadInputRef = useRef<HTMLInputElement>(null)
   const onUploadClick = () => {
@@ -130,8 +129,6 @@ const OrgAuthenticationMetadata = (props: Props) => {
           return
         }
         setMetadataURL(url!)
-        // wait a tick to flush the url to the react state
-        setImmediate(submitMetadataURL)
       }
     })
   }
