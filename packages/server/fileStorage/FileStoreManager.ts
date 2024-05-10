@@ -28,6 +28,11 @@ export default abstract class FileStoreManager {
     return this.putUserFile(file, partialPath)
   }
 
+  async putOrgIdPMetadata(file: ArrayBufferLike, orgId: string) {
+    const partialPath = `Organization/${orgId}/idpMetadata.xml`
+    return this.putUserFile(file, partialPath)
+  }
+
   async putTemplateIllustration(file: ArrayBufferLike, orgId: string, ext: string, name?: string) {
     const filename = name ?? generateUID()
     const dotfreeExt = ext.replace(/^\./, '')
