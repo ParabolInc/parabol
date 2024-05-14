@@ -33,7 +33,7 @@ Embedder isn't started by default. If it needs to run, it must be managed using 
 
 This will run `pre-deploy` and thus it will recreate the `web-server` and the `gql-executor`.
 
-The Embedder requires a model. It can be provided using the **Text Embeddings Inference** container available on the stack. It can be executed with `docker compose --profile databases --profile llm --profile parabol --profile embedder up`
+The Embedder requires a model. It can be provided using the **Text Embeddings Inference** container available on the stack. It can be executed with `docker compose --profile databases --profile text-embeddings --profile parabol --profile embedder up`
 
 ## Database debug
 
@@ -46,5 +46,5 @@ To operate them use `docker compose up --profile databases --profile database-de
 
 ## Running the whole stack
 
-- Start the whole stack: `docker compose --profile databases --profiles llm --profile parabol --profile database-debug --profile chronos up --profile embedder -d`.
-- Stop the stack: `docker compose --profile databases --profiles llm --profile parabol --profile database-debug --profile chronos up --profile embedder down`.
+- Start the whole stack: `docker compose --profile databases --profiles text-embeddings --profile parabol --profile database-debug --profile chronos up --profile embedder -d`.
+- Stop the stack: `docker compose --profile databases --profiles text-embeddings --profile parabol --profile database-debug --profile chronos up --profile embedder down`.
