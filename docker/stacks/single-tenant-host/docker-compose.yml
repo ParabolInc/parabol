@@ -76,7 +76,7 @@ services:
     networks:
       - parabol-network
   text-embeddings-inference:
-    profiles: ["llm"]
+    profiles: ["text-embeddings"]
     container_name: text-embeddings-inference
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2.2
     command:
