@@ -187,7 +187,9 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
 
         // For meetings that should still be active, start the meeting and set its end time.
         // Any subscriptions are handled by the shared meeting start code
-        const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+        const rrule = tracer.trace('RRule.fromString', () =>
+          RRule.fromString(meetingSeries.recurrenceRule)
+        )
         // technically, RRULE should never return NaN here but there's a bug in the library
         // https://github.com/jakubroztocil/rrule/issues/321
         if (isNaN(rrule.options.interval)) {
@@ -202,9 +204,8 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
               Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h'))
             )
           : new Date(0)
-        const newMeetingsStartTimes = rrule.between(
-          getRRuleDateFromJSDate(fromDate),
-          getRRuleDateFromJSDate(now)
+        const newMeetingsStartTimes = tracer.trace('RRule.between', () =>
+          rrule.between(getRRuleDateFromJSDate(fromDate), getRRuleDateFromJSDate(now))
         )
         for (const startTime of newMeetingsStartTimes) {
           const err = await tracer.trace('startRecurringMeeting', async (span) => {
