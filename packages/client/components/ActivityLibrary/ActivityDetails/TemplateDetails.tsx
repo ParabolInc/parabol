@@ -23,6 +23,7 @@ import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import DetailAction from '../../DetailAction'
 import FlatButton from '../../FlatButton'
+import ActivityCardFavorite from '../ActivityCardFavorite'
 import {QUICK_START_CATEGORY_ID} from '../Categories'
 import TeamPickerModal from '../TeamPickerModal'
 import ActivityDetailsBadges from './ActivityDetailsBadges'
@@ -258,15 +259,18 @@ export const TemplateDetails = (props: Props) => {
           {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
               <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
-              <div className='rounded-full border border-solid border-slate-400 text-slate-600'>
-                <FlatButton
-                  style={{padding: '8px 12px', border: '0'}}
-                  className='flex gap-1 px-12'
-                  onClick={toggleTeamPickerPortal}
-                >
-                  <ContentCopy className='text-slate-600' />
-                  <div className='font-semibold text-slate-700'>Clone & Edit</div>
-                </FlatButton>
+              <div className='flex items-center gap-2'>
+                <ActivityCardFavorite className='rounded-full border border-solid border-slate-400 hover:bg-slate-200' />
+                <div className='rounded-full border border-solid border-slate-400'>
+                  <FlatButton
+                    style={{padding: '8px 12px', border: '0'}}
+                    className='flex cursor-pointer gap-1 px-12'
+                    onClick={toggleTeamPickerPortal}
+                  >
+                    <ContentCopy className='text-slate-600' />
+                    <div className='font-semibold text-slate-700'>Clone & Edit</div>
+                  </FlatButton>
+                </div>
               </div>
             </div>
           )}

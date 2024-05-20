@@ -2,6 +2,7 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import {ActivityBadge} from './ActivityBadge'
 import {ActivityCard, ActivityCardImage} from './ActivityCard'
+import ActivityCardFavorite from './ActivityCardFavorite'
 import {Template} from './ActivityLibrary'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {CATEGORY_THEMES, CategoryID} from './Categories'
@@ -42,6 +43,7 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
                 src={template.illustrationUrl}
                 category={template.category as CategoryID}
               />
+              <ActivityCardFavorite className='absolute bottom-3 right-3' />
               <ActivityLibraryCardDescription
                 className='hidden group-hover/card:flex'
                 templateRef={template}
