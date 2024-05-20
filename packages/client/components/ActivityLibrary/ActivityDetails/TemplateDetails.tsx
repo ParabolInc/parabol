@@ -133,6 +133,7 @@ export const TemplateDetails = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment TemplateDetails_user on User {
+        ...ActivityCardFavorite_user
         preferredTeamId
         teams {
           ...TeamPickerModal_teams
@@ -260,7 +261,11 @@ export const TemplateDetails = (props: Props) => {
             <div className='flex items-center justify-between'>
               <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
               <div className='flex items-center gap-2'>
-                <ActivityCardFavorite className='rounded-full border border-solid border-slate-400 hover:bg-slate-200' />
+                <ActivityCardFavorite
+                  templateId={activityId}
+                  viewerRef={viewer}
+                  className='rounded-full border border-solid border-slate-400 hover:bg-slate-200'
+                />
                 <div className='rounded-full border border-solid border-slate-400'>
                   <FlatButton
                     style={{padding: '8px 12px', border: '0'}}

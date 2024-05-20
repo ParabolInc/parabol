@@ -65,8 +65,7 @@ export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string | JSX.Element> = 
       style={{
         color: 'inherit',
         display: 'flex',
-        alignItems: 'center',
-        fontSize: '18px'
+        fontSize: '22px'
       }}
     />
   ),

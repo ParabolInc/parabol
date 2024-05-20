@@ -78,6 +78,10 @@ graphql`
 const query = graphql`
   query ActivityLibraryQuery {
     viewer {
+      ...ActivityGrid_user
+      favoriteTemplates {
+        ...ActivityLibrary_template @relay(mask: false)
+      }
       availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
@@ -240,6 +244,9 @@ export const ActivityLibrary = (props: Props) => {
       // If there's a search query, just use the search filter results
       return filteredTemplates
     }
+    if (categoryId === 'favorite') {
+      return viewer.favoriteTemplates
+    }
 
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
@@ -344,7 +351,7 @@ export const ActivityLibrary = (props: Props) => {
                   style={{
                     color:
                       category === 'favorite'
-                        ? category === categoryId
+                        ? category === categoryId && searchQuery.length === 0
                           ? 'white'
                           : 'red'
                         : undefined
@@ -388,6 +395,7 @@ export const ActivityLibrary = (props: Props) => {
                             <ActivityGrid
                               templates={subCategoryTemplates}
                               selectedCategory={categoryId}
+                              viewerRef={viewer}
                             />
                           </div>
                         </Fragment>
@@ -400,6 +408,7 @@ export const ActivityLibrary = (props: Props) => {
                     <ActivityGrid
                       templates={templatesToRender as Template[]}
                       selectedCategory={categoryId}
+                      viewerRef={viewer}
                     />
                   </div>
                 </>
