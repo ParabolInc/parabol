@@ -87,10 +87,6 @@ const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLCo
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order of the reflection group'
     },
-    summary: {
-      type: GraphQLString,
-      description: `The AI generated summary of this reflection group`
-    },
     discussionPromptQuestion: {
       type: GraphQLString,
       description: `The AI generated question to prompt and engage the discussion of this reflection group`

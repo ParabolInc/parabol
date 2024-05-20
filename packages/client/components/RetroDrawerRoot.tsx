@@ -1,27 +1,42 @@
-import React, {Suspense} from 'react'
+import React, {Suspense, useState} from 'react'
 import retroDrawerQuery, {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import MeetingOptions from './MeetingOptions'
 import RetroDrawer from './RetroDrawer'
 
 type Props = {
-  showDrawer: boolean
-  setShowDrawer: (showDrawer: boolean) => void
   meetingId: string
 }
 
 const RetroDrawerRoot = (props: Props) => {
-  const {showDrawer, setShowDrawer, meetingId} = props
+  const {meetingId} = props
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showDrawer, setShowDrawer] = useState(false)
+
+  const handleOpenMenu = () => {
+    setIsMenuOpen(true)
+  }
+
   const queryRef = useQueryLoaderNow<RetroDrawerQuery>(retroDrawerQuery, {
     first: 2000,
     type: 'retrospective',
-    meetingId
+    meetingId,
+    isMenuOpen
   })
   return (
-    <Suspense fallback={''}>
-      {queryRef && (
-        <RetroDrawer showDrawer={showDrawer} setShowDrawer={setShowDrawer} queryRef={queryRef} />
-      )}
-    </Suspense>
+    <>
+      <MeetingOptions
+        showDrawer={showDrawer}
+        setShowDrawer={setShowDrawer}
+        handleOpenMenu={handleOpenMenu}
+        meetingId={meetingId}
+      />
+      <Suspense fallback={''}>
+        {queryRef && (
+          <RetroDrawer queryRef={queryRef} showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
+        )}
+      </Suspense>
+    </>
   )
 }
 
