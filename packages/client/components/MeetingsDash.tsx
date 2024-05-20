@@ -137,6 +137,7 @@ const MeetingsDash = (props: Props) => {
           {!teamFilterIds ? (
             <Wrapper maybeTabletPlus={maybeTabletPlus}>
               <DemoMeetingCard />
+              <TutorialMeetingCard type='retro' />
               <TutorialMeetingCard type='standup' />
               <TutorialMeetingCard type='poker' />
             </Wrapper>
