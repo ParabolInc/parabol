@@ -4917,10 +4917,10 @@
   resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.4.0.tgz#388c29614cf72aa0dd9803c77c9c9d070bd3cd2d"
   integrity sha512-TnPI97WVAxo8SQcPy8aV3OF9/2WjXB5/+pRNVudIWR7Bhi5ZjtR/ur162So08GkvsvB914AXCW2sxFh1x6KhHA==
 
-"@mattkrick/trebuchet-client@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.1.tgz#3fc49f7858652a55dca92cb0c14c0313df931619"
-  integrity sha512-5uHCldCqmVntoyujTzRfmGtjld8k4JuBdFN0SvhvRFf83FPaNeoit6Mh8VgrcxxxKujKeYCQDMQH6LWwpsshgQ==
+"@mattkrick/trebuchet-client@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.2.tgz#336d687256fb9ac7bb407f656bf2f69f35f817e1"
+  integrity sha512-JLOx8gd+cGkDeHhdnns0oor2UNv5uRZ8A/Jfw3NhQcVqQe6R+x9xIHW29M2T78TDHUWqItTgntX+cdDLqVjVvg==
   dependencies:
     "@mattkrick/fast-rtc-peer" "^0.4.1"
     eventemitter3 "^4.0.7"

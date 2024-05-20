@@ -68,7 +68,7 @@
     "@emotion/styled": "^10.0.27",
     "@mattkrick/graphql-trebuchet-client": "^2.2.1",
     "@mattkrick/sanitize-svg": "0.4.0",
-    "@mattkrick/trebuchet-client": "3.0.1",
+    "@mattkrick/trebuchet-client": "3.0.2",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.9.2",
     "@mui/x-date-pickers": "^6.3.1",
