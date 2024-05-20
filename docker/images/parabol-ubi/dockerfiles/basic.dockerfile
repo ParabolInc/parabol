@@ -13,10 +13,6 @@ ENV HOME=/home/node \
 COPY --chown=node --chmod=755 docker/images/parabol-ubi/entrypoints/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --chown=node docker/images/parabol-ubi/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
 
-# Required for pushToCDN to work with FILE_STORE_PROVIDER set to 'local'
-RUN mkdir -p ${HOME}/parabol/self-hosted && \
-    chown node:node ${HOME}/parabol/self-hosted
-
 # Create a directory to store fonts
 RUN mkdir -p /usr/share/fonts
 COPY --chown=node static/fonts /usr/share/fonts
