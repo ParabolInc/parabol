@@ -28,17 +28,13 @@ const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = 
   if (!orgId) {
     throw new Error(`orgId not found on metadata for customer ${customerId}`)
   }
-  const [org, subscription]: [Organization, any] = await Promise.all([
-    await dataLoader.get('organizations').load(orgId),
-    await manager.getSubscriptionItem(subscriptionId)
-  ])
+  const org: Organization = await dataLoader.get('organizations').load(orgId)
 
   const {stripeSubscriptionId} = org
   if (stripeSubscriptionId !== subscriptionId) {
     throw new Error('Subscription ID does not match')
   }
 
-  console.log(subscription)
   await r
     .table('Organization')
     .get(orgId)
