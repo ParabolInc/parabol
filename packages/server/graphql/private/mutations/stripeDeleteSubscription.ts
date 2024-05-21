@@ -1,0 +1,53 @@
+import getRethink from '../../../database/rethinkDriver'
+import Organization from '../../../database/types/Organization'
+import {isSuperUser} from '../../../utils/authorization'
+import {getStripeManager} from '../../../utils/stripe'
+import {MutationResolvers} from '../resolverTypes'
+
+const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = async (
+  _source,
+  {customerId, subscriptionId},
+  {authToken, dataLoader}
+) => {
+  const r = await getRethink()
+  // AUTH
+  if (!isSuperUser(authToken)) {
+    throw new Error('Don’t be rude.')
+  }
+
+  // RESOLUTION
+  const manager = getStripeManager()
+  const stripeCustomer = await manager.retrieveCustomer(customerId)
+  if (stripeCustomer.deleted) {
+    throw new Error('Customer was deleted')
+  }
+
+  const {
+    metadata: {orgId}
+  } = stripeCustomer
+  if (!orgId) {
+    throw new Error(`orgId not found on metadata for customer ${customerId}`)
+  }
+  const [org, subscription]: [Organization, any] = await Promise.all([
+    await dataLoader.get('organizations').load(orgId),
+    await manager.getSubscriptionItem(subscriptionId)
+  ])
+
+  const {stripeSubscriptionId} = org
+  if (stripeSubscriptionId !== subscriptionId) {
+    throw new Error('Subscription ID does not match')
+  }
+
+  console.log(subscription)
+  await r
+    .table('Organization')
+    .get(orgId)
+    .update({
+      stripeSubscriptionId: r.literal()
+    })
+    .run()
+
+  return true
+}
+
+export default stripeUpdateSubscription

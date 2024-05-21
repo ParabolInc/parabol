@@ -448,6 +448,35 @@ type Mutation {
   ): Boolean
 
   """
+  When stripe tells us a subscription was updated, update the details in our own DB
+  """
+  stripeUpdateSubscription(
+    """
+    The stripe customer ID, or stripeId
+    """
+    customerId: ID!
+    """
+    The stripe subscription ID
+    """
+    subscriptionId: ID!
+  ): Boolean
+
+  """
+  When stripe tells us a subscription was deleted, update the details in our own DB
+  """
+  stripeDeleteSubscription(
+    """
+    The stripe customer ID, or stripeId
+    """
+    customerId: ID!
+    """
+    The stripe subscription ID
+    """
+    subscriptionId: ID!
+  ): Boolean
+
+
+  """
   When a new invoiceitem is sent from stripe, tag it with metadata
   """
   stripeUpdateInvoiceItem(
