@@ -91,16 +91,12 @@ const Organization = (props: Props) => {
           path={`${match.url}/${AUTHENTICATION_PAGE}`}
           render={(p) => <Authentication {...p} orgId={orgId} />}
         />
-        {(isBillingLeader || isTeamLead) && (
-          <>
-            <Route
-              exact
-              path={`${match.url}/${TEAMS_PAGE}`}
-              render={() => <OrgTeams organizationRef={organization} />}
-            />
-            <Route exact path={`${match.url}/${TEAMS_PAGE}/:teamId`} component={OrgTeamMembers} />
-          </>
-        )}
+        <Route
+          exact
+          path={`${match.url}/${TEAMS_PAGE}`}
+          render={() => <OrgTeams organizationRef={organization} />}
+        />
+        <Route exact path={`${match.url}/${TEAMS_PAGE}/:teamId`} component={OrgTeamMembers} />
       </Switch>
     </section>
   )

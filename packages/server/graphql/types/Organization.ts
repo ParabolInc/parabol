@@ -10,7 +10,6 @@ import {
 import {
   getUserId,
   isSuperUser,
-  isTeamLead,
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../utils/authorization'
@@ -78,17 +77,18 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     allTeams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description:
-        'All the teams in the organization. If the viewer is not a billing lead, super user, or they do not have the publicTeams flag, return the teams they are a member of.',
+        'All the teams in the organization. If the viewer is not a billing lead, org admin, super user, or they do not have the publicTeams flag, return the teams they are a member of.',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
-        const [allTeamsOnOrg, organization] = await Promise.all([
+        const [allTeamsOnOrg, organization, isOrgAdmin, isBillingLeader] = await Promise.all([
           dataLoader.get('teamsByOrgIds').load(orgId),
-          dataLoader.get('organizations').load(orgId)
+          dataLoader.get('organizations').load(orgId),
+          isUserOrgAdmin(viewerId, orgId, dataLoader),
+          isUserBillingLeader(viewerId, orgId, dataLoader)
         ])
         const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
         const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
-        const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-        if (isBillingLeader || isSuperUser(authToken) || hasPublicTeamsFlag) {
+        if (isBillingLeader || isOrgAdmin || isSuperUser(authToken) || hasPublicTeamsFlag) {
           const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
           const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
           return [...viewerTeams, ...otherTeams]
@@ -105,19 +105,6 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         return allTeamsOnOrg
           .filter((team) => authToken.tms.includes(team.id))
           .sort((a, b) => a.name.localeCompare(b.name))
-      }
-    },
-    isTeamLead: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the viewer is a team lead for a team in the organization',
-      resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        const allTeamsInOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        const teamIds = allTeamsInOrg.map(({id}) => id)
-        const teamLeadStatuses = await Promise.all(
-          teamIds.map((teamId) => isTeamLead(viewerId, teamId, dataLoader))
-        )
-        return teamLeadStatuses.some((status) => status)
       }
     },
     periodEnd: {
