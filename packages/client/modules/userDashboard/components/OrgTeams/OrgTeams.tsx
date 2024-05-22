@@ -27,6 +27,7 @@ const OrgTeams = (props: Props) => {
     `,
     organizationRef
   )
+
   const {
     open: openAddTeamDialog,
     close: closeAddTeamDialog,
