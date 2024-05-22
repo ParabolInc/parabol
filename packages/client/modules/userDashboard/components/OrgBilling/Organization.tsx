@@ -47,7 +47,6 @@ const query = graphql`
         ...OrgDetails_organization
         ...OrgTeams_organization
         isBillingLeader
-        isTeamLead
       }
     }
   }
@@ -59,7 +58,7 @@ const Organization = (props: Props) => {
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
   const {organization} = viewer
   if (!organization) return null
-  const {id: orgId, isBillingLeader, isTeamLead} = organization
+  const {id: orgId} = organization
 
   return (
     <section className={'px-4 md:px-8'}>
