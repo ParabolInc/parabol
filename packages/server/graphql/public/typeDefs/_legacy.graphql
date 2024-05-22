@@ -761,11 +761,6 @@ type TeamMember {
   isOrgAdmin: Boolean!
 
   """
-  Is the viewer the org admin?
-  """
-  isViewerOrgAdmin: Boolean!
-
-  """
   true if the user prefers to not vote during a poker meeting
   """
   isSpectatingPoker: Boolean!
