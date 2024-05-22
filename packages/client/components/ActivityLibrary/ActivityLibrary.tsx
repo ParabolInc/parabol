@@ -78,6 +78,10 @@ graphql`
 const query = graphql`
   query ActivityLibraryQuery {
     viewer {
+      ...ActivityGrid_user
+      favoriteTemplates {
+        ...ActivityLibrary_template @relay(mask: false)
+      }
       availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
@@ -240,6 +244,9 @@ export const ActivityLibrary = (props: Props) => {
       // If there's a search query, just use the search filter results
       return filteredTemplates
     }
+    if (categoryId === 'favorite') {
+      return viewer.favoriteTemplates
+    }
 
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
@@ -326,7 +333,7 @@ export const ActivityLibrary = (props: Props) => {
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
           <div className='flex gap-2 px-4 pt-6 md:flex-wrap md:pb-4 lg:mx-[15%]'>
-            {(availableCategoryIds as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>).map(
+            {(availableCategoryIds as Array<AllCategoryID | typeof QUICK_START_CATEGORY_ID>).map(
               (category) => (
                 <Link
                   className={clsx(
@@ -341,6 +348,14 @@ export const ActivityLibrary = (props: Props) => {
                   to={`/activity-library/category/${category}`}
                   onClick={() => resetQuery()}
                   key={category}
+                  style={{
+                    color:
+                      category === 'favorite'
+                        ? category === categoryId && searchQuery.length === 0
+                          ? 'white'
+                          : 'red'
+                        : undefined
+                  }}
                 >
                   {CATEGORY_ID_TO_NAME[category]}
                 </Link>
@@ -380,6 +395,7 @@ export const ActivityLibrary = (props: Props) => {
                             <ActivityGrid
                               templates={subCategoryTemplates}
                               selectedCategory={categoryId}
+                              viewerRef={viewer}
                             />
                           </div>
                         </Fragment>
@@ -392,6 +408,7 @@ export const ActivityLibrary = (props: Props) => {
                     <ActivityGrid
                       templates={templatesToRender as Template[]}
                       selectedCategory={categoryId}
+                      viewerRef={viewer}
                     />
                   </div>
                 </>

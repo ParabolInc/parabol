@@ -1,6 +1,7 @@
 import {Slot} from '@radix-ui/react-slot'
 import clsx from 'clsx'
 import React from 'react'
+import {twMerge} from 'tailwind-merge'
 
 type Variant = 'primary' | 'secondary' | 'destructive' | 'ghost' | 'link' | 'outline'
 type Size = 'sm' | 'md' | 'lg' | 'default'
@@ -45,12 +46,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : 'button'
     return (
       <Comp
-        className={clsx(
-          BASE_STYLES,
-          VARIANT_STYLES[variant],
-          size ? SIZE_STYLES[size] : null,
-          SHAPE_STYLES[shape],
-          className
+        className={twMerge(
+          clsx(
+            BASE_STYLES,
+            VARIANT_STYLES[variant],
+            size ? SIZE_STYLES[size] : null,
+            SHAPE_STYLES[shape],
+            className
+          )
         )}
         ref={ref}
         {...props}
