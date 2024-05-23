@@ -3,6 +3,8 @@ import React from 'react'
 
 interface Props {
   level: 0 | 1 | 2 | 3 | 4 | 5
+  style: object
+  text: string
 }
 
 // Level 0: Unclassified
@@ -18,7 +20,7 @@ interface Props {
 // them when not used explicity, see tailwind.config.js
 
 const SecurityBanner = (props: Props) => {
-  const {level} = props
+  const {level, text, style} = props
   const labels = [
     'Unclassified',
     'Controlled (CUI)',
@@ -39,8 +41,9 @@ const SecurityBanner = (props: Props) => {
         'uppercase',
         'w-full'
       )}
+      style={style}
     >
-      {labels[level]}
+      {text ? text : labels[level]}
     </div>
   )
 }
