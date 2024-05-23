@@ -198,9 +198,12 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           sortOrder: maxSortOrder + 1 + dndNoise(),
           reflectionGroupId
         })
-        updateProxyRecord(reflectionGroupProxy, {
-          title: '🤖🤔 Thinking...'
-        })
+        // if title is user defined, we don't change it, so no need to show the thinking emoji
+        if (!reflectionGroupProxy.getValue('titleIsUserDefined')) {
+          updateProxyRecord(reflectionGroupProxy, {
+            title: '🤖🤔 Thinking...'
+          })
+        }
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
