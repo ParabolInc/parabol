@@ -5,6 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.32.1](https://github.com/ParabolInc/parabol/compare/v7.32.0...v7.32.1) (2024-05-22)
+
+
+### Fixed
+
+* Revert @aws-sdk/client-s3 upgrade ([#9763](https://github.com/ParabolInc/parabol/issues/9763)) ([8fc0ec1](https://github.com/ParabolInc/parabol/commit/8fc0ec11f8e45033c5291feef59d298b36dbfc7c))
+
+## [7.32.0](https://github.com/ParabolInc/parabol/compare/v7.31.0...v7.32.0) (2024-05-21)
+
+
+### Added
+
+* add favorite activities UI to activity library ([#9680](https://github.com/ParabolInc/parabol/issues/9680)) ([d6a775d](https://github.com/ParabolInc/parabol/commit/d6a775d4e8f5383588938e163b1e44025afa6624))
+* add logic that lets users favorite a template ([#9713](https://github.com/ParabolInc/parabol/issues/9713)) ([4558e14](https://github.com/ParabolInc/parabol/commit/4558e143c98c2ceab197b7c00670cc56ae7c6436))
+* saml upload ([#9750](https://github.com/ParabolInc/parabol/issues/9750)) ([5c40fcf](https://github.com/ParabolInc/parabol/commit/5c40fcfb1d6df9ac32c2f2277735169f0e1ae95d))
+* **single-tenant-host:** Embedder and Text Embeddings Inference added to the stack ([#9753](https://github.com/ParabolInc/parabol/issues/9753)) ([5ec8f45](https://github.com/ParabolInc/parabol/commit/5ec8f457f44780036da79b54136f3c68c5bb052c))
+
+
+### Fixed
+
+* close websocket with reason on invalid token ([#9744](https://github.com/ParabolInc/parabol/issues/9744)) ([a5d4bad](https://github.com/ParabolInc/parabol/commit/a5d4badf63781ddf9023fcc169d4b90f0f9d646f))
+* **dev-stack:** update text-embeddings-inference to 1.2.2 ([#9754](https://github.com/ParabolInc/parabol/issues/9754)) ([1c8fa84](https://github.com/ParabolInc/parabol/commit/1c8fa84444dc361d6bb8938d55accad31be2b6e7))
+* fix the issue where a successful upgrade won't refresh the billing page ([#9740](https://github.com/ParabolInc/parabol/issues/9740)) ([9a904d3](https://github.com/ParabolInc/parabol/commit/9a904d3a35b0f82ffd67d6e7d4853b40cfc4f234))
+* Send correct websocket status code ([#9760](https://github.com/ParabolInc/parabol/issues/9760)) ([ca20d75](https://github.com/ParabolInc/parabol/commit/ca20d75d86b467eef64c7e08419434a7f4be5946))
+* Update remove user from org copy ([#9759](https://github.com/ParabolInc/parabol/issues/9759)) ([a39cd41](https://github.com/ParabolInc/parabol/commit/a39cd41baa3a696600af5299b281fbb2729fa7af))
+
+
+### Changed
+
+* Trace RRule ([#9756](https://github.com/ParabolInc/parabol/issues/9756)) ([341772a](https://github.com/ParabolInc/parabol/commit/341772af9da5923e7c22b8a253aaca0b2aeab7c5))
+* update tutorial card thumbnail & video links ([#9746](https://github.com/ParabolInc/parabol/issues/9746)) ([28c7432](https://github.com/ParabolInc/parabol/commit/28c743274df3c8ed97e3e8dbe2677a58483a851e))
+
 ## [7.31.0](https://github.com/ParabolInc/parabol/compare/v7.30.4...v7.31.0) (2024-05-08)
 
 

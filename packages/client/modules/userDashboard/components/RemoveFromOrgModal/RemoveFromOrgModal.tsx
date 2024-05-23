@@ -37,9 +37,7 @@ const RemoveFromOrgModal = (props: Props) => {
     <StyledDialogContainer>
       <DialogTitle>{'Are you sure?'}</DialogTitle>
       <DialogContent>
-        {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
-        to the team leads. Any time remaining on their subscription will be refunded on the next
-        invoice.`}
+        {`This will remove ${preferredName} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
           <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
         </StyledButton>

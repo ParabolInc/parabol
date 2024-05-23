@@ -23,13 +23,12 @@ const handleOpen: WebSocketBehavior<SocketUserData>['open'] = async (socket) => 
   const {authToken, ip, protocol} = socket.getUserData()
   if (protocol !== 'trebuchet-ws') {
     sendToSentry(new Error(`WebSocket error: invalid protocol: ${protocol}`))
-    // WS Error 1002 is roughly HTTP 412 Precondition Failed because we can't support the req header
-    socket.end(412, 'Invalid protocol')
+    socket.end(1002, 'Invalid protocol')
     return
   }
 
   if (!isAuthenticated(authToken)) {
-    socket.end(401, TrebuchetCloseReason.EXPIRED_SESSION)
+    socket.end(1008, TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
 
@@ -37,7 +36,7 @@ const handleOpen: WebSocketBehavior<SocketUserData>['open'] = async (socket) => 
   const {sub: userId, iat} = authToken
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
   if (isBlacklistedJWT) {
-    socket.end(401, TrebuchetCloseReason.EXPIRED_SESSION)
+    socket.end(1008, TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
 

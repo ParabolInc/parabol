@@ -47,6 +47,10 @@ const Team: TeamResolvers = {
       .get('organizationUsersByUserIdOrgId')
       .load({userId: viewerId, orgId})
     return organizationUser?.role === 'ORG_ADMIN'
+  },
+  teamLead: async ({id: teamId}, _args, {dataLoader}) => {
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    return teamMembers.find((teamMember) => teamMember.isLead)!
   }
 }
 
