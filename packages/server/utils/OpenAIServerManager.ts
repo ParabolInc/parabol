@@ -42,7 +42,7 @@ class OpenAIServerManager {
     """`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'user',
