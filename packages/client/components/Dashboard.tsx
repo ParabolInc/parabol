@@ -127,6 +127,7 @@ const Dashboard = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
+  const showSecBanner = true
   useSnackNag(overLimitCopy)
   useUsageSnackNag(insights)
   useSnacksForNewMeetings(activeMeetings)
@@ -134,7 +135,7 @@ const Dashboard = (props: Props) => {
 
   return (
     <DashLayout>
-      <SecurityBanner level={5} /> {/* Levels 0-5 */}
+      {showSecBanner && <SecurityBanner level={5} />}
       <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (
         <DashTopBar queryRef={data} toggle={toggle} />
