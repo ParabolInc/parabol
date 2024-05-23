@@ -19,6 +19,8 @@ interface Props {
 // These classes are on the ‘safelist’ to force loading
 // them when not used explicity, see tailwind.config.js
 
+// Note: text and style props will override level defaults
+
 const SecurityBanner = (props: Props) => {
   const {level, text, style} = props
   const labels = [
