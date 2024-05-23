@@ -17,6 +17,7 @@ import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import MobileDashTopBar from './MobileDashTopBar'
 import RequestToJoinComponent from './RequestToJoin'
+import SecurityBanner from './SecurityBanner'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 const InsightsRoot = lazy(
@@ -133,6 +134,7 @@ const Dashboard = (props: Props) => {
 
   return (
     <DashLayout>
+      <SecurityBanner level={5} /> {/* Levels 0-5 */}
       <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (
         <DashTopBar queryRef={data} toggle={toggle} />
