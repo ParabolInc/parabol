@@ -6,6 +6,8 @@ interface Props {
   text: string
 }
 
+// https://www.astrouxds.com/components/classification-markings/#banner-examples
+
 const SecurityBanner = (props: Props) => {
   const {text, style} = props
   return (
