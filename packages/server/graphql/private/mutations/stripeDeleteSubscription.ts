@@ -4,7 +4,7 @@ import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
-const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = async (
+const stripeDeleteSubscription: MutationResolvers['stripeDeleteSubscription'] = async (
   _source,
   {customerId, subscriptionId},
   {authToken, dataLoader}
@@ -46,4 +46,4 @@ const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = 
   return true
 }
 
-export default stripeUpdateSubscription
+export default stripeDeleteSubscription
