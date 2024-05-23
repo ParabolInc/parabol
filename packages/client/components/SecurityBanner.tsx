@@ -13,6 +13,7 @@ interface Props {
 // Level 5: Top Secret/SCI
 
 // See tailwindTheme.ts for security color theme
+// https://www.astrouxds.com/components/classification-markings/#banner-examples
 // These classes are on the ‘safelist’ to force loading
 // them when not used explicity, see tailwind.config.js
 
