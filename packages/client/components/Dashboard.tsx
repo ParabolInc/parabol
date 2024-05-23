@@ -127,6 +127,7 @@ const Dashboard = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
+
   // security banner concept WIP
   const showSecBanner = true
   const SECURITY_BANNER_TEXT = 'UNCLASSIFIED CUI (IL4)'
@@ -134,6 +135,8 @@ const Dashboard = (props: Props) => {
     backgroundColor: 'blue',
     color: 'white'
   }
+  // security banner concept WIP
+
   useSnackNag(overLimitCopy)
   useUsageSnackNag(insights)
   useSnacksForNewMeetings(activeMeetings)
@@ -142,7 +145,7 @@ const Dashboard = (props: Props) => {
   return (
     <DashLayout>
       {showSecBanner && (
-        <SecurityBanner text={SECURITY_BANNER_TEXT} style={SECURITY_BANNER_STYLE} level={5} />
+        <SecurityBanner text={SECURITY_BANNER_TEXT} style={SECURITY_BANNER_STYLE} />
       )}
       <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (

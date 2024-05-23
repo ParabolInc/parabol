@@ -8,14 +8,6 @@ module.exports = {
   },
   presets: [require('./packages/client/tailwind.preset.js')],
   content: ['./packages/client/**/*.{ts,tsx,js,jsx,html}', './template.html'],
-  safelist: [
-    'bg-security-0',
-    'bg-security-1',
-    'bg-security-2',
-    'bg-security-3',
-    'bg-security-4',
-    'bg-security-5'
-  ],
   theme: {
     fontFamily: {
       sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
