@@ -3,7 +3,6 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
@@ -19,9 +18,9 @@ import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import generateReflectionGroupTitle from './helpers/generateReflectionGroupTitle'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
-import OpenAIServerManager from '../../utils/OpenAIServerManager'
 
 export default {
   type: CreateReflectionPayload,
@@ -38,7 +37,6 @@ export default {
   ) {
     const r = await getRethink()
     const pg = getKysely()
-    const manager = new OpenAIServerManager()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
@@ -121,8 +119,7 @@ export default {
       updatedAt: now
     })
 
-    const smartTitle =
-      (await manager.getReflectionGroupTitle([reflection])) ?? getGroupSmartTitle([reflection])
+    const smartTitle = await generateReflectionGroupTitle(team, [reflection])
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
       smartTitle,

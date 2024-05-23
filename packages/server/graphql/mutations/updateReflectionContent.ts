@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
@@ -12,11 +11,11 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import generateReflectionGroupTitle from './helpers/generateReflectionGroupTitle'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
-import {getFeatureTier} from '../types/helpers/getFeatureTier'
-import OpenAIServerManager from '../../utils/OpenAIServerManager'
 
 export default {
   type: UpdateReflectionContentPayload,
@@ -36,7 +35,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
-    const manager = new OpenAIServerManager()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
@@ -101,9 +99,7 @@ export default {
       .filter({isActive: true})
       .run()) as Reflection[]
 
-    const newTitle =
-      (await manager.getReflectionGroupTitle(reflectionsInGroup)) ??
-      getGroupSmartTitle(reflectionsInGroup)
+    const newTitle = await generateReflectionGroupTitle(team, reflectionsInGroup)
     await updateSmartGroupTitle(reflectionGroupId, newTitle)
 
     const data = {meetingId, reflectionId}

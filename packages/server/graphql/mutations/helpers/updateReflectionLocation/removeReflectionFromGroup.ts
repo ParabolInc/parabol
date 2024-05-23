@@ -5,8 +5,8 @@ import MeetingRetrospective from '../../../../database/types/MeetingRetrospectiv
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from '../../../graphql'
+import generateReflectionGroupTitle from '../generateReflectionGroupTitle'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
-import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
@@ -25,6 +25,7 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
       .run(),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  const {teamId} = meeting
 
   let newSortOrder = 1e6
   const oldReflectionGroupIdx = reflectionGroupsInColumn.findIndex(
@@ -65,15 +66,15 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   reflection.reflectionGroupId = reflectionGroupId
   const retroMeeting = meeting as MeetingRetrospective
   retroMeeting.nextAutoGroupThreshold = null
-  const oldReflections = await r
-    .table('RetroReflection')
-    .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-    .filter({isActive: true})
-    .run()
-
-  const manager = new OpenAIServerManager()
-  const nextTitle =
-    (await manager.getReflectionGroupTitle([reflection])) ?? getGroupSmartTitle([reflection])
+  const [oldReflections, team] = await Promise.all([
+    r
+      .table('RetroReflection')
+      .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
+      .filter({isActive: true})
+      .run(),
+    dataLoader.get('teams').loadNonNull(teamId)
+  ])
+  const nextTitle = await generateReflectionGroupTitle(team, [reflection])
   await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
   if (oldReflections.length > 0) {

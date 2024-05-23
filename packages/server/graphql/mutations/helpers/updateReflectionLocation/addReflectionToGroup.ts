@@ -4,9 +4,9 @@ import getRethink from '../../../../database/rethinkDriver'
 import Reflection from '../../../../database/types/Reflection'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
+import generateReflectionGroupTitle from '../generateReflectionGroupTitle'
 import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
-import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 
 const addReflectionToGroup = async (
   reflectionId: string,
@@ -16,7 +16,6 @@ const addReflectionToGroup = async (
 ) => {
   const r = await getRethink()
   const pg = getKysely()
-  const manager = new OpenAIServerManager()
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
@@ -62,23 +61,24 @@ const addReflectionToGroup = async (
 
   if (oldReflectionGroupId !== reflectionGroupId) {
     // ths is not just a reorder within the same group
-    const {nextReflections, oldReflections} = await r({
-      nextReflections: r
-        .table('RetroReflection')
-        .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
-        .filter({isActive: true})
-        .coerceTo('array') as unknown as Reflection[],
-      oldReflections: r
-        .table('RetroReflection')
-        .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-        .filter({isActive: true})
-        .coerceTo('array') as unknown as Reflection[]
-    }).run()
-
-    const nextTitle =
-      smartTitle ??
-      (await manager.getReflectionGroupTitle(nextReflections)) ??
-      getGroupSmartTitle(nextReflections)
+    const [{nextReflections, oldReflections}, meeting] = await Promise.all([
+      r({
+        nextReflections: r
+          .table('RetroReflection')
+          .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
+          .filter({isActive: true})
+          .coerceTo('array') as unknown as Reflection[],
+        oldReflections: r
+          .table('RetroReflection')
+          .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
+          .filter({isActive: true})
+          .coerceTo('array') as unknown as Reflection[]
+      }).run(),
+      dataLoader.get('newMeetings').load(meetingId)
+    ])
+    const {teamId} = meeting
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const nextTitle = smartTitle ?? (await generateReflectionGroupTitle(team, nextReflections))
     const oldGroupHasSingleReflectionCustomTitle =
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
