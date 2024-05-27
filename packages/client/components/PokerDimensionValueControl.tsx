@@ -4,7 +4,7 @@ import React, {Dispatch, MutableRefObject, SetStateAction, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, Threshold} from '~/types/constEnums'
 import {PokerDimensionValueControl_stage$key} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
 import LinkButton from './LinkButton'
@@ -133,7 +133,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const errorStr = error?.message ?? ''
 
-  useResizeFontForElement(inputRef, cardScore, 12, 18)
+  useResizeFontForElement(inputRef, cardScore, 10, 18)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
@@ -188,7 +188,7 @@ const PokerDimensionValueControl = (props: Props) => {
             onChange={onChange}
             placeholder={placeholder}
             value={cardScore}
-            maxLength={3}
+            maxLength={Threshold.POKER_SCALE_VALUE_MAX_LENGTH}
           />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}

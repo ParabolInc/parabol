@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useRef} from 'react'
+import useResizeFontForElement from '~/hooks/useResizeFontForElement'
 import {PALETTE} from '~/styles/paletteV3'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
 import {Elevation} from '../styles/elevation'
@@ -26,11 +27,12 @@ const MiniPokerCardPlaceholder = styled('div')<{
   flexShrink: 0,
   fontWeight: 600,
   height: 40,
-  fontSize: 18,
+  fontSize: 14,
   justifyContent: 'center',
   lineHeight: '24px',
   textAlign: 'center',
   textShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
+  textOverflow: 'ellipsis',
   transition: onClick ? 'all 200ms' : 'none',
   userSelect: 'none',
   width: 28,
@@ -56,8 +58,19 @@ interface Props {
 
 const MiniPokerCard = (props: Props) => {
   const {canEdit, color, children, onClick, isFinal} = props
+
+  const labelRef = useRef<HTMLDivElement>(null)
+  if (typeof children === 'string') {
+    useResizeFontForElement(labelRef, children, 10, 18, 1)
+  }
   return (
-    <MiniPokerCardPlaceholder canEdit={canEdit} color={color} onClick={onClick} isFinal={isFinal}>
+    <MiniPokerCardPlaceholder
+      ref={labelRef}
+      canEdit={canEdit}
+      color={color}
+      onClick={onClick}
+      isFinal={isFinal}
+    >
       {children === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : children}
     </MiniPokerCardPlaceholder>
   )
