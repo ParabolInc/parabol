@@ -6774,11 +6774,6 @@ type CreateReflectionPayload {
   The stages that were unlocked by navigating
   """
   unlockedStages: [NewMeetingStage!]
-
-  """
-  Kudoses that might be sent by the end of the retro
-  """
-  draftKudoses: [Kudos!]
 }
 
 input CreateReflectionInput {
