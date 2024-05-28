@@ -99,7 +99,7 @@ export default {
       .filter({isActive: true})
       .run()) as Reflection[]
 
-    const newTitle = await generateReflectionGroupTitle(team, reflectionsInGroup)
+    const newTitle = await generateReflectionGroupTitle(reflectionsInGroup)
     await updateSmartGroupTitle(reflectionGroupId, newTitle)
 
     const data = {meetingId, reflectionId}

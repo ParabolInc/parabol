@@ -61,24 +61,19 @@ const addReflectionToGroup = async (
 
   if (oldReflectionGroupId !== reflectionGroupId) {
     // ths is not just a reorder within the same group
-    const [{nextReflections, oldReflections}, meeting] = await Promise.all([
-      r({
-        nextReflections: r
-          .table('RetroReflection')
-          .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
-          .filter({isActive: true})
-          .coerceTo('array') as unknown as Reflection[],
-        oldReflections: r
-          .table('RetroReflection')
-          .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-          .filter({isActive: true})
-          .coerceTo('array') as unknown as Reflection[]
-      }).run(),
-      dataLoader.get('newMeetings').load(meetingId)
-    ])
-    const {teamId} = meeting
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const nextTitle = smartTitle ?? (await generateReflectionGroupTitle(team, nextReflections))
+    const {nextReflections, oldReflections} = await r({
+      nextReflections: r
+        .table('RetroReflection')
+        .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
+        .filter({isActive: true})
+        .coerceTo('array') as unknown as Reflection[],
+      oldReflections: r
+        .table('RetroReflection')
+        .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
+        .filter({isActive: true})
+        .coerceTo('array') as unknown as Reflection[]
+    }).run()
+    const nextTitle = smartTitle ?? (await generateReflectionGroupTitle(nextReflections))
     const oldGroupHasSingleReflectionCustomTitle =
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
