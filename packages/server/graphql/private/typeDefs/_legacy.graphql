@@ -475,7 +475,6 @@ type Mutation {
     subscriptionId: ID!
   ): Boolean
 
-
   """
   When a new invoiceitem is sent from stripe, tag it with metadata
   """
@@ -1657,7 +1656,6 @@ enum NotificationEnum {
   TEAMS_LIMIT_REMINDER
   PROMPT_TO_JOIN_ORG
   REQUEST_TO_JOIN_ORG
-  KUDOS_RECEIVED
 }
 
 """

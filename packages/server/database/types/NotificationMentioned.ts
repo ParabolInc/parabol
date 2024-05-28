@@ -9,8 +9,6 @@ interface Input {
   meetingId: string
   retroReflectionId?: string | null
   retroDiscussStageIdx?: number | null
-  kudosEmoji?: string | null
-  kudosEmojiUnicode?: string | null
 }
 
 // TODO: replace NotificationResponseMentioned and NotificationResponseReplied with NotificationMentioned
@@ -23,8 +21,6 @@ export default class NotificationMentioned extends Notification {
   meetingId: string
   retroReflectionId?: string | null
   retroDiscussStageIdx?: number | null
-  kudosEmoji?: string | null
-  kudosEmojiUnicode?: string | null
 
   constructor(input: Input) {
     const {
@@ -35,9 +31,7 @@ export default class NotificationMentioned extends Notification {
       meetingName,
       meetingId,
       retroReflectionId,
-      retroDiscussStageIdx,
-      kudosEmoji,
-      kudosEmojiUnicode
+      retroDiscussStageIdx
     } = input
     super({userId, type: 'MENTIONED'})
     this.senderName = senderName
@@ -46,8 +40,6 @@ export default class NotificationMentioned extends Notification {
     this.meetingName = meetingName
     this.meetingId = meetingId
     this.retroReflectionId = retroReflectionId
-    this.kudosEmoji = kudosEmoji
-    this.kudosEmojiUnicode = kudosEmojiUnicode
     this.retroDiscussStageIdx = retroDiscussStageIdx
   }
 }
