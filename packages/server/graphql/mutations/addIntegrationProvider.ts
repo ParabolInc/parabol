@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
-import {isSuperUser, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddIntegrationProviderInput, {
@@ -30,13 +30,27 @@ const addIntegrationProvider = {
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
-    const {teamId} = input
+    const {scope, teamId, orgId} = input
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
-      return {error: {message: 'Must be on the team for which the provider is created'}}
+    if (scope === 'team') {
+      if (!teamId) {
+        return {error: {message: 'Must provide a teamId for team scope'}}
+      }
+      if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
+        return {error: {message: 'Must be on the team for which the provider is created'}}
+      }
+    } else if (scope === 'org') {
+      const viewerId = getUserId(authToken)
+      if (!orgId) {
+        return {error: {message: 'Must provide an orgId for org scope'}}
+      }
+      const isOrgAdmin = await isUserOrgAdmin(viewerId, orgId, dataLoader)
+      if (!isSuperUser(authToken) && !isOrgAdmin) {
+        return {error: {message: 'Must be an org admin for org scope'}}
+      }
     }
 
     // VALIDATION

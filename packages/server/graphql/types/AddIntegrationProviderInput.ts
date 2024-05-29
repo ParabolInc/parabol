@@ -19,7 +19,8 @@ import IntegrationProviderMetadataInputWebhook, {
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 
 export interface IAddIntegrationProviderInput {
-  teamId: string
+  teamId: string | null
+  orgId: string | null
   service: TIntegrationProviderServiceEnum
   authStrategy: TIntegrationProviderAuthStrategyEnum
   scope: TIntegrationProviderEditableScopeEnum
@@ -32,9 +33,17 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
   name: 'AddIntegrationProviderInput',
   description: 'An Integration Provider configuration',
   fields: () => ({
+    scope: {
+      type: new GraphQLNonNull(IntegrationProviderEditableScopeEnum),
+      description: 'The scope this provider configuration was created at (org-wide, or by the team)'
+    },
     teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The team that the token is linked to'
+      type: GraphQLID,
+      description: 'If scope is team, the team that the token is linked to'
+    },
+    orgId: {
+      type: GraphQLID,
+      description: 'The scope is org, org that the token is linked to'
     },
     service: {
       type: new GraphQLNonNull(IntegrationProviderServiceEnum),
@@ -43,10 +52,6 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
     authStrategy: {
       type: new GraphQLNonNull(IntegrationProviderAuthStrategyEnum),
       description: 'The kind of token used by this provider'
-    },
-    scope: {
-      type: new GraphQLNonNull(IntegrationProviderEditableScopeEnum),
-      description: 'The scope this provider configuration was created at (org-wide, or by the team)'
     },
     webhookProviderMetadataInput: {
       type: IntegrationProviderMetadataInputWebhook,
