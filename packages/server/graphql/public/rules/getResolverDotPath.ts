@@ -2,7 +2,7 @@ import {FirstParam} from '../../../../client/types/generics'
 import {Resolvers} from '../resolverTypes'
 
 export const getResolverDotPath = (
-  dotPath: ResolverDotPath<string>,
+  dotPath: `${'source' | 'args'}.${string}`,
   source: Record<string, any>,
   args: Record<string, any>
 ) => {
@@ -20,7 +20,11 @@ type ExtractTypeof<T extends keyof Resolvers> = '__isTypeOf' extends keyof NonNu
 type ExtractParent<T extends keyof Resolvers> = FirstParam<NonNullable<ExtractTypeof<T>>>
 
 type Source<T> =
-  ParseParent<T> extends keyof Resolvers ? keyof ExtractParent<ParseParent<T>> & string : never
+  ParseParent<T> extends keyof Resolvers
+    ? ExtractParent<ParseParent<T>> extends never
+      ? never
+      : keyof ExtractParent<ParseParent<T>> & string
+    : never
 
 type ExtractChild<TOp, TChild extends string> = TChild extends keyof TOp
   ? NonNullable<TOp[TChild]>
