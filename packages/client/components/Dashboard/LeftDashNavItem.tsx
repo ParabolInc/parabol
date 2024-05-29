@@ -18,28 +18,22 @@ import React from 'react'
 import {useHistory, useRouteMatch} from 'react-router'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {PALETTE} from '~/styles/paletteV3'
-import {Breakpoint, NavSidebar} from '~/types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {NavSidebar} from '~/types/constEnums'
 
 const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   alignItems: 'center',
   backgroundColor: isActive ? PALETTE.SLATE_300 : undefined,
   borderRadius: 4,
-  color: PALETTE.SLATE_700,
+  color: PALETTE.SLATE_900,
   display: 'flex',
   fontSize: NavSidebar.FONT_SIZE,
   fontWeight: 600,
   lineHeight: NavSidebar.LINE_HEIGHT,
-  // marginBottom: 8,
-  // marginTop: 8,
   padding: 8,
   textDecoration: 'none',
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    // borderRadius: '0 4px 4px 0'
-  },
   ':hover': {
     backgroundColor: PALETTE.SLATE_300
   }
@@ -48,7 +42,7 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
 const StyledIcon = styled('div')({
   height: 24,
   width: 24,
-  color: PALETTE.SLATE_700,
+  color: PALETTE.SLATE_900,
   marginRight: 16,
   opacity: 0.5
 })

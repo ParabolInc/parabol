@@ -152,7 +152,7 @@ const DashSidebar = (props: Props) => {
       </div>
       <Nav isOpen={isOpen}>
         <Contents>
-          <div className='rounded-3xl px-3'>
+          <div className='px-3'>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
             <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
