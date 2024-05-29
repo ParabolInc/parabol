@@ -3,6 +3,7 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
@@ -18,7 +19,6 @@ import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
-import generateReflectionGroupTitle from './helpers/generateReflectionGroupTitle'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 
@@ -119,7 +119,7 @@ export default {
       updatedAt: now
     })
 
-    const smartTitle = await generateReflectionGroupTitle(team, [reflection])
+    const smartTitle = getGroupSmartTitle([reflection])
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
       smartTitle,
