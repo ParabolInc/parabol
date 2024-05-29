@@ -74,11 +74,11 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
       .run(),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  const nextTitle = await generateReflectionGroupTitle(team, [reflection])
+  const nextTitle = getGroupSmartTitle([reflection])
   await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
   if (oldReflections.length > 0) {
-    const oldTitle = getGroupSmartTitle(oldReflections)
+    const oldTitle = await generateReflectionGroupTitle(team, oldReflections)
     await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
   } else {
     await Promise.all([

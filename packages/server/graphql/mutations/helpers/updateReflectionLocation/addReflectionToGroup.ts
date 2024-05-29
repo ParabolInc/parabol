@@ -1,5 +1,4 @@
 import dndNoise from 'parabol-client/utils/dndNoise'
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
 import Reflection from '../../../../database/types/Reflection'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
@@ -105,7 +104,7 @@ const addReflectionToGroup = async (
     }
 
     if (oldReflections.length > 0) {
-      const oldTitle = getGroupSmartTitle(oldReflections)
+      const oldTitle = await generateReflectionGroupTitle(team, oldReflections)
       await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
     } else {
       await Promise.all([
