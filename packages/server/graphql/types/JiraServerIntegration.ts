@@ -77,7 +77,11 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
 
         const providers = await dataLoader
           .get('sharedIntegrationProviders')
-          .load({service: 'jiraServer', orgTeamIds, teamIds: [teamId]})
+          .load({
+            service: 'jiraServer',
+            orgTeamIds: [...orgTeamIds, 'aGhostTeam'],
+            teamIds: [teamId]
+          })
         return providers
       }
     },
