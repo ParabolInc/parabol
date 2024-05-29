@@ -3,7 +3,7 @@ import {getUserId} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import {ResolverDotPath, getResolverDotPath} from './getResolverDotPath'
 
-export const isViewerBillingLeader = (orgIdDotPath: ResolverDotPath) =>
+export const isViewerBillingLeader = <T>(orgIdDotPath: ResolverDotPath<T>) =>
   rule(`isViewerBillingLeader-${orgIdDotPath}`, {cache: 'strict'})(
     async (source, args, {authToken, dataLoader}: GQLContext) => {
       const orgId = getResolverDotPath(orgIdDotPath, source, args)
