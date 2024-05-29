@@ -39,4 +39,9 @@ export default abstract class FileStoreManager {
     const partialPath = `Organization/${orgId}/template/${filename}.${dotfreeExt}`
     return this.putUserFile(file, partialPath)
   }
+
+  async putDebugFile(file: ArrayBufferLike, nameWithExt: string) {
+    const partialPath = `__debug__/${nameWithExt}`
+    return this.putUserFile(file, partialPath)
+  }
 }
