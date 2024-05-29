@@ -58,6 +58,11 @@ type User {
   email: Email!
 
   """
+  The user's favorite meeting templates
+  """
+  favoriteTemplates: [MeetingTemplate!]!
+
+  """
   Any super power given to the user via a super user
   """
   featureFlags: UserFeatureFlags!

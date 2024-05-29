@@ -8,7 +8,6 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SelectTemplatePayload from '../types/SelectTemplatePayload'
-import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -32,9 +31,8 @@ const selectTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const [template, viewer] = await Promise.all([
-      dataLoader.get('meetingTemplates').load(selectedTemplateId) as Promise<MeetingTemplate>,
-      dataLoader.get('users').loadNonNull(viewerId)
+    const [template] = await Promise.all([
+      dataLoader.get('meetingTemplates').load(selectedTemplateId) as Promise<MeetingTemplate>
     ])
 
     if (!template || !template.isActive) {
@@ -42,7 +40,7 @@ const selectTemplate = {
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
-    const {scope, isFree} = template
+    const {scope} = template
     const viewerTeam = await dataLoader.get('teams').loadNonNull(teamId)
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, template.teamId))
@@ -51,16 +49,6 @@ const selectTemplate = {
       const templateTeam = await dataLoader.get('teams').loadNonNull(template.teamId)
       if (viewerTeam.orgId !== templateTeam.orgId) {
         return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
-      }
-    } else if (scope === 'PUBLIC') {
-      if (
-        !isFree &&
-        !viewer.featureFlags.includes('noTemplateLimit') &&
-        getFeatureTier(viewerTeam) === 'starter'
-      ) {
-        return standardError(new Error('User does not have access to this premium template'), {
-          userId: viewerId
-        })
       }
     }
 

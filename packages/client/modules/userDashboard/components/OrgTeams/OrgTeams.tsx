@@ -18,7 +18,11 @@ const OrgTeams = (props: Props) => {
     graphql`
       fragment OrgTeams_organization on Organization {
         id
+        isOrgAdmin
         isBillingLeader
+        featureFlags {
+          publicTeams
+        }
         allTeams {
           id
           ...OrgTeamsRow_team
@@ -27,19 +31,25 @@ const OrgTeams = (props: Props) => {
     `,
     organizationRef
   )
+
   const {
     open: openAddTeamDialog,
     close: closeAddTeamDialog,
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, isBillingLeader} = organization
-  if (!isBillingLeader) return null
-
+  const {allTeams, isBillingLeader, isOrgAdmin, featureFlags} = organization
+  const hasPublicTeamsFlag = featureFlags.publicTeams
+  const showAllTeams = isBillingLeader || isOrgAdmin || hasPublicTeamsFlag
   return (
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
-        <h1 className='flex-1 text-2xl font-semibold leading-7'>Teams</h1>
+        <div>
+          <h1 className='text-2xl font-semibold leading-7'>Teams</h1>
+          {!showAllTeams && (
+            <p className='text-gray-600 mb-2'>Only showing teams you're a member of</p>
+          )}
+        </div>
         <div className='ml-auto'>
           <Button
             variant='secondary'

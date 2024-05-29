@@ -4,10 +4,11 @@ import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
-import {isOrgTier, isOrgTierSource} from './rules/isOrgTier'
+import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import isUserViewer from './rules/isUserViewer'
-import {isViewerBillingLeader, isViewerBillingLeaderSource} from './rules/isViewerBillingLeader'
+import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
+import {isViewerOnOrg} from './rules/isViewerOnOrg'
 import isViewerOnTeam from './rules/isViewerOnTeam'
 import rateLimit from './rules/rateLimit'
 
@@ -50,9 +51,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     verifyEmail: rateLimit({perMinute: 50, perHour: 100}),
     addApprovedOrganizationDomains: or(
       isSuperUser,
-      and(isViewerBillingLeader, isOrgTier('enterprise'))
+      and(isViewerBillingLeader('args.orgId'), isOrgTier('args.orgId', 'enterprise'))
     ),
-    removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader),
+    removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader('args.orgId')),
+    uploadIdPMetadata: isViewerOnOrg('args.orgId'),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId)
   },
   Query: {
@@ -61,7 +63,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
   },
   Organization: {
-    saml: and(isViewerBillingLeaderSource, isOrgTierSource('enterprise'))
+    saml: and(isViewerBillingLeader('source.id'), isOrgTier('source.id', 'enterprise'))
   },
   User: {
     domains: or(isSuperUser, isUserViewer)

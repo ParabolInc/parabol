@@ -32,11 +32,8 @@ export const removePokerTemplateTeamUpdater: SharedUpdater<
   RemovePokerTemplateMutation_team$data
 > = (payload, {store}) => {
   const templateId = payload.getLinkedRecord('pokerTemplate').getValue('id')
-  const teamId = payload.getLinkedRecord('pokerTemplate').getValue('teamId')
-  handleRemovePokerTemplate(templateId, teamId, store)
+  handleRemovePokerTemplate(templateId, store)
 }
-
-type PokerTemplate = NonNullable<RemovePokerTemplateMutation_team$data['pokerTemplate']>
 
 const RemovePokerTemplateMutation: StandardMutation<TRemovePokerTemplateMutation> = (
   atmosphere,
@@ -55,9 +52,7 @@ const RemovePokerTemplateMutation: StandardMutation<TRemovePokerTemplateMutation
     },
     optimisticUpdater: (store) => {
       const {templateId} = variables
-      const template = store.get<PokerTemplate>(templateId)!
-      const teamId = template.getValue('teamId')
-      handleRemovePokerTemplate(templateId, teamId, store)
+      handleRemovePokerTemplate(templateId, store)
     }
   })
 }

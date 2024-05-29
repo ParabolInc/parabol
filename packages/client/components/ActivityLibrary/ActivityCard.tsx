@@ -38,7 +38,7 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
     >
       <img className='object-contain' src={backgroundSrc} alt='' />
       <img
-        className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
+        className='absolute top-0 left-0 h-full w-full object-contain p-10'
         src={src}
         alt='Card Illustration'
       />
@@ -94,7 +94,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
 
   return (
     <div
-      className='flex w-full flex-col'
+      className='flex w-full flex-col rounded-xl p-2'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

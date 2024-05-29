@@ -18,7 +18,6 @@ import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCou
 import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import GraphQLURLType from './GraphQLURLType'
 import OrgUserCount from './OrgUserCount'
 import OrganizationUser, {OrganizationUserConnection} from './OrganizationUser'
 import Team from './Team'
@@ -68,10 +67,6 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the organization'
     },
-    picture: {
-      type: GraphQLURLType,
-      description: 'The org avatar'
-    },
     activeTeamCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of teams with 3+ meetings (>1 attendee) that met within last 30 days',
@@ -82,17 +77,18 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     allTeams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description:
-        'All the teams in the organization. If the viewer is not a billing lead, super user, or they do not have the publicTeams flag, return the teams they are a member of.',
+        'All the teams in the organization. If the viewer is not a billing lead, org admin, super user, or they do not have the publicTeams flag, return the teams they are a member of.',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
-        const [allTeamsOnOrg, organization] = await Promise.all([
+        const [allTeamsOnOrg, organization, isOrgAdmin, isBillingLeader] = await Promise.all([
           dataLoader.get('teamsByOrgIds').load(orgId),
-          dataLoader.get('organizations').load(orgId)
+          dataLoader.get('organizations').load(orgId),
+          isUserOrgAdmin(viewerId, orgId, dataLoader),
+          isUserBillingLeader(viewerId, orgId, dataLoader)
         ])
         const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
         const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
-        const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-        if (isBillingLeader || isSuperUser(authToken) || hasPublicTeamsFlag) {
+        if (isBillingLeader || isOrgAdmin || isSuperUser(authToken) || hasPublicTeamsFlag) {
           const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
           const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
           return [...viewerTeams, ...otherTeams]

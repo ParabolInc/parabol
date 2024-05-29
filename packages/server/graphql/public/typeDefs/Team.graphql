@@ -189,4 +189,9 @@ type Team {
   Emoji that will be used for giving kudos
   """
   kudosEmoji: String!
+
+  """
+  The team member that is the team lead
+  """
+  teamLead: TeamMember!
 }

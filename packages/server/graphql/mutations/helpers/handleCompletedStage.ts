@@ -13,8 +13,8 @@ import {DataLoaderWorker} from '../../graphql'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import addDiscussionTopics from './addDiscussionTopics'
 import addRecallBot from './addRecallBot'
+import generateDiscussionPrompt from './generateDiscussionPrompt'
 import generateDiscussionSummary from './generateDiscussionSummary'
-import generateGroupSummaries from './generateGroupSummaries'
 import generateGroups from './generateGroups'
 import {publishToEmbedder} from './publishToEmbedder'
 import removeEmptyReflections from './removeEmptyReflections'
@@ -81,7 +81,7 @@ const handleCompletedRetrospectiveStage = async (
         .run()
       data.meeting = meeting
       // dont await for the OpenAI API response
-      generateGroupSummaries(meeting.id, teamId, dataLoader, facilitatorUserId)
+      generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId)
     }
 
     return {[stage.phaseType]: data}
@@ -101,7 +101,7 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader),
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
       publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})
     ])
     if (videoMeetingURL) {

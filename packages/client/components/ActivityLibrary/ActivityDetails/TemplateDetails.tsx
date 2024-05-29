@@ -23,6 +23,7 @@ import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import DetailAction from '../../DetailAction'
 import FlatButton from '../../FlatButton'
+import ActivityCardFavorite from '../ActivityCardFavorite'
 import {QUICK_START_CATEGORY_ID} from '../Categories'
 import TeamPickerModal from '../TeamPickerModal'
 import ActivityDetailsBadges from './ActivityDetailsBadges'
@@ -132,18 +133,17 @@ export const TemplateDetails = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment TemplateDetails_user on User {
-        tier
+        ...ActivityCardFavorite_user
         preferredTeamId
         teams {
           ...TeamPickerModal_teams
         }
-        ...useTemplateDescription_viewer
       }
     `,
     viewerRef
   )
 
-  const {teams, tier, preferredTeamId} = viewer
+  const {teams, preferredTeamId} = viewer
   const history = useHistory<{prevCategory?: string; edit?: boolean}>()
   const prevCategory = history.location.state?.prevCategory
 
@@ -201,7 +201,7 @@ export const TemplateDetails = (props: Props) => {
 
   const isOwner = viewerLowestScope === 'TEAM'
 
-  const description = useTemplateDescription(viewerLowestScope, activity, tier, viewer)
+  const description = useTemplateDescription(viewerLowestScope, activity)
 
   useEffect(() => {
     setIsEditing(!!history.location.state?.edit)
@@ -212,7 +212,7 @@ export const TemplateDetails = (props: Props) => {
   return (
     <div className='space-y-6'>
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
-      <div className='w-[480px]'>
+      <div className='max-w-[480px]'>
         <div className='mb-6'>
           {__typename === 'FixedActivity' && (
             <div className='text-base font-semibold text-slate-600'>Created by Parabol</div>
@@ -260,24 +260,31 @@ export const TemplateDetails = (props: Props) => {
           {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
               <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
-              <div className='rounded-full border border-solid border-slate-400 text-slate-600'>
-                <FlatButton
-                  style={{padding: '8px 12px', border: '0'}}
-                  className='flex gap-1 px-12'
-                  onClick={toggleTeamPickerPortal}
-                >
-                  <ContentCopy className='text-slate-600' />
-                  <div className='font-semibold text-slate-700'>Clone & Edit</div>
-                </FlatButton>
+              <div className='flex items-center gap-2'>
+                <ActivityCardFavorite
+                  templateId={activityId}
+                  viewerRef={viewer}
+                  className='rounded-full border border-solid border-slate-400 hover:bg-slate-200'
+                />
+                <div className='rounded-full border border-solid border-slate-400'>
+                  <FlatButton
+                    style={{padding: '8px 12px', border: '0'}}
+                    className='flex cursor-pointer gap-1 px-12'
+                    onClick={toggleTeamPickerPortal}
+                  >
+                    <ContentCopy className='text-slate-600' />
+                    <div className='font-semibold text-slate-700'>Clone & Edit</div>
+                  </FlatButton>
+                </div>
               </div>
             </div>
           )}
         </div>
         {activityDescription}
       </div>
-      <IntegrationsTip>{integrationsTip}</IntegrationsTip>
+      <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
 
-      <div className='-ml-14 pt-4'>
+      <div className='pt-4 sm:-ml-14'>
         {prompts && (
           <>
             <TemplatePromptList

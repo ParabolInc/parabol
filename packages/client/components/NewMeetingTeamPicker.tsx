@@ -3,8 +3,6 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
-import AddTeamDialogRoot from '~/components/AddTeamDialogRoot'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -28,12 +26,10 @@ interface Props {
   onSelectTeam: (teamId: string) => void
   positionOverride?: MenuPosition
   customPortal?: React.ReactNode
-  allowAddTeam?: boolean
 }
 
 const NewMeetingTeamPicker = (props: Props) => {
-  const {selectedTeamRef, teamsRef, onSelectTeam, positionOverride, customPortal, allowAddTeam} =
-    props
+  const {selectedTeamRef, teamsRef, onSelectTeam, positionOverride, customPortal} = props
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     positionOverride ?? MenuPosition.LOWER_RIGHT,
     {
@@ -41,18 +37,11 @@ const NewMeetingTeamPicker = (props: Props) => {
     }
   )
 
-  const [addTeamDialogOpen, setAddTeamDialogOpen] = React.useState(false)
-
   const atmosphere = useAtmosphere()
 
   const handleSelectTeam = (teamId: string) => {
     setPreferredTeamId(atmosphere, teamId)
     onSelectTeam(teamId)
-  }
-
-  const handleAddTeamClick = () => {
-    SendClientSideEvent(atmosphere, 'Add Team Clicked')
-    setAddTeamDialogOpen(true)
   }
 
   const selectedTeam = useFragment(
@@ -97,20 +86,8 @@ const NewMeetingTeamPicker = (props: Props) => {
             menuProps={menuProps}
             teams={teams}
             teamHandleClick={handleSelectTeam}
-            onAddTeamClick={allowAddTeam ? handleAddTeamClick : undefined}
           />
         )
-      )}
-      {addTeamDialogOpen && (
-        <AddTeamDialogRoot
-          onAddTeam={(teamId) => {
-            setAddTeamDialogOpen(false)
-            handleSelectTeam(teamId)
-          }}
-          onClose={() => {
-            setAddTeamDialogOpen(false)
-          }}
-        />
       )}
     </>
   )

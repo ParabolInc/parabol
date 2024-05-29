@@ -31,6 +31,7 @@ export const relatedDiscussionsStart: JobQueueStepRun<
     // Not techincally updatedAt since discussions are updated after they get created
     refUpdatedAt: createdAt
   }))
+  if (metadataRows.length === 0) return false
   const inserts = await pg
     .insertInto('EmbeddingsMetadata')
     .values(metadataRows)

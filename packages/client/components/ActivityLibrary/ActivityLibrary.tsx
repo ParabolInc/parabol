@@ -9,7 +9,6 @@ import {useDebounce} from 'use-debounce'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
-import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
@@ -18,14 +17,15 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
 import AISearch from './AISearch'
 import ActivityGrid from './ActivityGrid'
+import ActivityLibraryEmptyState from './ActivityLibraryEmptyState'
 import {
+  AllCategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
   CUSTOM_CATEGORY_ID,
   CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
-import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
 
 graphql`
@@ -68,7 +68,7 @@ graphql`
     category
     illustrationUrl
     isRecommended
-    isFree
+    scope
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
     ...ActivityCard_template
     ...ActivityLibraryCardDescription_template
@@ -78,6 +78,10 @@ graphql`
 const query = graphql`
   query ActivityLibraryQuery {
     viewer {
+      ...ActivityGrid_user
+      favoriteTemplates {
+        ...ActivityLibrary_template @relay(mask: false)
+      }
       availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
@@ -240,6 +244,9 @@ export const ActivityLibrary = (props: Props) => {
       // If there's a search query, just use the search filter results
       return filteredTemplates
     }
+    if (categoryId === 'favorite') {
+      return viewer.favoriteTemplates
+    }
 
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
@@ -326,7 +333,7 @@ export const ActivityLibrary = (props: Props) => {
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
           <div className='flex gap-2 px-4 pt-6 md:flex-wrap md:pb-4 lg:mx-[15%]'>
-            {(availableCategoryIds as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>).map(
+            {(availableCategoryIds as Array<AllCategoryID | typeof QUICK_START_CATEGORY_ID>).map(
               (category) => (
                 <Link
                   className={clsx(
@@ -341,6 +348,14 @@ export const ActivityLibrary = (props: Props) => {
                   to={`/activity-library/category/${category}`}
                   onClick={() => resetQuery()}
                   key={category}
+                  style={{
+                    color:
+                      category === 'favorite'
+                        ? category === categoryId && searchQuery.length === 0
+                          ? 'white'
+                          : 'red'
+                        : undefined
+                  }}
                 >
                   {CATEGORY_ID_TO_NAME[category]}
                 </Link>
@@ -359,19 +374,10 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           )}
           {templatesToRender.length === 0 ? (
-            <div className='mx-auto flex p-2 text-slate-700'>
-              <div className='ml-10'>
-                <img className='w-32' src={halloweenRetrospectiveTemplate} />
-                <div className='mb-4 text-xl font-semibold'>No results found!</div>
-                <div className='mb-6 max-w-[360px]'>
-                  Try tapping a category above, using a different search, or creating exactly what
-                  you have in mind.
-                </div>
-                <div className='h-40 w-64'>
-                  <CreateActivityCard category={QUICK_START_CATEGORY_ID} className='h-full' />
-                </div>
-              </div>
-            </div>
+            <ActivityLibraryEmptyState
+              searchQuery={searchQuery}
+              categoryId={categoryId as AllCategoryID}
+            />
           ) : (
             <>
               {sectionedTemplates ? (
@@ -389,6 +395,7 @@ export const ActivityLibrary = (props: Props) => {
                             <ActivityGrid
                               templates={subCategoryTemplates}
                               selectedCategory={categoryId}
+                              viewerRef={viewer}
                             />
                           </div>
                         </Fragment>
@@ -401,6 +408,7 @@ export const ActivityLibrary = (props: Props) => {
                     <ActivityGrid
                       templates={templatesToRender as Template[]}
                       selectedCategory={categoryId}
+                      viewerRef={viewer}
                     />
                   </div>
                 </>

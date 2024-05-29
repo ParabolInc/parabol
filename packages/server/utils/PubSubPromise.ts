@@ -5,6 +5,7 @@ import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
 const STANDARD_TIMEOUT = ms('10s')
+const LONG_TIMEOUT = ms('60s')
 const ADHOC_TIMEOUT = ms('10m')
 
 interface Job {
@@ -17,6 +18,7 @@ const {SERVER_ID} = process.env
 interface BaseRequest {
   executorServerId?: string
   isAdHoc?: boolean
+  longRunning?: boolean
 }
 
 export default class PubSubPromise<Request extends BaseRequest, Response> {
@@ -51,8 +53,8 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
     return new Promise<Response>((resolve, reject) => {
       const nextJob = numToBase64(this.jobCounter++)
       const jobId = `${SERVER_ID}:${nextJob}`
-      const {isAdHoc} = request
-      const timeout = isAdHoc ? ADHOC_TIMEOUT : STANDARD_TIMEOUT
+      const {isAdHoc, longRunning} = request
+      const timeout = isAdHoc ? ADHOC_TIMEOUT : longRunning ? LONG_TIMEOUT : STANDARD_TIMEOUT
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
         reject(new Error('TIMEOUT'))

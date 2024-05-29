@@ -7,8 +7,6 @@ enum UserFlagEnum {
   recurrence
   noAISummary
   noMeetingHistoryLimit
-  adHocTeams
-  noTemplateLimit
   signUpDestinationTeam
 }
 
@@ -21,8 +19,6 @@ type UserFeatureFlags {
   recurrence: Boolean!
   noAISummary: Boolean!
   noMeetingHistoryLimit: Boolean!
-  adHocTeams: Boolean!
-  noTemplateLimit: Boolean!
   signUpDestinationTeam: Boolean!
 }
 

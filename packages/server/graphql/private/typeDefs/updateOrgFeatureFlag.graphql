@@ -13,7 +13,6 @@ enum OrganizationFeatureFlagsEnum {
   singleColumnStandups
   publicTeams
   kudos
-  aiIcebreakers
   aiTemplate
   relatedDiscussions
 }

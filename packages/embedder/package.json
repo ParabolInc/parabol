@@ -1,6 +1,6 @@
 {
   "name": "parabol-embedder",
-  "version": "7.27.0",
+  "version": "7.33.0",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Jordan Husney <jordan.husney@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/embedder#readme",
@@ -10,6 +10,7 @@
     "url": "git+https://github.com/ParabolInc/parabol.git"
   },
   "scripts": {
+    "precommit": "lint-staged",
     "lint": "eslint --fix . --ext .ts,.tsx",
     "lint:check": "eslint . --ext .ts,.tsx",
     "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",

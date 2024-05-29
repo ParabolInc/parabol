@@ -1,18 +1,31 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
+import {ActivityGrid_user$key} from '../../__generated__/ActivityGrid_user.graphql'
 import {ActivityBadge} from './ActivityBadge'
-import {ActivityCardImage} from './ActivityCard'
+import {ActivityCard, ActivityCardImage} from './ActivityCard'
+import ActivityCardFavorite from './ActivityCardFavorite'
 import {Template} from './ActivityLibrary'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {CATEGORY_THEMES, CategoryID} from './Categories'
 
 interface ActivityGridProps {
   templates: Template[]
   selectedCategory: string
+  viewerRef?: ActivityGrid_user$key
 }
 
-const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
+const ActivityGrid = (props: ActivityGridProps) => {
+  const {templates, selectedCategory, viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment ActivityGrid_user on User {
+        ...ActivityCardFavorite_user
+      }
+    `,
+    viewerRef ?? null
+  )
   return (
     <>
       {templates.map((template) => {
@@ -23,9 +36,9 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               pathname: `/activity-library/details/${template.id}`,
               state: {prevCategory: selectedCategory}
             }}
-            className='flex focus:rounded-md focus:outline-primary'
+            className='flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500'
           >
-            <ActivityLibraryCard
+            <ActivityCard
               className='group aspect-[256/160] flex-1'
               key={template.id}
               theme={CATEGORY_THEMES[template.category as CategoryID]}
@@ -33,8 +46,8 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
               type={template.type}
               templateRef={template}
               badge={
-                !template.isFree ? (
-                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
+                template.scope !== 'PUBLIC' ? (
+                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Custom</ActivityBadge>
                 ) : null
               }
             >
@@ -43,11 +56,18 @@ const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
                 src={template.illustrationUrl}
                 category={template.category as CategoryID}
               />
+              {viewer && (
+                <ActivityCardFavorite
+                  templateId={template.id}
+                  className='absolute bottom-2 right-2'
+                  viewerRef={viewer}
+                />
+              )}
               <ActivityLibraryCardDescription
                 className='hidden group-hover/card:flex'
                 templateRef={template}
               />
-            </ActivityLibraryCard>
+            </ActivityCard>
           </Link>
         )
       })}

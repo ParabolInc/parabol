@@ -1,4 +1,4 @@
-import {Kysely, PostgresDialect} from 'kysely'
+import {Kysely, PostgresDialect, sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import connectRethinkDB from '../../database/connectRethinkDB'
 import getPg from '../getPg'
@@ -19,6 +19,12 @@ export async function up() {
   } catch {
     // index already exists
   }
+
+  await pg.schema
+    .alterTable('RetroReflectionGroup')
+    .alterColumn('voterIds', (ac) => ac.setDataType(sql`text[]`))
+    .alterColumn('promptId', (ac) => ac.setDataType('varchar(111)'))
+    .execute()
 
   const MAX_PG_PARAMS = 65545
   const PG_COLS = [
@@ -73,6 +79,19 @@ export async function up() {
         .execute()
     } catch (e) {
       console.log({lastRow}, rowsToInsert.length)
+      await Promise.all(
+        rowsToInsert.map(async (row) => {
+          try {
+            const res = await pg
+              .insertInto('RetroReflectionGroup')
+              .values(row)
+              .onConflict((oc) => oc.doNothing())
+              .execute()
+          } catch (e) {
+            console.log(e, row)
+          }
+        })
+      )
       throw e
     }
   }

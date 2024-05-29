@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import tracer from 'dd-trace'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
@@ -9,6 +10,7 @@ import Organization from '../database/types/Organization'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
+import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import isValid from '../graphql/isValid'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
@@ -29,10 +31,12 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {Team} from '../postgres/queries/getTeamsByIds'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
+import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
+import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
 
 export interface MeetingSettingsKey {
@@ -611,17 +615,13 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
   return new DataLoader<number, AnyMeeting[], string>(
     async (keys) => {
       const r = await getRethink()
-      const res = await Promise.all(
-        keys.map((key) => {
-          return r
-            .table('NewMeeting')
-            .getAll(key, {index: 'meetingSeriesId'})
-            .filter({endedAt: null}, {default: true})
-            .orderBy(r.asc('createdAt'))
-            .run()
-        })
-      )
-      return res
+      const res = await r
+        .table('NewMeeting')
+        .getAll(r.args(keys), {index: 'meetingSeriesId'})
+        .filter({endedAt: null}, {default: true})
+        .orderBy(r.asc('createdAt'))
+        .run()
+      return normalizeArrayResults(keys, res, 'meetingSeriesId')
     },
     {
       ...parent.dataLoaderOptions
@@ -631,21 +631,22 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
 
 export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
   return new DataLoader<number, AnyMeeting | null, string>(
-    async (keys) => {
-      const r = await getRethink()
-      const res = await Promise.all(
-        keys.map((key) => {
-          return r
+    async (keys) =>
+      tracer.trace('lastMeetingByMeetingSeriesId', async () => {
+        const r = await getRethink()
+        const res = await (
+          r
             .table('NewMeeting')
-            .getAll(key, {index: 'meetingSeriesId'})
-            .orderBy(r.desc('createdAt'))
-            .nth(0)
-            .default(null)
-            .run()
-        })
-      )
-      return res
-    },
+            .getAll(r.args(keys), {index: 'meetingSeriesId'})
+            .group('meetingSeriesId') as RDatum
+        )
+          .orderBy(r.desc('createdAt'))
+          .nth(0)
+          .default(null)
+          .ungroup()('reduction')
+          .run()
+        return normalizeResults(keys, res as AnyMeeting[], 'meetingSeriesId')
+      }),
     {
       ...parent.dataLoaderOptions
     }
@@ -834,6 +835,54 @@ export const isCompanyDomain = (parent: RootDataLoader) => {
         .execute()
       const freemailDomains = new Set(res.map(({domain}) => domain))
       return domains.map((domain) => !freemailDomains.has(domain))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const favoriteTemplateIds = (parent: RootDataLoader) => {
+  return new DataLoader<string, string[], string>(
+    async (userIds) => {
+      const pg = getKysely()
+      const users = await pg
+        .selectFrom('User')
+        .select(['id', 'favoriteTemplateIds'])
+        .where('id', 'in', userIds)
+        .execute()
+
+      const userIdToFavoriteTemplateIds = new Map(
+        users.map((user) => [user.id, user.favoriteTemplateIds])
+      )
+      return userIds.map((userId) => userIdToFavoriteTemplateIds.get(userId) || [])
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const fileStoreAsset = (parent: RootDataLoader) => {
+  return new DataLoader<string, string, string>(
+    async (urls) => {
+      // Our cloud saas has a public file store, so no need to make a presigned url
+      if (process.env.IS_ENTERPRISE !== 'true') return urls
+      const manager = getFileStoreManager()
+      const {baseUrl} = manager
+      const presignedUrls = await Promise.all(
+        urls.map(async (url) => {
+          // if the image is not hosted by us, ignore it
+          if (!url.startsWith(baseUrl)) return url
+          try {
+            return await manager.presignUrl(url)
+          } catch (e) {
+            Logger.log('Unable to presign url', url, e)
+            return url
+          }
+        })
+      )
+      return presignedUrls
     },
     {
       ...parent.dataLoaderOptions

@@ -89,7 +89,7 @@ const TeamSettings = (props: Props) => {
                   : 'This team is currently on a starter plan.'}
               </div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
-                {`Upgrade Team to ${TierLabel.TEAM}`}
+                {`Upgrade to ${TierLabel.TEAM} Plan`}
               </PrimaryButton>
             </StyledRow>
           </Panel>

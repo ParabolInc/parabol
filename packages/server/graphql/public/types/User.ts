@@ -19,6 +19,7 @@ import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
+import isValid from '../../isValid'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
@@ -84,6 +85,9 @@ const User: UserResolvers = {
       return null
     }
     return request
+  },
+  favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
+    return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
@@ -193,6 +197,14 @@ const User: UserResolvers = {
     const urlObj = new URL(baseUrl)
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
+  },
+  picture: async ({picture}, _args, {dataLoader}) => {
+    return dataLoader.get('fileStoreAsset').load(picture)
+  },
+  rasterPicture: async ({picture}, _args, {dataLoader}) => {
+    const rasterPicture =
+      picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
+    return dataLoader.get('fileStoreAsset').load(rasterPicture)
   },
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})

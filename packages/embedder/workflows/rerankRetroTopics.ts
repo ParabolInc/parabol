@@ -24,9 +24,7 @@ export const rerankRetroTopics: JobQueueStepRun<{
     const {body} = await createEmbeddingTextFrom(metadata, dataLoader, true)
     rerankText = body
   } catch (e) {
-    // get the trace since the error message may be unobvious
-    console.trace(e)
-    return new JobQueueError(`unable to create embedding text: ${e}`)
+    return new JobQueueError(e as Error)
   }
 
   const modelManager = getModelManager()

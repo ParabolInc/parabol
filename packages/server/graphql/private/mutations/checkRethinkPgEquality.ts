@@ -1,6 +1,5 @@
-import fs from 'fs'
-import path from 'path'
 import getRethink from '../../../database/rethinkDriver'
+import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
@@ -20,12 +19,10 @@ const handleResult = async (
   const resultStr = JSON.stringify(result)
   if (!writeToFile) return resultStr
 
-  const fileName = `${tableName}-${new Date()}`
-  const fileDir = path.join(process.cwd(), '__rethinkEquality__')
-  const fileLocation = path.join(fileDir, fileName)
-  await fs.promises.mkdir(fileDir, {recursive: true})
-  await fs.promises.writeFile(fileLocation, resultStr)
-  return `Result written to ${fileLocation}`
+  const fileName = `rethinkdbEquality_${tableName}_${new Date().toISOString()}.json`
+  const manager = getFileStoreManager()
+  const buffer = Buffer.from(resultStr, 'utf-8')
+  return manager.putDebugFile(buffer, fileName)
 }
 
 const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = async (
