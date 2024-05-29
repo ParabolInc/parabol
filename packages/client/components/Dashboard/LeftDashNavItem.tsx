@@ -30,15 +30,15 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   fontSize: NavSidebar.FONT_SIZE,
   fontWeight: 600,
   lineHeight: NavSidebar.LINE_HEIGHT,
-  marginBottom: 8,
-  marginTop: 8,
+  // marginBottom: 8,
+  // marginTop: 8,
   padding: 8,
   textDecoration: 'none',
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
   [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    borderRadius: '0 4px 4px 0'
+    // borderRadius: '0 4px 4px 0'
   },
   ':hover': {
     backgroundColor: PALETTE.SLATE_300

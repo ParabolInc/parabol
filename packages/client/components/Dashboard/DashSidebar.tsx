@@ -44,6 +44,7 @@ const DashHR = styled('div')({
 })
 
 const NavItem = styled(LeftDashNavItem)({
+  borderRadius: 44,
   paddingLeft: 16
 })
 
@@ -146,14 +147,16 @@ const DashSidebar = (props: Props) => {
 
   return (
     <Wrapper>
-      <SideBarStartMeetingButton isOpen={isOpen} />
+      <div className='px-3'>
+        <SideBarStartMeetingButton isOpen={isOpen} />
+      </div>
       <Nav isOpen={isOpen}>
         <Contents>
-          <NavItemsWrap>
+          <div className='rounded-3xl px-3'>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
             <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
-          </NavItemsWrap>
+          </div>
           <DashHR />
           <NavMain>
             <NavList organizationsRef={organizations} />
