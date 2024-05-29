@@ -36,7 +36,7 @@ class OpenAIServerManager {
 
   async getReflectionGroupTitle(reflections: Reflection[]) {
     if (!this.openAIApi) return null
-    const prompt = `Below are lines of texts possibly talking about the same topic. Summarize all of the content in less than 3 simple words, with a leading emoji if possible. If you cannot generate a meaningful summary title, simply return "NO_RESPONSE" with nothing else instead. You will be penalized if your return exceeds 3 words of length, or the language of your output does not match the majority language of the input.
+    const prompt = `Below are lines of texts possibly talking about the same topic. Summarize all of the content in less than or equal to 3 simple words, with a leading emoji if possible. If you cannot generate a meaningful summary title, simply return "NO_RESPONSE" with nothing else instead. You will be penalized if your return exceeds 3 words of length, or the language of your output does not match the majority language of the input.
     Text: """
     ${reflections.map(({plaintextContent}) => plaintextContent).join('\n')}
     """`
