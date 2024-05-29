@@ -30,7 +30,6 @@ import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import Reflection from './types/Reflection'
-import ReflectionGroup from './types/ReflectionGroup'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
 import SAML from './types/SAML'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
@@ -142,10 +141,6 @@ export type RethinkSchema = {
   MeetingTemplate: {
     type: MeetingTemplate
     index: 'teamId' | 'orgId'
-  }
-  RetroReflectionGroup: {
-    type: ReflectionGroup
-    index: 'meetingId'
   }
   RetroReflection: {
     type: Reflection

@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
@@ -26,7 +25,6 @@ const generateGroupSummaries = async (
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   ])
-  const r = await getRethink()
   const pg = getKysely()
   const manager = new OpenAIServerManager()
   if (!reflectionGroups.length) {
@@ -50,18 +48,11 @@ const generateGroupSummaries = async (
       if (!fullSummary && !fullQuestion) return
       const summary = fullSummary?.slice(0, 2000)
       const discussionPromptQuestion = fullQuestion?.slice(0, 2000)
-      return Promise.all([
-        pg
-          .updateTable('RetroReflectionGroup')
-          .set({summary, discussionPromptQuestion})
-          .where('id', '=', group.id)
-          .execute(),
-        r
-          .table('RetroReflectionGroup')
-          .get(group.id)
-          .update({summary, discussionPromptQuestion})
-          .run()
-      ])
+      return pg
+        .updateTable('RetroReflectionGroup')
+        .set({summary, discussionPromptQuestion})
+        .where('id', '=', group.id)
+        .execute()
     })
   )
 }

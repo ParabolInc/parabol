@@ -25,3 +25,7 @@ export const kudoses = primaryKeyLoaderMaker(getKudosesByIds)
 export const embeddingsMetadata = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return getKysely().selectFrom('EmbeddingsMetadata').selectAll().where('id', 'in', ids).execute()
 })
+
+export const retroReflectionGroups = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('RetroReflectionGroup').selectAll().where('id', 'in', ids).execute()
+})

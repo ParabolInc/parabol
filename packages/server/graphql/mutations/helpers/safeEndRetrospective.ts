@@ -317,12 +317,6 @@ const safeEndRetrospective = async ({
       .where('meetingId', '=', meetingId)
       .where('isActive', '=', false)
       .execute(),
-    r
-      .table('RetroReflectionGroup')
-      .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: false})
-      .delete()
-      .run(),
     updateTeamInsights(teamId, dataLoader),
     sendKudos(completedRetrospective, teamId, context)
   ])
