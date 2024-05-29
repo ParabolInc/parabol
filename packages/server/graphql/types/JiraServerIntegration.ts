@@ -152,7 +152,6 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           maxResults,
           startAt
         )
-        console.log('GEORG issueRes', JSON.stringify(issueRes, null, 2))
 
         if (issueRes instanceof Error) {
           return connectionFromTasks([], first, {

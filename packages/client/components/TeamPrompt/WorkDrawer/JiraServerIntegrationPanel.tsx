@@ -24,8 +24,13 @@ const JiraServerIntegrationPanel = (props: Props) => {
             teamId
             integrations {
               jiraServer {
-                id
-                providerId
+                auth {
+                  id
+                  isActive
+                }
+                sharedProviders {
+                  id
+                }
               }
             }
           }
@@ -37,8 +42,8 @@ const JiraServerIntegrationPanel = (props: Props) => {
 
   const teamMember = meeting.viewerMeetingMember?.teamMember
   const integration = teamMember?.integrations.jiraServer
-  const providerId = integration?.providerId
-  const isActive = !!integration?.id
+  const providerId = integration?.sharedProviders?.[0]?.id
+  const isActive = !!integration?.auth?.isActive
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()

@@ -35,11 +35,25 @@ const TeamPromptWorkDrawer = (props: Props) => {
         ...JiraIntegrationPanel_meeting
         ...GCalIntegrationPanel_meeting
         ...JiraServerIntegrationPanel_meeting
+        viewerMeetingMember {
+          teamMember {
+            teamId
+            integrations {
+              jiraServer {
+                sharedProviders {
+                  id
+                }
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
   const atmosphere = useAtmosphere()
+  const hasJiraServer =
+    !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Your Work Drawer Impression', {
@@ -57,12 +71,16 @@ const TeamPromptWorkDrawer = (props: Props) => {
       label: 'Parabol',
       Component: ParabolTasksPanel
     },
-    {
-      icon: <JiraServerSVG />,
-      service: 'jiraServer',
-      label: 'Jira Server',
-      Component: JiraServerIntegrationPanel
-    },
+    ...(hasJiraServer
+      ? [
+          {
+            icon: <JiraServerSVG />,
+            service: 'jiraServer',
+            label: 'Jira Server',
+            Component: JiraServerIntegrationPanel
+          }
+        ]
+      : []),
     {icon: <GitHubSVG />, service: 'github', label: 'GitHub', Component: GitHubIntegrationPanel},
     {icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel},
     {
