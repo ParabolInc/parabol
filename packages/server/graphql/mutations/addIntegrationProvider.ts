@@ -90,6 +90,9 @@ const addIntegrationProvider = {
       ...webhookProviderMetadataInput
     })
 
+    //TODO JRH: update below to handle subscriptions properly...
+    //          in the case of an org update, do we publish to every team on the org?
+
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
     const data = {teamId, providerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProviderSuccess', data, subOptions)

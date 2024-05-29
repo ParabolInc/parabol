@@ -1,26 +1,21 @@
-import getPg from '../getPg'
-import {
-  IntegrationProviderAuthStrategyEnum,
-  IntegrationProviderScopeEnum,
-  IntegrationProviderServiceEnum,
-  upsertIntegrationProviderQuery
-} from './generated/upsertIntegrationProviderQuery'
+import {Insertable} from 'kysely'
+import getKysely from '../getKysely'
+import type {DB} from '../pg'
 
-interface IUpsertIntegrationProviderInput {
-  service: IntegrationProviderServiceEnum
-  authStrategy: IntegrationProviderAuthStrategyEnum
-  scope?: IntegrationProviderScopeEnum
-  clientId?: string
-  tenantId?: string
-  clientSecret?: string
-  serverBaseUrl?: string
-  webhookUrl?: string
-  teamId: string
-}
-const upsertIntegrationProvider = async (provider: IUpsertIntegrationProviderInput) => {
-  const result = await upsertIntegrationProviderQuery.run(provider as any, getPg())
-  // guaranteed result because upsert will always result in a row
-  return result[0]!.id
+const upsertIntegrationProvider = async (provider: Insertable<DB['IntegrationProvider']>) => {
+  const pg = getKysely()
+  const newRow = await pg
+    .insertInto('IntegrationProvider')
+    .values(provider)
+    .onConflict((oc) =>
+      oc.columns(['teamId', 'service', 'authStrategy']).doUpdateSet({
+        ...provider,
+        isActive: true
+      })
+    )
+    .executeTakeFirst()
+
+  return newRow.insertId
 }
 
 export default upsertIntegrationProvider
