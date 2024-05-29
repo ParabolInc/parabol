@@ -25,6 +25,7 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
       .run(),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  const {teamId} = meeting
 
   let newSortOrder = 1e6
   const oldReflectionGroupIdx = reflectionGroupsInColumn.findIndex(
@@ -65,12 +66,15 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   reflection.reflectionGroupId = reflectionGroupId
   const retroMeeting = meeting as MeetingRetrospective
   retroMeeting.nextAutoGroupThreshold = null
-  const oldReflections = await r
-    .table('RetroReflection')
-    .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-    .filter({isActive: true})
-    .run()
-  const nextTitle = await generateReflectionGroupTitle([reflection])
+  const [oldReflections, team] = await Promise.all([
+    r
+      .table('RetroReflection')
+      .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
+      .filter({isActive: true})
+      .run(),
+    dataLoader.get('teams').loadNonNull(teamId)
+  ])
+  const nextTitle = await generateReflectionGroupTitle(team, [reflection])
   await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
   if (oldReflections.length > 0) {

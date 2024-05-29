@@ -119,7 +119,7 @@ export default {
       updatedAt: now
     })
 
-    const smartTitle = await generateReflectionGroupTitle([reflection])
+    const smartTitle = await generateReflectionGroupTitle(team, [reflection])
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
       smartTitle,
