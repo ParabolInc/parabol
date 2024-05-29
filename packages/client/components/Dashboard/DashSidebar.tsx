@@ -45,7 +45,7 @@ const DashHR = styled('div')({
 
 const NavItem = styled(LeftDashNavItem)({
   borderRadius: 44,
-  paddingLeft: 16
+  paddingLeft: 15
 })
 
 const NavList = styled(DashNavList)({

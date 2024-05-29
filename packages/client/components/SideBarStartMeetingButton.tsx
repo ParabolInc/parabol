@@ -9,24 +9,24 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
   height: 48,
   overflow: 'hidden',
   padding: 0,
-  // width: isOpen ? 160 : 48,
-  width: '100%',
+  width: isOpen ? '100%' : 48,
   // marginLeft: 7,
   marginTop: 15,
   marginBottom: 15,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  justifyContent: 'center'
+  justifyContent: isOpen ? 'center' : 'flex-start'
   // width: NavSidebar.WIDTH
 }))
 
 const MeetingIcon = styled(Add)({
-  // margin: '0px 11px'
+  margin: '0px 0px 0px 11px'
 })
 
 const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
   fontSize: 16,
-  paddingLeft: 6,
   fontWeight: 600,
+  paddingLeft: 4,
+  paddingRight: 11,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
   opacity: isOpen ? 1 : 0
 }))
