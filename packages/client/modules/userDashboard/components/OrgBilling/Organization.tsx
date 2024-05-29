@@ -58,7 +58,7 @@ const Organization = (props: Props) => {
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
   const {organization} = viewer
   if (!organization) return null
-  const {id: orgId, isBillingLeader} = organization
+  const {id: orgId} = organization
 
   return (
     <section className={'px-4 md:px-8'}>
@@ -90,16 +90,12 @@ const Organization = (props: Props) => {
           path={`${match.url}/${AUTHENTICATION_PAGE}`}
           render={(p) => <Authentication {...p} orgId={orgId} />}
         />
-        {isBillingLeader && (
-          <>
-            <Route
-              exact
-              path={`${match.url}/${TEAMS_PAGE}`}
-              render={() => <OrgTeams organizationRef={organization} />}
-            />
-            <Route exact path={`${match.url}/${TEAMS_PAGE}/:teamId`} component={OrgTeamMembers} />
-          </>
-        )}
+        <Route
+          exact
+          path={`${match.url}/${TEAMS_PAGE}`}
+          render={() => <OrgTeams organizationRef={organization} />}
+        />
+        <Route exact path={`${match.url}/${TEAMS_PAGE}/:teamId`} component={OrgTeamMembers} />
       </Switch>
     </section>
   )

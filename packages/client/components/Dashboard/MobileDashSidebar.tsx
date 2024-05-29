@@ -98,7 +98,6 @@ const MobileDashSidebar = (props: Props) => {
           ...DashNavList_organization
           id
           name
-          isBillingLeader
         }
       }
     `,
@@ -110,7 +109,7 @@ const MobileDashSidebar = (props: Props) => {
   if (match) {
     const {orgId: orgIdFromParams} = match.params
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
-    const {id: orgId, name, isBillingLeader} = currentOrg ?? {}
+    const {id: orgId, name} = currentOrg ?? {}
     return (
       <DashSidebarStyles>
         <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
@@ -131,14 +130,12 @@ const MobileDashSidebar = (props: Props) => {
                 href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
                 label={'Plans & Billing'}
               />
-              {isBillingLeader && (
-                <LeftDashNavItem
-                  onClick={handleMenuClick}
-                  icon={'groups'}
-                  href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
-                  label={'Teams'}
-                />
-              )}
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'groups'}
+                href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
+                label={'Teams'}
+              />
               <LeftDashNavItem
                 onClick={handleMenuClick}
                 icon={'group'}
