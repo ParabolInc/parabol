@@ -8,12 +8,14 @@ import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
 import JiraSVG from '../JiraSVG'
+import JiraServerSVG from '../JiraServerSVG'
 import ParabolLogoSVG from '../ParabolLogoSVG'
 import Tab from '../Tab/Tab'
 import Tabs from '../Tabs/Tabs'
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
+import JiraServerIntegrationPanel from './WorkDrawer/JiraServerIntegrationPanel'
 import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 
 interface Props {
@@ -32,6 +34,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
         ...GitHubIntegrationPanel_meeting
         ...JiraIntegrationPanel_meeting
         ...GCalIntegrationPanel_meeting
+        ...JiraServerIntegrationPanel_meeting
       }
     `,
     meetingRef
@@ -53,6 +56,12 @@ const TeamPromptWorkDrawer = (props: Props) => {
       service: 'PARABOL',
       label: 'Parabol',
       Component: ParabolTasksPanel
+    },
+    {
+      icon: <JiraServerSVG />,
+      service: 'jiraServer',
+      label: 'Jira Server',
+      Component: JiraServerIntegrationPanel
     },
     {icon: <GitHubSVG />, service: 'github', label: 'GitHub', Component: GitHubIntegrationPanel},
     {icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel},

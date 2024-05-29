@@ -1096,6 +1096,7 @@ type JiraServerIssue implements TaskIntegration {
   id: ID!
   issueKey: ID!
   projectKey: ID!
+  projectName: String!
 
   """
   The parabol teamId this issue was fetched for
@@ -1122,6 +1123,11 @@ type JiraServerIssue implements TaskIntegration {
   The description converted into raw HTML
   """
   descriptionHTML: String!
+  
+  """
+  The timestamp the issue was last updated
+  """
+  updatedAt: DateTime!
 }
 
 """

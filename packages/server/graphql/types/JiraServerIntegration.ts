@@ -92,7 +92,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         },
         after: {
           type: GraphQLString,
-          defaultValue: '0'
+          defaultValue: '-1'
         },
         queryString: {
           type: GraphQLString,
@@ -152,6 +152,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           maxResults,
           startAt
         )
+        console.log('GEORG issueRes', JSON.stringify(issueRes, null, 2))
 
         if (issueRes instanceof Error) {
           return connectionFromTasks([], first, {
@@ -162,21 +163,22 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         const {issues} = issueRes
 
         const mappedIssues = issues.map((issue) => {
-          const {project, issuetype, summary, description} = issue.fields
+          const {project, issuetype, summary, description, updated} = issue.fields
           return {
             ...issue,
             userId,
             teamId,
             providerId: provider.id,
             issueKey: issue.key,
+            description: description ?? '',
             descriptionHTML: issue.renderedFields.description,
             projectId: project.id,
             projectKey: project.key,
+            projectName: project.name,
             issueType: issuetype.id,
             summary,
-            description,
             service: 'jiraServer' as const,
-            updatedAt: new Date()
+            updatedAt: new Date(updated)
           }
         })
 
