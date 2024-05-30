@@ -72,7 +72,6 @@ const JiraServerObjectCard = (props: Props) => {
   return (
     <div className='rounded border border-solid border-slate-300 p-4 hover:border-slate-600'>
       <div className='flex gap-2 text-xs text-slate-600'>
-        {/*<img src={issueIcon} />*/}
         <a
           href={url}
           target='_blank'

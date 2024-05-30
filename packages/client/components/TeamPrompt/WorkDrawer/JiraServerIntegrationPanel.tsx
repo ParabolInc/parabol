@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import {JiraServerIntegrationPanel_meeting$key} from '../../../__generated__/JiraServerIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import jiraServerSVG from '../../../styles/theme/images/graphics/jira-software-blue.svg'
 import JiraServerClientManager from '../../../utils/JiraServerClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import JiraServerIntegrationResultsRoot from './JiraServerIntegrationResultsRoot'
@@ -71,7 +72,9 @@ const JiraServerIntegrationPanel = (props: Props) => {
         <JiraServerIntegrationResultsRoot teamId={teamMember.teamId} />
       ) : (
         <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
-          <div className='h-10 w-10'>{/* <img className='h-10 w-10' src={gitHubSVG} /> */}</div>
+          <div className='h-10 w-10'>
+            <img className='h-10 w-10' src={jiraServerSVG} />
+          </div>
           <b>Connect to Jira Server</b>
           <div className='w-1/2 text-center text-sm'>
             Connect to Jira Server to view your issues.
