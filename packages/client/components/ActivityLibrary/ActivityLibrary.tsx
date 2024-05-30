@@ -2,11 +2,19 @@ import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {Fragment, useEffect, useMemo} from 'react'
-import {PreloadedQuery, commitLocalUpdate, usePreloadedQuery} from 'react-relay'
+import {
+  PreloadedQuery,
+  commitLocalUpdate,
+  fetchQuery,
+  usePreloadedQuery,
+  useRefetchableFragment
+} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
 import {useDebounce} from 'use-debounce'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibraryTemplateSearchRefetchQuery} from '~/__generated__/ActivityLibraryTemplateSearchRefetchQuery.graphql'
+import {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/ActivityLibraryTemplateSearch_query.graphql'
 import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -75,8 +83,27 @@ graphql`
   }
 `
 
+const templateSearchFragment = graphql`
+  fragment ActivityLibraryTemplateSearch_query on Query
+  @argumentDefinitions(search: {type: "String!"})
+  @refetchable(queryName: "ActivityLibraryTemplateSearchRefetchQuery") {
+    viewer {
+      templateSearch(search: $search) {
+        ...ActivityLibrary_template @relay(mask: false)
+      }
+    }
+  }
+`
+
+const templateSearchQuery = graphql`
+  query ActivityLibraryTemplateSearchQuery($search: String!) {
+    ...ActivityLibraryTemplateSearch_query @arguments(search: $search)
+  }
+`
+
 const query = graphql`
   query ActivityLibraryQuery {
+    ...ActivityLibraryTemplateSearch_query @arguments(search: "")
     viewer {
       ...ActivityGrid_user
       favoriteTemplates {
@@ -203,6 +230,11 @@ export const ActivityLibrary = (props: Props) => {
   const {availableTemplates, organizations} = viewer
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
+  const [templateSearch, refetchTemplateSearch] = useRefetchableFragment<
+    ActivityLibraryTemplateSearchRefetchQuery,
+    ActivityLibraryTemplateSearch_query$key
+  >(templateSearchFragment, data)
+
   const setSearch = (value: string) => {
     commitLocalUpdate(atmosphere, (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
@@ -228,9 +260,18 @@ export const ActivityLibrary = (props: Props) => {
 
   useEffect(() => {
     if (debouncedSearchQuery) {
+      // Avoid suspense while refreshing the search results, see
+      // https://relay.dev/docs/guided-tour/refetching/refetching-fragments-with-different-data/#if-you-need-to-avoid-suspense
+      fetchQuery(atmosphere, templateSearchQuery, {search: debouncedSearchQuery}).subscribe({
+        complete: () => {
+          refetchTemplateSearch({search: debouncedSearchQuery}, {fetchPolicy: 'store-only'})
+        }
+      })
       SendClientSideEvent(atmosphere, 'Activity Library Searched', {
         debouncedSearchQuery
       })
+    } else {
+      refetchTemplateSearch({search: ''}, {fetchPolicy: 'store-only'})
     }
   }, [debouncedSearchQuery])
 
@@ -241,8 +282,21 @@ export const ActivityLibrary = (props: Props) => {
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
-      // If there's a search query, just use the search filter results
-      return filteredTemplates
+      // If there's a search query, combine the filtered templates with the search results
+      const searchResults = templateSearch.viewer.templateSearch
+      const doubleMatches = searchResults.filter((searchResult) =>
+        filteredTemplates.find((template) => template.id === searchResult.id)
+      )
+
+      return [
+        ...doubleMatches,
+        ...filteredTemplates.filter(
+          (template) => !doubleMatches.find((doubleMatch) => doubleMatch.id === template.id)
+        ),
+        ...searchResults.filter(
+          (searchResult) => !doubleMatches.find((doubleMatch) => doubleMatch.id === searchResult.id)
+        )
+      ]
     }
     if (categoryId === 'favorite') {
       return viewer.favoriteTemplates
@@ -255,7 +309,7 @@ export const ActivityLibrary = (props: Props) => {
           ? template.scope !== 'PUBLIC'
           : template.category === categoryId
     )
-  }, [searchQuery, filteredTemplates, categoryId])
+  }, [searchQuery, filteredTemplates, templateSearch, categoryId])
 
   const sectionedTemplates = useMemo(() => {
     // Show the teams on search as well, because you can search by team name
