@@ -63,6 +63,9 @@ export default {
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
+    if (normalizedContent.length > 2000) {
+      return {error: {message: 'Reflection content is too long'}}
+    }
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
