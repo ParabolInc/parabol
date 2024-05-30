@@ -24,12 +24,16 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   alignItems: 'center',
   backgroundColor: isActive ? PALETTE.SLATE_300 : undefined,
   borderRadius: 4,
-  color: PALETTE.SLATE_900,
+  color: isActive ? PALETTE.SLATE_900 : PALETTE.SLATE_800,
   display: 'flex',
   fontSize: NavSidebar.FONT_SIZE,
   fontWeight: 600,
   lineHeight: NavSidebar.LINE_HEIGHT,
-  padding: 8,
+  marginBottom: 2,
+  marginTop: 2,
+  paddingBottom: 5,
+  paddingRight: 8,
+  paddingTop: 5,
   textDecoration: 'none',
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
@@ -39,13 +43,13 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   }
 }))
 
-const StyledIcon = styled('div')({
-  height: 24,
-  width: 24,
-  color: PALETTE.SLATE_900,
-  marginRight: 16,
-  opacity: 0.5
-})
+const StyledIcon = styled('div')<{isActive: boolean}>(({isActive}) => ({
+  fontSize: 18,
+  height: 18,
+  width: 18,
+  color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600,
+  marginRight: 11
+}))
 
 const Label = styled('div')({
   flex: 1,
@@ -53,19 +57,19 @@ const Label = styled('div')({
 })
 
 const iconLookup = {
-  magic: <AutoAwesome />,
-  arrowBack: <ArrowBack />,
-  creditScore: <CreditScore />,
-  forum: <Forum />,
-  playlist_add_check: <PlaylistAddCheck />,
-  add: <Add />,
-  exit_to_app: <ExitToApp />,
-  group: <Group />,
-  groups: <Groups />,
-  warning: <Warning />,
-  work: <WorkOutline />,
-  timeline: <Timeline />,
-  key: <Key />
+  magic: <AutoAwesome fontSize='inherit' />,
+  arrowBack: <ArrowBack fontSize='inherit' />,
+  creditScore: <CreditScore fontSize='inherit' />,
+  forum: <Forum fontSize='inherit' />,
+  playlist_add_check: <PlaylistAddCheck fontSize='inherit' />,
+  add: <Add fontSize='inherit' />,
+  exit_to_app: <ExitToApp fontSize='inherit' />,
+  group: <Group fontSize='inherit' />,
+  groups: <Groups fontSize='inherit' />,
+  warning: <Warning fontSize='inherit' />,
+  work: <WorkOutline fontSize='inherit' />,
+  timeline: <Timeline fontSize='inherit' />,
+  key: <Key fontSize='inherit' />
 }
 
 interface Props {
@@ -93,7 +97,9 @@ const LeftDashNavItem = (props: Props) => {
       onClick={handleClick}
       isActive={!!match && (match?.isExact || !props.exact)}
     >
-      <StyledIcon>{iconLookup[icon]}</StyledIcon>
+      <StyledIcon isActive={!!match && (match?.isExact || !props.exact)}>
+        {iconLookup[icon]}
+      </StyledIcon>
       <Label>{label}</Label>
     </NavItem>
   )
