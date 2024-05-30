@@ -8626,6 +8626,7 @@ The scope this provider was created on by a user (excluding global scope)
 enum IntegrationProviderEditableScopeEnum {
   org
   team
+  global
 }
 
 """
