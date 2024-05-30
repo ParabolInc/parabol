@@ -31,21 +31,19 @@ const ResponseMentioned = (props: Props) => {
         }
         type
         status
-        kudosEmojiUnicode
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
-  const {meeting, response, kudosEmojiUnicode, type, status} = notification
+  const {meeting, response, type, status} = notification
   const {picture: authorPicture, preferredName: authorName} = response.user
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Notification Viewed', {
       notificationType: type,
-      notificationStatus: status,
-      kudosEmojiUnicode
+      notificationStatus: status
     })
   }, [])
 
@@ -54,9 +52,7 @@ const ResponseMentioned = (props: Props) => {
     history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
-  const message = kudosEmojiUnicode
-    ? `${kudosEmojiUnicode} ${authorName} mentioned you and gave kudos in their response in ${meetingName}.`
-    : `${authorName} mentioned you in their response in ${meetingName}.`
+  const message = `${authorName} mentioned you in their response in ${meetingName}.`
 
   // :TODO: (jmtaber129): Show mention preview.
   return (
