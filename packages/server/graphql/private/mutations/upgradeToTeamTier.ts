@@ -70,8 +70,12 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     return standardError(new Error('Organization does not have a subscription'), {userId: viewerId})
   }
 
-  if (tier !== 'starter') {
-    return standardError(new Error('Organization is not on the starter tier'), {
+  if (tier === 'enterprise') {
+    return standardError(new Error("Can not change an org's plan from enterprise to team"), {
+      userId: viewerId
+    })
+  } else if (tier === 'team') {
+    return standardError(new Error('Org is already on team tier'), {
       userId: viewerId
     })
   }

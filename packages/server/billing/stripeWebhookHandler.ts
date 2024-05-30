@@ -80,6 +80,41 @@ const eventLookup = {
         }
       `
       }
+    },
+    subscription: {
+      updated: {
+        getVars: ({customer, id}: {customer: string; id: string}) => ({
+          customerId: customer,
+          subscriptionId: id
+        }),
+        query: `
+        mutation StripeUpdateSubscription($customerId: ID!, $subscriptionId: ID!) {
+          stripeUpdateSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
+        }
+      `
+      },
+      created: {
+        getVars: ({customer, id}: {customer: string; id: string}) => ({
+          customerId: customer,
+          subscriptionId: id
+        }),
+        query: `
+        mutation StripeCreateSubscription($customerId: ID!, $subscriptionId: ID!) {
+          stripeUpdateSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
+        }
+      `
+      },
+      deleted: {
+        getVars: ({customer, id}: {customer: string; id: string}) => ({
+          customerId: customer,
+          subscriptionId: id
+        }),
+        query: `
+        mutation StripeDeleteSubscription($customerId: ID!, $subscriptionId: ID!) {
+          stripeDeleteSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
+        }
+      `
+      }
     }
   }
 } as const

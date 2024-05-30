@@ -165,8 +165,6 @@ export type AnalyticsEvent =
   | 'Reset Groups Clicked'
   // Conversion Tracking
   | 'Conversion Modal Pay Later Clicked'
-  // kudos
-  | 'Kudos Sent'
   | 'Icebreaker Modified'
   // Deprecated Events
   // These will be replaced with tracking plan compliant versions by the data team
@@ -697,26 +695,6 @@ class Analytics {
 
   autoJoined = (user: AnalyticsUser, teamId: string) => {
     this.track(user, 'AutoJoined Team', {userId: user.id, teamId})
-  }
-
-  kudosSent = (
-    user: AnalyticsUser,
-    teamId: string,
-    kudosId: number,
-    receiverUserId: string,
-    kudosType: 'mention' | 'reaction',
-    meetingType: MeetingTypeEnum,
-    isAnonymous = false
-  ) => {
-    this.track(user, 'Kudos Sent', {
-      userId: user.id,
-      teamId,
-      kudosId,
-      receiverUserId,
-      kudosType,
-      meetingType,
-      isAnonymous
-    })
   }
 
   icebreakerModified = (

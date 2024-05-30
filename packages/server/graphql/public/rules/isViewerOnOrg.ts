@@ -3,7 +3,7 @@ import {getUserId} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import {ResolverDotPath, getResolverDotPath} from './getResolverDotPath'
 
-export const isViewerOnOrg = (orgIdDotPath: ResolverDotPath) =>
+export const isViewerOnOrg = <T>(orgIdDotPath: ResolverDotPath<T>) =>
   rule(`isViewerOnOrg-${orgIdDotPath}`, {cache: 'strict'})(
     async (source, args, {authToken, dataLoader}: GQLContext) => {
       const orgId = getResolverDotPath(orgIdDotPath, source, args)

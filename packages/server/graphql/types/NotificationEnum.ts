@@ -12,7 +12,6 @@ export type NotificationEnumType =
   | 'TEAMS_LIMIT_REMINDER'
   | 'PROMPT_TO_JOIN_ORG'
   | 'REQUEST_TO_JOIN_ORG'
-  | 'KUDOS_RECEIVED'
 
 const NotificationEnum = new GraphQLEnumType({
   name: 'NotificationEnum',
@@ -28,8 +27,7 @@ const NotificationEnum = new GraphQLEnumType({
     TEAMS_LIMIT_EXCEEDED: {},
     TEAMS_LIMIT_REMINDER: {},
     PROMPT_TO_JOIN_ORG: {},
-    REQUEST_TO_JOIN_ORG: {},
-    KUDOS_RECEIVED: {}
+    REQUEST_TO_JOIN_ORG: {}
   }
 })
 
