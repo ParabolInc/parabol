@@ -5,12 +5,14 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import {AppBar} from '~/types/constEnums'
+import {AppBar, GlobalBanner} from '~/types/constEnums'
 import {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'
 import TopBarIcon from './TopBarIcon'
 import TopBarNotifications from './TopBarNotifications'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   toggle: () => void
@@ -20,7 +22,8 @@ interface Props {
 const Wrapper = styled('header')({
   backgroundColor: PALETTE.GRAPE_700,
   display: 'flex',
-  height: AppBar.HEIGHT,
+  height: isGlobalBannerEnabled ? AppBar.HEIGHT + GlobalBanner.HEIGHT : AppBar.HEIGHT,
+  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   maxWidth: '100%'
 })
 

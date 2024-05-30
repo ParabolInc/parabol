@@ -7,6 +7,9 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import {PALETTE} from '../../styles/paletteV3'
 import parabolLogo from '../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
+import {GlobalBanner} from '../../types/constEnums'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 const HeaderContainer = styled('div')({
   alignItems: 'center',
@@ -16,6 +19,7 @@ const HeaderContainer = styled('div')({
   flexDirection: 'row',
   justifyContent: 'center',
   minHeight: 56,
+  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   width: '100%'
 })
 

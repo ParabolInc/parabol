@@ -219,8 +219,10 @@ export const CreateNewActivity = (props: Props) => {
     )
   }
 
+  const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+
   return (
-    <div className='flex h-full w-full flex-col bg-white'>
+    <div className={clsx('flex h-full w-full flex-col bg-white', isGlobalBannerEnabled && 'pt-6')}>
       <div className='mx-1'>
         <div className='flex basis-[15%] items-center justify-start gap-x-2 px-2'>
           <Link className='p-4' to={`/activity-library/`} replace={true}>

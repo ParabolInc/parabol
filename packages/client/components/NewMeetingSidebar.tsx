@@ -7,7 +7,7 @@ import {NewMeetingSidebar_meeting$key} from '~/__generated__/NewMeetingSidebar_m
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import {PALETTE} from '../styles/paletteV3'
-import {NavSidebar} from '../types/constEnums'
+import {GlobalBanner, NavSidebar} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import EditableText from './EditableText'
 import Facilitator from './Facilitator'
@@ -15,6 +15,8 @@ import LogoBlock from './LogoBlock/LogoBlock'
 import NewMeetingSidebarUpgradeBlock from './NewMeetingSidebarUpgradeBlock'
 import SidebarToggle from './SidebarToggle'
 import InactiveTag from './Tag/InactiveTag'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 const MeetingName = styled('div')({
   fontSize: 20,
@@ -47,6 +49,7 @@ const SidebarParent = styled('div')({
   height: '100vh',
   maxWidth: NavSidebar.WIDTH,
   minWidth: NavSidebar.WIDTH,
+  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   userSelect: 'none'
 })
 

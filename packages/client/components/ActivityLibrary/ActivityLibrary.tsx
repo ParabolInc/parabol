@@ -280,8 +280,10 @@ export const ActivityLibrary = (props: Props) => {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
   }
 
+  const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+
   return (
-    <div className='flex h-full w-full flex-col bg-white'>
+    <div className={clsx('flex h-full w-full flex-col bg-white', isGlobalBannerEnabled && 'pt-6')}>
       <div className='mx-2 flex'>
         <div className='hidden items-center justify-start gap-x-2 px-4 lg:flex lg:basis-[15%]'>
           <Link title='My Dashboard' to='/meetings'>

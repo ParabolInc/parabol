@@ -12,10 +12,14 @@ import useBreakpoint from '../../../../hooks/useBreakpoint'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint, RightSidebar} from '../../../../types/constEnums'
+import {AppBar, Breakpoint, GlobalBanner, RightSidebar} from '../../../../types/constEnums'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import CloseDrawer from '../CloseDrawer/CloseDrawer'
 import ManageTeamList from '../ManageTeam/ManageTeamList'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+
+const desktopPadding = isGlobalBannerEnabled ? AppBar.HEIGHT + GlobalBanner.HEIGHT : AppBar.HEIGHT
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -28,7 +32,8 @@ const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
-  padding: `0 0 ${isDesktop ? 58 : 0}px`,
+  padding: `0 0 ${isDesktop ? desktopPadding : 0}px`,
+  paddingTop: isDesktop ? 0 : 24,
   height: '100vh',
   flexDirection: 'column',
   justifyContent: 'space-between',
