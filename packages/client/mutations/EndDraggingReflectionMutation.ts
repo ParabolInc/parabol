@@ -7,6 +7,7 @@ import {OnNextHandler, SharedUpdater, SimpleMutation} from '../types/relayMutati
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import clientTempId from '../utils/relay/clientTempId'
+import computeNewSortOrder from '../utils/relay/computeNewSortOrder'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
@@ -159,13 +160,10 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()
-      const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
+      const {reflectionId, dropTargetId: reflectionGroupId} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-      if (!dropTargetType) {
-        reflection.setValue(false, 'isViewerDragging')
-        return
-      }
+      reflection.setValue(false, 'isViewerDragging')
 
       const oldReflectionGroupId = reflection.getValue('reflectionGroupId') as string
       let reflectionGroupProxy: RecordProxy<{meetingId: string}>
@@ -173,12 +171,26 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       // move a reflection into its own group
       if (!reflectionGroupId) {
         // create the new group
+        const oldReflectionGroup = store.get(oldReflectionGroupId)!
+        const meetingId = reflection.getValue('meetingId') as string
+        const meeting = store.get(meetingId)!
+        const promptId = reflection.getValue('promptId') as string
+        const allReflectionGroups = meeting.getLinkedRecords('reflectionGroups')!
+        const reflectionGroupsInColumn = allReflectionGroups.filter(
+          (group) => group.getValue('promptId') === promptId
+        )
+        const sortOrder = computeNewSortOrder(
+          reflectionGroupsInColumn,
+          reflection,
+          oldReflectionGroup
+        )
         const reflectionGroup = {
           id: newReflectionGroupId,
           createdAt: nowISO,
-          meetingId: reflection.getValue('meetingId') as string,
+          meetingId,
+          promptId,
           isActive: true,
-          sortOrder: 0,
+          sortOrder,
           updatedAt: nowISO,
           voterIds: []
         }
