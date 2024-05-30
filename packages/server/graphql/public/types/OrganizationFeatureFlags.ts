@@ -11,7 +11,6 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   noTeamInsights: ({noTeamInsights}) => !!noTeamInsights,
   publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
-  kudos: ({kudos}) => !!kudos,
   aiTemplate: ({aiTemplate}) => !!aiTemplate,
   relatedDiscussions: ({relatedDiscussions}) => !!relatedDiscussions
 }

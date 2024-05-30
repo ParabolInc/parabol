@@ -12,7 +12,6 @@ enum OrganizationFeatureFlagsEnum {
   noTeamInsights
   singleColumnStandups
   publicTeams
-  kudos
   aiTemplate
   relatedDiscussions
 }

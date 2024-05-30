@@ -75,7 +75,6 @@
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
-          "Kudos": "../../postgres/types/Kudos#Kudos",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
