@@ -65,6 +65,10 @@ const permissionMap: PermissionMap<Resolvers> = {
   Organization: {
     saml: and(isViewerBillingLeader('source.id'), isOrgTier('source.id', 'enterprise'))
   },
+  RetroReflectionGroup: {
+    smartTitle: isSuperUser,
+    voterIds: isSuperUser
+  },
   User: {
     domains: or(isSuperUser, isUserViewer)
   }

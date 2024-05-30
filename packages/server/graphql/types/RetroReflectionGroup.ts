@@ -9,9 +9,8 @@ import {
   GraphQLString
 } from 'graphql'
 import Reflection from '../../database/types/Reflection'
-import {getUserId} from '../../utils/authorization'
+import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
-import {resolveForSU} from '../resolvers'
 import CommentorDetails from './CommentorDetails'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import ReflectPrompt from './ReflectPrompt'
@@ -81,7 +80,9 @@ const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLCo
     smartTitle: {
       type: GraphQLString,
       description: 'Our auto-suggested title, to be compared to the actual title for analytics',
-      resolve: resolveForSU('smartTitle')
+      resolve: (source, _args, {authToken}) => {
+        return isSuperUser(authToken) ? source.smartTitle : undefined
+      }
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
@@ -117,7 +118,9 @@ const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLCo
     voterIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'A list of voterIds (userIds). Not available to team to preserve anonymity',
-      resolve: resolveForSU('voterIds')
+      resolve: (source, _args, {authToken}) => {
+        return isSuperUser(authToken) ? source.voterIds : undefined
+      }
     },
     voteCount: {
       type: new GraphQLNonNull(GraphQLInt),
