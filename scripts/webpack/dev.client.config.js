@@ -60,9 +60,9 @@ module.exports = {
       // important terminating / so saml-redirect doesn't get targeted, too
       'saml/'
     ].map((name) => ({
-        context: [`/${name}`],
-        target: `http://localhost:${SOCKET_PORT}`,
-      }))
+      context: [`/${name}`],
+      target: `http://localhost:${SOCKET_PORT}`
+    }))
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
@@ -131,6 +131,10 @@ module.exports = {
         AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
         microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
         microsoft: process.env.MICROSOFT_CLIENT_ID,
+        GLOBAL_BANNER_ENABLED: process.env.GLOBAL_BANNER_ENABLED,
+        GLOBAL_BANNER_TEXT: process.env.GLOBAL_BANNER_TEXT,
+        GLOBAL_BANNER_BG_COLOR: process.env.GLOBAL_BANNER_BG_COLOR,
+        GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR
       })
     }),
     new ReactRefreshWebpackPlugin(),

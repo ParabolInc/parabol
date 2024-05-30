@@ -6,6 +6,7 @@ import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
 import {LoaderSize} from '../../types/constEnums'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
+import GlobalBanner from '../GlobalBanner'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
@@ -33,10 +34,18 @@ const Action = memo(() => {
   useTrebuchetEvents()
   useServiceWorkerUpdater()
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
+  // Global Banner
+  const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+  const bannerText = window.__ACTION__.GLOBAL_BANNER_TEXT
+  const bannerBgColor = window.__ACTION__.GLOBAL_BANNER_BG_COLOR
+  const bannerColor = window.__ACTION__.GLOBAL_BANNER_COLOR
   return (
     <>
       <ErrorBoundary>
         <Snackbar />
+        {isGlobalBannerEnabled && (
+          <GlobalBanner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
+        )}
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <AnalyticsPage />
           <Switch>

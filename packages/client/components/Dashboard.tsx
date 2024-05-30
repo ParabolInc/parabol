@@ -17,7 +17,6 @@ import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import MobileDashTopBar from './MobileDashTopBar'
 import RequestToJoinComponent from './RequestToJoin'
-import SecurityBanner from './SecurityBanner'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 const InsightsRoot = lazy(
@@ -128,15 +127,6 @@ const Dashboard = (props: Props) => {
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
 
-  // security banner concept WIP
-  const showSecBanner = true
-  const SECURITY_BANNER_TEXT = 'UNCLASSIFIED CUI (IL4)'
-  const SECURITY_BANNER_STYLE = {
-    backgroundColor: 'blue',
-    color: 'white'
-  }
-  // security banner concept WIP
-
   useSnackNag(overLimitCopy)
   useUsageSnackNag(insights)
   useSnacksForNewMeetings(activeMeetings)
@@ -144,9 +134,6 @@ const Dashboard = (props: Props) => {
 
   return (
     <DashLayout>
-      {showSecBanner && (
-        <SecurityBanner text={SECURITY_BANNER_TEXT} style={SECURITY_BANNER_STYLE} />
-      )}
       <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (
         <DashTopBar queryRef={data} toggle={toggle} />
