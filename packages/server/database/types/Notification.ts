@@ -17,7 +17,6 @@ export type NotificationEnum =
   | 'TEAMS_LIMIT_REMINDER'
   | 'PROMPT_TO_JOIN_ORG'
   | 'REQUEST_TO_JOIN_ORG'
-  | 'KUDOS_RECEIVED'
 
 export interface NotificationInput {
   type: NotificationEnum

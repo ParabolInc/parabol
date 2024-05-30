@@ -25,7 +25,6 @@ const Mentioned = (props: Props) => {
         status
         senderName
         senderPicture
-        kudosEmojiUnicode
         createdAt
         meetingId
         meetingName
@@ -45,7 +44,6 @@ const Mentioned = (props: Props) => {
     senderPicture,
     meetingId,
     meetingName,
-    kudosEmojiUnicode,
     type,
     status,
     retroReflection,
@@ -58,8 +56,7 @@ const Mentioned = (props: Props) => {
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Notification Viewed', {
       notificationType: type,
-      notificationStatus: status,
-      kudosEmojiUnicode
+      notificationStatus: status
     })
   }, [])
 
@@ -77,9 +74,7 @@ const Mentioned = (props: Props) => {
     }
   }
 
-  const message = !kudosEmojiUnicode
-    ? `${authorName} mentioned you in ${locationType} in ${meetingName}`
-    : `${kudosEmojiUnicode} ${authorName} gave you kudos in ${locationType} in ${meetingName}`
+  const message = `${authorName} mentioned you in ${locationType} in ${meetingName}`
 
   const goThere = () => {
     history.push(actionUrl)
