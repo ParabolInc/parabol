@@ -1,14 +1,14 @@
-import {Kysely, PostgresDialect} from 'kysely'
-import getPg from '../getPg'
+import {r} from 'rethinkdb-ts'
+import connectRethinkDB from '../../database/connectRethinkDB'
 
 export async function up() {
-  const pg = new Kysely<any>({
-    dialect: new PostgresDialect({
-      pool: getPg()
-    })
-  })
-
-  await pg.deleteFrom('Notification').where('type', '=', 'KUDOS_RECEIVED').execute()
+  try {
+    await connectRethinkDB()
+    await r.table('Notification').filter(r.row('type').eq('KUDOS_RECEIVED')).delete().run()
+    await r.getPoolMaster()?.drain()
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 export async function down() {
