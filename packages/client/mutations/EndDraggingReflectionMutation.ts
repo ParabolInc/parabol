@@ -192,6 +192,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           isActive: true,
           sortOrder,
           updatedAt: nowISO,
+          title: '🤖🤔 Thinking...',
           voterIds: []
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
@@ -209,10 +210,14 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           sortOrder: maxSortOrder + 1 + dndNoise(),
           reflectionGroupId
         })
+        // if title is user defined, we don't change it, so no need to show the thinking emoji
+        if (!reflectionGroupProxy.getValue('titleIsUserDefined')) {
+          updateProxyRecord(reflectionGroupProxy, {
+            title: '🤖🤔 Thinking...'
+          })
+        }
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
-      reflectionGroupProxy.setValue('🤖🤔...', 'title')
-      reflection.setValue(false, 'isViewerDragging')
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }
   })
