@@ -199,6 +199,8 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
+      reflectionGroupProxy.setValue('🤖🤔...', 'title')
+      reflection.setValue(false, 'isViewerDragging')
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }
   })
