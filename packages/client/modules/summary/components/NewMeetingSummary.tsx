@@ -86,7 +86,7 @@ const NewMeetingSummary = (props: Props) => {
             <DashSidebar viewerRef={viewer} isOpen={isOpen} />
           </div>
         )}
-        <div className='w-full'>
+        <div className='h-full w-full overflow-auto'>
           <MeetingSummaryEmail
             appOrigin={window.location.origin}
             urlAction={urlAction}
