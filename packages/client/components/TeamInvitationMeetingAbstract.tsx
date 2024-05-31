@@ -1,10 +1,7 @@
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import {GlobalBanner} from '../types/constEnums'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
-
-const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 const PageContainer = styled('div')({
   alignItems: 'center',
@@ -13,8 +10,8 @@ const PageContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   maxWidth: '100%',
-  minHeight: '100vh',
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
+  height: '100%',
+  maxHeight: '100%',
   position: 'relative'
 })
 

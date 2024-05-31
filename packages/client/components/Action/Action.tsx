@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import React, {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
@@ -43,51 +44,60 @@ const Action = memo(() => {
     <>
       <ErrorBoundary>
         <Snackbar />
-        {isGlobalBannerEnabled && (
-          <GlobalBanner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
-        )}
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <AnalyticsPage />
           <Switch>
-            <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
-            <Route
-              exact
-              path={`/${SIGNIN_SLUG}`}
-              render={(p) => <AuthenticationPage {...p} page={'signin'} />}
-            />
-            <Route
-              exact
-              path={`/${CREATE_ACCOUNT_SLUG}`}
-              render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
-            />
-            <Route exact path={`/auth/:provider`} component={AuthProvider} />
-            <Route path={`/saml-redirect`} component={SAMLRedirect} />
-            <Route
-              path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
-              component={DemoMeeting}
-            />
-            <Route path='/retrospective-demo-summary/:urlAction?' component={DemoSummary} />
-            {isInternalAuthEnabled && (
-              <Route
-                exact
-                path={`/forgot-password`}
-                render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
-              />
-            )}
-            {isInternalAuthEnabled && (
-              <Route
-                path={`/forgot-password/submitted`}
-                render={(p) => <AuthenticationPage {...p} page={`forgot-password/submitted`} />}
-              />
-            )}
-            <Route
-              path='/verify-email/:verificationToken/:invitationToken?'
-              component={VerifyEmail}
-            />
-            <Route path='/reset-password/:token' component={SetNewPassword} />
-            <Route path='/team-invitation/:token' component={TeamInvitation} />
-            <Route path='/invitation-link/:token' component={InvitationLink} />
-            <Route component={PrivateRoutes} />
+            {/* Set up a container for the global banner and the main app area */}
+            <div className='flex h-full max-h-screen flex-col'>
+              {isGlobalBannerEnabled && (
+                <GlobalBanner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
+              )}
+              <div className={clsx('h-full flex-1', isGlobalBannerEnabled && 'pt-6')}>
+                <Route
+                  exact
+                  path='/'
+                  render={(p) => <AuthenticationPage {...p} page={'signin'} />}
+                />
+                <Route
+                  exact
+                  path={`/${SIGNIN_SLUG}`}
+                  render={(p) => <AuthenticationPage {...p} page={'signin'} />}
+                />
+                <Route
+                  exact
+                  path={`/${CREATE_ACCOUNT_SLUG}`}
+                  render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
+                />
+                <Route exact path={`/auth/:provider`} component={AuthProvider} />
+                <Route path={`/saml-redirect`} component={SAMLRedirect} />
+                <Route
+                  path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
+                  component={DemoMeeting}
+                />
+                <Route path='/retrospective-demo-summary/:urlAction?' component={DemoSummary} />
+                {isInternalAuthEnabled && (
+                  <Route
+                    exact
+                    path={`/forgot-password`}
+                    render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
+                  />
+                )}
+                {isInternalAuthEnabled && (
+                  <Route
+                    path={`/forgot-password/submitted`}
+                    render={(p) => <AuthenticationPage {...p} page={`forgot-password/submitted`} />}
+                  />
+                )}
+                <Route
+                  path='/verify-email/:verificationToken/:invitationToken?'
+                  component={VerifyEmail}
+                />
+                <Route path='/reset-password/:token' component={SetNewPassword} />
+                <Route path='/team-invitation/:token' component={TeamInvitation} />
+                <Route path='/invitation-link/:token' component={InvitationLink} />
+                <Route component={PrivateRoutes} />
+              </div>
+            </div>
           </Switch>
         </Suspense>
       </ErrorBoundary>

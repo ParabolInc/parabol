@@ -3,7 +3,6 @@ import {Comment} from '@mui/icons-material'
 import React, {ReactElement, ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
-import {GlobalBanner} from '../types/constEnums'
 import hasToken from '../utils/hasToken'
 import isDemoRoute from '../utils/isDemoRoute'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
@@ -13,7 +12,6 @@ import RetroDrawerRoot from './RetroDrawerRoot'
 import SidebarToggle from './SidebarToggle'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
-const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 export const MeetingTopBarStyles = styled('div')({
   alignItems: 'flex-start',
@@ -26,7 +24,6 @@ export const MeetingTopBarStyles = styled('div')({
   overflowX: 'auto',
   paddingLeft: 16,
   paddingRight: 14, // compensate for overlapping block padding,
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   width: '100%',
   [meetingAvatarMediaQueries[0]]: {
     paddingRight: 13 // compensate for overlapping block padding

@@ -88,12 +88,10 @@ const ActivityDetails = (props: Props) => {
 
   const isOwner = viewerLowestScope === 'TEAM'
 
-  const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
-
   return (
     <div className='flex h-full w-full flex-col bg-white'>
       <div className='flex grow'>
-        <div className={clsx('mt-4 w-full grow', isGlobalBannerEnabled && 'pt-6')}>
+        <div className='mt-4 w-full grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
             <div className='mr-4'>
               <Link to={categoryLink}>
@@ -133,7 +131,7 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className='hidden w-[385px] shrink-0 lg:block'>
+        <div className='hidden w-[385px] shrink-0 lg:flex lg:flex-col'>
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}

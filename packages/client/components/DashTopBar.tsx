@@ -7,7 +7,7 @@ import {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import {AppBar, Breakpoint, GlobalBanner, Layout, NavSidebar} from '~/types/constEnums'
+import {AppBar, Breakpoint, Layout, NavSidebar} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import parabolLogo from '../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 import PinnedSnackbarNotifications from './PinnedSnackbarNotifications'
@@ -18,7 +18,6 @@ import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
 
 const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
-const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   toggle: () => void
@@ -28,8 +27,7 @@ interface Props {
 const Wrapper = styled('header')({
   backgroundColor: PALETTE.GRAPE_700,
   display: 'flex',
-  height: isGlobalBannerEnabled ? AppBar.HEIGHT + GlobalBanner.HEIGHT : AppBar.HEIGHT,
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
+  height: AppBar.HEIGHT,
   justifyContent: 'space-between',
   width: '100%',
   [dashWidestBreakpoint]: {

@@ -7,9 +7,7 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import {PALETTE} from '../../styles/paletteV3'
 import parabolLogo from '../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
-import {GlobalBanner} from '../../types/constEnums'
-
-const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+import {AppBar} from '../../types/constEnums'
 
 const HeaderContainer = styled('div')({
   alignItems: 'center',
@@ -17,9 +15,9 @@ const HeaderContainer = styled('div')({
   color: '#FFFFFF',
   display: 'flex',
   flexDirection: 'row',
+  height: AppBar.HEIGHT,
   justifyContent: 'center',
-  minHeight: 56,
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
+  minHeight: AppBar.HEIGHT,
   width: '100%'
 })
 
