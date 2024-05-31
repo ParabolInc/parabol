@@ -89,7 +89,7 @@ const ActivityDetails = (props: Props) => {
   const isOwner = viewerLowestScope === 'TEAM'
 
   return (
-    <div className='flex h-full w-full flex-col bg-white'>
+    <div className='flex h-full w-full flex-col overflow-auto bg-white'>
       <div className='flex grow'>
         <div className='mt-4 w-full grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>

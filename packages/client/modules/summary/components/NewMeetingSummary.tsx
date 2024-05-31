@@ -80,7 +80,7 @@ const NewMeetingSummary = (props: Props) => {
           <DashTopBar queryRef={data} toggle={toggle} />
         </div>
       )}
-      <div className='h-100 flex flex-1 bg-slate-200'>
+      <div className='h-100 flex flex-1 overflow-auto bg-slate-200'>
         {!isDemoRoute() && (
           <div className='hidden print:hidden lg:block'>
             <DashSidebar viewerRef={viewer} isOpen={isOpen} />

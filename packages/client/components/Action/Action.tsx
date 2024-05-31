@@ -51,7 +51,12 @@ const Action = memo(() => {
               <GlobalBanner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
             )}
             {/* Set up a container for the global banner and the main app area */}
-            <div className={clsx('h-100 flex flex-1 flex-col', isGlobalBannerEnabled && 'pt-6')}>
+            <div
+              className={clsx(
+                'h-100 flex flex-1 flex-col overflow-hidden',
+                isGlobalBannerEnabled && 'pt-6'
+              )}
+            >
               <Switch>
                 <Route
                   exact
