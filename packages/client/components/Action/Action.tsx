@@ -46,13 +46,13 @@ const Action = memo(() => {
         <Snackbar />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <AnalyticsPage />
-          <Switch>
+          <div className='flex h-full max-h-screen flex-col'>
+            {isGlobalBannerEnabled && (
+              <GlobalBanner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
+            )}
             {/* Set up a container for the global banner and the main app area */}
-            <div className='flex h-full max-h-screen flex-col'>
-              {isGlobalBannerEnabled && (
-                <GlobalBanner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
-              )}
-              <div className={clsx('h-full flex-1', isGlobalBannerEnabled && 'pt-6')}>
+            <div className={clsx('h-100 flex flex-1 flex-col', isGlobalBannerEnabled && 'pt-6')}>
+              <Switch>
                 <Route
                   exact
                   path='/'
@@ -96,9 +96,9 @@ const Action = memo(() => {
                 <Route path='/team-invitation/:token' component={TeamInvitation} />
                 <Route path='/invitation-link/:token' component={InvitationLink} />
                 <Route component={PrivateRoutes} />
-              </div>
+              </Switch>
             </div>
-          </Switch>
+          </div>
         </Suspense>
       </ErrorBoundary>
     </>

@@ -6,8 +6,9 @@ import {Link} from 'react-router-dom'
 import {NewMeetingSidebar_meeting$key} from '~/__generated__/NewMeetingSidebar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
+import useBreakpoint from '../hooks/useBreakpoint'
 import {PALETTE} from '../styles/paletteV3'
-import {GlobalBanner, NavSidebar} from '../types/constEnums'
+import {Breakpoint, GlobalBanner, NavSidebar} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import EditableText from './EditableText'
 import Facilitator from './Facilitator'
@@ -41,7 +42,7 @@ const StyledToggle = styled(SidebarToggle)({
   paddingRight: 16
 })
 
-const SidebarParent = styled('div')({
+const SidebarParent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: '#FFFFFF',
   display: 'flex',
   flex: 1,
@@ -49,9 +50,9 @@ const SidebarParent = styled('div')({
   height: '100vh',
   maxWidth: NavSidebar.WIDTH,
   minWidth: NavSidebar.WIDTH,
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
+  paddingTop: isDesktop ? 0 : isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   userSelect: 'none'
-})
+}))
 
 const TeamDashboardLink = styled(Link)({
   color: PALETTE.SKY_500,
@@ -109,9 +110,10 @@ const NewMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isFacilitator = viewerId === facilitatorUserId
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   return (
-    <SidebarParent data-cy='sidebar'>
+    <SidebarParent isDesktop={isDesktop} data-cy='sidebar'>
       <SidebarHeader>
         <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
         <div>
