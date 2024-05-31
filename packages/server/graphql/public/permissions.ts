@@ -51,10 +51,16 @@ const permissionMap: PermissionMap<Resolvers> = {
     verifyEmail: rateLimit({perMinute: 50, perHour: 100}),
     addApprovedOrganizationDomains: or(
       isSuperUser,
-      and(isViewerBillingLeader('args.orgId'), isOrgTier('args.orgId', 'enterprise'))
+      and(
+        isViewerBillingLeader<'Mutation.addApprovedOrganizationDomains'>('args.orgId'),
+        isOrgTier<'Mutation.addApprovedOrganizationDomains'>('args.orgId', 'enterprise')
+      )
     ),
-    removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader('args.orgId')),
-    uploadIdPMetadata: isViewerOnOrg('args.orgId'),
+    removeApprovedOrganizationDomains: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
+    ),
+    uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId)
   },
   Query: {
@@ -63,7 +69,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
   },
   Organization: {
-    saml: and(isViewerBillingLeader('source.id'), isOrgTier('source.id', 'enterprise'))
+    saml: and(
+      isViewerBillingLeader<'Organization.saml'>('source.id'),
+      isOrgTier<'Organization.saml'>('source.id', 'enterprise')
+    )
   },
   User: {
     domains: or(isSuperUser, isUserViewer)

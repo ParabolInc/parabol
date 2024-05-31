@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ValueOf} from 'parabol-client/types/generics'
@@ -7,23 +8,16 @@ import {RDatum} from '../../../database/stricterR'
 import Comment from '../../../database/types/Comment'
 import {Reactable} from '../../../database/types/Reactable'
 import Reflection from '../../../database/types/Reflection'
+import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
 import {GQLContext} from '../../graphql'
-
-import {sql} from 'kysely'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
-import NotificationKudosReceived from '../../../database/types/NotificationKudosReceived'
-import getKysely from '../../../postgres/getKysely'
-import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
-import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {ReactableEnumType} from '../../types/ReactableEnum'
 import getReactableType from '../../types/getReactableType'
 import {MutationResolvers} from '../resolverTypes'
-import publishNotification from './helpers/publishNotification'
 
 const rethinkTableLookup = {
   COMMENT: 'Comment',
@@ -33,28 +27,6 @@ const rethinkTableLookup = {
 const pgDataloaderLookup = {
   RESPONSE: 'teamPromptResponses'
 } as const
-
-const getReactableCreatorId = (
-  reactableType: ReactableEnumType,
-  reactable: Reactable,
-  meeting: AnyMeeting
-) => {
-  if (reactableType === 'COMMENT') {
-    if ((reactable as Comment).isAnonymous) {
-      return null
-    }
-    return (reactable as Comment).createdBy
-  } else if (reactableType === 'REFLECTION') {
-    if ((meeting as MeetingRetrospective).disableAnonymity) {
-      return (reactable as Reflection).creatorId
-    }
-    return null
-  } else if (reactableType === 'RESPONSE') {
-    return (reactable as TeamPromptResponse).userId
-  }
-
-  return null
-}
 
 const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async (
   _source: unknown,
@@ -171,54 +143,9 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   }
 
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const {meetingType, teamId} = meeting
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const {meetingType} = meeting
 
-  const reactableCreatorId = getReactableCreatorId(reactableType, reactable, meeting)
-
-  let addedKudosId = null
-  if (
-    !isRemove &&
-    team.giveKudosWithEmoji &&
-    reactji === team.kudosEmoji &&
-    reactableCreatorId &&
-    reactableCreatorId !== viewerId
-  ) {
-    addedKudosId = (await pg
-      .insertInto('Kudos')
-      .values({
-        senderUserId: viewerId,
-        receiverUserId: reactableCreatorId,
-        reactableType: reactableType,
-        reactableId: reactableId,
-        teamId,
-        emoji: team.kudosEmoji,
-        emojiUnicode: team.kudosEmojiUnicode
-      })
-      .returning('id')
-      .executeTakeFirst())!.id
-
-    const senderUser = await dataLoader.get('users').loadNonNull(viewerId)
-
-    const notificationsToInsert = new NotificationKudosReceived({
-      userId: reactableCreatorId,
-      senderUserId: viewerId,
-      meetingId,
-      meetingName: meeting.name,
-      emoji: team.kudosEmoji,
-      emojiUnicode: team.kudosEmojiUnicode,
-      name: senderUser.preferredName,
-      picture: senderUser.picture
-    })
-
-    await r.table('Notification').insert(notificationsToInsert).run()
-
-    publishNotification(notificationsToInsert, subOptions)
-
-    analytics.kudosSent(viewer, teamId, addedKudosId, reactableCreatorId, 'reaction', meetingType)
-  }
-
-  const data = {reactableId, reactableType, addedKudosId}
+  const data = {reactableId, reactableType}
 
   analytics.reactjiInteracted(
     viewer,

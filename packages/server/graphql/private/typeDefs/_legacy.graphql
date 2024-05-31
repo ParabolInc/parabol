@@ -475,7 +475,6 @@ type Mutation {
     subscriptionId: ID!
   ): Boolean
 
-
   """
   When a new invoiceitem is sent from stripe, tag it with metadata
   """
@@ -1096,6 +1095,7 @@ type JiraServerIssue implements TaskIntegration {
   id: ID!
   issueKey: ID!
   projectKey: ID!
+  projectName: String!
 
   """
   The parabol teamId this issue was fetched for
@@ -1122,6 +1122,11 @@ type JiraServerIssue implements TaskIntegration {
   The description converted into raw HTML
   """
   descriptionHTML: String!
+  
+  """
+  The timestamp the issue was last updated
+  """
+  updatedAt: DateTime!
 }
 
 """
@@ -1657,7 +1662,6 @@ enum NotificationEnum {
   TEAMS_LIMIT_REMINDER
   PROMPT_TO_JOIN_ORG
   REQUEST_TO_JOIN_ORG
-  KUDOS_RECEIVED
 }
 
 """
