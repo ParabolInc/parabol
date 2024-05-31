@@ -19,7 +19,7 @@ import ManageTeamList from '../ManageTeam/ManageTeamList'
 
 const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
-const desktopPadding = isGlobalBannerEnabled ? AppBar.HEIGHT + GlobalBanner.HEIGHT : AppBar.HEIGHT
+const bottomPadding = isGlobalBannerEnabled ? AppBar.HEIGHT + GlobalBanner.HEIGHT : AppBar.HEIGHT
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -32,8 +32,8 @@ const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
-  padding: `0 0 ${isDesktop ? desktopPadding : 0}px`,
-  paddingTop: isDesktop ? 0 : 24,
+  padding: `0 0 ${isDesktop ? bottomPadding : 0}px`,
+  paddingTop: !isDesktop && isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   height: '100vh',
   flexDirection: 'column',
   justifyContent: 'space-between',
