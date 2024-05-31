@@ -23,7 +23,7 @@ export const MeetingTopBarStyles = styled('div')({
   maxWidth: '100%',
   overflowX: 'auto',
   paddingLeft: 16,
-  paddingRight: 14, // compensate for overlapping block padding,
+  paddingRight: 14, // compensate for overlapping block padding
   width: '100%',
   [meetingAvatarMediaQueries[0]]: {
     paddingRight: 13 // compensate for overlapping block padding

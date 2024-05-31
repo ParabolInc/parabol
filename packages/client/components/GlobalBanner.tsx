@@ -9,7 +9,7 @@ interface Props {
 
 // https://www.astrouxds.com/components/classification-markings/#banner-examples
 
-// Note: banner height is 24px per Tailwind settings (h-6, leading-6)
+// Note: banner height is 24px per Tailwind settings (Scale of 6: h-6, leading-6, p-6, etc.)
 // This height value is also in constEnums GlobalBanner
 
 const GlobalBanner = (props: Props) => {
