@@ -101,6 +101,15 @@ const DashNavList = (props: Props) => {
                   <div className='text-md pt-2 pl-2 font-medium leading-6 text-slate-700 sm:pl-4'>
                     {name}
                   </div>
+                  <StyledLeftDashNavItem
+                    className={className}
+                    isViewerOnTeam={true}
+                    onClick={onClick}
+                    icon={'manageAccounts'}
+                    href={'settings'}
+                    label={'Settings & Members'}
+                  />
+                  <div className='mb-1 border-t border-solid border-slate-300' />
                   {teams.map((team) => (
                     <StyledLeftDashNavItem
                       className={className}
