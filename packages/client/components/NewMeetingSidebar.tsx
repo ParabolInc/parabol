@@ -18,6 +18,20 @@ import SidebarToggle from './SidebarToggle'
 import InactiveTag from './Tag/InactiveTag'
 
 const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+const sidebarHeight = isGlobalBannerEnabled ? `calc(100vh - ${GlobalBanner.HEIGHT}px)` : '100vh'
+const sidebarPaddingTop = isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0
+
+const SidebarParent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  backgroundColor: '#FFFFFF',
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  height: isDesktop ? sidebarHeight : '100vh',
+  maxWidth: NavSidebar.WIDTH,
+  minWidth: NavSidebar.WIDTH,
+  paddingTop: isDesktop ? 0 : sidebarPaddingTop,
+  userSelect: 'none'
+}))
 
 const MeetingName = styled('div')({
   fontSize: 20,
@@ -41,18 +55,6 @@ const SidebarHeader = styled('div')({
 const StyledToggle = styled(SidebarToggle)({
   paddingRight: 16
 })
-
-const SidebarParent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  backgroundColor: '#FFFFFF',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100vh',
-  maxWidth: NavSidebar.WIDTH,
-  minWidth: NavSidebar.WIDTH,
-  paddingTop: isDesktop ? 0 : isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
-  userSelect: 'none'
-}))
 
 const TeamDashboardLink = styled(Link)({
   color: PALETTE.SKY_500,
