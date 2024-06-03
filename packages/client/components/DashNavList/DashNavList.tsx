@@ -11,11 +11,6 @@ import {
 } from '../../__generated__/DashNavList_organization.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
-const DashNavListStyles = styled('div')({
-  paddingRight: 8,
-  width: '100%'
-})
-
 const OrgName = styled('div')({
   paddingTop: 8,
   paddingLeft: 8,
@@ -33,11 +28,6 @@ const EmptyTeams = styled('div')({
   fontStyle: 'italic',
   padding: 16,
   textAlign: 'center'
-})
-
-const DashHR = styled('div')({
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
-  width: 'calc(100% + 8px)'
 })
 
 const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>(
@@ -103,43 +93,44 @@ const DashNavList = (props: Props) => {
   const getIcon = (team: Team) => (team.organization.lockedAt || !team.isPaid ? 'warning' : 'group')
 
   return (
-    <DashNavListStyles>
-      {isSingleOrg
-        ? teams.map((team) => (
-            <StyledLeftDashNavItem
-              className={className}
-              onClick={onClick}
-              isViewerOnTeam={team.isViewerOnTeam}
-              key={team.id}
-              icon={getIcon(team)}
-              href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
-              label={team.name}
-            />
-          ))
-        : teamsByOrgKey.map((entry, idx) => {
-            const [key, teams] = entry
-            const name = key.slice(0, key.lastIndexOf(':'))
-            return (
-              <Fragment key={key}>
-                <OrgName>{name}</OrgName>
-                {teams.map((team) => (
-                  <StyledLeftDashNavItem
-                    className={className}
-                    isViewerOnTeam={team.isViewerOnTeam}
-                    onClick={onClick}
-                    key={team.id}
-                    icon={getIcon(team)}
-                    href={
-                      team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`
-                    }
-                    label={team.name}
-                  />
-                ))}
-                {idx !== teamsByOrgKey.length - 1 && <DashHR />}
-              </Fragment>
-            )
-          })}
-    </DashNavListStyles>
+    <div className='w-full p-2'>
+      <div className='h-full w-full rounded-lg border-2 border-solid border-slate-300'>
+        {isSingleOrg
+          ? teams.map((team) => (
+              <StyledLeftDashNavItem
+                className={className}
+                onClick={onClick}
+                isViewerOnTeam={team.isViewerOnTeam}
+                key={team.id}
+                icon={getIcon(team)}
+                href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
+                label={team.name}
+              />
+            ))
+          : teamsByOrgKey.map((entry) => {
+              const [key, teams] = entry
+              const name = key.slice(0, key.lastIndexOf(':'))
+              return (
+                <Fragment key={key}>
+                  <OrgName>{name}</OrgName>
+                  {teams.map((team) => (
+                    <StyledLeftDashNavItem
+                      className={className}
+                      isViewerOnTeam={team.isViewerOnTeam}
+                      onClick={onClick}
+                      key={team.id}
+                      icon={getIcon(team)}
+                      href={
+                        team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`
+                      }
+                      label={team.name}
+                    />
+                  ))}
+                </Fragment>
+              )
+            })}
+      </div>
+    </div>
   )
 }
 
