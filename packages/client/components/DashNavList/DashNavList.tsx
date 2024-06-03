@@ -3,25 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import {Breakpoint} from '~/types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {
   DashNavList_organization$data,
   DashNavList_organization$key
 } from '../../__generated__/DashNavList_organization.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
-
-const OrgName = styled('div')({
-  paddingTop: 8,
-  paddingLeft: 8,
-  fontWeight: 600,
-  fontSize: 12,
-  lineHeight: '24px',
-  color: PALETTE.SLATE_500,
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    paddingLeft: 16
-  }
-})
 
 const EmptyTeams = styled('div')({
   fontSize: 16,
@@ -94,25 +80,27 @@ const DashNavList = (props: Props) => {
 
   return (
     <div className='w-full p-2'>
-      <div className='h-full w-full rounded-lg border-2 border-solid border-slate-300'>
-        {isSingleOrg
-          ? teams.map((team) => (
-              <StyledLeftDashNavItem
-                className={className}
-                onClick={onClick}
-                isViewerOnTeam={team.isViewerOnTeam}
-                key={team.id}
-                icon={getIcon(team)}
-                href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
-                label={team.name}
-              />
-            ))
-          : teamsByOrgKey.map((entry) => {
-              const [key, teams] = entry
-              const name = key.slice(0, key.lastIndexOf(':'))
-              return (
+      {isSingleOrg
+        ? teams.map((team) => (
+            <StyledLeftDashNavItem
+              className={className}
+              onClick={onClick}
+              isViewerOnTeam={team.isViewerOnTeam}
+              key={team.id}
+              icon={getIcon(team)}
+              href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
+              label={team.name}
+            />
+          ))
+        : teamsByOrgKey.map((entry) => {
+            const [key, teams] = entry
+            const name = key.slice(0, key.lastIndexOf(':'))
+            return (
+              <div className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300'>
                 <Fragment key={key}>
-                  <OrgName>{name}</OrgName>
+                  <div className='text-md pt-2 pl-2 font-medium leading-6 text-slate-700 sm:pl-4'>
+                    {name}
+                  </div>
                   {teams.map((team) => (
                     <StyledLeftDashNavItem
                       className={className}
@@ -127,9 +115,9 @@ const DashNavList = (props: Props) => {
                     />
                   ))}
                 </Fragment>
-              )
-            })}
-      </div>
+              </div>
+            )
+          })}
     </div>
   )
 }
