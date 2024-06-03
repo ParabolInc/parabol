@@ -11,7 +11,6 @@ import {
 } from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
-import {useDebounce} from 'use-debounce'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibraryTemplateSearchRefetchQuery} from '~/__generated__/ActivityLibraryTemplateSearchRefetchQuery.graphql'
 import {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/ActivityLibraryTemplateSearch_query.graphql'
@@ -23,6 +22,7 @@ import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
+import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import AISearch from './AISearch'
 import ActivityGrid from './ActivityGrid'
 import ActivityLibraryEmptyState from './ActivityLibraryEmptyState'
@@ -222,6 +222,39 @@ const mapTeamCategories = (templates: readonly Template[]) => {
   return mapped
 }
 
+const useDebouncedSearch = (search: string) => {
+  const wordEndChars = /[\s,.\!?:;\-\(\)\[\]\{\}<>"'\\|&*+=#%@$]/
+  const timer = React.useRef<NodeJS.Timeout>()
+  const [debouncedSearch, setDebouncedSearch] = React.useState('')
+
+  useEffect(() => {
+    if (!search) {
+      setDebouncedSearch(search)
+      return
+    }
+    // if they finished a word, send it now
+    if (wordEndChars.test(search.at(-1)!)) {
+      setDebouncedSearch(search)
+      return
+    }
+    // assuming 40 wpm with 5 characters per word we get 300ms between characters
+    // give some wiggle room for slow typers
+    timer.current = setTimeout(() => {
+      setDebouncedSearch(search)
+      timer.current = undefined
+    }, 500)
+    return () => {
+      clearTimeout(timer.current)
+      timer.current = undefined
+    }
+  }, [search])
+
+  return {
+    debouncedSearch,
+    dirty: !!timer.current
+  }
+}
+
 export const ActivityLibrary = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {queryRef} = props
@@ -230,6 +263,7 @@ export const ActivityLibrary = (props: Props) => {
   const {availableTemplates, organizations} = viewer
   const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
 
+  const [isSearching, setIsSearching] = React.useState(true)
   const [templateSearch, refetchTemplateSearch] = useRefetchableFragment<
     ActivityLibraryTemplateSearchRefetchQuery,
     ActivityLibraryTemplateSearch_query$key
@@ -256,15 +290,21 @@ export const ActivityLibrary = (props: Props) => {
     onQueryChange,
     resetQuery
   } = useSearchFilter(templates, getTemplateDocumentValue)
-  const [debouncedSearchQuery] = useDebounce(searchQuery, 500)
+  const {debouncedSearch: debouncedSearchQuery, dirty} = useDebouncedSearch(searchQuery)
+  const showLoading = dirty || isSearching
 
   useEffect(() => {
     if (debouncedSearchQuery) {
+      setIsSearching(true)
       // Avoid suspense while refreshing the search results, see
       // https://relay.dev/docs/guided-tour/refetching/refetching-fragments-with-different-data/#if-you-need-to-avoid-suspense
       fetchQuery(atmosphere, templateSearchQuery, {search: debouncedSearchQuery}).subscribe({
         complete: () => {
           refetchTemplateSearch({search: debouncedSearchQuery}, {fetchPolicy: 'store-only'})
+          setIsSearching(false)
+        },
+        error: () => {
+          setIsSearching(false)
         }
       })
       SendClientSideEvent(atmosphere, 'Activity Library Searched', {
@@ -272,6 +312,7 @@ export const ActivityLibrary = (props: Props) => {
       })
     } else {
       refetchTemplateSearch({search: ''}, {fetchPolicy: 'store-only'})
+      setIsSearching(false)
     }
   }, [debouncedSearchQuery])
 
@@ -290,9 +331,11 @@ export const ActivityLibrary = (props: Props) => {
 
       return [
         ...doubleMatches,
+        /*
         ...filteredTemplates.filter(
           (template) => !doubleMatches.find((doubleMatch) => doubleMatch.id === template.id)
         ),
+         */
         ...searchResults.filter(
           (searchResult) => !doubleMatches.find((doubleMatch) => doubleMatch.id === searchResult.id)
         )
@@ -427,7 +470,7 @@ export const ActivityLibrary = (props: Props) => {
               <AISearch />
             </div>
           )}
-          {templatesToRender.length === 0 ? (
+          {templatesToRender.length === 0 && !showLoading ? (
             <ActivityLibraryEmptyState
               searchQuery={searchQuery}
               categoryId={categoryId as AllCategoryID}
@@ -469,6 +512,7 @@ export const ActivityLibrary = (props: Props) => {
               )}
             </>
           )}
+          {showLoading && <LoadingComponent />}
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation='vertical'
