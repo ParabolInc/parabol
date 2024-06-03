@@ -1,20 +1,18 @@
-import getRethink from '../../../database/rethinkDriver'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 
 const removeEmptyReflectionGroup = async (
   reflectionGroupId: string,
-  oldReflectionGroupId: string
+  oldReflectionGroupId: string,
+  dataLoader: DataLoaderInstance
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   if (!reflectionGroupId) return false
-  const reflectionCount = await r
-    .table('RetroReflection')
-    .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-    .filter({isActive: true})
-    .count()
-    .run()
-  if (reflectionCount > 0) return
+  const reflectionsInGroup = await dataLoader
+    .get('retroReflectionsByGroupId')
+    .load(oldReflectionGroupId)
+
+  if (reflectionsInGroup.length > 0) return
 
   return pg
     .updateTable('RetroReflectionGroup')

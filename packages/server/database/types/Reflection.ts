@@ -21,7 +21,6 @@ export interface ReflectionInput {
 
 export default class Reflection {
   id: string
-  autoReflectionGroupId?: string
   createdAt: Date
   // userId of the creator
   creatorId: string

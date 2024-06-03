@@ -1,17 +1,16 @@
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getRethink from '../../../database/rethinkDriver'
 import Meeting from '../../../database/types/Meeting'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 
-const removeEmptyReflections = async (meeting: Meeting) => {
+const removeEmptyReflections = async (meeting: Meeting, dataLoader: DataLoaderInstance) => {
   const r = await getRethink()
   const pg = getKysely()
   const {id: meetingId} = meeting
-  const reflections = await r
-    .table('RetroReflection')
-    .getAll(meetingId, {index: 'meetingId'})
-    .filter({isActive: true})
-    .run()
+  const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+  dataLoader.get('retroReflectionsByMeetingId').clear(meetingId)
+  dataLoader.get('retroReflections').clearAll()
   const emptyReflectionGroupIds = [] as string[]
   const emptyReflectionIds = [] as string[]
   reflections.forEach((reflection) => {
@@ -30,6 +29,11 @@ const removeEmptyReflections = async (meeting: Meeting) => {
           isActive: false
         })
         .run(),
+      pg
+        .updateTable('RetroReflection')
+        .set({isActive: false})
+        .where('id', 'in', emptyReflectionIds)
+        .execute(),
       pg
         .updateTable('RetroReflectionGroup')
         .set({isActive: false})

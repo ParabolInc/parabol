@@ -275,11 +275,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
       .coerceTo('array')
       .do((meetingIds: RValue) => {
         return r({
-          retroReflection: (
-            r.table('RetroReflection').getAll(r.args(meetingIds), {index: 'meetingId'}) as any
-          )
-            .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('RetroReflection').insert(items)),
           agendaItemComments: r
             .table('AgendaItem')
             .getAll(r.args(meetingIds), {index: 'meetingId'})('id')

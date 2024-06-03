@@ -16,6 +16,7 @@ export const notifications = new RethinkPrimaryKeyLoaderMaker('Notification')
 export const organizations = new RethinkPrimaryKeyLoaderMaker('Organization')
 export const organizationUsers = new RethinkPrimaryKeyLoaderMaker('OrganizationUser')
 export const templateScales = new RethinkPrimaryKeyLoaderMaker('TemplateScale')
+// Migrating to PG by June 30, 2024
 export const retroReflections = new RethinkPrimaryKeyLoaderMaker('RetroReflection')
 export const slackAuths = new RethinkPrimaryKeyLoaderMaker('SlackAuth')
 export const slackNotifications = new RethinkPrimaryKeyLoaderMaker('SlackNotification')

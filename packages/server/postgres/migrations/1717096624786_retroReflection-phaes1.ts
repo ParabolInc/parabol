@@ -16,9 +16,9 @@ export async function up() {
     "creatorId" VARCHAR(100) NOT NULL,
     "content" VARCHAR(2000) NOT NULL,
     "plaintextContent" VARCHAR(2000) NOT NULL,
-    "entities" JSONB[] NOT NULL DEFAULT '{}',
+    "entities" JSONB NOT NULL,
     "sentimentScore" INT,
-    "reactjis" JSONB[] NOT NULL DEFAULT '{}',
+    "reactjis" JSONB NOT NULL,
     "reflectionGroupId" VARCHAR(100) NOT NULL,
     CONSTRAINT "fk_creatorId"
       FOREIGN KEY("creatorId")

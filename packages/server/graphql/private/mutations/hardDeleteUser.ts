@@ -1,6 +1,7 @@
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
+import getKysely from '../../../postgres/getKysely'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
@@ -68,6 +69,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .map((row: RValue) => row('group'))
       .coerceTo('array')
       .run(),
+    // Migrating to PG by June 30, 2024
     (
       r
         .table('NewMeeting')
@@ -147,6 +149,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .filter((row: RValue) => r(teamMemberIds).contains(row('teamMemberId')))
       .delete(),
     pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
+    // Migrating to PG by June 30, 2024
     retroReflection: r
       .table('RetroReflection')
       .getAll(r.args(retroReflectionIds), {index: 'id'})
@@ -197,6 +200,11 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
 
   // now postgres, after FKs are added then triggers should take care of children
   await Promise.all([
+    getKysely()
+      .updateTable('RetroReflection')
+      .set({creatorId: tombstoneId})
+      .where('creatorId', '=', userIdToDelete)
+      .execute(),
     pg.query(`DELETE FROM "AtlassianAuth" WHERE "userId" = $1`, [userIdToDelete]),
     pg.query(`DELETE FROM "GitHubAuth" WHERE "userId" = $1`, [userIdToDelete]),
     pg.query(

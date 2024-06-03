@@ -46,6 +46,14 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   const {id: reflectionGroupId} = reflectionGroup
   await Promise.all([
     pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
+    pg
+      .updateTable('RetroReflection')
+      .set({
+        sortOrder: 0,
+        reflectionGroupId
+      })
+      .where('id', '=', reflectionId)
+      .execute(),
     r
       .table('RetroReflection')
       .get(reflectionId)
@@ -62,11 +70,9 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   reflection.reflectionGroupId = reflectionGroupId
   const retroMeeting = meeting as MeetingRetrospective
   retroMeeting.nextAutoGroupThreshold = null
-  const oldReflections = await r
-    .table('RetroReflection')
-    .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-    .filter({isActive: true})
-    .run()
+  const oldReflections = await dataLoader
+    .get('retroReflectionsByGroupId')
+    .load(oldReflectionGroupId)
 
   const nextTitle = getGroupSmartTitle([reflection])
   await updateSmartGroupTitle(reflectionGroupId, nextTitle)

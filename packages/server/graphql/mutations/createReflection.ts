@@ -102,6 +102,7 @@ export default {
 
     await Promise.all([
       pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
+      pg.insertInto('RetroReflection').values(reflection).execute(),
       r.table('RetroReflection').insert(reflection).run()
     ])
 

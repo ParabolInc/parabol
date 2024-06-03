@@ -1,7 +1,6 @@
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
-import Reflection from '../../../../database/types/Reflection'
 import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
@@ -32,25 +31,33 @@ const addReflectionToGroup = async (
   if (reflectionMeetingId !== meetingId) {
     throw new Error('Reflection group not found')
   }
-  const maxSortOrder = await r
-    .table('RetroReflection')
-    .getAll(reflectionGroupId, {index: 'reflectionGroupId'})('sortOrder')
-    .max()
-    .default(0)
-    .run()
+  const reflectionsInNextGroup = await dataLoader
+    .get('retroReflectionsByGroupId')
+    .load(reflectionGroupId)
+  dataLoader.get('retroReflectionsByGroupId').clear(reflectionGroupId)
+  const maxSortOrder = Math.max(0, ...reflectionsInNextGroup.map((r) => r.sortOrder))
 
   // RESOLUTION
   const sortOrder = maxSortOrder + 1 + dndNoise()
-  await r
-    .table('RetroReflection')
-    .get(reflectionId)
-    .update({
-      sortOrder,
-      reflectionGroupId,
-      updatedAt: now
-    })
-    .run()
-
+  await Promise.all([
+    pg
+      .updateTable('RetroReflection')
+      .set({
+        sortOrder,
+        reflectionGroupId
+      })
+      .where('id', '=', reflectionId)
+      .execute(),
+    r
+      .table('RetroReflection')
+      .get(reflectionId)
+      .update({
+        sortOrder,
+        reflectionGroupId,
+        updatedAt: now
+      })
+      .run()
+  ])
   // mutate the dataLoader cache
   reflection.sortOrder = sortOrder
   reflection.reflectionGroupId = reflectionGroupId
@@ -58,18 +65,10 @@ const addReflectionToGroup = async (
 
   if (oldReflectionGroupId !== reflectionGroupId) {
     // ths is not just a reorder within the same group
-    const {nextReflections, oldReflections} = await r({
-      nextReflections: r
-        .table('RetroReflection')
-        .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
-        .filter({isActive: true})
-        .coerceTo('array') as unknown as Reflection[],
-      oldReflections: r
-        .table('RetroReflection')
-        .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-        .filter({isActive: true})
-        .coerceTo('array') as unknown as Reflection[]
-    }).run()
+    const nextReflections = [...reflectionsInNextGroup, reflection]
+    const oldReflections = await dataLoader
+      .get('retroReflectionsByGroupId')
+      .load(oldReflectionGroupId)
 
     const nextTitle = smartTitle ?? getGroupSmartTitle(nextReflections)
     const oldGroupHasSingleReflectionCustomTitle =

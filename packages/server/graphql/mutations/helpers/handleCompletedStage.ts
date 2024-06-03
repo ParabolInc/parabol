@@ -2,7 +2,6 @@ import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/util
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import getRethink from '../../../database/rethinkDriver'
 import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
@@ -30,22 +29,16 @@ const handleCompletedRetrospectiveStage = async (
   dataLoader: DataLoaderWorker
 ) => {
   if (stage.phaseType === REFLECT || stage.phaseType === GROUP) {
-    const data: Record<string, any> = await removeEmptyReflections(meeting)
+    const data: Record<string, any> = await removeEmptyReflections(meeting, dataLoader)
 
     if (stage.phaseType === REFLECT) {
-      const r = await getRethink()
       const pg = getKysely()
 
-      const [reflectionGroups, reflections] = await Promise.all([
+      const [reflectionGroups, unsortedReflections] = await Promise.all([
         dataLoader.get('retroReflectionGroupsByMeetingId').load(meeting.id),
-        r
-          .table('RetroReflection')
-          .getAll(meeting.id, {index: 'meetingId'})
-          .filter({isActive: true})
-          .orderBy('createdAt')
-          .run()
+        dataLoader.get('retroReflectionsByMeetingId').load(meeting.id)
       ])
-
+      const reflections = unsortedReflections.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
       const {reflectionGroupMapping} = groupReflections(reflections.slice(), {
         groupingThreshold: AUTO_GROUPING_THRESHOLD
       })
