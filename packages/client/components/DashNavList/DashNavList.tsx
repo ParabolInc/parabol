@@ -33,7 +33,7 @@ const Tag = styled(BaseTag)<{tier: TierEnum | null}>(({tier}) => ({
       : tier === 'team'
         ? PALETTE.TERRA_300
         : PALETTE.JADE_400,
-  color: '#FFFFFF'
+  color: PALETTE.WHITE
 }))
 
 const SettingsNavItem = styled(LeftDashNavItem)({
@@ -102,7 +102,6 @@ const DashNavList = (props: Props) => {
         const [key, teams] = entry
         const org = teams[0]!.organization
         const orgTier = org.tier
-
         const name = key.slice(0, key.lastIndexOf(':'))
         return (
           <div className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300 pt-2'>

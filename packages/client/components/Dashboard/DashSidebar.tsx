@@ -157,7 +157,6 @@ const DashSidebar = (props: Props) => {
             <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </div>
-          {/* <DashHR /> */}
           <NavMain>
             <NavList organizationsRef={organizations} />
           </NavMain>
