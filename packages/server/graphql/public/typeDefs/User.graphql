@@ -68,6 +68,11 @@ type User {
   featureFlags: UserFeatureFlags!
 
   """
+  Has access to AI features
+  """
+  hasAI: Boolean!
+
+  """
   An array of objects with information about the user's identities.
         More than one will exists in case accounts are linked
   """

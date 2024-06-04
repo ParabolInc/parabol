@@ -86,9 +86,7 @@ const NewCheckInQuestion = (props: Props) => {
         }
         team {
           organization {
-            featureFlags {
-              noAISummary
-            }
+            hasAI
           }
         }
       }
@@ -102,7 +100,7 @@ const NewCheckInQuestion = (props: Props) => {
     localPhase,
     facilitatorUserId,
     team: {
-      organization: {featureFlags}
+      organization: {hasAI}
     }
   } = meeting
   const {checkInQuestion} = localPhase
@@ -227,7 +225,7 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const hideAiIcebreaker = featureFlags.noAISummary || !isFacilitating
+  const showAiIcebreaker = hasAI && isFacilitating
 
   return (
     <>
@@ -269,7 +267,7 @@ const NewCheckInQuestion = (props: Props) => {
           </div>
         )}
       </QuestionBlock>
-      {!hideAiIcebreaker && (
+      {showAiIcebreaker && (
         <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>

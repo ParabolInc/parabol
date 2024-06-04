@@ -1,3 +1,4 @@
+import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {isSuperUser} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {OrganizationResolvers} from '../resolverTypes'
@@ -19,6 +20,11 @@ const Organization: OrganizationResolvers = {
   featureFlags: ({featureFlags}) => {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
+  },
+  hasAI: ({featureFlags}) => {
+    const noAISummary = featureFlags?.includes('noAISummary') ?? false
+    const manager = new OpenAIServerManager()
+    return !noAISummary && manager.isApiAvailable()
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null
