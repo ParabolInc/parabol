@@ -48,7 +48,6 @@ const Action = memo(() => {
           {isGlobalBannerEnabled && (
             <Banner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
           )}
-          {/* Set up a container for the global banner and the main app area */}
           <div
             className='w-100 flex flex-col'
             style={{
