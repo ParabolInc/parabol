@@ -1,8 +1,25 @@
 import {GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
+import type {RetryErrorInfo, StandardRetryToken} from '@smithy/types'
+import {StandardRetryStrategy} from '@smithy/util-retry'
 import mime from 'mime-types'
 import path from 'path'
 import FileStoreManager, {FileAssetDir} from './FileStoreManager'
+
+class CloudflareRetry extends StandardRetryStrategy {
+  public async refreshRetryTokenForRetry(
+    tokenToRenew: StandardRetryToken,
+    errorInfo: RetryErrorInfo
+  ): Promise<StandardRetryToken> {
+    const status = errorInfo.error?.$response?.statusCode
+    if (status === 520) {
+      // Cloudflare swallows the error, so let's treat it as a transient and retry
+      errorInfo.errorType = 'TRANSIENT'
+    }
+    const token = await super.refreshRetryTokenForRetry(tokenToRenew, errorInfo)
+    return token
+  }
+}
 
 export default class S3Manager extends FileStoreManager {
   // e.g. development, production
@@ -38,7 +55,9 @@ export default class S3Manager extends FileStoreManager {
       credentials,
       // The bucket is inferred from the CDN_BASE_URL
       bucketEndpoint: true,
-      region: AWS_REGION
+      region: AWS_REGION,
+      followRegionRedirects: true,
+      retryStrategy: new CloudflareRetry(3)
     })
   }
 
