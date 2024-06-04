@@ -22,7 +22,7 @@ import {ISO6391} from '../iso6393To1'
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
 const MAX_TEXT_LENGTH = 10000
-async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderInstance) {
+async function getPreferredNameByUserId(userId: string | null, dataLoader: DataLoaderInstance) {
   if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
   return !user ? 'Unknown' : user.preferredName
