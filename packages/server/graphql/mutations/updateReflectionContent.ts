@@ -6,6 +6,7 @@ import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTit
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
+import {toGoogleAnalyzedEntityPG} from '../../database/types/Reflection'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -91,7 +92,7 @@ export default {
         .updateTable('RetroReflection')
         .set({
           content: normalizedContent,
-          entities: JSON.stringify(entities),
+          entities: entities.map(toGoogleAnalyzedEntityPG),
           sentimentScore,
           plaintextContent
         })

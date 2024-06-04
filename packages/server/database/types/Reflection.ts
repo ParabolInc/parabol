@@ -3,6 +3,9 @@ import generateUID from '../../generateUID'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import Reactji from './Reactji'
 
+export const toGoogleAnalyzedEntityPG = (e: GoogleAnalyzedEntity) =>
+  `(${e.name},${e.salience},${e.lemma || null})`
+
 export interface ReflectionInput {
   id?: string
   createdAt?: Date
@@ -23,7 +26,7 @@ export default class Reflection {
   id: string
   createdAt: Date
   // userId of the creator
-  creatorId: string
+  creatorId: string | null
   content: string
   plaintextContent: string
   entities: GoogleAnalyzedEntity[]
@@ -66,5 +69,12 @@ export default class Reflection {
     this.promptId = promptId
     this.sortOrder = sortOrder || 0
     this.updatedAt = updatedAt || now
+  }
+  toPG() {
+    return {
+      ...this,
+      reactjis: this.reactjis.map((r) => `(${r.id},${r.userId})`),
+      entities: this.entities.map(toGoogleAnalyzedEntityPG)
+    }
   }
 }

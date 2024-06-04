@@ -45,8 +45,8 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   const reflectionGroup = new ReflectionGroup({meetingId, promptId, sortOrder: newSortOrder})
   const {id: reflectionGroupId} = reflectionGroup
   await Promise.all([
-    pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
     pg
+      .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
       .updateTable('RetroReflection')
       .set({
         sortOrder: 0,

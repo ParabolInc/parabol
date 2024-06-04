@@ -104,7 +104,7 @@ export default {
       pg
         .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
         .insertInto('RetroReflection')
-        .values(reflection)
+        .values(reflection.toPG())
         .execute(),
       r.table('RetroReflection').insert(reflection).run()
     ])

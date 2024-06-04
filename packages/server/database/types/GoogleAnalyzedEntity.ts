@@ -5,7 +5,6 @@ interface Input {
 }
 
 export default class GoogleAnalyzedEntity {
-  [key: string]: any
   lemma?: string
   name: string
   salience: number

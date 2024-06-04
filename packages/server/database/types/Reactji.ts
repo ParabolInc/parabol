@@ -4,7 +4,6 @@ interface Input {
 }
 
 export default class Reactji {
-  [key: string]: any
   userId: string
   id: string
   constructor(input: Input) {

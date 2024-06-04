@@ -1,7 +1,6 @@
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
-import getKysely from '../../../postgres/getKysely'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
@@ -153,7 +152,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     retroReflection: r
       .table('RetroReflection')
       .getAll(r.args(retroReflectionIds), {index: 'id'})
-      .update({creatorId: tombstoneId}),
+      .update({creatorId: null}),
     slackNotification: r
       .table('SlackNotification')
       .getAll(userIdToDelete, {index: 'userId'})
@@ -199,12 +198,8 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   }).run()
 
   // now postgres, after FKs are added then triggers should take care of children
+  // TODO when we're done migrating to PG, these should have constraints that ON DELETE CASCADE
   await Promise.all([
-    getKysely()
-      .updateTable('RetroReflection')
-      .set({creatorId: tombstoneId})
-      .where('creatorId', '=', userIdToDelete)
-      .execute(),
     pg.query(`DELETE FROM "AtlassianAuth" WHERE "userId" = $1`, [userIdToDelete]),
     pg.query(`DELETE FROM "GitHubAuth" WHERE "userId" = $1`, [userIdToDelete]),
     pg.query(
