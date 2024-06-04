@@ -15,26 +15,33 @@ interface Props {
 const GlobalBanner = (props: Props) => {
   const {bgColor, color, text} = props
   return (
-    <div
-      className={clsx(
-        'bg-jade-600',
-        'block',
-        'font-bold',
-        'h-6',
-        'leading-6',
-        'text-center',
-        'text-white',
-        'uppercase',
-        'w-full',
-        'fixed',
-        'z-50'
-      )}
-      style={{
-        backgroundColor: bgColor,
-        color
-      }}
-    >
-      {text}
+    <div className='w-100 h-6 max-h-6 pt-6'>
+      {/* Container div creates natural height to push down
+          container wrapping <Switch /> in Action.tsx       */}
+      <div
+        className={clsx(
+          'bg-jade-600',
+          'block',
+          'fixed',
+          'font-bold',
+          'h-6',
+          'leading-6',
+          'left-0',
+          'max-h-6',
+          'text-center',
+          'text-white',
+          'top-0',
+          'uppercase',
+          'w-full',
+          'z-50'
+        )}
+        style={{
+          backgroundColor: bgColor,
+          color
+        }}
+      >
+        {text}
+      </div>
     </div>
   )
 }
