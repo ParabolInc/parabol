@@ -91,7 +91,7 @@ export default {
         .updateTable('RetroReflection')
         .set({
           content: normalizedContent,
-          entities,
+          entities: JSON.stringify(entities),
           sentimentScore,
           plaintextContent
         })
