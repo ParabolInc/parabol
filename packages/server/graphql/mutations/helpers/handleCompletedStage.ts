@@ -35,7 +35,6 @@ const handleCompletedRetrospectiveStage = async (
     if (stage.phaseType === REFLECT) {
       const r = await getRethink()
       const pg = getKysely()
-      const now = new Date()
 
       const [reflectionGroups, reflections] = await Promise.all([
         dataLoader.get('retroReflectionGroupsByMeetingId').load(meeting.id),
@@ -60,21 +59,11 @@ const handleCompletedRetrospectiveStage = async (
       await Promise.all(
         sortedReflectionGroups.map((group, index) => {
           group.sortOrder = index
-          return Promise.all([
-            pg
-              .updateTable('RetroReflectionGroup')
-              .set({sortOrder: index})
-              .where('id', '=', group.id)
-              .execute(),
-            r
-              .table('RetroReflectionGroup')
-              .get(group.id)
-              .update({
-                sortOrder: index,
-                updatedAt: now
-              } as any)
-              .run()
-          ])
+          return pg
+            .updateTable('RetroReflectionGroup')
+            .set({sortOrder: index})
+            .where('id', '=', group.id)
+            .execute()
         })
       )
 

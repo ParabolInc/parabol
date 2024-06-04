@@ -115,11 +115,6 @@ const resetRetroMeetingToGroupStage = {
         .set({voterIds: [], summary: null, discussionPromptQuestion: null})
         .where('id', 'in', reflectionGroupIds)
         .execute(),
-      r
-        .table('RetroReflectionGroup')
-        .getAll(r.args(reflectionGroupIds))
-        .update({voterIds: [], summary: null, discussionPromptQuestion: null})
-        .run(),
       r.table('NewMeeting').get(meetingId).update({phases: newPhases}).run(),
       (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
         .update({votesRemaining: meeting.totalVotes})

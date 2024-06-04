@@ -5,7 +5,6 @@ import {RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 
 const safelyCastVote = async (
@@ -40,36 +39,19 @@ const safelyCastVote = async (
     return standardError(new Error('No votes remaining'), {userId: viewerId})
   }
 
-  const [isVoteAddedToGroup, voteAddedResult] = await Promise.all([
-    r
-      .table('RetroReflectionGroup')
-      .get(reflectionGroupId)
-      .update((group: RValue) => {
-        return r.branch(
-          group('voterIds').count(userId).lt(maxVotesPerGroup),
-          {
-            updatedAt: now,
-            voterIds: group('voterIds').append(userId)
-          },
-          {}
-        )
-      })('replaced')
-      .eq(1)
-      .run(),
-    pg
-      .updateTable('RetroReflectionGroup')
-      .set({voterIds: sql`ARRAY_APPEND("voterIds",${userId})`})
-      .where('id', '=', reflectionGroupId)
-      .where(
-        sql`COALESCE(array_length(array_positions("voterIds", ${userId}),1),0)`,
-        '<',
-        maxVotesPerGroup
-      )
-      .executeTakeFirst()
-  ])
-  const isVoteAddedToGroupPG = voteAddedResult.numUpdatedRows === BigInt(1)
-  if (isVoteAddedToGroupPG !== isVoteAddedToGroup)
-    sendToSentry(new Error('MISMATCH VOTE CAST LOGIC'))
+  const voteAddedResult = await pg
+    .updateTable('RetroReflectionGroup')
+    .set({voterIds: sql`ARRAY_APPEND("voterIds",${userId})`})
+    .where('id', '=', reflectionGroupId)
+    .where(
+      sql`COALESCE(array_length(array_positions("voterIds", ${userId}),1),0)`,
+      '<',
+      maxVotesPerGroup
+    )
+    .executeTakeFirst()
+
+  const isVoteAddedToGroup = voteAddedResult.numUpdatedRows === BigInt(1)
+
   if (!isVoteAddedToGroup) {
     await r
       .table('MeetingMember')

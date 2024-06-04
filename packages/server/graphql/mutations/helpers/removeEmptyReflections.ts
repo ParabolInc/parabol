@@ -34,14 +34,7 @@ const removeEmptyReflections = async (meeting: Meeting) => {
         .updateTable('RetroReflectionGroup')
         .set({isActive: false})
         .where('id', 'in', emptyReflectionGroupIds)
-        .execute(),
-      r
-        .table('RetroReflectionGroup')
-        .getAll(r.args(emptyReflectionGroupIds), {index: 'id'})
-        .update({
-          isActive: false
-        })
-        .run()
+        .execute()
     ])
   }
   return {emptyReflectionGroupIds}
