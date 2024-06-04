@@ -172,11 +172,6 @@ const DashSidebar = (props: Props) => {
           <NavMain>
             <NavList organizationsRef={organizations} />
           </NavMain>
-          <DashHR />
-          <NavItemsWrap>
-            <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
-          </NavItemsWrap>
-          <DashHR />
         </Contents>
       </Nav>
     </Wrapper>
