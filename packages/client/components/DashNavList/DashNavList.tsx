@@ -101,7 +101,7 @@ const DashNavList = (props: Props) => {
       {teamsByOrgKey.map((entry) => {
         const [key, teams] = entry
         const org = teams[0]!.organization
-        const orgTier = org.tier
+        const tier = teams[0]!.tier
         const name = key.slice(0, key.lastIndexOf(':'))
         return (
           <div className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300 pt-2'>
@@ -112,7 +112,7 @@ const DashNavList = (props: Props) => {
                     {name}
                   </span>
                   <div className='mt-2 flex w-full justify-end px-2 sm:mt-0 sm:w-auto sm:text-right'>
-                    <Tag tier={orgTier}>{upperFirst(orgTier)}</Tag>
+                    <Tag tier={tier}>{upperFirst(tier)}</Tag>
                   </div>
                 </div>
               </div>
@@ -155,11 +155,11 @@ graphql`
     isPaid
     name
     isViewerOnTeam
+    tier
     organization {
       id
       name
       lockedAt
-      tier
     }
   }
 `
