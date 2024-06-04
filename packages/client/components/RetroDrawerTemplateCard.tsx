@@ -6,7 +6,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
 import {CATEGORY_THEMES, CategoryID} from '././ActivityLibrary/Categories'
-import {ActivityBadge} from './ActivityLibrary/ActivityBadge'
 import {ActivityCard, ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 
@@ -28,7 +27,6 @@ const RetroDrawerTemplateCard = (props: Props) => {
         name
         category
         illustrationUrl
-        scope
       }
     `,
     templateRef
@@ -54,11 +52,6 @@ const RetroDrawerTemplateCard = (props: Props) => {
           theme={CATEGORY_THEMES[template.category as CategoryID]}
           title={template.name}
           type='retrospective'
-          badge={
-            template.scope !== 'PUBLIC' ? (
-              <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Custom</ActivityBadge>
-            ) : null
-          }
         >
           <ActivityCardImage
             className='group-hover/card:hidden'
