@@ -38,18 +38,7 @@ const NavMain = styled('div')({
   overflowY: 'auto'
 })
 
-const DashHR = styled('div')({
-  borderBottom: `solid ${PALETTE.SLATE_300} 1px`,
-  width: '100%'
-})
-
 const NavItem = styled(LeftDashNavItem)({
-  borderRadius: 44,
-  paddingLeft: 15
-})
-
-const AddTeamNavItem = styled(LeftDashNavItem)({
-  color: PALETTE.SKY_500,
   borderRadius: 44,
   paddingLeft: 15
 })
@@ -162,12 +151,7 @@ const DashSidebar = (props: Props) => {
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
             <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
-            <AddTeamNavItem
-              iconClassName='text-sky-500'
-              icon={'add'}
-              href={'/newteam/1'}
-              label={'Add a Team'}
-            />
+            <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
           </div>
           <NavMain>
             <NavList organizationsRef={organizations} />
