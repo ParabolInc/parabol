@@ -15,18 +15,18 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
-  const [oldReflectionGroup, reflectionGroupsInColumn, meeting] = await Promise.all([
-    dataLoader.get('retroReflectionGroups').load(oldReflectionGroupId),
-    r
-      .table('RetroReflectionGroup')
-      .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: true, promptId})
-      .orderBy('sortOrder')
-      .run(),
+  const [meetingReflectionGroups, meeting] = await Promise.all([
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
   const {teamId} = meeting
 
+  dataLoader.get('retroReflectionGroupsByMeetingId').clear(meetingId)
+  dataLoader.get('retroReflectionGroups').clearAll()
+  const oldReflectionGroup = meetingReflectionGroups.find((g) => g.id === oldReflectionGroupId)!
+  const reflectionGroupsInColumn = meetingReflectionGroups
+    .filter((g) => g.promptId === promptId)
+    .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
   let newSortOrder = 1e6
   const oldReflectionGroupIdx = reflectionGroupsInColumn.findIndex(
     (group) => group.id === oldReflectionGroup.id
@@ -49,7 +49,6 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   const {id: reflectionGroupId} = reflectionGroup
   await Promise.all([
     pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
-    r.table('RetroReflectionGroup').insert(reflectionGroup).run(),
     r
       .table('RetroReflection')
       .get(reflectionId)
@@ -81,21 +80,11 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
     const oldTitle = await generateReflectionGroupTitle(team, oldReflections)
     await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
   } else {
-    await Promise.all([
-      pg
-        .updateTable('RetroReflectionGroup')
-        .set({isActive: false})
-        .where('id', '=', oldReflectionGroupId)
-        .execute(),
-      r
-        .table('RetroReflectionGroup')
-        .get(oldReflectionGroupId)
-        .update({
-          isActive: false,
-          updatedAt: now
-        })
-        .run()
-    ])
+    await pg
+      .updateTable('RetroReflectionGroup')
+      .set({isActive: false})
+      .where('id', '=', oldReflectionGroupId)
+      .execute()
   }
   return reflectionGroupId
 }

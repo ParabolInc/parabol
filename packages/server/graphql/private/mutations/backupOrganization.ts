@@ -280,23 +280,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
           )
             .coerceTo('array')
             .do((items: RValue) => r.db(DESTINATION).table('RetroReflection').insert(items)),
-          retroReflectionGroup: (
-            r.table('RetroReflectionGroup').getAll(r.args(meetingIds), {index: 'meetingId'}) as any
-          )
-            .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('RetroReflectionGroup').insert(items)),
-          // really hard things to clone
-          reflectionGroupComments: r
-            .table('RetroReflectionGroup')
-            .getAll(r.args(meetingIds), {index: 'meetingId'})('id')
-            .coerceTo('array')
-            .do((discussionIds: RValue) => {
-              return (
-                r.table('Comment').getAll(r.args(discussionIds), {index: 'discussionId'}) as any
-              )
-                .coerceTo('array')
-                .do((items: RValue) => r.db(DESTINATION).table('Comment').insert(items))
-            }),
           agendaItemComments: r
             .table('AgendaItem')
             .getAll(r.args(meetingIds), {index: 'meetingId'})('id')

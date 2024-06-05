@@ -23,3 +23,17 @@ export const embeddingsMetadataByRefId = foreignKeyLoaderMaker(
     return pg.selectFrom('EmbeddingsMetadata').selectAll().where('refId', 'in', refId).execute()
   }
 )
+
+export const retroReflectionGroupsByMeetingId = foreignKeyLoaderMaker(
+  'retroReflectionGroups',
+  'meetingId',
+  async (meetingIds) => {
+    const pg = getKysely()
+    return pg
+      .selectFrom('RetroReflectionGroup')
+      .selectAll()
+      .where('meetingId', 'in', meetingIds)
+      .where('isActive', '=', true)
+      .execute()
+  }
+)
