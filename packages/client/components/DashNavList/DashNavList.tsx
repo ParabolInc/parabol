@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {Fragment, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {
@@ -22,23 +22,17 @@ const EmptyTeams = styled('div')({
 
 const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>(
   ({isViewerOnTeam}) => ({
-    color: isViewerOnTeam ? PALETTE.SLATE_700 : PALETTE.SLATE_600
+    color: isViewerOnTeam ? PALETTE.SLATE_700 : PALETTE.SLATE_600,
+    borderRadius: 44,
+    paddingLeft: 15
   })
 )
 
 const Tag = styled(BaseTag)<{tier: TierEnum | null}>(({tier}) => ({
   backgroundColor:
-    tier === 'enterprise'
-      ? PALETTE.SKY_500
-      : tier === 'team'
-        ? PALETTE.TERRA_300
-        : PALETTE.JADE_400,
-  color: PALETTE.WHITE
+    tier === 'enterprise' ? PALETTE.SKY_500 : tier === 'team' ? PALETTE.GOLD_300 : PALETTE.JADE_400,
+  color: tier === 'team' ? PALETTE.GRAPE_700 : PALETTE.WHITE
 }))
-
-const SettingsNavItem = styled(LeftDashNavItem)({
-  color: PALETTE.SKY_500
-})
 
 interface Props {
   className?: string
@@ -101,47 +95,45 @@ const DashNavList = (props: Props) => {
       {teamsByOrgKey.map((entry) => {
         const [key, teams] = entry
         const org = teams[0]!.organization
-        const orgTier = org.tier
+        const tier = teams[0]!.tier
         const name = key.slice(0, key.lastIndexOf(':'))
         return (
-          <div className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300 pt-2'>
-            <Fragment key={key}>
-              <div className='flex flex-wrap items-center'>
-                <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
-                  <span className='text-md pl-2 font-medium leading-6 text-slate-700 sm:pl-4'>
-                    {name}
-                  </span>
-                  <div className='mt-2 flex w-full justify-end px-2 sm:mt-0 sm:w-auto sm:text-right'>
-                    <Tag tier={orgTier}>{upperFirst(orgTier)}</Tag>
-                  </div>
+          <div
+            key={key}
+            className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300 px-2 pt-2'
+          >
+            <div className='flex flex-wrap items-center'>
+              <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
+                <span className='text-md pl-2 font-medium leading-6 text-slate-700 sm:pl-4'>
+                  {name}
+                </span>
+                <div className='mt-2 flex w-full justify-end px-2 sm:mt-0 sm:w-auto sm:text-right'>
+                  <Tag tier={tier}>{upperFirst(tier)}</Tag>
                 </div>
               </div>
-              <SettingsNavItem
-                className={className}
-                onClick={onClick}
-                key={'settings'}
-                icon={'manageAccounts'}
-                iconClassName='text-sky-500'
-                href={`/me/organizations/${org.id}/billing`}
-                label={'Settings & Members'}
-              />
-              <div className='border-t border-solid border-slate-300' />
-              <div className='py-1'>
-                {teams.map((team) => (
-                  <StyledLeftDashNavItem
-                    className={clsx(className, `${isSingleOrg ? 'bg-slate-200' : ''}`)}
-                    isViewerOnTeam={team.isViewerOnTeam}
-                    onClick={onClick}
-                    key={team.id}
-                    icon={getIcon(team)}
-                    href={
-                      team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`
-                    }
-                    label={team.name}
-                  />
-                ))}
-              </div>
-            </Fragment>
+            </div>
+            <StyledLeftDashNavItem
+              className={className}
+              onClick={onClick}
+              icon={'manageAccounts'}
+              isViewerOnTeam
+              href={`/me/organizations/${org.id}/billing`}
+              label={'Settings & Members'}
+            />
+            <div className='border-t border-solid border-slate-300' />
+            <div className='py-1'>
+              {teams.map((team) => (
+                <StyledLeftDashNavItem
+                  className={clsx(className, `${isSingleOrg ? 'bg-slate-200' : ''}`)}
+                  isViewerOnTeam={team.isViewerOnTeam}
+                  onClick={onClick}
+                  key={team.id}
+                  icon={getIcon(team)}
+                  href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
+                  label={team.name}
+                />
+              ))}
+            </div>
           </div>
         )
       })}
@@ -155,11 +147,11 @@ graphql`
     isPaid
     name
     isViewerOnTeam
+    tier
     organization {
       id
       name
       lockedAt
-      tier
     }
   }
 `
