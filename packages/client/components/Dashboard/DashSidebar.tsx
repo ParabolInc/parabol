@@ -100,40 +100,42 @@ const DashSidebar = (props: Props) => {
         <SideBarStartMeetingButton isOpen={isOpen} />
         <Nav isOpen={isOpen}>
           <Contents>
-            <NavItemsWrap>
-              <NavItem
-                icon={'arrowBack'}
-                href={'/me/organizations'}
-                label={'Organizations'}
-                exact
-              />
-              <OrgName>{name}</OrgName>
-              <NavItem
-                icon={'creditScore'}
-                href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
-                label={'Plans & Billing'}
-              />
-              <NavItem
-                icon={'groups'}
-                href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
-                label={'Teams'}
-              />
-              <NavItem
-                icon={'group'}
-                href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
-                label={'Members'}
-              />
-              <NavItem
-                icon={'work'}
-                href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
-                label={'Organization Settings'}
-              />
-              <NavItem
-                icon={'key'}
-                href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
-                label={'Authentication'}
-              />
-            </NavItemsWrap>
+            <div className='px-3'>
+              <NavItemsWrap>
+                <NavItem
+                  icon={'arrowBack'}
+                  href={'/me/organizations'}
+                  label={'Organizations'}
+                  exact
+                />
+                <OrgName>{name}</OrgName>
+                <NavItem
+                  icon={'creditScore'}
+                  href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
+                  label={'Plans & Billing'}
+                />
+                <NavItem
+                  icon={'groups'}
+                  href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
+                  label={'Teams'}
+                />
+                <NavItem
+                  icon={'group'}
+                  href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
+                  label={'Members'}
+                />
+                <NavItem
+                  icon={'work'}
+                  href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
+                  label={'Organization Settings'}
+                />
+                <NavItem
+                  icon={'key'}
+                  href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
+                  label={'Authentication'}
+                />
+              </NavItemsWrap>
+            </div>
           </Contents>
         </Nav>
       </Wrapper>
@@ -142,9 +144,7 @@ const DashSidebar = (props: Props) => {
 
   return (
     <Wrapper>
-      <div className='px-3'>
-        <SideBarStartMeetingButton isOpen={isOpen} />
-      </div>
+      <SideBarStartMeetingButton isOpen={isOpen} />
       <Nav isOpen={isOpen}>
         <Contents>
           <div className='px-3'>
