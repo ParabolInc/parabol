@@ -22,23 +22,17 @@ const EmptyTeams = styled('div')({
 
 const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>(
   ({isViewerOnTeam}) => ({
-    color: isViewerOnTeam ? PALETTE.SLATE_700 : PALETTE.SLATE_600
+    color: isViewerOnTeam ? PALETTE.SLATE_700 : PALETTE.SLATE_600,
+    borderRadius: 44,
+    paddingLeft: 15
   })
 )
 
 const Tag = styled(BaseTag)<{tier: TierEnum | null}>(({tier}) => ({
   backgroundColor:
-    tier === 'enterprise'
-      ? PALETTE.SKY_500
-      : tier === 'team'
-        ? PALETTE.TERRA_300
-        : PALETTE.JADE_400,
-  color: PALETTE.WHITE
+    tier === 'enterprise' ? PALETTE.SKY_500 : tier === 'team' ? PALETTE.GOLD_300 : PALETTE.JADE_400,
+  color: tier === 'team' ? PALETTE.GRAPE_700 : PALETTE.WHITE
 }))
-
-const SettingsNavItem = styled(LeftDashNavItem)({
-  color: PALETTE.SKY_500
-})
 
 interface Props {
   className?: string
@@ -104,7 +98,7 @@ const DashNavList = (props: Props) => {
         const tier = teams[0]!.tier
         const name = key.slice(0, key.lastIndexOf(':'))
         return (
-          <div className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300 pt-2'>
+          <div className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300 px-2 pt-2'>
             <Fragment key={key}>
               <div className='flex flex-wrap items-center'>
                 <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
@@ -116,12 +110,12 @@ const DashNavList = (props: Props) => {
                   </div>
                 </div>
               </div>
-              <SettingsNavItem
+              <StyledLeftDashNavItem
                 className={className}
                 onClick={onClick}
                 key={'settings'}
                 icon={'manageAccounts'}
-                iconClassName='text-sky-500'
+                isViewerOnTeam
                 href={`/me/organizations/${org.id}/billing`}
                 label={'Settings & Members'}
               />
