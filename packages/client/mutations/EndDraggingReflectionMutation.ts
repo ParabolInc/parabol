@@ -160,11 +160,15 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()
-      const {reflectionId, dropTargetId: reflectionGroupId} = variables
+      const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-      reflection.setValue(false, 'isViewerDragging')
-
+      if (!dropTargetType) {
+        reflection.setValue(false, 'isViewerDragging')
+        return
+      } else {
+        reflection.setValue(true, 'isViewerDragging')
+      }
       const oldReflectionGroupId = reflection.getValue('reflectionGroupId') as string
       let reflectionGroupProxy: RecordProxy<{meetingId: string}>
       const newReflectionGroupId = clientTempId()
@@ -192,7 +196,6 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           isActive: true,
           sortOrder,
           updatedAt: nowISO,
-          title: '🤖🤔 Thinking...',
           voterIds: []
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
@@ -210,12 +213,6 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           sortOrder: maxSortOrder + 1 + dndNoise(),
           reflectionGroupId
         })
-        // if title is user defined, we don't change it, so no need to show the thinking emoji
-        if (!reflectionGroupProxy.getValue('titleIsUserDefined')) {
-          updateProxyRecord(reflectionGroupProxy, {
-            title: '🤖🤔 Thinking...'
-          })
-        }
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
