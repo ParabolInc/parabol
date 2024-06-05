@@ -12,7 +12,13 @@ class CloudflareRetry extends StandardRetryStrategy {
     errorInfo: RetryErrorInfo
   ): Promise<StandardRetryToken> {
     const status = errorInfo.error?.$response?.statusCode
-    if (status === 520) {
+    if (status && status >= 520 && status < 530) {
+      const date = errorInfo.error?.$response?.headers?.date
+      console.log('Cloudflare error', {
+        status,
+        date: date && new Date(date).toISOString(),
+        path: errorInfo.error?.$response?.body?.req?.path
+      })
       // Cloudflare swallows the error, so let's treat it as a transient and retry
       errorInfo.errorType = 'TRANSIENT'
     }
