@@ -60,9 +60,9 @@ module.exports = {
       // important terminating / so saml-redirect doesn't get targeted, too
       'saml/'
     ].map((name) => ({
-        context: [`/${name}`],
-        target: `http://localhost:${SOCKET_PORT}`,
-      }))
+      context: [`/${name}`],
+      target: `http://localhost:${SOCKET_PORT}`
+    }))
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
@@ -123,6 +123,7 @@ module.exports = {
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
         oauth2Redirect: process.env.OAUTH2_REDIRECT,
+        openAI: process.env.OPEN_AI_API_KEY,
         prblIn: process.env.INVITATION_SHORTLINK,
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
@@ -130,7 +131,7 @@ module.exports = {
         AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
         AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
         microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
-        microsoft: process.env.MICROSOFT_CLIENT_ID,
+        microsoft: process.env.MICROSOFT_CLIENT_ID
       })
     }),
     new ReactRefreshWebpackPlugin(),

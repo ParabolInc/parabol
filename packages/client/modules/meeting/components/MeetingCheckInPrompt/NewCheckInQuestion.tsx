@@ -60,6 +60,7 @@ const QuestionBlock = styled('div')({
     }
   }
 })
+
 interface Props {
   meeting: NewCheckInQuestion_meeting$key
 }
@@ -86,7 +87,9 @@ const NewCheckInQuestion = (props: Props) => {
         }
         team {
           organization {
-            hasAI
+            featureFlags {
+              noAISummary
+            }
           }
         }
       }
@@ -100,7 +103,7 @@ const NewCheckInQuestion = (props: Props) => {
     localPhase,
     facilitatorUserId,
     team: {
-      organization: {hasAI}
+      organization: {featureFlags}
     }
   } = meeting
   const {checkInQuestion} = localPhase
@@ -225,7 +228,7 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const showAiIcebreaker = hasAI && isFacilitating
+  const showAiIcebreaker = !featureFlags.noAISummary && isFacilitating && window.__ACTION__.openAI
 
   return (
     <>

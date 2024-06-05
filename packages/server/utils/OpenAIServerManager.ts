@@ -34,10 +34,6 @@ class OpenAIServerManager {
     })
   }
 
-  isApiAvailable() {
-    return this.openAIApi !== null
-  }
-
   async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
     if (!this.openAIApi) return null
     // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM

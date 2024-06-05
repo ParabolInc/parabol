@@ -8,7 +8,6 @@ import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {
   getUserId,
   isSuperUser,
@@ -92,11 +91,6 @@ const User: UserResolvers = {
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
-  },
-  hasAI: ({featureFlags}) => {
-    const noAISummary = featureFlags?.includes('noAISummary') ?? false
-    const manager = new OpenAIServerManager()
-    return !noAISummary && manager.isApiAvailable()
   },
   invoiceDetails: async (_source, {invoiceId}, {authToken, dataLoader}) => {
     const r = await getRethink()

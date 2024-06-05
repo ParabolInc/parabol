@@ -157,11 +157,6 @@ type Organization {
   featureFlags: OrganizationFeatureFlags!
 
   """
-  Has access to AI features
-  """
-  hasAI: Boolean!
-
-  """
   The SAML record attached to the Organization, if any
   """
   saml: SAML
