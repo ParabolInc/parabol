@@ -74,6 +74,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')
     )
   },
+  RetroReflectionGroup: {
+    smartTitle: isSuperUser,
+    voterIds: isSuperUser
+  },
   User: {
     domains: or(isSuperUser, isUserViewer)
   }
