@@ -160,15 +160,11 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()
-      const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
+      const {reflectionId, dropTargetId: reflectionGroupId} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-      if (!dropTargetType) {
-        reflection.setValue(false, 'isViewerDragging')
-        return
-      } else {
-        reflection.setValue(true, 'isViewerDragging')
-      }
+      reflection.setValue(false, 'isViewerDragging')
+
       const oldReflectionGroupId = reflection.getValue('reflectionGroupId') as string
       let reflectionGroupProxy: RecordProxy<{meetingId: string}>
       const newReflectionGroupId = clientTempId()
