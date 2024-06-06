@@ -4,7 +4,12 @@ import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
+  compareOptionalPlaintextContent,
+  compareRValOptionalPluckedArray,
+  compareRValUndefinedAsEmptyArray,
+  compareRValUndefinedAsNull,
   compareRValUndefinedAsNullAndTruncateRVal,
+  compareRealNumber,
   defaultEqFn
 } from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
@@ -31,11 +36,11 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'RetroReflectionGroup') {
+  if (tableName === 'RetroReflection') {
     const rowCountResult = await checkRowCount(tableName)
     const rethinkQuery = (updatedAt: Date, id: string | number) => {
       return r
-        .table('RetroReflectionGroup' as any)
+        .table('RetroReflection')
         .between([updatedAt, id], [r.maxval, r.maxval], {
           index: 'updatedAtId',
           leftBound: 'open',
@@ -45,8 +50,12 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
     }
     const pgQuery = (ids: string[]) => {
       return getKysely()
-        .selectFrom('RetroReflectionGroup')
+        .selectFrom('RetroReflection')
         .selectAll()
+        .select(({fn}) => [
+          fn('to_json', ['entities']).as('entities'),
+          fn('to_json', ['reactjis']).as('reactjis')
+        ])
         .where('id', 'in', ids)
         .execute()
     }
@@ -57,12 +66,18 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
       isActive: defaultEqFn,
       meetingId: defaultEqFn,
       promptId: defaultEqFn,
+      creatorId: defaultEqFn,
       sortOrder: defaultEqFn,
-      voterIds: defaultEqFn,
-      smartTitle: compareRValUndefinedAsNullAndTruncateRVal(255),
-      title: compareRValUndefinedAsNullAndTruncateRVal(255),
-      summary: compareRValUndefinedAsNullAndTruncateRVal(2000),
-      discussionPromptQuestion: compareRValUndefinedAsNullAndTruncateRVal(2000)
+      reflectionGroupId: defaultEqFn,
+      content: compareRValUndefinedAsNullAndTruncateRVal(2000, 0.98),
+      plaintextContent: compareOptionalPlaintextContent,
+      entities: compareRValOptionalPluckedArray({
+        name: defaultEqFn,
+        salience: compareRealNumber,
+        lemma: compareRValUndefinedAsNull
+      }),
+      reactjis: compareRValUndefinedAsEmptyArray,
+      sentimentScore: compareRValUndefinedAsNull
     })
     return handleResult(tableName, rowCountResult, errors, writeToFile)
   }
