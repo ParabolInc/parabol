@@ -13,8 +13,16 @@ import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../../../../types/constEnums'
+import {
+  BezierCurve,
+  Breakpoint,
+  DiscussionThreadEnum,
+  GlobalBanner,
+  ZIndex
+} from '../../../../types/constEnums'
 import OrgPlanDrawerContent from './OrgPlanDrawerContent'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -32,6 +40,7 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   flexDirection: 'column',
   justifyContent: 'stretch',
   overflow: 'hidden',
+  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   position: isDesktop ? 'fixed' : 'static',
   bottom: 0,
   top: 0,

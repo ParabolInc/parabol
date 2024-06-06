@@ -161,6 +161,10 @@ export const enum Filter {
   BENEATH_DIALOG = 'blur(1.5px)'
 }
 
+export const enum GlobalBanner {
+  HEIGHT = 24
+}
+
 export const enum Gutters {
   COLUMN_INNER_GUTTER = '12px',
   DASH_GUTTER = '20px',
