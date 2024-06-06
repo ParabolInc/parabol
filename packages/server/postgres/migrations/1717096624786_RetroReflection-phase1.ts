@@ -17,7 +17,7 @@ export async function up() {
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "isActive" BOOLEAN NOT NULL DEFAULT TRUE,
       "meetingId" VARCHAR(100) NOT NULL,
-      "promptId" VARCHAR(100) NOT NULL,
+      "promptId" VARCHAR(111) NOT NULL,
       "sortOrder" DOUBLE PRECISION NOT NULL DEFAULT 0,
       "creatorId" VARCHAR(100),
       "content" VARCHAR(2000) NOT NULL,

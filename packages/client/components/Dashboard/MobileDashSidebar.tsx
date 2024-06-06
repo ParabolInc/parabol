@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
-import {NavSidebar} from '../../types/constEnums'
+import {GlobalBanner, NavSidebar} from '../../types/constEnums'
 import {
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
@@ -17,6 +17,8 @@ import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
 import LeftDashNavItem from './LeftDashNavItem'
 import LeftDashParabol from './LeftDashNavParabol'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   handleMenuClick: () => void
@@ -32,6 +34,7 @@ const DashSidebarStyles = styled('div')({
   maxWidth: NavSidebar.WIDTH,
   minWidth: NavSidebar.WIDTH,
   overflow: 'hidden',
+  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   userSelect: 'none'
 })
 

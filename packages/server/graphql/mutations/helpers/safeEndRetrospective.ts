@@ -167,11 +167,6 @@ const safeEndRetrospective = async ({
     dataLoader.get('teamMembersByTeamId').load(teamId),
     removeEmptyTasks(meetingId),
     dataLoader.get('meetingTemplates').loadNonNull(templateId),
-    pg
-      .deleteFrom('RetroReflectionGroup')
-      .where('meetingId', '=', meetingId)
-      .where('isActive', '=', false)
-      .execute(),
     updateTeamInsights(teamId, dataLoader)
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
