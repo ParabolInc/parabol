@@ -50,14 +50,13 @@ export interface ActivityCardProps {
   className?: string
   theme: CardTheme
   title?: string
-  badge?: React.ReactNode
   children?: React.ReactNode
   type?: MeetingTypeEnum
   templateRef?: ActivityCard_template$key
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, theme, title, children, type, badge, templateRef} = props
+  const {className, theme, title, children, type, templateRef} = props
   const category = type && MEETING_TYPE_TO_CATEGORY[type]
   const [showTooltip, setShowTooltip] = useState(false)
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null)
@@ -105,10 +104,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
           className
         )}
       >
-        <div className='flex-1'>
-          {children}
-          <div className='absolute bottom-0 right-0'>{badge}</div>
-        </div>
+        <div className='flex-1'>{children}</div>
         {template && (
           <Tooltip open={showTooltip}>
             <TooltipTrigger asChild>

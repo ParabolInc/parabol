@@ -15,7 +15,6 @@ import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
 import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import Reflection from '../../../server/database/types/Reflection'
-import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
 import ITask from '../../../server/database/types/Task'
 import {
   ExternalLinks,
@@ -69,8 +68,17 @@ export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'update
   updatedAt: string | Date
 }
 
-export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | 'updatedAt'> & {
+export type DemoReflectionGroup = {
   __typename: string
+  id: string
+  isActive: boolean
+  meetingId: string
+  promptId: string
+  sortOrder: number
+  smartTitle: string | null
+  summary: string | null
+  title: string | null
+  discussionPromptQuestion: string | null
   commentors: any
   createdAt: string | Date
   meeting: any

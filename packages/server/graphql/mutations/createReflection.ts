@@ -99,7 +99,6 @@ export default {
 
     await Promise.all([
       pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
-      r.table('RetroReflectionGroup').insert(reflectionGroup).run(),
       r.table('RetroReflection').insert(reflection).run()
     ])
 

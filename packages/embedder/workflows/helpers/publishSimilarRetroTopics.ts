@@ -22,7 +22,7 @@ const makeSimilarDiscussionLink = async (
   const {meetingId, discussionTopicId: reflectionGroupId} = discussion
   const [meeting, reflectionGroup] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
+    dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId)
   ])
 
   if (!meeting || !isRetroMeeting(meeting)) throw new Error('invalid meeting type')
