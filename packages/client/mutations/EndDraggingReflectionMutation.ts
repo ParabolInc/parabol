@@ -7,7 +7,6 @@ import {OnNextHandler, SharedUpdater, SimpleMutation} from '../types/relayMutati
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import clientTempId from '../utils/relay/clientTempId'
-import computeNewSortOrder from '../utils/relay/computeNewSortOrder'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
@@ -171,26 +170,12 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       // move a reflection into its own group
       if (!reflectionGroupId) {
         // create the new group
-        const oldReflectionGroup = store.get(oldReflectionGroupId)!
-        const meetingId = reflection.getValue('meetingId') as string
-        const meeting = store.get(meetingId)!
-        const promptId = reflection.getValue('promptId') as string
-        const allReflectionGroups = meeting.getLinkedRecords('reflectionGroups')!
-        const reflectionGroupsInColumn = allReflectionGroups.filter(
-          (group) => group.getValue('promptId') === promptId
-        )
-        const sortOrder = computeNewSortOrder(
-          reflectionGroupsInColumn,
-          reflection,
-          oldReflectionGroup
-        )
         const reflectionGroup = {
           id: newReflectionGroupId,
           createdAt: nowISO,
-          meetingId,
-          promptId,
+          meetingId: reflection.getValue('meetingId') as string,
           isActive: true,
-          sortOrder,
+          sortOrder: 0,
           updatedAt: nowISO,
           voterIds: []
         }
