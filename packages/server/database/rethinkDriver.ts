@@ -166,7 +166,7 @@ export type RethinkSchema = {
     // tryRetroMeeting = 'tryRetroMeeting',
     // tryActionMeeting = 'tryActionMeeting'
     type: SuggestedActionCreateNewTeam | SuggestedActionInviteYourTeam | SuggestedActionTryTheDemo
-    index: 'userId'
+    index: 'userId' | 'teamId'
   }
   Task: {
     type: Task
