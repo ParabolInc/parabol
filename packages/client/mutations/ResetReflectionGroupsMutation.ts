@@ -14,7 +14,6 @@ graphql`
         id
         title
         promptId
-        smartTitle
         reflections {
           id
           plaintextContent
