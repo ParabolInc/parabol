@@ -81,7 +81,7 @@ interface Props {
   href?: string
   navState?: unknown
   //FIXME 6062: change to React.ComponentType
-  icon: keyof typeof iconLookup
+  icon?: keyof typeof iconLookup
   exact?: boolean
 }
 
@@ -101,9 +101,11 @@ const LeftDashNavItem = (props: Props) => {
       onClick={handleClick}
       isActive={!!match && (match?.isExact || !props.exact)}
     >
-      <StyledIcon isActive={!!match && (match?.isExact || !props.exact)}>
-        {iconLookup[icon]}
-      </StyledIcon>
+      {icon && (
+        <StyledIcon isActive={!!match && (match?.isExact || !props.exact)}>
+          {iconLookup[icon]}
+        </StyledIcon>
+      )}
       <Label>{label}</Label>
     </NavItem>
   )

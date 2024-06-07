@@ -2,10 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {
-  DashNavListTeams_organization$data,
-  DashNavListTeams_organization$key
-} from '../../__generated__/DashNavListTeams_organization.graphql'
+import {DashNavListTeams_organization$key} from '../../__generated__/DashNavListTeams_organization.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import plural from '../../utils/plural'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
@@ -18,8 +15,6 @@ const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isPublicTeams?: boolean}>
     paddingLeft: 15
   })
 )
-
-type Team = DashNavListTeams_organization$data['publicTeams'][0]
 
 type Props = {
   organizationRef: DashNavListTeams_organization$key
@@ -40,7 +35,7 @@ const DashNavListTeams = (props: Props) => {
           ...DashNavListTeam @relay(mask: false)
         }
         publicTeams {
-          ...DashNavListTeam @relay(mask: false)
+          ...PublicTeamsModal_team
         }
       }
     `,
@@ -58,7 +53,8 @@ const DashNavListTeams = (props: Props) => {
     setShowModal(true)
   }
 
-  const getIcon = (team: Team) => (team.organization.lockedAt || !team.isPaid ? 'warning' : 'group')
+  const getIcon = (lockedAt: string | null, isPaid: boolean | null) =>
+    lockedAt || !isPaid ? 'warning' : 'group'
 
   return (
     <div className='py-1'>
@@ -66,7 +62,7 @@ const DashNavListTeams = (props: Props) => {
         return (
           <StyledLeftDashNavItem
             key={team.id}
-            icon={getIcon(team)}
+            icon={getIcon(team.organization.lockedAt, team.isPaid)}
             href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
             label={team.name}
           />
@@ -74,14 +70,18 @@ const DashNavListTeams = (props: Props) => {
       })}
       {publicTeamsCount > 0 && (
         <StyledLeftDashNavItem
-          className='bg-slate-200'
+          className='bg-slate-200 pl-11'
           onClick={handleClick}
           isPublicTeams
-          icon={'group'}
           label={`View ${publicTeamsCount} ${plural(publicTeamsCount, 'Public Team', 'Public Teams')}`}
         />
       )}
-      <PublicTeamsModal publicTeams={publicTeams} isOpen={showModal} onClose={handleClose} />
+      <PublicTeamsModal
+        orgName={organization.name}
+        teamsRef={publicTeams}
+        isOpen={showModal}
+        onClose={handleClose}
+      />
     </div>
   )
 }

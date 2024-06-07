@@ -1,5 +1,7 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DashNavListTeam$data} from '../../__generated__/DashNavListTeam.graphql'
+import {useFragment} from 'react-relay'
+import {PublicTeamsModal_team$key} from '../../__generated__/PublicTeamsModal_team.graphql'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
@@ -10,18 +12,31 @@ import SecondaryButton from '../SecondaryButton'
 type Props = {
   isOpen: boolean
   onClose: () => void
-  publicTeams: DashNavListTeam$data[]
+  orgName: string
+  teamsRef: PublicTeamsModal_team$key
 }
 
 const PublicTeamsModal = (props: Props) => {
-  const {isOpen, onClose, publicTeams} = props
+  const {isOpen, onClose, teamsRef, orgName} = props
+
+  const publicTeams = useFragment(
+    graphql`
+      fragment PublicTeamsModal_team on Team @relay(plural: true) {
+        id
+        name
+      }
+    `,
+    teamsRef
+  )
   const publicTeamsCount = publicTeams.length
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
         <DialogTitle>{`${publicTeamsCount} ${plural(publicTeamsCount, 'Public Team', 'Public Teams')}`}</DialogTitle>
         <DialogDescription>
-          Request to join as a Team Member on any public teams at Narra Technologies
+          Request to join as a Team Member on any public teams at{' '}
+          <span className='font-semibold'>{orgName}</span>
         </DialogDescription>
         <hr className='my-2 border-t border-slate-300' />
         {publicTeams.map((team, index) => (
