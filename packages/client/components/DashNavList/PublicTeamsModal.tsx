@@ -7,7 +7,7 @@ import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import plural from '../../utils/plural'
-import SecondaryButton from '../SecondaryButton'
+import PublicTeamItem from './PublicTeamItem'
 
 type Props = {
   isOpen: boolean
@@ -23,7 +23,7 @@ const PublicTeamsModal = (props: Props) => {
     graphql`
       fragment PublicTeamsModal_team on Team @relay(plural: true) {
         id
-        name
+        ...PublicTeamItem_team
       }
     `,
     teamsRef
@@ -41,10 +41,7 @@ const PublicTeamsModal = (props: Props) => {
         <hr className='my-2 border-t border-slate-300' />
         {publicTeams.map((team, index) => (
           <React.Fragment key={team.id}>
-            <div className='flex items-center justify-between py-2'>
-              <span className='text-lg font-semibold'>{team.name}</span>
-              <SecondaryButton size='medium'>Request to Join</SecondaryButton>
-            </div>
+            <PublicTeamItem teamRef={team} />
             {index < publicTeams.length - 1 && <hr className='my-2 border-t border-slate-300' />}
           </React.Fragment>
         ))}

@@ -47,7 +47,7 @@ const DashNavList = (props: Props) => {
         tier
         ...DashNavListTeams_organization
         viewerTeams {
-          ...DashNavListTeam @relay(mask: false)
+          id
         }
       }
     `,
@@ -108,4 +108,5 @@ graphql`
     }
   }
 `
+
 export default DashNavList

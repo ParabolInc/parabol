@@ -42,8 +42,9 @@ const DashNavListTeams = (props: Props) => {
     organizationRef
   )
   const [showModal, setShowModal] = useState(false)
-  const {publicTeams, viewerTeams} = organization
-  const publicTeamsCount = publicTeams.length
+  const {publicTeams, viewerTeams, featureFlags} = organization
+  const publicTeamsEnabled = featureFlags?.publicTeams
+  const publicTeamsCount = publicTeamsEnabled ? publicTeams.length : 0
 
   const handleClose = () => {
     setShowModal(false)
