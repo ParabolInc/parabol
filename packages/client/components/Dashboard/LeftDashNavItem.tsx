@@ -78,7 +78,7 @@ interface Props {
   className?: string
   onClick?: () => void
   label: string
-  href: string
+  href?: string
   navState?: unknown
   //FIXME 6062: change to React.ComponentType
   icon: keyof typeof iconLookup
@@ -86,11 +86,13 @@ interface Props {
 }
 
 const LeftDashNavItem = (props: Props) => {
-  const {className, label, icon, href, navState, onClick} = props
+  const {className, label, icon, href = '', navState, onClick} = props
   const history = useHistory()
   const match = useRouteMatch(href)
   const handleClick = () => {
-    history.push(href, navState)
+    if (href) {
+      history.push(href, navState)
+    }
     onClick?.()
   }
   return (

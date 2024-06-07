@@ -10,6 +10,7 @@ import {
 import {
   getUserId,
   isSuperUser,
+  isTeamMember,
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../utils/authorization'
@@ -105,6 +106,22 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         return allTeamsOnOrg
           .filter((team) => authToken.tms.includes(team.id))
           .sort((a, b) => a.name.localeCompare(b.name))
+      }
+    },
+    publicTeams: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
+      description:
+        'all the teams that the viewer does not belong to that are in the organization. Only visible if the org has the publicTeams flag set to true.',
+      resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        const [allTeamsOnOrg, organization] = await Promise.all([
+          dataLoader.get('teamsByOrgIds').load(orgId),
+          dataLoader.get('organizations').load(orgId)
+        ])
+        const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
+        if (!isSuperUser(authToken) || !hasPublicTeamsFlag) return []
+        const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))
+        return publicTeams
       }
     },
     periodEnd: {
