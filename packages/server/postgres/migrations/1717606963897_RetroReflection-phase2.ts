@@ -46,8 +46,9 @@ export async function up() {
   const BATCH_SIZE = Math.trunc(MAX_PG_PARAMS / PG_COLS.length)
 
   const capContent = (content: string, plaintextContent: string) => {
-    let nextContent = content
     let nextPlaintextContent = plaintextContent || extractTextFromDraftString(content)
+    // if they got out of hand with formatting, extract the text & convert it back
+    let nextContent = content.length <= 2000 ? content : convertToTaskContent(nextPlaintextContent)
     while (nextContent.length > 2000 || nextPlaintextContent.length > 2000) {
       const maxLen = Math.max(nextContent.length, nextPlaintextContent.length)
       const overage = maxLen - 2000
