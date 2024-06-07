@@ -113,7 +113,6 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description:
         'all the teams that the viewer does not belong to that are in the organization. Only visible if the org has the publicTeams flag set to true.',
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
-        const viewerId = getUserId(authToken)
         const [allTeamsOnOrg, organization] = await Promise.all([
           dataLoader.get('teamsByOrgIds').load(orgId),
           dataLoader.get('organizations').load(orgId)
