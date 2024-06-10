@@ -13,7 +13,6 @@ graphql`
       reflectionGroups {
         id
         title
-        smartTitle
         reflections {
           id
           plaintextContent
