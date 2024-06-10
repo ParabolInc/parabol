@@ -16,6 +16,6 @@ e.g. Process realtime requests immediately, but start processing this historical
 In 5 days, that historical data will be a higher priority than new realtime requests.
 */
 export const getEmbedderPriority = (maxDelayInDays: number) => {
-  const maxDelayInSeconds = maxDelayInDays * ms('1d')
-  return -(2 ** 31) + ~~(Date.now() / 1000) + maxDelayInSeconds
+  const maxDelayInSeconds = (maxDelayInDays * ms('1d')) / ms('1s')
+  return -(2 ** 31) + Math.floor(Date.now() / ms('1s')) + maxDelayInSeconds
 }
