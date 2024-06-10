@@ -86,7 +86,7 @@ const DashNavList = (props: Props) => {
               label={'Settings & Members'}
             />
             <div className='border-t border-solid border-slate-300' />
-            <DashNavListTeams organizationRef={org} />
+            <DashNavListTeams onClick={onClick} organizationRef={org} />
           </div>
         )
       })}

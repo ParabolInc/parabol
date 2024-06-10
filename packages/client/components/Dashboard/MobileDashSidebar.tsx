@@ -173,18 +173,55 @@ const MobileDashSidebar = (props: Props) => {
         <Nav>
           <NavItemsWrap>
             <div className='p-2'>
-              <NavItem icon={'userSettings'} href={'/me/profile'} label={'My Settings'} />
-              <NavItem icon={'forum'} href={'/me/organizations'} label={'Organizations'} />
-              <NavItem icon={'timeline'} href={'/signout'} label={'Sign Out'} exact />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'userSettings'}
+                href={'/me/profile'}
+                label={'My Settings'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'forum'}
+                href={'/me/organizations'}
+                label={'Organizations'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'timeline'}
+                href={'/signout'}
+                label={'Sign Out'}
+                exact
+              />
             </div>
           </NavItemsWrap>
           <DashHR />
           <NavItemsWrap>
             <div className='p-2'>
-              <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-              <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
-              <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
-              <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'forum'}
+                href={'/meetings'}
+                label={'Meetings'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'timeline'}
+                href={'/me'}
+                label={'History'}
+                exact
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'playlist_add_check'}
+                href={'/me/tasks'}
+                label={'Tasks'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'add'}
+                href={'/newteam/1'}
+                label={'Add a Team'}
+              />
             </div>
           </NavItemsWrap>
           <NavMain>

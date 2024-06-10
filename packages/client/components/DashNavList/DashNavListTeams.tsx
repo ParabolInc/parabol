@@ -18,10 +18,11 @@ const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isPublicTeams?: boolean}>
 
 type Props = {
   organizationRef: DashNavListTeams_organization$key
+  onClick?: () => void
 }
 
 const DashNavListTeams = (props: Props) => {
-  const {organizationRef} = props
+  const {organizationRef, onClick} = props
   const organization = useFragment(
     graphql`
       fragment DashNavListTeams_organization on Organization {
@@ -52,6 +53,7 @@ const DashNavListTeams = (props: Props) => {
 
   const handleClick = () => {
     setShowModal(true)
+    onClick && onClick()
   }
 
   const getIcon = (lockedAt: string | null, isPaid: boolean | null) =>
@@ -66,6 +68,7 @@ const DashNavListTeams = (props: Props) => {
             icon={getIcon(team.organization.lockedAt, team.isPaid)}
             href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
             label={team.name}
+            onClick={onClick}
           />
         )
       })}
