@@ -38,7 +38,8 @@ const DashSidebarStyles = styled('div')({
 const NavBlock = styled('div')({
   flex: 1,
   position: 'relative',
-  padding: 8
+  padding: 8,
+  overflowY: 'auto'
 })
 
 const Nav = styled('nav')({
@@ -62,10 +63,6 @@ const OrgName = styled('div')({
   color: PALETTE.SLATE_500
 })
 
-const NavMain = styled('div')({
-  overflowY: 'auto'
-})
-
 const NavItemsWrap = styled('div')({
   paddingRight: 8
 })
@@ -84,9 +81,9 @@ const DashHR = styled('div')({
 const Footer = styled('div')({
   display: 'flex',
   // safari flexbox bug: https://stackoverflow.com/a/58720054/3155110
-  flex: '1 0 auto',
   flexDirection: 'column',
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-end',
+  marginTop: 'auto'
 })
 
 const FooterBottom = styled('div')({})
@@ -224,16 +221,16 @@ const MobileDashSidebar = (props: Props) => {
               />
             </div>
           </NavItemsWrap>
-          <NavMain>
+          <div>
             <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
-          </NavMain>
-          <Footer>
-            <FooterBottom>
-              <LeftDashParabol />
-            </FooterBottom>
-          </Footer>
+          </div>
         </Nav>
       </NavBlock>
+      <Footer>
+        <FooterBottom>
+          <LeftDashParabol />
+        </FooterBottom>
+      </Footer>
     </DashSidebarStyles>
   )
 }
