@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -22,6 +23,7 @@ const removePokerTemplateScale = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -56,6 +58,13 @@ const removePokerTemplateScale = {
       )('changes')('new_val')
       .default([])
       .run()
+    // mark templates as updated
+    const updatedTemplateIds = dimensions.map(({templateId}: any) => templateId)
+    await pg
+      .updateTable('MeetingTemplate')
+      .set({updatedAt: now})
+      .where('id', 'in', updatedTemplateIds)
+      .execute()
 
     const data = {scaleId, dimensions}
     publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
