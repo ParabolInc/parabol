@@ -117,7 +117,7 @@ const MobileDashSidebar = (props: Props) => {
     const {id: orgId, name} = currentOrg ?? {}
     return (
       <DashSidebarStyles>
-        {/* <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} /> */}
+        <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
         <NavBlock>
           <Nav>
             <NavItemsWrap>
@@ -172,7 +172,7 @@ const MobileDashSidebar = (props: Props) => {
       <NavBlock>
         <Nav>
           <NavItemsWrap>
-            <div className='p-3'>
+            <div className='p-2'>
               <NavItem icon={'userSettings'} href={'/me/profile'} label={'My Settings'} />
               <NavItem icon={'forum'} href={'/me/organizations'} label={'Organizations'} />
               <NavItem icon={'timeline'} href={'/signout'} label={'Sign Out'} exact />
@@ -180,7 +180,7 @@ const MobileDashSidebar = (props: Props) => {
           </NavItemsWrap>
           <DashHR />
           <NavItemsWrap>
-            <div className='p-3'>
+            <div className='p-2'>
               <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
               <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
               <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />

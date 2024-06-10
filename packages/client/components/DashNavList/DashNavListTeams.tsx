@@ -71,7 +71,7 @@ const DashNavListTeams = (props: Props) => {
       })}
       {publicTeamsCount > 0 && (
         <StyledLeftDashNavItem
-          className='bg-slate-200 pl-11'
+          className='bg-white pl-11 lg:bg-slate-200'
           onClick={handleClick}
           isPublicTeams
           label={`View ${publicTeamsCount} ${plural(publicTeamsCount, 'Public Team', 'Public Teams')}`}
