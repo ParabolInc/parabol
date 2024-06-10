@@ -70,6 +70,11 @@ const NavItemsWrap = styled('div')({
   paddingRight: 8
 })
 
+const NavItem = styled(LeftDashNavItem)({
+  borderRadius: 44,
+  paddingLeft: 15
+})
+
 const DashHR = styled('div')({
   borderBottom: `solid ${PALETTE.SLATE_300} 1px`,
   marginLeft: -8,
@@ -81,7 +86,7 @@ const Footer = styled('div')({
   // safari flexbox bug: https://stackoverflow.com/a/58720054/3155110
   flex: '1 0 auto',
   flexDirection: 'column',
-  justifyContent: 'space-between'
+  justifyContent: 'flex-end'
 })
 
 const FooterBottom = styled('div')({})
@@ -167,55 +172,26 @@ const MobileDashSidebar = (props: Props) => {
       <NavBlock>
         <Nav>
           <NavItemsWrap>
-            <LeftDashNavItem
-              onClick={handleMenuClick}
-              icon={'forum'}
-              href={'/meetings'}
-              label={'Meetings'}
-            />
-            <LeftDashNavItem
-              onClick={handleMenuClick}
-              icon={'magic'}
-              href={'/activity-library'}
-              label={'Activity Library'}
-            />
-            <LeftDashNavItem
-              onClick={handleMenuClick}
-              icon={'timeline'}
-              href={'/me'}
-              label={'History'}
-              exact
-            />
-            <LeftDashNavItem
-              onClick={handleMenuClick}
-              icon={'playlist_add_check'}
-              href={'/me/tasks'}
-              label={'Tasks'}
-            />
+            <div className='p-3'>
+              <NavItem icon={'userSettings'} href={'/me/profile'} label={'My Settings'} />
+              <NavItem icon={'forum'} href={'/me/organizations'} label={'Organizations'} />
+              <NavItem icon={'timeline'} href={'/signout'} label={'Sign Out'} exact />
+            </div>
           </NavItemsWrap>
           <DashHR />
+          <NavItemsWrap>
+            <div className='p-3'>
+              <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
+              <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
+              <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
+              <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+            </div>
+          </NavItemsWrap>
           <NavMain>
             <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
           </NavMain>
-          <DashHR />
           <Footer>
-            <NavItemsWrap>
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'add'}
-                href={'/newteam/1'}
-                label={'Add a Team'}
-              />
-            </NavItemsWrap>
             <FooterBottom>
-              <NavItemsWrap>
-                <LeftDashNavItem
-                  onClick={handleMenuClick}
-                  icon={'exit_to_app'}
-                  href={'/signout'}
-                  label={'Sign out'}
-                />
-              </NavItemsWrap>
               <LeftDashParabol />
             </FooterBottom>
           </Footer>

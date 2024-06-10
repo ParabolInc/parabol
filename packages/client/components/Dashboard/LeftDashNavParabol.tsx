@@ -25,7 +25,7 @@ const LeftDashParabol = () => {
   return (
     <Parabol>
       <img crossOrigin='' alt='Parabol' src={parabolLogo} />
-      <Label>{'PARABOL'}</Label>
+      <Label>{'parabol'}</Label>
     </Parabol>
   )
 }

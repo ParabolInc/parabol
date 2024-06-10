@@ -60,7 +60,7 @@ const DashNavList = (props: Props) => {
   }
 
   return (
-    <div className='w-full p-2'>
+    <div className='w-full p-0 pr-2 lg:p-2'>
       {organizations?.map((org) => {
         return (
           <div
@@ -69,7 +69,7 @@ const DashNavList = (props: Props) => {
           >
             <div className='flex flex-wrap items-center'>
               <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
-                <span className='text-md pl-2 font-medium leading-6 text-slate-700 sm:pl-4'>
+                <span className='text-md pl-2 font-medium leading-6 text-slate-700 '>
                   {org.name}
                 </span>
                 <div className='mt-2 flex w-full justify-end px-2 sm:mt-0 sm:w-auto sm:text-right'>

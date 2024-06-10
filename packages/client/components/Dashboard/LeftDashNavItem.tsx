@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import {
+  AccountBox,
   Add,
   ArrowBack,
   AutoAwesome,
@@ -58,6 +59,7 @@ const Label = styled('div')({
 })
 
 const iconLookup = {
+  userSettings: <AccountBox fontSize='inherit' />,
   magic: <AutoAwesome fontSize='inherit' />,
   arrowBack: <ArrowBack fontSize='inherit' />,
   creditScore: <CreditScore fontSize='inherit' />,
