@@ -112,7 +112,7 @@ const MobileDashSidebar = (props: Props) => {
     const {id: orgId, name} = currentOrg ?? {}
     return (
       <DashSidebarStyles>
-        <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
+        {/* <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} /> */}
         <NavBlock>
           <Nav>
             <NavItemsWrap>
