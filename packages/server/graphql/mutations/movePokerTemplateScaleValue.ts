@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -30,6 +31,7 @@ const movePokerTemplateScaleValue = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
     const now = new Date()
     const operationId = dataLoader.share()
@@ -66,6 +68,17 @@ const movePokerTemplateScaleValue = {
         updatedAt: now
       }))
       .run()
+    // mark all templates using this scale as updated
+    const updatedDimensions = await r
+      .table('TemplateDimension')
+      .getAll(scaleId, {index: 'scaleId'})
+      .run()
+    const updatedTemplateIds = updatedDimensions.map(({templateId}) => templateId)
+    await pg
+      .updateTable('MeetingTemplate')
+      .set({updatedAt: now})
+      .where('id', 'in', updatedTemplateIds)
+      .execute()
 
     const data = {scaleId}
     publish(

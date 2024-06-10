@@ -6774,11 +6774,6 @@ type CreateReflectionPayload {
   The stages that were unlocked by navigating
   """
   unlockedStages: [NewMeetingStage!]
-
-  """
-  Kudoses that might be sent by the end of the retro
-  """
-  draftKudoses: [Kudos!]
 }
 
 input CreateReflectionInput {
@@ -8631,6 +8626,7 @@ The scope this provider was created on by a user (excluding global scope)
 enum IntegrationProviderEditableScopeEnum {
   org
   team
+  global
 }
 
 """

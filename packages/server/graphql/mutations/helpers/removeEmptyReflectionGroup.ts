@@ -7,7 +7,6 @@ const removeEmptyReflectionGroup = async (
 ) => {
   const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   if (!reflectionGroupId) return false
   const reflectionCount = await r
     .table('RetroReflection')
@@ -17,18 +16,11 @@ const removeEmptyReflectionGroup = async (
     .run()
   if (reflectionCount > 0) return
 
-  return Promise.all([
-    pg
-      .updateTable('RetroReflectionGroup')
-      .set({isActive: false})
-      .where('id', '=', oldReflectionGroupId)
-      .execute(),
-    r
-      .table('RetroReflectionGroup')
-      .get(oldReflectionGroupId)
-      .update({isActive: false, updatedAt: now})
-      .run()
-  ])
+  return pg
+    .updateTable('RetroReflectionGroup')
+    .set({isActive: false})
+    .where('id', '=', oldReflectionGroupId)
+    .execute()
 }
 
 export default removeEmptyReflectionGroup

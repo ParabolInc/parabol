@@ -16,10 +16,9 @@ const List = styled('div')({
 const DrawerContent = styled('div')({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
+  flexDirection: 'column',
   overflowY: 'auto',
-  padding: 16,
-  height: '100vh',
-  flexDirection: 'column'
+  padding: 16
 })
 
 const Title = styled('span')({

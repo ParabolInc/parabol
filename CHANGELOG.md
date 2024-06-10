@@ -5,6 +5,81 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.36.0](https://github.com/ParabolInc/parabol/compare/v7.35.1...v7.36.0) (2024-06-10)
+
+
+### Added
+
+* security banner concept ([#9780](https://github.com/ParabolInc/parabol/issues/9780)) ([b683dc8](https://github.com/ParabolInc/parabol/commit/b683dc83426bfa96eee20b0ceb4d90640b9eb9b6))
+
+
+### Fixed
+
+* Add teamId index to SuggestedAction ([#9831](https://github.com/ParabolInc/parabol/issues/9831)) ([eb88af6](https://github.com/ParabolInc/parabol/commit/eb88af6fbafb19e748803fd6423ba17be0e51e74))
+
+
+### Changed
+
+* refactor ReflectionGroup to SDL pattern ([#9807](https://github.com/ParabolInc/parabol/issues/9807)) ([695646c](https://github.com/ParabolInc/parabol/commit/695646c6885c31e2049a1ac76fd3f4b9b589f5da))
+
+## [7.35.1](https://github.com/ParabolInc/parabol/compare/v7.35.0...v7.35.1) (2024-06-04)
+
+
+### Fixed
+
+* remove custom activity badge ([#9812](https://github.com/ParabolInc/parabol/issues/9812)) ([652a9c0](https://github.com/ParabolInc/parabol/commit/652a9c034267f9c53f4cf9c04b4f29b6f854eb1c))
+
+
+### Changed
+
+* read ReflectionGroups from PG ([#9801](https://github.com/ParabolInc/parabol/issues/9801)) ([52b80b5](https://github.com/ParabolInc/parabol/commit/52b80b5cdb7fa4834004516bc8fc997fda9c3369))
+
+## [7.35.0](https://github.com/ParabolInc/parabol/compare/v7.34.0...v7.35.0) (2024-05-30)
+
+
+### Added
+
+* type safety for gql perms ([#9798](https://github.com/ParabolInc/parabol/issues/9798)) ([712f79e](https://github.com/ParabolInc/parabol/commit/712f79eb81087b3a86301de3e611703a8ef46826))
+
+
+### Fixed
+
+* clear kudos received notifications ([#9805](https://github.com/ParabolInc/parabol/issues/9805)) ([74d8dbc](https://github.com/ParabolInc/parabol/commit/74d8dbc76366959be4274bde1d12d7978a146a2c))
+
+## [7.34.0](https://github.com/ParabolInc/parabol/compare/v7.33.0...v7.34.0) (2024-05-30)
+
+
+### Added
+
+* Add Jira Server to Your Work ([#9794](https://github.com/ParabolInc/parabol/issues/9794)) ([eec025e](https://github.com/ParabolInc/parabol/commit/eec025e3e22202c0c4c5630d2e6a75db76e3008f))
+
+
+### Changed
+
+* Allow global Jira Server integration provider ([#9796](https://github.com/ParabolInc/parabol/issues/9796)) ([051e51c](https://github.com/ParabolInc/parabol/commit/051e51c7746dfb50c4853b07ecc5bf548bd99a4e))
+* remove kudos ([#9785](https://github.com/ParabolInc/parabol/issues/9785)) ([23d48c4](https://github.com/ParabolInc/parabol/commit/23d48c48c01471be8e1332765f5d7cd9f0168954))
+
+## [7.33.0](https://github.com/ParabolInc/parabol/compare/v7.32.1...v7.33.0) (2024-05-29)
+
+
+### Added
+
+* **stripe:** handle Stripe subscription events ([#9768](https://github.com/ParabolInc/parabol/issues/9768)) ([2243667](https://github.com/ParabolInc/parabol/commit/224366762fcc11b1bfb3140317f444a10e5c0838))
+* update plan upgrade CTA label ([#9769](https://github.com/ParabolInc/parabol/issues/9769)) ([413f5b6](https://github.com/ParabolInc/parabol/commit/413f5b6349a3c7689d6dbf6b2b49df99d6b68412))
+* update promote team copy ([#9767](https://github.com/ParabolInc/parabol/issues/9767)) ([462a7f4](https://github.com/ParabolInc/parabol/commit/462a7f45eac7193a3c64f5971a7ecec085dffb25))
+* write equality checker to file store ([#9786](https://github.com/ParabolInc/parabol/issues/9786)) ([adcabbc](https://github.com/ParabolInc/parabol/commit/adcabbc186ebbbd124f0a596fead9b85b035f438))
+
+
+### Fixed
+
+* bump trebuchet-client to latest version ([#9797](https://github.com/ParabolInc/parabol/issues/9797)) ([da350e7](https://github.com/ParabolInc/parabol/commit/da350e73705604277cc0faa81b6dab9010927d4c))
+* team lead can view teams in org settings ([#9739](https://github.com/ParabolInc/parabol/issues/9739)) ([2699c3d](https://github.com/ParabolInc/parabol/commit/2699c3db7f2ca86257c6e5da475ec47af473c8a9))
+
+
+### Changed
+
+* Update processRecurrence tests ([#9770](https://github.com/ParabolInc/parabol/issues/9770)) ([222d6f9](https://github.com/ParabolInc/parabol/commit/222d6f94b9387dfbcff347f2bbcac8eef98bfe97))
+
 ## [7.32.1](https://github.com/ParabolInc/parabol/compare/v7.32.0...v7.32.1) (2024-05-22)
 
 

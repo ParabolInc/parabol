@@ -89,7 +89,7 @@ const ActivityDetails = (props: Props) => {
   const isOwner = viewerLowestScope === 'TEAM'
 
   return (
-    <div className='flex h-full w-full flex-col bg-white'>
+    <div className='flex h-full w-full flex-col overflow-auto bg-white'>
       <div className='flex grow'>
         <div className='mt-4 w-full grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
@@ -106,7 +106,6 @@ const ActivityDetails = (props: Props) => {
                 <ActivityCard
                   className='mb-8 w-80 max-md:hidden sm:ml-14 xl:ml-0 xl:mb-0'
                   theme={CATEGORY_THEMES[category as CategoryID]}
-                  badge={null}
                   type={type}
                 >
                   <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
@@ -131,7 +130,7 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className='hidden w-[385px] shrink-0 lg:block'>
+        <div className='hidden w-[385px] shrink-0 lg:flex lg:flex-col'>
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}

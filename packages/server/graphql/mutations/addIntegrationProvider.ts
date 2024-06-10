@@ -30,12 +30,19 @@ const addIntegrationProvider = {
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
-    const {teamId} = input
+    const {teamId, scope} = input
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
+    if (scope === 'global') {
+      if (!isSuperUser(authToken)) {
+        return {error: {message: 'Global scope requires su'}}
+      }
+      if (teamId !== 'aGhostTeam') {
+        return {error: {message: 'Global scope requires teamId to be aGhostTeam'}}
+      }
+    } else if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
       return {error: {message: 'Must be on the team for which the provider is created'}}
     }
 

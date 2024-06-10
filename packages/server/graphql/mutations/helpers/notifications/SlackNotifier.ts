@@ -284,9 +284,7 @@ const getSlackMessageForNotification = async (
     const responseId = notification.responseId
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
     const author = await dataLoader.get('users').loadNonNull(response.userId)
-    const title = notification.kudosEmojiUnicode
-      ? `${notification.kudosEmojiUnicode} *${author.preferredName}* mentioned you and gave kudos in their response in *${meeting.name}*`
-      : `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
+    const title = `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
 
     const options = {
       searchParams: {
@@ -331,9 +329,7 @@ const getSlackMessageForNotification = async (
       )
     }
 
-    const title = notification.kudosEmojiUnicode
-      ? `${notification.kudosEmojiUnicode} *${authorName}* mentioned you and gave kudos in their ${location} in *${meeting.name}*`
-      : `*${authorName}* mentioned you in their ${location} in *${meeting.name}*`
+    const title = `*${authorName}* mentioned you in their ${location} in *${meeting.name}*`
 
     return {
       buttonUrl,
@@ -601,7 +597,7 @@ export const SlackNotifier = {
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('users').loadNonNull(userId),
       dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
+      dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
       r.table('RetroReflection').getAll(reflectionGroupId, {index: 'reflectionGroupId'}).run(),
       r
         .table('SlackAuth')
