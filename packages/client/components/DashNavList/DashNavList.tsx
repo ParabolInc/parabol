@@ -72,7 +72,7 @@ const DashNavList = (props: Props) => {
                 <span className='text-md pl-2 font-medium leading-6 text-slate-700 '>
                   {org.name}
                 </span>
-                <div className='mt-2 flex w-full justify-end px-2 sm:mt-0 sm:w-auto sm:text-right'>
+                <div className='flex w-auto justify-end px-0 text-right'>
                   <Tag tier={org.tier}>{upperFirst(org.tier)}</Tag>
                 </div>
               </div>
