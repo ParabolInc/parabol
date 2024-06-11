@@ -17,6 +17,7 @@ import {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/ActivityL
 import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
@@ -222,39 +223,6 @@ const mapTeamCategories = (templates: readonly Template[]) => {
   return mapped
 }
 
-const useDebouncedSearch = (search: string) => {
-  const wordEndChars = /[\s,.\!?:;\-\(\)\[\]\{\}<>"'\\|&*+=#%@$]/
-  const timer = React.useRef<NodeJS.Timeout>()
-  const [debouncedSearch, setDebouncedSearch] = React.useState('')
-
-  useEffect(() => {
-    if (!search) {
-      setDebouncedSearch(search)
-      return
-    }
-    // if they finished a word, send it now
-    if (wordEndChars.test(search.at(-1)!)) {
-      setDebouncedSearch(search)
-      return
-    }
-    // assuming 40 wpm with 5 characters per word we get 300ms between characters
-    // give some wiggle room for slow typers
-    timer.current = setTimeout(() => {
-      setDebouncedSearch(search)
-      timer.current = undefined
-    }, 500)
-    return () => {
-      clearTimeout(timer.current)
-      timer.current = undefined
-    }
-  }, [search])
-
-  return {
-    debouncedSearch,
-    dirty: !!timer.current
-  }
-}
-
 export const ActivityLibrary = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {queryRef} = props
@@ -331,11 +299,9 @@ export const ActivityLibrary = (props: Props) => {
 
       return [
         ...doubleMatches,
-        /*
         ...filteredTemplates.filter(
           (template) => !doubleMatches.find((doubleMatch) => doubleMatch.id === template.id)
         ),
-         */
         ...searchResults.filter(
           (searchResult) => !doubleMatches.find((doubleMatch) => doubleMatch.id === searchResult.id)
         )
@@ -434,7 +400,7 @@ export const ActivityLibrary = (props: Props) => {
               (category) => (
                 <Link
                   className={clsx(
-                    'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
+                    'flex flex-shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
                     category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,
@@ -479,24 +445,25 @@ export const ActivityLibrary = (props: Props) => {
             <>
               {sectionedTemplates ? (
                 <>
-                  {Object.entries(sectionedTemplates).map(
-                    ([subCategory, subCategoryTemplates]) =>
-                      subCategoryTemplates.length > 0 && (
-                        <Fragment key={subCategory}>
-                          {subCategory && (
-                            <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                              {subCategory}
-                            </div>
-                          )}
-                          <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                            <ActivityGrid
-                              templates={subCategoryTemplates}
-                              selectedCategory={categoryId}
-                              viewerRef={viewer}
-                            />
+                  {Object.entries(sectionedTemplates).map(([subCategory, subCategoryTemplates]) =>
+                    subCategoryTemplates.length > 0 ? (
+                      <Fragment key={subCategory}>
+                        {subCategory && (
+                          <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                            {subCategory}
                           </div>
-                        </Fragment>
-                      )
+                        )}
+                        <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                          <ActivityGrid
+                            templates={subCategoryTemplates}
+                            selectedCategory={categoryId}
+                            viewerRef={viewer}
+                          />
+                        </div>
+                      </Fragment>
+                    ) : (
+                      <div className='p-4' />
+                    )
                   )}
                 </>
               ) : (
