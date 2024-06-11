@@ -187,7 +187,6 @@ type OrganizationFeatureFlags {
   noTeamInsights: Boolean!
   singleColumnStandups: Boolean!
   publicTeams: Boolean!
-  kudos: Boolean!
   aiTemplate: Boolean!
   relatedDiscussions: Boolean!
 }

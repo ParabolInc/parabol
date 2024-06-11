@@ -100,7 +100,7 @@ export const AUTHENTICATION_PAGE = 'authentication'
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
-export const MONTHLY_PRICE = 6
+export const MONTHLY_PRICE = 8
 
 export const FAILED = 'FAILED'
 

@@ -27,7 +27,6 @@ const RetroDrawerTemplateCard = (props: Props) => {
         name
         category
         illustrationUrl
-        isFree
       }
     `,
     templateRef

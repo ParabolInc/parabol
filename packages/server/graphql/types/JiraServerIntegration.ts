@@ -75,9 +75,11 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
         const orgTeamIds = orgTeams.map(({id}) => id)
 
-        const providers = await dataLoader
-          .get('sharedIntegrationProviders')
-          .load({service: 'jiraServer', orgTeamIds, teamIds: [teamId]})
+        const providers = await dataLoader.get('sharedIntegrationProviders').load({
+          service: 'jiraServer',
+          orgTeamIds: [...orgTeamIds, 'aGhostTeam'],
+          teamIds: [teamId]
+        })
         return providers
       }
     },
@@ -92,7 +94,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         },
         after: {
           type: GraphQLString,
-          defaultValue: '0'
+          defaultValue: '-1'
         },
         queryString: {
           type: GraphQLString,
@@ -162,21 +164,22 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         const {issues} = issueRes
 
         const mappedIssues = issues.map((issue) => {
-          const {project, issuetype, summary, description} = issue.fields
+          const {project, issuetype, summary, description, updated} = issue.fields
           return {
             ...issue,
             userId,
             teamId,
             providerId: provider.id,
             issueKey: issue.key,
+            description: description ?? '',
             descriptionHTML: issue.renderedFields.description,
             projectId: project.id,
             projectKey: project.key,
+            projectName: project.name,
             issueType: issuetype.id,
             summary,
-            description,
             service: 'jiraServer' as const,
-            updatedAt: new Date()
+            updatedAt: new Date(updated)
           }
         })
 

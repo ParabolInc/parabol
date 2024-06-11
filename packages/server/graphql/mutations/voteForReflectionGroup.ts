@@ -35,7 +35,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
+    const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
     if (!reflectionGroup || !reflectionGroup.isActive) {
       return standardError(new Error('Reflection group not found'), {
         userId: viewerId,
@@ -66,6 +66,7 @@ export default {
     }
 
     // RESOLUTION
+    dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
     if (isUnvote) {
       const votingError = await safelyWithdrawVote(
         authToken,

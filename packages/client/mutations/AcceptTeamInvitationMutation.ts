@@ -215,7 +215,10 @@ const AcceptTeamInvitationMutation: StandardMutation<
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
         const message = serverError.message
-        if (message === InvitationTokenError.ALREADY_ACCEPTED) {
+        if (message === InvitationTokenError.NOT_SIGNED_IN) {
+          // if the user follows an invitation link with an invalid auth token, invalidate it
+          atmosphere.setAuthToken(null)
+        } else if (message === InvitationTokenError.ALREADY_ACCEPTED) {
           handleAuthenticationRedirect(acceptTeamInvitation, {
             atmosphere,
             history,

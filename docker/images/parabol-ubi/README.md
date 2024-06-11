@@ -14,7 +14,7 @@ _Assumes redis, rethinkdb, and postgres already running to have operational stac
 
 The commands below will start a Parabol container on the target tag specified in \_DOCKER_TAG export. It will volume mount a .env in your current working directory to the container, so you can pass in any .env in your current working directory.
 
-For a more detailed how-to deploy Parabol, please go to the section [docker-host-st](https://github.com/ParabolInc/parabol/tree/master/docker/parabol-ubi/docker-host-st)
+For a more detailed how-to deploy Parabol, please go to the section [docker-host-st](https://github.com/ParabolInc/parabol/tree/master/docker/stacks/single-tenant-host/)
 
 - Run the PreDeploy script
 

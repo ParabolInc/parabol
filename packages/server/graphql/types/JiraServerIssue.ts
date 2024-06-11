@@ -3,6 +3,7 @@ import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {JiraServerIssue as JiraServerRestIssue} from '../../dataloader/jiraServerLoaders'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
 
@@ -39,6 +40,9 @@ const JiraServerIssue = new GraphQLObjectType<JiraServerIssueSource, GQLContext>
     },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID)
+    },
+    projectName: {
+      type: new GraphQLNonNull(GraphQLString)
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -84,6 +88,10 @@ const JiraServerIssue = new GraphQLObjectType<JiraServerIssueSource, GQLContext>
           .map(({name}) => name)
         return fieldNames
       }
+    },
+    updatedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The timestamp the issue was last updated'
     }
   })
 })

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Comment} from '@mui/icons-material'
-import React, {ReactElement, ReactNode, useState} from 'react'
+import React, {ReactElement, ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import hasToken from '../utils/hasToken'
@@ -165,7 +165,6 @@ const MeetingTopBar = (props: Props) => {
   } = props
   const showButton = isDemoRoute() && !hasToken()
   const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
-  const [showDrawer, setShowDrawer] = useState(false)
   const isOptionsVisible = !!meetingId && !isDemoRoute()
 
   return (
@@ -183,13 +182,7 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
-        {isOptionsVisible && (
-          <RetroDrawerRoot
-            meetingId={meetingId}
-            setShowDrawer={setShowDrawer}
-            showDrawer={showDrawer}
-          />
-        )}
+        {isOptionsVisible && <RetroDrawerRoot meetingId={meetingId} />}
         {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
             <Badge>

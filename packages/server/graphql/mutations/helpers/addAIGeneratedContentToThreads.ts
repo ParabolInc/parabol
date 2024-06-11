@@ -1,11 +1,9 @@
-import {AIExplainer} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import Comment from '../../../database/types/Comment'
 import DiscussStage from '../../../database/types/DiscussStage'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
-import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 export const buildCommentContentBlock = (
   title: string,
@@ -28,33 +26,17 @@ export const createAIComment = (discussionId: string, content: string, order: nu
 const addAIGeneratedContentToThreads = async (
   stages: DiscussStage[],
   meetingId: string,
-  teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const [r, groups, team] = await Promise.all([
+  const [r, groups] = await Promise.all([
     getRethink(),
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId)
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   ])
-  const commentPromises = stages.map(async ({discussionId, reflectionGroupId}, idx) => {
+  const commentPromises = stages.map(async ({discussionId, reflectionGroupId}) => {
     const group = groups.find((group) => group.id === reflectionGroupId)
-    if (!group?.summary && !group?.discussionPromptQuestion) return
+    if (!group?.discussionPromptQuestion) return
     const comments: Comment[] = []
 
-    if (group.summary) {
-      const topicSummaryExplainerText =
-        idx === 0
-          ? getFeatureTier(team) === 'starter'
-            ? AIExplainer.STARTER
-            : AIExplainer.PREMIUM_REFLECTIONS
-          : undefined
-      const topicSummaryComment = createAIComment(
-        discussionId,
-        buildCommentContentBlock('🤖 Topic Summary', group.summary, topicSummaryExplainerText),
-        0
-      )
-      comments.push(topicSummaryComment)
-    }
     if (group.discussionPromptQuestion) {
       const topicSummaryComment = createAIComment(
         discussionId,

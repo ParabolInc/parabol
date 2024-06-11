@@ -3,7 +3,6 @@ import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initSentry'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {Logger} from '../server/utils/Logger'
 import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 import {DBJob} from './custom'
 
@@ -13,10 +12,16 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
   }
 
   orchestrator: WorkflowOrchestrator
+  done: boolean
+
   constructor(orchestrator: WorkflowOrchestrator) {
     this.orchestrator = orchestrator
+    this.done = false
   }
   async next(): Promise<IteratorResult<DBJob>> {
+    if (this.done) {
+      return {done: true as const, value: undefined}
+    }
     const pg = getKysely()
     const getJob = (isFailed: boolean) => {
       return pg
@@ -47,7 +52,6 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
     try {
       const job = (await getJob(false)) || (await getJob(true))
       if (!job) {
-        Logger.log('JobQueueStream: no jobs found')
         // queue is empty, so sleep for a while
         await sleep(ms('10s'))
         return this.next()
@@ -60,9 +64,11 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
     }
   }
   return() {
+    this.done = true
     return Promise.resolve({done: true as const, value: undefined})
   }
   throw(error: any) {
+    this.done = true
     return Promise.resolve({done: true as const, value: error})
   }
 }

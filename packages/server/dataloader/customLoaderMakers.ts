@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import tracer from 'dd-trace'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
@@ -630,21 +631,22 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
 
 export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
   return new DataLoader<number, AnyMeeting | null, string>(
-    async (keys) => {
-      const r = await getRethink()
-      const res = await (
-        r
-          .table('NewMeeting')
-          .getAll(r.args(keys), {index: 'meetingSeriesId'})
-          .group('meetingSeriesId') as RDatum
-      )
-        .orderBy(r.desc('createdAt'))
-        .nth(0)
-        .default(null)
-        .ungroup()('reduction')
-        .run()
-      return normalizeResults(keys, res as AnyMeeting[], 'meetingSeriesId')
-    },
+    async (keys) =>
+      tracer.trace('lastMeetingByMeetingSeriesId', async () => {
+        const r = await getRethink()
+        const res = await (
+          r
+            .table('NewMeeting')
+            .getAll(r.args(keys), {index: 'meetingSeriesId'})
+            .group('meetingSeriesId') as RDatum
+        )
+          .orderBy(r.desc('createdAt'))
+          .nth(0)
+          .default(null)
+          .ungroup()('reduction')
+          .run()
+        return normalizeResults(keys, res as AnyMeeting[], 'meetingSeriesId')
+      }),
     {
       ...parent.dataLoaderOptions
     }
@@ -833,6 +835,27 @@ export const isCompanyDomain = (parent: RootDataLoader) => {
         .execute()
       const freemailDomains = new Set(res.map(({domain}) => domain))
       return domains.map((domain) => !freemailDomains.has(domain))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const favoriteTemplateIds = (parent: RootDataLoader) => {
+  return new DataLoader<string, string[], string>(
+    async (userIds) => {
+      const pg = getKysely()
+      const users = await pg
+        .selectFrom('User')
+        .select(['id', 'favoriteTemplateIds'])
+        .where('id', 'in', userIds)
+        .execute()
+
+      const userIdToFavoriteTemplateIds = new Map(
+        users.map((user) => [user.id, user.favoriteTemplateIds])
+      )
+      return userIds.map((userId) => userIdToFavoriteTemplateIds.get(userId) || [])
     },
     {
       ...parent.dataLoaderOptions

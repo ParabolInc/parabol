@@ -80,13 +80,13 @@ const NewMeetingSummary = (props: Props) => {
           <DashTopBar queryRef={data} toggle={toggle} />
         </div>
       )}
-      <div className='flex min-h-screen bg-slate-200'>
+      <div className='h-100 flex flex-1 overflow-auto bg-slate-200'>
         {!isDemoRoute() && (
           <div className='hidden print:hidden lg:block'>
             <DashSidebar viewerRef={viewer} isOpen={isOpen} />
           </div>
         )}
-        <div className='w-full'>
+        <div className='h-full w-full overflow-auto'>
           <MeetingSummaryEmail
             appOrigin={window.location.origin}
             urlAction={urlAction}

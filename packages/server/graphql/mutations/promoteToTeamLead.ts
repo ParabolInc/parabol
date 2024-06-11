@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../database/rethinkDriver'
-import {getUserId, isSuperUser} from '../../utils/authorization'
+import {getUserId, isSuperUser, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -32,18 +32,22 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const oldLeadTeamMemberId = await r
-      .table('TeamMember')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isNotRemoved: true, isLead: true})
-      .nth(0)('id')
-      .default(null)
-      .run()
+    const [oldLeadTeamMemberId, team] = await Promise.all([
+      r
+        .table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isNotRemoved: true, isLead: true})
+        .nth(0)('id')
+        .default(null)
+        .run(),
+      dataLoader.get('teams').loadNonNull(teamId)
+    ])
 
     if (!isSuperUser(authToken)) {
+      const isOrgAdmin = await isUserOrgAdmin(viewerId, team.orgId, dataLoader)
       const viewerTeamMemberId = TeamMemberId.join(teamId, viewerId)
-      if (viewerTeamMemberId !== oldLeadTeamMemberId) {
-        return standardError(new Error('Not team lead'), {userId: viewerId})
+      if (viewerTeamMemberId !== oldLeadTeamMemberId && !isOrgAdmin) {
+        return standardError(new Error('Not team lead or org admin'), {userId: viewerId})
       }
     }
 

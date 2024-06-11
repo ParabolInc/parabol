@@ -30,7 +30,6 @@ import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import Reflection from './types/Reflection'
-import ReflectionGroup from './types/ReflectionGroup'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
 import SAML from './types/SAML'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
@@ -143,10 +142,6 @@ export type RethinkSchema = {
     type: MeetingTemplate
     index: 'teamId' | 'orgId'
   }
-  RetroReflectionGroup: {
-    type: ReflectionGroup
-    index: 'meetingId'
-  }
   RetroReflection: {
     type: Reflection
     index: 'meetingId' | 'reflectionGroupId'
@@ -171,7 +166,7 @@ export type RethinkSchema = {
     // tryRetroMeeting = 'tryRetroMeeting',
     // tryActionMeeting = 'tryActionMeeting'
     type: SuggestedActionCreateNewTeam | SuggestedActionInviteYourTeam | SuggestedActionTryTheDemo
-    index: 'userId'
+    index: 'userId' | 'teamId'
   }
   Task: {
     type: Task
@@ -202,7 +197,7 @@ export type RethinkSchema = {
   }
   TemplateDimension: {
     type: TemplateDimension
-    index: 'teamId' | 'templateId'
+    index: 'teamId' | 'templateId' | 'scaleId'
   }
   TemplateScale: {
     type: TemplateScale
