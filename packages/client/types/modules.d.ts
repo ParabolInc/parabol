@@ -40,6 +40,7 @@ interface Window {
     slack: string
     stripe: string
     oauth2Redirect: string
+    hasOpenAI: boolean
     prblIn: string | undefined
     AUTH_INTERNAL_ENABLED: boolean
     AUTH_GOOGLE_ENABLED: boolean
