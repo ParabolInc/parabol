@@ -228,7 +228,8 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const showAiIcebreaker = !featureFlags.noAISummary && isFacilitating && window.__ACTION__.openAI
+  const showAiIcebreaker =
+    !featureFlags.noAISummary && isFacilitating && window.__ACTION__.hasOpenAI
 
   return (
     <>
