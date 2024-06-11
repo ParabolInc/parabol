@@ -9,7 +9,6 @@ import {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.g
 import {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
 import {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
 import AddReflectTemplateMutation from '../../mutations/AddReflectTemplateMutation'
@@ -121,7 +120,6 @@ const TeamPickerModal = (props: Props) => {
           <b>Select the team</b> to manage this cloned template
         </div>
         <NewMeetingTeamPicker
-          positionOverride={MenuPosition.UPPER_LEFT}
           onSelectTeam={(teamId) => {
             const newTeam = teams.find((team) => team.id === teamId)
             newTeam && setSelectedTeam(newTeam)

@@ -1,11 +1,12 @@
+import {ExpandMore, LockOpen} from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {PALETTE} from '../styles/paletteV3'
 import {Menu} from '../ui/Menu/Menu'
 import setPreferredTeamId from '../utils/relay/setPreferredTeamId'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
@@ -14,10 +15,11 @@ interface Props {
   selectedTeamRef: NewMeetingTeamPicker_selectedTeam$key
   teamsRef: NewMeetingTeamPicker_teams$key
   onSelectTeam: (teamId: string) => void
+  onShareToOrg?: () => void
 }
 
 const NewMeetingTeamPicker = (props: Props) => {
-  const {selectedTeamRef, teamsRef, onSelectTeam} = props
+  const {selectedTeamRef, teamsRef, onSelectTeam, onShareToOrg} = props
 
   const atmosphere = useAtmosphere()
 
@@ -31,6 +33,9 @@ const NewMeetingTeamPicker = (props: Props) => {
       fragment NewMeetingTeamPicker_selectedTeam on Team {
         ...NewMeetingTeamPickerAvatars_team
         name
+        organization {
+          name
+        }
       }
     `,
     selectedTeamRef
@@ -68,26 +73,51 @@ const NewMeetingTeamPicker = (props: Props) => {
           </div>
         }
       >
-        <div
-          className='w-[var(--radix-dropdown-menu-trigger-width)]'
-        >
-          <DropdownMenu.Label className='text-base px-3 py-2 font-semibold'>Select Team:</DropdownMenu.Label>
-          <DropdownMenu.Separator className='border-b border-slate-300' />
-          <div className='py-2'>
-            {teams.map((team) => {
-              return (
-                <DropdownMenu.Item
-                  key={team.id}
-                  className='text-base px-3 py-1 hover:bg-slate-200 outline-none'
-                  onClick={() => {
-                    handleSelectTeam(team.id)
-                  }}
-                >
-                  {team.name}
-                </DropdownMenu.Item>
-              )
-            })}
-          </div>
+        <div className='w-[var(--radix-dropdown-menu-trigger-width)]'>
+          {onShareToOrg ? (
+            <div className='w-[352px] p-4'>
+              <div>
+                This custom activity is private to the <b>{selectedTeam.name}</b> team.
+              </div>
+              <br />
+              <div>
+                As a member of the team you can share this activity with other teams at the{' '}
+                <b>{selectedTeam.organization.name}</b> organization so that they can also use the
+                activity.
+              </div>
+              <button
+                onClick={onShareToOrg}
+                className={
+                  'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-sm font-semibold text-slate-700 hover:bg-slate-100'
+                }
+              >
+                <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
+                Allow other teams to use this activity
+              </button>
+            </div>
+          ) : (
+            <>
+              <DropdownMenu.Label className='px-3 py-2 text-base font-semibold'>
+                Select Team:
+              </DropdownMenu.Label>
+              <DropdownMenu.Separator className='border-b border-slate-300' />
+              <div className='py-2'>
+                {teams.map((team) => {
+                  return (
+                    <DropdownMenu.Item
+                      key={team.id}
+                      className='px-3 py-1 text-base outline-none hover:bg-slate-200'
+                      onClick={() => {
+                        handleSelectTeam(team.id)
+                      }}
+                    >
+                      {team.name}
+                    </DropdownMenu.Item>
+                  )
+                })}
+              </div>
+            </>
+          )}
         </div>
       </Menu>
     </>

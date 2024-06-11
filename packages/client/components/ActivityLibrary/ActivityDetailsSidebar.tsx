@@ -1,4 +1,3 @@
-import {LockOpen} from '@mui/icons-material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
@@ -21,7 +20,6 @@ import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
-import {PALETTE} from '../../styles/paletteV3'
 import sortByTier from '../../utils/sortByTier'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
@@ -63,9 +61,6 @@ const ActivityDetailsSidebar = (props: Props) => {
         name
         tier
         orgId
-        organization {
-          name
-        }
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
           ...NewMeetingSettingsToggleTeamHealth_settings
@@ -184,6 +179,18 @@ const ActivityDetailsSidebar = (props: Props) => {
     }
   }
 
+  const handleShareToOrg =
+    templateTeam && selectedTemplate.scope === 'TEAM'
+      ? () => {
+          selectedTemplate &&
+            UpdateReflectTemplateScopeMutation(
+              atmosphere,
+              {scope: 'ORGANIZATION', templateId: selectedTemplate.id},
+              {onError, onCompleted}
+            )
+        }
+      : undefined
+
   const meetingNamePlaceholder =
     type === 'retrospective'
       ? 'Retro'
@@ -223,6 +230,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                 onSelectTeam={onSelectTeam}
                 selectedTeamRef={selectedTeam}
                 teamsRef={availableTeams}
+                onShareToOrg={handleShareToOrg}
               />
               {type === 'retrospective' && (
                 <>
