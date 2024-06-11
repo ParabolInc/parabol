@@ -56,7 +56,7 @@ const Nav = styled('nav')({
 
 const OrgName = styled('div')({
   paddingTop: 8,
-  paddingLeft: 8,
+  paddingLeft: 15,
   fontWeight: 600,
   fontSize: 12,
   lineHeight: '24px',
@@ -83,7 +83,8 @@ const Footer = styled('div')({
   // safari flexbox bug: https://stackoverflow.com/a/58720054/3155110
   flexDirection: 'column',
   justifyContent: 'flex-end',
-  marginTop: 'auto'
+  marginTop: 'auto',
+  padding: 8
 })
 
 const FooterBottom = styled('div')({})
@@ -118,47 +119,73 @@ const MobileDashSidebar = (props: Props) => {
         <NavBlock>
           <Nav>
             <NavItemsWrap>
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'arrowBack'}
-                href={'/me/organizations'}
-                label={'Organizations'}
-                exact
-              />
-              <OrgName>{name}</OrgName>
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'creditScore'}
-                href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
-                label={'Plans & Billing'}
-              />
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'groups'}
-                href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
-                label={'Teams'}
-              />
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'group'}
-                href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
-                label={'Members'}
-              />
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'work'}
-                href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
-                label={'Organization Settings'}
-              />
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'key'}
-                href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
-                label={'Authentication'}
-              />
+              <div className='p-2'>
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'userSettings'}
+                  href={'/me/profile'}
+                  label={'My Settings'}
+                />
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'timeline'}
+                  href={'/signout'}
+                  label={'Sign Out'}
+                  exact
+                />
+              </div>
+            </NavItemsWrap>
+            <DashHR />
+            <NavItemsWrap>
+              <div className='p-2'>
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'arrowBack'}
+                  href={'/me/organizations'}
+                  label={'Organizations'}
+                  exact
+                />
+                <OrgName>{name}</OrgName>
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'creditScore'}
+                  href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
+                  label={'Plans & Billing'}
+                />
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'groups'}
+                  href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
+                  label={'Teams'}
+                />
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'group'}
+                  href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
+                  label={'Members'}
+                />
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'work'}
+                  href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
+                  label={'Organization Settings'}
+                />
+                <NavItem
+                  onClick={handleMenuClick}
+                  icon={'key'}
+                  href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
+                  label={'Authentication'}
+                />
+              </div>
             </NavItemsWrap>
           </Nav>
         </NavBlock>
+        <DashHR />
+        <Footer>
+          <FooterBottom>
+            <LeftDashParabol />
+          </FooterBottom>
+        </Footer>
       </DashSidebarStyles>
     )
   }
