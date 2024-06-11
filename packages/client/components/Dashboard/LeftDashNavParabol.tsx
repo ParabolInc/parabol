@@ -17,10 +17,6 @@ const Parabol = styled(PlainButton)({
   width: '100%'
 })
 
-const Label = styled('div')({
-  paddingLeft: 8
-})
-
 const LeftDashParabol = () => {
   return (
     <Parabol>

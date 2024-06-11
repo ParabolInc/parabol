@@ -60,7 +60,7 @@ const DashNavList = (props: Props) => {
   }
 
   return (
-    <div className='w-full p-0 pr-2 lg:p-2'>
+    <div className='w-full pr-2 lg:p-2'>
       {organizations?.map((org) => {
         return (
           <div
