@@ -82,7 +82,7 @@ const DashNavList = (props: Props) => {
             </div>
 
             {isDesktop ? (
-              <DashNavMenu />
+              <DashNavMenu orgId={org.id} />
             ) : (
               <StyledLeftDashNavItem
                 className={'bg-transparent'}
@@ -93,7 +93,6 @@ const DashNavList = (props: Props) => {
                 label={'Settings & Members'}
               />
             )}
-
             <div className='border-t border-solid border-slate-300' />
             <DashNavListTeams onClick={onClick} organizationRef={org} />
           </div>

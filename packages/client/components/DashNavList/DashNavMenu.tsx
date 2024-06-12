@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useHistory} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -13,8 +14,44 @@ const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>
   })
 )
 
-const DashNavMenu = () => {
-  const handleMenuItemClick = () => {}
+type Props = {
+  orgId: string
+}
+
+const DashNavMenu = (props: Props) => {
+  const {orgId} = props
+  const history = useHistory()
+  const menuItems = [
+    {
+      label: (
+        <>
+          Plans & Billing •&nbsp;<span className='text-sky-500'>Upgrade</span>
+        </>
+      ),
+      href: `/me/organizations/${orgId}/billing`
+    },
+    {
+      label: 'Teams',
+      href: `/me/organizations/${orgId}/teams`
+    },
+    {
+      label: 'Members',
+      href: `/me/organizations/${orgId}/members`
+    },
+    {
+      label: 'Organization Settings',
+      href: `/me/organizations/${orgId}/settings`
+    },
+    {
+      label: 'Authentication',
+      href: `/me/organizations/${orgId}/authentication`
+    }
+  ]
+
+  const handleMenuItemClick = (href: string) => {
+    history.push(href)
+  }
+
   return (
     <Menu
       side='right'
@@ -24,22 +61,18 @@ const DashNavMenu = () => {
         <div>
           <StyledLeftDashNavItem
             className={'bg-transparent'}
-            // onClick={handleClick}
             icon={'manageAccounts'}
             isViewerOnTeam
-            // href={`/me/organizations/${org.id}/billing`}
             label={'Settings & Members'}
           />
         </div>
       }
     >
-      <MenuItem onClick={handleMenuItemClick}>
-        Plans & Billing •&nbsp;<span className='text-sky-500'>Upgrade</span>
-      </MenuItem>
-      <MenuItem onClick={handleMenuItemClick}>Teams</MenuItem>
-      <MenuItem onClick={handleMenuItemClick}>Members</MenuItem>
-      <MenuItem onClick={handleMenuItemClick}>Organization Settings</MenuItem>
-      <MenuItem onClick={handleMenuItemClick}>Authentication</MenuItem>
+      {menuItems.map((item) => (
+        <MenuItem key={item.href} onClick={() => handleMenuItemClick(item.href)}>
+          {item.label}
+        </MenuItem>
+      ))}
     </Menu>
   )
 }
