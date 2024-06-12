@@ -1,10 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
 import {TierEnum} from '../../__generated__/DowngradeToStarterMutation.graphql'
+import {Menu} from '../../ui/Menu/Menu'
+import {MenuItem} from '../../ui/Menu/MenuItem'
 import {upperFirst} from '../../utils/upperFirst'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 import BaseTag from '../Tag/BaseTag'
@@ -39,6 +41,7 @@ interface Props {
 
 const DashNavList = (props: Props) => {
   const {className, onClick, organizationsRef} = props
+  const [showMenu, setShowMenu] = useState(false)
   const organizations = useFragment(
     graphql`
       fragment DashNavList_organization on Organization @relay(plural: true) {
@@ -59,6 +62,11 @@ const DashNavList = (props: Props) => {
     return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
   }
 
+  const handleClick = () => {
+    console.log('cklickkkckckck')
+    setShowMenu(true)
+  }
+
   return (
     <div className='w-full pr-2 lg:p-2'>
       {organizations?.map((org) => {
@@ -77,14 +85,27 @@ const DashNavList = (props: Props) => {
                 </div>
               </div>
             </div>
-            <StyledLeftDashNavItem
-              className={className}
-              onClick={onClick}
-              icon={'manageAccounts'}
-              isViewerOnTeam
-              href={`/me/organizations/${org.id}/billing`}
-              label={'Settings & Members'}
-            />
+
+            <Menu
+              side='right'
+              sideOffset={20}
+              trigger={
+                <div>
+                  <StyledLeftDashNavItem
+                    className={className}
+                    onClick={handleClick}
+                    icon={'manageAccounts'}
+                    isViewerOnTeam
+                    // href={`/me/organizations/${org.id}/billing`}
+                    label={'Settings & Members'}
+                  />
+                </div>
+              }
+            >
+              <MenuItem className='h-80 w-full' onClick={() => {}}>
+                Change template
+              </MenuItem>
+            </Menu>
             <div className='border-t border-solid border-slate-300' />
             <DashNavListTeams onClick={onClick} organizationRef={org} />
           </div>
