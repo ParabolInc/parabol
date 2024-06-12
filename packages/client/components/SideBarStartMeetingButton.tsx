@@ -36,7 +36,7 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
     history.push('/activity-library')
   }
   return (
-    <div className='border-x border-slate-200 px-4'>
+    <div className='border-x border-solid border-[transparent] px-4'>
       <Button isOpen={isOpen} onClick={onClick}>
         <MeetingIcon />
         <MeetingLabel isOpen={isOpen}>Add Meeting</MeetingLabel>
