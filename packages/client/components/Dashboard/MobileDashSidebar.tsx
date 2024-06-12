@@ -119,7 +119,7 @@ const MobileDashSidebar = (props: Props) => {
         <NavBlock>
           <Nav>
             <NavItemsWrap>
-              <div className='p-2'>
+              <div className='border-x border-white p-2'>
                 <NavItem
                   onClick={handleMenuClick}
                   icon={'userSettings'}
@@ -137,7 +137,7 @@ const MobileDashSidebar = (props: Props) => {
             </NavItemsWrap>
             <DashHR />
             <NavItemsWrap>
-              <div className='p-2'>
+              <div className='border-x border-white p-2'>
                 <NavItem
                   onClick={handleMenuClick}
                   icon={'arrowBack'}
@@ -196,7 +196,7 @@ const MobileDashSidebar = (props: Props) => {
       <NavBlock>
         <Nav>
           <NavItemsWrap>
-            <div className='p-2'>
+            <div className='border-x border-white p-2'>
               <NavItem
                 onClick={handleMenuClick}
                 icon={'userSettings'}
@@ -214,7 +214,7 @@ const MobileDashSidebar = (props: Props) => {
           </NavItemsWrap>
           <DashHR />
           <NavItemsWrap>
-            <div className='p-2'>
+            <div className='border-x border-white p-2'>
               <NavItem
                 onClick={handleMenuClick}
                 icon={'forum'}
