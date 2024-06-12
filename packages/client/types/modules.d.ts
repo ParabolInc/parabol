@@ -48,6 +48,10 @@ interface Window {
     AMPLITUDE_WRITE_KEY: string
     microsoftTenantId: string
     microsoft: string
+    GLOBAL_BANNER_ENABLED: boolean
+    GLOBAL_BANNER_TEXT: string
+    GLOBAL_BANNER_BG_COLOR: string
+    GLOBAL_BANNER_COLOR: string
   }
 }
 declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}
