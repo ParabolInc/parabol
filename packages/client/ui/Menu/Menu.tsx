@@ -7,16 +7,17 @@ interface MenuProps extends DropdownMenu.DropdownMenuProps {
   trigger: React.ReactNode
   sideOffset?: number
   side?: 'left' | 'right'
+  align?: 'start' | 'center' | 'end'
 }
 
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
-  ({trigger, className, children, sideOffset = 10, side, ...props}, ref) => {
+  ({align = 'end', trigger, className, children, sideOffset = 10, side, ...props}, ref) => {
     return (
       <DropdownMenu.Root {...props}>
         <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            align='end'
+            align={align}
             className={twMerge(
               'border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none',
               className
