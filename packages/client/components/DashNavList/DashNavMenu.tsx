@@ -3,6 +3,7 @@ import React from 'react'
 import {useHistory} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {Menu} from '../../ui/Menu/Menu'
+import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
@@ -54,9 +55,6 @@ const DashNavMenu = (props: Props) => {
 
   return (
     <Menu
-      side='right'
-      align='center'
-      sideOffset={20}
       trigger={
         <div>
           <StyledLeftDashNavItem
@@ -68,11 +66,13 @@ const DashNavMenu = (props: Props) => {
         </div>
       }
     >
-      {menuItems.map((item) => (
-        <MenuItem key={item.href} onClick={() => handleMenuItemClick(item.href)}>
-          {item.label}
-        </MenuItem>
-      ))}
+      <MenuContent side='right' align='center' sideOffset={20}>
+        {menuItems.map((item) => (
+          <MenuItem key={item.href} onClick={() => handleMenuItemClick(item.href)}>
+            {item.label}
+          </MenuItem>
+        ))}
+      </MenuContent>
     </Menu>
   )
 }
