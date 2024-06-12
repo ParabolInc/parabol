@@ -48,7 +48,7 @@ const Nav = styled('nav')({
   left: 0,
   height: '100%',
   maxHeight: '100%',
-  padding: '0 0 8px 8px',
+  padding: 0,
   position: 'absolute',
   top: 0,
   width: '100%'
@@ -64,7 +64,7 @@ const OrgName = styled('div')({
 })
 
 const NavItemsWrap = styled('div')({
-  paddingRight: 8
+  padding: '0 8px'
 })
 
 const NavItem = styled(LeftDashNavItem)({
@@ -73,7 +73,7 @@ const NavItem = styled(LeftDashNavItem)({
 })
 
 const DashHR = styled('div')({
-  borderBottom: `solid ${PALETTE.SLATE_300} 1px`,
+  borderBottom: `solid ${PALETTE.SLATE_400} 1px`,
   marginLeft: -8,
   width: 'calc(100% + 8px)'
 })
@@ -128,7 +128,7 @@ const MobileDashSidebar = (props: Props) => {
                 />
                 <NavItem
                   onClick={handleMenuClick}
-                  icon={'timeline'}
+                  icon={'exit_to_app'}
                   href={'/signout'}
                   label={'Sign Out'}
                   exact
@@ -205,13 +205,7 @@ const MobileDashSidebar = (props: Props) => {
               />
               <NavItem
                 onClick={handleMenuClick}
-                icon={'forum'}
-                href={'/me/organizations'}
-                label={'Organizations'}
-              />
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'timeline'}
+                icon={'exit_to_app'}
                 href={'/signout'}
                 label={'Sign Out'}
                 exact

@@ -57,12 +57,11 @@ const Wrapper = styled('div')({
 })
 
 const OrgName = styled('div')({
-  paddingTop: 8,
+  color: PALETTE.SLATE_600,
   fontWeight: 600,
   fontSize: 12,
-  lineHeight: '24px',
-  color: PALETTE.SLATE_500,
-  paddingLeft: 16
+  lineHeight: '16px',
+  padding: '8px 16px'
 })
 
 interface Props {
@@ -147,7 +146,7 @@ const DashSidebar = (props: Props) => {
       <SideBarStartMeetingButton isOpen={isOpen} />
       <Nav isOpen={isOpen}>
         <Contents>
-          <div className='px-3'>
+          <div className='border-x border-slate-200 px-4'>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
             <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />

@@ -54,7 +54,7 @@ const OrgTeams = (props: Props) => {
           <Button
             variant='secondary'
             shape='pill'
-            className='text-md w-32 py-2'
+            className='w-32 py-2 text-base'
             onClick={openAddTeamDialog}
           >
             Add team
