@@ -1,6 +1,9 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
+import {DashNavMenu_organization$key} from '../../__generated__/DashNavMenu_organization.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -16,17 +19,32 @@ const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isViewerOnTeam: boolean}>
 )
 
 type Props = {
-  orgId: string
+  organizationRef: DashNavMenu_organization$key
 }
 
 const DashNavMenu = (props: Props) => {
-  const {orgId} = props
+  const {organizationRef} = props
   const history = useHistory()
+  const org = useFragment(
+    graphql`
+      fragment DashNavMenu_organization on Organization {
+        id
+        tier
+      }
+    `,
+    organizationRef
+  )
+  const {id: orgId, tier} = org
   const menuItems = [
     {
       label: (
         <>
-          Plans & Billing •&nbsp;<span className='text-sky-500'>Upgrade</span>
+          Plans & Billing{' '}
+          {tier === 'starter' && (
+            <>
+              •&nbsp;<span className='text-sky-500'>Upgrade</span>
+            </>
+          )}
         </>
       ),
       href: `/me/organizations/${orgId}/billing`

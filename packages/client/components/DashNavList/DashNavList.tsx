@@ -44,10 +44,11 @@ const DashNavList = (props: Props) => {
   const organizations = useFragment(
     graphql`
       fragment DashNavList_organization on Organization @relay(plural: true) {
+        ...DashNavListTeams_organization
+        ...DashNavMenu_organization
         id
         name
         tier
-        ...DashNavListTeams_organization
         viewerTeams {
           id
         }
@@ -82,7 +83,7 @@ const DashNavList = (props: Props) => {
             </div>
 
             {isDesktop ? (
-              <DashNavMenu orgId={org.id} />
+              <DashNavMenu organizationRef={org} />
             ) : (
               <StyledLeftDashNavItem
                 className={'bg-transparent'}
