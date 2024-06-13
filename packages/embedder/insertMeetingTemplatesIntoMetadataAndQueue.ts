@@ -46,9 +46,9 @@ export const insertMeetingTemplatesIntoMetadataAndQueue = async (
     .insertInto('EmbeddingsJobQueue')
     .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
     .expression(({selectFrom}) =>
-      selectFrom('Metadata').select(({lit, ref}) => [
+      selectFrom('Metadata').select(({ref}) => [
         sql.lit('embed:start').as('jobType'),
-        lit(priority).as('priority'),
+        priority.as('priority'),
         ref('Metadata.id').as('embeddingsMetadataId'),
         ref('Metadata.model').as('model')
       ])
