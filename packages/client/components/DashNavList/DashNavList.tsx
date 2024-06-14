@@ -4,7 +4,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
-import {TierEnum} from '../../__generated__/DowngradeToStarterMutation.graphql'
+import {TierEnum} from '../../__generated__/InvoiceHeader_invoice.graphql'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
 import {upperFirst} from '../../utils/upperFirst'
@@ -65,39 +65,35 @@ const DashNavList = (props: Props) => {
 
   return (
     <div className='w-full p-2 lg:pt-4'>
-      {organizations?.map((org) => {
-        return (
-          <div key={org.id} className='mb-3 w-full rounded-lg border border-solid border-slate-400'>
-            <div className='border-b border-solid border-slate-300 p-2'>
-              <div className='flex flex-wrap items-center pb-1'>
-                <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
-                  <span className='pl-2 text-base font-semibold leading-6 text-slate-700'>
-                    {org.name}
-                  </span>
-                  <div className='flex w-auto justify-end px-0 text-right'>
-                    <Tag tier={org.tier}>{upperFirst(org.tier)}</Tag>
-                  </div>
+      {organizations?.map((org) => (
+        <div key={org.id} className='mb-3 w-full rounded-lg border border-solid border-slate-400'>
+          <div className='border-b border-solid border-slate-300 p-2'>
+            <div className='flex flex-wrap items-center pb-1'>
+              <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
+                <span className='pl-2 text-base font-semibold leading-6 text-slate-700'>
+                  {org.name}
+                </span>
+                <div className='flex w-auto justify-end px-0 text-right'>
+                  <Tag tier={org.tier}>{upperFirst(org.tier)}</Tag>
                 </div>
               </div>
-              {isDesktop ? (
-                <DashNavMenu organizationRef={org} />
-              ) : (
-                <StyledLeftDashNavItem
-                  className={'bg-transparent'}
-                  icon={'manageAccounts'}
-                  isViewerOnTeam
-                  onClick={onClick}
-                  href={`/me/organizations/${org.id}/billing`}
-                  label={'Settings & Members'}
-                />
-              )}
             </div>
-
-            <div className='border-t border-solid border-slate-300' />
-            <DashNavListTeams onClick={onClick} organizationRef={org} />
+            {isDesktop ? (
+              <DashNavMenu organizationRef={org} />
+            ) : (
+              <StyledLeftDashNavItem
+                className={'bg-transparent'}
+                icon={'manageAccounts'}
+                isViewerOnTeam
+                onClick={onClick}
+                href={`/me/organizations/${org.id}/billing`}
+                label={'Settings & Members'}
+              />
+            )}
           </div>
-        )
-      })}
+          <DashNavListTeams onClick={onClick} organizationRef={org} />
+        </div>
+      ))}
     </div>
   )
 }
