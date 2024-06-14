@@ -60,7 +60,7 @@ const DashNavListTeams = (props: Props) => {
     lockedAt || !isPaid ? 'warning' : 'group'
 
   return (
-    <div className='py-1'>
+    <div className='p-2'>
       {viewerTeams.map((team) => {
         return (
           <StyledLeftDashNavItem

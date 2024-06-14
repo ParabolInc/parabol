@@ -26,7 +26,7 @@ const VideoConferencing = (props: Props) => {
       {videoType ? (
         <div className='bg-gray-100 flex items-center rounded py-3 px-2'>
           {videoType === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
-          <span className='text-gray-500 text-md h-[38px] py-2 pl-2 font-normal'>
+          <span className='text-gray-500 h-[38px] py-2 pl-2 text-base font-normal'>
             {selectedOptionLabel}
           </span>
           <Close

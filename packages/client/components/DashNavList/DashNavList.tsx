@@ -60,32 +60,30 @@ const DashNavList = (props: Props) => {
   }
 
   return (
-    <div className='w-full pr-2 lg:p-2'>
+    <div className='w-full p-2 lg:pt-4'>
       {organizations?.map((org) => {
         return (
-          <div
-            key={org.id}
-            className='mb-3 h-full w-full rounded-lg border-2 border-solid border-slate-300 px-2 pt-2'
-          >
-            <div className='flex flex-wrap items-center'>
-              <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
-                <span className='text-md pl-2 font-medium leading-6 text-slate-700 '>
-                  {org.name}
-                </span>
-                <div className='flex w-auto justify-end px-0 text-right'>
-                  <Tag tier={org.tier}>{upperFirst(org.tier)}</Tag>
+          <div key={org.id} className='mb-3 w-full rounded-lg border border-solid border-slate-400'>
+            <div className='border-b border-solid border-slate-300 p-2'>
+              <div className='flex flex-wrap items-center pb-1'>
+                <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
+                  <span className='pl-2 text-base font-semibold leading-6 text-slate-700'>
+                    {org.name}
+                  </span>
+                  <div className='flex w-auto justify-end px-0 text-right'>
+                    <Tag tier={org.tier}>{upperFirst(org.tier)}</Tag>
+                  </div>
                 </div>
               </div>
+              <StyledLeftDashNavItem
+                className={className}
+                onClick={onClick}
+                icon={'manageAccounts'}
+                isViewerOnTeam
+                href={`/me/organizations/${org.id}/billing`}
+                label={'Settings & Members'}
+              />
             </div>
-            <StyledLeftDashNavItem
-              className={className}
-              onClick={onClick}
-              icon={'manageAccounts'}
-              isViewerOnTeam
-              href={`/me/organizations/${org.id}/billing`}
-              label={'Settings & Members'}
-            />
-            <div className='border-t border-solid border-slate-300' />
             <DashNavListTeams onClick={onClick} organizationRef={org} />
           </div>
         )
