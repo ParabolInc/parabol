@@ -237,6 +237,7 @@ const MobileDashSidebar = (props: Props) => {
           <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
         </Nav>
       </NavBlock>
+      <DashHR />
       <Footer>
         <FooterBottom>
           <LeftDashParabol />
