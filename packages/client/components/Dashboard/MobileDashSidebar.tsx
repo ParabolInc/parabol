@@ -38,7 +38,8 @@ const DashSidebarStyles = styled('div')({
 const NavBlock = styled('div')({
   flex: 1,
   position: 'relative',
-  padding: 8
+  padding: 8,
+  overflowY: 'auto'
 })
 
 const Nav = styled('nav')({
@@ -47,7 +48,7 @@ const Nav = styled('nav')({
   left: 0,
   height: '100%',
   maxHeight: '100%',
-  padding: '0 0 8px 8px',
+  padding: 0,
   position: 'absolute',
   top: 0,
   width: '100%'
@@ -55,23 +56,24 @@ const Nav = styled('nav')({
 
 const OrgName = styled('div')({
   paddingTop: 8,
-  paddingLeft: 8,
+  paddingLeft: 15,
   fontWeight: 600,
   fontSize: 12,
   lineHeight: '24px',
   color: PALETTE.SLATE_500
 })
 
-const NavMain = styled('div')({
-  overflowY: 'auto'
+const NavItemsWrap = styled('div')({
+  padding: '8px 17px' // add 1 to 16 to match nav section border
 })
 
-const NavItemsWrap = styled('div')({
-  paddingRight: 8
+const NavItem = styled(LeftDashNavItem)({
+  borderRadius: 44,
+  paddingLeft: 15
 })
 
 const DashHR = styled('div')({
-  borderBottom: `solid ${PALETTE.SLATE_300} 1px`,
+  borderBottom: `solid ${PALETTE.SLATE_400} 1px`,
   marginLeft: -8,
   width: 'calc(100% + 8px)'
 })
@@ -79,9 +81,10 @@ const DashHR = styled('div')({
 const Footer = styled('div')({
   display: 'flex',
   // safari flexbox bug: https://stackoverflow.com/a/58720054/3155110
-  flex: '1 0 auto',
   flexDirection: 'column',
-  justifyContent: 'space-between'
+  justifyContent: 'flex-end',
+  marginTop: 'auto',
+  padding: 8
 })
 
 const FooterBottom = styled('div')({})
@@ -116,7 +119,23 @@ const MobileDashSidebar = (props: Props) => {
         <NavBlock>
           <Nav>
             <NavItemsWrap>
-              <LeftDashNavItem
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'userSettings'}
+                href={'/me/profile'}
+                label={'My Settings'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'exit_to_app'}
+                href={'/signout'}
+                label={'Sign Out'}
+                exact
+              />
+            </NavItemsWrap>
+            <DashHR />
+            <NavItemsWrap>
+              <NavItem
                 onClick={handleMenuClick}
                 icon={'arrowBack'}
                 href={'/me/organizations'}
@@ -124,31 +143,31 @@ const MobileDashSidebar = (props: Props) => {
                 exact
               />
               <OrgName>{name}</OrgName>
-              <LeftDashNavItem
+              <NavItem
                 onClick={handleMenuClick}
                 icon={'creditScore'}
                 href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
                 label={'Plans & Billing'}
               />
-              <LeftDashNavItem
+              <NavItem
                 onClick={handleMenuClick}
                 icon={'groups'}
                 href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
                 label={'Teams'}
               />
-              <LeftDashNavItem
+              <NavItem
                 onClick={handleMenuClick}
                 icon={'group'}
                 href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
                 label={'Members'}
               />
-              <LeftDashNavItem
+              <NavItem
                 onClick={handleMenuClick}
                 icon={'work'}
                 href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                 label={'Organization Settings'}
               />
-              <LeftDashNavItem
+              <NavItem
                 onClick={handleMenuClick}
                 icon={'key'}
                 href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
@@ -157,6 +176,12 @@ const MobileDashSidebar = (props: Props) => {
             </NavItemsWrap>
           </Nav>
         </NavBlock>
+        <DashHR />
+        <Footer>
+          <FooterBottom>
+            <LeftDashParabol />
+          </FooterBottom>
+        </Footer>
       </DashSidebarStyles>
     )
   }
@@ -167,60 +192,56 @@ const MobileDashSidebar = (props: Props) => {
       <NavBlock>
         <Nav>
           <NavItemsWrap>
-            <LeftDashNavItem
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'userSettings'}
+              href={'/me/profile'}
+              label={'My Settings'}
+            />
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'exit_to_app'}
+              href={'/signout'}
+              label={'Sign Out'}
+              exact
+            />
+          </NavItemsWrap>
+          <DashHR />
+          <NavItemsWrap>
+            <NavItem
               onClick={handleMenuClick}
               icon={'forum'}
               href={'/meetings'}
               label={'Meetings'}
             />
-            <LeftDashNavItem
-              onClick={handleMenuClick}
-              icon={'magic'}
-              href={'/activity-library'}
-              label={'Activity Library'}
-            />
-            <LeftDashNavItem
+            <NavItem
               onClick={handleMenuClick}
               icon={'timeline'}
               href={'/me'}
               label={'History'}
               exact
             />
-            <LeftDashNavItem
+            <NavItem
               onClick={handleMenuClick}
               icon={'playlist_add_check'}
               href={'/me/tasks'}
               label={'Tasks'}
             />
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'add'}
+              href={'/newteam/1'}
+              label={'Add a Team'}
+            />
           </NavItemsWrap>
-          <DashHR />
-          <NavMain>
-            <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
-          </NavMain>
-          <DashHR />
-          <Footer>
-            <NavItemsWrap>
-              <LeftDashNavItem
-                onClick={handleMenuClick}
-                icon={'add'}
-                href={'/newteam/1'}
-                label={'Add a Team'}
-              />
-            </NavItemsWrap>
-            <FooterBottom>
-              <NavItemsWrap>
-                <LeftDashNavItem
-                  onClick={handleMenuClick}
-                  icon={'exit_to_app'}
-                  href={'/signout'}
-                  label={'Sign out'}
-                />
-              </NavItemsWrap>
-              <LeftDashParabol />
-            </FooterBottom>
-          </Footer>
+          <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
         </Nav>
       </NavBlock>
+      <Footer>
+        <FooterBottom>
+          <LeftDashParabol />
+        </FooterBottom>
+      </Footer>
     </DashSidebarStyles>
   )
 }
