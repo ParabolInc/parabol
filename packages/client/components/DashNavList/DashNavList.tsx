@@ -5,10 +5,13 @@ import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
 import {TierEnum} from '../../__generated__/DowngradeToStarterMutation.graphql'
+import useBreakpoint from '../../hooks/useBreakpoint'
+import {Breakpoint} from '../../types/constEnums'
 import {upperFirst} from '../../utils/upperFirst'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 import BaseTag from '../Tag/BaseTag'
 import DashNavListTeams from './DashNavListTeams'
+import DashNavMenu from './DashNavMenu'
 
 const EmptyTeams = styled('div')({
   fontSize: 16,
@@ -32,20 +35,20 @@ const Tag = styled(BaseTag)<{tier: TierEnum | null}>(({tier}) => ({
 }))
 
 interface Props {
-  className?: string
   organizationsRef: DashNavList_organization$key | null
   onClick?: () => void
 }
 
 const DashNavList = (props: Props) => {
-  const {className, onClick, organizationsRef} = props
+  const {onClick, organizationsRef} = props
   const organizations = useFragment(
     graphql`
       fragment DashNavList_organization on Organization @relay(plural: true) {
+        ...DashNavListTeams_organization
+        ...DashNavMenu_organization
         id
         name
         tier
-        ...DashNavListTeams_organization
         viewerTeams {
           id
         }
@@ -53,6 +56,7 @@ const DashNavList = (props: Props) => {
     `,
     organizationsRef
   )
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const teams = organizations?.flatMap((org) => org.viewerTeams)
 
   if (teams?.length === 0) {
@@ -84,6 +88,20 @@ const DashNavList = (props: Props) => {
                 label={'Settings & Members'}
               />
             </div>
+
+            {isDesktop ? (
+              <DashNavMenu organizationRef={org} />
+            ) : (
+              <StyledLeftDashNavItem
+                className={'bg-transparent'}
+                icon={'manageAccounts'}
+                isViewerOnTeam
+                onClick={onClick}
+                href={`/me/organizations/${org.id}/billing`}
+                label={'Settings & Members'}
+              />
+            )}
+            <div className='border-t border-solid border-slate-300' />
             <DashNavListTeams onClick={onClick} organizationRef={org} />
           </div>
         )

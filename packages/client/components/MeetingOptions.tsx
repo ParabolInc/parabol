@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import {MeetingOptionsQuery} from '../__generated__/MeetingOptionsQuery.graphql'
 import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
@@ -92,17 +93,19 @@ const MeetingOptions = (props: Props) => {
         </OptionsButton>
       }
     >
-      <Tooltip open={openTooltip}>
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <TooltipTrigger asChild>
-            <MenuItem onClick={handleClick} isDisabled={isDisabled}>
-              <div className='mr-3 flex text-slate-700'>{<SwapHorizIcon />}</div>
-              Change template
-            </MenuItem>
-          </TooltipTrigger>
-        </div>
-        <TooltipContent>{tooltipCopy}</TooltipContent>
-      </Tooltip>
+      <MenuContent sideOffset={10}>
+        <Tooltip open={openTooltip}>
+          <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <TooltipTrigger asChild>
+              <MenuItem onClick={handleClick} isDisabled={isDisabled}>
+                <div className='mr-3 flex text-slate-700'>{<SwapHorizIcon />}</div>
+                Change template
+              </MenuItem>
+            </TooltipTrigger>
+          </div>
+          <TooltipContent>{tooltipCopy}</TooltipContent>
+        </Tooltip>
+      </MenuContent>
     </Menu>
   )
 }
