@@ -79,28 +79,20 @@ const DashNavList = (props: Props) => {
                   </div>
                 </div>
               </div>
-              <StyledLeftDashNavItem
-                className={className}
-                onClick={onClick}
-                icon={'manageAccounts'}
-                isViewerOnTeam
-                href={`/me/organizations/${org.id}/billing`}
-                label={'Settings & Members'}
-              />
+              {isDesktop ? (
+                <DashNavMenu organizationRef={org} />
+              ) : (
+                <StyledLeftDashNavItem
+                  className={'bg-transparent'}
+                  icon={'manageAccounts'}
+                  isViewerOnTeam
+                  onClick={onClick}
+                  href={`/me/organizations/${org.id}/billing`}
+                  label={'Settings & Members'}
+                />
+              )}
             </div>
 
-            {isDesktop ? (
-              <DashNavMenu organizationRef={org} />
-            ) : (
-              <StyledLeftDashNavItem
-                className={'bg-transparent'}
-                icon={'manageAccounts'}
-                isViewerOnTeam
-                onClick={onClick}
-                href={`/me/organizations/${org.id}/billing`}
-                label={'Settings & Members'}
-              />
-            )}
             <div className='border-t border-solid border-slate-300' />
             <DashNavListTeams onClick={onClick} organizationRef={org} />
           </div>
