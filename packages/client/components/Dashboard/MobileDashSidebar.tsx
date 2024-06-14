@@ -48,7 +48,7 @@ const Nav = styled('nav')({
   left: 0,
   height: '100%',
   maxHeight: '100%',
-  padding: '0 0 8px 8px',
+  padding: 0,
   position: 'absolute',
   top: 0,
   width: '100%'
@@ -64,7 +64,7 @@ const OrgName = styled('div')({
 })
 
 const NavItemsWrap = styled('div')({
-  paddingRight: 8
+  padding: '8px 17px' // add 1 to 16 to match nav section border
 })
 
 const NavItem = styled(LeftDashNavItem)({
@@ -73,7 +73,7 @@ const NavItem = styled(LeftDashNavItem)({
 })
 
 const DashHR = styled('div')({
-  borderBottom: `solid ${PALETTE.SLATE_300} 1px`,
+  borderBottom: `solid ${PALETTE.SLATE_400} 1px`,
   marginLeft: -8,
   width: 'calc(100% + 8px)'
 })
@@ -119,64 +119,60 @@ const MobileDashSidebar = (props: Props) => {
         <NavBlock>
           <Nav>
             <NavItemsWrap>
-              <div className='p-2'>
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'userSettings'}
-                  href={'/me/profile'}
-                  label={'My Settings'}
-                />
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'timeline'}
-                  href={'/signout'}
-                  label={'Sign Out'}
-                  exact
-                />
-              </div>
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'userSettings'}
+                href={'/me/profile'}
+                label={'My Settings'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'exit_to_app'}
+                href={'/signout'}
+                label={'Sign Out'}
+                exact
+              />
             </NavItemsWrap>
             <DashHR />
             <NavItemsWrap>
-              <div className='p-2'>
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'arrowBack'}
-                  href={'/me/organizations'}
-                  label={'Organizations'}
-                  exact
-                />
-                <OrgName>{name}</OrgName>
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'creditScore'}
-                  href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
-                  label={'Plans & Billing'}
-                />
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'groups'}
-                  href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
-                  label={'Teams'}
-                />
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'group'}
-                  href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
-                  label={'Members'}
-                />
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'work'}
-                  href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
-                  label={'Organization Settings'}
-                />
-                <NavItem
-                  onClick={handleMenuClick}
-                  icon={'key'}
-                  href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
-                  label={'Authentication'}
-                />
-              </div>
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'arrowBack'}
+                href={'/me/organizations'}
+                label={'Organizations'}
+                exact
+              />
+              <OrgName>{name}</OrgName>
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'creditScore'}
+                href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
+                label={'Plans & Billing'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'groups'}
+                href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
+                label={'Teams'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'group'}
+                href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
+                label={'Members'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'work'}
+                href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
+                label={'Organization Settings'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'key'}
+                href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
+                label={'Authentication'}
+              />
             </NavItemsWrap>
           </Nav>
         </NavBlock>
@@ -196,61 +192,49 @@ const MobileDashSidebar = (props: Props) => {
       <NavBlock>
         <Nav>
           <NavItemsWrap>
-            <div className='p-2'>
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'userSettings'}
-                href={'/me/profile'}
-                label={'My Settings'}
-              />
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'forum'}
-                href={'/me/organizations'}
-                label={'Organizations'}
-              />
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'timeline'}
-                href={'/signout'}
-                label={'Sign Out'}
-                exact
-              />
-            </div>
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'userSettings'}
+              href={'/me/profile'}
+              label={'My Settings'}
+            />
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'exit_to_app'}
+              href={'/signout'}
+              label={'Sign Out'}
+              exact
+            />
           </NavItemsWrap>
           <DashHR />
           <NavItemsWrap>
-            <div className='p-2'>
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'forum'}
-                href={'/meetings'}
-                label={'Meetings'}
-              />
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'timeline'}
-                href={'/me'}
-                label={'History'}
-                exact
-              />
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'playlist_add_check'}
-                href={'/me/tasks'}
-                label={'Tasks'}
-              />
-              <NavItem
-                onClick={handleMenuClick}
-                icon={'add'}
-                href={'/newteam/1'}
-                label={'Add a Team'}
-              />
-            </div>
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'forum'}
+              href={'/meetings'}
+              label={'Meetings'}
+            />
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'timeline'}
+              href={'/me'}
+              label={'History'}
+              exact
+            />
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'playlist_add_check'}
+              href={'/me/tasks'}
+              label={'Tasks'}
+            />
+            <NavItem
+              onClick={handleMenuClick}
+              icon={'add'}
+              href={'/newteam/1'}
+              label={'Add a Team'}
+            />
           </NavItemsWrap>
-          <div>
-            <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
-          </div>
+          <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
         </Nav>
       </NavBlock>
       <Footer>
