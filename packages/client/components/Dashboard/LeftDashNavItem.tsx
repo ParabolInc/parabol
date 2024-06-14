@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import {
+  AccountBox,
   Add,
   ArrowBack,
   AutoAwesome,
@@ -9,6 +10,7 @@ import {
   Group,
   Groups,
   Key,
+  ManageAccounts,
   PlaylistAddCheck,
   Timeline,
   Warning,
@@ -57,6 +59,7 @@ const Label = styled('div')({
 })
 
 const iconLookup = {
+  userSettings: <AccountBox fontSize='inherit' />,
   magic: <AutoAwesome fontSize='inherit' />,
   arrowBack: <ArrowBack fontSize='inherit' />,
   creditScore: <CreditScore fontSize='inherit' />,
@@ -64,6 +67,7 @@ const iconLookup = {
   playlist_add_check: <PlaylistAddCheck fontSize='inherit' />,
   add: <Add fontSize='inherit' />,
   exit_to_app: <ExitToApp fontSize='inherit' />,
+  manageAccounts: <ManageAccounts fontSize='inherit' />,
   group: <Group fontSize='inherit' />,
   groups: <Groups fontSize='inherit' />,
   warning: <Warning fontSize='inherit' />,
@@ -76,19 +80,21 @@ interface Props {
   className?: string
   onClick?: () => void
   label: string
-  href: string
+  href?: string
   navState?: unknown
   //FIXME 6062: change to React.ComponentType
-  icon: keyof typeof iconLookup
+  icon?: keyof typeof iconLookup
   exact?: boolean
 }
 
 const LeftDashNavItem = (props: Props) => {
-  const {className, label, icon, href, navState, onClick} = props
+  const {className, label, icon, href = '', navState, onClick} = props
   const history = useHistory()
   const match = useRouteMatch(href)
   const handleClick = () => {
-    history.push(href, navState)
+    if (href) {
+      history.push(href, navState)
+    }
     onClick?.()
   }
   return (
@@ -97,9 +103,11 @@ const LeftDashNavItem = (props: Props) => {
       onClick={handleClick}
       isActive={!!match && (match?.isExact || !props.exact)}
     >
-      <StyledIcon isActive={!!match && (match?.isExact || !props.exact)}>
-        {iconLookup[icon]}
-      </StyledIcon>
+      {icon && (
+        <StyledIcon isActive={!!match && (match?.isExact || !props.exact)}>
+          {iconLookup[icon]}
+        </StyledIcon>
+      )}
       <Label>{label}</Label>
     </NavItem>
   )

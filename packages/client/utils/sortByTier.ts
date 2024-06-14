@@ -1,4 +1,4 @@
-import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
+import {TierEnum} from '../__generated__/InvoiceHeader_invoice.graphql'
 
 const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]>(
   teamsOrOrgs: T

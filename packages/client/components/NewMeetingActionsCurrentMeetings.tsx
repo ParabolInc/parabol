@@ -8,6 +8,7 @@ import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {PALETTE} from '~/styles/paletteV3'
 import plural from '~/utils/plural'
 import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import FlatButton from './FlatButton'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
 
@@ -56,7 +57,9 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
         </CurrentButton>
       }
     >
-      <SelectMeetingDropdown meetings={activeMeetings!} />
+      <MenuContent className='w-[300px]' sideOffset={10}>
+        <SelectMeetingDropdown meetings={activeMeetings!} />
+      </MenuContent>
     </Menu>
   )
 }
