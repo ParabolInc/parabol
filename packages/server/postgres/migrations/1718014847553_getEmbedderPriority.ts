@@ -4,9 +4,6 @@ import getPgConfig from '../getPgConfig'
 export async function up() {
   const client = new Client(getPgConfig())
   await client.connect()
-  //export const getEmbedderPriority = (maxDelayInDays: number) => {
-  //const maxDelayInSeconds = maxDelayInDays * ms('1d')
-  //return -(2 ** 31) + ~~(Date.now() / 1000) + maxDelayInSeconds
   await client.query(`
     CREATE OR REPLACE FUNCTION "getEmbedderPriority"(IN "maxDelayInDays" INTEGER)
     RETURNS INTEGER LANGUAGE PLPGSQL AS $$
