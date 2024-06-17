@@ -49,9 +49,9 @@ const PromoteTeamMemberModal = (props: Props) => {
     teamMemberRef
   )
   const {preferredName, teamId, userId, team, isSelf} = teamMember
-  const {isOrgAdmin, teamLead} = team!
-  const oldLeadName = teamLead.preferredName
-  const isOldLeadSelf = teamLead.isSelf
+  const {isOrgAdmin, teamLead} = team ?? {}
+  const oldLeadName = teamLead?.preferredName ?? ''
+  const isOldLeadSelf = teamLead?.isSelf
   const handleClick = () => {
     submitMutation()
     PromoteToTeamLeadMutation(atmosphere, {teamId, userId}, {onError, onCompleted})
