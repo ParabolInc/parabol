@@ -18,8 +18,8 @@ import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
-  // 78px is total height of 'Add meeting' block
-  height: 'calc(100% - 78px)',
+  // 70px is total height of 'Add meeting' block
+  height: 'calc(100% - 70px)',
   userSelect: 'none',
   transition: `all 300ms`,
   transform: isOpen ? undefined : `translateX(-${NavSidebar.WIDTH}px)`,
