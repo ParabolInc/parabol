@@ -21,7 +21,7 @@ export async function up() {
     END
     $$;
     DROP TRIGGER IF EXISTS "update_embedding_on_MeetingTemplate" ON "MeetingTemplate";
-    CREATE TRIGGER "update_embedding_on_MeetingTemplate" AFTER UPDATE ON "MeetingTemplate" FOR EACH ROW EXECUTE PROCEDURE "updateEmbedding"();
+    CREATE TRIGGER "update_embedding_on_MeetingTemplate" AFTER INSERT OR UPDATE ON "MeetingTemplate" FOR EACH ROW EXECUTE PROCEDURE "updateEmbedding"();
   `)
   await client.end()
 }
