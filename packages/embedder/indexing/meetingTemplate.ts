@@ -4,6 +4,8 @@ import PokerTemplate from '../../server/database/types/PokerTemplate'
 import ReflectTemplate from '../../server/database/types/ReflectTemplate'
 import {inferLanguage} from '../inferLanguage'
 
+const MIN_TEXT_LENGTH = 10
+
 const createTextFromRetrospectiveMeetingTemplate = async (
   template: ReflectTemplate,
   dataLoader: DataLoaderInstance
@@ -14,15 +16,21 @@ const createTextFromRetrospectiveMeetingTemplate = async (
       return `${question}\n${description}`
     })
     .join('\n')
-  return `${template.name}\nRetrospective\n${promptText}`
+  const body = `${template.name}\nRetrospective\n${promptText}`
+  const language = inferLanguage(`${template.name}\n${promptText}`, MIN_TEXT_LENGTH)
+  return {body, language}
 }
 
 const createTextFromTeamPromptMeetingTemplate = async (template: MeetingTemplate) => {
-  return `${template.name}\nteam prompt, daily standup, status update`
+  const body = `${template.name}\nteam prompt, daily standup, status update`
+  const language = inferLanguage(template.name, MIN_TEXT_LENGTH)
+  return {body, language}
 }
 
 const createTextFromActionMeetingTemplate = async (template: MeetingTemplate) => {
-  return `${template.name}\ncheck-in, action, task, todo, follow-up`
+  const body = `${template.name}\ncheck-in, action, task, todo, follow-up`
+  const language = inferLanguage(template.name, MIN_TEXT_LENGTH)
+  return {body, language}
 }
 
 const createTextFromPokerMeetingTemplate = async (
@@ -39,7 +47,9 @@ const createTextFromPokerMeetingTemplate = async (
       })
     )
   ).join('\n')
-  return `${template.name}\nplanning poker, sprint poker, estimation\n${dimensionsText}`
+  const body = `${template.name}\nplanning poker, sprint poker, estimation\n${dimensionsText}`
+  const language = inferLanguage(`${template.name}\n${dimensionsText}`, MIN_TEXT_LENGTH)
+  return {body, language}
 }
 
 export const createTextFromMeetingTemplate = async (
@@ -47,21 +57,16 @@ export const createTextFromMeetingTemplate = async (
   dataLoader: DataLoaderInstance
 ) => {
   const template = await dataLoader.get('meetingTemplates').load(templateId)
-  const body = await (() => {
-    switch (template?.type) {
-      case 'retrospective':
-        return createTextFromRetrospectiveMeetingTemplate(template, dataLoader)
-      case 'teamPrompt':
-        return createTextFromTeamPromptMeetingTemplate(template)
-      case 'action':
-        return createTextFromActionMeetingTemplate(template)
-      case 'poker':
-        return createTextFromPokerMeetingTemplate(template, dataLoader)
-      default:
-        return ''
-    }
-  })()
-
-  const language = inferLanguage(body)
-  return {body, language}
+  switch (template?.type) {
+    case 'retrospective':
+      return createTextFromRetrospectiveMeetingTemplate(template, dataLoader)
+    case 'teamPrompt':
+      return createTextFromTeamPromptMeetingTemplate(template)
+    case 'action':
+      return createTextFromActionMeetingTemplate(template)
+    case 'poker':
+      return createTextFromPokerMeetingTemplate(template, dataLoader)
+    default:
+      return {body: '', language: undefined}
+  }
 }
