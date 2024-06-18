@@ -68,7 +68,6 @@ const ScopingSearchResultItem = (props: Props) => {
   const isTemp = isTempId(serviceTaskId)
 
   const handleClick = (e: React.MouseEvent) => {
-    console.log('🚀 ~ clicked!:')
     e.stopPropagation()
 
     if (disabled || isTemp) return
