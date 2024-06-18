@@ -15,7 +15,6 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
@@ -35,7 +34,7 @@ const getTranscription = async (recallBotId?: string | null) => {
 }
 
 const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: InternalContext) => {
-  const {dataLoader, authToken} = context
+  const {dataLoader} = context
   const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
@@ -48,24 +47,6 @@ const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: Int
   const discussionIds = stages.map((stage) => stage.discussionId)
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
-  const hasTopicSummary = reflectionGroups.some((group) => group.summary)
-  if (hasTopicSummary) {
-    const groupsWithMissingTopicSummaries = reflectionGroups.filter((group) => {
-      const reflectionsInGroup = reflections.filter(
-        (reflection) => reflection.reflectionGroupId === group.id
-      )
-      return reflectionsInGroup.length > 1 && !group.summary
-    })
-    if (groupsWithMissingTopicSummaries.length > 0) {
-      const missingGroupIds = groupsWithMissingTopicSummaries.map(({id}) => id).join(', ')
-      const error = new Error('Missing AI topic summary')
-      const viewerId = getUserId(authToken)
-      sendToSentry(error, {
-        userId: viewerId,
-        tags: {missingGroupIds, meetingId}
-      })
-    }
-  }
   const [summary, transcription] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     getTranscription(recallBotId)
