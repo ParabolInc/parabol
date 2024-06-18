@@ -66,7 +66,11 @@ const ScopingSearchResultItem = (props: Props) => {
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const isTemp = isTempId(serviceTaskId)
-  const onClick = () => {
+
+  const handleClick = (e: React.MouseEvent) => {
+    console.log('🚀 ~ clicked!:')
+    e.stopPropagation()
+
     if (disabled || isTemp) return
     submitMutation()
     const variables = {
@@ -85,12 +89,23 @@ const ScopingSearchResultItem = (props: Props) => {
       persistQuery?.()
     }
   }
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.stopPropagation()
+  }
+
   return (
-    <Item onClick={onClick}>
+    <Item onClick={handleClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
         <Title>{summary}</Title>
-        <StyledLink href={url} rel='noopener noreferrer' target='_blank' title={linkTitle}>
+        <StyledLink
+          href={url}
+          rel='noopener noreferrer'
+          target='_blank'
+          title={linkTitle}
+          onClick={handleLinkClick}
+        >
           {linkText}
           {isTemp && <Ellipsis />}
         </StyledLink>
