@@ -40,19 +40,25 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
+  const hasAI = window.__ACTION__.hasOpenAI
   if (meeting.__typename === 'RetrospectiveMeeting') {
     const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
     const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
     const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
-    if (!hasMoreThanOneReflection || organization.featureFlags.noAISummary) return null
+    if (!hasMoreThanOneReflection || organization.featureFlags.noAISummary || !hasAI) return null
     if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
     const {summary: wholeMeetingSummary, responses, organization} = meeting
-    if (!organization.featureFlags.standupAISummary || organization.featureFlags.noAISummary) {
+    if (
+      !organization.featureFlags.standupAISummary ||
+      organization.featureFlags.noAISummary ||
+      !hasAI ||
+      !responses ||
+      responses.length === 0
+    ) {
       return null
     }
-    if (!responses || responses.length === 0) return null
     if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   }
