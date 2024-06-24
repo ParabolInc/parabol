@@ -9,6 +9,11 @@ interface Props {
   meetingRef: WholeMeetingSummary_meeting$key
 }
 
+const isServer = typeof window === 'undefined'
+const hasAI = isServer
+  ? !!process.env.OPEN_AI_API_KEY
+  : !!window.__ACTION__ && !!window.__ACTION__.hasOpenAI
+
 const WholeMeetingSummary = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
@@ -40,7 +45,6 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
-  const hasAI = window.__ACTION__.hasOpenAI
   if (meeting.__typename === 'RetrospectiveMeeting') {
     const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
     const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
