@@ -90,6 +90,7 @@ const ScopingSearchResultItem = (props: Props) => {
   }
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    // don't propagate or the checkbox will be toggled
     e.stopPropagation()
   }
 
