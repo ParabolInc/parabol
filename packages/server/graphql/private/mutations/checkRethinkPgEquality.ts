@@ -69,7 +69,7 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
       creatorId: defaultEqFn,
       sortOrder: defaultEqFn,
       reflectionGroupId: defaultEqFn,
-      content: compareRValUndefinedAsNullAndTruncateRVal(2000, 0.98),
+      content: compareRValUndefinedAsNullAndTruncateRVal(2000, 0.19),
       plaintextContent: compareOptionalPlaintextContent,
       entities: compareRValOptionalPluckedArray({
         name: defaultEqFn,

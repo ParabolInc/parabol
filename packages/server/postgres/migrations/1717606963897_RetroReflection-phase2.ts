@@ -1,9 +1,21 @@
+import {ContentState, convertToRaw} from 'draft-js'
 import {Kysely, PostgresDialect, sql} from 'kysely'
-import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import {r} from 'rethinkdb-ts'
 import connectRethinkDB from '../../database/connectRethinkDB'
 import getPg from '../getPg'
+
+const convertTextToRaw = (text: string) => {
+  // plaintextContent can have a bunch of linebreaks like \n which get converted into new blocks.
+  // New blocks take up a BUNCH of space, so we'd rather preserve as much plaintextContent as possible.
+  const spaceFreeText = text
+    .split(/\s/)
+    .filter((s) => s.length)
+    .join(' ')
+  const contentState = ContentState.createFromText(spaceFreeText)
+  const raw = convertToRaw(contentState)
+  return JSON.stringify(raw)
+}
 
 export async function up() {
   await connectRethinkDB()
@@ -48,13 +60,13 @@ export async function up() {
   const capContent = (content: string, plaintextContent: string) => {
     let nextPlaintextContent = plaintextContent || extractTextFromDraftString(content)
     // if they got out of hand with formatting, extract the text & convert it back
-    let nextContent = content.length <= 2000 ? content : convertToTaskContent(nextPlaintextContent)
+    let nextContent = content.length <= 2000 ? content : convertTextToRaw(nextPlaintextContent)
     while (nextContent.length > 2000 || nextPlaintextContent.length > 2000) {
       const maxLen = Math.max(nextContent.length, nextPlaintextContent.length)
       const overage = maxLen - 2000
       const stopIdx = nextPlaintextContent.length - overage - 1
       nextPlaintextContent = nextPlaintextContent.slice(0, stopIdx)
-      nextContent = convertToTaskContent(nextPlaintextContent)
+      nextContent = convertTextToRaw(nextPlaintextContent)
     }
     return {content: nextContent, plaintextContent: nextPlaintextContent}
   }
@@ -145,4 +157,10 @@ export async function down() {
   } catch {
     // index already dropped
   }
+  const pg = new Kysely<any>({
+    dialect: new PostgresDialect({
+      pool: getPg()
+    })
+  })
+  await pg.deleteFrom('RetroReflection').execute()
 }

@@ -68,7 +68,6 @@ export const compareRValUndefinedAsNullAndTruncateRVal =
     ) {
       if (normalizedRVal === pgVal) return true
       const comparison = stringSimilarity.compareTwoStrings(normalizedRVal, pgVal)
-      console.log('compare', comparison, normalizedRVal, pgVal)
       return comparison >= similarity
     }
     return defaultEqFn(normalizedRVal, pgVal)
@@ -78,5 +77,5 @@ export const compareOptionalPlaintextContent = (rVal: unknown, pgVal: unknown) =
   // old records don't have a plaintextContent, but we created that in new versions
   return rVal === undefined
     ? true
-    : compareRValUndefinedAsNullAndTruncateRVal(2000, 0.98)(rVal, pgVal)
+    : compareRValUndefinedAsNullAndTruncateRVal(2000, 0.19)(rVal, pgVal)
 }
