@@ -5,6 +5,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.37.0](https://github.com/ParabolInc/parabol/compare/v7.36.0...v7.37.0) (2024-06-24)
+
+
+### Added
+
+* Add MeetingTemplate update embeddings trigger ([#9838](https://github.com/ParabolInc/parabol/issues/9838)) ([87e0d86](https://github.com/ParabolInc/parabol/commit/87e0d8607ded642859bd23acbc4cab2d87171b9d))
+* Create embeddings for meeting templates ([#9776](https://github.com/ParabolInc/parabol/issues/9776)) ([095cf71](https://github.com/ParabolInc/parabol/commit/095cf71348bd486a71e1f19f48be0718cbca9840))
+* update dashboard nav item styles ([#9795](https://github.com/ParabolInc/parabol/issues/9795)) ([71b17c2](https://github.com/ParabolInc/parabol/commit/71b17c2d05d1f75e6eff98e94d45953ad9907c6b))
+* Update MeetingTemplate.updatedAt on prompt changes ([#9829](https://github.com/ParabolInc/parabol/issues/9829)) ([e614253](https://github.com/ParabolInc/parabol/commit/e614253d55aef39cb14f8c73ba160ee74701be1d))
+
+
+### Fixed
+
+* add meeting block is now 70px ([#9848](https://github.com/ParabolInc/parabol/issues/9848)) ([8ab3b72](https://github.com/ParabolInc/parabol/commit/8ab3b72be6b9aa51da8ba9d84225051e299fd7b9))
+* clicking scope link does not affect checkbox ([#9859](https://github.com/ParabolInc/parabol/issues/9859)) ([b79943d](https://github.com/ParabolInc/parabol/commit/b79943d3efe198a820ce9a1fe740d5dd30e1ea73))
+* hide ai icebreaker ui for non ai users ([#9824](https://github.com/ParabolInc/parabol/issues/9824)) ([6cf4098](https://github.com/ParabolInc/parabol/commit/6cf4098e572494e7db59d20fe9faaa72e9285568))
+* Retry S3 upload after cloudflare error ([#9819](https://github.com/ParabolInc/parabol/issues/9819)) ([bd37d85](https://github.com/ParabolInc/parabol/commit/bd37d85ed95f4d0186b129421c2b1e5dedef3ea8))
+* update promote team member copy ([#9849](https://github.com/ParabolInc/parabol/issues/9849)) ([de659aa](https://github.com/ParabolInc/parabol/commit/de659aa9f1a2ce406a133527ff4ab74fad951c18))
+
+
+### Changed
+
+* Avoid undefined in embeddings for Poker scales ([#9854](https://github.com/ParabolInc/parabol/issues/9854)) ([f9ca53b](https://github.com/ParabolInc/parabol/commit/f9ca53bd440be1ef16189a893f04028a5ce40d37))
+* **ci:** release-to jobs for both staging and production will notify Slack whenever they fail ([#9850](https://github.com/ParabolInc/parabol/issues/9850)) ([4604716](https://github.com/ParabolInc/parabol/commit/4604716afa1b84a6b567f16f74bc168139259a16))
+* **deps:** bump @grpc/grpc-js from 1.10.6 to 1.10.9 ([#9840](https://github.com/ParabolInc/parabol/issues/9840)) ([6aec87f](https://github.com/ParabolInc/parabol/commit/6aec87f7ec4d4abc1b395552161f4cbaf85334de))
+* Reduce language detection threshold for MeetingTemplates ([#9855](https://github.com/ParabolInc/parabol/issues/9855)) ([03bd7dd](https://github.com/ParabolInc/parabol/commit/03bd7dda258e39d8e2687d1b8833ea60c82cec4f))
+* remove summary from retro reflection group ([#9851](https://github.com/ParabolInc/parabol/issues/9851)) ([ecc9cb1](https://github.com/ParabolInc/parabol/commit/ecc9cb1ecfb220b6e8004cb03fa9ae578c59fde4))
+* Update fullText when embedding is older than reference ([#9857](https://github.com/ParabolInc/parabol/issues/9857)) ([71484a3](https://github.com/ParabolInc/parabol/commit/71484a39661b648923de83d2d2ce3c9257d8ab2d))
+* Update MeetingTemplate embeddings on insert ([#9853](https://github.com/ParabolInc/parabol/issues/9853)) ([8ab679c](https://github.com/ParabolInc/parabol/commit/8ab679c9032586cacbd8d3382d58b23c8d765c52))
+
 ## [7.36.0](https://github.com/ParabolInc/parabol/compare/v7.35.1...v7.36.0) (2024-06-10)
 
 
