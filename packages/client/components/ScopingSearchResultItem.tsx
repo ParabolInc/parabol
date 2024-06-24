@@ -67,9 +67,7 @@ const ScopingSearchResultItem = (props: Props) => {
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const isTemp = isTempId(serviceTaskId)
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-
+  const onClick = () => {
     if (disabled || isTemp) return
     submitMutation()
     const variables = {
@@ -95,7 +93,7 @@ const ScopingSearchResultItem = (props: Props) => {
   }
 
   return (
-    <Item onClick={handleClick}>
+    <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
         <Title>{summary}</Title>
