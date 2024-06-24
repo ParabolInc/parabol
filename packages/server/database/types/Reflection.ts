@@ -1,10 +1,13 @@
+import {sql} from 'kysely'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import generateUID from '../../generateUID'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import Reactji from './Reactji'
 
-export const toGoogleAnalyzedEntityPG = (e: GoogleAnalyzedEntity) =>
-  `(${e.name},${e.salience},${e.lemma || null})`
+export const toGoogleAnalyzedEntityPG = (entities: GoogleAnalyzedEntity[]) =>
+  sql<
+    string[]
+  >`(select coalesce(array_agg((name, salience, lemma)::"GoogleAnalyzedEntity"), '{}') from json_populate_recordset(null::"GoogleAnalyzedEntity", ${JSON.stringify(entities)}))`
 
 export interface ReflectionInput {
   id?: string
@@ -74,7 +77,8 @@ export default class Reflection {
     return {
       ...this,
       reactjis: this.reactjis.map((r) => `(${r.id},${r.userId})`),
-      entities: this.entities.map(toGoogleAnalyzedEntityPG)
+      // this is complex because we have to account for escape chars. it's safest to pass in a JSON object & let PG do the conversion for us
+      entities: toGoogleAnalyzedEntityPG(this.entities)
     }
   }
 }

@@ -92,7 +92,7 @@ export default {
         .updateTable('RetroReflection')
         .set({
           content: normalizedContent,
-          entities: entities.map(toGoogleAnalyzedEntityPG),
+          entities: toGoogleAnalyzedEntityPG(entities),
           sentimentScore,
           plaintextContent
         })
