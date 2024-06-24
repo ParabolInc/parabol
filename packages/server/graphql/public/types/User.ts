@@ -211,7 +211,7 @@ const User: UserResolvers = {
     const data = await response.json()
 
     const MODEL = 'Embeddings_ember_1'
-    const SIMILARITY_THRESHOLD = 0.45
+    const SIMILARITY_THRESHOLD = 0.5
 
     const pg = getKysely()
     const similarEmbeddings = await pg
