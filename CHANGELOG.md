@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.37.1](https://github.com/ParabolInc/parabol/compare/v7.37.0...v7.37.1) (2024-06-25)
+
+
+### Fixed
+
+* ensure dashboard sidebar animates smoothly ([#9865](https://github.com/ParabolInc/parabol/issues/9865)) ([73cdb7c](https://github.com/ParabolInc/parabol/commit/73cdb7cc64844f0a5baad81202695d518897d176))
+* remove AI UI if user doesn't have access to AI ([#9856](https://github.com/ParabolInc/parabol/issues/9856)) ([95431b2](https://github.com/ParabolInc/parabol/commit/95431b26f534e000fa0e2113f8cd490f96c88982))
+
 ## [7.37.0](https://github.com/ParabolInc/parabol/compare/v7.36.0...v7.37.0) (2024-06-24)
 
 
