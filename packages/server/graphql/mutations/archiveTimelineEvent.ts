@@ -4,6 +4,7 @@ import TimelineEventCheckinComplete from 'parabol-server/database/types/Timeline
 import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../../database/rethinkDriver'
 import {TimelineEventEnum} from '../../database/types/TimelineEvent'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -57,7 +58,15 @@ const archiveTimelineEvent = {
         .get('timelineEventsByMeetingId')
         .load(meetingId)
       const eventIds = meetingTimelineEvents.map(({id}) => id)
-      await r.table('TimelineEvent').getAll(r.args(eventIds)).update({isActive: false}).run()
+      const pg = getKysely()
+      await Promise.all([
+        pg
+          .updateTable('TimelineEvent')
+          .set({isActive: false})
+          .where('id', 'in', eventIds)
+          .execute(),
+        r.table('TimelineEvent').getAll(r.args(eventIds)).update({isActive: false}).run()
+      ])
       meetingTimelineEvents.map((event) => {
         const {id: timelineEventId, userId} = event
         publish(

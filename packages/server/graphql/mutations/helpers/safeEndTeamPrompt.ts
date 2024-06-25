@@ -3,6 +3,7 @@ import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
+import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -102,7 +103,11 @@ const safeEndTeamPrompt = async ({
       })
   )
   const timelineEventId = events[0]!.id
-  await r.table('TimelineEvent').insert(events).run()
+  const pg = getKysely()
+  await Promise.all([
+    pg.insertInto('TimelineEvent').values(events).execute(),
+    r.table('TimelineEvent').insert(events).run()
+  ])
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   checkTeamsLimit(team.orgId, dataLoader)

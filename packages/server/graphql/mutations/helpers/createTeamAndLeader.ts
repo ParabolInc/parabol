@@ -4,6 +4,7 @@ import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
+import getKysely from '../../../postgres/getKysely'
 import getPg from '../../../postgres/getPg'
 import {insertTeamQuery} from '../../../postgres/queries/generated/insertTeamQuery'
 import IUser from '../../../postgres/types/IUser'
@@ -38,12 +39,14 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
     orgId
   })
 
+  const pg = getKysely()
   await Promise.all([
     catchAndLog(() => insertTeamQuery.run(verifiedTeam, getPg())),
     // add meeting settings
     r.table('MeetingSettings').insert(meetingSettings).run(),
     // denormalize common fields to team member
     insertNewTeamMember(user, teamId),
+    pg.insertInto('TimelineEvent').values(timelineEvent).execute(),
     r.table('TimelineEvent').insert(timelineEvent).run(),
     addTeamIdToTMS(userId, teamId)
   ])

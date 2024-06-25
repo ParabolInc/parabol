@@ -7,6 +7,7 @@ import getRethink from '../../database/rethinkDriver'
 import Meeting from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
+import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -127,7 +128,11 @@ export default {
           meetingId
         })
     )
-    await r.table('TimelineEvent').insert(events).run()
+    const pg = getKysely()
+    await Promise.all([
+      pg.insertInto('TimelineEvent').values(events).execute(),
+      r.table('TimelineEvent').insert(events).run()
+    ])
 
     const data = {
       meetingId,
