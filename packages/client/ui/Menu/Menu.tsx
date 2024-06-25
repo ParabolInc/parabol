@@ -16,7 +16,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           <DropdownMenu.Content
             align='end'
             className={twMerge(
-              'border-rad w-auto min-w-[200px] rounded-md bg-white shadow-lg outline-none',
+              'border-rad w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg outline-none',
               className
             )}
             sideOffset={10}
