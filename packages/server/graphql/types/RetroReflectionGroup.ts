@@ -8,7 +8,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import Reflection from '../../database/types/Reflection'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
@@ -70,11 +69,9 @@ const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLCo
         // use meetingId so we only hit the DB once instead of once per group
         const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         const filteredReflections = reflections.filter(
-          (reflection: Reflection) => reflection.reflectionGroupId === reflectionGroupId
+          (reflection) => reflection.reflectionGroupId === reflectionGroupId
         )
-        filteredReflections.sort((a: Reflection, b: Reflection) =>
-          a.sortOrder < b.sortOrder ? 1 : -1
-        )
+        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
         return filteredReflections
       }
     },

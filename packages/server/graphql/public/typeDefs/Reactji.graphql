@@ -1,0 +1,24 @@
+"""
+An aggregate of reactji metadata
+"""
+type Reactji {
+  """
+  composite of entity:reactjiId
+  """
+  id: ID!
+
+  """
+  The number of users who have added this reactji
+  """
+  count: Int!
+
+  """
+  The users who added a reactji
+  """
+  users: [User!]!
+
+  """
+  true if the viewer is included in the count, else false
+  """
+  isViewerReactji: Boolean!
+}

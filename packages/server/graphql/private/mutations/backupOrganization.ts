@@ -290,17 +290,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
       })
   }).run()
 
-  // remove teamIds that are not part of the desired orgIds
-  await r
-    .db('orgBackup')
-    .table('User')
-    .update((row: RValue) => ({
-      tms: row('tms')
-        .innerJoin(r(teamIds), (a: RValue, b: RValue) => a.eq(b))
-        .zip()
-    }))
-    .run()
-
   return `Success! 'orgBackup' contains all the records for ${orgIds.join(', ')}`
 }
 

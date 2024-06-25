@@ -1,11 +1,9 @@
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import getRethink from '../../../database/rethinkDriver'
 import Meeting from '../../../database/types/Meeting'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 
 const removeEmptyReflections = async (meeting: Meeting, dataLoader: DataLoaderInstance) => {
-  const r = await getRethink()
   const pg = getKysely()
   const {id: meetingId} = meeting
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
@@ -22,13 +20,6 @@ const removeEmptyReflections = async (meeting: Meeting, dataLoader: DataLoaderIn
   })
   if (emptyReflectionGroupIds.length > 0) {
     await Promise.all([
-      r
-        .table('RetroReflection')
-        .getAll(r.args(emptyReflectionIds), {index: 'id'})
-        .update({
-          isActive: false
-        })
-        .run(),
       pg
         .updateTable('RetroReflection')
         .set({isActive: false})

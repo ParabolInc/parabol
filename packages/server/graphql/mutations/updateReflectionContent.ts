@@ -5,8 +5,7 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
-import getRethink from '../../database/rethinkDriver'
-import {toGoogleAnalyzedEntityPG} from '../../database/types/Reflection'
+import {toGoogleAnalyzedEntityPG} from '../../database/types/GoogleAnalyzedEntity'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -35,10 +34,8 @@ export default {
     {reflectionId, content}: {reflectionId: string; content: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
-    const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
@@ -87,29 +84,17 @@ export default {
           ? await getReflectionSentimentScore(question, plaintextContent)
           : reflection.sentimentScore
         : undefined
-    await Promise.all([
-      pg
-        .updateTable('RetroReflection')
-        .set({
-          content: normalizedContent,
-          entities: toGoogleAnalyzedEntityPG(entities),
-          sentimentScore,
-          plaintextContent
-        })
-        .where('id', '=', reflectionId)
-        .execute(),
-      r
-        .table('RetroReflection')
-        .get(reflectionId)
-        .update({
-          content: normalizedContent,
-          entities,
-          sentimentScore,
-          plaintextContent,
-          updatedAt: now
-        })
-        .run()
-    ])
+    await pg
+      .updateTable('RetroReflection')
+      .set({
+        content: normalizedContent,
+        entities: toGoogleAnalyzedEntityPG(entities),
+        sentimentScore,
+        plaintextContent
+      })
+      .where('id', '=', reflectionId)
+      .execute()
+
     const reflectionsInGroup = await dataLoader
       .get('retroReflectionsByGroupId')
       .load(reflectionGroupId)
