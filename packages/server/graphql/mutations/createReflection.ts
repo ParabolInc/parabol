@@ -84,7 +84,6 @@ export default {
       plaintextContent,
       entities,
       sentimentScore,
-      isActive: true,
       meetingId,
       promptId,
       reflectionGroupId
