@@ -117,9 +117,9 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
       .expression(({selectFrom}) =>
         selectFrom('EmbeddingsMetadata')
-          .select(({lit, ref}) => [
+          .select(({ref}) => [
             sql.lit('embed:start').as('jobType'),
-            lit(priority).as('priority'),
+            priority.as('priority'),
             ref('id').as('embeddingsMetadataId'),
             sql.lit(this.tableName).as('model')
           ])

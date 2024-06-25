@@ -1,6 +1,6 @@
 {
   "name": "parabol-embedder",
-  "version": "7.35.1",
+  "version": "7.37.1",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Jordan Husney <jordan.husney@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/embedder#readme",
@@ -15,6 +15,7 @@
     "lint:check": "eslint . --ext .ts,.tsx",
     "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",
     "prettier:check": "prettier --config ../../.prettierrc --check \"**/*.{ts,tsx}\"",
+    "test": "jest --verbose",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "bugs": {
@@ -26,8 +27,12 @@
     "@types/franc": "^5.0.3",
     "@types/node": "^16.11.62",
     "babel-plugin-inline-import": "^3.0.0",
+    "jest": "^29.5.0",
+    "jest-extended": "^3.2.4",
+    "jest-junit": "^16.0.0",
     "openapi-fetch": "^0.9.3",
     "sucrase": "^3.32.0",
+    "ts-jest": "^29.1.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^5.3.3"
   },

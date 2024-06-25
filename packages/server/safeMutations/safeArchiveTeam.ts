@@ -26,7 +26,7 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
         })) as unknown as null,
       removedSuggestedActionIds: r
         .table('SuggestedAction')
-        .filter({teamId})
+        .getAll(teamId, {index: 'teamId'})
         .update(
           {
             removedAt: now

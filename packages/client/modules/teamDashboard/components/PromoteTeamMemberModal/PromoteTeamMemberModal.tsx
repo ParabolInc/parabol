@@ -50,7 +50,7 @@ const PromoteTeamMemberModal = (props: Props) => {
   )
   const {preferredName, teamId, userId, team, isSelf} = teamMember
   const {isOrgAdmin, teamLead} = team ?? {}
-  const oldLeadName = teamLead?.preferredName
+  const oldLeadName = teamLead?.preferredName ?? ''
   const isOldLeadSelf = teamLead?.isSelf
   const handleClick = () => {
     submitMutation()
@@ -58,11 +58,11 @@ const PromoteTeamMemberModal = (props: Props) => {
     closePortal()
   }
 
-  const copyStart = `Are you sure? ${isOldLeadSelf ? 'You' : oldLeadName} will be removed as the team leader and ${isSelf ? 'You' : preferredName} will be promoted.`
+  const copyStart = `Are you sure? ${isOldLeadSelf ? 'You' : oldLeadName} will be removed as the team leader and ${isSelf ? 'you' : preferredName} will be promoted.`
   const copyEnd =
     isOldLeadSelf && isOrgAdmin
       ? ''
-      : `${isSelf ? 'You' : upperFirst(preferredName)} will no longer be able to change team membership.`
+      : `${isOldLeadSelf ? 'You' : upperFirst(oldLeadName)} will no longer be able to change team membership.`
   const copy = `${copyStart} ${copyEnd}`
 
   return (
