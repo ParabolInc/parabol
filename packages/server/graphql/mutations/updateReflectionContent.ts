@@ -6,7 +6,8 @@ import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTit
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
-import Reflection from '../../database/types/Reflection'
+import {toGoogleAnalyzedEntityPG} from '../../database/types/Reflection'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -35,13 +36,15 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId).run()
+    const reflection = await dataLoader.get('retroReflections').load(reflectionId)
+    dataLoader.get('retroReflections').clear(reflectionId)
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
@@ -67,6 +70,9 @@ export default {
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
+    if (normalizedContent.length > 2000) {
+      return {error: {message: 'Reflection content is too long'}}
+    }
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
@@ -81,23 +87,32 @@ export default {
           ? await getReflectionSentimentScore(question, plaintextContent)
           : reflection.sentimentScore
         : undefined
-    await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
-        content: normalizedContent,
-        entities,
-        sentimentScore,
-        plaintextContent,
-        updatedAt: now
-      })
-      .run()
-
-    const reflectionsInGroup = (await r
-      .table('RetroReflection')
-      .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
-      .filter({isActive: true})
-      .run()) as Reflection[]
+    await Promise.all([
+      pg
+        .updateTable('RetroReflection')
+        .set({
+          content: normalizedContent,
+          entities: toGoogleAnalyzedEntityPG(entities),
+          sentimentScore,
+          plaintextContent
+        })
+        .where('id', '=', reflectionId)
+        .execute(),
+      r
+        .table('RetroReflection')
+        .get(reflectionId)
+        .update({
+          content: normalizedContent,
+          entities,
+          sentimentScore,
+          plaintextContent,
+          updatedAt: now
+        })
+        .run()
+    ])
+    const reflectionsInGroup = await dataLoader
+      .get('retroReflectionsByGroupId')
+      .load(reflectionGroupId)
 
     const newTitle = getGroupSmartTitle(reflectionsInGroup)
     await updateSmartGroupTitle(reflectionGroupId, newTitle)

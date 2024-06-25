@@ -68,6 +68,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .map((row: RValue) => row('group'))
       .coerceTo('array')
       .run(),
+    // Migrating to PG by June 30, 2024
     (
       r
         .table('NewMeeting')
@@ -147,10 +148,11 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .filter((row: RValue) => r(teamMemberIds).contains(row('teamMemberId')))
       .delete(),
     pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
+    // Migrating to PG by June 30, 2024
     retroReflection: r
       .table('RetroReflection')
       .getAll(r.args(retroReflectionIds), {index: 'id'})
-      .update({creatorId: tombstoneId}),
+      .update({creatorId: null}),
     slackNotification: r
       .table('SlackNotification')
       .getAll(userIdToDelete, {index: 'userId'})
@@ -196,6 +198,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   }).run()
 
   // now postgres, after FKs are added then triggers should take care of children
+  // TODO when we're done migrating to PG, these should have constraints that ON DELETE CASCADE
   await Promise.all([
     pg.query(`DELETE FROM "AtlassianAuth" WHERE "userId" = $1`, [userIdToDelete]),
     pg.query(`DELETE FROM "GitHubAuth" WHERE "userId" = $1`, [userIdToDelete]),

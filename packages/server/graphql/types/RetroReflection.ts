@@ -69,7 +69,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
 
         // let's not allow super users to grap this in case the UI does not check `disableAnonymity` in which case
         // reflection authors would be always visible for them
-        if (meetingType !== 'retrospective' || !meeting.disableAnonymity) {
+        if (meetingType !== 'retrospective' || !meeting.disableAnonymity || !creatorId) {
           return null
         }
 

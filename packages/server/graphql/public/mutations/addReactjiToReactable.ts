@@ -1,12 +1,11 @@
 import {sql} from 'kysely'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {ValueOf} from 'parabol-client/types/generics'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {ValueOf} from '../../../../client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
 import Comment from '../../../database/types/Comment'
-import {Reactable} from '../../../database/types/Reactable'
 import Reflection from '../../../database/types/Reflection'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -19,13 +18,16 @@ import {ReactableEnumType} from '../../types/ReactableEnum'
 import getReactableType from '../../types/getReactableType'
 import {MutationResolvers} from '../resolverTypes'
 
-const rethinkTableLookup = {
-  COMMENT: 'Comment',
-  REFLECTION: 'RetroReflection'
+const dataLoaderLookup = {
+  RESPONSE: 'teamPromptResponses',
+  COMMENT: 'comments',
+  REFLECTION: 'retroReflections'
 } as const
 
-const pgDataloaderLookup = {
-  RESPONSE: 'teamPromptResponses'
+const tableLookup = {
+  RESPONSE: 'TeamPromptResponse',
+  COMMENT: 'Comment',
+  REFLECTION: 'RetroReflection'
 } as const
 
 const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async (
@@ -53,16 +55,10 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const subOptions = {mutatorId, operationId}
 
   //AUTH
-  let reactable: Reactable
-  const pgLoaderName = pgDataloaderLookup[
-    reactableType as keyof typeof pgDataloaderLookup
-  ] as ValueOf<typeof pgDataloaderLookup> | null
-  const rethinkDbTable = rethinkTableLookup[reactableType as keyof typeof rethinkTableLookup]
-  if (pgLoaderName) {
-    reactable = await dataLoader.get(pgLoaderName).loadNonNull(reactableId)
-  } else {
-    reactable = (await r.table(rethinkDbTable).get(reactableId).run()) as Reactable
-  }
+  const loaderName = dataLoaderLookup[reactableType]
+  const reactable = await dataLoader.get(loaderName).load(reactableId)
+  dataLoader.get(loaderName).clear(reactableId)
+
   if (!reactable) {
     return {error: {message: `Item does not exist`}}
   }
@@ -96,30 +92,35 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
 
   // RESOLUTION
   const subDoc = {id: reactji, userId: viewerId}
-  if (pgLoaderName) {
-    const numberReactableId = TeamPromptResponseId.split(reactableId)
+  const tableName = tableLookup[reactableType]
+  const dbId =
+    tableName === 'TeamPromptResponse' ? TeamPromptResponseId.split(reactableId) : reactableId
+
+  const updatePG = async (pgTable: ValueOf<typeof tableLookup>) => {
+    if (pgTable === 'Comment') return
     if (isRemove) {
       await pg
-        .updateTable('TeamPromptResponse')
+        .updateTable(pgTable)
         .set({reactjis: sql`array_remove("reactjis", (${reactji},${viewerId})::"Reactji")`})
-        .where('id', '=', numberReactableId)
+        .where('id', '=', dbId)
         .execute()
     } else {
       await pg
-        .updateTable('TeamPromptResponse')
+        .updateTable(pgTable)
         .set({
           reactjis: sql`arr_append_uniq("reactjis", (${reactji},${viewerId})::"Reactji")`
         })
-        .where('id', '=', numberReactableId)
+        .where('id', '=', dbId)
         .execute()
     }
+  }
 
-    dataLoader.get(pgLoaderName).clear(reactableId)
-  } else {
+  const updateRethink = async (rethinkDbTable: ValueOf<typeof tableLookup>) => {
+    if (rethinkDbTable === 'TeamPromptResponse') return
     if (isRemove) {
       await r
         .table(rethinkDbTable)
-        .get(reactableId)
+        .get(dbId)
         .update((row: RDatum<Comment | Reflection>) => ({
           reactjis: row('reactjis').difference([subDoc]),
           updatedAt: now
@@ -128,7 +129,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     } else {
       await r
         .table(rethinkDbTable)
-        .get(reactableId)
+        .get(dbId)
         .update((row: RDatum<Comment | Reflection>) => ({
           reactjis: r.branch(
             row('reactjis').contains(subDoc),
@@ -141,8 +142,12 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
         .run()
     }
   }
+  const [meeting] = await Promise.all([
+    dataLoader.get('newMeetings').load(meetingId),
+    updatePG(tableName),
+    updateRethink(tableName)
+  ])
 
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {meetingType} = meeting
 
   const data = {reactableId, reactableType}
