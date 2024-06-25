@@ -10,7 +10,6 @@ export interface ReflectionGroupInput {
   voterIds?: string[]
   title?: string
   smartTitle?: string
-  summary?: string
   discussionPromptQuestion?: string
 }
 
@@ -25,7 +24,6 @@ export default class ReflectionGroup {
   // userIds of the voters
   voterIds: string[]
   smartTitle: string | null
-  summary: string | null
   title: string | null
   discussionPromptQuestion: string | null
   constructor(input: ReflectionGroupInput) {
@@ -38,7 +36,6 @@ export default class ReflectionGroup {
       updatedAt,
       voterIds,
       smartTitle,
-      summary,
       title,
       discussionPromptQuestion
     } = input
@@ -52,7 +49,6 @@ export default class ReflectionGroup {
     this.updatedAt = updatedAt || now
     this.voterIds = voterIds || []
     this.smartTitle = smartTitle || null
-    this.summary = summary || null
     this.title = title || null
     this.discussionPromptQuestion = discussionPromptQuestion || null
   }

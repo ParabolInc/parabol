@@ -60,6 +60,7 @@ const QuestionBlock = styled('div')({
     }
   }
 })
+
 interface Props {
   meeting: NewCheckInQuestion_meeting$key
 }
@@ -227,7 +228,8 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const hideAiIcebreaker = featureFlags.noAISummary || !isFacilitating
+  const showAiIcebreaker =
+    !featureFlags.noAISummary && isFacilitating && window.__ACTION__.hasOpenAI
 
   return (
     <>
@@ -269,7 +271,7 @@ const NewCheckInQuestion = (props: Props) => {
           </div>
         )}
       </QuestionBlock>
-      {!hideAiIcebreaker && (
+      {showAiIcebreaker && (
         <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>

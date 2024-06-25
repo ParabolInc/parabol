@@ -166,7 +166,7 @@ export type RethinkSchema = {
     // tryRetroMeeting = 'tryRetroMeeting',
     // tryActionMeeting = 'tryActionMeeting'
     type: SuggestedActionCreateNewTeam | SuggestedActionInviteYourTeam | SuggestedActionTryTheDemo
-    index: 'userId'
+    index: 'userId' | 'teamId'
   }
   Task: {
     type: Task
@@ -197,7 +197,7 @@ export type RethinkSchema = {
   }
   TemplateDimension: {
     type: TemplateDimension
-    index: 'teamId' | 'templateId'
+    index: 'teamId' | 'templateId' | 'scaleId'
   }
   TemplateScale: {
     type: TemplateScale
