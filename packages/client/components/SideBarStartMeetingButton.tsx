@@ -9,7 +9,7 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
   height: 40,
   overflow: 'hidden',
   padding: 0,
-  width: isOpen ? '100%' : 40,
+  width: isOpen ? 200 : 40,
   marginTop: 16,
   marginBottom: 14, // account for nav margin 2px
   transition: `all 300ms ${BezierCurve.DECELERATE}`,

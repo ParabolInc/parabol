@@ -67,7 +67,11 @@ const DashNavList = (props: Props) => {
     <div className='w-full p-2 lg:pt-4'>
       {organizations?.map((org) => (
         <div key={org.id} className='mb-3 w-full rounded-lg border border-solid border-slate-400'>
-          <div className='border-b border-solid border-slate-300 p-2'>
+          <div
+            className={
+              org.viewerTeams.length > 0 ? `border-b border-solid border-slate-300 p-2` : 'p-2'
+            }
+          >
             <div className='flex flex-wrap items-center pb-1'>
               <div className='flex min-w-0 flex-1 flex-wrap items-center justify-between'>
                 <span className='pl-2 text-base font-semibold leading-6 text-slate-700'>

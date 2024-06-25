@@ -59,6 +59,7 @@ const DashNavListTeams = (props: Props) => {
   const getIcon = (lockedAt: string | null, isPaid: boolean | null) =>
     lockedAt || !isPaid ? 'warning' : 'group'
 
+  if (!viewerTeams.length) return null
   return (
     <div className='p-2'>
       {viewerTeams.map((team) => {
