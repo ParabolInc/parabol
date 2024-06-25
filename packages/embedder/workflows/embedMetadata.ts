@@ -4,7 +4,7 @@ import {JobQueueError} from '../JobQueueError'
 import {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
 import {JobQueueStepRun, ParentJob} from '../custom'
-import {createEmbeddingTextFrom} from '../indexing/createEmbeddingTextFrom'
+import {createEmbeddingTextFrom, isEmbeddingOutdated} from '../indexing/createEmbeddingTextFrom'
 import numberVectorToString from '../indexing/numberVectorToString'
 import {getSimilarRetroTopics} from './getSimilarRetroTopics'
 
@@ -25,7 +25,13 @@ export const embedMetadata: JobQueueStepRun<
 
   if (!metadata) return new JobQueueError(`Invalid embeddingsMetadataId: ${embeddingsMetadataId}`)
 
-  if (!metadata.fullText || !metadata.language || forceBuildText) {
+  const updateFullText =
+    !metadata.fullText ||
+    !metadata.language ||
+    forceBuildText ||
+    (await isEmbeddingOutdated(metadata, dataLoader))
+
+  if (updateFullText) {
     try {
       const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader)
       metadata.fullText = fullText
@@ -48,8 +54,8 @@ export const embedMetadata: JobQueueStepRun<
     return new JobQueueError(`embedding model ${model} not available`)
   }
   // Exit successfully, we don't want to fail the job because the language is not supported
-  if (!embeddingModel.languages.includes(language)) return false
-  const chunks = await embeddingModel.chunkText(fullText)
+  if (!language || !embeddingModel.languages.includes(language)) return false
+  const chunks = await embeddingModel.chunkText(fullText!)
   if (chunks instanceof Error) {
     return new JobQueueError(`unable to get tokens: ${chunks.message}`, ms('1m'), 10, {
       forceBuildText: true

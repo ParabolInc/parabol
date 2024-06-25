@@ -4,6 +4,7 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import TemplateDimension from '../../database/types/TemplateDimension'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -24,6 +25,7 @@ const addPokerTemplateDimension = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await dataLoader.get('meetingTemplates').load(templateId)
@@ -73,7 +75,14 @@ const addPokerTemplateDimension = {
       templateId
     })
 
-    await r.table('TemplateDimension').insert(newDimension).run()
+    await Promise.all([
+      r.table('TemplateDimension').insert(newDimension).run(),
+      pg
+        .updateTable('MeetingTemplate')
+        .set({updatedAt: new Date()})
+        .where('id', '=', templateId)
+        .execute()
+    ])
 
     const dimensionId = newDimension.id
     const data = {dimensionId}

@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -25,6 +26,7 @@ const renamePokerTemplateDimension = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -55,14 +57,17 @@ const renamePokerTemplateDimension = {
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .update({
-        name: normalizedName,
-        updatedAt: now
-      })
-      .run()
+    await Promise.all([
+      r
+        .table('TemplateDimension')
+        .get(dimensionId)
+        .update({
+          name: normalizedName,
+          updatedAt: now
+        })
+        .run(),
+      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
+    ])
 
     const data = {dimensionId}
     publish(

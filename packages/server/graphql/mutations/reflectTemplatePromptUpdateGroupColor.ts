@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -24,6 +25,7 @@ const reflectTemplatePromptUpdateGroupColor = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -40,17 +42,20 @@ const reflectTemplatePromptUpdateGroupColor = {
     }
 
     // VALIDATION
-    const {teamId} = prompt
+    const {teamId, templateId} = prompt
 
     // RESOLUTION
-    await r
-      .table('ReflectPrompt')
-      .get(promptId)
-      .update({
-        groupColor,
-        updatedAt: now
-      })
-      .run()
+    await Promise.all([
+      r
+        .table('ReflectPrompt')
+        .get(promptId)
+        .update({
+          groupColor,
+          updatedAt: now
+        })
+        .run(),
+      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
+    ])
 
     const data = {promptId}
     publish(
