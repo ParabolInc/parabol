@@ -10,7 +10,7 @@ export async function up() {
 
   await sql`
   ALTER TABLE "User"
-  ADD COLUMN "favoriteTemplateIds" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+  ADD COLUMN IF NOT EXISTS "favoriteTemplateIds" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
 `.execute(pg)
 }
 

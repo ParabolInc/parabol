@@ -4,7 +4,12 @@ import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
+  compareOptionalPlaintextContent,
+  compareRValOptionalPluckedArray,
+  compareRValUndefinedAsEmptyArray,
+  compareRValUndefinedAsNull,
   compareRValUndefinedAsNullAndTruncateRVal,
+  compareRealNumber,
   defaultEqFn
 } from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
@@ -27,15 +32,15 @@ const handleResult = async (
 
 const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = async (
   _source,
-  {tableName, writeToFile}
+  {tableName, writeToFile, maxErrors}
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'RetroReflectionGroup') {
+  if (tableName === 'RetroReflection') {
     const rowCountResult = await checkRowCount(tableName)
     const rethinkQuery = (updatedAt: Date, id: string | number) => {
       return r
-        .table('RetroReflectionGroup' as any)
+        .table('RetroReflection')
         .between([updatedAt, id], [r.maxval, r.maxval], {
           index: 'updatedAtId',
           leftBound: 'open',
@@ -43,27 +48,42 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         })
         .orderBy({index: 'updatedAtId'}) as any
     }
-    const pgQuery = (ids: string[]) => {
+    const pgQuery = async (ids: string[]) => {
       return getKysely()
-        .selectFrom('RetroReflectionGroup')
+        .selectFrom('RetroReflection')
         .selectAll()
+        .select(({fn}) => [
+          fn('to_json', ['entities']).as('entities'),
+          fn('to_json', ['reactjis']).as('reactjis')
+        ])
         .where('id', 'in', ids)
         .execute()
     }
-    const errors = await checkTableEq(rethinkQuery, pgQuery, {
-      id: defaultEqFn,
-      createdAt: defaultEqFn,
-      updatedAt: compareDateAlmostEqual,
-      isActive: defaultEqFn,
-      meetingId: defaultEqFn,
-      promptId: defaultEqFn,
-      sortOrder: defaultEqFn,
-      voterIds: defaultEqFn,
-      smartTitle: compareRValUndefinedAsNullAndTruncateRVal(255),
-      title: compareRValUndefinedAsNullAndTruncateRVal(255),
-      summary: compareRValUndefinedAsNullAndTruncateRVal(2000),
-      discussionPromptQuestion: compareRValUndefinedAsNullAndTruncateRVal(2000)
-    })
+    const errors = await checkTableEq(
+      rethinkQuery,
+      pgQuery,
+      {
+        id: defaultEqFn,
+        createdAt: defaultEqFn,
+        updatedAt: compareDateAlmostEqual,
+        isActive: defaultEqFn,
+        meetingId: defaultEqFn,
+        promptId: defaultEqFn,
+        creatorId: compareRValUndefinedAsNull,
+        sortOrder: defaultEqFn,
+        reflectionGroupId: defaultEqFn,
+        content: compareRValUndefinedAsNullAndTruncateRVal(2000, 0.19),
+        plaintextContent: compareOptionalPlaintextContent,
+        entities: compareRValOptionalPluckedArray({
+          name: defaultEqFn,
+          salience: compareRealNumber,
+          lemma: compareRValUndefinedAsNull
+        }),
+        reactjis: compareRValUndefinedAsEmptyArray,
+        sentimentScore: compareRValUndefinedAsNull
+      },
+      maxErrors
+    )
     return handleResult(tableName, rowCountResult, errors, writeToFile)
   }
   return 'Table not found'

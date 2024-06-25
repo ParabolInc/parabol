@@ -8,7 +8,7 @@ export async function up() {
   DO $$
   BEGIN
     ALTER TABLE "IntegrationProvider"
-      DROP CONSTRAINT global_provider_must_be_oauth2;
+      DROP CONSTRAINT IF EXISTS global_provider_must_be_oauth2;
   END $$;
   `)
   await client.end()
