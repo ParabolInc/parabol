@@ -47,7 +47,6 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
     // denormalize common fields to team member
     insertNewTeamMember(user, teamId),
     pg.insertInto('TimelineEvent').values(timelineEvent).execute(),
-    r.table('TimelineEvent').insert(timelineEvent).run(),
     addTeamIdToTMS(userId, teamId)
   ])
 }

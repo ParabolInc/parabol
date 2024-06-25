@@ -256,17 +256,7 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
               r.or(row('teamId').default(null).eq(null), r(teamIds).contains(row('teamId')))
             )
             .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('SuggestedAction').insert(items)),
-          timelineEvent: (
-            r
-              .table('TimelineEvent')
-              .filter((row: RDatum) => r(userIds).contains(row('userId'))) as any
-          )
-            .filter((row: RValue) =>
-              r.branch(row('teamId'), r(teamIds).contains(row('teamId')), true)
-            )
-            .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('TimelineEvent').insert(items))
+            .do((items: RValue) => r.db(DESTINATION).table('SuggestedAction').insert(items))
         })
       }),
     meetingIds: r

@@ -104,10 +104,7 @@ const safeEndTeamPrompt = async ({
   )
   const timelineEventId = events[0]!.id
   const pg = getKysely()
-  await Promise.all([
-    pg.insertInto('TimelineEvent').values(events).execute(),
-    r.table('TimelineEvent').insert(events).run()
-  ])
+  await pg.insertInto('TimelineEvent').values(events).execute()
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   checkTeamsLimit(team.orgId, dataLoader)

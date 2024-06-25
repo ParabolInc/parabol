@@ -62,8 +62,7 @@ const bootstrapNewUser = async (
   const [teamsWithAutoJoinRes] = await Promise.all([
     isQualifiedForAutoJoin ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
     insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
-    pg.insertInto('TimelineEvent').values(joinEvent).execute(),
-    r.table('TimelineEvent').insert(joinEvent).run()
+    pg.insertInto('TimelineEvent').values(joinEvent).execute()
   ])
 
   // Identify the user so user properties are set before any events are sent

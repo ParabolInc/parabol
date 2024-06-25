@@ -60,3 +60,17 @@ export const retroReflectionsByGroupId = foreignKeyLoaderMaker(
       .execute()
   }
 )
+
+export const timelineEventsByMeetingId = foreignKeyLoaderMaker(
+  'timelineEvents',
+  'meetingId',
+  async (meetingIds) => {
+    const pg = getKysely()
+    return pg
+      .selectFrom('TimelineEvent')
+      .selectAll()
+      .where('meetingId', 'in', meetingIds)
+      .where('isActive', '=', true)
+      .execute()
+  }
+)
