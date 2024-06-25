@@ -49,7 +49,7 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         .orderBy({index: 'updatedAtId'}) as any
     }
     const pgQuery = async (ids: string[]) => {
-      const res = await getKysely()
+      return getKysely()
         .selectFrom('RetroReflection')
         .selectAll()
         .select(({fn}) => [
@@ -58,15 +58,6 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         ])
         .where('id', 'in', ids)
         .execute()
-      return res.map((row) => ({
-        ...row,
-        reactjis: (row.reactjis as any as {shortname: string; userid: string}[])?.map(
-          (reactji) => ({
-            id: reactji.shortname,
-            userId: reactji.userid
-          })
-        )
-      }))
     }
     const errors = await checkTableEq(
       rethinkQuery,

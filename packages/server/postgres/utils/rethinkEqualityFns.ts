@@ -18,7 +18,6 @@ export const compareRealNumber = (rVal: unknown, pgVal: unknown) => {
   if (typeof rVal !== 'number' || typeof pgVal !== 'number') return false
   // real numbers are 4 bytes & guarantee 6-decimal places of precision
   const answer = Math.abs(rVal - pgVal) < 1e-6
-  if (!answer) console.log('rVal', rVal, 'pgVal', pgVal)
   return answer
 }
 
