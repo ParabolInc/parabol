@@ -39,7 +39,7 @@ export const compareRValUndefinedAsEmptyArray = (rVal: unknown, pgVal: unknown) 
 export const compareRValOptionalPluckedArray =
   (pluckFields: Record<string, typeof defaultEqFn>) => (rVal: unknown, pgVal: unknown) => {
     const rValArray = Array.isArray(rVal) ? rVal : []
-    if (!Array.isArray(pgVal)) return false
+    if (!Array.isArray(pgVal) || pgVal.length !== rValArray.length) return false
     let isEqual = true
     rValArray.forEach((rValItem, idx) => {
       const isEqualItem = Object.keys(pluckFields).every((prop) => {

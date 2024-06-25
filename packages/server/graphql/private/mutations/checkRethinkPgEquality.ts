@@ -32,7 +32,7 @@ const handleResult = async (
 
 const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = async (
   _source,
-  {tableName, writeToFile}
+  {tableName, writeToFile, maxErrors}
 ) => {
   const r = await getRethink()
 
@@ -48,8 +48,8 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         })
         .orderBy({index: 'updatedAtId'}) as any
     }
-    const pgQuery = (ids: string[]) => {
-      return getKysely()
+    const pgQuery = async (ids: string[]) => {
+      const res = await getKysely()
         .selectFrom('RetroReflection')
         .selectAll()
         .select(({fn}) => [
@@ -58,27 +58,41 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         ])
         .where('id', 'in', ids)
         .execute()
+      return res.map((row) => ({
+        ...row,
+        reactjis: (row.reactjis as any as {shortname: string; userid: string}[])?.map(
+          (reactji) => ({
+            id: reactji.shortname,
+            userId: reactji.userid
+          })
+        )
+      }))
     }
-    const errors = await checkTableEq(rethinkQuery, pgQuery, {
-      id: defaultEqFn,
-      createdAt: defaultEqFn,
-      updatedAt: compareDateAlmostEqual,
-      isActive: defaultEqFn,
-      meetingId: defaultEqFn,
-      promptId: defaultEqFn,
-      creatorId: defaultEqFn,
-      sortOrder: defaultEqFn,
-      reflectionGroupId: defaultEqFn,
-      content: compareRValUndefinedAsNullAndTruncateRVal(2000, 0.19),
-      plaintextContent: compareOptionalPlaintextContent,
-      entities: compareRValOptionalPluckedArray({
-        name: defaultEqFn,
-        salience: compareRealNumber,
-        lemma: compareRValUndefinedAsNull
-      }),
-      reactjis: compareRValUndefinedAsEmptyArray,
-      sentimentScore: compareRValUndefinedAsNull
-    })
+    const errors = await checkTableEq(
+      rethinkQuery,
+      pgQuery,
+      {
+        id: defaultEqFn,
+        createdAt: defaultEqFn,
+        updatedAt: compareDateAlmostEqual,
+        isActive: defaultEqFn,
+        meetingId: defaultEqFn,
+        promptId: defaultEqFn,
+        creatorId: compareRValUndefinedAsNull,
+        sortOrder: defaultEqFn,
+        reflectionGroupId: defaultEqFn,
+        content: compareRValUndefinedAsNullAndTruncateRVal(2000, 0.19),
+        plaintextContent: compareOptionalPlaintextContent,
+        entities: compareRValOptionalPluckedArray({
+          name: defaultEqFn,
+          salience: compareRealNumber,
+          lemma: compareRValUndefinedAsNull
+        }),
+        reactjis: compareRValUndefinedAsEmptyArray,
+        sentimentScore: compareRValUndefinedAsNull
+      },
+      maxErrors
+    )
     return handleResult(tableName, rowCountResult, errors, writeToFile)
   }
   return 'Table not found'

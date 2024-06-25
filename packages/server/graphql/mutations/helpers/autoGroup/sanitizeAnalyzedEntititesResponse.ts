@@ -4,7 +4,8 @@ const sanitizeAnalyzedEntitiesResponse = (response: GoogleAnalyzedEntities | nul
   if (!response) return null
   const {entities} = response
   if (!Array.isArray(entities)) return null
-  const validEntities = {} as {[lowerCaseName: string]: number}
+  // very important to Object.create(null) since validEntities['constructor'] would return a function!
+  const validEntities = Object.create(null) as {[lowerCaseName: string]: number}
   entities.forEach((entity) => {
     const {name, salience} = entity
     if (!name || !salience) return
