@@ -33,6 +33,10 @@ export async function up() {
       CONSTRAINT "fk_userId"
         FOREIGN KEY("userId")
           REFERENCES "User"("id")
+          ON DELETE CASCADE,
+      CONSTRAINT "fk_teamId"
+        FOREIGN KEY("teamId")
+          REFERENCES "Team"("id")
           ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS "idx_TimelineEvent_userId_createdAt" ON "TimelineEvent"("userId", "createdAt") WHERE "isActive" = TRUE;
