@@ -24,14 +24,14 @@ const SelectMeetingDropdown = (props: Props) => {
   const meetingCount = meetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   return (
-    <>
+    <div className='w-[var(--radix-dropdown-menu-trigger-width)]'>
       <DropdownMenu.Label className='select-none px-4 py-2 text-xs font-semibold text-slate-600'>
         {label}
       </DropdownMenu.Label>
       {meetings.map((meeting) => (
         <SelectMeetingDropdownItem key={meeting.id} meeting={meeting} />
       ))}
-    </>
+    </div>
   )
 }
 
