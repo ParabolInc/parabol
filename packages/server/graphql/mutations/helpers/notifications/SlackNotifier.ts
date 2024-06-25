@@ -598,7 +598,7 @@ export const SlackNotifier = {
       dataLoader.get('users').loadNonNull(userId),
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
-      r.table('RetroReflection').getAll(reflectionGroupId, {index: 'reflectionGroupId'}).run(),
+      dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId),
       r
         .table('SlackAuth')
         .getAll(userId, {index: 'userId'})

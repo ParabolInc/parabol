@@ -166,6 +166,7 @@ export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
+// Migrating to PG by June 30, 2024
 export const retroReflectionsByMeetingId = new RethinkForeignKeyLoaderMaker(
   'retroReflections',
   'meetingId',
@@ -179,6 +180,7 @@ export const retroReflectionsByMeetingId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
+// Migrating to PG by June 30, 2024
 export const retroReflectionsByGroupId = new RethinkForeignKeyLoaderMaker(
   'retroReflections',
   'reflectionGroupId',

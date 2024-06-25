@@ -7,7 +7,6 @@ import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
-import getKysely from '../../../postgres/getKysely'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../../utils/Logger'
 import RecallAIServerManager from '../../../utils/RecallAIServerManager'
@@ -104,7 +103,6 @@ const safeEndRetrospective = async ({
   const {authToken, socketId: mutatorId, dataLoader} = context
   const {id: meetingId, phases, facilitatorStageId, teamId} = meeting
   const r = await getRethink()
-  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -148,11 +146,6 @@ const safeEndRetrospective = async ({
     dataLoader.get('teamMembersByTeamId').load(teamId),
     removeEmptyTasks(meetingId),
     dataLoader.get('meetingTemplates').loadNonNull(templateId),
-    pg
-      .deleteFrom('RetroReflectionGroup')
-      .where('meetingId', '=', meetingId)
-      .where('isActive', '=', false)
-      .execute(),
     updateTeamInsights(teamId, dataLoader)
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting

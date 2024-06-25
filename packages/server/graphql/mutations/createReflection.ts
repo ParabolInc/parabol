@@ -63,6 +63,9 @@ export default {
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
+    if (normalizedContent.length > 2000) {
+      return {error: {message: 'Reflection content is too long'}}
+    }
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
@@ -98,7 +101,11 @@ export default {
     })
 
     await Promise.all([
-      pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
+      pg
+        .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
+        .insertInto('RetroReflection')
+        .values(reflection.toPG())
+        .execute(),
       r.table('RetroReflection').insert(reflection).run()
     ])
 
