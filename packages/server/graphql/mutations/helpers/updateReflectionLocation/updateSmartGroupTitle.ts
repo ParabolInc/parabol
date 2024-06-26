@@ -7,7 +7,7 @@ const updateSmartGroupTitle = async (reflectionGroupId: string, smartTitle: stri
     .updateTable('RetroReflectionGroup')
     .set({
       smartTitle,
-      title: sql`CASE WHEN "smartTitle" = "title" THEN ${smartTitle} ELSE "title" END`
+      title: sql`CASE WHEN "smartTitle" = "title" OR "title" IS NULL THEN ${smartTitle} ELSE "title" END`
     })
     .where('id', '=', reflectionGroupId)
     .execute()
