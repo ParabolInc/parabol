@@ -36,8 +36,9 @@ export async function checkTableEq(
   rethinkQuery: (updatedAt: Date, id: string | number) => RSelection,
   pgQuery: (ids: string[]) => Promise<PGDoc[] | null>,
   equalityMap: Record<string, (a: unknown, b: unknown) => boolean>,
-  maxErrors = 10
+  maxErrors: number | null | undefined
 ) {
+  maxErrors = maxErrors || 10
   const batchSize = 3000
   const errors = [] as Diff[]
   const propsToCheck = Object.keys(equalityMap)

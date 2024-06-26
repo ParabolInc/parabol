@@ -8,12 +8,16 @@ export async function up() {
     })
   })
 
-  await pg.schema.dropTable('Kudos').execute()
-  await pg.schema
-    .alterTable('Team')
-    .dropColumn('giveKudosWithEmoji')
-    .dropColumn('kudosEmoji')
-    .execute()
+  await pg.schema.dropTable('Kudos').ifExists().execute()
+  try {
+    await pg.schema
+      .alterTable('Team')
+      .dropColumn('giveKudosWithEmoji')
+      .dropColumn('kudosEmoji')
+      .execute()
+  } catch {
+    // noop
+  }
 }
 
 export async function down() {
