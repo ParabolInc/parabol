@@ -92,7 +92,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const card = new AdaptiveCards.AdaptiveCard()
     card.version = new AdaptiveCards.Version(1.2, 0)
 
-    const meetingTitle = meetingTypeTitleLookup[meeting.meetingType](meeting.name)
+    const meetingTitle = meetingTypeTitleLookup[meeting.meetingType]!(meeting.name)
     const titleTextBlock = GenerateACMeetingTitle(meetingTitle)
     card.addItem(titleTextBlock)
 
@@ -104,7 +104,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const meetingLinkColumn = new AdaptiveCards.Column()
     meetingLinkColumn.width = 'stretch'
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
-    const joinMeetingAction = MeetingActionLookup[meeting.meetingType](meetingUrl)
+    const joinMeetingAction = MeetingActionLookup[meeting.meetingType]!(meetingUrl)
     joinMeetingActionSet.addAction(joinMeetingAction)
     meetingLinkColumn.addItem(joinMeetingActionSet)
     meetingLinkColumnSet.addColumn(meetingLinkColumn)

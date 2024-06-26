@@ -6,8 +6,8 @@ import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTr
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
-import insertUser from '../../../postgres/queries/insertUser'
 import IUser from '../../../postgres/types/IUser'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -57,13 +57,22 @@ const bootstrapNewUser = async (
   const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
   const isQualifiedForAutoJoin = (isVerified || hasSAMLURL) && isCompanyDomain
   const orgIds = organizations.map(({id}) => id)
-
+  const pg = getKysely()
   const [teamsWithAutoJoinRes] = await Promise.all([
     isQualifiedForAutoJoin ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
-    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
-    r({
-      event: r.table('TimelineEvent').insert(joinEvent)
-    }).run()
+    pg
+      .with('User', (qc) =>
+        qc.insertInto('User').values({
+          ...newUser,
+          isPatient0,
+          featureFlags: experimentalFlags,
+          identities: newUser.identities.map((identity) => JSON.stringify(identity))
+        })
+      )
+      .insertInto('TimelineEvent')
+      .values(joinEvent)
+      .execute(),
+    r.table('TimelineEvent').insert(joinEvent).run()
   ])
 
   // Identify the user so user properties are set before any events are sent

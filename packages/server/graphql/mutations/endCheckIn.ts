@@ -11,6 +11,7 @@ import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import generateUID from '../../generateUID'
+import getKysely from '../../postgres/getKysely'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../utils/Logger'
@@ -244,7 +245,11 @@ export default {
         })
     )
     const timelineEventId = events[0]!.id
-    await r.table('TimelineEvent').insert(events).run()
+    const pg = getKysely()
+    await Promise.all([
+      pg.insertInto('TimelineEvent').values(events).execute(),
+      r.table('TimelineEvent').insert(events).run()
+    ])
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')
