@@ -1,9 +1,9 @@
 import ReactjiId from 'parabol-client/shared/gqlIds/ReactjiId'
 import Reactji from '../database/types/Reactji'
-import {ReactjiType} from '../graphql/types/Reactji'
+import {ReactjiSource} from '../graphql/public/types/Reactji'
 
 const getGroupedReactjis = (reactjis: Reactji[], viewerId: string, idPrefix: string) => {
-  const agg = {} as {[key: string]: ReactjiType}
+  const agg = {} as {[key: string]: ReactjiSource}
   reactjis.forEach((reactji) => {
     const {id, userId} = reactji
     const guid = ReactjiId.join(idPrefix, id)

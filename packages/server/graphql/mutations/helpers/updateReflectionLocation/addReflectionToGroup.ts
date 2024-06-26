@@ -1,6 +1,5 @@
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
-import getRethink from '../../../../database/rethinkDriver'
 import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
@@ -11,7 +10,6 @@ const addReflectionToGroup = async (
   {dataLoader}: GQLContext,
   smartTitle?: string
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
@@ -39,25 +37,14 @@ const addReflectionToGroup = async (
 
   // RESOLUTION
   const sortOrder = maxSortOrder + 1 + dndNoise()
-  await Promise.all([
-    pg
-      .updateTable('RetroReflection')
-      .set({
-        sortOrder,
-        reflectionGroupId
-      })
-      .where('id', '=', reflectionId)
-      .execute(),
-    r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
-        sortOrder,
-        reflectionGroupId,
-        updatedAt: now
-      })
-      .run()
-  ])
+  await pg
+    .updateTable('RetroReflection')
+    .set({
+      sortOrder,
+      reflectionGroupId
+    })
+    .where('id', '=', reflectionId)
+    .execute()
   // mutate the dataLoader cache
   reflection.sortOrder = sortOrder
   reflection.reflectionGroupId = reflectionGroupId

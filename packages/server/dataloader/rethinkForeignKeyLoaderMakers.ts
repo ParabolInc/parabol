@@ -166,34 +166,6 @@ export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-// Migrating to PG by June 30, 2024
-export const retroReflectionsByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'retroReflections',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r
-      .table('RetroReflection')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .filter({isActive: true})
-      .run()
-  }
-)
-
-// Migrating to PG by June 30, 2024
-export const retroReflectionsByGroupId = new RethinkForeignKeyLoaderMaker(
-  'retroReflections',
-  'reflectionGroupId',
-  async (reflectionGroupIds) => {
-    const r = await getRethink()
-    return r
-      .table('RetroReflection')
-      .getAll(r.args(reflectionGroupIds), {index: 'reflectionGroupId'})
-      .filter({isActive: true})
-      .run()
-  }
-)
-
 export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
   'templateDimensions',
   'templateId',

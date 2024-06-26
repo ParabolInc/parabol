@@ -10,7 +10,6 @@ import updateSmartGroupTitle from './updateSmartGroupTitle'
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
@@ -54,15 +53,6 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
       })
       .where('id', '=', reflectionId)
       .execute(),
-    r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
-        sortOrder: 0,
-        reflectionGroupId,
-        updatedAt: now
-      })
-      .run(),
     r.table('NewMeeting').get(meetingId).update({nextAutoGroupThreshold: null}).run()
   ])
   // mutates the dataloader response

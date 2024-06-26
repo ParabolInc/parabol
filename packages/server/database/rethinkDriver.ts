@@ -29,18 +29,14 @@ import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
-import Reflection from './types/Reflection'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
-import SAML from './types/SAML'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import Task from './types/Task'
-import Team from './types/Team'
 import TemplateDimension from './types/TemplateDimension'
 import TemplateScale from './types/TemplateScale'
 import TimelineEvent from './types/TimelineEvent'
-import User from './types/User'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -142,14 +138,6 @@ export type RethinkSchema = {
     type: MeetingTemplate
     index: 'teamId' | 'orgId'
   }
-  RetroReflection: {
-    type: Reflection
-    index: 'meetingId' | 'reflectionGroupId'
-  }
-  SAML: {
-    type: SAML
-    index: 'domains' | 'orgId'
-  }
   ScheduledJob: {
     type: ScheduledJobUnion
     index: 'runAt' | 'type'
@@ -183,10 +171,6 @@ export type RethinkSchema = {
     type: any
     index: 'taskIdUpdatedAt' | 'teamMemberId'
   }
-  Team: {
-    type: Team
-    index: 'orgId'
-  }
   TeamInvitation: {
     type: TeamInvitation
     index: 'email' | 'teamId' | 'token'
@@ -206,10 +190,6 @@ export type RethinkSchema = {
   TimelineEvent: {
     type: TimelineEvent
     index: 'userIdCreatedAt' | 'meetingId'
-  }
-  User: {
-    type: User
-    index: 'email'
   }
 }
 

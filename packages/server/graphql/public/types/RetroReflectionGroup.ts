@@ -1,6 +1,5 @@
 import {Selectable} from 'kysely'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
-import Reflection from '../../../database/types/Reflection'
 import {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/pg'
 import {getUserId} from '../../../utils/authorization'
 import {RetroReflectionGroupResolvers} from '../resolverTypes'
@@ -19,9 +18,9 @@ const RetroReflectionGroup: RetroReflectionGroupResolvers = {
     // use meetingId so we only hit the DB once instead of once per group
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     const filteredReflections = reflections.filter(
-      (reflection: Reflection) => reflection.reflectionGroupId === reflectionGroupId
+      (reflection) => reflection.reflectionGroupId === reflectionGroupId
     )
-    filteredReflections.sort((a: Reflection, b: Reflection) => (a.sortOrder < b.sortOrder ? 1 : -1))
+    filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
     return filteredReflections
   },
   team: async ({meetingId}, _args, {dataLoader}) => {
