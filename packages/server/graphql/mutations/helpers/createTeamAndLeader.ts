@@ -47,7 +47,6 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
     r.table('MeetingSettings').insert(meetingSettings).run(),
     // denormalize common fields to team member
     insertNewTeamMember(user, teamId),
-    pg.insertInto('TimelineEvent').values(timelineEvent).execute(),
     addTeamIdToTMS(userId, teamId)
   ])
 }
