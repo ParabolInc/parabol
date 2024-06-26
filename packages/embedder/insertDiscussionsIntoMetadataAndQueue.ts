@@ -35,9 +35,9 @@ export const insertDiscussionsIntoMetadataAndQueue = async (
       .with('Metadata', (qc) =>
         qc
           .selectFrom('Insert')
-          .fullJoin(
+          .innerJoin(
             sql<{model: string}>`UNNEST(ARRAY[${sql.join(tableNames)}])`.as('model'),
-            (join) => join.onTrue()
+            (join) => join.on('Insert.id', 'is not', null)
           )
           .select(['id', 'model'])
       )
