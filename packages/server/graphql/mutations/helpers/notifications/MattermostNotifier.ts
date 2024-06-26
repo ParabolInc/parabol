@@ -169,7 +169,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const notification = makeStartMeetingNotificationLookup[meeting.meetingType](
+    const notification = makeStartMeetingNotificationLookup[meeting.meetingType]!(
       team,
       meeting,
       meetingUrl
