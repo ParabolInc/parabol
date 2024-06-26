@@ -6,7 +6,7 @@ import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTit
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
-import Reflection from '../../database/types/Reflection'
+import {toGoogleAnalyzedEntityPG} from '../../database/types/GoogleAnalyzedEntity'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
@@ -37,7 +37,6 @@ export default {
     const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
-    const now = new Date()
     const subOptions = {operationId, mutatorId}
     const {content, sortOrder, meetingId, promptId} = input
     // AUTH
@@ -78,7 +77,8 @@ export default {
     ])
     const reflectionGroupId = generateUID()
 
-    const reflection = new Reflection({
+    const reflection = {
+      id: generateUID(),
       creatorId: viewerId,
       content: normalizedContent,
       plaintextContent,
@@ -86,9 +86,8 @@ export default {
       sentimentScore,
       meetingId,
       promptId,
-      reflectionGroupId,
-      updatedAt: now
-    })
+      reflectionGroupId
+    }
 
     const smartTitle = getGroupSmartTitle([reflection])
     const reflectionGroup = new ReflectionGroup({
@@ -100,14 +99,11 @@ export default {
       sortOrder
     })
 
-    await Promise.all([
-      pg
-        .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
-        .insertInto('RetroReflection')
-        .values(reflection.toPG())
-        .execute(),
-      r.table('RetroReflection').insert(reflection).run()
-    ])
+    await pg
+      .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
+      .insertInto('RetroReflection')
+      .values({...reflection, entities: toGoogleAnalyzedEntityPG(entities)})
+      .execute()
 
     const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
     const {stages} = groupPhase

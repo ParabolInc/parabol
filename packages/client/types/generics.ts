@@ -1,5 +1,6 @@
-import {MutableRefObject} from 'react'
-import {RecordProxy} from 'relay-runtime'
+import type {SelectQueryBuilder} from 'kysely'
+import type {MutableRefObject} from 'react'
+import type {RecordProxy} from 'relay-runtime'
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
 export type Subtract<T, K> = Omit<T, keyof K>
@@ -108,3 +109,6 @@ declare global {
     findLastIndex(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any): number
   }
 }
+
+export type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
+  ReturnType<T> extends SelectQueryBuilder<infer _A, infer _B, infer X> ? X : never

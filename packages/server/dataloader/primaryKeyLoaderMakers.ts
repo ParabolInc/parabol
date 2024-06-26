@@ -27,3 +27,29 @@ export const embeddingsMetadata = primaryKeyLoaderMaker((ids: readonly number[])
 export const retroReflectionGroups = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return getKysely().selectFrom('RetroReflectionGroup').selectAll().where('id', 'in', ids).execute()
 })
+
+export const selectRetroReflections = () =>
+  getKysely()
+    .selectFrom('RetroReflection')
+    .select([
+      'id',
+      'content',
+      'createdAt',
+      'creatorId',
+      'isActive',
+      'meetingId',
+      'plaintextContent',
+      'promptId',
+      'reflectionGroupId',
+      'sentimentScore',
+      'sortOrder',
+      'updatedAt'
+    ])
+    .select(({fn}) => [
+      fn<{lemma: string; salience: number; name: string}[]>('to_json', ['entities']).as('entities'),
+      fn<{id: string; userId: string}[]>('to_json', ['reactjis']).as('reactjis')
+    ])
+
+export const retroReflections = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectRetroReflections().where('id', 'in', ids).execute()
+})

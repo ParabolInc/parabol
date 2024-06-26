@@ -14,7 +14,6 @@ import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
 import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
 import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
-import Reflection from '../../../server/database/types/Reflection'
 import ITask from '../../../server/database/types/Task'
 import {
   ExternalLinks,
@@ -50,7 +49,7 @@ import initDB, {
   demoViewerId
 } from './initDB'
 
-export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'updatedAt'> & {
+export type DemoReflection = {
   __typename: string
   createdAt: string | Date
   dragContext: any
@@ -66,6 +65,13 @@ export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'update
   reflectionId: string
   retroReflectionGroup: DemoReflectionGroup
   updatedAt: string | Date
+  content: string
+  plaintextContent: string
+  isActive: boolean
+  reflectionGroupId: string
+  id: string
+  sortOrder: number
+  promptId: string
 }
 
 export type DemoReflectionGroup = {

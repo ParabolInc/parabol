@@ -27,7 +27,6 @@ export default {
     const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
-    const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
@@ -52,21 +51,11 @@ export default {
     }
 
     // RESOLUTION
-    await Promise.all([
-      pg
-        .updateTable('RetroReflection')
-        .set({isActive: false})
-        .where('id', '=', reflectionId)
-        .execute(),
-      r
-        .table('RetroReflection')
-        .get(reflectionId)
-        .update({
-          isActive: false,
-          updatedAt: now
-        })
-        .run()
-    ])
+    await pg
+      .updateTable('RetroReflection')
+      .set({isActive: false})
+      .where('id', '=', reflectionId)
+      .execute()
     await removeEmptyReflectionGroup(reflectionGroupId, reflectionGroupId, dataLoader)
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     let unlockedStageIds

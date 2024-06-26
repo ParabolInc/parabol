@@ -40,7 +40,7 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
     const rowCountResult = await checkRowCount(tableName)
     const rethinkQuery = (updatedAt: Date, id: string | number) => {
       return r
-        .table('RetroReflection')
+        .table('RetroReflection' as any)
         .between([updatedAt, id], [r.maxval, r.maxval], {
           index: 'updatedAtId',
           leftBound: 'open',

@@ -6,7 +6,6 @@ import {ValueOf} from '../../../../client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
 import Comment from '../../../database/types/Comment'
-import Reflection from '../../../database/types/Reflection'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -116,12 +115,12 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   }
 
   const updateRethink = async (rethinkDbTable: ValueOf<typeof tableLookup>) => {
-    if (rethinkDbTable === 'TeamPromptResponse') return
+    if (rethinkDbTable === 'TeamPromptResponse' || rethinkDbTable === 'RetroReflection') return
     if (isRemove) {
       await r
         .table(rethinkDbTable)
         .get(dbId)
-        .update((row: RDatum<Comment | Reflection>) => ({
+        .update((row: RDatum<Comment>) => ({
           reactjis: row('reactjis').difference([subDoc]),
           updatedAt: now
         }))
@@ -130,7 +129,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
       await r
         .table(rethinkDbTable)
         .get(dbId)
-        .update((row: RDatum<Comment | Reflection>) => ({
+        .update((row: RDatum<Comment>) => ({
           reactjis: r.branch(
             row('reactjis').contains(subDoc),
             row('reactjis'),

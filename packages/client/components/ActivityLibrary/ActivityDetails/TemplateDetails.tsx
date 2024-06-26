@@ -1,7 +1,7 @@
 import {ContentCopy} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useCallback, useEffect} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -175,13 +175,7 @@ export const TemplateDetails = (props: Props) => {
     removeTemplateMutation(atmosphere, {templateId: activityId}, mutationArgs)
   }, [activityId, submitting, submitMutation, onError, onCompleted])
 
-  const {
-    togglePortal: toggleTeamPickerPortal,
-    modalPortal: teamPickerModalPortal,
-    closePortal: closeTeamPickerPortal
-  } = useModal({
-    id: 'templateTeamPickerModal'
-  })
+  const [teamPickerOpen, setTeamPickerOpen] = useState(false)
 
   const {
     openPortal: openPokerTemplateScaleDetailsPortal,
@@ -250,7 +244,7 @@ export const TemplateDetails = (props: Props) => {
                       />
                     </div>
                     <div className='rounded-full border border-solid border-slate-400'>
-                      <CloneTemplate onClick={toggleTeamPickerPortal} />
+                      <CloneTemplate onClick={() => setTeamPickerOpen(true)} />
                     </div>
                   </>
                 )}
@@ -270,7 +264,7 @@ export const TemplateDetails = (props: Props) => {
                   <FlatButton
                     style={{padding: '8px 12px', border: '0'}}
                     className='flex cursor-pointer gap-1 px-12'
-                    onClick={toggleTeamPickerPortal}
+                    onClick={() => setTeamPickerOpen(true)}
                   >
                     <ContentCopy className='text-slate-600' />
                     <div className='font-semibold text-slate-700'>Clone & Edit</div>
@@ -323,16 +317,17 @@ export const TemplateDetails = (props: Props) => {
         </div>
       )}
 
-      {teamPickerModalPortal(
-        <TeamPickerModal
-          category={category}
-          teamsRef={teams}
-          closePortal={closeTeamPickerPortal}
-          parentTemplateId={activityId}
-          preferredTeamId={preferredTeamId}
-          type={type}
-        />
-      )}
+      <TeamPickerModal
+        category={category}
+        teamsRef={teams}
+        parentTemplateId={activityId}
+        preferredTeamId={preferredTeamId}
+        type={type}
+        isOpen={teamPickerOpen}
+        closeModal={() => {
+          setTeamPickerOpen(false)
+        }}
+      />
 
       {type === 'poker' &&
         editingScaleId &&

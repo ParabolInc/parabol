@@ -20,7 +20,6 @@ import {RDatum} from '../../database/stricterR'
 import MeetingMemberType from '../../database/types/MeetingMember'
 import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
-import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import TimelineEvent from '../../database/types/TimelineEvent'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -478,7 +477,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const meetingMemberId = MeetingMemberId.join(meetingId, userId)
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
-          dataLoader.get('retroReflectionsByMeetingId').load(meetingId) as Promise<Reflection[]>
+          dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         ])
         if (!viewerMeetingMember) {
           return standardError(new Error('Not on team'), {userId})
@@ -489,7 +488,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             plaintextContent.toLowerCase().includes(searchQuery)
           )
           const relatedReflections = matchedReflections.filter(
-            ({reflectionGroupId: groupId}: Reflection) => groupId !== reflectionGroupId
+            ({reflectionGroupId: groupId}) => groupId !== reflectionGroupId
           )
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))

@@ -7,6 +7,7 @@ import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
+import getKysely from '../../../postgres/getKysely'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../../utils/Logger'
 import RecallAIServerManager from '../../../utils/RecallAIServerManager'
@@ -163,7 +164,11 @@ const safeEndRetrospective = async ({
       })
   )
   const timelineEventId = events[0]!.id
-  await r.table('TimelineEvent').insert(events).run()
+  const pg = getKysely()
+  await Promise.all([
+    pg.insertInto('TimelineEvent').values(events).execute(),
+    r.table('TimelineEvent').insert(events).run()
+  ])
 
   if (team.isOnboardTeam) {
     const teamLeadUserId = await r

@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.37.4](https://github.com/ParabolInc/parabol/compare/v7.37.3...v7.37.4) (2024-06-26)
+
+
+### Fixed
+
+* Don't reset failed embedding jobs ([#9877](https://github.com/ParabolInc/parabol/issues/9877)) ([882443c](https://github.com/ParabolInc/parabol/commit/882443c60c80ddc74e45b9ba7a375db43a0d4494))
+* refactor new meeting team dropdown ([#9679](https://github.com/ParabolInc/parabol/issues/9679)) ([0300ce5](https://github.com/ParabolInc/parabol/commit/0300ce5241e2b4dee848ad5978e97e1c802510cd))
+
+
+### Changed
+
+* **rethinkdb:** RetroReflection: Phase 3 ([#9867](https://github.com/ParabolInc/parabol/issues/9867)) ([7b8f505](https://github.com/ParabolInc/parabol/commit/7b8f50549df0b1e1251fe8275c41c602d072e441))
+* **rethinkdb:** TimelineEvent: Phase 1 ([#9871](https://github.com/ParabolInc/parabol/issues/9871)) ([c6a028b](https://github.com/ParabolInc/parabol/commit/c6a028bc357ee411e42f68e0f5beeddadf6fe6fd))
+
 ## [7.37.3](https://github.com/ParabolInc/parabol/compare/v7.37.2...v7.37.3) (2024-06-25)
 
 
