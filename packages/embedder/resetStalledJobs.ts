@@ -13,6 +13,7 @@ export const resetStalledJobs = () => {
         stateMessage: 'stalled'
       }))
       .where('startAt', '<', new Date(Date.now() - ms('5m')))
+      .where('state', '=', 'running')
       .execute()
   }, ms('5m')).unref()
 }
