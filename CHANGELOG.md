@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.37.5](https://github.com/ParabolInc/parabol/compare/v7.37.4...v7.37.5) (2024-06-26)
+
+
+### Fixed
+
+* handle sql null equalities ([#9884](https://github.com/ParabolInc/parabol/issues/9884)) ([87363fa](https://github.com/ParabolInc/parabol/commit/87363fa4168ac97869bd5b71571c7ecc5c7fb903))
+
+
+### Changed
+
+* **rethinkdb:** TimelineEvent: Phase 2 ([#9875](https://github.com/ParabolInc/parabol/issues/9875)) ([1c8b116](https://github.com/ParabolInc/parabol/commit/1c8b116c15818f328e448467b789c9f3f3c11c12))
+
 ## [7.37.4](https://github.com/ParabolInc/parabol/compare/v7.37.3...v7.37.4) (2024-06-26)
 
 
