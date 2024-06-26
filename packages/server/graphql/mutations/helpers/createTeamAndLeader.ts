@@ -5,10 +5,7 @@ import MeetingSettingsRetrospective from '../../../database/types/MeetingSetting
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import getKysely from '../../../postgres/getKysely'
-import getPg from '../../../postgres/getPg'
-import {insertTeamQuery} from '../../../postgres/queries/generated/insertTeamQuery'
 import IUser from '../../../postgres/types/IUser'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 
@@ -41,7 +38,11 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
 
   const pg = getKysely()
   await Promise.all([
-    catchAndLog(() => insertTeamQuery.run(verifiedTeam, getPg())),
+    pg
+      .with('Team', (qc) => qc.insertInto('Team').values(verifiedTeam))
+      .insertInto('TimelineEvent')
+      .values(timelineEvent)
+      .execute(),
     // add meeting settings
     r.table('MeetingSettings').insert(meetingSettings).run(),
     // denormalize common fields to team member

@@ -352,7 +352,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const {title, blocks} = makeStartMeetingNotificationLookup[meeting.meetingType](
+    const {title, blocks} = makeStartMeetingNotificationLookup[meeting.meetingType]!(
       team,
       meeting,
       meetingUrl
@@ -388,7 +388,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const {blocks} = makeStartMeetingNotificationLookup[meeting.meetingType](
+    const {blocks} = makeStartMeetingNotificationLookup[meeting.meetingType]!(
       team,
       meeting,
       meetingUrl
