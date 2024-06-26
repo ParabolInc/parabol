@@ -318,7 +318,7 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
       keys.forEach((key) => {
         const {meetingType} = key
         types[meetingType] = types[meetingType] || []
-        types[meetingType].push(key.teamId)
+        types[meetingType]!.push(key.teamId)
       })
       const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
       const resultsByType = await Promise.all(
@@ -422,7 +422,7 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
       keys.forEach((key) => {
         const {meetingType} = key
         types[meetingType] = types[meetingType] || []
-        types[meetingType].push(key.teamId)
+        types[meetingType]!.push(key.teamId)
       })
       const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
       const resultsByType = await Promise.all(
