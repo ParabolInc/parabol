@@ -249,15 +249,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           .selectFrom('TimelineEvent')
           .selectAll()
           .where('userId', '=', viewerId)
-          .where('createdAt', '>', minVal)
-          .where('createdAt', '<=', dbAfter)
+          .where((eb) => eb.between('createdAt', minVal, dbAfter))
           .where('isActive', '=', true)
           .where('teamId', 'in', validTeamIds)
           .$if(!!eventTypes, (db) => db.where('type', 'in', eventTypes))
-          .orderBy('createdAt')
+          .orderBy('createdAt', 'desc')
           .limit(first + 1)
           .execute()
-
         const edges = events.slice(0, first).map((node) => ({
           cursor: node.createdAt,
           node
