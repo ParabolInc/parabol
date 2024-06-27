@@ -5,7 +5,7 @@ import {SummarySheet_meeting$key} from 'parabol-client/__generated__/SummaryShee
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
 import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
-import React from 'react'
+import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
@@ -90,12 +90,65 @@ const SummarySheet = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, meetingType, taskCount} = meeting
+  const {id: meetingId, meetingType, taskCount, name} = meeting
   const isDemo = !!props.isDemo
+  const sheetRef = useRef<HTMLTableElement | null>(null)
 
   const downloadPDF = () => {
     SendClientSideEvent(atmosphere, 'Download PDF Clicked', {meetingId})
-    window.print()
+
+    const printStyles = `
+      <style>
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+          }
+          table {
+            page-break-after: auto;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 800px;
+          }
+          tr, td {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          thead {
+            display: table-header-group;
+          }
+          tfoot {
+            display: table-footer-group;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+          .print\\:w-[210mm] {
+            width: 100%;
+          }
+          .text-center {
+            text-align: center;
+          }
+        }
+      </style>
+    `
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Parabol: ${name} Summary</title>
+        </head>
+        <body>
+          ${printStyles}
+          ${sheetRef.current?.outerHTML}
+        </body>
+      </html>
+    `)
+    printWindow.document.close()
+    printWindow.focus()
+    printWindow.print()
   }
 
   return (
@@ -105,6 +158,7 @@ const SummarySheet = (props: Props) => {
       height='100%'
       align='center'
       bgcolor='#FFFFFF'
+      ref={sheetRef}
       style={sheetStyle}
     >
       <tbody>
