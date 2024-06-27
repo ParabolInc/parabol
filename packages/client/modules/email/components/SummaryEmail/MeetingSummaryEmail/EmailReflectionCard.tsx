@@ -18,6 +18,7 @@ const contentStyle = {
   borderStyle: 'solid',
   borderWidth: '1px',
   boxSizing: 'content-box',
+  breakInside: 'avoid',
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
