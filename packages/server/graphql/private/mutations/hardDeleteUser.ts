@@ -117,12 +117,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
       .delete(),
-    timelineEvent: r
-      .table('TimelineEvent')
-      .between([userIdToDelete, r.minval], [userIdToDelete, r.maxval], {
-        index: 'userIdCreatedAt'
-      })
-      .delete(),
     agendaItem: r
       .table('AgendaItem')
       .getAll(r.args(teamIds), {index: 'teamId'})

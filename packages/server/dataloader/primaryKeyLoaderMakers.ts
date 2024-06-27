@@ -53,3 +53,7 @@ export const selectRetroReflections = () =>
 export const retroReflections = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectRetroReflections().where('id', 'in', ids).execute()
 })
+
+export const timelineEvents = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('TimelineEvent').selectAll().where('id', 'in', ids).execute()
+})

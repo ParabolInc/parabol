@@ -71,8 +71,7 @@ const bootstrapNewUser = async (
       )
       .insertInto('TimelineEvent')
       .values(joinEvent)
-      .execute(),
-    r.table('TimelineEvent').insert(joinEvent).run()
+      .execute()
   ])
 
   // Identify the user so user properties are set before any events are sent

@@ -1,5 +1,3 @@
-import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
-import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
@@ -180,18 +178,6 @@ export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
         .orderBy('sortOrder')
         .run()
     )
-  }
-)
-export const timelineEventsByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'timelineEvents',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r
-      .table('TimelineEvent')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .filter({isActive: true})
-      .run() as Promise<TimelineEventCheckinComplete[] | TimelineEventRetroComplete[]>
   }
 )
 
