@@ -169,7 +169,7 @@ const RetroTopic = (props: Props) => {
           <td align='center'>
             <table>
               <tr>
-                <td>
+                <td className='text-center'>
                   <AnchorIfEmail href={to} isEmail={isEmail} style={commentLinkStyle}>
                     {commentLinkLabel}
                   </AnchorIfEmail>

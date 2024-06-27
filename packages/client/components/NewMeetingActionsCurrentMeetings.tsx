@@ -57,7 +57,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
         </CurrentButton>
       }
     >
-      <MenuContent className='w-[300px]' sideOffset={10}>
+      <MenuContent className='w-[var(--radix-dropdown-menu-trigger-width)]'>
         <SelectMeetingDropdown meetings={activeMeetings!} />
       </MenuContent>
     </Menu>
