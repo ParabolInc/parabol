@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import normalizeAvatarUpload from '../../../fileStorage/normalizeAvatarUpload'
 import validateAvatarUpload from '../../../fileStorage/validateAvatarUpload'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -33,7 +34,11 @@ const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
   const [normalExt, normalBuffer] = await normalizeAvatarUpload(validExt, validBuffer)
   const manager = getFileStoreManager()
   const publicLocation = await manager.putOrgAvatar(normalBuffer, orgId, normalExt)
-
+  await getKysely()
+    .updateTable('Organization')
+    .set({picture: publicLocation})
+    .where('id', '=', orgId)
+    .execute()
   await r
     .table('Organization')
     .get(orgId)

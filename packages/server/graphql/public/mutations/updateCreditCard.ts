@@ -2,6 +2,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -56,6 +58,18 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   const creditCard = stripeCardToDBCard(stripeCard)
 
   await Promise.all([
+    getKysely()
+      .updateTable('Organization')
+      .set({
+        creditCard: toCreditCard(creditCard),
+        tier: 'team',
+        stripeId: customer.id,
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null
+      })
+      .where('id', '=', orgId)
+      .execute(),
     r({
       updatedOrg: r.table('Organization').get(orgId).update({
         creditCard,

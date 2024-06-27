@@ -128,7 +128,7 @@ const bootstrapNewUser = async (
     const orgName = `${newUser.preferredName}’s Org`
     await createNewOrg(orgId, orgName, userId, email, dataLoader)
     await Promise.all([
-      createTeamAndLeader(newUser as IUser, validNewTeam),
+      createTeamAndLeader(newUser as IUser, validNewTeam, dataLoader),
       addSeedTasks(userId, teamId),
       r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run(),
       sendPromptToJoinOrg(newUser, dataLoader)

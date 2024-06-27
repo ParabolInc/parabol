@@ -57,7 +57,7 @@ const removeFromOrg = async (
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
   if (role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)) {
-    const organization = await r.table('Organization').get(orgId).run()
+    const organization = await dataLoader.get('organizations').load(orgId)
     // if no other billing leader, promote the oldest
     // if team tier & no other member, downgrade to starter
     const otherBillingLeaders = await r
@@ -84,7 +84,7 @@ const removeFromOrg = async (
           })
           .run()
       } else if (organization.tier !== 'starter') {
-        await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, user)
+        await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, user, dataLoader)
       }
     }
   }

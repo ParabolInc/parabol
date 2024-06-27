@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import standardError from '../../../utils/standardError'
@@ -57,6 +58,15 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
     periodStart: fromEpochSeconds(subscription.current_period_start),
     stripeSubscriptionId: subscription.id
   }
+
+  await getKysely()
+    .updateTable('Organization')
+    .set({
+      ...subscriptionFields,
+      stripeId: customer.id
+    })
+    .where('id', '=', orgId)
+    .execute()
 
   await r({
     updatedOrg: r

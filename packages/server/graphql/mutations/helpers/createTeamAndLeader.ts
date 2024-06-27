@@ -4,6 +4,7 @@ import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import IUser from '../../../postgres/types/IUser'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
@@ -17,11 +18,15 @@ interface ValidNewTeam {
 }
 
 // used for addorg, addTeam
-export default async function createTeamAndLeader(user: IUser, newTeam: ValidNewTeam) {
+export default async function createTeamAndLeader(
+  user: IUser,
+  newTeam: ValidNewTeam,
+  dataLoader: DataLoaderInstance
+) {
   const r = await getRethink()
   const {id: userId} = user
   const {id: teamId, orgId} = newTeam
-  const organization = await r.table('Organization').get(orgId).run()
+  const organization = await dataLoader.get('organizations').load(orgId)
   const {tier, trialStartDate} = organization
   const verifiedTeam = new Team({...newTeam, createdBy: userId, tier, trialStartDate})
   const meetingSettings = [

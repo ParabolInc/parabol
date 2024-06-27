@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -41,6 +42,11 @@ const updateOrg: MutationResolvers['updateOrg'] = async (
     name: normalizedName,
     updatedAt: now
   }
+  await getKysely()
+    .updateTable('Organization')
+    .set({name: normalizedName})
+    .where('id', '=', orgId)
+    .execute()
   await r.table('Organization').get(orgId).update(dbUpdate).run()
 
   const data = {orgId}

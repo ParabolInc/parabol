@@ -19,6 +19,7 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
 
   // RESOLUTION
   await Promise.all([
+    pg.updateTable('Organization').set({trialStartDate: null}).where('id', '=', orgId).execute(),
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
         trialStartDate: null,

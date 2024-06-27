@@ -2,6 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -81,20 +82,30 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
 
   // RESOLUTION
+  const creditCard = await getCCFromCustomer(customer)
   await Promise.all([
+    pg
+      .updateTable('Organization')
+      .set({
+        creditCard: toCreditCard(creditCard),
+        tier: 'team',
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        trialStartDate: null
+      })
+      .where('id', '=', orgId)
+      .execute(),
     r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          creditCard: await getCCFromCustomer(customer),
-          tier: 'team',
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now,
-          trialStartDate: null
-        })
+      updatedOrg: r.table('Organization').get(orgId).update({
+        creditCard,
+        tier: 'team',
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        updatedAt: now,
+        trialStartDate: null
+      })
     }).run(),
     pg
       .updateTable('Team')

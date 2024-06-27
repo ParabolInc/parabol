@@ -37,6 +37,8 @@ export async function up() {
     );
     CREATE INDEX IF NOT EXISTS "idx_Organization_activeDomain" ON "Organization"("activeDomain");
     CREATE INDEX IF NOT EXISTS "idx_Organization_tier" ON "Organization"("tier");
+    DROP TRIGGER IF EXISTS "update_Organization_updatedAt" ON "Organization";
+    CREATE TRIGGER "update_Organization_updatedAt" BEFORE UPDATE ON "Organization" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
   END $$;
 `)
   await client.end()
