@@ -149,6 +149,9 @@ const SummarySheet = (props: Props) => {
     printWindow.document.close()
     printWindow.focus()
     printWindow.print()
+    printWindow.onafterprint = () => {
+      printWindow.close()
+    }
   }
 
   return (
