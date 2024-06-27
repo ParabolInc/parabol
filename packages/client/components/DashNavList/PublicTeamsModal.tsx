@@ -32,7 +32,7 @@ const PublicTeamsModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
-      <DialogContent className='z-10'>
+      <DialogContent className='z-10 overflow-scroll'>
         <DialogTitle>{`${publicTeamsCount} ${plural(publicTeamsCount, 'Public Team', 'Public Teams')}`}</DialogTitle>
         <DialogDescription>
           Request to join as a Team Member on any public teams at{' '}

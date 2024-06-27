@@ -8,6 +8,7 @@ import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPick
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import setPreferredTeamId from '../utils/relay/setPreferredTeamId'
 import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
 
@@ -72,52 +73,54 @@ const NewMeetingTeamPicker = (props: Props) => {
         </div>
       }
     >
-      <div className='w-[var(--radix-dropdown-menu-trigger-width)]'>
-        {onShareToOrg ? (
-          <div className='w-[352px] p-4'>
-            <div>
-              This custom activity is private to the <b>{selectedTeam.name}</b> team.
+      <MenuContent>
+        <div className='w-[var(--radix-dropdown-menu-trigger-width)]'>
+          {onShareToOrg ? (
+            <div className='w-[352px] p-4'>
+              <div>
+                This custom activity is private to the <b>{selectedTeam.name}</b> team.
+              </div>
+              <br />
+              <div>
+                As a member of the team you can share this activity with other teams at the{' '}
+                <b>{selectedTeam.organization.name}</b> organization so that they can also use the
+                activity.
+              </div>
+              <button
+                onClick={onShareToOrg}
+                className={
+                  'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-sm font-semibold text-slate-700 hover:bg-slate-100'
+                }
+              >
+                <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
+                Allow other teams to use this activity
+              </button>
             </div>
-            <br />
-            <div>
-              As a member of the team you can share this activity with other teams at the{' '}
-              <b>{selectedTeam.organization.name}</b> organization so that they can also use the
-              activity.
-            </div>
-            <button
-              onClick={onShareToOrg}
-              className={
-                'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-sm font-semibold text-slate-700 hover:bg-slate-100'
-              }
-            >
-              <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
-              Allow other teams to use this activity
-            </button>
-          </div>
-        ) : (
-          <>
-            <DropdownMenu.Label className='px-3 py-2 text-base font-semibold'>
-              Select Team:
-            </DropdownMenu.Label>
-            <DropdownMenu.Separator className='border-b border-slate-300' />
-            <div className='py-2'>
-              {teams.map((team) => {
-                return (
-                  <DropdownMenu.Item
-                    key={team.id}
-                    className='px-3 py-1 text-base outline-none hover:bg-slate-200'
-                    onClick={() => {
-                      handleSelectTeam(team.id)
-                    }}
-                  >
-                    {team.name}
-                  </DropdownMenu.Item>
-                )
-              })}
-            </div>
-          </>
-        )}
-      </div>
+          ) : (
+            <>
+              <DropdownMenu.Label className='px-3 py-2 text-base font-semibold'>
+                Select Team:
+              </DropdownMenu.Label>
+              <DropdownMenu.Separator className='border-b border-slate-300' />
+              <div className='py-2'>
+                {teams.map((team) => {
+                  return (
+                    <DropdownMenu.Item
+                      key={team.id}
+                      className='px-3 py-1 text-base outline-none hover:bg-slate-200'
+                      onClick={() => {
+                        handleSelectTeam(team.id)
+                      }}
+                    >
+                      {team.name}
+                    </DropdownMenu.Item>
+                  )
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      </MenuContent>
     </Menu>
   )
 }
