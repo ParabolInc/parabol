@@ -36,7 +36,6 @@ import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import Task from './types/Task'
 import TemplateDimension from './types/TemplateDimension'
 import TemplateScale from './types/TemplateScale'
-import TimelineEvent from './types/TimelineEvent'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -186,10 +185,6 @@ export type RethinkSchema = {
   TemplateScale: {
     type: TemplateScale
     index: 'teamId'
-  }
-  TimelineEvent: {
-    type: TimelineEvent
-    index: 'userIdCreatedAt' | 'meetingId'
   }
 }
 

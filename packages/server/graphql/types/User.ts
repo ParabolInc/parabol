@@ -15,13 +15,11 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import MeetingMemberType from '../../database/types/MeetingMember'
 import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import SuggestedActionType from '../../database/types/SuggestedAction'
-import TimelineEvent from '../../database/types/TimelineEvent'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
@@ -217,7 +215,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         {after, first, teamIds, eventTypes},
         {authToken, dataLoader}: GQLContext
       ) => {
-        const r = await getRethink()
         const viewerId = getUserId(authToken)
 
         // VALIDATE
@@ -244,21 +241,21 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           : accessibleTeamIds
 
         if (viewerId !== id && !isSuperUser(authToken)) return null
-        const dbAfter = after ? new Date(after) : r.maxval
-        const events = await r
-          .table('TimelineEvent')
-          .between([viewerId, r.minval], [viewerId, dbAfter], {
-            index: 'userIdCreatedAt'
-          })
-          .filter({isActive: true})
-          .filter((t: RDatum<TimelineEvent>) =>
-            eventTypes ? r.expr(eventTypes).contains(t('type')) : true
-          )
-          .filter((t: RDatum) => r.expr(validTeamIds).contains(t('teamId')))
-          .orderBy(r.desc('createdAt'))
+        const dbAfter = after ? new Date(after) : new Date('3000-01-01')
+        const minVal = new Date(0)
+
+        const pg = getKysely()
+        const events = await pg
+          .selectFrom('TimelineEvent')
+          .selectAll()
+          .where('userId', '=', viewerId)
+          .where((eb) => eb.between('createdAt', minVal, dbAfter))
+          .where('isActive', '=', true)
+          .where('teamId', 'in', validTeamIds)
+          .$if(!!eventTypes, (db) => db.where('type', 'in', eventTypes))
+          .orderBy('createdAt', 'desc')
           .limit(first + 1)
-          .coerceTo('array')
-          .run()
+          .execute()
         const edges = events.slice(0, first).map((node) => ({
           cursor: node.createdAt,
           node

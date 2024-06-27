@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.37.8](https://github.com/ParabolInc/parabol/compare/v7.37.7...v7.37.8) (2024-06-27)
+
+
+### Fixed
+
+* timeline ordering ([#9898](https://github.com/ParabolInc/parabol/issues/9898)) ([9f5f38c](https://github.com/ParabolInc/parabol/commit/9f5f38c250fbb1d0af4aaed8526c19f0fc6fd111))
+
+## [7.37.7](https://github.com/ParabolInc/parabol/compare/v7.37.6...v7.37.7) (2024-06-27)
+
+
+### Changed
+
+* **rethinkdb:** TimelineEvent: Phase 3 ([#9876](https://github.com/ParabolInc/parabol/issues/9876)) ([77b56ad](https://github.com/ParabolInc/parabol/commit/77b56ad296bd3ff69f2a8f3440a34a7b5f34c0cf))
+
 ## [7.37.6](https://github.com/ParabolInc/parabol/compare/v7.37.5...v7.37.6) (2024-06-27)
 
 
