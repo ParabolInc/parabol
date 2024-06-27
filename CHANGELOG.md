@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.37.6](https://github.com/ParabolInc/parabol/compare/v7.37.5...v7.37.6) (2024-06-27)
+
+
+### Fixed
+
+* can scroll public teams modal ([#9880](https://github.com/ParabolInc/parabol/issues/9880)) ([b4231b5](https://github.com/ParabolInc/parabol/commit/b4231b5e249b853c49bf2ac7bc736b7e47447956))
+* download pdf shows multiple pages ([#9889](https://github.com/ParabolInc/parabol/issues/9889)) ([edb7e58](https://github.com/ParabolInc/parabol/commit/edb7e5882a0fcf0be6bae7fc21fa174b2d9b6195))
+* User can change team in Activity Library ([#9893](https://github.com/ParabolInc/parabol/issues/9893)) ([ce7e8bb](https://github.com/ParabolInc/parabol/commit/ce7e8bb6aea40d053e707b40c2b9b5bfdc981702))
+
 ## [7.37.5](https://github.com/ParabolInc/parabol/compare/v7.37.4...v7.37.5) (2024-06-26)
 
 
