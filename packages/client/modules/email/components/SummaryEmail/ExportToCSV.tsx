@@ -351,21 +351,19 @@ const ExportToCSV = (props: Props) => {
 
   const {emailCSVUrl, referrer, corsOptions} = props
   return (
-    <>
-      <tr>
-        <td align='center' style={iconLinkLabel} width='100%'>
-          <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
-            <img
-              alt={label}
-              src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
-              style={imageStyle}
-              {...corsOptions}
-            />
-            <span style={labelStyle}>{label}</span>
-          </AnchorIfEmail>
-        </td>
-      </tr>
-    </>
+    <tr className='print:hidden'>
+      <td align='center' style={iconLinkLabel} width='100%'>
+        <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
+          <img
+            alt={label}
+            src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
+            style={imageStyle}
+            {...corsOptions}
+          />
+          <span style={labelStyle}>{label}</span>
+        </AnchorIfEmail>
+      </td>
+    </tr>
   )
 }
 
