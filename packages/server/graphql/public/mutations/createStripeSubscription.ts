@@ -38,14 +38,18 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
     return standardError(new Error('Organization already has a subscription'), {userId: viewerId})
   }
   const {email} = viewer
-  const customer = stripeId
-    ? await manager.retrieveCustomer(stripeId)
-    : await manager.createCustomer(orgId, email)
-  const {id: customerId} = customer
-  const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
-  if (res instanceof Error) return standardError(res, {userId: viewerId})
-  // wait until the payment is attached to the customer before updating the default payment method
-  await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
+  let customer: Stripe.Response<Stripe.Customer | Stripe.DeletedCustomer>
+  if (stripeId) {
+    customer = await manager.retrieveCustomer(stripeId)
+    const {id: customerId} = customer
+    const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
+    if (res instanceof Error) return standardError(res, {userId: viewerId})
+    // wait until the payment is attached to the customer before updating the default payment method
+    await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
+  } else {
+    customer = await manager.createCustomer(orgId, email, paymentMethodId)
+  }
+
   const subscription = await manager.createTeamSubscription(customer.id, orgId, orgUsersCount)
 
   const latestInvoice = subscription.latest_invoice as Stripe.Invoice

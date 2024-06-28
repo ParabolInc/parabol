@@ -90,10 +90,21 @@ export default class StripeManager {
     }
   }
 
-  async createCustomer(orgId: string, email: string, source?: string) {
+  async createCustomer(
+    orgId: string,
+    email: string,
+    paymentMethodId?: string | undefined,
+    source?: string
+  ) {
     return this.stripe.customers.create({
       email,
       source,
+      payment_method: paymentMethodId,
+      invoice_settings: paymentMethodId
+        ? {
+            default_payment_method: paymentMethodId
+          }
+        : undefined,
       metadata: {
         orgId
       }

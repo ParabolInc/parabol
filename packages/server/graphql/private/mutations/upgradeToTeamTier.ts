@@ -134,10 +134,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const data = {orgId, teamIds, meetingIds}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierSuccess', data, subOptions)
 
-  teamIds.forEach((teamId) => {
-    const teamData = {orgId, teamIds: [teamId]}
-    publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToTeamTierSuccess', teamData, subOptions)
-  })
   return data
 }
 
