@@ -346,7 +346,7 @@ class OpenAIServerManager {
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',

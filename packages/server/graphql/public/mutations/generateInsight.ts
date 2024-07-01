@@ -4,7 +4,6 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 const generateInsight: MutationResolvers['generateInsight'] = async (
@@ -12,10 +11,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   {teamId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const viewerId = getUserId(authToken)
-  console.log('🚀 ~ generateInsight_____:', viewerId)
-  const now = new Date()
-
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
     const pg = getKysely()
@@ -25,10 +20,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
       .where('discussionTopicId', '=', reflectionGroupId)
       .limit(1)
       .executeTakeFirst()
-    if (!discussion) {
-      console.log('no discuss', reflectionGroupId)
-      return null
-    }
+    if (!discussion) return null
     const {id: discussionId} = discussion
     const rawComments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
     const humanComments = rawComments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy))
@@ -75,11 +67,13 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map((team) => team.id)
     const r = await getRethink()
+    const MIN_REFLECTION_COUNT = 3
     const rawMeetings = await r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: any) => row('createdAt').ge(startDate).and(row('createdAt').le(endDate)))
       .filter({meetingType: 'retrospective'})
+      .filter((row: any) => row('createdAt').ge(startDate).and(row('createdAt').le(endDate)))
+      .filter((row: any) => row('reflectionCount').gt(MIN_REFLECTION_COUNT))
       .run()
 
     const meetings = await Promise.all(
@@ -116,7 +110,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                     dataLoader.get('reflectPrompts').load(promptId),
                     dataLoader.get('users').loadNonNull(creatorId)
                   ])
-                  console.log('🚀 ~ creator:', creator)
                   const {question} = prompt
                   const creatorName = disableAnonymity ? creator.preferredName : 'Anonymous'
                   return {
@@ -126,7 +119,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                   }
                 })
               )
-              console.log('🚀 ~ reflections:', reflections)
               const res = {
                 // topicId: reflectionGroupId,
                 voteCount: voterIds.length,
@@ -140,7 +132,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                 teamName
                 // teamId
               }
-              console.log('🚀 ~ res:', res)
               if (!res.comments || !res.comments.length) {
                 delete (res as any).comments
               }
@@ -150,72 +141,65 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
         return reflectionGroups
       })
     )
-    console.log('🚀 ~ meetings:', {meetings: meetings.flat()})
     return meetings.flat()
   }
 
-  const doWork = async () => {
-    const openAI = new OpenAIServerManager()
-    const org = 'parabol'
-    const startDate = new Date('2024-01-01')
-    // const endDate = new Date('2024-04-01')
-    const endDate = new Date()
+  const openAI = new OpenAIServerManager()
+  const org = 'parabol'
+  const startDate = new Date('2024-01-01')
+  // const endDate = new Date('2024-04-01')
+  const endDate = new Date()
 
-    const orgLookup = {
-      parabol: 'y3ZJgMy6hq'
+  const orgLookup = {
+    parabol: 'y3ZJgMy6hq'
+  }
+  const orgId = orgLookup[org]
+  const inTopics = await getTopicJSON(orgId, startDate, endDate)
+  fs.writeFileSync(`./topics_${org}.json`, JSON.stringify(inTopics))
+
+  const rawTopics = JSON.parse(fs.readFileSync(`./topics_${org}.json`, 'utf-8')) as Awaited<
+    ReturnType<typeof getTopicJSON>
+  >
+  const hotTopics = rawTopics
+  // .filter((t) => t.voteCount > 2)
+  // .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
+  type IDLookup = Record<string, string>
+  const idLookup = {
+    team: {} as IDLookup,
+    topic: {} as IDLookup,
+    meeting: {} as IDLookup
+  }
+  const idGenerator = {
+    team: 1,
+    topic: 1,
+    meeting: 1
+  }
+
+  const shortTokenedTopics = hotTopics.map((t) => {
+    const {date, meetingId} = t
+    // const shortTeamId = `t${idGenerator.team++}`
+    // const shortTopicId = `to${idGenerator.topic++}`
+    const shortMeetingId = `m${idGenerator.meeting++}`
+    const shortMeetingDate = new Date(date).toISOString().split('T')[0]
+    // idLookup.team[shortTeamId] = teamId
+    // idLookup.topic[shortTopicId] = topicId
+    idLookup.meeting[shortMeetingId] = meetingId
+    return {
+      ...t,
+      // teamId: shortTeamId,
+      // topicId: shortTopicId,
+      date: shortMeetingDate,
+      meetingId: shortMeetingId
     }
-    const orgId = orgLookup[org]
-    const inTopics = await getTopicJSON(orgId, startDate, endDate)
-    fs.writeFileSync(`./topics_${org}.json`, JSON.stringify(inTopics))
-    console.log('wrote topics!')
-    // return
+  })
+  // fs.writeFileSync('./topics_target_short.json', JSON.stringify(shortTokenedTopics))
+  const yamlData = yaml.dump(shortTokenedTopics, {
+    noCompatMode: true // This option ensures compatibility mode is off
+  })
+  fs.writeFileSync(`./topics_${org}_short.yml`, yamlData)
+  // return
 
-    const rawTopics = JSON.parse(fs.readFileSync(`./topics_${org}.json`, 'utf-8')) as Awaited<
-      ReturnType<typeof getTopicJSON>
-    >
-    console.log('🚀 ~ rawTopics:', rawTopics)
-    const hotTopics = rawTopics
-    // .filter((t) => t.voteCount > 2)
-    // .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
-    type IDLookup = Record<string, string>
-    const idLookup = {
-      team: {} as IDLookup,
-      topic: {} as IDLookup,
-      meeting: {} as IDLookup
-    }
-    const idGenerator = {
-      team: 1,
-      topic: 1,
-      meeting: 1
-    }
-
-    const shortTokenedTopics = hotTopics.map((t) => {
-      const {date, meetingId} = t
-      // const shortTeamId = `t${idGenerator.team++}`
-      // const shortTopicId = `to${idGenerator.topic++}`
-      const shortMeetingId = `m${idGenerator.meeting++}`
-      const shortMeetingDate = new Date(date).toISOString().split('T')[0]
-      // idLookup.team[shortTeamId] = teamId
-      // idLookup.topic[shortTopicId] = topicId
-      idLookup.meeting[shortMeetingId] = meetingId
-      return {
-        ...t,
-        // teamId: shortTeamId,
-        // topicId: shortTopicId,
-        meetingDate: shortMeetingDate,
-        meetingId: shortMeetingId
-      }
-    })
-    console.log('🚀 ~ hotTopics:', hotTopics)
-    console.log('🚀 ~ shortTokenedTopics:', shortTokenedTopics)
-    // fs.writeFileSync('./topics_target_short.json', JSON.stringify(shortTokenedTopics))
-    const yamlData = yaml.dump(shortTokenedTopics, {
-      noCompatMode: true // This option ensures compatibility mode is off
-    })
-    fs.writeFileSync(`./topics_${org}_short.yml`, yamlData)
-    // return
-
-    const summarizingPrompt = `
+  const summarizingPrompt = `
   You are a management consultant who needs to discover behavioral trends for a given team.
   Below is a list of reflection topics in YAML format from meetings over the last 3 months.
   You should describe the situation in two sections with no more than 3 bullet points each.
@@ -229,17 +213,23 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   The format of the subject line should be the following: Subject: [Team Name] [Short description of the negative behavior]
   Your tone should be kind and professional. No yapping.`
 
-    const batch = await openAI.batchChatCompletion(summarizingPrompt, yamlData)
-    console.log('🚀 ~ batch:', batch)
+  const batch = await openAI.batchChatCompletion(summarizingPrompt, yamlData)
 
-    // const meetingIdRegex = /\/meet\/([m|t|to]\d+)/gm
-    // const fixedUrls = summaryEmail!.replace(meetingIdRegex, (_, meetingId) => {
-    //   return `/meet/${idLookup.meeting[meetingId]}`
-    // })
-    process.exit()
+  const replaceShortTokensWithUrls = (text: string, lookup: IDLookup) => {
+    return text.replace(/https:\/\/action\.parabol\.co\/meet\/(m\d+)/g, (_, shortMeetingId) => {
+      const actualMeetingId = lookup.meeting[shortMeetingId]
+      return `https://action.parabol.co/meet/${actualMeetingId}`
+    })
   }
 
-  doWork()
+  if (!batch) return null
+
+  const insight = replaceShortTokensWithUrls(batch, idLookup)
+
+  // const meetingIdRegex = /\/meet\/([m|t|to]\d+)/gm
+  // const fixedUrls = summaryEmail!.replace(meetingIdRegex, (_, meetingId) => {
+  //   return `/meet/${idLookup.meeting[meetingId]}`
+  // })
 
   // RESOLUTION
   const data = {}
