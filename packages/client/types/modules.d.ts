@@ -35,6 +35,8 @@ interface Window {
     github: string
     google: string
     googleAnalytics: string
+    mattermostDisabled: boolean | undefined
+    msTeamsDisabled: boolean | undefined
     publicPath: string
     sentry: string
     slack: string
