@@ -46,6 +46,11 @@ const TeamPromptWorkDrawer = (props: Props) => {
                   id
                 }
               }
+              gcal {
+                cloudProvider {
+                  id
+                }
+              }
             }
           }
         }
@@ -56,6 +61,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const atmosphere = useAtmosphere()
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
+  const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Your Work Drawer Impression', {
@@ -96,12 +102,16 @@ const TeamPromptWorkDrawer = (props: Props) => {
     ...(AtlassianClientManager.isAvailable
       ? [{icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel}]
       : []),
-    {
-      icon: <img className='h-6 w-6' src={gcalLogo} />,
-      service: 'gcal',
-      label: 'Google Calendar',
-      Component: GCalIntegrationPanel
-    }
+    ...(hasGCal
+      ? [
+          {
+            icon: <img className='h-6 w-6' src={gcalLogo} />,
+            service: 'gcal',
+            label: 'Google Calendar',
+            Component: GCalIntegrationPanel
+          }
+        ]
+      : [])
   ] as const
 
   const {Component} = baseTabs[activeIdx]!
