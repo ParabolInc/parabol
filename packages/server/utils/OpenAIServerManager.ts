@@ -339,6 +339,36 @@ class OpenAIServerManager {
       return null
     }
   }
+
+  // TODO: actually batch the completions
+  async batchChatCompletion(prompt: string, yamlData: string) {
+    if (!this.openAIApi) return null
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: `${prompt}\n\n${yamlData}`
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const completionText = (response.choices[0]?.message?.content?.trim() as string) ?? null
+      return completionText
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to generate the batch completion')
+      Logger.error(error.message)
+      sendToSentry(error)
+      return null
+    }
+  }
 }
 
 export default OpenAIServerManager

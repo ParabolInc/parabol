@@ -1,0 +1,18 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  generateInsight(teamId: ID!): GenerateInsightPayload!
+}
+
+"""
+Return value for generateInsight, which could be an error
+"""
+union GenerateInsightPayload = ErrorPayload | GenerateInsightSuccess
+
+type GenerateInsightSuccess {
+  """
+  Describe the first return field here
+  """
+  successField: ID!
+}
