@@ -139,16 +139,17 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
-  const {teamId, meetingSeriesId} = meeting
-  if (!meetingSeriesId) {
-    return standardError(new Error('Meeting is not recurring'), {userId: viewerId})
-  }
+  const {teamId, meetingType, meetingSeriesId} = meeting
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 
-  if (meeting.meetingSeriesId) {
-    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
+  if (meetingType !== 'teamPrompt' && meetingType !== 'retrospective') {
+    return standardError(new Error('Recurring meeting type is not implemented'), {userId: viewerId})
+  }
+
+  if (meetingSeriesId) {
+    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
     const {gcalSeriesId, teamId, facilitatorId, recurrenceRule} = meetingSeries
 
     if (!recurrenceSettings.rrule) {
