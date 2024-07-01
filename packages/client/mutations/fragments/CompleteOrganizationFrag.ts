@@ -23,5 +23,6 @@ graphql`
     periodStart
     periodEnd
     tier
+    billingTier
   }
 `

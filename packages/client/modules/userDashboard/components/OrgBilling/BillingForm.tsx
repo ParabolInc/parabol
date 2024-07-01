@@ -6,8 +6,12 @@ import {
   useElements,
   useStripe
 } from '@stripe/react-stripe-js'
-import {StripeElementChangeEvent} from '@stripe/stripe-js'
-import React, {useState} from 'react'
+import {
+  StripeCardNumberElement,
+  StripeCardNumberElementOptions,
+  StripeElementChangeEvent
+} from '@stripe/stripe-js'
+import React, {MutableRefObject, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
@@ -48,7 +52,8 @@ const ErrorMsg = styled(StyledError)({
   textTransform: 'none'
 })
 
-const CARD_ELEMENT_OPTIONS = {
+const CARD_ELEMENT_OPTIONS: StripeCardNumberElementOptions = {
+  disableLink: true,
   style: {
     base: {
       color: PALETTE.SLATE_800,
@@ -64,10 +69,11 @@ const CARD_ELEMENT_OPTIONS = {
 
 type Props = {
   orgId: string
+  cardNumberRef: MutableRefObject<StripeCardNumberElement | null>
 }
 
 const BillingForm = (props: Props) => {
-  const {orgId} = props
+  const {cardNumberRef, orgId} = props
   const stripe = useStripe()
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
@@ -191,6 +197,9 @@ const BillingForm = (props: Props) => {
 
         <div className='mt-1'>
           <CardNumberElement
+            onReady={(e) => {
+              cardNumberRef.current = e
+            }}
             className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
             options={CARD_ELEMENT_OPTIONS}
             onChange={handleChange('CardNumber')}
