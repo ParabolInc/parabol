@@ -5,6 +5,8 @@ import {useFragment} from 'react-relay'
 import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
+import AtlassianClientManager from '../../utils/AtlassianClientManager'
+import GitHubClientManager from '../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
 import JiraSVG from '../JiraSVG'
@@ -81,8 +83,19 @@ const TeamPromptWorkDrawer = (props: Props) => {
           }
         ]
       : []),
-    {icon: <GitHubSVG />, service: 'github', label: 'GitHub', Component: GitHubIntegrationPanel},
-    {icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel},
+    ...(GitHubClientManager.isAvailable
+      ? [
+          {
+            icon: <GitHubSVG />,
+            service: 'github',
+            label: 'GitHub',
+            Component: GitHubIntegrationPanel
+          }
+        ]
+      : []),
+    ...(AtlassianClientManager.isAvailable
+      ? [{icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel}]
+      : []),
     {
       icon: <img className='h-6 w-6' src={gcalLogo} />,
       service: 'gcal',

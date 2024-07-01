@@ -8,6 +8,8 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
+import AtlassianClientManager from '../utils/AtlassianClientManager'
+import GitHubClientManager from '../utils/GitHubClientManager'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
@@ -148,8 +150,18 @@ const ScopePhaseArea = (props: Props) => {
   const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
 
   const baseTabs = [
-    {icon: <GitHubSVG />, label: 'GitHub', allow: true, Component: ScopePhaseAreaGitHub},
-    {icon: <JiraSVG />, label: 'Jira', allow: true, Component: ScopePhaseAreaJira},
+    {
+      icon: <GitHubSVG />,
+      label: 'GitHub',
+      allow: GitHubClientManager.isAvailable,
+      Component: ScopePhaseAreaGitHub
+    },
+    {
+      icon: <JiraSVG />,
+      label: 'Jira',
+      allow: AtlassianClientManager.isAvailable,
+      Component: ScopePhaseAreaJira
+    },
     {
       icon: <ParabolLogoSVG />,
       label: 'Parabol',
