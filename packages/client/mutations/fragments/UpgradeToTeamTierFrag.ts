@@ -12,6 +12,9 @@ graphql`
         tier
       }
       tier
+      billingTier
+      isBillingLeader
+      isOrgAdmin
       periodEnd
       periodStart
       updatedAt
