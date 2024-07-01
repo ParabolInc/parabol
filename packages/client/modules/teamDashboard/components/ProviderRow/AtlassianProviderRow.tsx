@@ -86,6 +86,8 @@ const AtlassianProviderRow = (props: Props) => {
     return message
   }, [error])
 
+  if (!AtlassianClientManager.isAvailable) return null
+
   return (
     <>
       <ProviderRow
