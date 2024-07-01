@@ -8,7 +8,7 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       authStrategy: 'oauth2',
       scope: 'global',
       teamId: 'aGhostTeam',
-      serverBaseUrl: 'https://gitlab.com',
+      serverBaseUrl: process.env.GITLAB_SERVER_URL ?? 'https://gitlab.com',
       clientId: process.env.GITLAB_CLIENT_ID,
       clientSecret: process.env.GITLAB_CLIENT_SECRET
     },
