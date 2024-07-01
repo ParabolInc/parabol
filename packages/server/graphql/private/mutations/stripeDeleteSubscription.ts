@@ -32,8 +32,10 @@ const stripeDeleteSubscription: MutationResolvers['stripeDeleteSubscription'] = 
   const org: Organization = await dataLoader.get('organizations').load(orgId)
 
   const {stripeSubscriptionId} = org
+  if (!stripeSubscriptionId) return false
+
   if (stripeSubscriptionId !== subscriptionId) {
-    throw new Error('Subscription ID does not match')
+    throw new Error(`Subscription ID does not match: ${stripeSubscriptionId} vs ${subscriptionId}`)
   }
   await getKysely()
     .updateTable('Organization')

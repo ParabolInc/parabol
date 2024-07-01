@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "7.37.6",
+  "version": "7.37.8",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -144,7 +144,6 @@
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
     "tslib": "^2.4.0",
-    "unicode-substring": "^1.0.0",
-    "use-debounce": "^10.0.0"
+    "unicode-substring": "^1.0.0"
   }
 }

@@ -29,8 +29,10 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const userId = getUserId(authToken)
   const manager = getStripeManager()
   const invoice = await manager.retrieveInvoice(invoiceId)
-  const customerId = invoice.customer as string
-  const customer = await manager.retrieveCustomer(customerId)
+  const stripeId = invoice.customer as string
+  const stripeSubscriptionId = invoice.subscription as string
+  const customer = await manager.retrieveCustomer(stripeId)
+
   if (customer.deleted) {
     return standardError(new Error('Customer has been deleted'), {userId})
   }
@@ -52,24 +54,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     dataLoader.get('users').loadNonNull(viewerId)
   ])
 
-  const {
-    stripeId,
-    tier,
-    activeDomain,
-    name: orgName,
-    stripeSubscriptionId,
-    trialStartDate
-  } = organization
-
-  if (!stripeId) {
-    return standardError(new Error('Organization does not have a stripe id'), {
-      userId: viewerId
-    })
-  }
-
-  if (!stripeSubscriptionId) {
-    return standardError(new Error('Organization does not have a subscription'), {userId: viewerId})
-  }
+  const {tier, activeDomain, name: orgName, trialStartDate} = organization
 
   if (tier === 'enterprise') {
     return standardError(new Error("Can not change an org's plan from enterprise to team"), {
@@ -92,7 +77,9 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
         tierLimitExceededAt: null,
         scheduledLockAt: null,
         lockedAt: null,
-        trialStartDate: null
+        trialStartDate: null,
+        stripeId,
+        stripeSubscriptionId
       })
       .where('id', '=', orgId)
       .execute(),
@@ -104,7 +91,9 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
         scheduledLockAt: null,
         lockedAt: null,
         updatedAt: now,
-        trialStartDate: null
+        trialStartDate: null,
+        stripeId,
+        stripeSubscriptionId
       })
     }).run(),
     pg
@@ -145,10 +134,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const data = {orgId, teamIds, meetingIds}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierSuccess', data, subOptions)
 
-  teamIds.forEach((teamId) => {
-    const teamData = {orgId, teamIds: [teamId]}
-    publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToTeamTierSuccess', teamData, subOptions)
-  })
   return data
 }
 

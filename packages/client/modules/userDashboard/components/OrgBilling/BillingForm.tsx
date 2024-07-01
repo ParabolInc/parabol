@@ -8,6 +8,7 @@ import {
 } from '@stripe/react-stripe-js'
 import {StripeElementChangeEvent} from '@stripe/stripe-js'
 import React, {useState} from 'react'
+import {commitLocalUpdate} from 'relay-runtime'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -15,8 +16,10 @@ import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
+import upgradeToTeamTierSuccessUpdater from '../../../../mutations/handlers/upgradeToTeamTierSuccessUpdater'
 import {PALETTE} from '../../../../styles/paletteV3'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
+import createProxyRecord from '../../../../utils/relay/createProxyRecord'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -131,6 +134,11 @@ const BillingForm = (props: Props) => {
         setIsLoading(false)
         return
       }
+      commitLocalUpdate(atmosphere, (store) => {
+        const payload = createProxyRecord(store, 'payload', {})
+        payload.setLinkedRecord(store.get(orgId)!, 'organization')
+        upgradeToTeamTierSuccessUpdater(payload)
+      })
       onCompleted()
     }
 

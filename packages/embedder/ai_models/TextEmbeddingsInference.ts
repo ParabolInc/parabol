@@ -77,7 +77,7 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
       body: {inputs: content}
     })
     if (error) {
-      if (response.status !== 429 || retries < 1) return new Error(error.error)
+      if (response?.status !== 429 || retries < 1) return new Error(error.error)
       await sleep(2000)
       return this.getEmbedding(content, retries - 1)
     }

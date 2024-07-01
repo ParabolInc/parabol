@@ -1,5 +1,5 @@
 import faker from 'faker'
-import {sendIntranet, signUp, signUpWithEmail} from './common'
+import {sendIntranet, sendPublic, signUp, signUpWithEmail} from './common'
 
 test('Get user by id', async () => {
   const {email, userId} = await signUp()
@@ -119,6 +119,68 @@ test('First user is patientZero', async () => {
       user: {
         id: user2Id,
         isPatient0: false
+      }
+    }
+  })
+})
+
+// The tests only work after the embeddings were generated, which is not the case on CI
+test.skip.each([
+  ['card game', ['moscowPrioritizationTemplate', 'estimatedEffortTemplate', 'wsjfTemplate']],
+  ['winning loosing', ['winningStreakTemplate']],
+  [
+    'project failure',
+    [
+      'whyDidTheProjectFailPremortemTemplate',
+      'successAndFailurePremortemTemplate',
+      'postmortemAnalysisTemplate',
+      'blamelessPostmortemTemplate',
+      'simplePostmortemTemplate',
+      'softwareProjectPostmortemTemplate',
+      'movieDirectorPostmortemTemplate',
+      'fortuneTellerPremortemTemplate',
+      'timelinePremortemTemplate',
+      'howLikelyToFailPremortemTemplate',
+      'engineeringPostmortemTemplate',
+      'resourceAllocationPremortemTemplate',
+      'processImprovementPostmortemTemplate',
+      'incidentImpactPostmortemTemplate',
+      'bestworstCaseScenarioPremortemTemplate',
+      'gameShowPostmortemTemplate',
+      'timeTravelPostmortemTemplate',
+      'teamEfficiencyPremortemTemplate',
+      'risksAndPrecautionsPremortemTemplate',
+      'obstacleCoursePremortemTemplate',
+      'stakeholderSatisfactionPostmortemTemplate'
+    ]
+  ],
+  ['christmas', ['aChristmasCarolRetrospectiveTemplate']],
+  ['risk management', ['riskManagementPostmortemTemplate', 'risksAndPrecautionsPremortemTemplate']],
+  ['animals', ['iguanaCrocodileKomodoDragonPremortemTemplate']],
+  ['plants', ['roseThornBudTemplate']]
+])('Template search - %s', async (search, templateIds) => {
+  const {authToken} = await signUp()
+
+  const user = await sendPublic({
+    query: `
+      query Template($search: String!) {
+        viewer {
+          templateSearch(search: $search) {
+            id
+          }
+        }
+      }
+    `,
+    variables: {
+      search
+    },
+    authToken
+  })
+
+  expect(user).toMatchObject({
+    data: {
+      viewer: {
+        templateSearch: expect.arrayContaining(templateIds.map((id) => ({id})))
       }
     }
   })

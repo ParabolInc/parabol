@@ -16,18 +16,13 @@ graphql`
       periodStart
       updatedAt
       lockedAt
+      teams {
+        isPaid
+        tier
+      }
     }
     meetings {
       showConversionModal
-    }
-  }
-`
-
-graphql`
-  fragment UpgradeToTeamTierFrag_team on UpgradeToTeamTierSuccess {
-    teams {
-      isPaid
-      tier
     }
   }
 `
