@@ -28,6 +28,7 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
   const onClick = () => {
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
+  if (!AtlassianClientManager.isAvailable) return null
   return (
     <MenuItem
       ref={ref}
