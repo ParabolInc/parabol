@@ -39,15 +39,10 @@ const ScheduleMeetingButton = (props: Props) => {
       fragment ScheduleMeetingButton_team on Team {
         id
         viewerTeamMember {
-          isSelf
           integrations {
             gcal {
-              auth {
-                id
-              }
               cloudProvider {
                 id
-                clientId
               }
             }
           }
@@ -73,7 +68,7 @@ const ScheduleMeetingButton = (props: Props) => {
     closeModal()
   }
 
-  if (!cloudProvider) return null
+  if (!cloudProvider && !withRecurrence) return null
   return (
     <>
       <SecondaryButton onClick={handleClick} waiting={submitting} className='h-14'>
