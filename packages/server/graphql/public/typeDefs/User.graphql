@@ -445,6 +445,16 @@ type User {
   ): MeetingTemplateConnection!
 
   """
+  Activities available to the user matching the search
+  """
+  templateSearch(
+    """
+    Search query
+    """
+    search: String!
+  ): [MeetingTemplate!]!
+
+  """
   A prototype for a team experience. Includes meeting templates and meeting types that have no templates
   """
   activity(

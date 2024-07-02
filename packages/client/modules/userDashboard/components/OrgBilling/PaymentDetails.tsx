@@ -1,14 +1,13 @@
 import styled from '@emotion/styled'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
-import {loadStripe} from '@stripe/stripe-js'
+import {StripeCardNumberElement, loadStripe} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {MutableRefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
@@ -96,12 +95,12 @@ const ActiveUserBlock = styled('div')({
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
+  cardNumberRef: MutableRefObject<StripeCardNumberElement | null>
   organizationRef: PaymentDetails_organization$key
-  hasSelectedTeamPlan: boolean
 }
 
 const PaymentDetails = (props: Props) => {
-  const {organizationRef, hasSelectedTeamPlan} = props
+  const {cardNumberRef, organizationRef} = props
 
   const organization = useFragment(
     graphql`
@@ -118,7 +117,6 @@ const PaymentDetails = (props: Props) => {
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
   const ref = useRef<HTMLDivElement | null>(null)
-  useScrollIntoView(ref, hasSelectedTeamPlan)
 
   return (
     <StyledPanel label='Credit Card'>
@@ -127,7 +125,7 @@ const PaymentDetails = (props: Props) => {
           <Title>{'Credit Card Details'}</Title>
           <Content>
             <Elements stripe={stripePromise}>
-              <BillingForm orgId={orgId} />
+              <BillingForm cardNumberRef={cardNumberRef} orgId={orgId} />
             </Elements>
           </Content>
         </Plan>

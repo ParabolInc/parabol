@@ -8,6 +8,7 @@ import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
+import getKysely from '../../../postgres/getKysely'
 import {
   getUserId,
   isSuperUser,
@@ -183,6 +184,73 @@ const User: UserResolvers = {
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
 
     return connectionFromTemplateArray(allActivities, first, after)
+  },
+  templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {
+    if (!search) return []
+    const viewerId = getUserId(authToken)
+    const user = await dataLoader.get('users').loadNonNull(userId)
+    const teamIds =
+      viewerId === userId || isSuperUser(authToken)
+        ? user.tms
+        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
+    const userOrgIds = organizationUsers.map(({orgId}) => orgId)
+
+    const allOrgTeams = (await dataLoader.get('teamsByOrgIds').loadMany(userOrgIds))
+      .filter(isValid)
+      .flat()
+    // all team ids which could have accessible templates
+    const allTeamIds = ['aGhostTeam', ...allOrgTeams.map(({id}) => id)]
+
+    const response = await fetch('http://localhost:3040/embed', {
+      method: 'POST',
+      body: JSON.stringify({inputs: search}),
+      headers: {'Content-Type': 'application/json'}
+    })
+    const data = await response.json()
+
+    const MODEL = 'Embeddings_ember_1'
+    const SIMILARITY_THRESHOLD = 0.5
+
+    const pg = getKysely()
+    const similarEmbeddings = await pg
+      .with('Model', (qc) =>
+        qc
+          .selectFrom(MODEL)
+          .innerJoin('EmbeddingsMetadata', 'EmbeddingsMetadata.id', `${MODEL}.embeddingsMetadataId`)
+          .select([`${MODEL}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
+          .where('objectType', '=', 'meetingTemplate')
+          .where('teamId', 'in', allTeamIds)
+      )
+      .with('CosineSimilarity', (pg) =>
+        pg
+          .selectFrom(['Model'])
+          .select(({eb, val, parens, ref}) => [
+            ref('Model.id').as('embeddingId'),
+            ref('Model.embeddingsMetadataId').as('embeddingsMetadataId'),
+            ref('Model.refId').as('refId'),
+            eb(
+              val(1),
+              '-',
+              parens('Model.embedding' as any, '<=>' as any, JSON.stringify(data[0]))
+            ).as('similarity')
+          ])
+      )
+      .selectFrom('CosineSimilarity')
+      .select(['embeddingId', 'similarity', 'embeddingsMetadataId', 'refId'])
+      .where('similarity', '>=', SIMILARITY_THRESHOLD)
+      .orderBy('similarity', 'desc')
+      .execute()
+
+    const aiActivityIds = similarEmbeddings.map(({refId}) => refId)
+
+    // TODO filter out seasonal templates
+    const activities = await dataLoader.get('meetingTemplates').loadMany(aiActivityIds)
+    const accessibleActivities = activities.filter(isValid).filter((activity) => {
+      return activity.scope !== 'TEAM' || teamIds.includes(activity.teamId)
+    })
+    return accessibleActivities
   },
   parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
     const metadata = await getSSOMetadataFromURL(metadataURL)

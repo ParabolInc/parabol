@@ -27,7 +27,7 @@ export const importHistoricalRetrospectiveDiscussionTopic = async () => {
   const earliestImportedDiscussion = await pg
     .selectFrom('EmbeddingsMetadata')
     .select(['id', 'refUpdatedAt', 'refId'])
-    .where('objectType', '=', 'retrospectiveDiscussionTopic')
+    .where('objectType', '=', 'meetingTemplate')
     .orderBy('refUpdatedAt')
     .limit(1)
     .executeTakeFirst()
