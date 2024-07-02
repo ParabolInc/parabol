@@ -2,7 +2,7 @@ extend type Mutation {
   """
   Describe the mutation here
   """
-  generateInsight(teamId: ID!): GenerateInsightPayload!
+  generateInsight(teamId: ID, orgId: ID): GenerateInsightPayload!
 }
 
 """

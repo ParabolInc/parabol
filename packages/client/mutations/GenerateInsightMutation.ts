@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-// import {GenerateInsightMutation as TGenerateInsightMutation} from '../__generated__/GenerateInsightMutation.graphql'
+import {GenerateInsightMutation as TGenerateInsightMutation} from '../__generated__/GenerateInsightMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
 graphql`
@@ -10,8 +10,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation GenerateInsightMutation($teamId: ID!) {
-    generateInsight(teamId: $teamId) {
+  mutation GenerateInsightMutation($teamId: ID, $orgId: ID) {
+    generateInsight(teamId: $teamId, orgId: $orgId) {
       ... on ErrorPayload {
         error {
           message
@@ -22,17 +22,14 @@ const mutation = graphql`
   }
 `
 
-const GenerateInsightMutation: StandardMutation<any> = (
+const GenerateInsightMutation: StandardMutation<TGenerateInsightMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<any>(atmosphere, {
+  return commitMutation<TGenerateInsightMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {} = variables
-    },
     onCompleted,
     onError
   })
