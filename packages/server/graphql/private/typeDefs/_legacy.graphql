@@ -450,7 +450,7 @@ type Mutation {
   """
   When stripe tells us a subscription was updated, update the details in our own DB
   """
-  stripeUpdateSubscription(
+  stripeCreateSubscription(
     """
     The stripe customer ID, or stripeId
     """
@@ -1122,7 +1122,7 @@ type JiraServerIssue implements TaskIntegration {
   The description converted into raw HTML
   """
   descriptionHTML: String!
-  
+
   """
   The timestamp the issue was last updated
   """
