@@ -101,6 +101,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   if (!stripeId) {
     // create the customer
     const customer = await manager.createCustomer(orgId, apEmail || user.email)
+    if (customer instanceof Error) throw customer
     await r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
     customerId = customer.id
   } else {

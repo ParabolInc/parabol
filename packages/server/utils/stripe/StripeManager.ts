@@ -96,19 +96,23 @@ export default class StripeManager {
     paymentMethodId?: string | undefined,
     source?: string
   ) {
-    return this.stripe.customers.create({
-      email,
-      source,
-      payment_method: paymentMethodId,
-      invoice_settings: paymentMethodId
-        ? {
-            default_payment_method: paymentMethodId
-          }
-        : undefined,
-      metadata: {
-        orgId
-      }
-    })
+    try {
+      return await this.stripe.customers.create({
+        email,
+        source,
+        payment_method: paymentMethodId,
+        invoice_settings: paymentMethodId
+          ? {
+              default_payment_method: paymentMethodId
+            }
+          : undefined,
+        metadata: {
+          orgId
+        }
+      })
+    } catch (e) {
+      return e as Error
+    }
   }
 
   async createEnterpriseSubscription(

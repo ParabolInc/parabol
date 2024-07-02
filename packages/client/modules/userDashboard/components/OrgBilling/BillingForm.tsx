@@ -76,10 +76,8 @@ const BillingForm = (props: Props) => {
   const {cardNumberRef, orgId} = props
   const stripe = useStripe()
   const elements = useElements()
-  const [isLoading, setIsLoading] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
-  const [errorMsg, setErrorMsg] = useState<null | string>()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const [hasStarted, setHasStarted] = useState(false)
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
@@ -94,22 +92,16 @@ const BillingForm = (props: Props) => {
     !cardNumberError &&
     !expiryDateError &&
     !cvcError
-  const isUpgradeDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
+  const isUpgradeDisabled = submitting || !stripe || !elements || !hasValidCCDetails
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!stripe || !elements) return
-    setIsLoading(true)
-    if (errorMsg) {
-      setIsLoading(false)
-      setErrorMsg(null)
-      return
-    }
+    submitMutation()
+
     const cardElement = elements.getElement(CardNumberElement)
     if (!cardElement) {
-      setIsLoading(false)
-      const newErrorMsg = 'Something went wrong. Please try again.'
-      setErrorMsg(newErrorMsg)
+      onError(new Error('Something went wrong. Please try again.'))
       return
     }
     const {paymentMethod, error} = await stripe.createPaymentMethod({
@@ -117,8 +109,7 @@ const BillingForm = (props: Props) => {
       card: cardElement
     })
     if (error) {
-      setErrorMsg(error.message)
-      setIsLoading(false)
+      onError(new Error(error.message))
       return
     }
 
@@ -130,14 +121,12 @@ const BillingForm = (props: Props) => {
         const newErrMsg =
           createStripeSubscription.error?.message ??
           'Something went wrong. Please try again or contact support.'
-        setIsLoading(false)
-        setErrorMsg(newErrMsg)
+        onError(new Error(newErrMsg))
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
       if (error) {
-        setErrorMsg(error.message)
-        setIsLoading(false)
+        onError(new Error(error.message))
         return
       }
       commitLocalUpdate(atmosphere, (store) => {
@@ -157,7 +146,7 @@ const BillingForm = (props: Props) => {
 
   const handleChange =
     (type: 'CardNumber' | 'ExpiryDate' | 'CVC') => (event: StripeElementChangeEvent) => {
-      if (errorMsg) setErrorMsg(null)
+      if (error) onCompleted()
       if (!hasStarted && !event.empty) {
         SendClientSideEvent(atmosphere, 'Payment Details Started', {orgId})
         setHasStarted(true)
@@ -237,14 +226,14 @@ const BillingForm = (props: Props) => {
         </div>
       </div>
       <ButtonBlock>
-        {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
+        {error && <ErrorMsg>{error.message}</ErrorMsg>}
         <UpgradeButton
           size='medium'
           disabled={isUpgradeDisabled}
           isDisabled={isUpgradeDisabled}
           type={'submit'}
         >
-          {isLoading ? (
+          {submitting ? (
             <>
               Upgrading <Ellipsis />
             </>
