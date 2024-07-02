@@ -3,6 +3,7 @@ import sendTeamsLimitEmail from '../../billing/helpers/sendTeamsLimitEmail'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
+import getKysely from '../../postgres/getKysely'
 import NotificationTeamsLimitReminder from './NotificationTeamsLimitReminder'
 import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
@@ -27,7 +28,14 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
 
   if (type === 'LOCK_ORGANIZATION') {
     const now = new Date()
-    await r.table('Organization').get(orgId).update({lockedAt: now}).run()
+    await Promise.all([
+      getKysely()
+        .updateTable('Organization')
+        .set({lockedAt: now})
+        .where('id', '=', 'orgId')
+        .execute(),
+      r.table('Organization').get(orgId).update({lockedAt: now}).run()
+    ])
     organization.lockedAt = lockedAt
   } else if (type === 'WARN_ORGANIZATION') {
     const notificationsToInsert = billingLeadersIds.map((userId) => {

@@ -8,6 +8,7 @@ import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
 import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTemplate'
 import getMailManager from '../../../email/getMailManager'
+import getKysely from '../../../postgres/getKysely'
 import IUser from '../../../postgres/types/IUser'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -134,6 +135,11 @@ const sendUpcomingInvoiceEmails: MutationResolvers['sendUpcomingInvoiceEmails'] 
     })
   )
   const orgIds = organizations.map(({id}) => id)
+  await getKysely()
+    .updateTable('Organization')
+    .set({upcomingInvoiceEmailSentAt: now})
+    .where('id', 'in', orgIds)
+    .execute()
   await r
     .table('Organization')
     .getAll(r.args(orgIds))

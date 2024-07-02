@@ -38,7 +38,7 @@ export default {
     }
 
     // RESOLUTION
-    const {stripeId} = await r.table('Organization').get(orgId).pluck('stripeId').run()
+    const {stripeId} = await dataLoader.get('organizations').load(orgId)
     const dbAfter = after ? new Date(after) : r.maxval
     const [tooManyInvoices, orgUserCount] = await Promise.all([
       r

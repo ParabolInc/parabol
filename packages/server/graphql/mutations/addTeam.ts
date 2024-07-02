@@ -85,7 +85,7 @@ export default {
 
       // RESOLUTION
       const teamId = generateUID()
-      await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, ...newTeam})
+      await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, ...newTeam}, dataLoader)
 
       const {tms} = authToken
       // MUTATIVE

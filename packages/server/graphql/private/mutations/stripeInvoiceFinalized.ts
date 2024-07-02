@@ -6,7 +6,7 @@ import {MutationResolvers} from '../resolverTypes'
 const stripeInvoiceFinalized: MutationResolvers['stripeInvoiceFinalized'] = async (
   _source,
   {invoiceId},
-  {authToken}
+  {authToken, dataLoader}
 ) => {
   const r = await getRethink()
   const now = new Date()
@@ -29,7 +29,7 @@ const stripeInvoiceFinalized: MutationResolvers['stripeInvoiceFinalized'] = asyn
     livemode,
     metadata: {orgId}
   } = customer
-  const org = await r.table('Organization').get(orgId).run()
+  const org = await dataLoader.get('organizations').load(orgId!)
   if (!org) {
     if (livemode) {
       throw new Error(

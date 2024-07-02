@@ -1,4 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
@@ -23,6 +25,14 @@ const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = asyn
   const {
     metadata: {orgId}
   } = customer
+  if (!orgId) {
+    throw new Error('Unable to update credit card as customer does not have an orgId')
+  }
+  await getKysely()
+    .updateTable('Organization')
+    .set({creditCard: toCreditCard(creditCard)})
+    .where('id', '=', orgId)
+    .execute()
   await r.table('Organization').get(orgId).update({creditCard}).run()
   return true
 }

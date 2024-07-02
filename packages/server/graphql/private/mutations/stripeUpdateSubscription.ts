@@ -1,4 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
@@ -28,6 +29,13 @@ const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = 
     throw new Error(`orgId not found on metadata for customer ${customerId}`)
   }
 
+  await getKysely()
+    .updateTable('Organization')
+    .set({
+      stripeSubscriptionId: subscriptionId
+    })
+    .where('id', '=', orgId)
+    .execute()
   await r
     .table('Organization')
     .get(orgId)
