@@ -4,11 +4,13 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import sendToSentry from '../../../utils/sendToSentry'
 import {MutationResolvers} from '../resolverTypes'
 
 const generateInsight: MutationResolvers['generateInsight'] = async (
   _source,
-  {teamId},
+  // {teamId, orgId, startDate, endDate},
+  {teamId, orgId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const getComments = async (reflectionGroupId: string) => {
@@ -63,9 +65,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     return comments
   }
 
-  const getTopicJSON = async (orgId: string, startDate: Date, endDate: Date) => {
-    const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
-    const teamIds = teams.map((team) => team.id)
+  const getTopicJSON = async (teamIds: string[], startDate: Date, endDate: Date) => {
     const r = await getRethink()
     const MIN_REFLECTION_COUNT = 3
     const rawMeetings = await r
@@ -82,12 +82,10 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
           id: meetingId,
           disableAnonymity,
           teamId,
-          // templateId,
           name: meetingName,
           createdAt: meetingDate
         } = meeting as MeetingRetrospective
         const [team, rawReflectionGroups] = await Promise.all([
-          // dataLoader.get('meetingTemplates').loadNonNull(templateId),
           dataLoader.get('teams').loadNonNull(teamId),
           dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
         ])
@@ -128,7 +126,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                 meetingName,
                 date: meetingDate,
                 meetingId,
-                // meetingTemplateName,
                 teamName
                 // teamId
               }
@@ -145,19 +142,24 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   }
 
   const openAI = new OpenAIServerManager()
-  const org = 'parabol'
+
+  const getTeamIds = async (orgId?: string, teamId?: string) => {
+    if (teamId) return [teamId]
+    const teams = await dataLoader.get('teamsByOrgIds').load(orgId!)
+    return teams.map((team) => team.id)
+  }
+
+  const teamIds = await getTeamIds(orgId, teamId)
+
   const startDate = new Date('2024-01-01')
   // const endDate = new Date('2024-04-01')
   const endDate = new Date()
 
-  const orgLookup = {
-    parabol: 'y3ZJgMy6hq'
-  }
-  const orgId = orgLookup[org]
-  const inTopics = await getTopicJSON(orgId, startDate, endDate)
-  fs.writeFileSync(`./topics_${org}.json`, JSON.stringify(inTopics))
+  const identifier = teamId ?? orgId
+  const inTopics = await getTopicJSON(teamIds, startDate, endDate)
+  fs.writeFileSync(`./topics_${identifier}.json`, JSON.stringify(inTopics))
 
-  const rawTopics = JSON.parse(fs.readFileSync(`./topics_${org}.json`, 'utf-8')) as Awaited<
+  const rawTopics = JSON.parse(fs.readFileSync(`./topics_${identifier}.json`, 'utf-8')) as Awaited<
     ReturnType<typeof getTopicJSON>
   >
   const hotTopics = rawTopics
@@ -165,29 +167,20 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   // .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
   type IDLookup = Record<string, string>
   const idLookup = {
-    team: {} as IDLookup,
-    topic: {} as IDLookup,
     meeting: {} as IDLookup
   }
+
   const idGenerator = {
-    team: 1,
-    topic: 1,
     meeting: 1
   }
-
   const shortTokenedTopics = hotTopics.map((t) => {
     const {date, meetingId} = t
-    // const shortTeamId = `t${idGenerator.team++}`
-    // const shortTopicId = `to${idGenerator.topic++}`
     const shortMeetingId = `m${idGenerator.meeting++}`
     const shortMeetingDate = new Date(date).toISOString().split('T')[0]
-    // idLookup.team[shortTeamId] = teamId
-    // idLookup.topic[shortTopicId] = topicId
+    console.log('🚀 ~ shortMeetingId:', shortMeetingId)
     idLookup.meeting[shortMeetingId] = meetingId
     return {
       ...t,
-      // teamId: shortTeamId,
-      // topicId: shortTopicId,
       date: shortMeetingDate,
       meetingId: shortMeetingId
     }
@@ -196,8 +189,9 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const yamlData = yaml.dump(shortTokenedTopics, {
     noCompatMode: true // This option ensures compatibility mode is off
   })
-  fs.writeFileSync(`./topics_${org}_short.yml`, yamlData)
-  // return
+  fs.writeFileSync(`./topics_${identifier}_short.yml`, yamlData)
+
+  const meetingURL = 'https://action.parabol.co/meet/'
 
   const summarizingPrompt = `
   You are a management consultant who needs to discover behavioral trends for a given team.
@@ -205,7 +199,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   You should describe the situation in two sections with no more than 3 bullet points each.
   The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
   The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
-  When citing the quote, inlcude the meetingId in the format of https://action.parabol.co/meet/[meetingId].
+  When citing the quote, inlcude the meetingId in the format of ${meetingURL}[meetingId].
   For each topic, mention how many votes it has.
   Be sure that each author is only mentioned once.
   Above the two sections, include a short subject line that mentions the team name and summarizes the negative behavior mentioned in the second paragraph.
@@ -214,22 +208,38 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   Your tone should be kind and professional. No yapping.`
 
   const batch = await openAI.batchChatCompletion(summarizingPrompt, yamlData)
-
-  const replaceShortTokensWithUrls = (text: string, lookup: IDLookup) => {
-    return text.replace(/https:\/\/action\.parabol\.co\/meet\/(m\d+)/g, (_, shortMeetingId) => {
-      const actualMeetingId = lookup.meeting[shortMeetingId]
-      return `https://action.parabol.co/meet/${actualMeetingId}`
-    })
+  if (!batch) {
+    const error = new Error('Unable to generate insight.')
+    sendToSentry(error)
+    return null
   }
 
-  if (!batch) return null
+  const lines = batch.split('\n')
 
-  const insight = replaceShortTokensWithUrls(batch, idLookup)
+  const processedLines = lines.map((line) => {
+    const hasMeetingId = line.includes(meetingURL)
+    if (hasMeetingId) {
+      let shortMeetingId = line.split('https://action.parabol.co/meet/')[1]
+      if (shortMeetingId) {
+        shortMeetingId = shortMeetingId.split(/[),]/)[0] // Split by closing parenthesis or comma
+      }
+      console.log('🚀 ~ shortMeetingId:', shortMeetingId)
+      const actualMeetingId = shortMeetingId && idLookup.meeting[shortMeetingId]
+      if (shortMeetingId && actualMeetingId) {
+        return line.replace(shortMeetingId, actualMeetingId)
+      } else {
+        const error = new Error(
+          `AI hallucinated. Unable to find meetingId for ${shortMeetingId}. Line: ${line}`
+        )
+        sendToSentry(error)
+        return ''
+      }
+    }
+    return line
+  })
 
-  // const meetingIdRegex = /\/meet\/([m|t|to]\d+)/gm
-  // const fixedUrls = summaryEmail!.replace(meetingIdRegex, (_, meetingId) => {
-  //   return `/meet/${idLookup.meeting[meetingId]}`
-  // })
+  const insight = processedLines.filter((line) => line.trim() !== '').join('\n')
+  console.log('🚀 ~ insight:', insight)
 
   // RESOLUTION
   const data = {}
