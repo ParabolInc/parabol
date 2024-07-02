@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.1](https://github.com/ParabolInc/parabol/compare/v7.38.0...v7.38.1) (2024-07-02)
+
+
+### Fixed
+
+* Allow starting recurring meetings without GCal ([#9920](https://github.com/ParabolInc/parabol/issues/9920)) ([3f2ca48](https://github.com/ParabolInc/parabol/commit/3f2ca482aef98cf07a7f27b6a3872c9505735334))
+
+
+### Changed
+
+* Read Gitlab server URL from env for prime integrations ([#9910](https://github.com/ParabolInc/parabol/issues/9910)) ([830235d](https://github.com/ParabolInc/parabol/commit/830235ddb5afe4d3e0731181c76930ec0307609d))
+* Show only available integrations ([#9908](https://github.com/ParabolInc/parabol/issues/9908)) ([04bfa6c](https://github.com/ParabolInc/parabol/commit/04bfa6c69c07be8a190542db4a5fb907e43d67ad))
+
 ## [7.38.0](https://github.com/ParabolInc/parabol/compare/v7.37.8...v7.38.0) (2024-07-02)
 
 
