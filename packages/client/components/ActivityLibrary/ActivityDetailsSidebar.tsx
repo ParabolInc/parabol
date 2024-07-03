@@ -5,16 +5,14 @@ import clsx from 'clsx'
 import React, {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
+import {RRule} from 'rrule'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import {
-  CreateGcalEventInput,
-  RecurrenceSettingsInput
-} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
@@ -116,10 +114,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
 
-  const handleStartActivity = (
-    gcalInput?: CreateGcalEventInput,
-    recurrenceSettings?: RecurrenceSettingsInput
-  ) => {
+  const handleStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
     submitMutation()
     if (type === 'teamPrompt') {
@@ -127,12 +122,8 @@ const ActivityDetailsSidebar = (props: Props) => {
         atmosphere,
         {
           teamId: selectedTeam.id,
-          recurrenceSettings: recurrenceSettings
-            ? {
-                rrule: recurrenceSettings.rrule?.toString(),
-                name: recurrenceSettings.name
-              }
-            : undefined,
+          name,
+          rrule,
           gcalInput
         },
         {history, onError, onCompleted}
@@ -155,12 +146,8 @@ const ActivityDetailsSidebar = (props: Props) => {
                 atmosphere,
                 {
                   teamId: selectedTeam.id,
-                  recurrenceSettings: recurrenceSettings
-                    ? {
-                        rrule: recurrenceSettings.rrule?.toString(),
-                        name: recurrenceSettings.name
-                      }
-                    : undefined,
+                  name,
+                  rrule,
                   gcalInput
                 },
                 {history, onError, onCompleted}

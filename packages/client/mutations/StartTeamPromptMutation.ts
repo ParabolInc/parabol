@@ -19,14 +19,11 @@ graphql`
 const mutation = graphql`
   mutation StartTeamPromptMutation(
     $teamId: ID!
-    $recurrenceSettings: RecurrenceSettingsInput
+    $name: String
+    $rrule: RRule
     $gcalInput: CreateGcalEventInput
   ) {
-    startTeamPrompt(
-      teamId: $teamId
-      recurrenceSettings: $recurrenceSettings
-      gcalInput: $gcalInput
-    ) {
+    startTeamPrompt(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
       ... on ErrorPayload {
         error {
           message

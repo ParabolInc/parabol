@@ -7,10 +7,7 @@ import React, {ChangeEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
 import {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
-import {
-  CreateGcalEventInput,
-  RecurrenceSettingsInput
-} from '../__generated__/StartRetrospectiveMutation.graphql'
+import {CreateGcalEventInput} from '../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import {MenuMutationProps} from '../hooks/useMutationProps'
@@ -34,7 +31,7 @@ const validateTitle = (title: string) =>
   new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
 
 interface Props {
-  onStartActivity: (gcalInput?: CreateGcalEventInput, recurrence?: RecurrenceSettingsInput) => void
+  onStartActivity: (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => void
   placeholder: string
   teamRef: ScheduleDialog_team$key
   onCancel: () => void
@@ -101,7 +98,7 @@ export const ScheduleDialog = (props: Props) => {
   }
 
   const handleSubmit = () => {
-    const title = fields.title.value || placeholder
+    const name = fields.title.value || placeholder
     const titleRes = validateTitle(title)
     if (titleRes.error) {
       fields.title.setError(titleRes.error)
@@ -110,7 +107,6 @@ export const ScheduleDialog = (props: Props) => {
 
     const gcalEventInput = addedInvite
       ? {
-          title,
           startTimestamp: gcalInput.start.unix(),
           endTimestamp: gcalInput.end.unix(),
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -118,7 +114,7 @@ export const ScheduleDialog = (props: Props) => {
           videoType: gcalInput.videoType ?? undefined
         }
       : undefined
-    props.onStartActivity(gcalEventInput, rrule ? {rrule} : undefined)
+    props.onStartActivity(name, rrule ?? undefined, gcalEventInput)
   }
 
   const onAddInvite = () => {
@@ -202,7 +198,11 @@ export const ScheduleDialog = (props: Props) => {
             <ExpandMore className={clsx(openRecurrence && 'rotate-180')} />
           </Collapsible.Trigger>
           <Collapsible.Content className='space-y-4'>
-            <RecurrenceSettings title={title} rrule={rrule} onRruleUpdated={setRrule} />
+            <RecurrenceSettings
+              title={title || placeholder}
+              rrule={rrule}
+              onRruleUpdated={setRrule}
+            />
           </Collapsible.Content>
         </Collapsible.Root>
       )}

@@ -889,3 +889,27 @@ export const fileStoreAsset = (parent: RootDataLoader) => {
     }
   )
 }
+
+export const meetingCount = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map(async ({teamId, meetingType}) => {
+          return r
+            .table('NewMeeting')
+            .getAll(teamId, {index: 'teamId'})
+            .filter({meetingType: meetingType as any})
+            .count()
+            .default(0)
+            .run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}

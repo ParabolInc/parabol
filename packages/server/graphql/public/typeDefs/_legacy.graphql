@@ -5851,6 +5851,10 @@ type Mutation {
     """
     teamId: ID!
     """
+    The name of the meeting
+    """
+    name: String
+    """
     The gcal input if creating a gcal event
     """
     gcalInput: CreateGcalEventInput

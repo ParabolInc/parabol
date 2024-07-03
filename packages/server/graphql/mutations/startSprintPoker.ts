@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
@@ -74,6 +74,10 @@ export default {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team starting the meeting'
     },
+    name: {
+      type: GraphQLString,
+      description: 'The name of the meeting'
+    },
     gcalInput: {
       type: CreateGcalEventInput,
       description: 'The gcal event to create. If not provided, no event will be created'
@@ -81,7 +85,11 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {teamId, gcalInput}: {teamId: string; gcalInput?: CreateGcalEventInputType},
+    {
+      teamId,
+      name,
+      gcalInput
+    }: {teamId: string; name: string | null | undefined; gcalInput?: CreateGcalEventInputType},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()
@@ -128,6 +136,7 @@ export default {
     const meeting = new MeetingPoker({
       id: meetingId,
       teamId,
+      name: name ?? `Sprint Poker #${meetingCount + 1}`,
       meetingCount,
       phases,
       facilitatorUserId: viewerId,
@@ -175,7 +184,14 @@ export default {
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewer, meeting, template)
-    const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+    const {error} = await createGcalEvent({
+      name: meeting.name,
+      gcalInput,
+      meetingId,
+      teamId,
+      viewerId,
+      dataLoader
+    })
     const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
     publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)
     return data

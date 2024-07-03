@@ -16,7 +16,7 @@ const safeCreateRetrospective = async (
     videoMeetingURL?: string
     meetingSeriesId?: number
     scheduledEndTime?: Date
-    name?: string
+    name: string
   },
   dataLoader: DataLoaderWorker
 ) => {
@@ -24,13 +24,7 @@ const safeCreateRetrospective = async (
   const {teamId, facilitatorUserId, name} = meetingSettings
   const meetingType: MeetingTypeEnum = 'retrospective'
   const [meetingCount, team] = await Promise.all([
-    r
-      .table('NewMeeting')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({meetingType})
-      .count()
-      .default(0)
-      .run(),
+    dataLoader.get('meetingCount').load({teamId, meetingType}),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
 
@@ -38,7 +32,6 @@ const safeCreateRetrospective = async (
   const {showConversionModal} = organization
 
   const meetingId = generateUID()
-  const meetingName = name ?? `Retro ${meetingCount + 1}`
   const phases = await createNewMeetingPhases(
     facilitatorUserId,
     teamId,
@@ -54,7 +47,7 @@ const safeCreateRetrospective = async (
     phases,
     showConversionModal,
     ...meetingSettings,
-    name: meetingName
+    name
   })
 }
 
