@@ -8,6 +8,7 @@ class GitHubClientManager {
   static SCOPE = Providers.GITHUB_SCOPE
 
   fetch = window.fetch.bind(window)
+  static isAvailable = !!window.__ACTION__.github
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const hash = Math.random().toString(36).substring(5)

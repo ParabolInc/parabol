@@ -119,7 +119,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   }
   return (
     <Block>
-      {(slack?.isActive || noActiveIntegrations) && (
+      {SlackClientManager.isAvailable && (slack?.isActive || noActiveIntegrations) && (
         <ButtonRow onClick={onClick}>
           <StyledCheckbox active={slackToggleActive} />
           <Label>{'Notify team via Slack'}</Label>

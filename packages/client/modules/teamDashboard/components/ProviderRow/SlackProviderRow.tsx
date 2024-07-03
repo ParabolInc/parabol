@@ -40,6 +40,8 @@ const SlackProviderRow = (props: Props) => {
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
+  if (!SlackClientManager.isAvailable) return null
+
   return (
     <>
       <ProviderRow

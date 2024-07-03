@@ -5,6 +5,8 @@ import {useFragment} from 'react-relay'
 import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
+import AtlassianClientManager from '../../utils/AtlassianClientManager'
+import GitHubClientManager from '../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
 import JiraSVG from '../JiraSVG'
@@ -44,6 +46,11 @@ const TeamPromptWorkDrawer = (props: Props) => {
                   id
                 }
               }
+              gcal {
+                cloudProvider {
+                  id
+                }
+              }
             }
           }
         }
@@ -54,6 +61,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const atmosphere = useAtmosphere()
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
+  const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Your Work Drawer Impression', {
@@ -81,14 +89,29 @@ const TeamPromptWorkDrawer = (props: Props) => {
           }
         ]
       : []),
-    {icon: <GitHubSVG />, service: 'github', label: 'GitHub', Component: GitHubIntegrationPanel},
-    {icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel},
-    {
-      icon: <img className='h-6 w-6' src={gcalLogo} />,
-      service: 'gcal',
-      label: 'Google Calendar',
-      Component: GCalIntegrationPanel
-    }
+    ...(GitHubClientManager.isAvailable
+      ? [
+          {
+            icon: <GitHubSVG />,
+            service: 'github',
+            label: 'GitHub',
+            Component: GitHubIntegrationPanel
+          }
+        ]
+      : []),
+    ...(AtlassianClientManager.isAvailable
+      ? [{icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel}]
+      : []),
+    ...(hasGCal
+      ? [
+          {
+            icon: <img className='h-6 w-6' src={gcalLogo} />,
+            service: 'gcal',
+            label: 'Google Calendar',
+            Component: GCalIntegrationPanel
+          }
+        ]
+      : [])
   ] as const
 
   const {Component} = baseTabs[activeIdx]!

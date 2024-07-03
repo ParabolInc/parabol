@@ -33,7 +33,7 @@ const oldUpgradeToTeamTier = async (
   const customer = stripeId
     ? await manager.updatePayment(stripeId, source)
     : await manager.createCustomer(orgId, email, undefined, source)
-
+  if (customer instanceof Error) throw customer
   let subscriptionFields = {}
   if (!stripeSubscriptionId) {
     const subscription = await manager.createTeamSubscriptionOld(customer.id, orgId, quantity)

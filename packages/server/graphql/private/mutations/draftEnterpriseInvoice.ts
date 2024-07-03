@@ -101,6 +101,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   if (!stripeId) {
     // create the customer
     const customer = await manager.createCustomer(orgId, apEmail || user.email)
+    if (customer instanceof Error) throw customer
     await getKysely()
       .updateTable('Organization')
       .set({stripeId: customer.id})
