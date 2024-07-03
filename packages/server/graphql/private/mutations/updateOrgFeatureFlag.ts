@@ -23,13 +23,10 @@ const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
   // RESOLUTION
   await getKysely()
     .updateTable('Organization')
-    .$if(addFlag, (db) => db.set({featureFlags: sql`ARRAY_APPEND("featureFlags",${flag})`}))
+    .$if(addFlag, (db) => db.set({featureFlags: sql`arr_append_uniq("featureFlags",${flag})`}))
     .$if(!addFlag, (db) =>
       db.set({
-        featureFlags: sql`array_cat(
-          "featureFlags"[1:array_position("featureFlags",${flag})-1],
-          "featureFlags"[array_position("featureFlags",${flag})+1:]
-        )`
+        featureFlags: sql`ARRAY_REMOVE("featureFlags",${flag})`
       })
     )
     .where('id', 'in', orgIds)
