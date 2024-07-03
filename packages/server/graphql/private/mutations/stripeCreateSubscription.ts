@@ -1,9 +1,10 @@
+import Stripe from 'stripe'
 import getRethink from '../../../database/rethinkDriver'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
-const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = async (
+const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = async (
   _source,
   {customerId, subscriptionId},
   {authToken}
@@ -28,6 +29,15 @@ const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = 
     throw new Error(`orgId not found on metadata for customer ${customerId}`)
   }
 
+  const subscription = await manager.retrieveSubscription(subscriptionId)
+  const invalidStatuses: Stripe.Subscription.Status[] = [
+    'canceled',
+    'incomplete',
+    'incomplete_expired'
+  ]
+  const isSubscriptionInvalid = invalidStatuses.some((status) => (subscription.status = status))
+  if (isSubscriptionInvalid) return false
+
   await r
     .table('Organization')
     .get(orgId)
@@ -39,4 +49,4 @@ const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = 
   return true
 }
 
-export default stripeUpdateSubscription
+export default stripeCreateSubscription
