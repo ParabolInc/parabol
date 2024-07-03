@@ -7,6 +7,7 @@ graphql`
   fragment DowngradeToStarterMutation_organization on DowngradeToStarterPayload {
     organization {
       tier
+      billingTier
     }
   }
 `

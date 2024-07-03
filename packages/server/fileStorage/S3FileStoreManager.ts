@@ -14,7 +14,7 @@ class CloudflareRetry extends StandardRetryStrategy {
     const status = errorInfo.error?.$response?.statusCode
     if (status && status >= 520 && status < 530) {
       const date = errorInfo.error?.$response?.headers?.date
-      console.log('Cloudflare error', {
+      console.log('Retrying after Cloudflare error', {
         status,
         date: date && new Date(date).toISOString(),
         path: errorInfo.error?.$response?.body?.req?.path

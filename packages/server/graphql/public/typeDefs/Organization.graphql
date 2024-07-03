@@ -52,11 +52,6 @@ type Organization {
   """
   picture: URL
 
-  """
-  all the teams the viewer is on in the organization
-  """
-  teams: [Team!]!
-
   tier: TierEnum!
 
   billingTier: TierEnum!

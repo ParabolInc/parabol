@@ -26,6 +26,7 @@ graphql`
       }
       picture
       tier
+      billingTier
     }
     team {
       id

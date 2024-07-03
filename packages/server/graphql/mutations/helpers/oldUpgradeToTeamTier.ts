@@ -32,7 +32,7 @@ const oldUpgradeToTeamTier = async (
   const manager = getStripeManager()
   const customer = stripeId
     ? await manager.updatePayment(stripeId, source)
-    : await manager.createCustomer(orgId, email, source)
+    : await manager.createCustomer(orgId, email, undefined, source)
 
   let subscriptionFields = {}
   if (!stripeSubscriptionId) {

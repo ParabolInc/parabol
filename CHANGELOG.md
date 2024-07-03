@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.0](https://github.com/ParabolInc/parabol/compare/v7.37.8...v7.38.0) (2024-07-02)
+
+
+### Added
+
+* Add search template mutation ([#9802](https://github.com/ParabolInc/parabol/issues/9802)) ([486f670](https://github.com/ParabolInc/parabol/commit/486f6703a997c827ffcd157c13e3fa1321e977ed))
+
+
+### Fixed
+
+* Allow to start recurrence for existing Standups ([#9909](https://github.com/ParabolInc/parabol/issues/9909)) ([ae577e2](https://github.com/ParabolInc/parabol/commit/ae577e28a791350f20dbd29779511f75f439224c))
+* Avoid adding embedding jobs without metadata id ([#9881](https://github.com/ParabolInc/parabol/issues/9881)) ([4e2fec1](https://github.com/ParabolInc/parabol/commit/4e2fec1ea0e1b9eb442a799b0d3a2d66ef40772b))
+* bugs during upgrade/downgrade ([#9919](https://github.com/ParabolInc/parabol/issues/9919)) ([c67a6a8](https://github.com/ParabolInc/parabol/commit/c67a6a87efc35fcb8f41e388d451b1a784a045e2))
+* remove ai from summary url if no ai env var ([#9895](https://github.com/ParabolInc/parabol/issues/9895)) ([4413142](https://github.com/ParabolInc/parabol/commit/4413142e55c94388e1cfe78503cc420d2945c334))
+* remove Organization.teams field from gql ([#9918](https://github.com/ParabolInc/parabol/issues/9918)) ([55b2dfb](https://github.com/ParabolInc/parabol/commit/55b2dfb425f89135a39bb38b02b5bc955ea2e5a0))
+* speed up team upgrade ([#9902](https://github.com/ParabolInc/parabol/issues/9902)) ([d91f649](https://github.com/ParabolInc/parabol/commit/d91f649918ed471bc37332abdefcc6e07d737e6d))
+
+
+### Changed
+
+* Fix debug output when retrying after Cloudflare error ([#9912](https://github.com/ParabolInc/parabol/issues/9912)) ([d17345f](https://github.com/ParabolInc/parabol/commit/d17345ff90bc88cba673fbd3a9efb76848556449))
+* remove contact us message for team users that want to downgrade ([#9903](https://github.com/ParabolInc/parabol/issues/9903)) ([7e90ac2](https://github.com/ParabolInc/parabol/commit/7e90ac2d1ba2144271779982272160c7c1b0df33))
+
 ## [7.37.8](https://github.com/ParabolInc/parabol/compare/v7.37.7...v7.37.8) (2024-06-27)
 
 

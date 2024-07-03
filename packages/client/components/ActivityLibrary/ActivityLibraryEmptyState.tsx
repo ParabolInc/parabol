@@ -14,7 +14,7 @@ const ActivityLibraryEmptyState = (props: Props) => {
   const {categoryId, searchQuery} = props
   const showResultsNotFound = categoryId !== 'custom' || searchQuery !== ''
 
-  if (categoryId === 'favorite') {
+  if (!searchQuery && categoryId === 'favorite') {
     return (
       <div className='relative mx-auto flex justify-center p-2 align-middle text-slate-700'>
         <div className='p-4 md:p-0 '>
