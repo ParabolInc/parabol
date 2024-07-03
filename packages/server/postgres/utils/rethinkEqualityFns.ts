@@ -4,6 +4,7 @@ import stringSimilarity from 'string-similarity'
 export const defaultEqFn = (a: unknown, b: unknown) => {
   if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime()
   if (Array.isArray(a) && Array.isArray(b)) return JSON.stringify(a) === JSON.stringify(b)
+  if (typeof a === 'object' && typeof b === 'object') return JSON.stringify(a) === JSON.stringify(b)
   return a === b
 }
 export const compareDateAlmostEqual = (rVal: unknown, pgVal: unknown) => {
@@ -30,11 +31,33 @@ export const compareRValUndefinedAsFalse = (rVal: unknown, pgVal: unknown) => {
   return normalizedRVal === pgVal
 }
 
+export const compareRValUndefinedAsZero = (rVal: unknown, pgVal: unknown) => {
+  const normalizedRVal = rVal === undefined ? 0 : rVal
+  return normalizedRVal === pgVal
+}
+
 export const compareRValUndefinedAsEmptyArray = (rVal: unknown, pgVal: unknown) => {
   const normalizedRVal = rVal === undefined ? [] : rVal
   return defaultEqFn(normalizedRVal, pgVal)
 }
 
+export const compareRValStringAsNumber = (rVal: unknown, pgVal: unknown) => {
+  const normalizedRVal = Number(rVal)
+  return defaultEqFn(normalizedRVal, pgVal)
+}
+
+export const compareRValOptionalPluckedObject =
+  (pluckFields: Record<string, typeof defaultEqFn>) => (rVal: unknown, pgVal: unknown) => {
+    if (!rVal && !pgVal) return true
+    const rValObj = rVal || {}
+    const pgValItem = pgVal || {}
+    return Object.keys(pluckFields).every((prop) => {
+      const eqFn = pluckFields[prop]!
+      const rValItemProp = rValObj[prop as keyof typeof rValObj]
+      const pgValItemProp = pgValItem[prop as keyof typeof pgValItem]
+      return eqFn(rValItemProp, pgValItemProp)
+    })
+  }
 export const compareRValOptionalPluckedArray =
   (pluckFields: Record<string, typeof defaultEqFn>) => (rVal: unknown, pgVal: unknown) => {
     const rValArray = Array.isArray(rVal) ? rVal : []
@@ -56,7 +79,8 @@ export const compareRValOptionalPluckedArray =
   }
 
 export const compareRValUndefinedAsNullAndTruncateRVal =
-  (length: number, similarity?: number) => (rVal: unknown, pgVal: unknown) => {
+  (length: number, similarity = 1) =>
+  (rVal: unknown, pgVal: unknown) => {
     const truncatedRVal = typeof rVal === 'string' ? rVal.slice(0, length) : rVal
     const normalizedRVal = truncatedRVal === undefined ? null : truncatedRVal
     if (
