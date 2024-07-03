@@ -5,12 +5,13 @@ import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
+import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const generateInsight: MutationResolvers['generateInsight'] = async (
   _source,
   // {teamId, orgId, startDate, endDate},
-  {teamId, orgId},
+  {teamId, orgId}: {teamId?: string; orgId?: string},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const getComments = async (reflectionGroupId: string) => {
@@ -68,12 +69,19 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const getTopicJSON = async (teamIds: string[], startDate: Date, endDate: Date) => {
     const r = await getRethink()
     const MIN_REFLECTION_COUNT = 3
+    const MIN_MILLISECONDS = 60 * 1000 // 1 minute
     const rawMeetings = await r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({meetingType: 'retrospective'})
-      .filter((row: any) => row('createdAt').ge(startDate).and(row('createdAt').le(endDate)))
-      .filter((row: any) => row('reflectionCount').gt(MIN_REFLECTION_COUNT))
+      .filter((row: any) =>
+        row('meetingType')
+          .eq('retrospective')
+          .and(row('createdAt').ge(startDate))
+          .and(row('createdAt').le(endDate))
+          .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
+          .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
+          .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
+      )
       .run()
 
     const meetings = await Promise.all(
@@ -86,11 +94,10 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
           createdAt: meetingDate
         } = meeting as MeetingRetrospective
         const [team, rawReflectionGroups] = await Promise.all([
-          dataLoader.get('teams').loadNonNull(teamId),
+          orgId ? dataLoader.get('teams').loadNonNull(teamId) : null,
           dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
         ])
-        // const {name: meetingTemplateName} = template
-        const {name: teamName} = team
+        const {name: teamName} = team ?? {}
         const reflectionGroups = Promise.all(
           rawReflectionGroups
             // for performance since it's really slow!
@@ -106,10 +113,11 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                   const {promptId, creatorId, plaintextContent} = reflection
                   const [prompt, creator] = await Promise.all([
                     dataLoader.get('reflectPrompts').load(promptId),
-                    dataLoader.get('users').loadNonNull(creatorId)
+                    creatorId ? dataLoader.get('users').loadNonNull(creatorId) : null
                   ])
                   const {question} = prompt
-                  const creatorName = disableAnonymity ? creator.preferredName : 'Anonymous'
+                  const creatorName =
+                    disableAnonymity && creator ? creator.preferredName : 'Anonymous'
                   return {
                     prompt: question,
                     author: creatorName,
@@ -118,7 +126,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                 })
               )
               const res = {
-                // topicId: reflectionGroupId,
                 voteCount: voterIds.length,
                 title: title,
                 comments,
@@ -126,9 +133,9 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                 meetingName,
                 date: meetingDate,
                 meetingId,
-                teamName
-                // teamId
+                ...(teamName ? {teamName} : {})
               }
+
               if (!res.comments || !res.comments.length) {
                 delete (res as any).comments
               }
@@ -140,8 +147,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     )
     return meetings.flat()
   }
-
-  const openAI = new OpenAIServerManager()
 
   const getTeamIds = async (orgId?: string, teamId?: string) => {
     if (teamId) return [teamId]
@@ -157,6 +162,9 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
 
   const identifier = teamId ?? orgId
   const inTopics = await getTopicJSON(teamIds, startDate, endDate)
+  if (!inTopics.length) {
+    return standardError(new Error('Not enough data to generate insight.'))
+  }
   fs.writeFileSync(`./topics_${identifier}.json`, JSON.stringify(inTopics))
 
   const rawTopics = JSON.parse(fs.readFileSync(`./topics_${identifier}.json`, 'utf-8')) as Awaited<
@@ -165,20 +173,25 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const hotTopics = rawTopics
   // .filter((t) => t.voteCount > 2)
   // .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
-  type IDLookup = Record<string, string>
+
+  type IDLookup = Record<string, string | Date>
   const idLookup = {
-    meeting: {} as IDLookup
+    meeting: {} as IDLookup,
+    date: {} as IDLookup
   }
 
   const idGenerator = {
     meeting: 1
   }
+  console.log('🚀 ~ hotTopics:', hotTopics)
+
   const shortTokenedTopics = hotTopics.map((t) => {
     const {date, meetingId} = t
     const shortMeetingId = `m${idGenerator.meeting++}`
     const shortMeetingDate = new Date(date).toISOString().split('T')[0]
     console.log('🚀 ~ shortMeetingId:', shortMeetingId)
     idLookup.meeting[shortMeetingId] = meetingId
+    idLookup.date[shortMeetingId] = date
     return {
       ...t,
       date: shortMeetingDate,
@@ -207,11 +220,10 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   The format of the subject line should be the following: Subject: [Team Name] [Short description of the negative behavior]
   Your tone should be kind and professional. No yapping.`
 
+  const openAI = new OpenAIServerManager()
   const batch = await openAI.batchChatCompletion(summarizingPrompt, yamlData)
   if (!batch) {
-    const error = new Error('Unable to generate insight.')
-    sendToSentry(error)
-    return null
+    return standardError(new Error('Unable to generate insight.'))
   }
 
   const lines = batch.split('\n')
@@ -219,12 +231,12 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const processedLines = lines.map((line) => {
     const hasMeetingId = line.includes(meetingURL)
     if (hasMeetingId) {
-      let shortMeetingId = line.split('https://action.parabol.co/meet/')[1]
+      let shortMeetingId = line.split(meetingURL)[1]
       if (shortMeetingId) {
         shortMeetingId = shortMeetingId.split(/[),]/)[0] // Split by closing parenthesis or comma
       }
-      console.log('🚀 ~ shortMeetingId:', shortMeetingId)
-      const actualMeetingId = shortMeetingId && idLookup.meeting[shortMeetingId]
+      const actualMeetingId = shortMeetingId && (idLookup.meeting[shortMeetingId] as string)
+
       if (shortMeetingId && actualMeetingId) {
         return line.replace(shortMeetingId, actualMeetingId)
       } else {
