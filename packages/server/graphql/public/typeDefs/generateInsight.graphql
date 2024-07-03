@@ -1,8 +1,8 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  Generate an insight for a team
   """
-  generateInsight(teamId: ID, orgId: ID): GenerateInsightPayload!
+  generateInsight(teamId: ID!): GenerateInsightPayload!
 }
 
 """
@@ -12,7 +12,12 @@ union GenerateInsightPayload = ErrorPayload | GenerateInsightSuccess
 
 type GenerateInsightSuccess {
   """
-  Describe the first return field here
+  The insights generated focusing on the wins of the team
   """
-  successField: ID!
+  wins: String!
+
+  """
+  The insights generated focusing on the challenges team are facing
+  """
+  challenges: String!
 }

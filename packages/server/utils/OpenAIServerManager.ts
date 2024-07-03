@@ -10,6 +10,11 @@ type Prompt = {
   description: string
 }
 
+type InsightResponse = {
+  wins: string[]
+  challenges: string[]
+}
+
 type Template = {
   templateId: string
   templateName: string
@@ -341,12 +346,12 @@ class OpenAIServerManager {
   }
 
   // TODO: actually batch the completions
-  async batchChatCompletion(prompt: string, yamlData: string) {
+  async batchChatCompletion(prompt: string, yamlData: string): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4',
         messages: [
           {
             role: 'user',
@@ -359,12 +364,21 @@ class OpenAIServerManager {
         presence_penalty: 0
       })
 
-      const completionText = (response.choices[0]?.message?.content?.trim() as string) ?? null
-      return completionText
+      const completionContent = response.choices[0]?.message.content as string
+
+      let data: InsightResponse
+      try {
+        data = JSON.parse(completionContent)
+      } catch (e) {
+        const error =
+          e instanceof Error ? e : new Error('Error parsing JSON in batchChatCompletion')
+        sendToSentry(error)
+        return null
+      }
+
+      return data
     } catch (e) {
-      const error =
-        e instanceof Error ? e : new Error('OpenAI failed to generate the batch completion')
-      Logger.error(error.message)
+      const error = e instanceof Error ? e : new Error('Error in batchChatCompletion')
       sendToSentry(error)
       return null
     }

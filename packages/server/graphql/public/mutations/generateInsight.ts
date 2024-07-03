@@ -10,10 +10,10 @@ import {MutationResolvers} from '../resolverTypes'
 
 const generateInsight: MutationResolvers['generateInsight'] = async (
   _source,
-  // {teamId, orgId, startDate, endDate},
-  {teamId, orgId}: {teamId?: string; orgId?: string},
+  {teamId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  console.log('🚀 ~ teamId:', teamId)
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
     const pg = getKysely()
@@ -66,38 +66,37 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     return comments
   }
 
-  const getTopicJSON = async (teamIds: string[], startDate: Date, endDate: Date) => {
+  const getTopicJSON = async (teamId: string, startDate: Date, endDate: Date) => {
     const r = await getRethink()
     const MIN_REFLECTION_COUNT = 3
     const MIN_MILLISECONDS = 60 * 1000 // 1 minute
     const rawMeetings = await r
       .table('NewMeeting')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: any) =>
-        row('meetingType')
-          .eq('retrospective')
-          .and(row('createdAt').ge(startDate))
-          .and(row('createdAt').le(endDate))
-          .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-          .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-          .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
+      .getAll(teamId, {index: 'teamId'})
+      .filter(
+        (row: any) =>
+          row('meetingType')
+            .eq('retrospective')
+            .and(row('createdAt').ge(startDate))
+            .and(row('createdAt').le(endDate))
+            .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
+        // .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
+        // .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
       )
       .run()
+    console.log('🚀 ~ rawMeetings:', rawMeetings)
 
     const meetings = await Promise.all(
       rawMeetings.map(async (meeting) => {
         const {
           id: meetingId,
           disableAnonymity,
-          teamId,
           name: meetingName,
           createdAt: meetingDate
         } = meeting as MeetingRetrospective
-        const [team, rawReflectionGroups] = await Promise.all([
-          orgId ? dataLoader.get('teams').loadNonNull(teamId) : null,
-          dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
-        ])
-        const {name: teamName} = team ?? {}
+        const rawReflectionGroups = await dataLoader
+          .get('retroReflectionGroupsByMeetingId')
+          .load(meetingId)
         const reflectionGroups = Promise.all(
           rawReflectionGroups
             // for performance since it's really slow!
@@ -132,8 +131,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
                 reflections,
                 meetingName,
                 date: meetingDate,
-                meetingId,
-                ...(teamName ? {teamName} : {})
+                meetingId
               }
 
               if (!res.comments || !res.comments.length) {
@@ -148,26 +146,17 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     return meetings.flat()
   }
 
-  const getTeamIds = async (orgId?: string, teamId?: string) => {
-    if (teamId) return [teamId]
-    const teams = await dataLoader.get('teamsByOrgIds').load(orgId!)
-    return teams.map((team) => team.id)
-  }
-
-  const teamIds = await getTeamIds(orgId, teamId)
-
   const startDate = new Date('2024-01-01')
   // const endDate = new Date('2024-04-01')
   const endDate = new Date()
 
-  const identifier = teamId ?? orgId
-  const inTopics = await getTopicJSON(teamIds, startDate, endDate)
+  const inTopics = await getTopicJSON(teamId, startDate, endDate)
   if (!inTopics.length) {
     return standardError(new Error('Not enough data to generate insight.'))
   }
-  fs.writeFileSync(`./topics_${identifier}.json`, JSON.stringify(inTopics))
+  fs.writeFileSync(`./topics_${teamId}.json`, JSON.stringify(inTopics))
 
-  const rawTopics = JSON.parse(fs.readFileSync(`./topics_${identifier}.json`, 'utf-8')) as Awaited<
+  const rawTopics = JSON.parse(fs.readFileSync(`./topics_${teamId}.json`, 'utf-8')) as Awaited<
     ReturnType<typeof getTopicJSON>
   >
   const hotTopics = rawTopics
@@ -183,13 +172,11 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const idGenerator = {
     meeting: 1
   }
-  console.log('🚀 ~ hotTopics:', hotTopics)
 
   const shortTokenedTopics = hotTopics.map((t) => {
     const {date, meetingId} = t
     const shortMeetingId = `m${idGenerator.meeting++}`
     const shortMeetingDate = new Date(date).toISOString().split('T')[0]
-    console.log('🚀 ~ shortMeetingId:', shortMeetingId)
     idLookup.meeting[shortMeetingId] = meetingId
     idLookup.date[shortMeetingId] = date
     return {
@@ -202,59 +189,82 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const yamlData = yaml.dump(shortTokenedTopics, {
     noCompatMode: true // This option ensures compatibility mode is off
   })
-  fs.writeFileSync(`./topics_${identifier}_short.yml`, yamlData)
+  fs.writeFileSync(`./topics_${teamId}_short.yml`, yamlData)
 
   const meetingURL = 'https://action.parabol.co/meet/'
 
   const summarizingPrompt = `
-  You are a management consultant who needs to discover behavioral trends for a given team.
-  Below is a list of reflection topics in YAML format from meetings over the last 3 months.
-  You should describe the situation in two sections with no more than 3 bullet points each.
-  The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
-  The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
-  When citing the quote, inlcude the meetingId in the format of ${meetingURL}[meetingId].
-  For each topic, mention how many votes it has.
-  Be sure that each author is only mentioned once.
-  Above the two sections, include a short subject line that mentions the team name and summarizes the negative behavior mentioned in the second paragraph.
-  The subject must not be generic sounding. The person who reads the subject should instantly know that the person who wrote it has deep understanding of the team's problems.
-  The format of the subject line should be the following: Subject: [Team Name] [Short description of the negative behavior]
-  Your tone should be kind and professional. No yapping.`
+You are a management consultant who needs to discover behavioral trends for a given team.
+Below is a list of reflection topics in YAML format from meetings over the last 3 months.
+You should describe the situation in two sections with exactly 3 bullet points each.
+The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
+The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
+When citing the quote, include the meetingId in the format of ${meetingURL}[meetingId].
+For each topic, mention how many votes it has.
+Be sure that each author is only mentioned once.
+Return the output as a JSON object with the following structure:
+{
+  "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
+  "challenges": ["bullet point 1", "bullet point 2", "bullet point 3"]
+}
+Your tone should be kind and professional. No yapping.
+`
 
   const openAI = new OpenAIServerManager()
   const batch = await openAI.batchChatCompletion(summarizingPrompt, yamlData)
+  console.log('🚀 ~ batch:', batch)
   if (!batch) {
     return standardError(new Error('Unable to generate insight.'))
   }
 
-  const lines = batch.split('\n')
+  const processLines = (lines: string[], meetingURL: string): string => {
+    return lines
+      .map((line) => {
+        if (line.includes(meetingURL)) {
+          let processedLine = line
+          const regex = new RegExp(`${meetingURL}\\S+`, 'g')
+          const matches = processedLine.match(regex) || []
 
-  const processedLines = lines.map((line) => {
-    const hasMeetingId = line.includes(meetingURL)
-    if (hasMeetingId) {
-      let shortMeetingId = line.split(meetingURL)[1]
-      if (shortMeetingId) {
-        shortMeetingId = shortMeetingId.split(/[),]/)[0] // Split by closing parenthesis or comma
-      }
-      const actualMeetingId = shortMeetingId && (idLookup.meeting[shortMeetingId] as string)
+          let isValid = true
+          matches.forEach((match) => {
+            let shortMeetingId = match.split(meetingURL)[1].split(/[),\s]/)[0] // Split by closing parenthesis, comma, or space
+            const actualMeetingId = shortMeetingId && (idLookup.meeting[shortMeetingId] as string)
 
-      if (shortMeetingId && actualMeetingId) {
-        return line.replace(shortMeetingId, actualMeetingId)
-      } else {
-        const error = new Error(
-          `AI hallucinated. Unable to find meetingId for ${shortMeetingId}. Line: ${line}`
-        )
-        sendToSentry(error)
-        return ''
-      }
-    }
-    return line
-  })
+            if (shortMeetingId && actualMeetingId) {
+              processedLine = processedLine.replace(shortMeetingId, actualMeetingId)
+            } else {
+              const error = new Error(
+                `AI hallucinated. Unable to find meetingId for ${shortMeetingId}. Line: ${line}`
+              )
+              sendToSentry(error)
+              isValid = false
+            }
+          })
+          return isValid ? processedLine : '' // Return empty string if invalid
+        }
+        return line
+      })
+      .filter((line) => line.trim() !== '')
+      .join('\n')
+  }
 
-  const insight = processedLines.filter((line) => line.trim() !== '').join('\n')
-  console.log('🚀 ~ insight:', insight)
+  const processSection = (section: string[]): string => {
+    return section
+      .map((item) => {
+        const lines = item.split('\n')
+        return processLines(lines, meetingURL)
+      })
+      .filter((processedItem) => processedItem.trim() !== '')
+      .join('\n')
+  }
 
-  // RESOLUTION
-  const data = {}
+  const wins = processSection(batch.wins)
+  const challenges = processSection(batch.challenges)
+
+  console.log('🚀 ~ Wins:', wins)
+  console.log('🚀 ~ Challenges:', challenges)
+
+  const data = {wins, challenges}
   return data
 }
 

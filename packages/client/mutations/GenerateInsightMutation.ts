@@ -5,13 +5,14 @@ import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment GenerateInsightMutation_team on GenerateInsightSuccess {
-    successField
+    wins
+    challenges
   }
 `
 
 const mutation = graphql`
-  mutation GenerateInsightMutation($teamId: ID, $orgId: ID) {
-    generateInsight(teamId: $teamId, orgId: $orgId) {
+  mutation GenerateInsightMutation($teamId: ID!) {
+    generateInsight(teamId: $teamId) {
       ... on ErrorPayload {
         error {
           message

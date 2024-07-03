@@ -1,13 +1,4 @@
-// import {GenerateInsightSuccessResolvers} from '../resolverTypes'
-
 export type GenerateInsightSuccessSource = {
-  id: string
+  wins: string
+  challenges: string
 }
-
-const GenerateInsightSuccess = {
-  successField: async ({id}, _args, {dataLoader}) => {
-    return null
-  }
-}
-
-export default GenerateInsightSuccess
