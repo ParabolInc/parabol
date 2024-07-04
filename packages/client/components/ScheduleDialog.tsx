@@ -139,12 +139,11 @@ export const ScheduleDialog = (props: Props) => {
     }
   }
 
+  const subTitle = `Create a ${withRecurrence ? 'recurring meeting series' : 'meeting'}${gcal?.cloudProvider ? ' or add the meeting to your calendar.' : '.'}`
   return (
     <div className='space-y-4 overflow-auto p-4'>
       <div className='text-lg font-semibold leading-none'>Schedule Your Meeting</div>
-      <div className='text-sm text-slate-800'>
-        Create a recurring meeting series or add the meeting to your calendar.
-      </div>
+      <div className='text-sm text-slate-800'>{subTitle}</div>
       <div className='flex flex-col'>
         <input
           className='form-input rounded border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-600'

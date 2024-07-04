@@ -80,7 +80,13 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 
   if (!(await isLimitExceeded(orgId))) {
     const billingLeadersIds = await dataLoader.get('billingLeadersIdsByOrgId').load(orgId)
+    const pg = getKysely()
     await Promise.all([
+      pg
+        .updateTable('Organization')
+        .set({tierLimitExceededAt: null, scheduledLockAt: null, lockedAt: null})
+        .where('id', '=', orgId)
+        .execute(),
       r
         .table('Organization')
         .get(orgId)
@@ -129,16 +135,26 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   const now = new Date()
   const scheduledLockAt = new Date(now.getTime() + ms(`${Threshold.STARTER_TIER_LOCK_AFTER_DAYS}d`))
-
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      tierLimitExceededAt: now,
-      scheduledLockAt,
-      updatedAt: now
-    })
-    .run()
+  const pg = getKysely()
+  await Promise.all([
+    pg
+      .updateTable('Organization')
+      .set({
+        tierLimitExceededAt: now,
+        scheduledLockAt
+      })
+      .where('id', '=', orgId)
+      .execute(),
+    r
+      .table('Organization')
+      .get(orgId)
+      .update({
+        tierLimitExceededAt: now,
+        scheduledLockAt,
+        updatedAt: now
+      })
+      .run()
+  ])
   dataLoader.get('organizations').clear(orgId)
 
   const billingLeaders = await getBillingLeadersByOrgId(orgId, dataLoader)

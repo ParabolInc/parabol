@@ -1,5 +1,3 @@
-import {sql} from 'kysely'
-
 interface Input {
   lemma?: string
   name: string
@@ -17,8 +15,3 @@ export default class GoogleAnalyzedEntity {
     this.salience = salience
   }
 }
-
-export const toGoogleAnalyzedEntityPG = (entities: GoogleAnalyzedEntity[]) =>
-  sql<
-    string[]
-  >`(select coalesce(array_agg((name, salience, lemma)::"GoogleAnalyzedEntity"), '{}') from json_populate_recordset(null::"GoogleAnalyzedEntity", ${JSON.stringify(entities)}))`

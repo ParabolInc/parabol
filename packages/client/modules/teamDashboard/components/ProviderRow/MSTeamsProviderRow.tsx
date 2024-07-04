@@ -51,6 +51,9 @@ const MSTeamsProviderRow = (props: Props) => {
   const {integrations} = teamMember!
   const {msTeams} = integrations
   const {auth} = msTeams
+
+  if (window.__ACTION__.msTeamsDisabled) return null
+
   return (
     <>
       <ProviderRow

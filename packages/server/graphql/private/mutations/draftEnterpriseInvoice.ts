@@ -101,6 +101,12 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   if (!stripeId) {
     // create the customer
     const customer = await manager.createCustomer(orgId, apEmail || user.email)
+    if (customer instanceof Error) throw customer
+    await getKysely()
+      .updateTable('Organization')
+      .set({stripeId: customer.id})
+      .where('id', '=', orgId)
+      .execute()
     await r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
     customerId = customer.id
   } else {
@@ -115,6 +121,21 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   )
 
   await Promise.all([
+    pg
+      .updateTable('Organization')
+      .set({
+        periodEnd: fromEpochSeconds(subscription.current_period_end),
+        periodStart: fromEpochSeconds(subscription.current_period_start),
+        stripeSubscriptionId: subscription.id,
+        tier: 'enterprise',
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        updatedAt: now,
+        trialStartDate: null
+      })
+      .where('id', '=', orgId)
+      .execute(),
     r({
       updatedOrg: r
         .table('Organization')

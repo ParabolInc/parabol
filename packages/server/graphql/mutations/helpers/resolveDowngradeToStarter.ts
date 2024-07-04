@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import Organization from '../../../database/types/Organization'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -13,6 +13,7 @@ const resolveDowngradeToStarter = async (
   orgId: string,
   stripeSubscriptionId: string,
   user: {id: string; email: string},
+  dataLoader: DataLoaderInstance,
   reasonsForLeaving?: ReasonToDowngradeEnum[],
   otherTool?: string
 ) => {
@@ -27,7 +28,16 @@ const resolveDowngradeToStarter = async (
   }
 
   const [org] = await Promise.all([
-    r.table('Organization').get(orgId).run() as unknown as Organization,
+    dataLoader.get('organizations').load(orgId),
+    pg
+      .updateTable('Organization')
+      .set({
+        tier: 'starter',
+        periodEnd: now,
+        stripeSubscriptionId: null
+      })
+      .where('id', '=', orgId)
+      .execute(),
     pg
       .updateTable('SAML')
       .set({metadata: null, lastUpdatedBy: user.id})
@@ -49,7 +59,7 @@ const resolveDowngradeToStarter = async (
       orgId
     )
   ])
-
+  dataLoader.get('organizations').clear(orgId)
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   analytics.organizationDowngraded(user, {
     orgId,

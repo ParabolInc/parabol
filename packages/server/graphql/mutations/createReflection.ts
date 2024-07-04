@@ -6,10 +6,10 @@ import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTit
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
-import {toGoogleAnalyzedEntityPG} from '../../database/types/GoogleAnalyzedEntity'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
+import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -102,7 +102,7 @@ export default {
     await pg
       .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
       .insertInto('RetroReflection')
-      .values({...reflection, entities: toGoogleAnalyzedEntityPG(entities)})
+      .values({...reflection, entities: toGoogleAnalyzedEntity(entities)})
       .execute()
 
     const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
