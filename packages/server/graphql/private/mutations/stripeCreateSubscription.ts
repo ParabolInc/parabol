@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
@@ -37,6 +38,14 @@ const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = 
   ]
   const isSubscriptionInvalid = invalidStatuses.some((status) => (subscription.status = status))
   if (isSubscriptionInvalid) return false
+
+  await getKysely()
+    .updateTable('Organization')
+    .set({
+      stripeSubscriptionId: subscriptionId
+    })
+    .where('id', '=', orgId)
+    .execute()
 
   await r
     .table('Organization')

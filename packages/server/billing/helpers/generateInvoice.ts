@@ -8,7 +8,6 @@ import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
 import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
 import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
 import NextPeriodCharges from '../../database/types/NextPeriodCharges'
-import Organization from '../../database/types/Organization'
 import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
@@ -354,16 +353,16 @@ export default async function generateInvoice(
     invoice.status === 'paid' && invoice.status_transitions.paid_at
       ? fromEpochSeconds(invoice.status_transitions.paid_at)
       : undefined
-
-  const {organization, billingLeaderIds} = await r({
-    organization: r.table('Organization').get(orgId) as unknown as Organization,
-    billingLeaderIds: r
+  const [organization, billingLeaderIds] = await Promise.all([
+    dataLoader.get('organizations').load(orgId),
+    r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null})
       .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-      .coerceTo('array')('userId') as unknown as string[]
-  }).run()
+      .coerceTo('array')('userId')
+      .run() as any as string[]
+  ])
 
   const billingLeaders = (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
   const billingLeaderEmails = billingLeaders.map((user) => user.email)

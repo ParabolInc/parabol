@@ -5,8 +5,8 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
-import {toGoogleAnalyzedEntityPG} from '../../database/types/GoogleAnalyzedEntity'
 import getKysely from '../../postgres/getKysely'
+import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -88,7 +88,7 @@ export default {
       .updateTable('RetroReflection')
       .set({
         content: normalizedContent,
-        entities: toGoogleAnalyzedEntityPG(entities),
+        entities: toGoogleAnalyzedEntity(entities),
         sentimentScore,
         plaintextContent
       })

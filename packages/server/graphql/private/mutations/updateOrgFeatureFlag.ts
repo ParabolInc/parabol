@@ -1,14 +1,18 @@
+import {sql} from 'kysely'
 import {RValue} from 'rethinkdb-ts'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
+import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
 
 const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
   _source,
-  {orgIds, flag, addFlag}
+  {orgIds, flag, addFlag},
+  {dataLoader}
 ) => {
   const r = await getRethink()
-
-  const existingIds = (await r.table('Organization').getAll(r.args(orgIds))('id').run()) as string[]
+  const existingOrgs = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
+  const existingIds = existingOrgs.map(({id}) => id)
 
   const nonExistingIds = orgIds.filter((x) => !existingIds.includes(x))
 
@@ -17,6 +21,17 @@ const updateOrgFeatureFlag: MutationResolvers['updateOrgFeatureFlag'] = async (
   }
 
   // RESOLUTION
+  await getKysely()
+    .updateTable('Organization')
+    .$if(addFlag, (db) => db.set({featureFlags: sql`arr_append_uniq("featureFlags",${flag})`}))
+    .$if(!addFlag, (db) =>
+      db.set({
+        featureFlags: sql`ARRAY_REMOVE("featureFlags",${flag})`
+      })
+    )
+    .where('id', 'in', orgIds)
+    .returning('id')
+    .execute()
   const updatedOrgIds = (await r
     .table('Organization')
     .getAll(r.args(orgIds))

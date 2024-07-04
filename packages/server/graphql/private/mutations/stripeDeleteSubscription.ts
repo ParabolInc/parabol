@@ -1,5 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import Organization from '../../../database/types/Organization'
+import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
@@ -36,7 +37,11 @@ const stripeDeleteSubscription: MutationResolvers['stripeDeleteSubscription'] = 
   if (stripeSubscriptionId !== subscriptionId) {
     throw new Error(`Subscription ID does not match: ${stripeSubscriptionId} vs ${subscriptionId}`)
   }
-
+  await getKysely()
+    .updateTable('Organization')
+    .set({stripeSubscriptionId: null})
+    .where('id', '=', orgId)
+    .execute()
   await r
     .table('Organization')
     .get(orgId)

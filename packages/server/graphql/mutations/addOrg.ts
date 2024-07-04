@@ -62,7 +62,11 @@ export default {
     const teamId = generateUID()
     const {email} = viewer
     await createNewOrg(orgId, orgName, viewerId, email, dataLoader)
-    await createTeamAndLeader(viewer, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
+    await createTeamAndLeader(
+      viewer,
+      {id: teamId, orgId, isOnboardTeam: false, ...newTeam},
+      dataLoader
+    )
 
     const {tms} = authToken
     // MUTATIVE

@@ -2,9 +2,11 @@
 import {r} from 'rethinkdb-ts'
 import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
+import {TierEnum} from '../../database/types/Invoice'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import getKysely from '../../postgres/getKysely'
 import getRedis from '../getRedis'
 import {getEligibleOrgIdsByDomain} from '../isRequestToJoinDomainAllowed'
 jest.mock('../../database/rethinkDriver')
@@ -44,7 +46,7 @@ type TestOrganizationUser = Partial<
 const addOrg = async (
   activeDomain: string | null,
   members: TestOrganizationUser[],
-  rest?: {featureFlags?: string[]; tier?: string}
+  rest?: {featureFlags?: string[]; tier?: TierEnum}
 ) => {
   const {featureFlags, tier} = rest ?? {}
   const orgId = generateUID()
@@ -52,6 +54,7 @@ const addOrg = async (
     id: orgId,
     activeDomain,
     featureFlags,
+    name: 'foog',
     tier: tier ?? 'starter'
   }
 
@@ -63,7 +66,7 @@ const addOrg = async (
     role: member.role ?? null,
     removedAt: member.removedAt ?? null
   }))
-
+  await getKysely().insertInto('Organization').values(org).execute()
   await r.table('Organization').insert(org).run()
   await r.table('OrganizationUser').insert(orgUsers).run()
   return orgId
