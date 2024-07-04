@@ -8,8 +8,8 @@ test('Retro is named Retro #1 by default', async () => {
 
   const newRetro = await sendPublic({
     query: `
-      mutation StartRetrospectiveMutation($teamId: ID!, $recurrenceSettings: RecurrenceSettingsInput, $gcalInput: CreateGcalEventInput) {
-        startRetrospective(teamId: $teamId, recurrenceSettings: $recurrenceSettings, gcalInput: $gcalInput) {
+      mutation StartRetrospectiveMutation($teamId: ID!, $name: String, $rrule: RRule, $gcalInput: CreateGcalEventInput) {
+        startRetrospective(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
           ... on ErrorPayload {
             error {
               message
@@ -34,7 +34,7 @@ test('Retro is named Retro #1 by default', async () => {
       startRetrospective: {
         meeting: {
           id: expect.anything(),
-          name: 'Retro 1'
+          name: 'Retro #1'
         }
       }
     }
@@ -49,8 +49,8 @@ test('Recurring retro is named like RetroSeries Jan 1', async () => {
   const now = new Date()
   const newRetro = await sendPublic({
     query: `
-      mutation StartRetrospectiveMutation($teamId: ID!, $recurrenceSettings: RecurrenceSettingsInput, $gcalInput: CreateGcalEventInput) {
-        startRetrospective(teamId: $teamId, recurrenceSettings: $recurrenceSettings, gcalInput: $gcalInput) {
+      mutation StartRetrospectiveMutation($teamId: ID!, $name: String, $rrule: RRule, $gcalInput: CreateGcalEventInput) {
+        startRetrospective(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
           ... on ErrorPayload {
             error {
               message
@@ -67,10 +67,8 @@ test('Recurring retro is named like RetroSeries Jan 1', async () => {
     `,
     variables: {
       teamId,
-      recurrenceSettings: {
-        rrule: 'DTSTART;TZID=Europe/Berlin:20240117T060000\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=WE',
-        name: 'RetroSeries'
-      }
+      rrule: 'DTSTART;TZID=Europe/Berlin:20240117T060000\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=WE',
+      name: 'RetroSeries'
     },
     authToken
   })
