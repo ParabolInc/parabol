@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import normalizeAvatarUpload from '../../../fileStorage/normalizeAvatarUpload'
 import validateAvatarUpload from '../../../fileStorage/validateAvatarUpload'
@@ -14,8 +13,6 @@ const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
   {file, orgId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
-  const now = new Date()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -39,15 +36,6 @@ const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
     .set({picture: publicLocation})
     .where('id', '=', orgId)
     .execute()
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      id: orgId,
-      picture: publicLocation,
-      updatedAt: now
-    })
-    .run()
 
   const data = {orgId}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateOrgPayload', data, subOptions)

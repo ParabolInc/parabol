@@ -1,5 +1,4 @@
 import Stripe from 'stripe'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
@@ -10,7 +9,6 @@ const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = 
   {customerId, subscriptionId},
   {authToken}
 ) => {
-  const r = await getRethink()
   // AUTH
   if (!isSuperUser(authToken)) {
     throw new Error('Don’t be rude.')
@@ -46,14 +44,6 @@ const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = 
     })
     .where('id', '=', orgId)
     .execute()
-
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      stripeSubscriptionId: subscriptionId
-    })
-    .run()
 
   return true
 }

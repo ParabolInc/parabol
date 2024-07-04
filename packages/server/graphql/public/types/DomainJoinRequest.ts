@@ -32,7 +32,7 @@ const DomainJoinRequest: DomainJoinRequestResolvers = {
     const leadTeamIds = leadTeamMembers.map((teamMember) => teamMember.teamId)
     const leadTeams = (await dataLoader.get('teams').loadMany(leadTeamIds)).filter(isValid)
     const teamOrgs = await Promise.all(
-      leadTeams.map((t) => dataLoader.get('organizations').load(t.orgId))
+      leadTeams.map((t) => dataLoader.get('organizations').loadNonNull(t.orgId))
     )
     const validOrgIds = teamOrgs.filter((org) => org.activeDomain === domain).map(({id}) => id)
 

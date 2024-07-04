@@ -1,10 +1,12 @@
 /* eslint-env jest */
+import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import getKysely from '../../postgres/getKysely'
 import getRedis from '../../utils/getRedis'
 import isUserVerified from '../../utils/isUserVerified'
 import RootDataLoader from '../RootDataLoader'
@@ -26,6 +28,15 @@ const config = getRethinkConfig()
 const testConfig = {
   ...config,
   db: TEST_DB
+}
+
+export const createPGTables = async (...tables: string[]) => {
+  const pg = getKysely()
+  return tables.map((table) => {
+    sql`CREATE TABLE ${sql.table(table)} (LIKE "public".${sql.table(table)} INCLUDING ALL);`.execute(
+      pg
+    )
+  })
 }
 
 const createTables = async (...tables: string[]) => {
@@ -75,10 +86,11 @@ const addOrg = async (
   members: TestOrganizationUser[],
   featureFlags?: string[]
 ) => {
-  const orgId = activeDomain
+  const orgId = activeDomain!
   const org = {
     id: orgId,
     activeDomain,
+    name: 'baddadan',
     featureFlags: featureFlags ?? []
   }
 
@@ -92,7 +104,8 @@ const addOrg = async (
     removedAt: member.removedAt ?? null
   }))
 
-  await r.table('Organization').insert(org).run()
+  const pg = getKysely()
+  await pg.insertInto('Organization').values(org).execute()
   await r.table('OrganizationUser').insert(orgUsers).run()
 
   const users = orgUsers.map(({userId, domain}) => ({
@@ -110,17 +123,24 @@ const isOrgVerifiedLoader = isOrgVerified(dataLoader as any as RootDataLoader)
 
 beforeAll(async () => {
   await r.connectPool(testConfig)
+  const pg = getKysely()
+
   try {
     await r.dbDrop(TEST_DB).run()
   } catch (e) {
     //ignore
   }
+  await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
+  sql`SET search_path TO '${TEST_DB}'`.execute(pg)
+
   await r.dbCreate(TEST_DB).run()
-  await createTables('Organization', 'OrganizationUser')
+  await createPGTables('Organization')
+  await createTables('OrganizationUser')
 })
 
 afterEach(async () => {
-  await r.table('Organization').delete().run()
+  const pg = getKysely()
+  await sql`truncate table ${sql.table('Organization')}`.execute(pg)
   await r.table('OrganizationUser').delete().run()
   isOrgVerifiedLoader.clearAll()
 })

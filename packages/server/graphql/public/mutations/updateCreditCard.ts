@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
@@ -21,8 +20,6 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const now = new Date()
-  const r = await getRethink()
 
   // AUTH
   const viewerId = getUserId(authToken)
@@ -31,7 +28,9 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   }
 
   // RESOLUTION
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+  if (!organization) return {error: {message: 'Organization not found'}}
+
   const {stripeId, stripeSubscriptionId} = organization
   if (!stripeId || !stripeSubscriptionId) {
     return standardError(new Error('Organization is not subscribed to a plan'), {userId: viewerId})
@@ -70,17 +69,6 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
       })
       .where('id', '=', orgId)
       .execute(),
-    r({
-      updatedOrg: r.table('Organization').get(orgId).update({
-        creditCard,
-        tier: 'team',
-        stripeId: customer.id,
-        tierLimitExceededAt: null,
-        scheduledLockAt: null,
-        lockedAt: null,
-        updatedAt: now
-      })
-    }).run(),
     updateTeamByOrgId(
       {
         isPaid: true,
@@ -89,7 +77,7 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
       orgId
     )
   ])
-  organization.creditCard = creditCard
+  dataLoader.get('organizations').clear(orgId)
 
   // If there are unpaid open invoices, try to process them
   const openInvoices = (await manager.listSubscriptionOpenInvoices(stripeSubscriptionId)).data

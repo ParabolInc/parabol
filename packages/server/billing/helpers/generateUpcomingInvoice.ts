@@ -6,7 +6,7 @@ import generateInvoice from './generateInvoice'
 
 const generateUpcomingInvoice = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const invoiceId = getUpcomingInvoiceId(orgId)
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {stripeId} = organization
   const manager = getStripeManager()
   const [stripeLineItems, upcomingInvoice] = await Promise.all([

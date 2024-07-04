@@ -24,7 +24,7 @@ export default async function sendNewMeetingSummary(
   const [content, users, organization] = await Promise.all([
     newMeetingSummaryEmailCreator({meetingId, context}),
     dataLoader.get('users').loadMany(userIds),
-    dataLoader.get('organizations').load(orgId)
+    dataLoader.get('organizations').loadNonNull(orgId)
   ])
   const {tier, name: orgName} = organization
   const emailAddresses = users

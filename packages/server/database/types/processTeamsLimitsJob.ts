@@ -10,7 +10,7 @@ import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: DataLoaderWorker) => {
   const {orgId, type} = job
   const [organization, orgUsers] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     dataLoader.get('organizationUsersByOrgId').load(orgId)
   ])
   const {name: orgName, picture: orgPicture, scheduledLockAt, lockedAt} = organization
@@ -28,14 +28,11 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
 
   if (type === 'LOCK_ORGANIZATION') {
     const now = new Date()
-    await Promise.all([
-      getKysely()
-        .updateTable('Organization')
-        .set({lockedAt: now})
-        .where('id', '=', 'orgId')
-        .execute(),
-      r.table('Organization').get(orgId).update({lockedAt: now}).run()
-    ])
+    await getKysely()
+      .updateTable('Organization')
+      .set({lockedAt: now})
+      .where('id', '=', 'orgId')
+      .execute()
     organization.lockedAt = lockedAt
   } else if (type === 'WARN_ORGANIZATION') {
     const notificationsToInsert = billingLeadersIds.map((userId) => {

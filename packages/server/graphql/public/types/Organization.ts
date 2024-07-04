@@ -1,6 +1,11 @@
+import {ExtractTypeFromQueryBuilderSelect} from '../../../../client/types/generics'
+import {selectOrganizations} from '../../../dataloader/primaryKeyLoaderMakers'
 import {isSuperUser} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {OrganizationResolvers} from '../resolverTypes'
+
+export interface OrganizationSource
+  extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}
 
 const Organization: OrganizationResolvers = {
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {

@@ -1,9 +1,11 @@
 /* eslint-env jest */
+import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
 import {TierEnum} from '../../database/types/Invoice'
 import OrganizationUser from '../../database/types/OrganizationUser'
+import {createPGTables} from '../../dataloader/__tests__/isOrgVerified.test'
 import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import getKysely from '../../postgres/getKysely'
@@ -67,7 +69,6 @@ const addOrg = async (
     removedAt: member.removedAt ?? null
   }))
   await getKysely().insertInto('Organization').values(org).execute()
-  await r.table('Organization').insert(org).run()
   await r.table('OrganizationUser').insert(orgUsers).run()
   return orgId
 }
@@ -96,17 +97,22 @@ const dataLoader = {
 
 beforeAll(async () => {
   await r.connectPool(testConfig)
+  const pg = getKysely()
   try {
     await r.dbDrop(TEST_DB).run()
   } catch (e) {
     //ignore
   }
+  await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
+  sql`SET search_path TO '${TEST_DB}'`.execute(pg)
   await r.dbCreate(TEST_DB).run()
-  await createTables('Organization', 'OrganizationUser')
+  await createPGTables('Organization')
+  await createTables('OrganizationUser')
 })
 
 afterEach(async () => {
-  await r.table('Organization').delete().run()
+  const pg = getKysely()
+  await sql`truncate table ${sql.table('Organization')}`.execute(pg)
   await r.table('OrganizationUser').delete().run()
 })
 

@@ -354,7 +354,7 @@ export default async function generateInvoice(
       ? fromEpochSeconds(invoice.status_transitions.paid_at)
       : undefined
   const [organization, billingLeaderIds] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
@@ -378,6 +378,7 @@ export default async function generateInvoice(
       })) ||
     null
 
+  const {creditCard} = organization
   const dbInvoice = new Invoice({
     id: invoiceId,
     amountDue: invoice.amount_due,
@@ -385,7 +386,7 @@ export default async function generateInvoice(
     coupon,
     total: invoice.total,
     billingLeaderEmails,
-    creditCard: organization.creditCard,
+    creditCard: creditCard ? {...creditCard, last4: String(creditCard.last4)} : undefined,
     endAt: fromEpochSeconds(invoice.period_end),
     invoiceDate: fromEpochSeconds(invoice.due_date!),
     lines: invoiceLineItems,

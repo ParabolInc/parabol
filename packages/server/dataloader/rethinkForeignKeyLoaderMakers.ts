@@ -116,14 +116,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const organizationsByActiveDomain = new RethinkForeignKeyLoaderMaker(
-  'organizations',
-  'activeDomain',
-  async (activeDomains) => {
-    const r = await getRethink()
-    return r.table('Organization').getAll(r.args(activeDomains), {index: 'activeDomain'}).run()
-  }
-)
 export const organizationUsersByOrgId = new RethinkForeignKeyLoaderMaker(
   'organizationUsers',
   'orgId',

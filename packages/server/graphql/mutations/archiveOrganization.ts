@@ -41,7 +41,7 @@ export default {
     }
 
     const [organization, viewer] = await Promise.all([
-      dataLoader.get('organizations').load(orgId),
+      dataLoader.get('organizations').loadNonNull(orgId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     const {tier} = organization

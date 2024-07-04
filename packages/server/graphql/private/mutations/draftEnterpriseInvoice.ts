@@ -59,7 +59,6 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   {orgId, quantity, email, apEmail, plan},
   {dataLoader}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const now = new Date()
 
@@ -107,7 +106,6 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
       .set({stripeId: customer.id})
       .where('id', '=', orgId)
       .execute()
-    await r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
     customerId = customer.id
   } else {
     customerId = stripeId
@@ -136,22 +134,6 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
       })
       .where('id', '=', orgId)
       .execute(),
-    r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          periodEnd: fromEpochSeconds(subscription.current_period_end),
-          periodStart: fromEpochSeconds(subscription.current_period_start),
-          stripeSubscriptionId: subscription.id,
-          tier: 'enterprise',
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now,
-          trialStartDate: null
-        })
-    }).run(),
     pg
       .updateTable('Team')
       .set({
@@ -171,7 +153,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   ])
   analytics.organizationUpgraded(user, {
     orgId,
-    domain: org.activeDomain,
+    domain: org.activeDomain || undefined,
     orgName: org.name,
     isTrial: !!org.trialStartDate,
     oldTier: 'starter',

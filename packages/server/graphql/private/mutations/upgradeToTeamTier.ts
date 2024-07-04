@@ -45,12 +45,11 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const now = new Date()
 
   // AUTH
   const viewerId = getUserId(authToken)
   const [organization, viewer] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
 
@@ -83,19 +82,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
       })
       .where('id', '=', orgId)
       .execute(),
-    r({
-      updatedOrg: r.table('Organization').get(orgId).update({
-        creditCard,
-        tier: 'team',
-        tierLimitExceededAt: null,
-        scheduledLockAt: null,
-        lockedAt: null,
-        updatedAt: now,
-        trialStartDate: null,
-        stripeId,
-        stripeSubscriptionId
-      })
-    }).run(),
     pg
       .updateTable('Team')
       .set({
@@ -125,7 +111,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const teamIds = teams.map(({id}) => id)
   analytics.organizationUpgraded(viewer, {
     orgId,
-    domain: activeDomain,
+    domain: activeDomain || undefined,
     isTrial: !!trialStartDate,
     orgName,
     oldTier: 'starter',
