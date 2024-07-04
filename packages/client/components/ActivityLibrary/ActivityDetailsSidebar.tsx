@@ -123,7 +123,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         {
           teamId: selectedTeam.id,
           name,
-          rrule,
+          rrule: rrule?.toString(),
           gcalInput
         },
         {history, onError, onCompleted}
@@ -147,7 +147,7 @@ const ActivityDetailsSidebar = (props: Props) => {
                 {
                   teamId: selectedTeam.id,
                   name,
-                  rrule,
+                  rrule: rrule?.toString(),
                   gcalInput
                 },
                 {history, onError, onCompleted}

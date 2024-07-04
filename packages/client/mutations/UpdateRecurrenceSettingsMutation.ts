@@ -21,7 +21,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateRecurrenceSettingsMutation($meetingId: ID!, $name: String, $rrule: RRule!) {
+  mutation UpdateRecurrenceSettingsMutation($meetingId: ID!, $name: String, $rrule: RRule) {
     updateRecurrenceSettings(meetingId: $meetingId, name: $name, rrule: $rrule) {
       ... on ErrorPayload {
         error {
