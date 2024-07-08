@@ -745,14 +745,20 @@ export const isOrgVerified = (parent: RootDataLoader) => {
         .filter(isValid)
         .flat()
         .filter(({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role))
-
       const orgUsersUserIds = orgUsersWithRole.map((orgUser) => orgUser.userId)
       const usersRes = await parent.get('users').loadMany(orgUsersUserIds)
       const verifiedUsers = usersRes.filter(isValid).filter(isUserVerified)
       const verifiedOrgUsers = orgUsersWithRole.filter((orgUser) =>
         verifiedUsers.some((user) => user.id === orgUser.userId)
       )
-      return orgIds.map((orgId) => verifiedOrgUsers.some((orgUser) => orgUser.orgId === orgId))
+      return await Promise.all(
+        orgIds.map(async (orgId) => {
+          const isUserVerified = verifiedOrgUsers.some((orgUser) => orgUser.orgId === orgId)
+          if (isUserVerified) return true
+          const isOrgSAML = await parent.get('samlByOrgId').load(orgId)
+          return !!isOrgSAML
+        })
+      )
     },
     {
       ...parent.dataLoaderOptions
