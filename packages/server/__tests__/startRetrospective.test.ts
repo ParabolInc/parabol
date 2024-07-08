@@ -41,6 +41,48 @@ test('Retro is named Retro #1 by default', async () => {
   })
 })
 
+test('Single Retro can be named', async () => {
+  await getRethink()
+  const {userId, authToken} = await signUp()
+  const {id: teamId} = (await getUserTeams(userId))[0]
+
+  const name = 'My Retro'
+  const newRetro = await sendPublic({
+    query: `
+      mutation StartRetrospectiveMutation($teamId: ID!, $name: String, $rrule: RRule, $gcalInput: CreateGcalEventInput) {
+        startRetrospective(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
+          ... on ErrorPayload {
+            error {
+              message
+            }
+          }
+          ... on StartRetrospectiveSuccess {
+            meeting {
+              id
+              name
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      teamId,
+      name
+    },
+    authToken
+  })
+  expect(newRetro).toMatchObject({
+    data: {
+      startRetrospective: {
+        meeting: {
+          id: expect.anything(),
+          name
+        }
+      }
+    }
+  })
+})
+
 test('Recurring retro is named like RetroSeries Jan 1', async () => {
   await getRethink()
   const {userId, authToken} = await signUp()

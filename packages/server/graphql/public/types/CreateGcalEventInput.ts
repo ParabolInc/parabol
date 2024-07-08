@@ -36,13 +36,11 @@ const CreateGcalEventInput = new GraphQLInputObjectType({
   })
 })
 
-type GcalVideoTypeEnum = 'meet' | 'zoom'
-
 export type CreateGcalEventInputType = {
   startTimestamp: number
   endTimestamp: number
   timeZone: string
-  videoType?: GcalVideoTypeEnum
+  videoType?: 'meet' | 'zoom'
   invitees?: string[]
 }
 
