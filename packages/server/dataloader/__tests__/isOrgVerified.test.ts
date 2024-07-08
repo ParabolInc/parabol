@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
+import {createPGTables} from '../../__tests__/common'
 import getRethinkConfig from '../../database/getRethinkConfig'
 import getRethink from '../../database/rethinkDriver'
 import OrganizationUser from '../../database/types/OrganizationUser'
@@ -28,15 +29,6 @@ const config = getRethinkConfig()
 const testConfig = {
   ...config,
   db: TEST_DB
-}
-
-export const createPGTables = async (...tables: string[]) => {
-  const pg = getKysely()
-  return tables.map((table) => {
-    sql`CREATE TABLE ${sql.table(table)} (LIKE "public".${sql.table(table)} INCLUDING ALL);`.execute(
-      pg
-    )
-  })
 }
 
 const createTables = async (...tables: string[]) => {
@@ -131,7 +123,6 @@ beforeAll(async () => {
     //ignore
   }
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
-  sql`SET search_path TO '${TEST_DB}'`.execute(pg)
 
   await r.dbCreate(TEST_DB).run()
   await createPGTables('Organization')

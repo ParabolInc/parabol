@@ -1,11 +1,12 @@
 import User from '../database/types/User'
+import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import {DataLoaderWorker} from '../graphql/graphql'
 import isUserVerified from './isUserVerified'
 
 export const getEligibleOrgIdsByDomain = async (
   activeDomain: string,
   userId: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderInstance
 ) => {
   const isCompanyDomain = await dataLoader.get('isCompanyDomain').load(activeDomain)
   if (!isCompanyDomain) {
@@ -57,7 +58,7 @@ export const getEligibleOrgIdsByDomain = async (
     (acc, org) => (org.activeMembers > acc ? org.activeMembers : acc),
     0
   )
-
+  console.log({verifiedOrgs, biggestSize, highestTierOrgs, verifiedOrgsWithActiveUserCount})
   return highestTierOrgs
     .filter(({activeMembers}) => activeMembers === biggestSize)
     .map(({id}) => id)

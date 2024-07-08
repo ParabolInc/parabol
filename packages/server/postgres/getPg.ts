@@ -22,10 +22,17 @@ const graceFullyReconnect = async () => {
 }
 
 let pool: Pool | undefined
-const getPg = () => {
+const getPg = (schema?: string) => {
   if (!pool) {
     pool = new Pool(config)
     pool.on('error', graceFullyReconnect)
+    if (schema) {
+      pool.on('connect', (client) => {
+        // passing the search_path as a connection option does not work
+        // The schema has to be explicitly each time that way.
+        client.query(`SET search_path TO "${schema}"`)
+      })
+    }
   }
   return pool
 }
