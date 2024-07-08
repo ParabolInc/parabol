@@ -89,7 +89,7 @@ beforeAll(async () => {
   }
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
   await r.dbCreate(TEST_DB).run()
-  await createPGTables('Organization', 'User', 'FreemailDomain')
+  await createPGTables('Organization', 'User', 'FreemailDomain', 'SAML', 'SAMLDomain')
   await createTables('OrganizationUser')
 })
 

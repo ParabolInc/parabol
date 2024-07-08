@@ -20,6 +20,7 @@ const setUserTierForUserId = async (userId: string) => {
     .run()
 
   const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
+  if (orgIds.length === 0) return
 
   const organizations = await pg
     .selectFrom('Organization')

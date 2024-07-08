@@ -58,7 +58,6 @@ export const getEligibleOrgIdsByDomain = async (
     (acc, org) => (org.activeMembers > acc ? org.activeMembers : acc),
     0
   )
-  console.log({verifiedOrgs, biggestSize, highestTierOrgs, verifiedOrgsWithActiveUserCount})
   return highestTierOrgs
     .filter(({activeMembers}) => activeMembers === biggestSize)
     .map(({id}) => id)
