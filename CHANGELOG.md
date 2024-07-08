@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.2](https://github.com/ParabolInc/parabol/compare/v7.38.1...v7.38.2) (2024-07-08)
+
+
+### Fixed
+
+* Read embedder URL from env ([#9936](https://github.com/ParabolInc/parabol/issues/9936)) ([0a60ff9](https://github.com/ParabolInc/parabol/commit/0a60ff9b59b33d65ac532d80799f3e7425ee5e54))
+
+
+### Changed
+
+* **client:** when a release happens, links to the specific tag version ([#9937](https://github.com/ParabolInc/parabol/issues/9937)) ([9081e38](https://github.com/ParabolInc/parabol/commit/9081e38f2f44c87941abf35e97b30942f6c9ccd7))
+* **postgres:** Postgres upgraded to 15.7 and pgvector to 0.7.0 ([#9941](https://github.com/ParabolInc/parabol/issues/9941)) ([ef6e626](https://github.com/ParabolInc/parabol/commit/ef6e62629a9eb1b9b4aec75b83ca004cf02919fc))
+* **rethinkdb:** Organization: Phase 2 ([#9931](https://github.com/ParabolInc/parabol/issues/9931)) ([5baad4c](https://github.com/ParabolInc/parabol/commit/5baad4c9843a0189f40decfbcbd8ea7810599ea1))
+
 ## [7.38.1](https://github.com/ParabolInc/parabol/compare/v7.38.0...v7.38.1) (2024-07-04)
 
 
