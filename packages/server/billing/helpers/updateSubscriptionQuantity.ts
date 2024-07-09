@@ -11,9 +11,10 @@ import {getStripeManager} from '../../utils/stripe'
  */
 const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) => {
   const r = await getRethink()
+  const pg = getKysely()
   const manager = getStripeManager()
 
-  const org = await getKysely()
+  const org = await pg
     .selectFrom('Organization')
     .selectAll()
     .where('id', '=', orgId)
@@ -34,15 +35,29 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
       return
     }
 
-    const [orgUserCount, teamSubscription] = await Promise.all([
+    const [orgUserCountRes, orgUserCount, teamSubscription] = await Promise.all([
+      pg
+        .selectFrom('OrganizationUser')
+        .select(({fn}) => fn.count<number>('id').as('count'))
+        .where('orgId', '=', orgId)
+        .where('removedAt', 'is', null)
+        .where('inactive', '=', false)
+        .executeTakeFirstOrThrow(),
       r
         .table('OrganizationUser')
         .getAll(orgId, {index: 'orgId'})
         .filter({removedAt: null, inactive: false})
         .count()
         .run(),
-      await manager.getSubscriptionItem(stripeSubscriptionId)
+      manager.getSubscriptionItem(stripeSubscriptionId)
     ])
+    if (orgUserCountRes.count !== orgUserCount) {
+      sendToSentry(new Error('OrganizationUser count mismatch'), {
+        tags: {
+          orgId
+        }
+      })
+    }
     if (
       teamSubscription &&
       teamSubscription.quantity !== undefined &&

@@ -21,6 +21,13 @@ import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
   const pg = getKysely()
+  await pg
+    .updateTable('OrganizationUser')
+    .set({suggestedTier: 'team'})
+    .where('orgId', '=', orgId)
+    .where('userId', 'in', userIds)
+    .where('removedAt', 'is', null)
+    .execute()
   await r
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
@@ -86,6 +93,13 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
         .updateTable('Organization')
         .set({tierLimitExceededAt: null, scheduledLockAt: null, lockedAt: null})
         .where('id', '=', orgId)
+        .execute(),
+      pg
+        .updateTable('OrganizationUser')
+        .set({suggestedTier: 'starter'})
+        .where('orgId', '=', orgId)
+        .where('userId', 'in', billingLeadersIds)
+        .where('removedAt', 'is', null)
         .execute(),
       r
         .table('OrganizationUser')

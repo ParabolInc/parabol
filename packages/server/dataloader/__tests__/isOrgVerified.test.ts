@@ -35,22 +35,6 @@ const addUsers = async (users: TestUser[]) => {
   getKysely().insertInto('User').values(users).execute()
 }
 
-const createTables = async (...tables: string[]) => {
-  for (const tableName of tables) {
-    const structure = await r
-      .db('rethinkdb')
-      .table('table_config')
-      .filter({db: config.db, name: tableName})
-      .run()
-    await r.tableCreate(tableName).run()
-    const {indexes} = structure[0]
-    for (const index of indexes) {
-      await r.table(tableName).indexCreate(index).run()
-    }
-    await r.table(tableName).indexWait().run()
-  }
-}
-
 type TestOrganizationUser = Partial<
   Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'> & {
     domain: string
@@ -77,13 +61,16 @@ const addOrg = async (
     ...member,
     inactive: member.inactive ?? false,
     role: member.role ?? null,
-    removedAt: member.removedAt ?? null
+    removedAt: member.removedAt ?? null,
+    tier: 'starter' as const
   }))
 
   const pg = getKysely()
-  await pg.insertInto('Organization').values(org).execute()
-  await r.table('OrganizationUser').insert(orgUsers).run()
-
+  await pg
+    .with('Org', (qc) => qc.insertInto('Organization').values(org))
+    .insertInto('OrganizationUser')
+    .values(orgUsers)
+    .execute()
   return orgId
 }
 
@@ -99,13 +86,11 @@ beforeAll(async () => {
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
 
   await r.dbCreate(TEST_DB).run()
-  await createPGTables('Organization', 'User', 'SAML', 'SAMLDomain')
-  await createTables('OrganizationUser')
+  await createPGTables('Organization', 'User', 'SAML', 'SAMLDomain', 'OrganizationUser')
 })
 
 afterEach(async () => {
-  await truncatePGTables('Organization', 'User')
-  await r.table('OrganizationUser').delete().run()
+  await truncatePGTables('Organization', 'User', 'OrganizationUser')
 })
 
 afterAll(async () => {

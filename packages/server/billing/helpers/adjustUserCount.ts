@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
@@ -52,7 +53,7 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
     email,
     isActive: !inactive
   })
-  return Promise.all([
+  await Promise.all([
     updateUser(
       {
         inactive
@@ -111,7 +112,13 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
 const deleteUser = async (orgIds: string[], user: IUser) => {
   const r = await getRethink()
   orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
-  return r
+  await getKysely()
+    .updateTable('OrganizationUser')
+    .set({removedAt: sql`CURRENT_TIMESTAMP`})
+    .where('userId', '=', user.id)
+    .where('orgId', 'in', orgIds)
+    .execute()
+  await r
     .table('OrganizationUser')
     .getAll(user.id, {index: 'userId'})
     .filter((row: RDatum) => r.expr(orgIds).contains(row('orgId')))
