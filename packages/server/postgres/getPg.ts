@@ -29,7 +29,7 @@ const getPg = (schema?: string) => {
     if (schema) {
       pool.on('connect', (client) => {
         // passing the search_path as a connection option does not work
-        // The schema has to be explicitly each time that way.
+        // That strategy requires explicitly stating the schema in each query
         client.query(`SET search_path TO "${schema}"`)
       })
     }
