@@ -59,6 +59,12 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
       },
       userId
     ),
+    getKysely()
+      .updateTable('OrganizationUser')
+      .set({inactive})
+      .where('userId', '=', userId)
+      .where('removedAt', 'is', null)
+      .execute(),
     r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
@@ -73,12 +79,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
   const r = await getRethink()
   const [rawOrganizations, organizationUsers] = await Promise.all([
     dataLoader.get('organizations').loadMany(orgIds),
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .orderBy(r.desc('newUserUntil'))
-      .coerceTo('array')
-      .run()
+    dataLoader.get('organizationUsersByUserId').load(userId)
   ])
   const organizations = rawOrganizations.filter(isValid)
   const docs = orgIds.map((orgId) => {
@@ -87,19 +88,18 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     )
     const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
-    const newUserUntil =
-      (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
-      organization.periodEnd ||
-      new Date()
     return new OrganizationUser({
       id: oldOrganizationUser?.id,
       orgId,
       userId,
-      newUserUntil,
       tier: organization.tier
     })
   })
-
+  await getKysely()
+    .insertInto('OrganizationUser')
+    .values(docs)
+    .onConflict((oc) => oc.doNothing())
+    .execute()
   await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
   await Promise.all(
     orgIds.map((orgId) => {
