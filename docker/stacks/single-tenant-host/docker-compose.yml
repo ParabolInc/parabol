@@ -17,7 +17,7 @@ services:
   postgres:
     container_name: postgres
     profiles: ["databases"]
-    image: pgvector/pgvector:0.6.2-pg15
+    image: pgvector/pgvector:0.7.0-pg15
     restart: always
     env_file: .env
     environment:

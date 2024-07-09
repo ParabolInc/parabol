@@ -4,12 +4,13 @@ import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
-  compareOptionalPlaintextContent,
-  compareRValOptionalPluckedArray,
+  compareRValOptionalPluckedObject,
+  compareRValStringAsNumber,
   compareRValUndefinedAsEmptyArray,
+  compareRValUndefinedAsFalse,
   compareRValUndefinedAsNull,
   compareRValUndefinedAsNullAndTruncateRVal,
-  compareRealNumber,
+  compareRValUndefinedAsZero,
   defaultEqFn
 } from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
@@ -36,11 +37,11 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'RetroReflection') {
+  if (tableName === 'Organization') {
     const rowCountResult = await checkRowCount(tableName)
     const rethinkQuery = (updatedAt: Date, id: string | number) => {
       return r
-        .table('RetroReflection' as any)
+        .table('Organization' as any)
         .between([updatedAt, id], [r.maxval, r.maxval], {
           index: 'updatedAtId',
           leftBound: 'open',
@@ -50,12 +51,9 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
     }
     const pgQuery = async (ids: string[]) => {
       return getKysely()
-        .selectFrom('RetroReflection')
+        .selectFrom('Organization')
         .selectAll()
-        .select(({fn}) => [
-          fn('to_json', ['entities']).as('entities'),
-          fn('to_json', ['reactjis']).as('reactjis')
-        ])
+        .select(({fn}) => [fn('to_json', ['creditCard']).as('creditCard')])
         .where('id', 'in', ids)
         .execute()
     }
@@ -64,23 +62,30 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
       pgQuery,
       {
         id: defaultEqFn,
-        createdAt: defaultEqFn,
-        updatedAt: compareDateAlmostEqual,
-        isActive: defaultEqFn,
-        meetingId: defaultEqFn,
-        promptId: defaultEqFn,
-        creatorId: compareRValUndefinedAsNull,
-        sortOrder: defaultEqFn,
-        reflectionGroupId: defaultEqFn,
-        content: compareRValUndefinedAsNullAndTruncateRVal(2000, 0.19),
-        plaintextContent: compareOptionalPlaintextContent,
-        entities: compareRValOptionalPluckedArray({
-          name: defaultEqFn,
-          salience: compareRealNumber,
-          lemma: compareRValUndefinedAsNull
+        activeDomain: compareRValUndefinedAsNullAndTruncateRVal(100),
+        isActiveDomainTouched: compareRValUndefinedAsFalse,
+        creditCard: compareRValOptionalPluckedObject({
+          brand: compareRValUndefinedAsNull,
+          expiry: compareRValUndefinedAsNull,
+          last4: compareRValStringAsNumber
         }),
-        reactjis: compareRValUndefinedAsEmptyArray,
-        sentimentScore: compareRValUndefinedAsNull
+        createdAt: defaultEqFn,
+        name: compareRValUndefinedAsNullAndTruncateRVal(100),
+        payLaterClickCount: compareRValUndefinedAsZero,
+        periodEnd: compareRValUndefinedAsNull,
+        periodStart: compareRValUndefinedAsNull,
+        picture: compareRValUndefinedAsNull,
+        showConversionModal: compareRValUndefinedAsFalse,
+        stripeId: compareRValUndefinedAsNull,
+        stripeSubscriptionId: compareRValUndefinedAsNull,
+        upcomingInvoiceEmailSentAt: compareRValUndefinedAsNull,
+        tier: defaultEqFn,
+        tierLimitExceededAt: compareRValUndefinedAsNull,
+        trialStartDate: compareRValUndefinedAsNull,
+        scheduledLockAt: compareRValUndefinedAsNull,
+        lockedAt: compareRValUndefinedAsNull,
+        updatedAt: compareDateAlmostEqual,
+        featureFlags: compareRValUndefinedAsEmptyArray
       },
       maxErrors
     )

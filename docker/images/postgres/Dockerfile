@@ -1,8 +1,8 @@
-FROM postgres:15.4
-ARG PGVECTOR_VERSION=v0.6.1
+FROM postgres:15.7
+ARG PGVECTOR_VERSION=v0.7.0
 ARG PSQL_MAJOR_VERSION=15
 
-ADD extensions /extensions
+COPY extensions /extensions
 
 RUN apt-get update && apt-get install -y \
     build-essential \
