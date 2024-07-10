@@ -96,7 +96,7 @@ const addOrg = async (
 
 beforeAll(async () => {
   await r.connectPool(testConfig)
-  const pg = getKysely()
+  const pg = getKysely(TEST_DB)
 
   try {
     await r.dbDrop(TEST_DB).run()
