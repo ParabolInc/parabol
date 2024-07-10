@@ -1,10 +1,13 @@
-import Organization from '../../../database/types/Organization'
 import {StartTrialSuccessResolvers} from '../resolverTypes'
 
 export type StartTrialSuccessSource = {
-  organization: Organization
+  orgId: string
 }
 
-const StartTrialSuccess: StartTrialSuccessResolvers = {}
+const StartTrialSuccess: StartTrialSuccessResolvers = {
+  organization: async ({orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('organizations').loadNonNull(orgId)
+  }
+}
 
 export default StartTrialSuccess

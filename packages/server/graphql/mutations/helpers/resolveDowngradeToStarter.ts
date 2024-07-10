@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
@@ -19,7 +18,6 @@ const resolveDowngradeToStarter = async (
 ) => {
   const now = new Date()
   const manager = getStripeManager()
-  const r = await getRethink()
   const pg = getKysely()
   try {
     await manager.deleteSubscription(stripeSubscriptionId)
@@ -28,7 +26,7 @@ const resolveDowngradeToStarter = async (
   }
 
   const [org] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     pg
       .updateTable('Organization')
       .set({
@@ -43,14 +41,6 @@ const resolveDowngradeToStarter = async (
       .set({metadata: null, lastUpdatedBy: user.id})
       .where('orgId', '=', orgId)
       .execute(),
-    r({
-      orgUpdate: r.table('Organization').get(orgId).update({
-        tier: 'starter',
-        periodEnd: now,
-        stripeSubscriptionId: null,
-        updatedAt: now
-      })
-    }).run(),
     updateTeamByOrgId(
       {
         tier: 'starter',
@@ -63,7 +53,7 @@ const resolveDowngradeToStarter = async (
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   analytics.organizationDowngraded(user, {
     orgId,
-    domain: org.activeDomain,
+    domain: org.activeDomain || undefined,
     orgName: org.name,
     oldTier: 'team',
     newTier: 'starter',

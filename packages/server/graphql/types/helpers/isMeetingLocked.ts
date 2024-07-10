@@ -30,7 +30,7 @@ const isMeetingLocked = async (
 
   // Archived teams are not updated with the current tier, just check the organization
   if (isArchived) {
-    const organization = await dataLoader.get('organizations').load(orgId)
+    const organization = await dataLoader.get('organizations').loadNonNull(orgId)
     if (getFeatureTier(organization) !== 'starter') {
       return false
     }

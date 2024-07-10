@@ -259,7 +259,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         _args: unknown,
         {authToken, dataLoader}: GQLContext
       ) => {
-        const organization = await dataLoader.get('organizations').load(orgId)
+        const organization = await dataLoader.get('organizations').loadNonNull(orgId)
         // TODO this is bad, we should probably just put the perms on each field in the org
         if (!isTeamMember(authToken, teamId)) {
           return {

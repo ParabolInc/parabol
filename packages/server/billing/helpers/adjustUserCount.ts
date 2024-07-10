@@ -22,8 +22,7 @@ const maybeUpdateOrganizationActiveDomain = async (
   newUserEmail: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {isActiveDomainTouched, activeDomain} = organization
   // don't modify if the domain was set manually
   if (isActiveDomainTouched) return
@@ -41,16 +40,7 @@ const maybeUpdateOrganizationActiveDomain = async (
   if (!domain || domain === activeDomain) return
   organization.activeDomain = domain
   const pg = getKysely()
-  await Promise.all([
-    pg.updateTable('Organization').set({activeDomain: domain}).where('id', '=', orgId).execute(),
-    r
-      .table('Organization')
-      .get(orgId)
-      .update({
-        activeDomain: domain
-      })
-      .run()
-  ])
+  await pg.updateTable('Organization').set({activeDomain: domain}).where('id', '=', orgId).execute()
 }
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {

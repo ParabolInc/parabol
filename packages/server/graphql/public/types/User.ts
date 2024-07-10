@@ -86,7 +86,7 @@ const User: UserResolvers = {
       .map(({orgId}) => orgId)
 
     const organizations = await Promise.all(
-      orgIds.map((orgId) => dataLoader.get('organizations').load(orgId))
+      orgIds.map((orgId) => dataLoader.get('organizations').loadNonNull(orgId))
     )
     const approvedDomains = organizations.map(({activeDomain}) => activeDomain).filter(isNotNull)
     return [...new Set(approvedDomains)].map((id) => ({id}))

@@ -51,16 +51,18 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
   }
   await Promise.all([
     r({
-      invoice: r.table('Invoice').get(invoiceId).update({
-        creditCard,
-        paidAt: now,
-        status: 'PAID'
-      }),
-      org: r
-        .table('Organization')
-        .get(orgId)
+      invoice: r
+        .table('Invoice')
+        .get(invoiceId)
         .update({
-          stripeSubscriptionId: invoice.subscription as string
+          creditCard: creditCard
+            ? {
+                ...creditCard,
+                last4: String(creditCard.last4)
+              }
+            : undefined,
+          paidAt: now,
+          status: 'PAID'
         })
     }).run(),
     updateTeamByOrgId(teamUpdates, orgId)

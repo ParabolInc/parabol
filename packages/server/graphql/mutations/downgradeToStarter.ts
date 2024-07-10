@@ -54,7 +54,7 @@ export default {
       return standardError(new Error('Other tool name is too long'), {userId: viewerId})
     }
 
-    const {stripeSubscriptionId, tier} = await dataLoader.get('organizations').load(orgId)
+    const {stripeSubscriptionId, tier} = await dataLoader.get('organizations').loadNonNull(orgId)
     dataLoader.get('organizations').clear(orgId)
 
     if (tier === 'starter') {

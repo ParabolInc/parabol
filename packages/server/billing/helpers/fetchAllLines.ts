@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 import {getStripeManager} from '../../utils/stripe'
 
-export default async function fetchAllLines(invoiceId: string, customerId?: string) {
+export default async function fetchAllLines(invoiceId: string, customerId?: string | null) {
   const stripeLineItems = [] as Stripe.InvoiceLineItem[]
   const options = {limit: 100} as Stripe.InvoiceLineItemListParams & {customer: string}
   // used for upcoming invoices

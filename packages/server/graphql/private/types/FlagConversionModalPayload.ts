@@ -8,7 +8,7 @@ export type FlagConversionModalPayloadSource =
 
 const FlagConversionModalPayload: FlagConversionModalPayloadResolvers = {
   org: (source, _args, {dataLoader}) => {
-    return 'orgId' in source ? dataLoader.get('organizations').load(source.orgId) : null
+    return 'orgId' in source ? dataLoader.get('organizations').loadNonNull(source.orgId) : null
   }
 }
 

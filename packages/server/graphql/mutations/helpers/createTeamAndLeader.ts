@@ -26,7 +26,7 @@ export default async function createTeamAndLeader(
   const r = await getRethink()
   const {id: userId} = user
   const {id: teamId, orgId} = newTeam
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, trialStartDate} = organization
   const verifiedTeam = new Team({...newTeam, createdBy: userId, tier, trialStartDate})
   const meetingSettings = [

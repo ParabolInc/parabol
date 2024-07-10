@@ -15,7 +15,7 @@ const safeArchiveEmptyStarterOrganization = async (
   const teamCountRemainingOnOldOrg = orgTeams.length
 
   if (teamCountRemainingOnOldOrg > 0) return
-  const org = await dataLoader.get('organizations').load(orgId)
+  const org = await dataLoader.get('organizations').loadNonNull(orgId)
   if (org.tier !== 'starter') return
 
   await r

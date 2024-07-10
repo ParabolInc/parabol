@@ -15,7 +15,7 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
 
   const [viewer, organization, orgUsersCount, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})

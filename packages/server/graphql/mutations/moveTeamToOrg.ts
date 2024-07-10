@@ -30,7 +30,7 @@ const moveToOrg = async (
   const su = isSuperUser(authToken)
   // VALIDATION
   const [org, teams, isPaidResult] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     getTeamsByIds([teamId]),
     pg
       .selectFrom('Team')
