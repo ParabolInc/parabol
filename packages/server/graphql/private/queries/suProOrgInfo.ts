@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
 import {selectOrganizations} from '../../../dataloader/primaryKeyLoaderMakers'
@@ -14,7 +15,8 @@ const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeIna
   const pgResults = await pg
     .selectFrom('OrganizationUser')
     .select(({fn}) => fn.count('id').as('orgSize'))
-    .where('orgId', 'in', proOrgIds)
+    // use ANY to support case where proOrgIds is empty array. Please use `in` after RethinkDB is gone
+    .where('orgId', '=', sql<string>`ANY(${proOrgIds})`)
     .where('inactive', '=', false)
     .where('removedAt', 'is', null)
     .groupBy('orgId')
