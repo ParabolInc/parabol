@@ -63,14 +63,14 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     }
   }
 
-  // if someone is leaving, make sure there is someone else to take their place
-  if (userId === viewerId) {
+  // if removing a role, make sure someone else has elevated permissions
+  if (!roleToSet) {
     const leaders = orgUsers.filter(
       ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
     )
     const leaderCount = leaders.length
-    if (leaderCount === 1 && !roleToSet) {
-      return standardError(new Error('You’re the last leader, you can’t give that up'), {
+    if (leaderCount === 1) {
+      return standardError(new Error('Cannot remove permissions of the last leader'), {
         userId: viewerId
       })
     }
