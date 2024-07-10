@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.3](https://github.com/ParabolInc/parabol/compare/v7.38.2...v7.38.3) (2024-07-09)
+
+
+### Changed
+
+* **rethinkdb:** phase 4 of RetroReflection, RetroReflectionGroup and TimelineEvent ([#9943](https://github.com/ParabolInc/parabol/issues/9943)) ([151b029](https://github.com/ParabolInc/parabol/commit/151b0298013837c912bd2c58226519196d800a94))
+
 ## [7.38.2](https://github.com/ParabolInc/parabol/compare/v7.38.1...v7.38.2) (2024-07-08)
 
 
