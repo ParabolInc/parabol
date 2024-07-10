@@ -19,6 +19,7 @@ const getBillingLeaderUser = async (
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   if (email) {
     const user = await getUserByEmail(email)
     if (!user) {
@@ -32,6 +33,13 @@ const getBillingLeaderUser = async (
       throw new Error('Email not associated with a user on that org')
     }
     if (organizationUser.role !== 'ORG_ADMIN') {
+      await pg
+        .updateTable('OrganizationUser')
+        .set({role: 'BILLING_LEADER'})
+        .where('userId', '=', userId)
+        .where('orgId', '=', orgId)
+        .where('removedAt', 'is', null)
+        .execute()
       await r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})

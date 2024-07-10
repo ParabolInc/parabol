@@ -91,13 +91,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
     const [organizationUser] = await Promise.all([
-      r
-        .table('OrganizationUser')
-        .getAll(userId, {index: 'userId'})
-        .filter({orgId, removedAt: null})
-        .nth(0)
-        .default(null)
-        .run(),
+      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
       insertNewTeamMember(user, teamId),
       addTeamIdToTMS(userId, teamId)
     ])

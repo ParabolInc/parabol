@@ -100,6 +100,13 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const activeMeetings = await hideConversionModal(orgId, dataLoader)
   const meetingIds = activeMeetings.map(({id}) => id)
 
+  await pg
+    .updateTable('OrganizationUser')
+    .set({role: 'BILLING_LEADER'})
+    .where('userId', '=', viewerId)
+    .where('orgId', '=', orgId)
+    .where('removedAt', 'is', null)
+    .execute()
   await r
     .table('OrganizationUser')
     .getAll(viewerId, {index: 'userId'})

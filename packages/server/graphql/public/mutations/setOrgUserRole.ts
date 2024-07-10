@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import NotificationPromoteToBillingLeader from '../../../database/types/NotificationPromoteToBillingLeader'
+import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -22,6 +22,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -39,24 +40,12 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     return standardError(new Error('Invalid role to set'), {userId: viewerId})
   }
 
-  const [organizationUser, viewer, viewerOrgUser] = await Promise.all([
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({orgId, removedAt: null})
-      .nth(0)
-      .default(null)
-      .run(),
-    dataLoader.get('users').loadNonNull(viewerId),
-    r
-      .table('OrganizationUser')
-      .getAll(viewerId, {index: 'userId'})
-      .filter({orgId, removedAt: null})
-      .nth(0)
-      .default(null)
-      .run()
+  const [orgUsers, viewer] = await Promise.all([
+    dataLoader.get('organizationUsersByOrgId').load(orgId),
+    dataLoader.get('users').loadNonNull(viewerId)
   ])
-
+  const organizationUser = orgUsers.find((orgUser) => orgUser.userId === userId)
+  const viewerOrgUser = orgUsers.find((orgUser) => orgUser.userId === viewerId)
   if (!organizationUser) {
     return standardError(new Error('Cannot find org user'), {
       userId: viewerId
@@ -76,13 +65,10 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
 
   // if someone is leaving, make sure there is someone else to take their place
   if (userId === viewerId) {
-    const leaderCount = await r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null})
-      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-      .count()
-      .run()
+    const leaders = orgUsers.filter(
+      ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+    )
+    const leaderCount = leaders.length
     if (leaderCount === 1 && !roleToSet) {
       return standardError(new Error('You’re the last leader, you can’t give that up'), {
         userId: viewerId
@@ -99,8 +85,17 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
       notificationIdsAdded: []
     }
   }
-  await r.table('OrganizationUser').get(organizationUserId).update({role: roleToSet}).run()
-
+  await pg
+    .updateTable('OrganizationUser')
+    .set({role: roleToSet || null})
+    .where('id', '=', organizationUserId)
+    .execute()
+  await r
+    .table('OrganizationUser')
+    .get(organizationUserId)
+    .update({role: roleToSet || null})
+    .run()
+  organizationUser.role = roleToSet || null
   if (roleToSet !== 'ORG_ADMIN') {
     const modificationType = roleToSet === 'BILLING_LEADER' ? 'add' : 'remove'
     analytics.billingLeaderModified(viewer, userId, orgId, modificationType)

@@ -40,7 +40,7 @@ export default {
     // RESOLUTION
     const {stripeId} = await dataLoader.get('organizations').loadNonNull(orgId)
     const dbAfter = after ? new Date(after) : r.maxval
-    const [tooManyInvoices, orgUserCount] = await Promise.all([
+    const [tooManyInvoices, orgUsers] = await Promise.all([
       r
         .table('Invoice')
         .between([orgId, r.minval], [orgId, dbAfter], {
@@ -54,16 +54,10 @@ export default {
         .orderBy(r.desc('startAt'), r.desc('createdAt'))
         .limit(first + 1)
         .run(),
-      r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({
-          inactive: false,
-          removedAt: null
-        })
-        .count()
-        .run()
+      dataLoader.get('organizationUsersByOrgId').load(orgId)
     ])
+    const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+    const orgUserCount = activeOrgUsers.length
     const org = await dataLoader.get('organizations').loadNonNull(orgId)
     const upcomingInvoice = after
       ? undefined

@@ -37,7 +37,7 @@ const maybeUpdateOrganizationActiveDomain = async (
     return
 
   // don't modify if we can't guess the domain or the domain we guess is the current domain
-  const domain = await getActiveDomainForOrgId(orgId)
+  const domain = await getActiveDomainForOrgId(orgId, dataLoader)
   if (!domain || domain === activeDomain) return
   organization.activeDomain = domain
   const pg = getKysely()
@@ -82,6 +82,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     dataLoader.get('organizations').loadMany(orgIds),
     dataLoader.get('organizationUsersByUserId').load(userId)
   ])
+  dataLoader.get('organizationUsersByUserId').clear(userId)
   const organizations = rawOrganizations.filter(isValid)
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
@@ -159,7 +160,6 @@ export default async function adjustUserCount(
 
   const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, user, dataLoader)
-
   const auditEventType = auditEventTypeLookup[type]
   await insertOrgUserAudit(orgIds, userId, auditEventType)
 

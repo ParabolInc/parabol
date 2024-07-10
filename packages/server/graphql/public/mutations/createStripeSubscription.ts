@@ -1,5 +1,4 @@
 import Stripe from 'stripe'
-import getRethink from '../../../database/rethinkDriver'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
@@ -11,20 +10,15 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
-  const r = await getRethink()
 
-  const [viewer, organization, orgUsersCount, organizationUser] = await Promise.all([
+  const [viewer, organization, orgUsers] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('organizations').loadNonNull(orgId),
-    r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, inactive: false})
-      .count()
-      .run(),
-    dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
+    dataLoader.get('organizationUsersByOrgId').load(orgId)
   ])
-
+  const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+  const orgUsersCount = activeOrgUsers.length
+  const organizationUser = orgUsers.find(({userId}) => userId === viewerId)
   if (!organizationUser)
     return standardError(new Error('Unable to create subscription'), {
       userId: viewerId
