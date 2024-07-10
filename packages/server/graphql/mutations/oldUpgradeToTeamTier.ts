@@ -42,7 +42,7 @@ export default {
       stripeSubscriptionId: startingSubId,
       name: orgName,
       activeDomain: domain
-    } = await r.table('Organization').get(orgId).run()
+    } = await dataLoader.get('organizations').loadNonNull(orgId)
 
     if (startingSubId) {
       return standardError(new Error('Already an organization on the team tier'), {
@@ -76,7 +76,7 @@ export default {
     const teamIds = teams.map(({id}) => id)
     analytics.organizationUpgraded(viewer, {
       orgId,
-      domain,
+      domain: domain || undefined,
       orgName,
       oldTier: 'starter',
       newTier: 'team'

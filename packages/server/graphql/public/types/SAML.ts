@@ -17,7 +17,7 @@ const SAML: SamlResolvers = {
   },
   organization: async ({orgId}, _args, {dataLoader}) => {
     if (!orgId) return null
-    return dataLoader.get('organizations').load(orgId)
+    return dataLoader.get('organizations').loadNonNull(orgId)
   }
 }
 

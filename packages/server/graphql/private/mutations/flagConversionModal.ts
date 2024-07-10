@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -7,8 +6,6 @@ const flagConversionModal: MutationResolvers['flagConversionModal'] = async (
   {active, orgId},
   {dataLoader}
 ) => {
-  const r = await getRethink()
-
   // VALIDATION
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
@@ -22,13 +19,6 @@ const flagConversionModal: MutationResolvers['flagConversionModal'] = async (
     .set({showConversionModal: active})
     .where('id', '=', orgId)
     .execute()
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      showConversionModal: active
-    })
-    .run()
 
   return {orgId}
 }

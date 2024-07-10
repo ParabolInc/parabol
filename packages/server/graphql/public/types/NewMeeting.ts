@@ -48,7 +48,7 @@ const NewMeeting: NewMeetingResolvers = {
   organization: async ({teamId}, _args, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    return dataLoader.get('organizations').load(orgId)
+    return dataLoader.get('organizations').loadNonNull(orgId)
   },
   phases: async ({phases, id: meetingId, teamId, endedAt}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

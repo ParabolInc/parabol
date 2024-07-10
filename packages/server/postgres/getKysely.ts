@@ -4,9 +4,9 @@ import {DB} from './pg.d'
 
 let kysely: Kysely<DB> | undefined
 
-const makeKysely = () => {
-  const nextPg = getPg()
-  nextPg.on('poolChange' as any, makeKysely)
+const makeKysely = (schema?: string) => {
+  const nextPg = getPg(schema)
+  nextPg.on('poolChange' as any, () => makeKysely(schema))
   return new Kysely<DB>({
     dialect: new PostgresDialect({
       pool: nextPg
@@ -20,9 +20,9 @@ const makeKysely = () => {
   })
 }
 
-const getKysely = () => {
+const getKysely = (schema?: string) => {
   if (!kysely) {
-    kysely = makeKysely()
+    kysely = makeKysely(schema)
   }
   return kysely
 }

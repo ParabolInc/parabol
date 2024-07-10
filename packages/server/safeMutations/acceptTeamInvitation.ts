@@ -4,14 +4,14 @@ import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
-import {Team} from '../postgres/queries/getTeamsByIds'
+import {TeamSource} from '../graphql/public/types/Team'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
 
-const handleFirstAcceptedInvitation = async (team: Team): Promise<string | null> => {
+const handleFirstAcceptedInvitation = async (team: TeamSource): Promise<string | null> => {
   const r = await getRethink()
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
@@ -46,7 +46,11 @@ const handleFirstAcceptedInvitation = async (team: Team): Promise<string | null>
   return newTeamLeadUserId
 }
 
-const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
+const acceptTeamInvitation = async (
+  team: TeamSource,
+  userId: string,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   const now = new Date()
   const {id: teamId, orgId} = team

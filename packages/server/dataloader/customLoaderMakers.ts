@@ -6,13 +6,13 @@ import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import Organization from '../database/types/Organization'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import isValid from '../graphql/isValid'
 import {SAMLSource} from '../graphql/public/types/SAML'
+import {TeamSource} from '../graphql/public/types/Team'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
@@ -29,7 +29,6 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {Team} from '../postgres/queries/getTeamsByIds'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -38,6 +37,7 @@ import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
+import {selectTeams} from './primaryKeyLoaderMakers'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -736,57 +736,29 @@ export const samlByOrgId = (parent: RootDataLoader) => {
   )
 }
 
-type OrgWithFounderAndLeads = Organization & {
-  founder: OrganizationUser | null
-  billingLeads: OrganizationUser[]
-}
-
 // Check if the org has a founder or billing lead with a verified email and their email domain is the same as the org domain
 export const isOrgVerified = (parent: RootDataLoader) => {
   return new DataLoader<string, boolean, string>(
     async (orgIds) => {
-      const r = await getRethink()
-      const orgs: OrgWithFounderAndLeads[] = await r
-        .table('Organization')
-        .getAll(r.args(orgIds))
-        .merge((org: RDatum) => ({
-          members: r
-            .table('OrganizationUser')
-            .getAll(org('id'), {index: 'orgId'})
-            .orderBy('joinedAt')
-            .coerceTo('array')
-        }))
-        .merge((org: RDatum) => ({
-          founder: org('members').nth(0).default(null),
-          billingLeads: org('members')
-            .filter({inactive: false})
-            .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-        }))
-        .run()
-
-      const userIds = orgs
-        .flatMap((org) => [
-          org.founder ? org.founder.userId : null,
-          ...org.billingLeads.map((lead) => lead.userId)
-        ])
-        .filter((id): id is string => Boolean(id))
-
-      const users = (await parent.get('users').loadMany(userIds)).filter(isValid)
-
-      return orgIds.map((orgId) => {
-        const isValid = orgs.some((org) => {
-          if (org.id !== orgId) return false
-          const checkEmailDomain = (userId: string) => {
-            const user = users.find((user) => user.id === userId)
-            if (!user) return false
-            return isUserVerified(user) && user.domain === org.activeDomain
-          }
-          return [org.founder, ...org.billingLeads].some(
-            (orgUser) => orgUser && !orgUser.inactive && checkEmailDomain(orgUser.userId)
-          )
+      const orgUsersRes = await parent.get('organizationUsersByOrgId').loadMany(orgIds)
+      const orgUsersWithRole = orgUsersRes
+        .filter(isValid)
+        .flat()
+        .filter(({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role))
+      const orgUsersUserIds = orgUsersWithRole.map((orgUser) => orgUser.userId)
+      const usersRes = await parent.get('users').loadMany(orgUsersUserIds)
+      const verifiedUsers = usersRes.filter(isValid).filter(isUserVerified)
+      const verifiedOrgUsers = orgUsersWithRole.filter((orgUser) =>
+        verifiedUsers.some((user) => user.id === orgUser.userId)
+      )
+      return await Promise.all(
+        orgIds.map(async (orgId) => {
+          const isUserVerified = verifiedOrgUsers.some((orgUser) => orgUser.orgId === orgId)
+          if (isUserVerified) return true
+          const isOrgSAML = await parent.get('samlByOrgId').load(orgId)
+          return !!isOrgSAML
         })
-        return isValid
-      })
+      )
     },
     {
       ...parent.dataLoaderOptions
@@ -795,23 +767,20 @@ export const isOrgVerified = (parent: RootDataLoader) => {
 }
 
 export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
-  return new DataLoader<string, Team[], string>(
+  return new DataLoader<string, TeamSource[], string>(
     async (orgIds) => {
       const verificationResults = await parent.get('isOrgVerified').loadMany(orgIds)
       const verifiedOrgIds = orgIds.filter((_, index) => verificationResults[index])
 
-      const pg = getKysely()
-
       const teams =
         verifiedOrgIds.length === 0
           ? []
-          : ((await pg
-              .selectFrom('Team')
+          : await selectTeams()
               .where('orgId', 'in', verifiedOrgIds)
               .where('autoJoin', '=', true)
               .where('isArchived', '!=', true)
               .selectAll()
-              .execute()) as unknown as Team[])
+              .execute()
 
       return orgIds.map((orgId) => teams.filter((team) => team.orgId === orgId))
     },

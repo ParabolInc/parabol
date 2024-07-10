@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {isSuperUser} from '../../../utils/authorization'
@@ -15,7 +14,6 @@ const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = asyn
   if (!isSuperUser(authToken)) {
     throw new Error('Don’t be rude.')
   }
-  const r = await getRethink()
   const manager = getStripeManager()
   const customer = await manager.retrieveCustomer(customerId)
   if (customer.deleted) {
@@ -33,7 +31,6 @@ const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = asyn
     .set({creditCard: toCreditCard(creditCard)})
     .where('id', '=', orgId)
     .execute()
-  await r.table('Organization').get(orgId).update({creditCard}).run()
   return true
 }
 

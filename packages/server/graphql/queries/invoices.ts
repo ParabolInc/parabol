@@ -38,7 +38,7 @@ export default {
     }
 
     // RESOLUTION
-    const {stripeId} = await dataLoader.get('organizations').load(orgId)
+    const {stripeId} = await dataLoader.get('organizations').loadNonNull(orgId)
     const dbAfter = after ? new Date(after) : r.maxval
     const [tooManyInvoices, orgUserCount] = await Promise.all([
       r
@@ -64,7 +64,7 @@ export default {
         .count()
         .run()
     ])
-    const org = await dataLoader.get('organizations').load(orgId)
+    const org = await dataLoader.get('organizations').loadNonNull(orgId)
     const upcomingInvoice = after
       ? undefined
       : await makeUpcomingInvoice(org, orgUserCount, stripeId)

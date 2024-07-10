@@ -1,5 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
-import Organization from '../../../database/types/Organization'
 import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
@@ -10,7 +8,6 @@ const stripeDeleteSubscription: MutationResolvers['stripeDeleteSubscription'] = 
   {customerId, subscriptionId},
   {authToken, dataLoader}
 ) => {
-  const r = await getRethink()
   // AUTH
   if (!isSuperUser(authToken)) {
     throw new Error('Don’t be rude.')
@@ -29,7 +26,10 @@ const stripeDeleteSubscription: MutationResolvers['stripeDeleteSubscription'] = 
   if (!orgId) {
     throw new Error(`orgId not found on metadata for customer ${customerId}`)
   }
-  const org: Organization = await dataLoader.get('organizations').load(orgId)
+  const org = await dataLoader.get('organizations').load(orgId)
+  if (!org) {
+    throw new Error(`Organization not found for orgId ${orgId}`)
+  }
 
   const {stripeSubscriptionId} = org
   if (!stripeSubscriptionId) return false
@@ -42,13 +42,6 @@ const stripeDeleteSubscription: MutationResolvers['stripeDeleteSubscription'] = 
     .set({stripeSubscriptionId: null})
     .where('id', '=', orgId)
     .execute()
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      stripeSubscriptionId: r.literal()
-    })
-    .run()
 
   return true
 }

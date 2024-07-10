@@ -83,7 +83,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         const viewerId = getUserId(authToken)
         const [allTeamsOnOrg, organization, isOrgAdmin, isBillingLeader] = await Promise.all([
           dataLoader.get('teamsByOrgIds').load(orgId),
-          dataLoader.get('organizations').load(orgId),
+          dataLoader.get('organizations').loadNonNull(orgId),
           isUserOrgAdmin(viewerId, orgId, dataLoader),
           isUserBillingLeader(viewerId, orgId, dataLoader)
         ])
@@ -115,7 +115,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       resolve: async ({id: orgId}, _args: unknown, {dataLoader, authToken}) => {
         const [allTeamsOnOrg, organization] = await Promise.all([
           dataLoader.get('teamsByOrgIds').load(orgId),
-          dataLoader.get('organizations').load(orgId)
+          dataLoader.get('organizations').loadNonNull(orgId)
         ])
         const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
         if (!isSuperUser(authToken) || !hasPublicTeamsFlag) return []

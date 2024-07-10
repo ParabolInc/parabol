@@ -6,7 +6,7 @@ export type AddApprovedOrganizationDomainsSuccessSource = {
 
 const AddApprovedOrganizationDomainsSuccess: AddApprovedOrganizationDomainsSuccessResolvers = {
   organization: async ({orgId}, _args, {dataLoader}) => {
-    return dataLoader.get('organizations').load(orgId)
+    return dataLoader.get('organizations').loadNonNull(orgId)
   }
 }
 

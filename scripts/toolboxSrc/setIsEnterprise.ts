@@ -16,21 +16,13 @@ export default async function setIsEnterprise() {
     'Updating tier to "enterprise" for Organization and OrganizationUser tables in RethinkDB'
   )
 
-  type RethinkTableKey = 'Organization' | 'OrganizationUser'
-
-  const tablesToUpdate: RethinkTableKey[] = ['Organization', 'OrganizationUser']
   await getKysely().updateTable('Organization').set({tier: 'enterprise'}).execute()
-  const rethinkPromises = tablesToUpdate.map(async (table) => {
-    const result = await r
-      .table(table)
-      .update({
-        tier: 'enterprise'
-      })
-      .run()
-
-    console.log(`Updated ${result.replaced} rows in ${table} table in RethinkDB.`)
-    return result
-  })
+  await r
+    .table('OrganizationUser')
+    .update({
+      tier: 'enterprise'
+    })
+    .run()
 
   const pg = getPg()
 
@@ -50,7 +42,7 @@ export default async function setIsEnterprise() {
 
   const pgPromises = [updateUserPromise, updateTeamPromise]
 
-  await Promise.all([...rethinkPromises, ...pgPromises])
+  await Promise.all(pgPromises)
 
   console.log('Finished updating tiers.')
 

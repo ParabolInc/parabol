@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -7,7 +6,6 @@ const setOrganizationDomain: MutationResolvers['setOrganizationDomain'] = async 
   {orgId, domain},
   {dataLoader}
 ) => {
-  const r = await getRethink()
   // VALIDATION
   const organization = await dataLoader.get('organizations').load(orgId)
   dataLoader.get('organizations').clear(orgId)
@@ -21,14 +19,7 @@ const setOrganizationDomain: MutationResolvers['setOrganizationDomain'] = async 
     .set({activeDomain: domain, isActiveDomainTouched: true})
     .where('id', '=', orgId)
     .execute()
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      activeDomain: domain,
-      isActiveDomainTouched: true
-    })
-    .run()
+
   return true
 }
 

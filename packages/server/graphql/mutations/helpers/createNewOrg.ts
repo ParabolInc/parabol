@@ -33,8 +33,5 @@ export default async function createNewOrg(
     .insertInto('Organization')
     .values({...org, creditCard: null})
     .execute()
-  return r({
-    org: r.table('Organization').insert(org),
-    organizationUser: r.table('OrganizationUser').insert(orgUser)
-  }).run()
+  await r.table('OrganizationUser').insert(orgUser).run()
 }

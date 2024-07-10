@@ -1,4 +1,5 @@
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import RedisLockQueue from '../../utils/RedisLockQueue'
 import sendToSentry from '../../utils/sendToSentry'
@@ -12,7 +13,11 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
   const r = await getRethink()
   const manager = getStripeManager()
 
-  const org = await r.table('Organization').get(orgId).run()
+  const org = await getKysely()
+    .selectFrom('Organization')
+    .selectAll()
+    .where('id', '=', orgId)
+    .executeTakeFirst()
 
   if (!org) throw new Error(`org not found for invoice`)
   const {stripeSubscriptionId, tier} = org

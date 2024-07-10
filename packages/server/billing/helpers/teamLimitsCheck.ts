@@ -5,10 +5,10 @@ import {Threshold} from 'parabol-client/types/constEnums'
 import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
-import Organization from '../../database/types/Organization'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
+import {OrganizationSource} from '../../graphql/public/types/Organization'
 import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
 import {getFeatureTier} from '../../graphql/types/helpers/getFeatureTier'
 import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
@@ -35,7 +35,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
 }
 
 const sendWebsiteNotifications = async (
-  organization: Organization,
+  organization: OrganizationSource,
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {
@@ -72,7 +72,7 @@ const isLimitExceeded = async (orgId: string) => {
 
 // Warning: the function might be expensive
 export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
 
   if (!organization.tierLimitExceededAt) {
     return
@@ -88,16 +88,6 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
         .where('id', '=', orgId)
         .execute(),
       r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: new Date()
-        })
-        .run(),
-      r
         .table('OrganizationUser')
         .getAll(r.args(billingLeadersIds), {index: 'userId'})
         .filter({orgId})
@@ -111,7 +101,7 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 
 // Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tierLimitExceededAt, tier, trialStartDate, featureFlags, name: orgName} = organization
 
   if (!featureFlags?.includes('teamsLimit')) return
@@ -144,16 +134,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
         scheduledLockAt
       })
       .where('id', '=', orgId)
-      .execute(),
-    r
-      .table('Organization')
-      .get(orgId)
-      .update({
-        tierLimitExceededAt: now,
-        scheduledLockAt,
-        updatedAt: now
-      })
-      .run()
+      .execute()
   ])
   dataLoader.get('organizations').clear(orgId)
 

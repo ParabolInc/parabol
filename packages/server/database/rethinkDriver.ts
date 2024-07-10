@@ -1,5 +1,4 @@
 import {MasterPool, r} from 'rethinkdb-ts'
-import Organization from '../database/types/Organization'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
@@ -112,10 +111,6 @@ export type RethinkSchema = {
       | NotificationResponseReplied
       | NotificationMentioned
     index: 'userId'
-  }
-  Organization: {
-    type: Organization
-    index: 'tier' | 'activeDomain'
   }
   OrganizationUser: {
     type: OrganizationUser
