@@ -18,7 +18,6 @@ export async function up() {
       "suggestedTier" "TierEnum",
       "inactive" BOOLEAN NOT NULL DEFAULT FALSE,
       "joinedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-      "newUserUntil" TIMESTAMP WITH TIME ZONE,
       "orgId" VARCHAR(100) NOT NULL,
       "removedAt" TIMESTAMP WITH TIME ZONE,
       "role" "OrgUserRoleEnum",

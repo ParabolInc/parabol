@@ -35,6 +35,22 @@ const addUsers = async (users: TestUser[]) => {
   getKysely().insertInto('User').values(users).execute()
 }
 
+const createTables = async (...tables: string[]) => {
+  for (const tableName of tables) {
+    const structure = await r
+      .db('rethinkdb')
+      .table('table_config')
+      .filter({db: config.db, name: tableName})
+      .run()
+    await r.tableCreate(tableName).run()
+    const {indexes} = structure[0]
+    for (const index of indexes) {
+      await r.table(tableName).indexCreate(index).run()
+    }
+    await r.table(tableName).indexWait().run()
+  }
+}
+
 type TestOrganizationUser = Partial<
   Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'> & {
     domain: string
@@ -71,6 +87,7 @@ const addOrg = async (
     .insertInto('OrganizationUser')
     .values(orgUsers)
     .execute()
+  await r.table('OrganizationUser').insert(orgUsers).run()
   return orgId
 }
 
@@ -87,10 +104,12 @@ beforeAll(async () => {
 
   await r.dbCreate(TEST_DB).run()
   await createPGTables('Organization', 'User', 'SAML', 'SAMLDomain', 'OrganizationUser')
+  await createTables('OrganizationUser')
 })
 
 afterEach(async () => {
-  await truncatePGTables('Organization', 'User', 'OrganizationUser')
+  await truncatePGTables('Organization', 'User')
+  await r.table('OrganizationUser').delete().run()
 })
 
 afterAll(async () => {

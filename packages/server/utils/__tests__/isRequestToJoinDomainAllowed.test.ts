@@ -27,6 +27,22 @@ const testConfig = {
   db: TEST_DB
 }
 
+const createTables = async (...tables: string[]) => {
+  for (const tableName of tables) {
+    const structure = await r
+      .db('rethinkdb')
+      .table('table_config')
+      .filter({db: config.db, name: tableName})
+      .run()
+    await r.tableCreate(tableName).run()
+    const {indexes} = structure[0]
+    for (const index of indexes) {
+      await r.table(tableName).indexCreate(index).run()
+    }
+    await r.table(tableName).indexWait().run()
+  }
+}
+
 type TestOrganizationUser = Partial<
   Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
 > & {userId: string}
@@ -85,10 +101,12 @@ beforeAll(async () => {
     'SAMLDomain',
     'OrganizationUser'
   )
+  await createTables('OrganizationUser')
 })
 
 afterEach(async () => {
   await truncatePGTables('Organization', 'User', 'OrganizationUser')
+  await r.table('OrganizationUser').delete().run()
 })
 
 afterAll(async () => {
