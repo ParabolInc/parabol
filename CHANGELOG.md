@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.5](https://github.com/ParabolInc/parabol/compare/v7.38.4...v7.38.5) (2024-07-11)
+
+
+### Fixed
+
+* Missing email summary for retros ([#9960](https://github.com/ParabolInc/parabol/issues/9960)) ([b4a9129](https://github.com/ParabolInc/parabol/commit/b4a91292cf941895d4766fbea545436101689a3c))
+
 ## [7.38.4](https://github.com/ParabolInc/parabol/compare/v7.38.3...v7.38.4) (2024-07-10)
 
 
