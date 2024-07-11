@@ -1,5 +1,4 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import IUser from '../../../postgres/types/IUser'
@@ -18,7 +17,6 @@ const getBillingLeaderUser = async (
   orgId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   if (email) {
     const user = await getUserByEmail(email)
@@ -40,12 +38,6 @@ const getBillingLeaderUser = async (
         .where('orgId', '=', orgId)
         .where('removedAt', 'is', null)
         .execute()
-      await r
-        .table('OrganizationUser')
-        .getAll(userId, {index: 'userId'})
-        .filter({removedAt: null, orgId})
-        .update({role: 'BILLING_LEADER'})
-        .run()
     }
     return user
   }

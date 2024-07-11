@@ -1,4 +1,3 @@
-import {r, RValue} from 'rethinkdb-ts'
 import getKysely from '../../../postgres/getKysely'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {MutationResolvers} from '../resolverTypes'
@@ -26,7 +25,7 @@ const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
   const userIds = users.map(({id}) => id)
   const recordsReplaced = await Promise.all(
     userIds.map(async (userId) => {
-      await pg
+      return await pg
         .updateTable('OrganizationUser')
         .set({suggestedTier})
         .where('userId', '=', userId)
@@ -34,18 +33,9 @@ const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
         .where('removedAt', 'is', null)
         .returning('id')
         .execute()
-      return r
-        .table('OrganizationUser')
-        .getAll(r.args(orgIds), {index: 'orgId'})
-        .filter({
-          userId
-        })
-        .filter((row: RValue) => row('removedAt').default(null).eq(null))
-        .update({suggestedTier})('replaced')
-        .run()
     })
   )
-  return {organizationUsersAffected: recordsReplaced.reduce((x, y) => x + y)}
+  return {organizationUsersAffected: recordsReplaced.flat().length}
 }
 
 export default toggleAllowInsights

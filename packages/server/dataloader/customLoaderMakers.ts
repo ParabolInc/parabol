@@ -6,7 +6,6 @@ import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
@@ -29,6 +28,7 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
+import {OrganizationUser} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -393,18 +393,20 @@ export const organizationApprovedDomains = (parent: RootDataLoader) => {
 export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
   return new DataLoader<{orgId: string; userId: string}, OrganizationUser | null, string>(
     async (keys) => {
-      const r = await getRethink()
+      const pg = getKysely()
       return Promise.all(
-        keys.map((key) => {
+        keys.map(async (key) => {
           const {userId, orgId} = key
           if (!userId || !orgId) return null
-          return r
-            .table('OrganizationUser')
-            .getAll(userId, {index: 'userId'})
-            .filter({orgId, removedAt: null})
-            .nth(0)
-            .default(null)
-            .run()
+          const res = await pg
+            .selectFrom('OrganizationUser')
+            .selectAll()
+            .where('userId', '=', userId)
+            .where('orgId', '=', orgId)
+            .where('removedAt', 'is', null)
+            .limit(1)
+            .executeTakeFirst()
+          return res || null
         })
       )
     },
@@ -656,16 +658,17 @@ export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
 export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, string[], string>(
     async (keys) => {
-      const r = await getRethink()
+      const pg = getKysely()
       const res = await Promise.all(
-        keys.map((orgId) => {
-          return r
-            .table('OrganizationUser')
-            .getAll(orgId, {index: 'orgId'})
-            .filter({removedAt: null})
-            .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-            .coerceTo('array')('userId')
-            .run()
+        keys.map(async (orgId) => {
+          const rows = await pg
+            .selectFrom('OrganizationUser')
+            .select('userId')
+            .where('orgId', '=', orgId)
+            .where('removedAt', 'is', null)
+            .where('role', 'in', ['BILLING_LEADER', 'ORG_ADMIN'])
+            .execute()
+          return rows.map((row) => row.userId)
         })
       )
       return res

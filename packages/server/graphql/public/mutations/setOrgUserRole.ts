@@ -21,7 +21,6 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   {orgId, userId, role: roleToSet},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -90,11 +89,6 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     .set({role: roleToSet || null})
     .where('id', '=', organizationUserId)
     .execute()
-  await r
-    .table('OrganizationUser')
-    .get(organizationUserId)
-    .update({role: roleToSet || null})
-    .run()
   organizationUser.role = roleToSet || null
   if (roleToSet !== 'ORG_ADMIN') {
     const modificationType = roleToSet === 'BILLING_LEADER' ? 'add' : 'remove'
