@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.6](https://github.com/ParabolInc/parabol/compare/v7.38.5...v7.38.6) (2024-07-11)
+
+
+### Changed
+
+* Make meeting series naming consistent ([#9928](https://github.com/ParabolInc/parabol/issues/9928)) ([97bfc0f](https://github.com/ParabolInc/parabol/commit/97bfc0fad786577534c6519ef4654d3e587e228f))
+* **rethinkdb:** OrganizationUser: Phase 1 ([#9952](https://github.com/ParabolInc/parabol/issues/9952)) ([f63c16e](https://github.com/ParabolInc/parabol/commit/f63c16e8fc17e1f7a34cc300667bafc993c85500))
+
 ## [7.38.5](https://github.com/ParabolInc/parabol/compare/v7.38.4...v7.38.5) (2024-07-11)
 
 
