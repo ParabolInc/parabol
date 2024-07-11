@@ -12,9 +12,14 @@ extend type Mutation {
     meetingId: ID!
 
     """
-    Updated recurrence settings
+    New meeting series name
     """
-    recurrenceSettings: RecurrenceSettingsInput!
+    name: String
+
+    """
+    The recurrence rule for the meeting series in RRULE format
+    """
+    rrule: RRule
   ): UpdateRecurrenceSettingsPayload!
 }
 

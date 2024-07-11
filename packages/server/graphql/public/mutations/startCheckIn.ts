@@ -17,7 +17,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
   _source,
-  {teamId, gcalInput},
+  {teamId, name, gcalInput},
   context
 ) => {
   const r = await getRethink()
@@ -59,6 +59,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const meeting = new MeetingAction({
     id: meetingId,
     teamId,
+    name: name ?? `Check-in #${meetingCount + 1}`,
     meetingCount,
     phases,
     facilitatorUserId: viewerId
@@ -92,7 +93,14 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)
-  const {error} = await createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
+  const {error} = await createGcalEvent({
+    name: meeting.name,
+    gcalInput,
+    teamId,
+    meetingId,
+    viewerId,
+    dataLoader
+  })
   const data = {teamId, meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
   return data

@@ -175,10 +175,8 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
       atmosphere,
       {
         meetingId: meeting.id,
-        recurrenceSettings: {
-          rrule: rrule?.toString(),
-          name: title
-        }
+        rrule: rrule?.toString(),
+        name: title
       },
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
@@ -190,7 +188,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
 
     UpdateRecurrenceSettingsMutation(
       atmosphere,
-      {meetingId: meeting.id, recurrenceSettings: {rrule: null}},
+      {meetingId: meeting.id, rrule: null},
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
   }

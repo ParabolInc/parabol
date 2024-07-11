@@ -8,9 +8,13 @@ extend type Mutation {
     """
     teamId: ID!
     """
-    The recurrence settings of the meeting
+    Name of the meeting or series
     """
-    recurrenceSettings: RecurrenceSettingsInput
+    name: String
+    """
+    The recurrence rule for the meeting series in RRULE format
+    """
+    rrule: RRule
     """
     The gcal input if creating a gcal event
     """
@@ -28,31 +32,4 @@ type StartRetrospectiveSuccess {
   meetingId: ID!
   team: Team!
   hasGcalError: Boolean
-}
-
-input CreateGcalEventInput {
-  """
-  The title of the event
-  """
-  title: String!
-  """
-  The start timestamp of the event
-  """
-  startTimestamp: Int!
-  """
-  The end timestamp of the event
-  """
-  endTimestamp: Int!
-  """
-  The timezone of the event
-  """
-  timeZone: String!
-  """
-  The type of video call to added to the gcal event. If not provided, no video call will be added
-  """
-  videoType: GcalVideoTypeEnum
-  """
-  The emails that will be invited to the gcal event. If not provided, the no one will be invited
-  """
-  invitees: [Email!]
 }
