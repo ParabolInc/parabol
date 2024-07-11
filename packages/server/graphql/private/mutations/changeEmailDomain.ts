@@ -55,11 +55,11 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       })
       .where('domain', 'like', normalizedOldDomain)
       .execute(),
-    r
-      .table('Organization')
-      .filter((row: RDatum) => row('activeDomain').eq(normalizedOldDomain))
-      .update({activeDomain: normalizedNewDomain})
-      .run(),
+    pg
+      .updateTable('Organization')
+      .set({activeDomain: normalizedNewDomain})
+      .where('activeDomain', '=', normalizedOldDomain)
+      .execute(),
     r
       .table('TeamMember')
       .filter((row: RDatum) => row('email').match(`@${normalizedOldDomain}$`))

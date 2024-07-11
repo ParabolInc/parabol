@@ -1,33 +1,28 @@
+import getKysely from 'parabol-server/postgres/getKysely'
 import getRethink from '../../packages/server/database/rethinkDriver'
 import getPg from '../../packages/server/postgres/getPg'
 import {defaultTier} from '../../packages/server/utils/defaultTier'
 
 export default async function setIsEnterprise() {
   if (defaultTier !== 'enterprise') {
-    throw new Error('Environment variable IS_ENTERPRISE is not set to true. Exiting without updating tiers.')
+    throw new Error(
+      'Environment variable IS_ENTERPRISE is not set to true. Exiting without updating tiers.'
+    )
   }
-  
+
   const r = await getRethink()
 
   console.log(
     'Updating tier to "enterprise" for Organization and OrganizationUser tables in RethinkDB'
   )
-  
-  type RethinkTableKey = 'Organization' | 'OrganizationUser'
 
-  const tablesToUpdate: RethinkTableKey[] = ['Organization', 'OrganizationUser']
-
-  const rethinkPromises = tablesToUpdate.map(async (table) => {
-    const result = await r
-      .table(table)
-      .update({
-        tier: 'enterprise'
-      })
-      .run()
-
-    console.log(`Updated ${result.replaced} rows in ${table} table in RethinkDB.`)
-    return result
-  })
+  await getKysely().updateTable('Organization').set({tier: 'enterprise'}).execute()
+  await r
+    .table('OrganizationUser')
+    .update({
+      tier: 'enterprise'
+    })
+    .run()
 
   const pg = getPg()
 
@@ -47,7 +42,7 @@ export default async function setIsEnterprise() {
 
   const pgPromises = [updateUserPromise, updateTeamPromise]
 
-  await Promise.all([...rethinkPromises, ...pgPromises])
+  await Promise.all(pgPromises)
 
   console.log('Finished updating tiers.')
 

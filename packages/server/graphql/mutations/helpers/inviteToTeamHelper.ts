@@ -87,7 +87,7 @@ const inviteToTeamHelper = async (
   }
 
   const {name: teamName, createdAt, isOnboardTeam, orgId} = team
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, name: orgName} = organization
   const uniqueInvitees = Array.from(new Set(validInvitees))
   // filter out emails already on team

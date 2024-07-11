@@ -1,10 +1,9 @@
 import getKysely from '../postgres/getKysely'
-import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
-import {selectRetroReflections} from './primaryKeyLoaderMakers'
+import {selectOrganizations, selectRetroReflections, selectTeams} from './primaryKeyLoaderMakers'
 
 export const teamsByOrgIds = foreignKeyLoaderMaker('teams', 'orgId', (orgIds) =>
-  getTeamsByOrgIds(orgIds, {isArchived: false})
+  selectTeams().where('orgId', 'in', orgIds).where('isArchived', '=', false).execute()
 )
 
 export const discussionsByMeetingId = foreignKeyLoaderMaker(
@@ -72,5 +71,13 @@ export const timelineEventsByMeetingId = foreignKeyLoaderMaker(
       .where('meetingId', 'in', meetingIds)
       .where('isActive', '=', true)
       .execute()
+  }
+)
+
+export const organizationsByActiveDomain = foreignKeyLoaderMaker(
+  'organizations',
+  'activeDomain',
+  async (activeDomains) => {
+    return selectOrganizations().where('activeDomain', 'in', activeDomains).execute()
   }
 )

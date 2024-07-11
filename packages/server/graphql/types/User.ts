@@ -16,7 +16,6 @@ import {
 } from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import MeetingMemberType from '../../database/types/MeetingMember'
-import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import getKysely from '../../postgres/getKysely'
@@ -24,7 +23,6 @@ import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
 import standardError from '../../utils/standardError'
-import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
 import invoices from '../queries/invoices'
@@ -405,11 +403,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         {authToken, dataLoader}: GQLContext
       ) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        const orgIds = organizationUsers.map(({orgId}: OrganizationUserType) => orgId)
+        const orgIds = organizationUsers.map(({orgId}) => orgId)
         const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(
-          errorFilter
+          isValid
         )
-        organizations.sort((a: OrganizationType, b: OrganizationType) => (a.name > b.name ? 1 : -1))
+        organizations.sort((a, b) => (a.name > b.name ? 1 : -1))
         const viewerId = getUserId(authToken)
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizations
@@ -417,10 +415,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
-        return organizations.filter((organization: OrganizationType) =>
-          viewerOrgIds.includes(organization.id)
-        )
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+        return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
       }
     },
     overLimitCopy: {

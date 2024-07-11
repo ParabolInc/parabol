@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import getPg from '../../postgres/getPg'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
 import {analytics} from '../../utils/analytics/analytics'
@@ -49,13 +49,13 @@ export default {
     // RESOLUTION
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    await r
-      .table('Organization')
-      .get(orgId)
-      .update((row: RValue) => ({
-        payLaterClickCount: row('payLaterClickCount').default(0).add(1)
+    await getKysely()
+      .updateTable('Organization')
+      .set((eb) => ({
+        payLaterClickCount: eb('payLaterClickCount', '+', 1)
       }))
-      .run()
+      .where('id', '=', orgId)
+      .execute()
     await r
       .table('NewMeeting')
       .get(meetingId)

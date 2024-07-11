@@ -1,6 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import Organization from '../../../database/types/Organization'
 import OrganizationUser from '../../../database/types/OrganizationUser'
+import getKysely from '../../../postgres/getKysely'
 import insertOrgUserAudit from '../../../postgres/helpers/insertOrgUserAudit'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import {DataLoaderWorker} from '../../graphql'
@@ -28,8 +29,9 @@ export default async function createNewOrg(
     tier: org.tier
   })
   await insertOrgUserAudit([orgId], leaderUserId, 'added')
-  return r({
-    org: r.table('Organization').insert(org),
-    organizationUser: r.table('OrganizationUser').insert(orgUser)
-  }).run()
+  await getKysely()
+    .insertInto('Organization')
+    .values({...org, creditCard: null})
+    .execute()
+  await r.table('OrganizationUser').insert(orgUser).run()
 }

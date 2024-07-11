@@ -30,7 +30,7 @@ const moveToOrg = async (
   const su = isSuperUser(authToken)
   // VALIDATION
   const [org, teams, isPaidResult] = await Promise.all([
-    r.table('Organization').get(orgId).run(),
+    dataLoader.get('organizations').loadNonNull(orgId),
     getTeamsByIds([teamId]),
     pg
       .selectFrom('Team')
@@ -117,7 +117,7 @@ const moveToOrg = async (
   const {newToOrgUserIds} = rethinkResult
 
   // if no teams remain on the org, remove it
-  await safeArchiveEmptyStarterOrganization(currentOrgId)
+  await safeArchiveEmptyStarterOrganization(currentOrgId, dataLoader)
 
   await Promise.all(
     newToOrgUserIds.map((newUserId) => {

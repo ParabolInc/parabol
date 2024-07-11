@@ -30,7 +30,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
-  const organization = await dataLoader.get('organizations').load(team.orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
   const {featureFlags} = organization
   const hasTranscriptFlag = featureFlags?.includes('zoomTranscription')
 

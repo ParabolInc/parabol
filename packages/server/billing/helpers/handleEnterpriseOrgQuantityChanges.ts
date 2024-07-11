@@ -1,12 +1,12 @@
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import Organization from '../../database/types/Organization'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import {OrganizationSource} from '../../graphql/public/types/Organization'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 
 const sendEnterpriseOverageEvent = async (
-  organization: Organization,
+  organization: OrganizationSource,
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
@@ -41,7 +41,7 @@ const sendEnterpriseOverageEvent = async (
 }
 
 const handleEnterpriseOrgQuantityChanges = async (
-  paidOrgs: Organization[],
+  paidOrgs: OrganizationSource[],
   dataLoader: DataLoaderWorker
 ) => {
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')

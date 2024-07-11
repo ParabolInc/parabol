@@ -1,9 +1,10 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import isValid from '../../graphql/isValid'
+import getKysely from '../../postgres/getKysely'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
@@ -21,8 +22,7 @@ const maybeUpdateOrganizationActiveDomain = async (
   newUserEmail: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
-  const organization = await r.table('Organization').get(orgId).run()
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {isActiveDomainTouched, activeDomain} = organization
   // don't modify if the domain was set manually
   if (isActiveDomainTouched) return
@@ -38,14 +38,9 @@ const maybeUpdateOrganizationActiveDomain = async (
   // don't modify if we can't guess the domain or the domain we guess is the current domain
   const domain = await getActiveDomainForOrgId(orgId)
   if (!domain || domain === activeDomain) return
-
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      activeDomain: domain
-    })
-    .run()
+  organization.activeDomain = domain
+  const pg = getKysely()
+  await pg.updateTable('Organization').set({activeDomain: domain}).where('id', '=', orgId).execute()
 }
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {
@@ -76,18 +71,16 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
 const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
   const {id: userId} = user
   const r = await getRethink()
-  const {organizations, organizationUsers} = await r({
-    organizationUsers: r
+  const [rawOrganizations, organizationUsers] = await Promise.all([
+    dataLoader.get('organizations').loadMany(orgIds),
+    r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .orderBy(r.desc('newUserUntil'))
-      .coerceTo('array') as unknown as OrganizationUser[],
-    organizations: r
-      .table('Organization')
-      .getAll(r.args(orgIds))
-      .coerceTo('array') as unknown as Organization[]
-  }).run()
-
+      .coerceTo('array')
+      .run()
+  ])
+  const organizations = rawOrganizations.filter(isValid)
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
       (organizationUser) => organizationUser.orgId === orgId
@@ -153,7 +146,6 @@ export default async function adjustUserCount(
   type: InvoiceItemType,
   dataLoader: DataLoaderWorker
 ) {
-  const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
 
   const user = (await getUserById(userId))!
@@ -164,11 +156,8 @@ export default async function adjustUserCount(
   const auditEventType = auditEventTypeLookup[type]
   await insertOrgUserAudit(orgIds, userId, auditEventType)
 
-  const paidOrgs = await r
-    .table('Organization')
-    .getAll(r.args(orgIds), {index: 'id'})
-    .filter((org: RDatum) => org('stripeSubscriptionId').default(null).ne(null))
-    .run()
+  const organizations = await dataLoader.get('organizations').loadMany(orgIds)
+  const paidOrgs = organizations.filter(isValid).filter((org) => org.stripeSubscriptionId)
 
   handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch()
   handleTeamOrgQuantityChanges(paidOrgs).catch(Logger.error)

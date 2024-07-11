@@ -82,17 +82,6 @@ const eventLookup = {
       }
     },
     subscription: {
-      updated: {
-        getVars: ({customer, id}: {customer: string; id: string}) => ({
-          customerId: customer,
-          subscriptionId: id
-        }),
-        query: `
-        mutation StripeUpdateSubscription($customerId: ID!, $subscriptionId: ID!) {
-          stripeUpdateSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
-        }
-      `
-      },
       created: {
         getVars: ({customer, id}: {customer: string; id: string}) => ({
           customerId: customer,
@@ -100,7 +89,7 @@ const eventLookup = {
         }),
         query: `
         mutation StripeCreateSubscription($customerId: ID!, $subscriptionId: ID!) {
-          stripeUpdateSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
+          stripeCreateSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
         }
       `
       },

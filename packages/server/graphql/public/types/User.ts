@@ -28,6 +28,20 @@ import {UserResolvers} from '../resolverTypes'
 
 declare const __PRODUCTION__: string
 
+const MODEL = 'Embeddings_ember_1'
+const EMBED_URL = (() => {
+  try {
+    const availableModels =
+      process.env.AI_EMBEDDING_MODELS && JSON.parse(process.env.AI_EMBEDDING_MODELS)
+    return availableModels.find(
+      ({model}: {model?: string}) => model?.split(':')[1] === 'llmrails/ember-v1'
+    )?.url
+  } catch {
+    return undefined
+  }
+})()
+const SIMILARITY_THRESHOLD = 0.5
+
 const User: UserResolvers = {
   activity: async (_source, {activityId}, {dataLoader}) => {
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
@@ -72,7 +86,7 @@ const User: UserResolvers = {
       .map(({orgId}) => orgId)
 
     const organizations = await Promise.all(
-      orgIds.map((orgId) => dataLoader.get('organizations').load(orgId))
+      orgIds.map((orgId) => dataLoader.get('organizations').loadNonNull(orgId))
     )
     const approvedDomains = organizations.map(({activeDomain}) => activeDomain).filter(isNotNull)
     return [...new Set(approvedDomains)].map((id) => ({id}))
@@ -186,7 +200,7 @@ const User: UserResolvers = {
     return connectionFromTemplateArray(allActivities, first, after)
   },
   templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {
-    if (!search) return []
+    if (!search || !EMBED_URL) return []
     const viewerId = getUserId(authToken)
     const user = await dataLoader.get('users').loadNonNull(userId)
     const teamIds =
@@ -203,15 +217,12 @@ const User: UserResolvers = {
     // all team ids which could have accessible templates
     const allTeamIds = ['aGhostTeam', ...allOrgTeams.map(({id}) => id)]
 
-    const response = await fetch('http://localhost:3040/embed', {
+    const response = await fetch(EMBED_URL, {
       method: 'POST',
       body: JSON.stringify({inputs: search}),
       headers: {'Content-Type': 'application/json'}
     })
     const data = await response.json()
-
-    const MODEL = 'Embeddings_ember_1'
-    const SIMILARITY_THRESHOLD = 0.5
 
     const pg = getKysely()
     const similarEmbeddings = await pg

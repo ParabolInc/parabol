@@ -56,11 +56,10 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
 
   // Provided request domain should match team's organizations activeDomain
   const leadTeams = await getTeamsByIds(validTeamMembers.map((teamMember) => teamMember.teamId))
-  const validOrgIds = await r
-    .table('Organization')
-    .getAll(r.args(leadTeams.map((team) => team.orgId)))
-    .filter({activeDomain: domain})('id')
-    .run()
+  const teamOrgs = await Promise.all(
+    leadTeams.map((t) => dataLoader.get('organizations').loadNonNull(t.orgId))
+  )
+  const validOrgIds = teamOrgs.filter((org) => org.activeDomain === domain).map(({id}) => id)
 
   if (!validOrgIds.length) {
     return standardError(new Error('Invalid organizations'))

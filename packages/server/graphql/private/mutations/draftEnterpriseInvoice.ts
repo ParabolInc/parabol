@@ -59,7 +59,6 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   {orgId, quantity, email, apEmail, plan},
   {dataLoader}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const now = new Date()
 
@@ -101,7 +100,12 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   if (!stripeId) {
     // create the customer
     const customer = await manager.createCustomer(orgId, apEmail || user.email)
-    await r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
+    if (customer instanceof Error) throw customer
+    await getKysely()
+      .updateTable('Organization')
+      .set({stripeId: customer.id})
+      .where('id', '=', orgId)
+      .execute()
     customerId = customer.id
   } else {
     customerId = stripeId
@@ -115,22 +119,21 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   )
 
   await Promise.all([
-    r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          periodEnd: fromEpochSeconds(subscription.current_period_end),
-          periodStart: fromEpochSeconds(subscription.current_period_start),
-          stripeSubscriptionId: subscription.id,
-          tier: 'enterprise',
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now,
-          trialStartDate: null
-        })
-    }).run(),
+    pg
+      .updateTable('Organization')
+      .set({
+        periodEnd: fromEpochSeconds(subscription.current_period_end),
+        periodStart: fromEpochSeconds(subscription.current_period_start),
+        stripeSubscriptionId: subscription.id,
+        tier: 'enterprise',
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        updatedAt: now,
+        trialStartDate: null
+      })
+      .where('id', '=', orgId)
+      .execute(),
     pg
       .updateTable('Team')
       .set({
@@ -150,7 +153,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   ])
   analytics.organizationUpgraded(user, {
     orgId,
-    domain: org.activeDomain,
+    domain: org.activeDomain || undefined,
     orgName: org.name,
     isTrial: !!org.trialStartDate,
     oldTier: 'starter',

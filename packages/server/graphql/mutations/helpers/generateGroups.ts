@@ -16,7 +16,7 @@ const generateGroups = async (
   if (reflections.length === 0) return
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const organization = await dataLoader.get('organizations').load(team.orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
   const {featureFlags} = organization
   const hasSuggestGroupsFlag = featureFlags?.includes('suggestGroups')
   if (!hasSuggestGroupsFlag) return

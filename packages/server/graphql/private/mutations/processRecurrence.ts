@@ -165,7 +165,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
         }
 
         const [seriesOrg, lastMeeting] = await Promise.all([
-          dataLoader.get('organizations').load(seriesTeam.orgId),
+          dataLoader.get('organizations').loadNonNull(seriesTeam.orgId),
           dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeries.id)
         ])
 

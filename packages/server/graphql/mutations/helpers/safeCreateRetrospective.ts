@@ -28,7 +28,7 @@ const safeCreateRetrospective = async (
     dataLoader.get('teams').loadNonNull(teamId)
   ])
 
-  const organization = await r.table('Organization').get(team.orgId).run()
+  const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
   const {showConversionModal} = organization
 
   const meetingId = generateUID()

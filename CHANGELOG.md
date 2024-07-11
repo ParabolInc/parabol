@@ -5,6 +5,51 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.4](https://github.com/ParabolInc/parabol/compare/v7.38.3...v7.38.4) (2024-07-10)
+
+
+### Changed
+
+* **rethinkdb:** Organization: Phase 3 ([#9933](https://github.com/ParabolInc/parabol/issues/9933)) ([70084f8](https://github.com/ParabolInc/parabol/commit/70084f86b1832dc087b0bf7eb279253b61dacf01))
+
+## [7.38.3](https://github.com/ParabolInc/parabol/compare/v7.38.2...v7.38.3) (2024-07-09)
+
+
+### Changed
+
+* **rethinkdb:** phase 4 of RetroReflection, RetroReflectionGroup and TimelineEvent ([#9943](https://github.com/ParabolInc/parabol/issues/9943)) ([151b029](https://github.com/ParabolInc/parabol/commit/151b0298013837c912bd2c58226519196d800a94))
+
+## [7.38.2](https://github.com/ParabolInc/parabol/compare/v7.38.1...v7.38.2) (2024-07-08)
+
+
+### Fixed
+
+* Read embedder URL from env ([#9936](https://github.com/ParabolInc/parabol/issues/9936)) ([0a60ff9](https://github.com/ParabolInc/parabol/commit/0a60ff9b59b33d65ac532d80799f3e7425ee5e54))
+
+
+### Changed
+
+* **client:** when a release happens, links to the specific tag version ([#9937](https://github.com/ParabolInc/parabol/issues/9937)) ([9081e38](https://github.com/ParabolInc/parabol/commit/9081e38f2f44c87941abf35e97b30942f6c9ccd7))
+* **postgres:** Postgres upgraded to 15.7 and pgvector to 0.7.0 ([#9941](https://github.com/ParabolInc/parabol/issues/9941)) ([ef6e626](https://github.com/ParabolInc/parabol/commit/ef6e62629a9eb1b9b4aec75b83ca004cf02919fc))
+* **rethinkdb:** Organization: Phase 2 ([#9931](https://github.com/ParabolInc/parabol/issues/9931)) ([5baad4c](https://github.com/ParabolInc/parabol/commit/5baad4c9843a0189f40decfbcbd8ea7810599ea1))
+
+## [7.38.1](https://github.com/ParabolInc/parabol/compare/v7.38.0...v7.38.1) (2024-07-04)
+
+
+### Fixed
+
+* Allow starting recurring meetings without GCal ([#9920](https://github.com/ParabolInc/parabol/issues/9920)) ([3f2ca48](https://github.com/ParabolInc/parabol/commit/3f2ca482aef98cf07a7f27b6a3872c9505735334))
+* connectionContext always available ([#9923](https://github.com/ParabolInc/parabol/issues/9923)) ([1dce636](https://github.com/ParabolInc/parabol/commit/1dce6366ae968718dfa72c44553201a016863213))
+* handle failed 3DS payments ([#9924](https://github.com/ParabolInc/parabol/issues/9924)) ([4663e9e](https://github.com/ParabolInc/parabol/commit/4663e9ea28f36dcf10bfe21347912865d22a8872))
+
+
+### Changed
+
+* **gitignore:** ignore anything on the backups folder ([068f91e](https://github.com/ParabolInc/parabol/commit/068f91e33e0d3c160c67f52f8008a177eb5c326d))
+* Read Gitlab server URL from env for prime integrations ([#9910](https://github.com/ParabolInc/parabol/issues/9910)) ([830235d](https://github.com/ParabolInc/parabol/commit/830235ddb5afe4d3e0731181c76930ec0307609d))
+* **rethinkdb:** Organization: Phase 1 ([#9883](https://github.com/ParabolInc/parabol/issues/9883)) ([6bb5fb2](https://github.com/ParabolInc/parabol/commit/6bb5fb2c2cfc0ba77679633acd2a21ac04fcbfd3))
+* Show only available integrations ([#9908](https://github.com/ParabolInc/parabol/issues/9908)) ([04bfa6c](https://github.com/ParabolInc/parabol/commit/04bfa6c69c07be8a190542db4a5fb907e43d67ad))
+
 ## [7.38.0](https://github.com/ParabolInc/parabol/compare/v7.37.8...v7.38.0) (2024-07-02)
 
 

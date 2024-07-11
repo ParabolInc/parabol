@@ -8,7 +8,7 @@ export type StripeFailPaymentPayloadSource = {
 
 const StripeFailPaymentPayload: StripeFailPaymentPayloadResolvers = {
   organization: ({orgId}, _args, {dataLoader}) => {
-    return dataLoader.get('organizations').load(orgId)
+    return dataLoader.get('organizations').loadNonNull(orgId)
   },
   notification: async ({notificationId}, _args, {dataLoader}) => {
     const notification = await dataLoader.get('notifications').load(notificationId)

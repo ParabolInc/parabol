@@ -15,7 +15,7 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
 
   const [viewer, organization, orgUsersCount, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
@@ -45,7 +45,9 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
     // cannot updateDefaultPaymentMethod until it is attached to the customer
     await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
   } else {
-    customer = await manager.createCustomer(orgId, email, paymentMethodId)
+    const maybeCustomer = await manager.createCustomer(orgId, email, paymentMethodId)
+    if (maybeCustomer instanceof Error) return {error: {message: maybeCustomer.message}}
+    customer = maybeCustomer
   }
 
   const subscription = await manager.createTeamSubscription(customer.id, orgId, orgUsersCount)

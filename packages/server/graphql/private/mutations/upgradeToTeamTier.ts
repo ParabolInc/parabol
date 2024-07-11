@@ -2,6 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -44,12 +45,11 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const now = new Date()
 
   // AUTH
   const viewerId = getUserId(authToken)
   const [organization, viewer] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
 
@@ -66,23 +66,22 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
 
   // RESOLUTION
+  const creditCard = await getCCFromCustomer(customer)
   await Promise.all([
-    r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          creditCard: await getCCFromCustomer(customer),
-          tier: 'team',
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now,
-          trialStartDate: null,
-          stripeId,
-          stripeSubscriptionId
-        })
-    }).run(),
+    pg
+      .updateTable('Organization')
+      .set({
+        creditCard: toCreditCard(creditCard),
+        tier: 'team',
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        trialStartDate: null,
+        stripeId,
+        stripeSubscriptionId
+      })
+      .where('id', '=', orgId)
+      .execute(),
     pg
       .updateTable('Team')
       .set({
@@ -112,7 +111,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const teamIds = teams.map(({id}) => id)
   analytics.organizationUpgraded(viewer, {
     orgId,
-    domain: activeDomain,
+    domain: activeDomain || undefined,
     isTrial: !!trialStartDate,
     orgName,
     oldTier: 'starter',

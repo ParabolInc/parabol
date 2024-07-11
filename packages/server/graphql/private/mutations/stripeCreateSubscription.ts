@@ -1,14 +1,14 @@
-import getRethink from '../../../database/rethinkDriver'
+import Stripe from 'stripe'
+import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
-const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = async (
+const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = async (
   _source,
   {customerId, subscriptionId},
   {authToken}
 ) => {
-  const r = await getRethink()
   // AUTH
   if (!isSuperUser(authToken)) {
     throw new Error('Don’t be rude.')
@@ -28,15 +28,24 @@ const stripeUpdateSubscription: MutationResolvers['stripeUpdateSubscription'] = 
     throw new Error(`orgId not found on metadata for customer ${customerId}`)
   }
 
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
+  const subscription = await manager.retrieveSubscription(subscriptionId)
+  const invalidStatuses: Stripe.Subscription.Status[] = [
+    'canceled',
+    'incomplete',
+    'incomplete_expired'
+  ]
+  const isSubscriptionInvalid = invalidStatuses.some((status) => (subscription.status = status))
+  if (isSubscriptionInvalid) return false
+
+  await getKysely()
+    .updateTable('Organization')
+    .set({
       stripeSubscriptionId: subscriptionId
     })
-    .run()
+    .where('id', '=', orgId)
+    .execute()
 
   return true
 }
 
-export default stripeUpdateSubscription
+export default stripeCreateSubscription
