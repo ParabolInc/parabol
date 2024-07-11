@@ -5,7 +5,6 @@ export type OrgUserRole = 'BILLING_LEADER' | 'ORG_ADMIN'
 interface Input {
   orgId: string
   userId: string
-  newUserUntil?: Date
   id?: string
   inactive?: boolean
   joinedAt?: Date
@@ -20,36 +19,23 @@ export default class OrganizationUser {
   suggestedTier: TierEnum | null
   inactive: boolean
   joinedAt: Date
-  newUserUntil: Date
   orgId: string
   removedAt: Date | null
   role: OrgUserRole | null
   userId: string
-  tier: TierEnum | null
+  tier: TierEnum
   trialStartDate?: Date | null
 
   constructor(input: Input) {
-    const {
-      suggestedTier,
-      userId,
-      id,
-      removedAt,
-      inactive,
-      orgId,
-      joinedAt,
-      newUserUntil,
-      role,
-      tier
-    } = input
+    const {suggestedTier, userId, id, removedAt, inactive, orgId, joinedAt, role, tier} = input
     this.id = id || generateUID()
     this.suggestedTier = suggestedTier || null
     this.inactive = inactive || false
     this.joinedAt = joinedAt || new Date()
-    this.newUserUntil = newUserUntil || new Date()
     this.orgId = orgId
     this.removedAt = removedAt || null
     this.role = role || null
     this.userId = userId
-    this.tier = tier || null
+    this.tier = tier || 'starter'
   }
 }

@@ -1,8 +1,7 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
-import {RDatum} from '../database/stricterR'
 import AuthToken from '../database/types/AuthToken'
-import OrganizationUser, {OrgUserRole} from '../database/types/OrganizationUser'
+import {OrgUserRole} from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'
 
 export const getUserId = (authToken: any) => {
@@ -89,27 +88,4 @@ export const isUserInOrg = async (userId: string, orgId: string, dataLoader: Dat
     .get('organizationUsersByUserIdOrgId')
     .load({userId, orgId})
   return !!organizationUser
-}
-
-export const isOrgLeaderOfUser = async (authToken: AuthToken, userId: string) => {
-  const r = await getRethink()
-  const viewerId = getUserId(authToken)
-  const {viewerOrgIds, userOrgIds} = await r({
-    viewerOrgIds: r
-      .table('OrganizationUser')
-      .getAll(viewerId, {index: 'userId'})
-      .filter({removedAt: null})
-      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))(
-        'orgId'
-      )
-      .coerceTo('array') as any as OrganizationUser[],
-    userOrgIds: r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})('orgId')
-      .coerceTo('array') as any as OrganizationUser[]
-  }).run()
-  const uniques = new Set(viewerOrgIds.concat(userOrgIds))
-  const total = viewerOrgIds.length + userOrgIds.length
-  return uniques.size < total
 }

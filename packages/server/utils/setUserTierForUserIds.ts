@@ -12,7 +12,13 @@ import {analytics} from './analytics/analytics'
 const setUserTierForUserId = async (userId: string) => {
   const r = await getRethink()
   const pg = getKysely()
-
+  const _orgUsers = await pg
+    .selectFrom('OrganizationUser')
+    .selectAll()
+    .where('userId', '=', userId)
+    .where('removedAt', 'is', null)
+    .execute()
+  console.log({_orgUsers})
   const orgUsers = await r
     .table('OrganizationUser')
     .getAll(userId, {index: 'userId'})

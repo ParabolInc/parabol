@@ -24,11 +24,6 @@ const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the datetime the user first joined the org'
     },
-    newUserUntil: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description:
-        'The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd'
-    },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'FK'
