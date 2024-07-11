@@ -9,7 +9,6 @@ import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
-import isValid from '../graphql/isValid'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import {TeamSource} from '../graphql/public/types/Team'
 import getKysely from '../postgres/getKysely'
@@ -743,21 +742,22 @@ export const samlByOrgId = (parent: RootDataLoader) => {
 export const isOrgVerified = (parent: RootDataLoader) => {
   return new DataLoader<string, boolean, string>(
     async (orgIds) => {
-      const orgUsersRes = await parent.get('organizationUsersByOrgId').loadMany(orgIds)
-      const orgUsersWithRole = orgUsersRes
-        .filter(isValid)
-        .flat()
-        .filter(({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role))
-      const orgUsersUserIds = orgUsersWithRole.map((orgUser) => orgUser.userId)
-      const usersRes = await parent.get('users').loadMany(orgUsersUserIds)
-      const verifiedUsers = usersRes.filter(isValid).filter(isUserVerified)
-      const verifiedOrgUsers = orgUsersWithRole.filter((orgUser) =>
-        verifiedUsers.some((user) => user.id === orgUser.userId)
-      )
       return await Promise.all(
         orgIds.map(async (orgId) => {
-          const isUserVerified = verifiedOrgUsers.some((orgUser) => orgUser.orgId === orgId)
-          if (isUserVerified) return true
+          const [organization, orgUsers] = await Promise.all([
+            parent.get('organizations').loadNonNull(orgId),
+            parent.get('organizationUsersByOrgId').load(orgId)
+          ])
+          const orgLeaders = orgUsers.filter(
+            ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+          )
+          const orgLeaderUsers = await Promise.all(
+            orgLeaders.map(({userId}) => parent.get('users').loadNonNull(userId))
+          )
+          const isALeaderVerifiedAtOrgDomain = orgLeaderUsers.some(
+            (user) => isUserVerified(user) && user.domain === organization.activeDomain
+          )
+          if (isALeaderVerifiedAtOrgDomain) return true
           const isOrgSAML = await parent.get('samlByOrgId').load(orgId)
           return !!isOrgSAML
         })

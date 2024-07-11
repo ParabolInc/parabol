@@ -6,13 +6,7 @@ import getKysely from '../../postgres/getKysely'
 import {User} from '../../postgres/pg'
 import {OrganizationUser} from '../../postgres/types'
 import getRedis from '../../utils/getRedis'
-import isUserVerified from '../../utils/isUserVerified'
 import RootDataLoader from '../RootDataLoader'
-jest.mock('../../utils/isUserVerified')
-
-jest.mocked(isUserVerified).mockImplementation(() => {
-  return true
-})
 
 const TEST_DB = 'getVerifiedOrgIdsTest'
 
@@ -70,7 +64,7 @@ beforeAll(async () => {
 })
 
 afterEach(async () => {
-  await truncatePGTables('Organization', 'User')
+  await truncatePGTables('Organization', 'User', 'OrganizationUser')
 })
 
 afterAll(async () => {

@@ -50,15 +50,13 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
     email,
     isActive: !inactive
   })
-  await Promise.all([
-    pg.updateTable('User').set({inactive}).where('id', '=', userId).execute(),
-    pg
-      .updateTable('OrganizationUser')
-      .set({inactive})
-      .where('userId', '=', userId)
-      .where('removedAt', 'is', null)
-      .execute()
-  ])
+  await pg
+    .with('User', (qb) => qb.updateTable('User').set({inactive}).where('id', '=', userId))
+    .updateTable('OrganizationUser')
+    .set({inactive})
+    .where('userId', '=', userId)
+    .where('removedAt', 'is', null)
+    .execute()
 }
 
 const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
