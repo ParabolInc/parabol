@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import generateUID from '../../../generateUID'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
@@ -20,7 +19,6 @@ const safeCreateRetrospective = async (
   },
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const {teamId, facilitatorUserId, name} = meetingSettings
   const meetingType: MeetingTypeEnum = 'retrospective'
   const [meetingCount, team] = await Promise.all([

@@ -99,9 +99,9 @@ export const ScheduleDialog = (props: Props) => {
 
   const handleSubmit = () => {
     const name = fields.title.value || placeholder
-    const titleRes = validateTitle(title)
-    if (titleRes.error) {
-      fields.title.setError(titleRes.error)
+    const nameRes = validateTitle(name)
+    if (nameRes.error) {
+      fields.title.setError(nameRes.error)
       return
     }
 

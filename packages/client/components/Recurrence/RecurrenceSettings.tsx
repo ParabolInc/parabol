@@ -255,7 +255,7 @@ export const RecurrenceSettings = (props: Props) => {
           <Description>
             The next meeting in this series will be called{' '}
             <span className='font-semibold'>
-              "{title} - {dayjs(recurrenceStartTime).format('MMM DD')}"
+              "{title} - {dayjs(new Date()).format('MMM DD')}"
             </span>
           </Description>
         )}

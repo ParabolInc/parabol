@@ -59,6 +59,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     : rrule
       ? createMeetingSeriesTitle(name, new Date(), 'UTC')
       : name
+  const meetingSeriesName = name || meetingName
 
   const meeting = await safeCreateRetrospective(
     {
@@ -97,7 +98,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     lastMeetingType: meetingType
   }
   const [meetingSeries] = await Promise.all([
-    rrule && startNewMeetingSeries(meeting, rrule, name || meetingName),
+    rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
     r
       .table('MeetingMember')
       .insert(
@@ -123,7 +124,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting, template)
   const {error, gcalSeriesId} = await createGcalEvent({
-    name: meetingName,
+    name: meetingSeriesName,
     gcalInput,
     meetingId,
     teamId,
