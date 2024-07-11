@@ -2,17 +2,7 @@ import getRethink from '../../../database/rethinkDriver'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
-import {
-  compareDateAlmostEqual,
-  compareRValOptionalPluckedObject,
-  compareRValStringAsNumber,
-  compareRValUndefinedAsEmptyArray,
-  compareRValUndefinedAsFalse,
-  compareRValUndefinedAsNull,
-  compareRValUndefinedAsNullAndTruncateRVal,
-  compareRValUndefinedAsZero,
-  defaultEqFn
-} from '../../../postgres/utils/rethinkEqualityFns'
+import {compareRValUndefinedAsNull, defaultEqFn} from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
 
 const handleResult = async (
@@ -37,55 +27,35 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'Organization') {
+  if (tableName === 'OrganizationUser') {
     const rowCountResult = await checkRowCount(tableName)
-    const rethinkQuery = (updatedAt: Date, id: string | number) => {
+    const rethinkQuery = (joinedAt: Date, id: string | number) => {
       return r
-        .table('Organization' as any)
-        .between([updatedAt, id], [r.maxval, r.maxval], {
-          index: 'updatedAtId',
+        .table('OrganizationUser' as any)
+        .between([joinedAt, id], [r.maxval, r.maxval], {
+          index: 'joinedAtId',
           leftBound: 'open',
           rightBound: 'closed'
         })
-        .orderBy({index: 'updatedAtId'}) as any
+        .orderBy({index: 'joinedAtId'}) as any
     }
     const pgQuery = async (ids: string[]) => {
-      return getKysely()
-        .selectFrom('Organization')
-        .selectAll()
-        .select(({fn}) => [fn('to_json', ['creditCard']).as('creditCard')])
-        .where('id', 'in', ids)
-        .execute()
+      return getKysely().selectFrom('OrganizationUser').selectAll().where('id', 'in', ids).execute()
     }
     const errors = await checkTableEq(
       rethinkQuery,
       pgQuery,
       {
         id: defaultEqFn,
-        activeDomain: compareRValUndefinedAsNullAndTruncateRVal(100),
-        isActiveDomainTouched: compareRValUndefinedAsFalse,
-        creditCard: compareRValOptionalPluckedObject({
-          brand: compareRValUndefinedAsNull,
-          expiry: compareRValUndefinedAsNull,
-          last4: compareRValStringAsNumber
-        }),
-        createdAt: defaultEqFn,
-        name: compareRValUndefinedAsNullAndTruncateRVal(100),
-        payLaterClickCount: compareRValUndefinedAsZero,
-        periodEnd: compareRValUndefinedAsNull,
-        periodStart: compareRValUndefinedAsNull,
-        picture: compareRValUndefinedAsNull,
-        showConversionModal: compareRValUndefinedAsFalse,
-        stripeId: compareRValUndefinedAsNull,
-        stripeSubscriptionId: compareRValUndefinedAsNull,
-        upcomingInvoiceEmailSentAt: compareRValUndefinedAsNull,
+        suggestedTier: compareRValUndefinedAsNull,
+        inactive: defaultEqFn,
+        joinedAt: defaultEqFn,
+        orgId: defaultEqFn,
+        removedAt: defaultEqFn,
+        role: compareRValUndefinedAsNull,
+        userId: defaultEqFn,
         tier: defaultEqFn,
-        tierLimitExceededAt: compareRValUndefinedAsNull,
-        trialStartDate: compareRValUndefinedAsNull,
-        scheduledLockAt: compareRValUndefinedAsNull,
-        lockedAt: compareRValUndefinedAsNull,
-        updatedAt: compareDateAlmostEqual,
-        featureFlags: compareRValUndefinedAsEmptyArray
+        trialStartDate: compareRValUndefinedAsNull
       },
       maxErrors
     )

@@ -33,7 +33,7 @@ export const checkRowCount = async (tableName: string) => {
 }
 
 export async function checkTableEq(
-  rethinkQuery: (updatedAt: Date, id: string | number) => RSelection,
+  rethinkQuery: (joinedAt: Date, id: string | number) => RSelection,
   pgQuery: (ids: string[]) => Promise<PGDoc[] | null>,
   equalityMap: Record<string, (a: unknown, b: unknown) => boolean>,
   maxErrors: number | null | undefined
@@ -51,7 +51,7 @@ export async function checkTableEq(
       .run()) as RethinkDoc[]
     if (rethinkRows.length === 0) break
     const lastRow = rethinkRows[rethinkRows.length - 1]!
-    curUpdatedDate = lastRow.updatedAt
+    curUpdatedDate = lastRow.joinedAt
     curId = lastRow.id
     const ids = rethinkRows.map((t) => t.id)
     const pgRows = (await pgQuery(ids)) ?? []
