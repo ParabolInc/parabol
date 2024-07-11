@@ -1,9 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../database/rethinkDriver'
 import Team from '../../database/types/Team'
 import User from '../../database/types/User'
+import getKysely from '../../postgres/getKysely'
 import IUser from '../../postgres/types/IUser'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../utils/analytics/analytics'
@@ -81,6 +83,12 @@ export default {
     const uniqueUserIds = Array.from(new Set(allUserIds))
 
     await Promise.all([
+      getKysely()
+        .updateTable('OrganizationUser')
+        .set({removedAt: sql`CURRENT_TIMESTAMP`})
+        .where('orgId', '=', orgId)
+        .where('removedAt', 'is', null)
+        .execute(),
       r
         .table('OrganizationUser')
         .getAll(orgId, {index: 'orgId'})

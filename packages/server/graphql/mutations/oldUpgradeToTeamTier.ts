@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -65,6 +66,13 @@ export default {
     const activeMeetings = await hideConversionModal(orgId, dataLoader)
     const meetingIds = activeMeetings.map(({id}) => id)
 
+    await getKysely()
+      .updateTable('OrganizationUser')
+      .set({role: 'BILLING_LEADER'})
+      .where('userId', '=', viewerId)
+      .where('orgId', '=', orgId)
+      .where('removedAt', 'is', null)
+      .execute()
     await r
       .table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})

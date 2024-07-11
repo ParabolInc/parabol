@@ -21,7 +21,6 @@ import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import RowInfoLink from '../../../../components/Row/RowInfoLink'
 import BaseTag from '../../../../components/Tag/BaseTag'
-import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -126,7 +125,6 @@ interface UserInfoProps {
   isBillingLeader: boolean
   isOrgAdmin: boolean
   inactive: boolean | null
-  newUserUntil: string
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({
@@ -134,8 +132,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
   email,
   isBillingLeader,
   isOrgAdmin,
-  inactive,
-  newUserUntil
+  inactive
 }) => (
   <StyledRowInfo>
     <RowInfoHeader>
@@ -143,7 +140,6 @@ const UserInfo: React.FC<UserInfoProps> = ({
       {isBillingLeader && <RoleTag>Billing Leader</RoleTag>}
       {isOrgAdmin && <BaseTag className='bg-gold-500 text-white'>Org Admin</BaseTag>}
       {inactive && !isBillingLeader && !isOrgAdmin && <InactiveTag>Inactive</InactiveTag>}
-      {new Date(newUserUntil) > new Date() && <EmphasisTag>New</EmphasisTag>}
     </RowInfoHeader>
     <RowInfoLink href={`mailto:${email}`} title='Send an email'>
       {email}
@@ -258,7 +254,6 @@ const OrgMemberRow = (props: Props) => {
           preferredName
         }
         role
-        newUserUntil
         ...BillingLeaderActionMenu_organizationUser
         ...OrgAdminActionMenu_organizationUser
       }
@@ -269,7 +264,6 @@ const OrgMemberRow = (props: Props) => {
   const {isViewerBillingLeader, isViewerOrgAdmin} = organization
 
   const {
-    newUserUntil,
     user: {email, inactive, picture, preferredName},
     role
   } = organizationUser
@@ -291,7 +285,6 @@ const OrgMemberRow = (props: Props) => {
         isBillingLeader={isBillingLeader}
         isOrgAdmin={isOrgAdmin}
         inactive={inactive}
-        newUserUntil={newUserUntil}
       />
       <UserActions
         isViewerOrgAdmin={isViewerOrgAdmin}

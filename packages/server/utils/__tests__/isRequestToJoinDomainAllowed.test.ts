@@ -45,11 +45,11 @@ const createTables = async (...tables: string[]) => {
 
 type TestOrganizationUser = Partial<
   Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
->
+> & {userId: string}
 
 type TestUser = Insertable<User>
 const addUsers = async (users: TestUser[]) => {
-  getKysely().insertInto('User').values(users).execute()
+  return getKysely().insertInto('User').values(users).execute()
 }
 const addOrg = async (
   activeDomain: string | null,
@@ -72,9 +72,14 @@ const addOrg = async (
     ...member,
     inactive: member.inactive ?? false,
     role: member.role ?? null,
-    removedAt: member.removedAt ?? null
+    removedAt: member.removedAt ?? null,
+    tier: 'starter' as const
   }))
-  await getKysely().insertInto('Organization').values(org).execute()
+  await getKysely()
+    .with('Org', (qc) => qc.insertInto('Organization').values(org))
+    .insertInto('OrganizationUser')
+    .values(orgUsers)
+    .execute()
   await r.table('OrganizationUser').insert(orgUsers).run()
   return orgId
 }
@@ -89,21 +94,82 @@ beforeAll(async () => {
   }
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
   await r.dbCreate(TEST_DB).run()
-  await createPGTables('Organization', 'User', 'FreemailDomain', 'SAML', 'SAMLDomain')
+  await createPGTables(
+    'Organization',
+    'User',
+    'FreemailDomain',
+    'SAML',
+    'SAMLDomain',
+    'OrganizationUser'
+  )
   await createTables('OrganizationUser')
 })
 
 afterEach(async () => {
-  await truncatePGTables('Organization', 'User')
+  await truncatePGTables('Organization', 'User', 'OrganizationUser')
   await r.table('OrganizationUser').delete().run()
 })
 
 afterAll(async () => {
   await r.getPoolMaster()?.drain()
+  await getKysely().destroy()
   getRedis().quit()
 })
 
 test('Only the biggest org with verified emails qualify', async () => {
+  await addUsers([
+    {
+      id: 'founder1',
+      email: 'user1@parabol.co',
+      picture: '',
+      preferredName: 'user1',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    },
+    {
+      id: 'founder2',
+      email: 'user2@parabol.co',
+      picture: '',
+      preferredName: 'user2',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    },
+    {
+      id: 'founder3',
+      email: 'user3@parabol.co',
+      picture: '',
+      preferredName: 'user3',
+      identities: [
+        {
+          isEmailVerified: false
+        }
+      ]
+    },
+    {
+      id: 'member1',
+      email: 'member1@parabol.co',
+      picture: '',
+      preferredName: ''
+    },
+    {
+      id: 'member2',
+      email: 'member2@parabol.co',
+      picture: '',
+      preferredName: ''
+    },
+    {
+      id: 'member3',
+      email: 'member3@parabol.co',
+      picture: '',
+      preferredName: ''
+    }
+  ])
   await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
@@ -141,80 +207,12 @@ test('Only the biggest org with verified emails qualify', async () => {
       userId: 'member3'
     }
   ])
-  addUsers([
-    {
-      id: 'founder1',
-      email: 'user1@parabol.co',
-      picture: '',
-      preferredName: 'user1',
-      identities: [
-        {
-          isEmailVerified: true
-        }
-      ]
-    },
-    {
-      id: 'founder2',
-      email: 'user2@parabol.co',
-      picture: '',
-      preferredName: 'user2',
-      identities: [
-        {
-          isEmailVerified: true
-        }
-      ]
-    },
-    {
-      id: 'founder3',
-      email: 'user3@parabol.co',
-      picture: '',
-      preferredName: 'user3',
-      identities: [
-        {
-          isEmailVerified: false
-        }
-      ]
-    }
-  ])
   const dataLoader = new RootDataLoader()
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(orgIds).toIncludeSameMembers([biggerOrg])
 })
 
 test('All the biggest orgs with verified emails qualify', async () => {
-  const org1 = await addOrg('parabol.co', [
-    {
-      joinedAt: new Date('2023-09-06'),
-      userId: 'founder1',
-      role: 'BILLING_LEADER'
-    },
-    {
-      joinedAt: new Date('2023-09-07'),
-      userId: 'member1'
-    }
-  ])
-  const org2 = await addOrg('parabol.co', [
-    {
-      joinedAt: new Date('2023-09-06'),
-      userId: 'founder2',
-      role: 'BILLING_LEADER'
-    },
-    {
-      joinedAt: new Date('2023-09-07'),
-      userId: 'member2'
-    }
-  ])
-  await addOrg('parabol.co', [
-    {
-      joinedAt: new Date('2023-09-06'),
-      userId: 'founder3',
-      role: 'BILLING_LEADER'
-    },
-    {
-      joinedAt: new Date('2023-09-07'),
-      userId: 'member3'
-    }
-  ])
   await addUsers([
     {
       id: 'founder1',
@@ -250,6 +248,39 @@ test('All the biggest orgs with verified emails qualify', async () => {
       ]
     }
   ])
+  const org1 = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder1',
+      role: 'BILLING_LEADER'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member1'
+    }
+  ])
+  const org2 = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder2',
+      role: 'BILLING_LEADER'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member2'
+    }
+  ])
+  await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder3',
+      role: 'BILLING_LEADER'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member3'
+    }
+  ])
 
   const dataLoader = new RootDataLoader()
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
@@ -257,6 +288,41 @@ test('All the biggest orgs with verified emails qualify', async () => {
 })
 
 test('Team trumps starter tier with more users org', async () => {
+  await addUsers([
+    {
+      id: 'founder1',
+      email: 'user1@parabol.co',
+      picture: '',
+      preferredName: 'user1',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    },
+    {
+      id: 'founder2',
+      email: 'user2@parabol.co',
+      picture: '',
+      preferredName: 'user2',
+      identities: [
+        {
+          isEmailVerified: true
+        }
+      ]
+    },
+    {
+      id: 'founder3',
+      email: 'user3@parabol.co',
+      picture: '',
+      preferredName: 'user3',
+      identities: [
+        {
+          isEmailVerified: false
+        }
+      ]
+    }
+  ])
   const teamOrg = await addOrg(
     'parabol.co',
     [
@@ -299,6 +365,12 @@ test('Team trumps starter tier with more users org', async () => {
     }
   ])
 
+  const dataLoader = new RootDataLoader()
+  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
+  expect(orgIds).toIncludeSameMembers([teamOrg])
+})
+
+test('Enterprise trumps team tier with more users org', async () => {
   await addUsers([
     {
       id: 'founder1',
@@ -334,12 +406,6 @@ test('Team trumps starter tier with more users org', async () => {
       ]
     }
   ])
-  const dataLoader = new RootDataLoader()
-  const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
-  expect(orgIds).toIncludeSameMembers([teamOrg])
-})
-
-test('Enterprise trumps team tier with more users org', async () => {
   const enterpriseOrg = await addOrg(
     'parabol.co',
     [
@@ -386,58 +452,12 @@ test('Enterprise trumps team tier with more users org', async () => {
     }
   ])
 
-  await addUsers([
-    {
-      id: 'founder1',
-      email: 'user1@parabol.co',
-      picture: '',
-      preferredName: 'user1',
-      identities: [
-        {
-          isEmailVerified: true
-        }
-      ]
-    },
-    {
-      id: 'founder2',
-      email: 'user2@parabol.co',
-      picture: '',
-      preferredName: 'user2',
-      identities: [
-        {
-          isEmailVerified: true
-        }
-      ]
-    },
-    {
-      id: 'founder3',
-      email: 'user3@parabol.co',
-      picture: '',
-      preferredName: 'user3',
-      identities: [
-        {
-          isEmailVerified: false
-        }
-      ]
-    }
-  ])
   const dataLoader = new RootDataLoader()
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(orgIds).toIncludeSameMembers([enterpriseOrg])
 })
 
 test('Orgs with verified emails from different domains do not qualify', async () => {
-  await addOrg('parabol.co', [
-    {
-      joinedAt: new Date('2023-09-06'),
-      userId: 'founder1'
-    },
-    {
-      joinedAt: new Date('2023-09-07'),
-      userId: 'member1'
-    }
-  ])
-
   await addUsers([
     {
       id: 'founder1',
@@ -452,30 +472,23 @@ test('Orgs with verified emails from different domains do not qualify', async ()
     }
   ])
 
+  await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'founder1'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'member1'
+    }
+  ])
+
   const dataLoader = new RootDataLoader()
   const orgIds = await getEligibleOrgIdsByDomain('parabol.co', 'newUser', dataLoader)
   expect(orgIds).toIncludeSameMembers([])
 })
 
 test('Orgs with at least 1 verified billing lead with correct email qualify', async () => {
-  const org1 = await addOrg('parabol.co', [
-    {
-      joinedAt: new Date('2023-09-06'),
-      userId: 'user1',
-      role: 'BILLING_LEADER'
-    },
-    {
-      joinedAt: new Date('2023-09-07'),
-      userId: 'user2',
-      role: 'BILLING_LEADER'
-    },
-    {
-      joinedAt: new Date('2023-09-08'),
-      userId: 'user3',
-      role: 'BILLING_LEADER'
-    }
-  ])
-
   await addUsers([
     {
       id: 'user1',
@@ -509,6 +522,23 @@ test('Orgs with at least 1 verified billing lead with correct email qualify', as
           isEmailVerified: true
         }
       ]
+    }
+  ])
+  const org1 = await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      userId: 'user1',
+      role: 'BILLING_LEADER'
+    },
+    {
+      joinedAt: new Date('2023-09-07'),
+      userId: 'user2',
+      role: 'BILLING_LEADER'
+    },
+    {
+      joinedAt: new Date('2023-09-08'),
+      userId: 'user3',
+      role: 'BILLING_LEADER'
     }
   ])
 

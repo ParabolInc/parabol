@@ -11,10 +11,6 @@ import GraphQLEmailType from '../../types/GraphQLEmailType'
 const CreateGcalEventInput = new GraphQLInputObjectType({
   name: 'CreateGcalEventInput',
   fields: () => ({
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The title of the meeting'
-    },
     startTimestamp: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The start dateTime of the meeting'
@@ -40,14 +36,11 @@ const CreateGcalEventInput = new GraphQLInputObjectType({
   })
 })
 
-type GcalVideoTypeEnum = 'meet' | 'zoom'
-
 export type CreateGcalEventInputType = {
-  title: string
   startTimestamp: number
   endTimestamp: number
   timeZone: string
-  videoType?: GcalVideoTypeEnum
+  videoType?: 'meet' | 'zoom'
   invitees?: string[]
 }
 

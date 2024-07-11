@@ -1995,11 +1995,6 @@ type OrganizationUser {
   joinedAt: DateTime!
 
   """
-  The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
-  """
-  newUserUntil: DateTime!
-
-  """
   FK
   """
   orgId: ID!
@@ -5850,6 +5845,10 @@ type Mutation {
     The team starting the meeting
     """
     teamId: ID!
+    """
+    The name of the meeting
+    """
+    name: String
     """
     The gcal input if creating a gcal event
     """

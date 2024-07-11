@@ -32,7 +32,7 @@ const testConfig = {
 
 type TestUser = Insertable<User>
 const addUsers = async (users: TestUser[]) => {
-  getKysely().insertInto('User').values(users).execute()
+  return getKysely().insertInto('User').values(users).execute()
 }
 
 const createTables = async (...tables: string[]) => {
@@ -52,9 +52,7 @@ const createTables = async (...tables: string[]) => {
 }
 
 type TestOrganizationUser = Partial<
-  Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'> & {
-    domain: string
-  }
+  Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
 >
 
 const addOrg = async (
@@ -77,19 +75,28 @@ const addOrg = async (
     ...member,
     inactive: member.inactive ?? false,
     role: member.role ?? null,
-    removedAt: member.removedAt ?? null
+    removedAt: member.removedAt ?? null,
+    tier: 'starter' as const
   }))
 
   const pg = getKysely()
-  await pg.insertInto('Organization').values(org).execute()
-  await r.table('OrganizationUser').insert(orgUsers).run()
+  if (orgUsers.length > 0) {
+    await pg
+      .with('Org', (qc) => qc.insertInto('Organization').values(org))
+      .insertInto('OrganizationUser')
+      .values(orgUsers)
+      .execute()
+  } else {
+    await pg.insertInto('Organization').values(org).execute()
+  }
 
+  await r.table('OrganizationUser').insert(orgUsers).run()
   return orgId
 }
 
 beforeAll(async () => {
   await r.connectPool(testConfig)
-  const pg = getKysely()
+  const pg = getKysely(TEST_DB)
 
   try {
     await r.dbDrop(TEST_DB).run()
@@ -99,7 +106,7 @@ beforeAll(async () => {
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
 
   await r.dbCreate(TEST_DB).run()
-  await createPGTables('Organization', 'User', 'SAML', 'SAMLDomain')
+  await createPGTables('Organization', 'User', 'SAML', 'SAMLDomain', 'OrganizationUser')
   await createTables('OrganizationUser')
 })
 
@@ -110,17 +117,11 @@ afterEach(async () => {
 
 afterAll(async () => {
   await r.getPoolMaster()?.drain()
+  await getKysely().destroy()
   getRedis().quit()
 })
 
 test('Founder is billing lead', async () => {
-  await addOrg('parabol.co', [
-    {
-      joinedAt: new Date('2023-09-06'),
-      role: 'BILLING_LEADER',
-      userId: 'user1'
-    }
-  ])
   await addUsers([
     {
       id: 'user1',
@@ -130,6 +131,14 @@ test('Founder is billing lead', async () => {
       identities: [{isEmailVerified: true}]
     }
   ])
+  await addOrg('parabol.co', [
+    {
+      joinedAt: new Date('2023-09-06'),
+      role: 'BILLING_LEADER',
+      userId: 'user1'
+    }
+  ])
+
   const dataLoader = new RootDataLoader()
   const isVerified = await dataLoader.get('isOrgVerified').load('parabol.co')
   expect(isVerified).toBe(true)
@@ -147,6 +156,13 @@ test('Non-founder billing lead is checked', async () => {
     {
       id: 'billing1',
       email: 'billing1@parabol.co',
+      picture: '',
+      preferredName: '',
+      identities: [{isEmailVerified: true}]
+    },
+    {
+      id: 'member1',
+      email: 'member1@parabol.co',
       picture: '',
       preferredName: '',
       identities: [{isEmailVerified: true}]
@@ -196,8 +212,7 @@ test('Orgs with verified emails from different domains do not qualify', async ()
   await addOrg('parabol.co', [
     {
       joinedAt: new Date('2023-09-06'),
-      userId: 'founder1',
-      domain: 'not-parabol.co'
+      userId: 'founder1'
     } as any
   ])
 

@@ -1,7 +1,6 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import Coupon from '../../database/types/Coupon'
 import Invoice, {InvoiceStatusEnum} from '../../database/types/Invoice'
 import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
@@ -353,16 +352,13 @@ export default async function generateInvoice(
     invoice.status === 'paid' && invoice.status_transitions.paid_at
       ? fromEpochSeconds(invoice.status_transitions.paid_at)
       : undefined
-  const [organization, billingLeaderIds] = await Promise.all([
+  const [organization, orgUsers] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
-    r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null})
-      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-      .coerceTo('array')('userId')
-      .run() as any as string[]
+    dataLoader.get('organizationUsersByOrgId').load(orgId)
   ])
+  const billingLeaderIds = orgUsers
+    .filter(({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role))
+    .map(({userId}) => userId)
 
   const billingLeaders = (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
   const billingLeaderEmails = billingLeaders.map((user) => user.email)

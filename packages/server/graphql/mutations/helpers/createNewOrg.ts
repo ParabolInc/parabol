@@ -30,8 +30,9 @@ export default async function createNewOrg(
   })
   await insertOrgUserAudit([orgId], leaderUserId, 'added')
   await getKysely()
-    .insertInto('Organization')
-    .values({...org, creditCard: null})
+    .with('Org', (qc) => qc.insertInto('Organization').values({...org, creditCard: null}))
+    .insertInto('OrganizationUser')
+    .values(orgUser)
     .execute()
   await r.table('OrganizationUser').insert(orgUser).run()
 }

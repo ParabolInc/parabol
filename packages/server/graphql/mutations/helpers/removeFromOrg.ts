@@ -1,8 +1,9 @@
+import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import OrganizationUser from '../../../database/types/OrganizationUser'
+import getKysely from '../../../postgres/getKysely'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {Logger} from '../../../utils/Logger'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
@@ -17,6 +18,7 @@ const removeFromOrg = async (
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   const orgTeams = await getTeamsByOrgIds([orgId])
   const teamIds = orgTeams.map((team) => team.id)
@@ -42,7 +44,15 @@ const removeFromOrg = async (
     return arr
   }, [])
 
-  const [organizationUser, user] = await Promise.all([
+  const [_pgOrgUser, organizationUser, user] = await Promise.all([
+    pg
+      .updateTable('OrganizationUser')
+      .set({removedAt: sql`CURRENT_TIMESTAMP`})
+      .where('userId', '=', userId)
+      .where('orgId', '=', orgId)
+      .where('removedAt', 'is', null)
+      .returning('role')
+      .executeTakeFirstOrThrow(),
     r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
@@ -60,22 +70,19 @@ const removeFromOrg = async (
     const organization = await dataLoader.get('organizations').loadNonNull(orgId)
     // if no other billing leader, promote the oldest
     // if team tier & no other member, downgrade to starter
-    const otherBillingLeaders = await r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null})
-      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-      .run()
+    const allOrgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+    const otherBillingLeaders = allOrgUsers.filter(
+      ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+    )
     if (otherBillingLeaders.length === 0) {
-      const nextInLine = await r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null})
-        .orderBy('joinedAt')
-        .nth(0)
-        .default(null)
-        .run()
+      const orgUsersByJoinAt = allOrgUsers.sort((a, b) => (a.joinedAt < b.joinedAt ? -1 : 1))
+      const nextInLine = orgUsersByJoinAt[0]
       if (nextInLine) {
+        await pg
+          .updateTable('OrganizationUser')
+          .set({role: 'BILLING_LEADER'})
+          .where('id', '=', nextInLine.id)
+          .execute()
         await r
           .table('OrganizationUser')
           .get(nextInLine.id)

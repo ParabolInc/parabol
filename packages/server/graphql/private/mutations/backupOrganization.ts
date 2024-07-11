@@ -191,9 +191,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
     newMeeting: (r.table('NewMeeting').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('NewMeeting').insert(items)),
-    organizationUser: (r.table('OrganizationUser').getAll(r.args(orgIds), {index: 'orgId'}) as any)
-      .coerceTo('array')
-      .do((items: RValue) => r.db(DESTINATION).table('OrganizationUser').insert(items)),
     reflectPrompt: (r.table('ReflectPrompt').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('ReflectPrompt').insert(items)),
