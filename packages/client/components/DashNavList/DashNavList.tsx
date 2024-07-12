@@ -32,7 +32,6 @@ const DashNavList = (props: Props) => {
     graphql`
       fragment DashNavList_organization on Organization @relay(plural: true) {
         ...DashNavListTeams_organization
-        ...DashNavMenu_organization
         id
         name
         tier
