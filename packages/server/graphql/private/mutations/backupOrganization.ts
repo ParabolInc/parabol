@@ -171,9 +171,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (_sour
     agendaItem: (r.table('AgendaItem').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('AgendaItem').insert(items)),
-    atlassianAuth: (r.table('AtlassianAuth').getAll(r.args(teamIds), {index: 'teamId'}) as any)
-      .coerceTo('array')
-      .do((items: RValue) => r.db(DESTINATION).table('AtlassianAuth').insert(items)),
     invoice: (r.table('Invoice').filter((row: RDatum) => r(orgIds).contains(row('orgId'))) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('Invoice').insert(items)),
