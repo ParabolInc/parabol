@@ -40,7 +40,7 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
-  ':hover': {
+  ':hover, :focus, :active': {
     backgroundColor: PALETTE.SLATE_300
   }
 }))
