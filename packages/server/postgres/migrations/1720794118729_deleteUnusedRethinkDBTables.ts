@@ -9,7 +9,6 @@ export async function up() {
   await r.tableDrop('Provider').run()
   await r.tableDrop('AtlassianAuth').run()
   await r.tableDrop('FailedAuthRequest').run()
-  await r.tableDrop('Organization').run()
 }
 
 export async function down() {
