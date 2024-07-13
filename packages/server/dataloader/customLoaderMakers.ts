@@ -34,7 +34,7 @@ import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
-import RootDataLoader from './RootDataLoader'
+import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
 import {selectTeams} from './primaryKeyLoaderMakers'
@@ -85,7 +85,11 @@ export const serializeUserTasksKey = (key: UserTasksKey) => {
   return parts.join(':')
 }
 
-export const commentCountByDiscussionId = (parent: RootDataLoader) => {
+export const commentCountByDiscussionId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('comments')
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
       const r = await getRethink()
@@ -143,7 +147,8 @@ export const meetingTaskEstimates = (parent: RootDataLoader) => {
   )
 }
 
-export const reactables = (parent: RootDataLoader) => {
+export const reactables = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn(reactableLoaders.map((a) => a.loader))
   return new DataLoader<ReactablesKey, Reactable, string>(
     async (keys) => {
       const reactableResults = (await Promise.all(
@@ -164,7 +169,8 @@ export const reactables = (parent: RootDataLoader) => {
   )
 }
 
-export const userTasks = (parent: RootDataLoader) => {
+export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('tasks')
   return new DataLoader<UserTasksKey, Task[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -310,7 +316,8 @@ export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
   )
 }
 
-export const meetingSettingsByType = (parent: RootDataLoader) => {
+export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('meetingSettings')
   return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
       const r = await getRethink()
@@ -390,7 +397,11 @@ export const organizationApprovedDomains = (parent: RootDataLoader) => {
   )
 }
 
-export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
+export const organizationUsersByUserIdOrgId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('organizationUsers')
   return new DataLoader<{orgId: string; userId: string}, OrganizationUser | null, string>(
     async (keys) => {
       const r = await getRethink()
@@ -415,7 +426,8 @@ export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
   )
 }
 
-export const meetingTemplatesByType = (parent: RootDataLoader) => {
+export const meetingTemplatesByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('meetingTemplates')
   return new DataLoader<MeetingTemplateKey, MeetingTemplate[], string>(
     async (keys) => {
       const types = {} as Record<MeetingTypeEnum, string[]>
@@ -451,7 +463,6 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
   )
 }
 
-// :TODO:(jmtaber129): Generalize this to all meeting types if needed.
 export const teamMeetingTemplateByTeamId = (parent: RootDataLoader) => {
   return new DataLoader<string, Selectable<TeamMeetingTemplate>[], string>(
     async (teamIds) => {
@@ -461,11 +472,7 @@ export const teamMeetingTemplateByTeamId = (parent: RootDataLoader) => {
         .selectAll()
         .where('teamId', 'in', teamIds)
         .execute()
-      return teamIds.map((teamId) => {
-        return teamMeetingTemplates.filter(
-          (teamMeetingTemplate) => teamMeetingTemplate.teamId === teamId
-        )
-      })
+      return normalizeArrayResults(teamIds, teamMeetingTemplates, 'teamId')
     },
     {
       ...parent.dataLoaderOptions
@@ -473,7 +480,8 @@ export const teamMeetingTemplateByTeamId = (parent: RootDataLoader) => {
   )
 }
 
-export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
+export const meetingTemplatesByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('meetingTemplates')
   return new DataLoader<string, MeetingTemplate[], string>(
     async (orgIds) => {
       const pg = getKysely()
@@ -499,7 +507,8 @@ export const meetingTemplatesByOrgId = (parent: RootDataLoader) => {
   )
 }
 
-export const meetingTemplatesByTeamId = (parent: RootDataLoader) => {
+export const meetingTemplatesByTeamId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('meetingTemplates')
   return new DataLoader<string, MeetingTemplate[], string>(
     async (teamIds) => {
       const pg = getKysely()
@@ -522,7 +531,8 @@ type MeetingStat = {
   meetingType: MeetingTypeEnum
   createdAt: Date
 }
-export const meetingStatsByOrgId = (parent: RootDataLoader) => {
+export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('newMeetings')
   return new DataLoader<string, MeetingStat[], string>(
     async (orgIds) => {
       const r = await getRethink()
@@ -553,7 +563,8 @@ export const meetingStatsByOrgId = (parent: RootDataLoader) => {
   )
 }
 
-export const teamStatsByOrgId = (parent: RootDataLoader) => {
+export const teamStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('teams')
   return new DataLoader<string, {id: string; createdAt: Date}[], string>(
     async (orgIds) => {
       const teamStatsByOrgId = await Promise.all(
@@ -573,7 +584,11 @@ export const teamStatsByOrgId = (parent: RootDataLoader) => {
   )
 }
 
-export const taskIdsByTeamAndGitHubRepo = (parent: RootDataLoader) => {
+export const taskIdsByTeamAndGitHubRepo = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('tasks')
   return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -611,7 +626,11 @@ export const meetingHighlightedTaskId = (parent: RootDataLoader) => {
   )
 }
 
-export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
+export const activeMeetingsByMeetingSeriesId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('newMeetings')
   return new DataLoader<number, AnyMeeting[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -629,7 +648,11 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
   )
 }
 
-export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
+export const lastMeetingByMeetingSeriesId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('newMeetings')
   return new DataLoader<number, AnyMeeting | null, string>(
     async (keys) =>
       tracer.trace('lastMeetingByMeetingSeriesId', async () => {
@@ -653,7 +676,8 @@ export const lastMeetingByMeetingSeriesId = (parent: RootDataLoader) => {
   )
 }
 
-export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
+export const billingLeadersIdsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('organizationUsers')
   return new DataLoader<string, string[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -676,27 +700,8 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
   )
 }
 
-export const saml = (parent: RootDataLoader) => {
-  return new NullableDataLoader<string, SAMLSource | null, string>(
-    async (samlIds) => {
-      const pg = getKysely()
-      const res = await pg
-        .selectFrom('SAMLDomain')
-        .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
-        .where('SAML.id', 'in', samlIds)
-        .groupBy('SAML.id')
-        .selectAll('SAML')
-        .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
-        .execute()
-      return samlIds.map((samlId) => res.find((row) => row.id === samlId))
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const samlByDomain = (parent: RootDataLoader) => {
+export const samlByDomain = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('saml')
   return new NullableDataLoader<string, SAMLSource | null, string>(
     async (domains) => {
       const pg = getKysely()
@@ -708,15 +713,15 @@ export const samlByDomain = (parent: RootDataLoader) => {
         .selectAll('SAML')
         .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
         .execute()
-      return domains.map((domain) => res.find((row) => row.domains.includes(domain)))
+      return normalizeResults(domains, res)
     },
     {
       ...parent.dataLoaderOptions
     }
   )
 }
-
-export const samlByOrgId = (parent: RootDataLoader) => {
+export const samlByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('saml')
   return new NullableDataLoader<string, SAMLSource | null, string>(
     async (orgIds) => {
       const pg = getKysely()
@@ -728,7 +733,7 @@ export const samlByOrgId = (parent: RootDataLoader) => {
         .selectAll('SAML')
         .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
         .execute()
-      return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
+      return normalizeResults(orgIds, res)
     },
     {
       ...parent.dataLoaderOptions
@@ -737,7 +742,8 @@ export const samlByOrgId = (parent: RootDataLoader) => {
 }
 
 // Check if the org has a founder or billing lead with a verified email and their email domain is the same as the org domain
-export const isOrgVerified = (parent: RootDataLoader) => {
+export const isOrgVerified = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('organizationUsers')
   return new DataLoader<string, boolean, string>(
     async (orgIds) => {
       const orgUsersRes = await parent.get('organizationUsersByOrgId').loadMany(orgIds)
@@ -766,7 +772,8 @@ export const isOrgVerified = (parent: RootDataLoader) => {
   )
 }
 
-export const autoJoinTeamsByOrgId = (parent: RootDataLoader) => {
+export const autoJoinTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('teams')
   return new DataLoader<string, TeamSource[], string>(
     async (orgIds) => {
       const verificationResults = await parent.get('isOrgVerified').loadMany(orgIds)
@@ -811,7 +818,8 @@ export const isCompanyDomain = (parent: RootDataLoader) => {
   )
 }
 
-export const favoriteTemplateIds = (parent: RootDataLoader) => {
+export const favoriteTemplateIds = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('users')
   return new DataLoader<string, string[], string>(
     async (userIds) => {
       const pg = getKysely()
@@ -859,7 +867,8 @@ export const fileStoreAsset = (parent: RootDataLoader) => {
   )
 }
 
-export const meetingCount = (parent: RootDataLoader) => {
+export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('selectTeams')
   return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
     async (keys) => {
       const r = await getRethink()

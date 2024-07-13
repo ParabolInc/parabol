@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import RootDataLoader from './RootDataLoader'
+import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 
@@ -18,19 +18,17 @@ type LoaderType<LoaderName extends LoaderKeys> =
  */
 export function foreignKeyLoaderMaker<
   LoaderName extends LoaderKeys,
-  KeyName extends keyof LoaderType<LoaderName>
+  T extends LoaderType<LoaderName>,
+  KeyName extends keyof T
 >(
   primaryLoaderKey: LoaderName,
   foreignKey: KeyName,
-  fetchFn: (
-    keys: readonly LoaderType<LoaderName>[KeyName][]
-  ) => Promise<(LoaderType<LoaderName> & {id: string | number})[]>
+  fetchFn: (keys: readonly T[KeyName][]) => Promise<(T & {id?: string | number})[]>
 ) {
-  type T = LoaderType<LoaderName>
-  type PrimaryKeyT = string | number
   type KeyValue = T[KeyName]
-  return (parent: RootDataLoader) => {
-    const primaryLoader = parent.get(primaryLoaderKey) as DataLoader<PrimaryKeyT, T, PrimaryKeyT>
+  return (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+    dependsOn(primaryLoaderKey)
+    const primaryLoader = parent.get(primaryLoaderKey) as DataLoader<any, T, any>
     return new UpdatableCacheDataLoader<KeyValue, T[], KeyValue>(
       async (ids) => {
         const items = await fetchFn(ids)
