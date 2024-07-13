@@ -101,7 +101,7 @@
     "fast-json-stable-stringify": "^2.1.0",
     "fast-xml-parser": "^4.2.7",
     "googleapis": "^118.0.0",
-    "graphql": "15.8.0",
+    "graphql": "15.9.0",
     "graphql-jit": "^0.8.4",
     "graphql-middleware": "^6.1.18",
     "graphql-relay": "^0.10.0",
