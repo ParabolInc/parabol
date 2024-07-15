@@ -131,3 +131,7 @@ export const selectOrganizations = () =>
 export const organizations = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectOrganizations().where('id', 'in', ids).execute()
 })
+
+export const organizationUsers = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('OrganizationUser').selectAll().where('id', 'in', ids).execute()
+})

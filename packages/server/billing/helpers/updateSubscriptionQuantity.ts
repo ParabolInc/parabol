@@ -1,4 +1,3 @@
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import RedisLockQueue from '../../utils/RedisLockQueue'
@@ -10,7 +9,6 @@ import {getStripeManager} from '../../utils/stripe'
  * @param logMismatch Pass true if a quantity mismatch should be logged
  */
 const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) => {
-  const r = await getRethink()
   const pg = getKysely()
   const manager = getStripeManager()
 
@@ -35,7 +33,7 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
       return
     }
 
-    const [orgUserCountRes, orgUserCount, teamSubscription] = await Promise.all([
+    const [orgUserCountRes, teamSubscription] = await Promise.all([
       pg
         .selectFrom('OrganizationUser')
         .select(({fn}) => fn.count<number>('id').as('count'))
@@ -43,21 +41,9 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
         .where('removedAt', 'is', null)
         .where('inactive', '=', false)
         .executeTakeFirstOrThrow(),
-      r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null, inactive: false})
-        .count()
-        .run(),
       manager.getSubscriptionItem(stripeSubscriptionId)
     ])
-    if (orgUserCountRes.count !== orgUserCount) {
-      sendToSentry(new Error('OrganizationUser count mismatch'), {
-        tags: {
-          orgId
-        }
-      })
-    }
+    const {count: orgUserCount} = orgUserCountRes
     if (
       teamSubscription &&
       teamSubscription.quantity !== undefined &&

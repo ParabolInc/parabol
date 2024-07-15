@@ -25,7 +25,6 @@ import NotificationResponseReplied from './types/NotificationResponseReplied'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
@@ -111,10 +110,6 @@ export type RethinkSchema = {
       | NotificationResponseReplied
       | NotificationMentioned
     index: 'userId'
-  }
-  OrganizationUser: {
-    type: OrganizationUser
-    index: 'orgId' | 'userId'
   }
   PasswordResetRequest: {
     type: PasswordResetRequest

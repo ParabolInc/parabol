@@ -1,47 +1,16 @@
 /* eslint-env jest */
 import {Insertable} from 'kysely'
-import {r} from 'rethinkdb-ts'
 import {createPGTables, truncatePGTables} from '../../__tests__/common'
-import getRethinkConfig from '../../database/getRethinkConfig'
-import getRethink from '../../database/rethinkDriver'
 import {TierEnum} from '../../database/types/Invoice'
-import OrganizationUser from '../../database/types/OrganizationUser'
 import RootDataLoader from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {User} from '../../postgres/pg'
+import {OrganizationUser} from '../../postgres/types'
 import getRedis from '../getRedis'
 import {getEligibleOrgIdsByDomain} from '../isRequestToJoinDomainAllowed'
 
-jest.mock('../../database/rethinkDriver')
-
-jest.mocked(getRethink).mockImplementation(() => {
-  return r as any
-})
-
 const TEST_DB = 'isRequestToJoinDomainAllowedTest'
-
-const config = getRethinkConfig()
-const testConfig = {
-  ...config,
-  db: TEST_DB
-}
-
-const createTables = async (...tables: string[]) => {
-  for (const tableName of tables) {
-    const structure = await r
-      .db('rethinkdb')
-      .table('table_config')
-      .filter({db: config.db, name: tableName})
-      .run()
-    await r.tableCreate(tableName).run()
-    const {indexes} = structure[0]
-    for (const index of indexes) {
-      await r.table(tableName).indexCreate(index).run()
-    }
-    await r.table(tableName).indexWait().run()
-  }
-}
 
 type TestOrganizationUser = Partial<
   Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
@@ -80,20 +49,12 @@ const addOrg = async (
     .insertInto('OrganizationUser')
     .values(orgUsers)
     .execute()
-  await r.table('OrganizationUser').insert(orgUsers).run()
   return orgId
 }
 
 beforeAll(async () => {
-  await r.connectPool(testConfig)
   const pg = getKysely(TEST_DB)
-  try {
-    await r.dbDrop(TEST_DB).run()
-  } catch (e) {
-    //ignore
-  }
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
-  await r.dbCreate(TEST_DB).run()
   await createPGTables(
     'Organization',
     'User',
@@ -102,16 +63,13 @@ beforeAll(async () => {
     'SAMLDomain',
     'OrganizationUser'
   )
-  await createTables('OrganizationUser')
 })
 
 afterEach(async () => {
   await truncatePGTables('Organization', 'User', 'OrganizationUser')
-  await r.table('OrganizationUser').delete().run()
 })
 
 afterAll(async () => {
-  await r.getPoolMaster()?.drain()
   await getKysely().destroy()
   getRedis().quit()
 })

@@ -81,3 +81,29 @@ export const organizationsByActiveDomain = foreignKeyLoaderMaker(
     return selectOrganizations().where('activeDomain', 'in', activeDomains).execute()
   }
 )
+
+export const organizationUsersByUserId = foreignKeyLoaderMaker(
+  'organizationUsers',
+  'userId',
+  async (userIds) => {
+    return getKysely()
+      .selectFrom('OrganizationUser')
+      .selectAll()
+      .where('userId', 'in', userIds)
+      .where('removedAt', 'is', null)
+      .execute()
+  }
+)
+
+export const organizationUsersByOrgId = foreignKeyLoaderMaker(
+  'organizationUsers',
+  'orgId',
+  async (orgIds) => {
+    return getKysely()
+      .selectFrom('OrganizationUser')
+      .selectAll()
+      .where('orgId', 'in', orgIds)
+      .where('removedAt', 'is', null)
+      .execute()
+  }
+)

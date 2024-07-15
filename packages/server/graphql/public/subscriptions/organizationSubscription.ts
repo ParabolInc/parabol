@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {SubscriptionContext} from '../../graphql'
@@ -10,12 +10,14 @@ const organizationSubscription: SubscriptionResolvers<SubscriptionContext>['orga
     subscribe: async (_source, _args, {authToken}) => {
       // AUTH
       const viewerId = getUserId(authToken)
-      const r = await getRethink()
-      const organizationUsers = await r
-        .table('OrganizationUser')
-        .getAll(viewerId, {index: 'userId'})
-        .filter({removedAt: null})
-        .run()
+      const pg = getKysely()
+
+      const organizationUsers = await pg
+        .selectFrom('OrganizationUser')
+        .select('orgId')
+        .where('userId', '=', viewerId)
+        .where('removedAt', 'is', null)
+        .execute()
       const orgIds = organizationUsers.map(({orgId}) => orgId)
 
       // RESOLUTION
