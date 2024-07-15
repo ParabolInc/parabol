@@ -6,11 +6,9 @@ import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
-import isValid from '../graphql/isValid'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import {TeamSource} from '../graphql/public/types/Team'
 import getKysely from '../postgres/getKysely'
@@ -29,6 +27,7 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
+import {OrganizationUser} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -404,18 +403,20 @@ export const organizationUsersByUserIdOrgId = (
   dependsOn('organizationUsers')
   return new DataLoader<{orgId: string; userId: string}, OrganizationUser | null, string>(
     async (keys) => {
-      const r = await getRethink()
+      const pg = getKysely()
       return Promise.all(
-        keys.map((key) => {
+        keys.map(async (key) => {
           const {userId, orgId} = key
           if (!userId || !orgId) return null
-          return r
-            .table('OrganizationUser')
-            .getAll(userId, {index: 'userId'})
-            .filter({orgId, removedAt: null})
-            .nth(0)
-            .default(null)
-            .run()
+          const res = await pg
+            .selectFrom('OrganizationUser')
+            .selectAll()
+            .where('userId', '=', userId)
+            .where('orgId', '=', orgId)
+            .where('removedAt', 'is', null)
+            .limit(1)
+            .executeTakeFirst()
+          return res || null
         })
       )
     },
@@ -680,16 +681,17 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader, dependsOn: Regi
   dependsOn('organizationUsers')
   return new DataLoader<string, string[], string>(
     async (keys) => {
-      const r = await getRethink()
+      const pg = getKysely()
       const res = await Promise.all(
-        keys.map((orgId) => {
-          return r
-            .table('OrganizationUser')
-            .getAll(orgId, {index: 'orgId'})
-            .filter({removedAt: null})
-            .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-            .coerceTo('array')('userId')
-            .run()
+        keys.map(async (orgId) => {
+          const rows = await pg
+            .selectFrom('OrganizationUser')
+            .select('userId')
+            .where('orgId', '=', orgId)
+            .where('removedAt', 'is', null)
+            .where('role', 'in', ['BILLING_LEADER', 'ORG_ADMIN'])
+            .execute()
+          return rows.map((row) => row.userId)
         })
       )
       return res
@@ -746,21 +748,22 @@ export const isOrgVerified = (parent: RootDataLoader, dependsOn: RegisterDepends
   dependsOn('organizationUsers')
   return new DataLoader<string, boolean, string>(
     async (orgIds) => {
-      const orgUsersRes = await parent.get('organizationUsersByOrgId').loadMany(orgIds)
-      const orgUsersWithRole = orgUsersRes
-        .filter(isValid)
-        .flat()
-        .filter(({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role))
-      const orgUsersUserIds = orgUsersWithRole.map((orgUser) => orgUser.userId)
-      const usersRes = await parent.get('users').loadMany(orgUsersUserIds)
-      const verifiedUsers = usersRes.filter(isValid).filter(isUserVerified)
-      const verifiedOrgUsers = orgUsersWithRole.filter((orgUser) =>
-        verifiedUsers.some((user) => user.id === orgUser.userId)
-      )
       return await Promise.all(
         orgIds.map(async (orgId) => {
-          const isUserVerified = verifiedOrgUsers.some((orgUser) => orgUser.orgId === orgId)
-          if (isUserVerified) return true
+          const [organization, orgUsers] = await Promise.all([
+            parent.get('organizations').loadNonNull(orgId),
+            parent.get('organizationUsersByOrgId').load(orgId)
+          ])
+          const orgLeaders = orgUsers.filter(
+            ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+          )
+          const orgLeaderUsers = await Promise.all(
+            orgLeaders.map(({userId}) => parent.get('users').loadNonNull(userId))
+          )
+          const isALeaderVerifiedAtOrgDomain = orgLeaderUsers.some(
+            (user) => isUserVerified(user) && user.domain === organization.activeDomain
+          )
+          if (isALeaderVerifiedAtOrgDomain) return true
           const isOrgSAML = await parent.get('samlByOrgId').load(orgId)
           return !!isOrgSAML
         })

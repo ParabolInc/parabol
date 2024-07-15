@@ -142,3 +142,7 @@ export const saml = primaryKeyLoaderMaker((ids: readonly string[]) => {
     .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
     .execute()
 })
+
+export const organizationUsers = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('OrganizationUser').selectAll().where('id', 'in', ids).execute()
+})

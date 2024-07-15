@@ -1,15 +1,12 @@
 import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
-import OrganizationUser from '../../database/types/OrganizationUser'
+import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import getKysely from '../../postgres/getKysely'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
-import updateUser from '../../postgres/queries/updateUser'
 import IUser from '../../postgres/types/IUser'
 import {Logger} from '../../utils/Logger'
 import {analytics} from '../../utils/analytics/analytics'
@@ -45,7 +42,7 @@ const maybeUpdateOrganizationActiveDomain = async (
 }
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {id: userId, email} = user
   inactive ? analytics.accountPaused(user) : analytics.accountUnpaused(user)
   analytics.identify({
@@ -53,31 +50,17 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
     email,
     isActive: !inactive
   })
-  await Promise.all([
-    updateUser(
-      {
-        inactive
-      },
-      userId
-    ),
-    getKysely()
-      .updateTable('OrganizationUser')
-      .set({inactive})
-      .where('userId', '=', userId)
-      .where('removedAt', 'is', null)
-      .execute(),
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})
-      .update({inactive})
-      .run()
-  ])
+  await pg
+    .with('User', (qb) => qb.updateTable('User').set({inactive}).where('id', '=', userId))
+    .updateTable('OrganizationUser')
+    .set({inactive})
+    .where('userId', '=', userId)
+    .where('removedAt', 'is', null)
+    .execute()
 }
 
 const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
   const {id: userId} = user
-  const r = await getRethink()
   const [rawOrganizations, organizationUsers] = await Promise.all([
     dataLoader.get('organizations').loadMany(orgIds),
     dataLoader.get('organizationUsersByUserId').load(userId)
@@ -89,12 +72,12 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     )
     const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
-    return new OrganizationUser({
-      id: oldOrganizationUser?.id,
+    return {
+      id: oldOrganizationUser?.id || generateUID(),
       orgId,
       userId,
       tier: organization.tier
-    })
+    }
   })
   dataLoader.clearAll('organizationUsers')
   await getKysely()
@@ -102,7 +85,6 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     .values(docs)
     .onConflict((oc) => oc.doNothing())
     .execute()
-  await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
@@ -111,7 +93,6 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
 }
 
 const deleteUser = async (orgIds: string[], user: IUser) => {
-  const r = await getRethink()
   orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
   await getKysely()
     .updateTable('OrganizationUser')
@@ -119,14 +100,6 @@ const deleteUser = async (orgIds: string[], user: IUser) => {
     .where('userId', '=', user.id)
     .where('orgId', 'in', orgIds)
     .execute()
-  await r
-    .table('OrganizationUser')
-    .getAll(user.id, {index: 'userId'})
-    .filter((row: RDatum) => r.expr(orgIds).contains(row('orgId')))
-    .update({
-      removedAt: new Date()
-    })
-    .run()
 }
 
 const dbActionTypeLookup = {

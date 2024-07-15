@@ -7,11 +7,9 @@
  * and rejoins the same org, a new `OrganizationUser` row
  * will be created.
  */
-import getRethink from '../database/rethinkDriver'
 import getKysely from '../postgres/getKysely'
 
 const setTierForOrgUsers = async (orgId: string) => {
-  const r = await getRethink()
   const pg = getKysely()
   const organization = await getKysely()
     .selectFrom('Organization')
@@ -25,15 +23,6 @@ const setTierForOrgUsers = async (orgId: string) => {
     .where('orgId', '=', orgId)
     .where('removedAt', 'is', null)
     .execute()
-  await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null})
-    .update({
-      tier,
-      trialStartDate
-    })
-    .run()
 }
 
 export default setTierForOrgUsers
