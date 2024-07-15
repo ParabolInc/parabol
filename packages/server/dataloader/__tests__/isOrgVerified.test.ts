@@ -66,6 +66,10 @@ afterEach(async () => {
   await truncatePGTables('Organization', 'User', 'OrganizationUser')
 })
 
+afterAll(async () => {
+  await getKysely().destroy()
+})
+
 test('Founder is billing lead', async () => {
   await addUsers([
     {
