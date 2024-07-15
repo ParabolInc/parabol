@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.8](https://github.com/ParabolInc/parabol/compare/v7.38.7...v7.38.8) (2024-07-15)
+
+
+### Fixed
+
+* add ClearAll dataloader method ([#9975](https://github.com/ParabolInc/parabol/issues/9975)) ([63bf930](https://github.com/ParabolInc/parabol/commit/63bf930989f1493f54d36407a990863519b80528))
+* if the content of a task is only spaces, it gets deleted as if i… ([#9968](https://github.com/ParabolInc/parabol/issues/9968)) ([59eb73f](https://github.com/ParabolInc/parabol/commit/59eb73f78c2b9aebaca7f3562d9af1148e37c0ba))
+
+
+### Changed
+
+* **postgresql:** upgrade to v16 ([#9976](https://github.com/ParabolInc/parabol/issues/9976)) ([3e9e05b](https://github.com/ParabolInc/parabol/commit/3e9e05bc12ca6ddfdb50911157c92931c7a4895c))
+* **rethinkdb:** OrganizationUser: Phase 3 ([#9965](https://github.com/ParabolInc/parabol/issues/9965)) ([0cff6dc](https://github.com/ParabolInc/parabol/commit/0cff6dcb7308b851b14eeeba08fd6229a59a228c))
+
 ## [7.38.7](https://github.com/ParabolInc/parabol/compare/v7.38.6...v7.38.7) (2024-07-11)
 
 
