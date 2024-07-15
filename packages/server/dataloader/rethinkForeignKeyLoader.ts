@@ -15,7 +15,7 @@ const rethinkForeignKeyLoader = <T extends keyof DBType>(
     })
     return ids.map((id) => items.filter((item) => item[field] === id))
   }
-  return new UpdatableCacheDataLoader<string, DBType[T]>(batchFn, options)
+  return new UpdatableCacheDataLoader<string, DBType[T][]>(batchFn, options)
 }
 
 export default rethinkForeignKeyLoader

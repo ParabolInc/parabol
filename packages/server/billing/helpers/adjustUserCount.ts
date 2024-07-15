@@ -65,7 +65,6 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     dataLoader.get('organizations').loadMany(orgIds),
     dataLoader.get('organizationUsersByUserId').load(userId)
   ])
-  dataLoader.get('organizationUsersByUserId').clear(userId)
   const organizations = rawOrganizations.filter(isValid)
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
@@ -80,6 +79,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
       tier: organization.tier
     }
   })
+  dataLoader.clearAll('organizationUsers')
   await getKysely()
     .insertInto('OrganizationUser')
     .values(docs)

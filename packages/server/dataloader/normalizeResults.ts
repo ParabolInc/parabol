@@ -7,11 +7,7 @@ export const normalizeResults = <KeyT extends string | number, T extends {[key: 
   results.forEach((result: T) => {
     map[result[key]] = result
   })
-  const mappedResults = [] as T[]
-  keys.forEach((key) => {
-    mappedResults.push(map[key])
-  })
-  return mappedResults
+  return keys.map((key) => map[key] as T)
 }
 
 export default normalizeResults

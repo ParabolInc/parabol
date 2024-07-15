@@ -132,6 +132,17 @@ export const organizations = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectOrganizations().where('id', 'in', ids).execute()
 })
 
+export const saml = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely()
+    .selectFrom('SAMLDomain')
+    .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
+    .where('SAML.id', 'in', ids)
+    .groupBy('SAML.id')
+    .selectAll('SAML')
+    .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+    .execute()
+})
+
 export const organizationUsers = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return getKysely().selectFrom('OrganizationUser').selectAll().where('id', 'in', ids).execute()
 })
