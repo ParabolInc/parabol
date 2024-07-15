@@ -5,7 +5,6 @@ import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {User} from '../../postgres/pg'
 import {OrganizationUser} from '../../postgres/types'
-import getRedis from '../../utils/getRedis'
 import RootDataLoader from '../RootDataLoader'
 
 const TEST_DB = 'getVerifiedOrgIdsTest'
@@ -65,11 +64,6 @@ beforeAll(async () => {
 
 afterEach(async () => {
   await truncatePGTables('Organization', 'User', 'OrganizationUser')
-})
-
-afterAll(async () => {
-  await getKysely().destroy()
-  getRedis().quit()
 })
 
 test('Founder is billing lead', async () => {
