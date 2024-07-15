@@ -47,6 +47,22 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   const pg = getKysely()
 
   const [updatedUserRes] = await Promise.all([
+    pg
+      .with('TeamMembers', (qc) =>
+        qc
+          .updateTable('TeamMember')
+          .set({
+            email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
+          })
+          .where('userId', 'in', userIdsToUpdate)
+      )
+      .updateTable('User')
+      .set({
+        email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
+      })
+      .where('id', 'in', userIdsToUpdate)
+      .returning('id')
+      .execute(),
     updateUserEmailDomainsToPG(normalizedNewDomain, userIdsToUpdate),
     pg
       .updateTable('OrganizationApprovedDomain')

@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import normalizeAvatarUpload from '../../../fileStorage/normalizeAvatarUpload'
 import validateAvatarUpload from '../../../fileStorage/validateAvatarUpload'
+import getKysely from '../../../postgres/getKysely'
 import updateUser from '../../../postgres/queries/updateUser'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -15,6 +16,7 @@ const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
@@ -32,15 +34,27 @@ const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
   const manager = getFileStoreManager()
   const publicLocation = await manager.putUserAvatar(normalBuffer, userId, normalExt)
 
-  const [teamMembers] = await Promise.all([
+  await Promise.all([
+    pg
+      .with('TeamMemberUpdate', (qc) =>
+        qc.updateTable('TeamMember').set({picture: publicLocation}).where('userId', '=', userId)
+      )
+      .updateTable('User')
+      .set({picture: publicLocation})
+      .where('id', '=', userId)
+      .execute(),
     r
       .table('TeamMember')
       .getAll(userId, {index: 'userId'})
       .update({picture: publicLocation}, {returnChanges: true})('changes')('new_val')
       .default([])
       .run() as unknown as TeamMember[],
+
     updateUser({picture: publicLocation}, userId)
   ])
+  dataLoader.clearAll('users')
+  dataLoader.clearAll('teamMembers')
+  const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
   const teamIds = teamMembers.map(({teamId}) => teamId)
   teamIds.forEach((teamId) => {
     const data = {userId, teamIds: [teamId]}

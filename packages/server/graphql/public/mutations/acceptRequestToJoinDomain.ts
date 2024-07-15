@@ -2,7 +2,6 @@ import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestI
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import getTeamsByIds from '../../../postgres/queries/getTeamsByIds'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
@@ -27,7 +26,6 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const viewerId = getUserId(authToken)
   const now = new Date()
   const pg = getKysely()
-  const r = await getRethink()
 
   // Fetch the request that is not expired
   const request = await pg
@@ -44,11 +42,10 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const {createdBy, domain} = request
 
   // Viewer must be a lead of the provided teamIds
-  const validTeamMembers = await r
-    .table('TeamMember')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({isLead: true, userId: viewerId})
-    .run()
+  const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+  const validTeamMembers = viewerTeamMembers.filter(
+    ({isLead, teamId}) => isLead && teamIds.includes(teamId)
+  )
 
   if (!validTeamMembers.length) {
     return standardError(new Error('Not a team leader'))
@@ -92,7 +89,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     const {id: teamId, orgId} = validTeam
     const [organizationUser] = await Promise.all([
       dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
-      insertNewTeamMember(user, teamId),
+      insertNewTeamMember(user, teamId, dataLoader),
       addTeamIdToTMS(userId, teamId)
     ])
 

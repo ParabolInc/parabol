@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {Logger} from '../../../utils/Logger'
@@ -16,15 +15,13 @@ const removeFromOrg = async (
   evictorUserId: string | undefined,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
+  // TODO consider a teamMembersByOrgId dataloader if this pattern pops up more
   const orgTeams = await getTeamsByOrgIds([orgId])
   const teamIds = orgTeams.map((team) => team.id)
-  const teamMemberIds = (await r
-    .table('TeamMember')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({userId, isNotRemoved: true})('id')
-    .run()) as string[]
+  const allTeamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+  const teamMembers = allTeamMembers.filter((teamMember) => teamIds.includes(teamMember.teamId))
+  const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
 
   const perTeamRes = await Promise.all(
     teamMemberIds.map((teamMemberId) => {
@@ -53,7 +50,7 @@ const removeFromOrg = async (
       .executeTakeFirstOrThrow(),
     dataLoader.get('users').loadNonNull(userId)
   ])
-
+  dataLoader.clearAll('organizationUsers')
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
   if (role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)) {

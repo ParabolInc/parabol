@@ -2,48 +2,59 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
+import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import {TeamSource} from '../graphql/public/types/Team'
-import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
 
-const handleFirstAcceptedInvitation = async (team: TeamSource): Promise<string | null> => {
+const handleFirstAcceptedInvitation = async (
+  team: TeamSource,
+  dataLoader: DataLoaderInstance
+): Promise<string | null> => {
   const r = await getRethink()
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
   if (!isOnboardTeam) return null
-  const newTeamLeadUserId = await getNewTeamLeadUserId(teamId)
-  if (newTeamLeadUserId) {
-    await r
-      .table('SuggestedAction')
-      .insert([
-        {
-          id: generateUID(),
-          createdAt: now,
-          priority: 3,
-          removedAt: null,
-          teamId,
-          type: 'tryRetroMeeting',
-          userId: newTeamLeadUserId
-        },
-        new SuggestedActionCreateNewTeam({userId: newTeamLeadUserId}),
-        {
-          id: generateUID(),
-          createdAt: now,
-          priority: 5,
-          removedAt: null,
-          teamId,
-          type: 'tryActionMeeting',
-          userId: newTeamLeadUserId
-        }
-      ])
-      .run()
-  }
-  return newTeamLeadUserId
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  const teamLead = teamMembers.find((tm) => tm.isLead)!
+  const {userId} = teamLead
+  const isNewTeamLead = await r
+    .table('SuggestedAction')
+    .getAll(userId, {index: 'userId'})
+    .filter({type: 'tryRetroMeeting'})
+    .count()
+    .eq(0)
+    .run()
+  if (!isNewTeamLead) return null
+  await r
+    .table('SuggestedAction')
+    .insert([
+      {
+        id: generateUID(),
+        createdAt: now,
+        priority: 3,
+        removedAt: null,
+        teamId,
+        type: 'tryRetroMeeting',
+        userId
+      },
+      new SuggestedActionCreateNewTeam({userId}),
+      {
+        id: generateUID(),
+        createdAt: now,
+        priority: 5,
+        removedAt: null,
+        teamId,
+        type: 'tryActionMeeting',
+        userId
+      }
+    ])
+    .run()
+  return userId
 }
 
 const acceptTeamInvitation = async (
@@ -59,9 +70,9 @@ const acceptTeamInvitation = async (
     dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
   ])
   const {email} = user
-  const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
+  const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team, dataLoader)
   const [, invitationNotificationIds] = await Promise.all([
-    insertNewTeamMember(user, teamId),
+    insertNewTeamMember(user, teamId, dataLoader),
     r
       .table('Notification')
       .getAll(userId, {index: 'userId'})

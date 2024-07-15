@@ -51,7 +51,7 @@ export default async function createTeamAndLeader(
     // add meeting settings
     r.table('MeetingSettings').insert(meetingSettings).run(),
     // denormalize common fields to team member
-    insertNewTeamMember(user, teamId),
+    insertNewTeamMember(user, teamId, dataLoader),
     addTeamIdToTMS(userId, teamId)
   ])
 }

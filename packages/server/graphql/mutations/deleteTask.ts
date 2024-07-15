@@ -37,19 +37,16 @@ export default {
     }
 
     // RESOLUTION
-    const {subscribedUserIds} = await r({
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const subscribedUserIds = teamMembers.map(({userId}) => userId)
+    await r({
       task: r.table('Task').get(taskId).delete(),
       taskHistory: r
         .table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {
           index: 'taskIdUpdatedAt'
         })
-        .delete(),
-      subscribedUserIds: r
-        .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isNotRemoved: true})('userId')
-        .coerceTo('array') as unknown as string[]
+        .delete()
     }).run()
     const {tags, userId: taskUserId} = task
 

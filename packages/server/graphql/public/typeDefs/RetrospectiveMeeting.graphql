@@ -63,14 +63,14 @@ type RetrospectiveMeeting implements NewMeeting {
   createdAt: DateTime!
 
   """
-  The id of the user that created the meeting
+  The id of the user that created the meeting, null if user was hard deleted
   """
-  createdBy: ID!
+  createdBy: ID
 
   """
-  The user that created the meeting
+  The user that created the meeting, null if user was hard deleted
   """
-  createdByUser: User!
+  createdByUser: User
 
   """
   Disables anonymity of reflections

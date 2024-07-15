@@ -2,19 +2,13 @@ import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
-import removeUserTms from '../postgres/queries/removeUserTms'
 
 const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const pg = getKysely()
   const now = new Date()
-  const userIds = await r
-    .table('TeamMember')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({isNotRemoved: true})('userId')
-    .run()
-  await removeUserTms(teamId, userIds)
-  const users = await Promise.all(userIds.map((userId) => dataLoader.get('users').load(userId)))
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  const userIds = teamMembers.map((tm) => tm.userId)
   const [rethinkResult, pgResult] = await Promise.all([
     r({
       invitations: r
@@ -40,9 +34,15 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
       .set({isArchived: true})
       .where('id', '=', teamId)
       .returningAll()
-      .executeTakeFirst()
+      .executeTakeFirst(),
+    pg
+      .updateTable('User')
+      .set(({fn, ref, val}) => ({tms: fn('ARR_DIFF', [ref('tms'), val(teamId)])}))
+      .where('id', 'in', userIds)
+      .execute()
   ])
-
+  dataLoader.clearAll('teamMembers').clearAll('users').clearAll('teams')
+  const users = await Promise.all(userIds.map((userId) => dataLoader.get('users').load(userId)))
   return {...rethinkResult, team: pgResult ?? null, users}
 }
 

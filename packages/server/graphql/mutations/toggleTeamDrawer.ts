@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -27,6 +28,7 @@ const toggleTeamDrawer = {
     {authToken}: GQLContext
   ) => {
     const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
 
     //AUTH
@@ -37,6 +39,14 @@ const toggleTeamDrawer = {
     // RESOLUTION
     const userId = getUserId(authToken)
     const viewerTeamMemberId = `${userId}::${teamId}`
+
+    await pg
+      .updateTable('TeamMember')
+      .set(({fn, ref, val}) => ({
+        openDrawer: fn('NULLIF', [val(teamDrawerType), ref('openDrawer')])
+      }))
+      .where('id', '=', viewerTeamMemberId)
+      .execute()
     await r
       .table('TeamMember')
       .get(viewerTeamMemberId)
@@ -48,6 +58,7 @@ const toggleTeamDrawer = {
         )
       }))
       .run()
+
     return {teamMemberId: viewerTeamMemberId}
   }
 }
