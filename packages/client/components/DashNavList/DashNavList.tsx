@@ -22,7 +22,7 @@ const StyledIcon = styled(ManageAccounts)({
 })
 
 interface Props {
-  organizationsRef: DashNavList_organization$key | null
+  organizationsRef: DashNavList_organization$key
   onClick?: () => void
 }
 
@@ -43,29 +43,23 @@ const DashNavList = (props: Props) => {
     organizationsRef
   )
 
-  // const sortedEnterpriseOrgs = organizations
-  //   ?.filter((org) => org.tier === 'enterprise')
-  //   .sort((a, b) => a.name.localeCompare(b.name))
+  const tiers = ['enterprise', 'team', 'starter']
 
-  // const sortedTeamOrgs = organizations
-  //   ?.filter((org) => org.tier === 'team')
-  //   .sort((a, b) => a.name.localeCompare(b.name))
+  const sortedOrgs = organizations.toSorted((a, b) => {
+    const aTier = tiers.indexOf(a.tier)
+    const bTier = tiers.indexOf(b.tier)
+    return aTier < bTier ? -1 : aTier > bTier ? 1 : a.name.localeCompare(b.name)
+  })
 
-  // const sortedStarterOrgs = organizations
-  //   ?.filter((org) => org.tier === 'starter')
-  //   .sort((a, b) => a.name.localeCompare(b.name))
-
-  // const sortedOrgs = [...sortedEnterpriseOrgs, ...sortedTeamOrgs, ...sortedStarterOrgs]
-
-  const teams = organizations?.flatMap((org) => org.viewerTeams)
+  const teams = organizations.flatMap((org) => org.viewerTeams)
 
   if (teams?.length === 0) {
-    return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
+    return <EmptyTeams>{'It appears you are not a member of any team!'}</EmptyTeams>
   }
 
   return (
     <div className='w-full p-3 pt-4 pb-0'>
-      {organizations?.map((org) => (
+      {sortedOrgs.map((org) => (
         <div key={org.id} className='w-full pb-4'>
           <div className='mb-1 flex min-w-0 flex-1 flex-wrap items-center justify-between'>
             <span className='flex-1 pl-3 text-base font-semibold leading-6 text-slate-700'>
