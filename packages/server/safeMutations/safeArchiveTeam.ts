@@ -37,11 +37,11 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
       .executeTakeFirst(),
     pg
       .updateTable('User')
-      .set(({fn, ref, val}) => ({tms: fn('ARR_DIFF', [ref('tms'), val(teamId)])}))
+      .set(({fn, ref, val}) => ({tms: fn('ARR_REMOVE', [ref('tms'), val(teamId)])}))
       .where('id', 'in', userIds)
       .execute()
   ])
-  dataLoader.clearAll('teamMembers').clearAll('users').clearAll('teams')
+  dataLoader.clearAll(['teamMembers', 'users', 'teams'])
   const users = await Promise.all(userIds.map((userId) => dataLoader.get('users').load(userId)))
   return {...rethinkResult, team: pgResult ?? null, users}
 }

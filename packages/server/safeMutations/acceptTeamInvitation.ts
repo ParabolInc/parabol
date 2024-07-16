@@ -1,4 +1,6 @@
+import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
@@ -6,9 +8,9 @@ import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import {TeamSource} from '../graphql/public/types/Team'
+import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
-import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
 
 const handleFirstAcceptedInvitation = async (
@@ -63,16 +65,16 @@ const acceptTeamInvitation = async (
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   const {id: teamId, orgId} = team
   const [user, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(userId),
     dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
   ])
-  const {email} = user
+  const {email, picture, preferredName} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team, dataLoader)
-  const [, invitationNotificationIds] = await Promise.all([
-    insertNewTeamMember(user, teamId, dataLoader),
+  const [invitationNotificationIds] = await Promise.all([
     r
       .table('Notification')
       .getAll(userId, {index: 'userId'})
@@ -87,8 +89,26 @@ const acceptTeamInvitation = async (
       )('changes')('new_val')('id')
       .default([])
       .run(),
-    // add the team to the user doc
-    addTeamIdToTMS(userId, teamId),
+    pg
+      .with('UserUpdate', (qc) =>
+        qc
+          .updateTable('User')
+          .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
+          .where('id', '=', userId)
+      )
+      .insertInto('TeamMember')
+      .values({
+        id: TeamMemberId.join(teamId, userId),
+        teamId,
+        userId,
+        picture,
+        preferredName,
+        email,
+        openDrawer: 'manageTeam'
+      })
+      .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true}))
+      .execute(),
+    insertNewTeamMember(user, teamId, dataLoader),
     r
       .table('TeamInvitation')
       .getAll(teamId, {index: 'teamId'})
@@ -100,7 +120,7 @@ const acceptTeamInvitation = async (
       })
       .run()
   ])
-
+  dataLoader.clearAll(['teamMembers', 'users'])
   if (!organizationUser) {
     // clear the cache, adjustUserCount will mutate these
     dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})

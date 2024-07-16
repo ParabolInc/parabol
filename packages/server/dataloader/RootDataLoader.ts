@@ -48,7 +48,7 @@ export type RegisterDependsOn = (primaryLoaders: AllPrimaryLoaders | AllPrimaryL
 
 // The RethinkDB logic is a leaky abstraction! It will be gone soon & this will be generic enough to put in its own package
 interface GenericDataLoader<TLoaders, TPrimaryLoaderNames> {
-  clearAll(pkLoaderName: TPrimaryLoaderNames): this
+  clearAll(pkLoaderName: TPrimaryLoaderNames | TPrimaryLoaderNames[]): void
   get<LoaderName extends keyof TLoaders, Loader extends TLoaders[LoaderName]>(
     loaderName: LoaderName
   ): Loader extends (...args: any[]) => any
@@ -85,12 +85,12 @@ export default class RootDataLoader<
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  clearAll: DataLoaderInstance['clearAll'] = (pkLoaderName) => {
-    const dependencies = [pkLoaderName, ...(this.dependentLoaders[pkLoaderName] ?? [])]
+  clearAll: DataLoaderInstance['clearAll'] = (inPkLoaderName) => {
+    const pkLoaderNames = Array.isArray(inPkLoaderName) ? inPkLoaderName : [inPkLoaderName]
+    const dependencies = pkLoaderNames.flatMap((pk) => [pk, ...(this.dependentLoaders[pk] ?? [])])
     dependencies.forEach((loaderName) => {
       this.loaders[loaderName]?.clearAll()
     })
-    return this
   }
   get: DataLoaderInstance['get'] = (loaderName) => {
     let loader = this.loaders[loaderName]

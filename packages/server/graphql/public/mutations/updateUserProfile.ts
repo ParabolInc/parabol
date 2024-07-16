@@ -69,8 +69,7 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
       .default([])
       .run() as unknown as TeamMember[]
   ])
-  dataLoader.clearAll('users')
-  dataLoader.clearAll('teamMembers')
+  dataLoader.clearAll(['users', 'teamMembers'])
 
   const [user, teamMembers] = await Promise.all([
     dataLoader.get('users').loadNonNull(userId),

@@ -52,8 +52,7 @@ const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
 
     updateUser({picture: publicLocation}, userId)
   ])
-  dataLoader.clearAll('users')
-  dataLoader.clearAll('teamMembers')
+  dataLoader.clearAll(['users', 'teamMembers'])
   const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
   const teamIds = teamMembers.map(({teamId}) => teamId)
   teamIds.forEach((teamId) => {

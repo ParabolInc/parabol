@@ -106,10 +106,10 @@ const removeTeamMember = async (
   }).run()
   await pg
     .updateTable('User')
-    .set(({fn, ref, val}) => ({tms: fn('ARR_DIFF', [ref('tms'), val(teamId)])}))
+    .set(({fn, ref, val}) => ({tms: fn('ARR_REMOVE', [ref('tms'), val(teamId)])}))
     .where('id', '=', userId)
     .execute()
-  dataLoader.clearAll('teamMembers').clearAll('users')
+  dataLoader.clearAll(['users', 'teamMembers'])
   const user = await dataLoader.get('users').load(userId)
 
   let notificationId: string | undefined

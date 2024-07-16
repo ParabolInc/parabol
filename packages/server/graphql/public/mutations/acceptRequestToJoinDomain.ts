@@ -1,10 +1,11 @@
+import {sql} from 'kysely'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 import {Logger} from '../../../utils/Logger'
 import RedisLock from '../../../utils/RedisLock'
@@ -83,14 +84,32 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     return standardError(new Error('User not found'))
   }
 
-  const {id: userId} = user
+  const {id: userId, picture, preferredName, email} = user
 
   for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
     const [organizationUser] = await Promise.all([
       dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
-      insertNewTeamMember(user, teamId, dataLoader),
-      addTeamIdToTMS(userId, teamId)
+      pg
+        .with('UserUpdate', (qc) =>
+          qc
+            .updateTable('User')
+            .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
+            .where('id', '=', userId)
+        )
+        .insertInto('TeamMember')
+        .values({
+          id: TeamMemberId.join(teamId, userId),
+          teamId,
+          userId,
+          picture,
+          preferredName,
+          email,
+          openDrawer: 'manageTeam'
+        })
+        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true}))
+        .execute(),
+      insertNewTeamMember(user, teamId, dataLoader)
     ])
 
     if (!organizationUser) {
@@ -102,7 +121,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       await setUserTierForUserIds([userId])
     }
   }
-  dataLoader.clearAll('teamMembers').clearAll('users')
+  dataLoader.clearAll(['users', 'teamMembers'])
   await redisLock.unlock()
 
   // Send the new team member a welcome & a new token
