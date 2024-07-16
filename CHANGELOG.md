@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.9](https://github.com/ParabolInc/parabol/compare/v7.38.8...v7.38.9) (2024-07-16)
+
+
+### Fixed
+
+* **postgresql:** install postgresql-server-dev-16 in the local postgres Docker image ([4d71de4](https://github.com/ParabolInc/parabol/commit/4d71de4a6804c819223e73eb85b47a55c2bccac8))
+* pull pgvector from image ([#9981](https://github.com/ParabolInc/parabol/issues/9981)) ([f4a9f11](https://github.com/ParabolInc/parabol/commit/f4a9f11ff652a24edd2d92fb714bc8d293f7d76f))
+
 ## [7.38.8](https://github.com/ParabolInc/parabol/compare/v7.38.7...v7.38.8) (2024-07-15)
 
 
