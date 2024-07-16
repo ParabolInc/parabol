@@ -1,0 +1,41 @@
+name: Style Check
+on:
+  push:
+    branches-ignore:
+      - "release-please--**"
+      - "release/v**"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PARABOL_BUILD_ENV_PATH: docker/images/parabol-ubi/environments/pipeline
+jobs:
+  style-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: package.json
+          # Caching yarn dir & running yarn install is too slow
+          # Instead, we aggressively cache node_modules below to avoid calling install
+      - name: Get cached node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Install node_modules
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Check Code Quality
+        run: yarn codecheck
