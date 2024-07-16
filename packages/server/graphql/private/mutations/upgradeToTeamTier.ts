@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -41,7 +40,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     return standardError(new Error('Customer does not have an orgId'), {userId})
   }
 
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -107,12 +105,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     .where('orgId', '=', orgId)
     .where('removedAt', 'is', null)
     .execute()
-  await r
-    .table('OrganizationUser')
-    .getAll(viewerId, {index: 'userId'})
-    .filter({removedAt: null, orgId})
-    .update({role: 'BILLING_LEADER'})
-    .run()
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)

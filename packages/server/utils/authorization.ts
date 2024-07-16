@@ -1,8 +1,8 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
-import {OrgUserRole} from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'
+import {OrganizationUser} from '../postgres/types'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
@@ -55,7 +55,7 @@ const isUserAnyRoleIn = async (
   userId: string,
   orgId: string,
   dataLoader: DataLoaderWorker,
-  roles: OrgUserRole[],
+  roles: NonNullable<OrganizationUser['role']>[],
   options?: Options
 ) => {
   const organizationUser = await dataLoader

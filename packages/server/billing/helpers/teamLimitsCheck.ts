@@ -28,12 +28,6 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .where('userId', 'in', userIds)
     .where('removedAt', 'is', null)
     .execute()
-  await r
-    .table('OrganizationUser')
-    .getAll(r.args(userIds), {index: 'userId'})
-    .filter({orgId})
-    .update({suggestedTier: 'team'})
-    .run()
   await pg
     .updateTable('User')
     .set({featureFlags: sql`arr_append_uniq("featureFlags", 'insights')`})
@@ -101,12 +95,6 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
         .where('userId', 'in', billingLeadersIds)
         .where('removedAt', 'is', null)
         .execute(),
-      r
-        .table('OrganizationUser')
-        .getAll(r.args(billingLeadersIds), {index: 'userId'})
-        .filter({orgId})
-        .update({suggestedTier: 'starter'})
-        .run(),
       removeTeamsLimitObjects(orgId, dataLoader)
     ])
     dataLoader.get('organizations').clear(orgId)

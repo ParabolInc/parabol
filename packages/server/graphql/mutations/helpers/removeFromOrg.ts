@@ -2,7 +2,6 @@ import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
-import OrganizationUser from '../../../database/types/OrganizationUser'
 import getKysely from '../../../postgres/getKysely'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {Logger} from '../../../utils/Logger'
@@ -19,7 +18,6 @@ const removeFromOrg = async (
 ) => {
   const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const orgTeams = await getTeamsByOrgIds([orgId])
   const teamIds = orgTeams.map((team) => team.id)
   const teamMemberIds = (await r
@@ -44,23 +42,15 @@ const removeFromOrg = async (
     return arr
   }, [])
 
-  const [_pgOrgUser, organizationUser, user] = await Promise.all([
+  const [organizationUser, user] = await Promise.all([
     pg
       .updateTable('OrganizationUser')
       .set({removedAt: sql`CURRENT_TIMESTAMP`})
       .where('userId', '=', userId)
       .where('orgId', '=', orgId)
       .where('removedAt', 'is', null)
-      .returning('role')
+      .returning(['id', 'role'])
       .executeTakeFirstOrThrow(),
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({orgId, removedAt: null})
-      .nth(0)
-      .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
-      .default(null)
-      .run() as unknown as OrganizationUser,
     dataLoader.get('users').loadNonNull(userId)
   ])
 
@@ -83,13 +73,6 @@ const removeFromOrg = async (
           .set({role: 'BILLING_LEADER'})
           .where('id', '=', nextInLine.id)
           .execute()
-        await r
-          .table('OrganizationUser')
-          .get(nextInLine.id)
-          .update({
-            role: 'BILLING_LEADER'
-          })
-          .run()
       } else if (organization.tier !== 'starter') {
         await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, user, dataLoader)
       }

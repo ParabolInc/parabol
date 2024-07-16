@@ -92,7 +92,7 @@
           "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
           "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",
           "Organization": "./types/Organization#OrganizationSource",
-          "OrganizationUser": "../../database/types/OrganizationUser#default as OrganizationUser",
+          "OrganizationUser": "../../postgres/types/index#OrganizationUser",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "PokerMeetingMember": "../../database/types/MeetingPokerMeetingMember#default as PokerMeetingMemberDB",
           "PokerTemplate": "../../database/types/PokerTemplate#default as PokerTemplateDB",
