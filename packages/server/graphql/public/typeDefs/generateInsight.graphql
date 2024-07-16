@@ -1,0 +1,23 @@
+extend type Mutation {
+  """
+  Generate an insight for a team
+  """
+  generateInsight(teamId: ID!): GenerateInsightPayload!
+}
+
+"""
+Return value for generateInsight, which could be an error
+"""
+union GenerateInsightPayload = ErrorPayload | GenerateInsightSuccess
+
+type GenerateInsightSuccess {
+  """
+  The insights generated focusing on the wins of the team
+  """
+  wins: String!
+
+  """
+  The insights generated focusing on the challenges team are facing
+  """
+  challenges: String!
+}

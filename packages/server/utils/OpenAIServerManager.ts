@@ -10,6 +10,11 @@ type Prompt = {
   description: string
 }
 
+type InsightResponse = {
+  wins: string[]
+  challenges: string[]
+}
+
 type Template = {
   templateId: string
   templateName: string
@@ -335,6 +340,45 @@ class OpenAIServerManager {
       return (response.choices[0]?.message?.content?.trim() as string).replaceAll(`"`, '') ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to modifyCheckInQuestion')
+      sendToSentry(error)
+      return null
+    }
+  }
+
+  // TODO: actually batch the completions
+  async batchChatCompletion(prompt: string, yamlData: string): Promise<InsightResponse | null> {
+    if (!this.openAIApi) return null
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'user',
+            content: `${prompt}\n\n${yamlData}`
+          }
+        ],
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const completionContent = response.choices[0]?.message.content as string
+
+      let data: InsightResponse
+      try {
+        data = JSON.parse(completionContent)
+      } catch (e) {
+        const error =
+          e instanceof Error ? e : new Error('Error parsing JSON in batchChatCompletion')
+        sendToSentry(error)
+        return null
+      }
+
+      return data
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('Error in batchChatCompletion')
       sendToSentry(error)
       return null
     }

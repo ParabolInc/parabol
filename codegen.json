@@ -70,6 +70,7 @@
           "File": "./types/File#TFile",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
+          "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
           "GetTemplateSuggestionSuccess": "./types/GetTemplateSuggestionSuccess#GetTemplateSuggestionSuccessSource",
           "IntegrationProviderOAuth2": "../../postgres/queries/getIntegrationProvidersByIds#TIntegrationProvider",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",

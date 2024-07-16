@@ -121,7 +121,7 @@
     "node-pg-migrate": "^5.9.0",
     "nodemailer": "^6.9.9",
     "oauth-1.0a": "^2.2.6",
-    "openai": "^4.24.1",
+    "openai": "^4.52.2",
     "openapi-fetch": "^0.9.7",
     "oy-vey": "^0.12.1",
     "parabol-client": "7.38.7",
