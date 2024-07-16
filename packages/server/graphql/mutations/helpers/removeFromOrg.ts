@@ -2,7 +2,6 @@ import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
-import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {Logger} from '../../../utils/Logger'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
@@ -17,9 +16,11 @@ const removeFromOrg = async (
 ) => {
   const pg = getKysely()
   // TODO consider a teamMembersByOrgId dataloader if this pattern pops up more
-  const orgTeams = await getTeamsByOrgIds([orgId])
+  const [orgTeams, allTeamMembers] = await Promise.all([
+    dataLoader.get('teamsByOrgIds').load(orgId),
+    dataLoader.get('teamMembersByUserId').load(userId)
+  ])
   const teamIds = orgTeams.map((team) => team.id)
-  const allTeamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
   const teamMembers = allTeamMembers.filter((teamMember) => teamIds.includes(teamMember.teamId))
   const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
 

@@ -3,7 +3,6 @@ import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEn
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
-import getTeamsByIds from '../../../postgres/queries/getTeamsByIds'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
@@ -13,6 +12,7 @@ import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import standardError from '../../../utils/standardError'
+import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
@@ -52,10 +52,10 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   }
 
   // Provided request domain should match team's organizations activeDomain
-  const leadTeams = await getTeamsByIds(validTeamMembers.map((teamMember) => teamMember.teamId))
-  const teamOrgs = await Promise.all(
-    leadTeams.map((t) => dataLoader.get('organizations').loadNonNull(t.orgId))
-  )
+  const leadTeams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+  const orgIds = leadTeams.map((team) => team.orgId)
+  const teamOrgs = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
+
   const validOrgIds = teamOrgs.filter((org) => org.activeDomain === domain).map(({id}) => id)
 
   if (!validOrgIds.length) {
@@ -102,7 +102,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       await setUserTierForUserIds([userId])
     }
   }
-
+  dataLoader.clearAll('teamMembers').clearAll('users')
   await redisLock.unlock()
 
   // Send the new team member a welcome & a new token
