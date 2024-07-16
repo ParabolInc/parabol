@@ -27,8 +27,7 @@ services:
     networks:
       - parabol-network
   postgres:
-    build:
-      context: "../../images/postgres"
+    image: pgvector/pgvector:0.7.0-pg16
     restart: unless-stopped
     env_file: ../../../.env
     ports:
