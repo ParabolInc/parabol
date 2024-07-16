@@ -6,17 +6,17 @@ export async function up() {
 
   await r
     .table('ReflectPrompt')
-    .filter({id: 'threatLevelPremortemTemplateSeverePrompt'})
+    .get('threatLevelPremortemTemplateSeverePrompt')
     .update({groupColor: '#FD6157'})
     .run()
   await r
     .table('ReflectPrompt')
-    .filter({id: 'threatLevelPremortemTemplateElevatedPrompt'})
+    .get('threatLevelPremortemTemplateElevatedPrompt')
     .update({groupColor: '#FFCC63'})
     .run()
   await r
     .table('ReflectPrompt')
-    .filter({id: 'threatLevelPremortemTemplateLowPrompt'})
+    .get('threatLevelPremortemTemplateLowPrompt')
     .update({groupColor: '#66BC8C'})
     .run()
 }
@@ -26,17 +26,17 @@ export async function down() {
 
   await r
     .table('ReflectPrompt')
-    .filter({id: 'threatLevelPremortemTemplateSeverePrompt'})
+    .get('threatLevelPremortemTemplateSeverePrompt')
     .update({groupColor: '#66BC8C'})
     .run()
   await r
     .table('ReflectPrompt')
-    .filter({id: 'threatLevelPremortemTemplateElevatedPrompt'})
+    .get('threatLevelPremortemTemplateElevatedPrompt')
     .update({groupColor: '#FD6157'})
     .run()
   await r
     .table('ReflectPrompt')
-    .filter({id: 'threatLevelPremortemTemplateLowPrompt'})
+    .get('threatLevelPremortemTemplateLowPrompt')
     .update({groupColor: '#FFCC63'})
     .run()
 }
