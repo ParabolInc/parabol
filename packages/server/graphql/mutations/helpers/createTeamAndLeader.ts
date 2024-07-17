@@ -9,6 +9,7 @@ import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreat
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import IUser from '../../../postgres/types/IUser'
+import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 
 interface ValidNewTeam {
   id: string
@@ -51,7 +52,7 @@ export default async function createTeamAndLeader(
           .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
           .where('id', '=', userId)
       )
-      .with('TeamMemberUpsert', (qc) =>
+      .with('TeamMemberInsert', (qc) =>
         qc.insertInto('TeamMember').values({
           id: TeamMemberId.join(teamId, userId),
           teamId,
@@ -67,6 +68,8 @@ export default async function createTeamAndLeader(
       .values(timelineEvent)
       .execute(),
     // add meeting settings
-    r.table('MeetingSettings').insert(meetingSettings).run()
+    r.table('MeetingSettings').insert(meetingSettings).run(),
+    // denormalize common fields to team member
+    insertNewTeamMember(user, teamId, dataLoader)
   ])
 }
