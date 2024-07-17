@@ -8,7 +8,6 @@ import NotificationKickedOut from '../../../database/types/NotificationKickedOut
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import getKysely from '../../../postgres/getKysely'
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
@@ -41,13 +40,9 @@ const removeTeamMember = async (
   }
 
   if (activeTeamMembers.length === 1) {
-    const updates = {
-      isArchived: true,
-      updatedAt: new Date()
-    }
     await Promise.all([
       // archive single-person teams
-      updateTeamByTeamId(updates, teamId),
+      pg.updateTable('Team').set({isArchived: true}).where('id', '=', teamId).execute(),
       // delete all tasks belonging to a 1-person team
       r.table('Task').getAll(teamId, {index: 'teamId'}).delete()
     ])
@@ -66,13 +61,12 @@ const removeTeamMember = async (
     }).run()
   }
 
-  // assign active tasks to the team lead
   await pg
     .updateTable('TeamMember')
     .set({isNotRemoved: false})
-    .where('id', '=', 'teamMemberId')
+    .where('id', '=', teamMemberId)
     .execute()
-
+  // assign active tasks to the team lead
   const {integratedTasksToArchive, reassignedTasks} = await r({
     teamMember: r.table('TeamMember').get(teamMemberId).update({
       isNotRemoved: false,
@@ -106,7 +100,7 @@ const removeTeamMember = async (
   }).run()
   await pg
     .updateTable('User')
-    .set(({fn, ref, val}) => ({tms: fn('ARR_REMOVE', [ref('tms'), val(teamId)])}))
+    .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
     .where('id', '=', userId)
     .execute()
   dataLoader.clearAll(['users', 'teamMembers'])

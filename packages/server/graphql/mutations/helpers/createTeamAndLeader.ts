@@ -72,4 +72,5 @@ export default async function createTeamAndLeader(
     // denormalize common fields to team member
     insertNewTeamMember(user, teamId, dataLoader)
   ])
+  dataLoader.clearAll(['teams', 'users', 'teamMembers', 'timelineEvents', 'meetingSettings'])
 }

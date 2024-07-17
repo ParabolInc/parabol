@@ -37,7 +37,7 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
       .executeTakeFirst(),
     pg
       .updateTable('User')
-      .set(({fn, ref, val}) => ({tms: fn('ARR_REMOVE', [ref('tms'), val(teamId)])}))
+      .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
       .where('id', 'in', userIds)
       .execute()
   ])
