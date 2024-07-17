@@ -99,8 +99,8 @@ jobs:
       - name: Kysely Codegen
         run: yarn pg:generate
 
-      - name: Check Code Quality
-        run: yarn codecheck
+      - name: Typecheck
+        run: yarn typecheck
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit

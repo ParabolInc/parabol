@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.38.10](https://github.com/ParabolInc/parabol/compare/v7.38.9...v7.38.10) (2024-07-17)
+
+
+### Fixed
+
+* colors of the prompts for the threat level retro match now the prompts' names ([#9956](https://github.com/ParabolInc/parabol/issues/9956)) ([0287026](https://github.com/ParabolInc/parabol/commit/02870268ea8b57e31aec28295cd6d5bac9797b8c))
+* SAML return values from dataloader ([#9991](https://github.com/ParabolInc/parabol/issues/9991)) ([4f883fe](https://github.com/ParabolInc/parabol/commit/4f883fe7e557d4f6d121bc11ab68b30646d3d5e4))
+
+
+### Changed
+
+* parallelize codecheck ([#9983](https://github.com/ParabolInc/parabol/issues/9983)) ([cec7063](https://github.com/ParabolInc/parabol/commit/cec70635bb76dafb4bd71f661268268e34467e3c))
+
 ## [7.38.9](https://github.com/ParabolInc/parabol/compare/v7.38.8...v7.38.9) (2024-07-16)
 
 
