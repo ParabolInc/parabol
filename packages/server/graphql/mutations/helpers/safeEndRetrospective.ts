@@ -170,7 +170,7 @@ const safeEndRetrospective = async ({
   if (team.isOnboardTeam) {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const teamLead = teamMembers.find((teamMember) => teamMember.isLead)!
-    const teamLeadUserId = teamLead?.userId
+    const teamLeadUserId = teamLead.userId
 
     const removedSuggestedActionId = await removeSuggestedAction(teamLeadUserId, 'tryRetroMeeting')
     if (removedSuggestedActionId) {

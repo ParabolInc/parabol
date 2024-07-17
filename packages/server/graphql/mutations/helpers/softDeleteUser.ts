@@ -1,4 +1,3 @@
-import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
 import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
@@ -20,7 +19,7 @@ const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWork
     orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
   )
   const teamMembers = await dataLoader.get('teamMembersByUserId').load(userIdToDelete)
-  const teamIds = teamMembers.map(({id}) => TeamMemberId.split(id).teamId)
+  const teamIds = teamMembers.map(({teamId}) => teamId)
 
   await Promise.all([
     removeAtlassianAuths(userIdToDelete, teamIds),
