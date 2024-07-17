@@ -23,8 +23,24 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   if (end.getTime() - start.getTime() < oneWeekInMs) {
     return standardError(new Error('The end date must be at least one week after the start date.'))
   }
-
   const pg = getKysely()
+
+  const existingInsight = await pg
+    .selectFrom('Insight')
+    .selectAll()
+    .where('teamId', '=', teamId)
+    .where('startDateTime', '=', start)
+    .where('endDateTime', '=', end)
+    .limit(1)
+    .executeTakeFirst()
+
+  if (existingInsight) {
+    return {
+      wins: existingInsight.wins,
+      challenges: existingInsight.challenges
+    }
+  }
+
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
     const discussion = await pg
