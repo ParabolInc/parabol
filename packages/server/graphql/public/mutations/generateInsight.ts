@@ -73,15 +73,14 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     const rawMeetings = await r
       .table('NewMeeting')
       .getAll(teamId, {index: 'teamId'})
-      .filter(
-        (row: any) =>
-          row('meetingType')
-            .eq('retrospective')
-            .and(row('createdAt').ge(startDate))
-            .and(row('createdAt').le(endDate))
-            .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-        // .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-        // .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
+      .filter((row: any) =>
+        row('meetingType')
+          .eq('retrospective')
+          .and(row('createdAt').ge(startDate))
+          .and(row('createdAt').le(endDate))
+          .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
+          .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
+          .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
       )
       .run()
     console.log('🚀 ~ rawMeetings:', rawMeetings)
@@ -100,7 +99,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
         const reflectionGroups = Promise.all(
           rawReflectionGroups
             // for performance since it's really slow!
-            // .filter((g) => g.voterIds.length > 0)
+            .filter((g) => g.voterIds.length > 0)
             .map(async (group) => {
               const {id: reflectionGroupId, voterIds, title} = group
               const [comments, rawReflections] = await Promise.all([
@@ -147,8 +146,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   }
 
   const startDate = new Date('2024-01-01')
-  // const endDate = new Date('2024-04-01')
-  const endDate = new Date()
+  const endDate = new Date('2024-02-01')
 
   const inTopics = await getTopicJSON(teamId, startDate, endDate)
   if (!inTopics.length) {
@@ -160,8 +158,8 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     ReturnType<typeof getTopicJSON>
   >
   const hotTopics = rawTopics
-  // .filter((t) => t.voteCount > 2)
-  // .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
+    .filter((t) => t.voteCount > 2)
+    .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
 
   type IDLookup = Record<string, string | Date>
   const idLookup = {
@@ -193,26 +191,8 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
 
   const meetingURL = 'https://action.parabol.co/meet/'
 
-  const summarizingPrompt = `
-You are a management consultant who needs to discover behavioral trends for a given team.
-Below is a list of reflection topics in YAML format from meetings over the last 3 months.
-You should describe the situation in two sections with exactly 3 bullet points each.
-The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
-The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
-When citing the quote, include the meetingId in the format of ${meetingURL}[meetingId].
-For each topic, mention how many votes it has.
-Be sure that each author is only mentioned once.
-Return the output as a JSON object with the following structure:
-{
-  "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
-  "challenges": ["bullet point 1", "bullet point 2", "bullet point 3"]
-}
-Your tone should be kind and professional. No yapping.
-`
-
   const openAI = new OpenAIServerManager()
-  const batch = await openAI.batchChatCompletion(summarizingPrompt, yamlData)
-  console.log('🚀 ~ batch:', batch)
+  const batch = await openAI.generateInsight(yamlData)
   if (!batch) {
     return standardError(new Error('Unable to generate insight.'))
   }
@@ -227,7 +207,7 @@ Your tone should be kind and professional. No yapping.
 
           let isValid = true
           matches.forEach((match) => {
-            let shortMeetingId = match.split(meetingURL)[1].split(/[),\s]/)[0] // Split by closing parenthesis, comma, or space
+            let shortMeetingId = match.split(meetingURL)[1]?.split(/[),\s]/)[0] // Split by closing parenthesis, comma, or space
             const actualMeetingId = shortMeetingId && (idLookup.meeting[shortMeetingId] as string)
 
             if (shortMeetingId && actualMeetingId) {

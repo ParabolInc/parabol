@@ -345,9 +345,25 @@ class OpenAIServerManager {
     }
   }
 
-  // TODO: actually batch the completions
-  async batchChatCompletion(prompt: string, yamlData: string): Promise<InsightResponse | null> {
+  async generateInsight(yamlData: string): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
+    const meetingURL = 'https://action.parabol.co/meet/'
+    const prompt = `
+    You are a management consultant who needs to discover behavioral trends for a given team.
+    Below is a list of reflection topics in YAML format from meetings over the last 3 months.
+    You should describe the situation in two sections with exactly 3 bullet points each.
+    The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
+    The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
+    When citing the quote, include the meetingId in the format of ${meetingURL}[meetingId].
+    For each topic, mention how many votes it has.
+    Be sure that each author is only mentioned once.
+    Return the output as a JSON object with the following structure:
+    {
+      "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
+      "challenges": ["bullet point 1", "bullet point 2", "bullet point 3"]
+    }
+    Your tone should be kind and professional. No yapping.
+    `
 
     try {
       const response = await this.openAIApi.chat.completions.create({
