@@ -9,7 +9,6 @@ import {
 } from 'graphql'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
-import TeamMember from '../../database/types/TeamMember'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import getLatestIntegrationSearchQueries from '../../postgres/queries/getLatestIntegrationSearchQueries'
@@ -65,9 +64,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderOAuth1))),
       resolve: async ({teamId, userId}, _args, {dataLoader}) => {
         const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
-        const teamMember = teamMembers.find(
-          (teamMember: TeamMember) => teamMember.teamId === teamId
-        )
+        const teamMember = teamMembers.find((teamMember) => teamMember.teamId === teamId)
         if (!teamMember) return []
 
         const team = await dataLoader.get('teams').loadNonNull(teamMember.teamId)

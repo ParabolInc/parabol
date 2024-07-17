@@ -20,7 +20,7 @@ export async function up() {
       "isSpectatingPoker" BOOLEAN NOT NULL DEFAULT FALSE,
       "email" "citext" NOT NULL,
       "openDrawer" "TeamDrawerEnum",
-      "picture" VARCHAR(2056),
+      "picture" VARCHAR(2056) NOT NULL,
       "preferredName" VARCHAR(100) NOT NULL,
       "teamId" VARCHAR(100) NOT NULL,
       "userId" VARCHAR(100) NOT NULL,

@@ -2,7 +2,6 @@ import {MasterPool, r} from 'rethinkdb-ts'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
-import TeamMember from '../database/types/TeamMember'
 import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import {ScheduledJobUnion} from '../types/custom'
 import getRethinkConfig from './getRethinkConfig'
@@ -163,10 +162,6 @@ export type RethinkSchema = {
   TeamInvitation: {
     type: TeamInvitation
     index: 'email' | 'teamId' | 'token'
-  }
-  TeamMember: {
-    type: TeamMember
-    index: 'teamId' | 'userId'
   }
   TemplateDimension: {
     type: TemplateDimension
