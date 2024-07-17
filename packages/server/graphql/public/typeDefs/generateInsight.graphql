@@ -2,7 +2,7 @@ extend type Mutation {
   """
   Generate an insight for a team
   """
-  generateInsight(teamId: ID!): GenerateInsightPayload!
+  generateInsight(teamId: ID!, startDate: DateTime!, endDate: DateTime!): GenerateInsightPayload!
 }
 
 """

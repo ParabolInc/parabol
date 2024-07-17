@@ -1,5 +1,4 @@
 import yaml from 'js-yaml'
-import fs from 'node:fs'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
@@ -10,13 +9,24 @@ import {MutationResolvers} from '../resolverTypes'
 
 const generateInsight: MutationResolvers['generateInsight'] = async (
   _source,
-  {teamId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {teamId, startDate, endDate},
+  {dataLoader}
 ) => {
-  console.log('🚀 ~ teamId:', teamId)
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return standardError(
+      new Error('Invalid date format. Please use ISO 8601 format (e.g., 2024-01-01T00:00:00Z).')
+    )
+  }
+  const oneWeekInMs = 7 * 24 * 60 * 60 * 1000
+  if (end.getTime() - start.getTime() < oneWeekInMs) {
+    return standardError(new Error('The end date must be at least one week after the start date.'))
+  }
+
+  const pg = getKysely()
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
-    const pg = getKysely()
     const discussion = await pg
       .selectFrom('Discussion')
       .selectAll()
@@ -83,7 +93,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
           .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
       )
       .run()
-    console.log('🚀 ~ rawMeetings:', rawMeetings)
 
     const meetings = await Promise.all(
       rawMeetings.map(async (meeting) => {
@@ -98,7 +107,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
           .load(meetingId)
         const reflectionGroups = Promise.all(
           rawReflectionGroups
-            // for performance since it's really slow!
             .filter((g) => g.voterIds.length > 0)
             .map(async (group) => {
               const {id: reflectionGroupId, voterIds, title} = group
@@ -145,19 +153,11 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     return meetings.flat()
   }
 
-  const startDate = new Date('2024-01-01')
-  const endDate = new Date('2024-02-01')
-
   const inTopics = await getTopicJSON(teamId, startDate, endDate)
   if (!inTopics.length) {
     return standardError(new Error('Not enough data to generate insight.'))
   }
-  fs.writeFileSync(`./topics_${teamId}.json`, JSON.stringify(inTopics))
-
-  const rawTopics = JSON.parse(fs.readFileSync(`./topics_${teamId}.json`, 'utf-8')) as Awaited<
-    ReturnType<typeof getTopicJSON>
-  >
-  const hotTopics = rawTopics
+  const hotTopics = inTopics
     .filter((t) => t.voteCount > 2)
     .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
 
@@ -183,13 +183,9 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
       meetingId: shortMeetingId
     }
   })
-  // fs.writeFileSync('./topics_target_short.json', JSON.stringify(shortTokenedTopics))
   const yamlData = yaml.dump(shortTokenedTopics, {
     noCompatMode: true // This option ensures compatibility mode is off
   })
-  fs.writeFileSync(`./topics_${teamId}_short.yml`, yamlData)
-
-  const meetingURL = 'https://action.parabol.co/meet/'
 
   const openAI = new OpenAIServerManager()
   const batch = await openAI.generateInsight(yamlData)
@@ -197,7 +193,9 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     return standardError(new Error('Unable to generate insight.'))
   }
 
-  const processLines = (lines: string[], meetingURL: string): string => {
+  const meetingURL = 'https://action.parabol.co/meet/'
+
+  const processLines = (lines: string[]): string => {
     return lines
       .map((line) => {
         if (line.includes(meetingURL)) {
@@ -232,7 +230,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     return section
       .map((item) => {
         const lines = item.split('\n')
-        return processLines(lines, meetingURL)
+        return processLines(lines)
       })
       .filter((processedItem) => processedItem.trim() !== '')
       .join('\n')
@@ -241,8 +239,16 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const wins = processSection(batch.wins)
   const challenges = processSection(batch.challenges)
 
-  console.log('🚀 ~ Wins:', wins)
-  console.log('🚀 ~ Challenges:', challenges)
+  await pg
+    .insertInto('Insight')
+    .values({
+      teamId,
+      wins,
+      challenges,
+      startDate,
+      endDate
+    })
+    .execute()
 
   const data = {wins, challenges}
   return data
