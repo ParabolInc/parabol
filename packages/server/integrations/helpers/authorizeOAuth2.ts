@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/node'
 import {OAuth2Error, OAuth2Success} from '../../types/custom'
 
 type OAuth2Response = OAuth2Success | OAuth2Error
@@ -73,12 +72,6 @@ export const authorizeOAuth2 = async <
   const tokenJson = (await oauth2Response.json()) as OAuth2Response
   if ('error' in tokenJson) {
     const errorMessage = tokenJson.error || `Received null OAuth2 Error from ${authUrl}`
-    Sentry.addBreadcrumb({
-      category: 'OAuth2 Error',
-      message: errorMessage,
-      data: tokenJson,
-      level: 'error'
-    })
     return new Error(errorMessage)
   }
   const {
