@@ -1,0 +1,74 @@
+"""
+OAuth token for a team member
+"""
+type SlackIntegration {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  true if the auth is updated & ready to use for all features, else false
+  """
+  isActive: Boolean!
+
+  """
+  the parabol bot user id
+  """
+  botUserId: ID
+
+  """
+  the parabol bot access token, used as primary communication
+  """
+  botAccessToken: ID
+
+  """
+  The timestamp the provider was created
+  """
+  createdAt: DateTime!
+
+  """
+  The default channel to assign to new team notifications
+  """
+  defaultTeamChannelId: String!
+
+  """
+  The id of the team in slack
+  """
+  slackTeamId: ID
+
+  """
+  The name of the team in slack
+  """
+  slackTeamName: String
+
+  """
+  The userId in slack
+  """
+  slackUserId: ID!
+
+  """
+  The name of the user in slack
+  """
+  slackUserName: String!
+
+  """
+  *The team that the token is linked to
+  """
+  teamId: ID!
+
+  """
+  The timestamp the token was updated at
+  """
+  updatedAt: DateTime!
+
+  """
+  The id of the user that integrated Slack
+  """
+  userId: ID!
+
+  """
+  A list of events and the slack channels they get posted to
+  """
+  notifications: [SlackNotification!]!
+}
