@@ -11,8 +11,18 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation GenerateInsightMutation($teamId: ID!, $startDate: DateTime!, $endDate: DateTime!) {
-    generateInsight(teamId: $teamId, startDate: $startDate, endDate: $endDate) {
+  mutation GenerateInsightMutation(
+    $teamId: ID!
+    $startDate: DateTime!
+    $endDate: DateTime!
+    $useSummaries: Boolean
+  ) {
+    generateInsight(
+      teamId: $teamId
+      startDate: $startDate
+      endDate: $endDate
+      useSummaries: $useSummaries
+    ) {
       ... on ErrorPayload {
         error {
           message
