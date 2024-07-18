@@ -409,9 +409,11 @@ class OpenAIServerManager {
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a few sentences.
     Below is a list of reflection topics and comments in YAML format from the meeting.
     When citing the quote, link directly to the discussion in the format of ${meetingURL}[meetingId]/discuss/[discussionId].
-    Mention how many votes a topic has.
+    Don't mention the name of the meeting.
+    Prioritise the topics that got the most votes.
     Be sure that each author is only mentioned once.
     Your output must be a string.
+    You do not need to mention everything. Just mention the most important points, and ensure the summary is concise.
     Your tone should be kind, professional, and concise.
     `
 

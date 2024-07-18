@@ -1,0 +1,473 @@
+- voteCount: 1
+  title: Ai icebreakers
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: 'AI icebreakers: is this safe to release?'
+      discussionId: 16
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 16
+- voteCount: 7
+  title: Public teams
+  comments:
+    - text: Would it be public within an org or a whole domain?
+      author: Grayson Crickman
+      replies:
+        - text: It's by org
+          author: Nick O'Ferrall
+  reflections:
+    - prompt: 🛑 Halt
+      author: Jordan
+      text: >-
+        Defer: making teams public by default – let's get this released to GA
+        when we've got a feature that gives making teams public more value
+        (single team summarization or org summarization)
+      discussionId: 8
+    - prompt: ✈️ In-Flight
+      author: Nick O'Ferrall
+      text: >-
+        Public teams. This is still being tested:
+        https://eppo.cloud/experiments/13129
+      discussionId: 8
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 8
+- voteCount: 8
+  title: Team conversion throttle
+  comments:
+    - text: >-
+        interesting data on sales led vs organic Team Plan conversions in this
+        thread 
+
+
+        https://parabol.slack.com/archives/C08FL5UE7/p1697653709789529?thread_ts=1697481390.194139&cid=C08FL5UE7
+      author: Drew
+      replies: []
+    - text: >-
+        TLDR: 
+
+        All time: 56.11% sales led vs 43.89% organic
+
+        This is probably skewed from historical changes to our HubSpot
+        pipelines, meaning we aren't accurately identify "sales-led" deals in
+        the past
+
+        Last 12 months: 60.9% sales led vs 39.1% organic
+
+        Last 6 months: 61.7% sales led vs 38.3% organic
+
+        Last 3 months: 61.3% sales led vs 38.6% organic
+      author: Drew
+      replies: []
+    - text: 'safe to try getting rid of them all for a couple months? '
+      author: Drew
+      replies:
+        - text: Not sure
+          author: Jordan
+    - text: >-
+        I got 68% sales-led all time from the excel sheet that Taylor shared
+        back in October
+      author: Grayson Crickman
+      replies: []
+    - text: >-
+        Pricing
+        https://www.notion.so/parabol/84e7bd61edfc40aeb6331a4e48c8085c?v=9fc22914219f457982e9a3e36d31ecc1
+      author: Lorena Martínez
+      replies:
+        - text: Here are the limits and special features per Tier
+          author: Lorena Martínez
+    - text: >-
+        Lorena adds that folks churn from template landing pages when they find
+        the template isn’t free
+      author: Terry
+      replies: []
+    - text: >-
+        Maybe being able to use premium templates once to evaluate them? Or
+        like: you are a free team, but you can use premium templates 10 times
+        until you run out of trial templates.
+
+
+        That means 10 meetings and they can evaluate 10 different templates or
+        use the same 10 times
+      author: Rafael Romero
+      replies: []
+    - text: >-
+        About half of templates are free right now, all in "test: free" column:
+        https://www.notion.so/parabol/Templates-ce5a1b9ee7df47a1a2142c6e9e2edd8b
+      author: Georg Bremer
+      replies: []
+  reflections:
+    - prompt: ✨New
+      author: Jordan
+      text: >-
+        Team conversion: relax constraints such as template limits (need list of
+        conversion levers)
+      discussionId: 5
+    - prompt: ✨New
+      author: Charles
+      text: >-
+        A no credit card trial when a P0 signs up - along with a series of
+        emails showing off the benefits of Team
+      discussionId: 5
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 5
+- voteCount: 19
+  title: Feature Team insights Team management
+  comments:
+    - text: >-
+        https://www.notion.so/parabol/Feature-Flag-Lifecycle-35075fae1be84e2a99c84068b3475a6e
+      author: "matt\_🙈"
+      replies: []
+    - text: I'm pretty sure current version of team insights is rolled out
+      author: Georg Bremer
+      replies: []
+    - text: https://eppo.cloud/experiments?show=1-25
+      author: Nick O'Ferrall
+      replies: []
+    - text: >-
+        I feel like a better metaphor is, we are asking users: which pizza
+        sounds better? i.e., we are not always testing the right set of metrics
+        for statistical significance, e.g., the AI discussion prompt might not
+        be a boosting factor for org growth, yet we are comparing number of
+        users added between control vs. experiment groups.
+      author: Bruce Tian
+      replies: []
+    - text: 'Management interface PR: https://github.com/ParabolInc/parabol/pull/9285'
+      author: Jordan
+      replies: []
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: >-
+        Team Management: what choices shall we make here? We have a Figma
+        design, milestone, and partially completed branch
+      discussionId: 1
+    - prompt: ✨New
+      author: Charles
+      text: Insights+Reporting for Leaders
+      discussionId: 1
+    - prompt: ✈️ In-Flight
+      author: Charles
+      text: >-
+        Team Insights - I think it is still being tested. I'd vote for this
+        being a Team and Enterprise feature
+      discussionId: 1
+    - prompt: ✈️ In-Flight
+      author: Charles
+      text: >-
+        Org Admin Role & Managing Users/Teams for Enterprise orgs only. These
+        two together will make a lot of our current paid users happy
+      discussionId: 1
+    - prompt: ✨New
+      author: Charles
+      text: Improved Org/Team view UI
+      discussionId: 1
+    - prompt: ✈️ In-Flight
+      author: Drew
+      text: >-
+        I would love for us to release some kind of "super user" feature that
+        allows an Org Admin to see all teams, adjust team leads, adjust billing
+        leaders, etc 
+      discussionId: 1
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 1
+- voteCount: 7
+  title: Retros Integration
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: 'Recurring retros: what''s left to do?'
+      discussionId: 7
+    - prompt: ✈️ In-Flight
+      author: Charles
+      text: >-
+        MS Teams and Azure DevOps Integrations. They were released under a
+        feature flag a while ago and have been used by users upon request -
+        let's roll them out!
+      discussionId: 7
+    - prompt: ✈️ In-Flight
+      author: Georg Bremer
+      text: >-
+        Recurring retros, especially having a recurring Gcal event associated
+        with it.
+      discussionId: 7
+    - prompt: ✈️ In-Flight
+      author: Bruce Tian
+      text: GCal integration
+      discussionId: 7
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 7
+- voteCount: 1
+  title: Onboarding Improvements
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Nick O'Ferrall
+      text: >-
+        Alicia created onboarding improvement recommendations. We could
+        implement some of them, depending on what other work we're considering:
+        https://www.notion.so/parabol/Onboarding-Recommendations-e02cce5464fa42f88a31b0ac9955adc7
+      discussionId: 15
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 15
+- voteCount: 4
+  title: Add Activity Button
+  reflections:
+    - prompt: 🛑 Halt
+      author: Jordan
+      text: >-
+        Halt: add an activity button; I'd like to back this change out – the UX
+        is very clunky
+      discussionId: 10
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 10
+- voteCount: 4
+  title: Kudos
+  comments:
+    - text: |-
+        I feel like we could have a card in team insights:
+        * # all kudos given this week
+        * # kudos you've given
+        * # kudos you've received
+      author: Georg Bremer
+      replies: []
+    - text: 'people do love their kudos retro columns, they want that button :) '
+      author: Drew
+      replies:
+        - text: >-
+            I agree, I think this would be cool. You can give people sincere
+            gratitude with reflections 
+          author: Nick O'Ferrall
+        - text: Yes, I really want to put this draft over the edge
+          author: Georg Bremer
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: >-
+        Kudos: much effort has been poured here, what if anything should be
+        released and at what scale?
+      discussionId: 12
+    - prompt: 🛑 Halt
+      author: Nick O'Ferrall
+      text: >-
+        Kudos. We'd need to build a leaderboard or some sort of kudos page
+        before promoting this feature. Personally, I'm not a fan of gamifying
+        appreciation as it can cheapen gratitude, so I'd prefer to stop work on
+        this.
+      discussionId: 12
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 12
+- voteCount: 2
+  title: Release process and config management
+  reflections:
+    - prompt: ✨New
+      author: Rafael Romero
+      text: Improve configuration management
+      discussionId: 14
+    - prompt: 🛑 Halt
+      author: Rafael Romero
+      text: >-
+        The release process is simple enough. No need to improve it more. If we
+        are not able to fix the merge conflict when merging the PRs to the
+        branch production, just drop that last part and use Gitlab pipeline to
+        release to prod. Simple and no more work to do.
+      discussionId: 14
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 14
+- voteCount: 18
+  title: Activity library
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Bruce Tian
+      text: Activity Library full rollout
+      discussionId: 2
+    - prompt: ✈️ In-Flight
+      author: Nick O'Ferrall
+      text: >-
+        Activity library. Still being tested:
+        https://eppo.cloud/experiments/8430
+      discussionId: 2
+    - prompt: ✨New
+      author: Jordan
+      text: 'Activity Library: simple search'
+      discussionId: 2
+    - prompt: ✨New
+      author: Georg Bremer
+      text: >-
+        Finish up the custom template logic in the activity library to be on par
+        with the legacy dialog and finally remove the legacy dialog
+      discussionId: 2
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 2
+- voteCount: 3
+  title: 1:1 and Ad Hoc Meetings
+  reflections:
+    - prompt: 🛑 Halt
+      author: Bruce Tian
+      text: AdHoc Team & 1:1
+      discussionId: 13
+    - prompt: 🛑 Halt
+      author: Jordan
+      text: Halt near-term future work on 1-on-1 meetings
+      discussionId: 13
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 13
+- voteCount: 4
+  title: Ai summary Stand-up summaries
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Bruce Tian
+      text: AI summary for standup
+      discussionId: 11
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: 'Stand-up summaries: any reason this can''t be released to GA?'
+      discussionId: 11
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 11
+- voteCount: 9
+  title: Zoom transcription
+  reflections:
+    - prompt: 🛑 Halt
+      author: Jordan
+      text: >-
+        Defer: zoom transcription, I'd like to return to this after we've got
+        infrastructure in place for embedding and summarization
+      discussionId: 3
+    - prompt: ✨New
+      author: Nick O'Ferrall
+      text: >-
+        Video call transcription. Data is the key to building an AI product with
+        a business moat. This would be a useful feature, and it would give us
+        access to a lot more data.
+      discussionId: 3
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 3
+- voteCount: 7
+  title: RethinkDB
+  comments:
+    - text: >-
+        Even a partial migration would:
+
+        - Reduce our  risk. Backups and restorations would be faster, smaller
+        and everything in PG can be restored using Point In-Time Recovery.
+
+        - Saving 💸 in the cloud, being able to reduce the RethinkDB instance to
+        a smaller one.
+
+
+        A full migration out of RethinkDB should:
+
+        - Reduce around 15% of GCP cost per environment ($376.07264 $/month per
+        env => 2 envs => 752 $/month)
+
+        - Make our backups consistent and reduce our time to make them to
+        virtually nothing.
+
+        - Probably helping PubSec projects, simplifying the stack and removing
+        the unmaintained component.
+
+        - Allow us to automatically deploy PPMIs: running databases in container
+        would be possible in a safe enough way. That would allow us to build
+        something to sell cheap and easy to deploy and maintain PPMIs
+        "automatically".
+      author: Rafael Romero
+      replies: []
+  reflections:
+    - prompt: ✨New
+      author: "matt\_🙈"
+      text: >-
+        getting RetroReflection and RetroReflectionGruop tables into PG. This
+        will halve our RethinkDB size & unlock the ability to move reflections
+        to tiptap
+      discussionId: 6
+    - prompt: ✨New
+      author: Rafael Romero
+      text: >-
+        RethinkDB. We must get rid of RethinkDB, even more if we are going to
+        enter in a do not touch mode. And we should start by RetroReflection and
+        RetroReflectionGroup. Those two make for almost the 50% of size and more
+        than 40% of docs.
+      discussionId: 6
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 6
+- voteCount: 9
+  title: Embeddings
+  comments:
+    - text: >-
+        future thing: it would be VERY cool if this ended in a place where the
+        sales team could generate the reports themselves 
+      author: Drew
+      replies:
+        - text: I think it’d be cool if you could demo it in the product 🤔
+          author: Terry
+    - text: 'Here''s a milestone: https://github.com/ParabolInc/parabol/milestone/193'
+      author: Jordan
+      replies: []
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: >-
+        Embedder service: we got a milestone's work of backend effort. How to
+        share the love here?
+      discussionId: 4
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: >-
+        Related Conversations: I can take point on PR to allow us to experiment
+        with this feature, and get a feel for how to use the Embedder tables
+        (and their efficacy)
+      discussionId: 4
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 4
+- voteCount: 5
+  title: Ai Prompt
+  reflections:
+    - prompt: ✈️ In-Flight
+      author: Bruce Tian
+      text: AI generated discussion prompt
+      discussionId: 9
+    - prompt: ✈️ In-Flight
+      author: Jordan
+      text: >-
+        AI Discussion prompt: what next step shall we take? This feature seems
+        rather safe...
+      discussionId: 9
+    - prompt: ✈️ In-Flight
+      author: Charles
+      text: >-
+        AI Generated Discussion Prompt - is this still under test? We should
+        release it for Team and Enterprise users only
+      discussionId: 9
+  meetingName: 2024T1 Spring Cleaning 🌱🧹
+  date: 2024-02-19T23:50:06.859Z
+  meetingId: uEofN2TrmU
+  discussionId: 9

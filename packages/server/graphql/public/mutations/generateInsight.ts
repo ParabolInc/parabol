@@ -50,7 +50,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   }
 
   const yamlData = yaml.dump(meetingsContent, {
-    noCompatMode: true // This option ensures compatibility mode is off
+    noCompatMode: true
   })
 
   const openAI = new OpenAIServerManager()

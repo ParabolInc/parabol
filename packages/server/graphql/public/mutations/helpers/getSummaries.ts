@@ -63,6 +63,7 @@ const generateMeetingSummary = async (
   meeting: MeetingRetrospective,
   dataLoader: DataLoaderWorker
 ) => {
+  const pg = getKysely()
   const {id: meetingId, disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting
   const rawReflectionGroups = await dataLoader
     .get('retroReflectionGroupsByMeetingId')
@@ -72,10 +73,23 @@ const generateMeetingSummary = async (
       .filter((g) => g.voterIds.length > 0)
       .map(async (group) => {
         const {id: reflectionGroupId, voterIds, title} = group
-        const [comments, rawReflections] = await Promise.all([
+        const [comments, rawReflections, discussion] = await Promise.all([
           getComments(reflectionGroupId, dataLoader),
-          dataLoader.get('retroReflectionsByGroupId').load(group.id)
+          dataLoader.get('retroReflectionsByGroupId').load(group.id),
+          pg
+            .selectFrom('Discussion')
+            .selectAll()
+            .where('discussionTopicId', '=', reflectionGroupId)
+            .limit(1)
+            .executeTakeFirst()
         ])
+        const discussPhase = getPhase(meeting.phases, 'discuss')
+        const {stages} = discussPhase
+        const stageIdx = stages
+          .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+          .findIndex((stage) => stage.discussionId === discussion?.id)
+        const discussionIdx = stageIdx + 1
+
         const reflections = await Promise.all(
           rawReflections.map(async (reflection) => {
             const {promptId, creatorId, plaintextContent} = reflection
@@ -88,7 +102,8 @@ const generateMeetingSummary = async (
             return {
               prompt: question,
               author: creatorName,
-              text: plaintextContent
+              text: plaintextContent,
+              discussionId: discussionIdx
             }
           })
         )
@@ -99,7 +114,8 @@ const generateMeetingSummary = async (
           reflections,
           meetingName,
           date: meetingDate,
-          meetingId
+          meetingId,
+          discussionId: discussionIdx
         }
 
         if (!res.comments || !res.comments.length) {
@@ -159,12 +175,10 @@ export const getSummaries = async (
       fs.writeFileSync('meetingSummary.yaml', yamlData, 'utf8')
 
       const manager = new OpenAIServerManager()
-      const mySummary = await manager.generateSummary(yamlData)
-      console.log('🚀 ~ mySummary:', mySummary)
+      const newSummary = await manager.generateSummary(yamlData)
+      console.log('🚀 ~ newSummary:', newSummary)
 
       console.log('🚀 ~ res_____:', res)
-      const newSummary = null
-      console.log('🚀 ~ newSummary___:', newSummary)
 
       if (newSummary) {
         // Update the meeting with the new summary
