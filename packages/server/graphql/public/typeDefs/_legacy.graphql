@@ -856,66 +856,6 @@ enum TeamDrawer {
 
 scalar Email
 
-"""
-The atlassian auth + integration helpers for a specific team member
-"""
-type AtlassianIntegration {
-  """
-  Composite key in atlassiani:teamId:userId format
-  """
-  id: ID!
-
-  """
-  true if the auth is valid, else false
-  """
-  isActive: Boolean!
-
-  """
-  The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user
-  """
-  accessToken: ID
-
-  """
-  *The atlassian account ID
-  """
-  accountId: ID!
-
-  """
-  The atlassian cloud IDs that the user has granted
-  """
-  cloudIds: [ID!]!
-
-  """
-  The timestamp the provider was created
-  """
-  createdAt: DateTime!
-
-  """
-  *The team that the token is linked to
-  """
-  teamId: ID!
-
-  """
-  The timestamp the token was updated at
-  """
-  updatedAt: DateTime!
-
-  """
-  The user that the access token is attached to
-  """
-  userId: ID!
-
-  """
-  A list of projects accessible by this team member. empty if viewer is not the user
-  """
-  projects: [JiraRemoteProject!]!
-
-  """
-  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
-  """
-  jiraSearchQueries: [JiraSearchQuery!]!
-}
-
 interface TaskIntegration {
   id: ID!
 }
@@ -1011,26 +951,6 @@ type JiraSearchQuery {
   the time the search query was last used. Used for sorting
   """
   lastUsedAt: DateTime!
-}
-
-"""
-Jira Server integration data for a given team member
-"""
-type JiraServerIntegration {
-  """
-  The OAuth1 Authorization for this team member
-  """
-  auth: TeamMemberIntegrationAuthOAuth1
-
-  """
-  The non-global providers shared with the team or organization
-  """
-  sharedProviders: [IntegrationProviderOAuth1!]!
-
-  """
-  A list of projects accessible by this team member. empty if viewer is not the user
-  """
-  projects: [JiraServerRemoteProject!]!
 }
 
 """
@@ -1146,101 +1066,6 @@ type JiraServerRemoteProject implements RepoIntegration {
 }
 
 """
-OAuth token for a team member
-"""
-type GitHubIntegration {
-  """
-  composite key
-  """
-  id: ID!
-
-  """
-  The access token to github. good forever
-  """
-  accessToken: ID
-
-  """
-  The timestamp the provider was created
-  """
-  createdAt: DateTime!
-
-  """
-  true if an access token exists, else false
-  """
-  isActive: Boolean!
-
-  """
-  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
-  """
-  githubSearchQueries: [GitHubSearchQuery!]!
-
-  """
-  *The GitHub login used for queries
-  """
-  login: ID!
-
-  """
-  The comma-separated list of scopes requested from GitHub
-  """
-  scope: String!
-
-  """
-  *The team that the token is linked to
-  """
-  teamId: ID!
-
-  """
-  The timestamp the token was updated at
-  """
-  updatedAt: DateTime!
-
-  """
-  The user that the access token is attached to
-  """
-  userId: ID!
-}
-
-"""
-A GitHub search query including all filters selected when the query was executed
-"""
-type GitHubSearchQuery {
-  """
-  shortid
-  """
-  id: ID!
-
-  """
-  The query string in GitHub format, including repository filters. e.g. is:issue is:open
-  """
-  queryString: String!
-
-  """
-  the time the search query was last used. Used for sorting
-  """
-  lastUsedAt: DateTime!
-}
-
-"""
-Gitlab integration data for a given team member
-"""
-type GitLabIntegration {
-  """
-  The OAuth2 Authorization for this team member
-  """
-  auth: TeamMemberIntegrationAuthOAuth2
-
-  """
-  The cloud provider the team member may choose to integrate with. Nullable based on env vars
-  """
-  cloudProvider: IntegrationProviderOAuth2
-
-  """
-  The non-global providers shared with the team or organization
-  """
-  sharedProviders: [IntegrationProviderOAuth2!]!
-}
-
-"""
 An integration token that connects via OAuth2
 """
 type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
@@ -1296,33 +1121,6 @@ type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
 }
 
 """
-Integration Auth and shared providers available to the team member
-"""
-type MattermostIntegration {
-  """
-  The OAuth2 Authorization for this team member
-  """
-  auth: TeamMemberIntegrationAuthWebhook
-
-  """
-  The non-global providers shared with the team or organization
-  """
-  sharedProviders: [IntegrationProviderWebhook!]!
-}
-
-type MSTeamsIntegration {
-  """
-  The OAuth2 Authorization for this team member
-  """
-  auth: TeamMemberIntegrationAuthWebhook
-
-  """
-  The non-global providers shared with the team or organization
-  """
-  sharedProviders: [IntegrationProviderWebhook!]!
-}
-
-"""
 An integration authorization that connects via Webhook auth strategy
 """
 type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
@@ -1365,81 +1163,6 @@ type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
   The provider strategy this token connects to
   """
   provider: IntegrationProviderWebhook!
-}
-
-"""
-OAuth token for a team member
-"""
-type SlackIntegration {
-  """
-  shortid
-  """
-  id: ID!
-
-  """
-  true if the auth is updated & ready to use for all features, else false
-  """
-  isActive: Boolean!
-
-  """
-  the parabol bot user id
-  """
-  botUserId: ID
-
-  """
-  the parabol bot access token, used as primary communication
-  """
-  botAccessToken: ID
-
-  """
-  The timestamp the provider was created
-  """
-  createdAt: DateTime!
-
-  """
-  The default channel to assign to new team notifications
-  """
-  defaultTeamChannelId: String!
-
-  """
-  The id of the team in slack
-  """
-  slackTeamId: ID
-
-  """
-  The name of the team in slack
-  """
-  slackTeamName: String
-
-  """
-  The userId in slack
-  """
-  slackUserId: ID!
-
-  """
-  The name of the user in slack
-  """
-  slackUserName: String!
-
-  """
-  *The team that the token is linked to
-  """
-  teamId: ID!
-
-  """
-  The timestamp the token was updated at
-  """
-  updatedAt: DateTime!
-
-  """
-  The id of the user that integrated Slack
-  """
-  userId: ID!
-
-  """
-  A list of events and the slack channels they get posted to
-  """
-  notifications: [SlackNotification!]!
 }
 
 """

@@ -51,7 +51,7 @@ const TeamMember: TeamMemberResolvers = {
       }
     }
     const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(teamId)
-    if (!prevUsedRepoIntegrations) return []
+    if (!prevUsedRepoIntegrations) return {hasMore: false, items: []}
     if (prevUsedRepoIntegrations.length > first) {
       return {hasMore: true, items: prevUsedRepoIntegrations.slice(0, first)}
     } else {
