@@ -23,6 +23,7 @@ export async function up() {
     .table('QueryMap')
     .filter((row) => row('createdAt').default(null).ne(null))
     .run()
+  if (queries.length === 0) return
   await pg.insertInto('QueryMap').values(queries).execute()
 }
 
