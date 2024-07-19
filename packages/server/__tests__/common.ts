@@ -49,14 +49,18 @@ const persistFunction = (text: string) => {
 }
 
 const persistQuery = async (query: string) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const id = persistFunction(query.trim())
   const record = {
     id,
     query,
     createdAt: new Date()
   }
-  await r.table('QueryMap').insert(record, {conflict: 'replace'}).run()
+  await pg
+    .insertInto('QueryMap')
+    .values(record)
+    .onConflict((oc) => oc.doNothing())
+    .execute()
   return id
 }
 
