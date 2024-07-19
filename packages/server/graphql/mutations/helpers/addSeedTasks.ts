@@ -3,7 +3,6 @@ import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntity
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import {TaskStatusEnum} from '../../../database/types/Task'
 import generateUID from '../../../generateUID'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
@@ -52,21 +51,5 @@ export default async (userId: string, teamId: string) => {
     updatedAt: now
   }))
 
-  return r
-    .table('Task')
-    .insert(seedTasks, {returnChanges: true})
-    .do((result: RValue) => {
-      return r.table('TaskHistory').insert(
-        result('changes').map((change: RValue) => ({
-          id: generateUID(),
-          content: change('new_val')('content'),
-          taskId: change('new_val')('id'),
-          status: change('new_val')('status'),
-          teamId: change('new_val')('teamId'),
-          userId: change('new_val')('userId'),
-          updatedAt: change('new_val')('updatedAt')
-        }))
-      )
-    })
-    .run()
+  return r.table('Task').insert(seedTasks).run()
 }

@@ -40,13 +40,7 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const subscribedUserIds = teamMembers.map(({userId}) => userId)
     await r({
-      task: r.table('Task').get(taskId).delete(),
-      taskHistory: r
-        .table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {
-          index: 'taskIdUpdatedAt'
-        })
-        .delete()
+      task: r.table('Task').get(taskId).delete()
     }).run()
     const {tags, userId: taskUserId} = task
 
