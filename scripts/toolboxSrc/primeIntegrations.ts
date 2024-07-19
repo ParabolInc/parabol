@@ -44,9 +44,7 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
 
 const primeIntegrations = async () => {
   console.log('⛓️ Prime Integrationgs Started')
-  const pg = getPg()
   await upsertGlobalIntegrationProvidersFromEnv()
-  await pg.end()
   console.log('⛓️ Prime Integrations Complete')
 }
 

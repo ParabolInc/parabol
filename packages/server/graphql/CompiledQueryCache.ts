@@ -1,7 +1,7 @@
 import tracer from 'dd-trace'
 import {GraphQLSchema, parse} from 'graphql'
 import {CompiledQuery} from 'graphql-jit'
-import getRethink from '../database/rethinkDriver'
+import getKysely from '../postgres/getKysely'
 import {MutationResolvers, QueryResolvers, Resolver} from './public/resolverTypes'
 import {tracedCompileQuery} from './traceGraphQL'
 
@@ -42,8 +42,13 @@ export default class CompiledQueryCache {
   async fromID(docId: string, schema: GraphQLSchema) {
     const compiledQuery = this.store[docId]
     if (compiledQuery) return compiledQuery
-    const r = await getRethink()
-    let queryString = await r.table('QueryMap').get(docId)('query').default(null).run()
+    const pg = getKysely()
+    const queryStringRes = await pg
+      .selectFrom('QueryMap')
+      .select('query')
+      .where('id', '=', docId)
+      .executeTakeFirst()
+    let queryString = queryStringRes?.query
     if (!queryString && !__PRODUCTION__) {
       // try/catch block required for building the toolbox
       try {

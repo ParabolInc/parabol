@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import dotenvExpand from 'dotenv-expand'
+import getKysely from 'parabol-server/postgres/getKysely'
 import path from 'path'
-import getRethink from '../../packages/server/database/rethinkDriver'
 import queryMap from '../../queryMap.json'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
@@ -21,13 +21,9 @@ const storePersistedQueries = async () => {
     createdAt: now
   }))
 
-  const r = await getRethink()
-  const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
-  // without this sleep RethinkDB closes the connection before the query completes. It doesn't make sense!
-  await new Promise((resolve) => setTimeout(resolve, 50))
-  await r.getPoolMaster()?.drain()
-
-  console.log(`🔗 QueryMap Persistence Complete: ${res.inserted} records added`)
+  const pg = getKysely()
+  const res = await pg.insertInto('QueryMap').values(records).onConflict((oc) => oc.doNothing()).returning('id').execute()
+  console.log(`🔗 QueryMap Persistence Complete: ${res.length} records added`)
 }
 
 const preDeploy = async () => {
@@ -41,6 +37,7 @@ const preDeploy = async () => {
 
   // The we can prime the DB & CDN
   await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])
+  await getKysely().destroy()
   console.log(`🚀 Predeploy Complete`)
   process.exit()
 }
