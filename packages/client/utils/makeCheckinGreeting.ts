@@ -76,8 +76,8 @@ const greetings = [
     language: 'Arabic'
   },
   {
-    content: 'Filipino',
-    language: 'Kumusta'
+    content: 'Kumusta',
+    language: 'Filipino'
   },
   {
     content: 'Pryvit',
