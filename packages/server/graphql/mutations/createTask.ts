@@ -7,7 +7,6 @@ import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task, {TaskServiceEnum} from '../../database/types/Task'
-import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -218,20 +217,10 @@ export default {
       threadParentId,
       userId
     })
-    const {id: taskId, updatedAt} = task
-    const history = {
-      id: generateUID(),
-      content,
-      taskId,
-      status,
-      teamId,
-      userId,
-      updatedAt
-    }
+    const {id: taskId} = task
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     await r({
-      task: r.table('Task').insert(task),
-      history: r.table('TaskHistory').insert(history)
+      task: r.table('Task').insert(task)
     }).run()
 
     handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {

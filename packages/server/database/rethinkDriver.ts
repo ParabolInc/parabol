@@ -156,10 +156,6 @@ export type RethinkSchema = {
       | 'userId'
       | 'integrationHash'
   }
-  TaskHistory: {
-    type: any
-    index: 'taskIdUpdatedAt' | 'teamMemberId'
-  }
   TeamInvitation: {
     type: TeamInvitation
     index: 'email' | 'teamId' | 'token'
