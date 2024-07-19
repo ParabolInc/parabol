@@ -22,17 +22,6 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
   return Array.isArray(tms) && tms.includes(teamId)
 }
 
-// export const isPastOrPresentTeamMember = async (viewerId: string, teamId: string) => {
-//   const r = await getRethink()
-//   return r
-//     .table('TeamMember')
-//     .getAll(teamId, {index: 'teamId'})
-//     .filter({userId: viewerId})
-//     .count()
-//     .ge(1)
-//     .run()
-// }
-
 export const isTeamLead = async (userId: string, teamId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const teamMemberId = toTeamMemberId(teamId, userId)

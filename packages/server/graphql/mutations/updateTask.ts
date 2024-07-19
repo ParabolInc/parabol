@@ -6,7 +6,6 @@ import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
 import Task, {AreaEnum as TAreaEnum, TaskStatusEnum} from '../../database/types/Task'
-import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -120,20 +119,14 @@ export default {
           )
         })
     }
-    const {newTask, teamMembers} = await r({
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const {newTask} = await r({
       newTask: r
         .table('Task')
         .get(taskId)
         .update(nextTask, {returnChanges: true})('changes')(0)('new_val')
         .default(null) as unknown as Task,
-      history: taskHistory,
-      teamMembers: r
-        .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({
-          isNotRemoved: true
-        })
-        .coerceTo('array') as unknown as TeamMember[]
+      history: taskHistory
     }).run()
     // TODO: get users in the same location
     const usersToIgnore = await getUsersToIgnore(viewerId, teamId)

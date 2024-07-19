@@ -1,22 +1,18 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
 import TeamMember from '../database/types/TeamMember'
+import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import IUser from '../postgres/types/IUser'
 
-const insertNewTeamMember = async (user: IUser, teamId: string) => {
+const insertNewTeamMember = async (user: IUser, teamId: string, dataLoader: DataLoaderInstance) => {
   const r = await getRethink()
   const now = new Date()
   const {id: userId} = user
   const teamMemberId = toTeamMemberId(teamId, userId)
-  const [teamMemberCount, existingTeamMember] = await Promise.all([
-    r
-      .table('TeamMember')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isNotRemoved: true})
-      .count()
-      .run(),
-    r.table('TeamMember').get(teamMemberId).run()
-  ])
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  const existingTeamMember = teamMembers.find((tm) => tm.userId === userId)
+  const teamMemberCount = teamMembers.length
+
   if (!user) {
     throw new Error('User does not exist')
   }
@@ -24,6 +20,7 @@ const insertNewTeamMember = async (user: IUser, teamId: string) => {
     existingTeamMember.isNotRemoved = true
     existingTeamMember.updatedAt = now
     await r.table('TeamMember').get(teamMemberId).replace(existingTeamMember).run()
+    dataLoader.clearAll('teamMembers')
     return existingTeamMember
   }
 
@@ -38,6 +35,7 @@ const insertNewTeamMember = async (user: IUser, teamId: string) => {
     isLead,
     openDrawer: 'manageTeam'
   })
+
   await r.table('TeamMember').insert(teamMember).run()
   return teamMember
 }
