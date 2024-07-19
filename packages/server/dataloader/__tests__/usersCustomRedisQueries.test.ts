@@ -5,10 +5,7 @@ import isValid from '../../graphql/isValid'
 import getPg from '../../postgres/getPg'
 
 afterAll(async () => {
-  const pg = getPg()
   const dataloader = getDataLoader()
-
-  await pg.end()
   dataloader.dispose(true)
   // TODO shutdown redis to properly end test
 })

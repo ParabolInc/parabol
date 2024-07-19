@@ -118,10 +118,6 @@ export type RethinkSchema = {
     type: PushInvitation
     index: 'userId'
   }
-  QueryMap: {
-    type: any
-    index: ''
-  }
   MeetingTemplate: {
     type: MeetingTemplate
     index: 'teamId' | 'orgId'
@@ -154,10 +150,6 @@ export type RethinkSchema = {
       | 'discussionId'
       | 'userId'
       | 'integrationHash'
-  }
-  TaskHistory: {
-    type: any
-    index: 'taskIdUpdatedAt' | 'teamMemberId'
   }
   TeamInvitation: {
     type: TeamInvitation
