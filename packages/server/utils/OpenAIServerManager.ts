@@ -354,7 +354,7 @@ class OpenAIServerManager {
     You should describe the situation in two sections with exactly 3 bullet points each.
     The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
     The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    When citing the quote, include the meetingId in the format of ${meetingURL}[meetingId].
+    When citing the quote, include the meetingId in the format of ${meetingURL}[meetingId] or if the meeting summary already includes a link, use that link.
     For each topic, mention how many votes it has.
     Be sure that each author is only mentioned once.
     Return the output as a JSON object with the following structure:

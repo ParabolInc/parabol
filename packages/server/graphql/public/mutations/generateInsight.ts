@@ -1,3 +1,4 @@
+import fs from 'fs'
 import yaml from 'js-yaml'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
@@ -52,6 +53,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const yamlData = yaml.dump(meetingsContent, {
     noCompatMode: true
   })
+  fs.writeFileSync('summaryMeetingContent.yaml', yamlData, 'utf8')
 
   const openAI = new OpenAIServerManager()
   const rawInsight = await openAI.generateInsight(yamlData)
