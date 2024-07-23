@@ -22,6 +22,11 @@ export const compareRealNumber = (rVal: unknown, pgVal: unknown) => {
   return answer
 }
 
+export const compareRValUndefinedAs =
+  (as: string | number | boolean | null | undefined) => (rVal: unknown, pgVal: unknown) => {
+    const normalizedRVal = rVal === undefined ? as : rVal
+    return defaultEqFn(normalizedRVal, pgVal)
+  }
 export const compareRValUndefinedAsNull = (rVal: unknown, pgVal: unknown) => {
   const normalizedRVal = rVal === undefined ? null : rVal
   return defaultEqFn(normalizedRVal, pgVal)
