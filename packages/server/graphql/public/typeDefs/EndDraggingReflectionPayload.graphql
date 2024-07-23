@@ -1,0 +1,39 @@
+type EndDraggingReflectionPayload {
+  error: StandardMutationError
+  dragId: ID
+
+  """
+  The drag as sent from the team member
+  """
+  remoteDrag: RemoteReflectionDrag
+
+  """
+  the type of item the reflection was dropped on
+  """
+  dropTargetType: DragReflectionDropTargetTypeEnum
+
+  """
+  The ID that the dragged item was dropped on, if dropTargetType is not specific enough
+  """
+  dropTargetId: ID
+  meeting: RetrospectiveMeeting
+  meetingId: ID
+  reflection: RetroReflection
+  reflectionGroupId: ID
+  reflectionId: ID
+
+  """
+  foreign key to get user
+  """
+  userId: ID
+
+  """
+  The group encapsulating the new reflection. A new one was created if one was not provided.
+  """
+  reflectionGroup: RetroReflectionGroup
+
+  """
+  The old group the reflection was in
+  """
+  oldReflectionGroup: RetroReflectionGroup
+}

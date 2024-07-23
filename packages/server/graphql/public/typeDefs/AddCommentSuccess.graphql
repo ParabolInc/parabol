@@ -1,0 +1,11 @@
+type AddCommentSuccess {
+  """
+  the comment just created
+  """
+  comment: Comment!
+
+  """
+  The id of the meeting where the comment was added
+  """
+  meetingId: ID!
+}

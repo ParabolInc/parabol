@@ -1,0 +1,6 @@
+type RenameMeetingSuccess {
+  """
+  the renamed meeting
+  """
+  meeting: NewMeeting!
+}

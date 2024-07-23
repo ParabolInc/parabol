@@ -1,0 +1,4 @@
+"""
+Return object for SetDefaultSlackChannelPayload
+"""
+union SetDefaultSlackChannelPayload = ErrorPayload | SetDefaultSlackChannelSuccess

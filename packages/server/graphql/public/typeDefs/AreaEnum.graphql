@@ -1,0 +1,8 @@
+"""
+The part of the site that is calling the mutation
+"""
+enum AreaEnum {
+  meeting
+  teamDash
+  userDash
+}

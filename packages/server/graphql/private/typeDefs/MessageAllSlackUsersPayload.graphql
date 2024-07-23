@@ -1,0 +1,4 @@
+"""
+Return object for MessageAllSlackUsersPayload
+"""
+union MessageAllSlackUsersPayload = ErrorPayload | MessageAllSlackUsersSuccess

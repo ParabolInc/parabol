@@ -1,0 +1,31 @@
+"""
+A notification alerting the user that a team they were on is now archived
+"""
+type NotifyTeamArchived implements Notification {
+  """
+  the user that archived the team
+  """
+  archivor: User!
+  team: Team!
+
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  *The userId that should see this notification
+  """
+  userId: ID!
+}

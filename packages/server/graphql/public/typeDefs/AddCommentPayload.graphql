@@ -1,0 +1,4 @@
+"""
+Return object for AddCommentPayload
+"""
+union AddCommentPayload = ErrorPayload | AddCommentSuccess

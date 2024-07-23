@@ -1,0 +1,90 @@
+"""
+The retro-specific meeting settings
+"""
+type RetrospectiveMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """
+  The type of meeting these settings apply to
+  """
+  meetingType: MeetingTypeEnum!
+
+  """
+  The broad phase types that will be addressed during the meeting
+  """
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """
+  FK
+  """
+  teamId: ID!
+
+  """
+  The team these settings belong to
+  """
+  team: Team!
+
+  """
+  The total number of votes each team member receives for the voting phase
+  """
+  totalVotes: Int!
+
+  """
+  The maximum number of votes a team member can vote for a single reflection group
+  """
+  maxVotesPerGroup: Int!
+
+  """
+  Disables anonymity of reflections
+  """
+  disableAnonymity: Boolean!
+
+  """
+  FK. The template that will be used to start the retrospective
+  """
+  selectedTemplateId: ID!
+
+  """
+  The template that will be used to start the retrospective
+  """
+  selectedTemplate: ReflectTemplate!
+
+  """
+  The list of templates used to start a retrospective
+  """
+  reflectTemplates: [ReflectTemplate!]!
+
+  """
+  The list of templates used to start a retrospective
+  """
+  teamTemplates: [ReflectTemplate!]!
+
+  """
+  The list of templates shared across the organization to start a retrospective
+  """
+  organizationTemplates(
+    first: Int!
+
+    """
+    The cursor, which is the templateId
+    """
+    after: ID
+  ): ReflectTemplateConnection!
+
+  """
+  The list of templates shared across the organization to start a retrospective
+  """
+  publicTemplates(
+    first: Int!
+
+    """
+    The cursor, which is the templateId
+    """
+    after: ID
+  ): ReflectTemplateConnection!
+
+  """
+  The meeting URL that we will transcribe; stored in settings until the meeting starts
+  """
+  videoMeetingURL: String
+}

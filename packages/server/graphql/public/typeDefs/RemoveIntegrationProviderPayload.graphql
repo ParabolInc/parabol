@@ -1,0 +1,4 @@
+"""
+Return object for RemoveIntegrationProviderPayload
+"""
+union RemoveIntegrationProviderPayload = ErrorPayload | RemoveIntegrationProviderSuccess

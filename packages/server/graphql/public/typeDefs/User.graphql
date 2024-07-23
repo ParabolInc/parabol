@@ -1,9 +1,3 @@
-enum CanAccessEntity {
-  Team
-  Meeting
-  Organization
-}
-
 """
 The user account profile
 """
@@ -12,6 +6,11 @@ type User {
   The userId provided by us
   """
   id: ID!
+
+  """
+  The optional pseudoId for the user
+  """
+  pseudoId: String
   archivedTasks(
     first: Int!
 
@@ -33,39 +32,14 @@ type User {
   ): Int
 
   """
-  The assumed company this organizaiton belongs to
-  """
-  company: Company
-
-  """
   The timestamp the user was created
   """
   createdAt: DateTime!
 
   """
-  The domains the user is a lead of
-  """
-  domains: [Company!]!
-
-  """
-  Domain join request
-  """
-  domainJoinRequest(requestId: ID!): DomainJoinRequest
-
-  """
   The user email
   """
   email: Email!
-
-  """
-  The user's favorite meeting templates
-  """
-  favoriteTemplates: [MeetingTemplate!]!
-
-  """
-  Any super power given to the user via a super user
-  """
-  featureFlags: UserFeatureFlags!
 
   """
   An array of objects with information about the user's identities.
@@ -77,12 +51,6 @@ type User {
   true if the user is not currently being billed for service. removed on every websocket handshake
   """
   inactive: Boolean
-  invoiceDetails(
-    """
-    The id of the invoice
-    """
-    invoiceId: ID!
-  ): Invoice
   invoices(
     first: Int!
 
@@ -110,7 +78,12 @@ type User {
   """
   true if the user is the first to sign up from their domain, else false
   """
-  isPatientZero: Boolean!
+  isPatient0: Boolean!
+
+  """
+  true if the user is the first to sign up from their domain, else false
+  """
+  isPatientZero: Boolean! @deprecated(reason: "Use isPatient0 instead")
 
   """
   the reason the user account was removed
@@ -170,6 +143,12 @@ type User {
     the number of timeline events to return
     """
     first: Int!
+
+    """
+    a list of team Ids that you want timeline events for. if null, will return timeline events for all possible active teams
+    """
+    teamIds: [ID!]
+    eventTypes: [TimelineEventEnum!]
   ): TimelineEventConnection!
 
   """
@@ -193,19 +172,9 @@ type User {
   newFeature: NewFeatureBroadcast
 
   """
-  url of user’s profile picture
-  """
-  picture: URL!
-
-  """
   The application-specific name, defaults to email before the tld
   """
   preferredName: String!
-
-  """
-  url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
-  """
-  rasterPicture: URL!
 
   """
   The last day the user connected via websocket or navigated to a common area
@@ -288,6 +257,11 @@ type User {
   overLimitCopy: String
 
   """
+  Whether the user should receive a meeting summary email
+  """
+  sendSummaryEmail: Boolean!
+
+  """
   The reflection groups that are similar to the selected reflection in the Spotlight
   """
   similarReflectionGroups(
@@ -344,21 +318,6 @@ type User {
   ): TaskConnection!
 
   """
-  Check whether the viewer can access a given entity. This can be used to distinguish errors from unauthorized access which requires an invite.
-  """
-  canAccess(
-    """
-    the entity to check
-    """
-    entity: CanAccessEntity!
-
-    """
-    the id of the entity
-    """
-    id: ID!
-  ): Boolean!
-
-  """
   A query for a team
   """
   team(
@@ -408,10 +367,6 @@ type User {
     userId: ID
   ): TeamMember
 
-  tier: TierEnum!
-
-  billingTier: TierEnum!
-
   """
   all the teams the user is a part of that the viewer can see
   """
@@ -429,6 +384,64 @@ type User {
   ): User
 
   """
+  The assumed company this organizaiton belongs to
+  """
+  company: Company
+
+  """
+  The domains the user is a lead of
+  """
+  domains: [Company!]!
+
+  """
+  Domain join request
+  """
+  domainJoinRequest(requestId: ID!): DomainJoinRequest
+
+  """
+  The user's favorite meeting templates
+  """
+  favoriteTemplates: [MeetingTemplate!]!
+
+  """
+  Any super power given to the user via a super user
+  """
+  featureFlags: UserFeatureFlags!
+  invoiceDetails(
+    """
+    The id of the invoice
+    """
+    invoiceId: ID!
+  ): Invoice
+
+  """
+  url of user’s profile picture
+  """
+  picture: URL!
+
+  """
+  url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
+  """
+  rasterPicture: URL!
+
+  """
+  Check whether the viewer can access a given entity. This can be used to distinguish errors from unauthorized access which requires an invite.
+  """
+  canAccess(
+    """
+    the entity to check
+    """
+    entity: CanAccessEntity!
+
+    """
+    the id of the entity
+    """
+    id: ID!
+  ): Boolean!
+  tier: TierEnum!
+  billingTier: TierEnum!
+
+  """
   A connection of activities available to the user
   """
   availableTemplates(
@@ -438,6 +451,7 @@ type User {
     The cursor, which is the templateId
     """
     after: ID
+
     """
     An optional argument to filter by template type
     """
@@ -472,15 +486,18 @@ type User {
     URL of a blob of XML from the IdP describing how to handle authentication
     """
     metadataURL: String!
+
     """
     The name of the company, used as a slug in signon URLs
     """
     domain: String!
   ): ParseSAMLMetadataPayload!
+
   """
   The number of free custom retro templates remaining
   """
   freeCustomRetroTemplatesRemaining: Int!
+
   """
   The number of free custom poker templates remaining
   """

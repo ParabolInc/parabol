@@ -1,0 +1,13 @@
+type PayLaterPayload {
+  error: StandardMutationError
+
+  """
+  the ids of the meetings that were showing conversion modals
+  """
+  meetingId: ID
+
+  """
+  the meetings that were showing conversion modals
+  """
+  meeting: NewMeeting
+}

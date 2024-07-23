@@ -1,0 +1,160 @@
+"""
+The stage where the team estimates & discusses a single task
+"""
+type EstimateStage implements NewMeetingStage & DiscussionThreadStage {
+  """
+  stageId, shortid
+  """
+  id: ID!
+
+  """
+  The datetime the stage was completed
+  """
+  endAt: DateTime
+
+  """
+  foreign key. try using meeting
+  """
+  meetingId: ID!
+
+  """
+  The meeting this stage belongs to
+  """
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """
+  true if any meeting participant can navigate to this stage
+  """
+  isNavigable: Boolean!
+
+  """
+  true if the facilitator can navigate to this stage
+  """
+  isNavigableByFacilitator: Boolean!
+
+  """
+  The phase this stage belongs to
+  """
+  phase: NewMeetingPhase
+
+  """
+  The type of the phase
+  """
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """
+  The datetime the stage was started
+  """
+  startAt: DateTime
+
+  """
+  Number of times the facilitator has visited this stage
+  """
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """
+  true if the viewer is ready to advance, else false
+  """
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """
+  The ID to find the discussion that goes in the stage
+  """
+  discussionId: ID!
+
+  """
+  The discussion about the stage
+  """
+  discussion: Discussion!
+
+  """
+  The id of the user that added this stage.
+  """
+  creatorUserId: ID!
+
+  """
+  The ID that points to the issue that exists in parabol
+  """
+  taskId: ID!
+
+  """
+  The field name used by the service for this dimension
+  """
+  serviceField: ServiceField!
+
+  """
+  The immutable index of the dimensionRef tied to this stage
+  """
+  dimensionRefIdx: Int!
+
+  """
+  The immutable dimension linked to this stage
+  """
+  dimensionRef: TemplateDimensionRef!
+
+  """
+  the final score, as defined by the facilitator
+  """
+  finalScore: String
+
+  """
+  the userIds of the team members hovering the deck
+  """
+  hoveringUserIds: [ID!]!
+
+  """
+  the users of the team members hovering the deck
+  """
+  hoveringUsers: [User!]!
+
+  """
+  all the estimates, 1 per user
+  """
+  scores: [EstimateUserScore!]!
+
+  """
+  The task referenced in the stage, as it exists in Parabol. null if the task was deleted
+  """
+  task: Task
+
+  """
+  true when the participants are still voting and results are hidden. false when votes are revealed
+  """
+  isVoting: Boolean!
+}

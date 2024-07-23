@@ -1,0 +1,8 @@
+type UpdateMeetingPromptSuccess {
+  meetingId: ID!
+
+  """
+  the updated meeting
+  """
+  meeting: TeamPromptMeeting!
+}

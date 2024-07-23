@@ -1,0 +1,4 @@
+"""
+Return value for acceptRequestToJoinDomain, which could be an error
+"""
+union AcceptRequestToJoinDomainPayload = ErrorPayload | AcceptRequestToJoinDomainSuccess

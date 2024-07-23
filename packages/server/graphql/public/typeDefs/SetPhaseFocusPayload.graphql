@@ -1,0 +1,5 @@
+type SetPhaseFocusPayload {
+  error: StandardMutationError
+  meeting: RetrospectiveMeeting!
+  reflectPhase: ReflectPhase!
+}

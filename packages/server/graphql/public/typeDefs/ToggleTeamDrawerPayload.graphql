@@ -1,0 +1,4 @@
+"""
+Return object for ToggleTeamDrawerPayload
+"""
+union ToggleTeamDrawerPayload = ErrorPayload | ToggleTeamDrawerSuccess

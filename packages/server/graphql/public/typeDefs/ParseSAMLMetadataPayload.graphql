@@ -1,0 +1,1 @@
+union ParseSAMLMetadataPayload = ErrorPayload | ParseSAMLMetadataSuccess

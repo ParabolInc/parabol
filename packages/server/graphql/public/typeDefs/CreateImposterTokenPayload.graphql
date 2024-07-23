@@ -1,0 +1,13 @@
+type CreateImposterTokenPayload {
+  error: StandardMutationError
+
+  """
+  The new JWT
+  """
+  authToken: ID
+
+  """
+  The user you have assumed
+  """
+  user: User
+}
