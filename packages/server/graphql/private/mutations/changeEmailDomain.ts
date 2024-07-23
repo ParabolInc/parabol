@@ -3,7 +3,6 @@ import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
-import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
 import {MutationResolvers} from '../../private/resolverTypes'
 
 const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
@@ -47,18 +46,41 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   const pg = getKysely()
 
   const [updatedUserRes] = await Promise.all([
-    updateUserEmailDomainsToPG(normalizedNewDomain, userIdsToUpdate),
     pg
-      .updateTable('OrganizationApprovedDomain')
+      .with('TeamMembersUpdate', (qc) =>
+        qc
+          .updateTable('TeamMember')
+          .set({
+            email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
+          })
+          .where('userId', 'in', userIdsToUpdate)
+      )
+      .with('OrganizationApprovedDomainUpdate', (qc) =>
+        qc
+          .updateTable('OrganizationApprovedDomain')
+          .set({
+            domain: sql`REPLACE("domain", ${normalizedOldDomain}, ${normalizedNewDomain})`
+          })
+          .where('domain', 'like', normalizedOldDomain)
+      )
+      .with('OrganizationUpdate', (qc) =>
+        qc
+          .updateTable('Organization')
+          .set({activeDomain: normalizedNewDomain})
+          .where('activeDomain', '=', normalizedOldDomain)
+      )
+      .with('SAMLUpdate', (qc) =>
+        qc
+          .updateTable('SAMLDomain')
+          .set({domain: normalizedNewDomain})
+          .where('domain', '=', normalizedOldDomain)
+      )
+      .updateTable('User')
       .set({
-        domain: sql`REPLACE("domain", ${normalizedOldDomain}, ${normalizedNewDomain})`
+        email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
       })
-      .where('domain', 'like', normalizedOldDomain)
-      .execute(),
-    pg
-      .updateTable('Organization')
-      .set({activeDomain: normalizedNewDomain})
-      .where('activeDomain', '=', normalizedOldDomain)
+      .where('id', 'in', userIdsToUpdate)
+      .returning('id')
       .execute(),
     r
       .table('TeamMember')
@@ -67,11 +89,6 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
         email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)
       }))
       .run(),
-    pg
-      .updateTable('SAMLDomain')
-      .set({domain: normalizedNewDomain})
-      .where('domain', '=', normalizedOldDomain)
-      .execute(),
     r
       .table('Invoice')
       .filter((row: RDatum) =>

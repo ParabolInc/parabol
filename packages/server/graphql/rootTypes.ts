@@ -4,7 +4,6 @@ import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
 import AuthIdentityMicrosoft from './types/AuthIdentityMicrosoft'
-import AzureDevOpsWorkItem from './types/AzureDevOpsWorkItem'
 import CheckInPhase from './types/CheckInPhase'
 import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
@@ -71,7 +70,6 @@ const rootTypes = [
   TeamPromptMeetingMember,
   TeamPromptMeetingSettings,
   Comment,
-  AzureDevOpsWorkItem,
   JiraDimensionField,
   RenamePokerTemplatePayload,
   UserTiersCount

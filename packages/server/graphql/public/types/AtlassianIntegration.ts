@@ -1,5 +1,8 @@
-import {downloadAndCacheImages, updateJiraImageUrls} from '../../../utils/atlassian/jiraImages'
+import ms from 'ms'
+import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
+import updateJiraSearchQueries from '../../../postgres/queries/updateJiraSearchQueries'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
+import {downloadAndCacheImages, updateJiraImageUrls} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {AtlassianIntegrationResolvers} from '../resolverTypes'
@@ -80,6 +83,35 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
         hasPreviousPage: false
       }
     }
+  },
+  id: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId),
+
+  isActive: ({accessToken}) => !!accessToken,
+
+  accessToken: async ({accessToken, userId}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    return viewerId === userId ? accessToken : null
+  },
+
+  projects: ({teamId, userId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId) return []
+    return dataLoader.get('allJiraProjects').load({teamId, userId})
+  },
+
+  jiraSearchQueries: async ({teamId, userId, jiraSearchQueries}) => {
+    const expirationThresh = ms('60d')
+    const thresh = new Date(Date.now() - expirationThresh)
+    const searchQueries = jiraSearchQueries || []
+    const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
+    if (unexpiredQueries.length < searchQueries.length) {
+      await updateJiraSearchQueries({
+        jiraSearchQueries: searchQueries,
+        teamId,
+        userId
+      })
+    }
+    return unexpiredQueries
   }
 }
 

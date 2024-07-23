@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import getKysely from '../postgres/getKysely'
-import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 
 // Only does something if the organization is empty & not paid
 // safeArchiveTeam & downgradeToStarter should be called before calling this
@@ -11,7 +10,7 @@ const safeArchiveEmptyStarterOrganization = async (
   dataLoader: DataLoaderInstance
 ) => {
   const pg = getKysely()
-  const orgTeams = await getTeamsByOrgIds([orgId])
+  const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamCountRemainingOnOldOrg = orgTeams.length
 
   if (teamCountRemainingOnOldOrg > 0) return
@@ -23,6 +22,7 @@ const safeArchiveEmptyStarterOrganization = async (
     .where('orgId', '=', orgId)
     .where('removedAt', 'is', null)
     .execute()
+  dataLoader.clearAll('organizationUsers')
 }
 
 export default safeArchiveEmptyStarterOrganization

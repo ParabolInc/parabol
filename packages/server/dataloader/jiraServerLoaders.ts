@@ -55,6 +55,8 @@ type TeamUserKey = {
 export type JiraServerProject = JiraServerRestProject & {
   service: 'jiraServer'
   providerId: number
+  userId: string
+  teamId: string
 }
 
 export const jiraServerIssue = (parent: RootDataLoader) => {
@@ -123,7 +125,9 @@ export const allJiraServerProjects = (parent: RootDataLoader) => {
           .map((project) => ({
             ...project,
             service: 'jiraServer' as const,
-            providerId: provider.id
+            providerId: provider.id,
+            userId,
+            teamId
           }))
       })
     )
