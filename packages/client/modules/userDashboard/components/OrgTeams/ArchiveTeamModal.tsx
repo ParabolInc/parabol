@@ -4,17 +4,20 @@ import DialogTitle from '../../../../components/DialogTitle'
 import FlatButton from '../../../../components/FlatButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import BatchArchiveTasksMutation from '../../../../mutations/BatchArchiveTasksMutation'
+import useRouter from '../../../../hooks/useRouter'
+import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
 
 type Props = {
-  taskIds: string[]
+  teamId: string
+  teamName: string
   closeModal: () => void
 }
 
-const ArchiveAllDoneTasksModal = (props: Props) => {
-  const {closeModal, taskIds} = props
+const ArchiveTeamModal = (props: Props) => {
+  const {teamId, teamName, closeModal} = props
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
+  const {history} = useRouter()
 
   const handleClose = () => {
     closeModal()
@@ -23,18 +26,18 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
   const onSubmit = async () => {
     if (submitting) return
     submitMutation()
-    BatchArchiveTasksMutation(atmosphere, {taskIds}, {onCompleted, onError})
+    await ArchiveTeamMutation(atmosphere, {teamId}, {history, onError, onCompleted})
     closeModal()
   }
 
   return (
     <div className='flex h-auto w-auto flex-col items-center rounded-lg bg-white'>
       <div className='title-wrapper flex w-full items-center justify-between pr-6'>
-        <DialogTitle className='px-6 pt-6 pb-4 text-slate-700'>{'Archive all'}</DialogTitle>
+        <DialogTitle className='px-6 pt-6 pb-4 text-slate-700'>{'Archive team'}</DialogTitle>
         <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
       </div>
       <div className='px-6 pb-8 text-base text-slate-700'>
-        This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?
+        Are you sure you want to archive the team "{teamName}"?
       </div>
       <div className='flex w-full justify-end'>
         <FlatButton
@@ -54,4 +57,4 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
   )
 }
 
-export default ArchiveAllDoneTasksModal
+export default ArchiveTeamModal
