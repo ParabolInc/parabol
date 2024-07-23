@@ -39,7 +39,7 @@ const OrgTeamsRow = (props: Props) => {
       <div className='flex flex-1 flex-col py-1'>
         <Link
           to={`teams/${teamId}`}
-          className='text-gray-700 text-lg font-bold hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset'
+          className='text-lg font-bold text-sky-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset'
         >
           {name}
         </Link>
