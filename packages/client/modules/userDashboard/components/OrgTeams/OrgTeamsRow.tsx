@@ -48,8 +48,13 @@ const OrgTeamsRow = (props: Props) => {
               {name}
             </Link>
             {viewerIsLead && (
-              <span className='rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
-                Your team
+              <span className='rounded-full bg-sky-700 px-2 py-0.5 text-xs text-white'>
+                Lead team
+              </span>
+            )}
+            {!viewerIsLead && !isOrgAdmin && (
+              <span className='rounded-full bg-grass-500 px-2 py-0.5 text-xs text-white'>
+                Member team
               </span>
             )}
           </div>
