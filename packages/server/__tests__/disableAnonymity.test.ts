@@ -130,6 +130,10 @@ const addReflection = async (meetingId: string, promptId: string, authToken: str
   return reflection
 }
 
+afterAll(async () => {
+  await closePg()
+})
+
 test('By default all reflections are anonymous', async () => {
   const {userId, authToken} = await signUp()
   const teamId = (await getUserTeams(userId))[0].id
@@ -182,7 +186,6 @@ test('Super user can always read creatorId of a reflection', async () => {
 
   const pg = getPg()
   await pg.query(`UPDATE "User" SET rol='su' WHERE id='${userId}'`)
-  await closePg()
 
   const login = await sendPublic({
     query: `

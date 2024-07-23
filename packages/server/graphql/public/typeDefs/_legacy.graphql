@@ -839,14 +839,6 @@ type TeamMember {
 }
 
 """
-The suggested repos and projects a user can integrate with
-"""
-interface RepoIntegration {
-  id: ID!
-  service: IntegrationProviderServiceEnum!
-}
-
-"""
 The right drawer types available on the team dashboard
 """
 enum TeamDrawer {
@@ -858,37 +850,6 @@ scalar Email
 
 interface TaskIntegration {
   id: ID!
-}
-
-"""
-A project fetched from Jira in real time
-"""
-type JiraRemoteProject implements RepoIntegration {
-  id: ID!
-  service: IntegrationProviderServiceEnum!
-
-  """
-  The parabol teamId this issue was fetched for
-  """
-  teamId: ID!
-
-  """
-  The parabol userId this issue was fetched for
-  """
-  userId: ID!
-  self: ID!
-
-  """
-  The cloud ID that the project lives on. Does not exist on the Jira object!
-  """
-  cloudId: ID!
-  key: String!
-  name: String!
-  avatar: String!
-  avatarUrls: JiraRemoteAvatarUrls!
-  projectCategory: JiraRemoteProjectCategory!
-  simplified: Boolean!
-  style: String!
 }
 
 """
@@ -951,218 +912,6 @@ type JiraSearchQuery {
   the time the search query was last used. Used for sorting
   """
   lastUsedAt: DateTime!
-}
-
-"""
-An integration token that connects via OAuth1
-"""
-type TeamMemberIntegrationAuthOAuth1 implements TeamMemberIntegrationAuth {
-  """
-  The token's unique identifier
-  """
-  id: ID!
-
-  """
-  The team that the token is linked to
-  """
-  teamId: ID!
-
-  """
-  The timestamp the token was created
-  """
-  createdAt: DateTime!
-
-  """
-  The timestamp the token was updated at
-  """
-  updatedAt: DateTime!
-
-  """
-  The GQL GUID of the DB providerId foreign key
-  """
-  providerId: ID!
-
-  """
-  The service this token is associated with, denormalized from the provider
-  """
-  service: IntegrationProviderServiceEnum!
-
-  """
-  true if the token configuration should be used
-  """
-  isActive: Boolean!
-
-  """
-  The provider strategy this token connects to
-  """
-  provider: IntegrationProviderOAuth1!
-}
-
-"""
-The auth credentials for a token, specific to a team member
-"""
-interface TeamMemberIntegrationAuth {
-  """
-  The token's unique identifier
-  """
-  id: ID!
-
-  """
-  The team that the token is linked to
-  """
-  teamId: ID!
-
-  """
-  The timestamp the token was created
-  """
-  createdAt: DateTime!
-
-  """
-  The timestamp the token was updated at
-  """
-  updatedAt: DateTime!
-
-  """
-  The GQL GUID of the DB providerId foreign key
-  """
-  providerId: ID!
-
-  """
-  The service this token is associated with, denormalized from the provider
-  """
-  service: IntegrationProviderServiceEnum!
-
-  """
-  true if the token configuration should be used
-  """
-  isActive: Boolean!
-
-  """
-  The provider to connect to
-  """
-  provider: IntegrationProvider!
-}
-
-"""
-A project fetched from Jira in real time
-"""
-type JiraServerRemoteProject implements RepoIntegration {
-  id: ID!
-  service: IntegrationProviderServiceEnum!
-
-  """
-  The parabol teamId this issue was fetched for
-  """
-  teamId: ID!
-
-  """
-  The parabol userId this issue was fetched for
-  """
-  userId: ID!
-  name: String!
-  avatar: String!
-  avatarUrls: JiraRemoteAvatarUrls!
-  projectCategory: JiraRemoteProjectCategory!
-}
-
-"""
-An integration token that connects via OAuth2
-"""
-type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
-  """
-  The token's unique identifier
-  """
-  id: ID!
-
-  """
-  The team that the token is linked to
-  """
-  teamId: ID!
-
-  """
-  The timestamp the token was created
-  """
-  createdAt: DateTime!
-
-  """
-  The timestamp the token was updated at
-  """
-  updatedAt: DateTime!
-
-  """
-  The GQL GUID of the DB providerId foreign key
-  """
-  providerId: ID!
-
-  """
-  The service this token is associated with, denormalized from the provider
-  """
-  service: IntegrationProviderServiceEnum!
-
-  """
-  true if the token configuration should be used
-  """
-  isActive: Boolean!
-
-  """
-  The provider strategy this token connects to
-  """
-  provider: IntegrationProviderOAuth2!
-
-  """
-  The token used to connect to the provider
-  """
-  accessToken: ID!
-
-  """
-  The scopes allowed on the provider
-  """
-  scopes: String!
-}
-
-"""
-An integration authorization that connects via Webhook auth strategy
-"""
-type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
-  """
-  The token's unique identifier
-  """
-  id: ID!
-
-  """
-  The team that the token is linked to
-  """
-  teamId: ID!
-
-  """
-  The timestamp the token was created
-  """
-  createdAt: DateTime!
-
-  """
-  The timestamp the token was updated at
-  """
-  updatedAt: DateTime!
-
-  """
-  The GQL GUID of the DB providerId foreign key
-  """
-  providerId: ID!
-
-  """
-  The service this token is associated with, denormalized from the provider
-  """
-  service: IntegrationProviderServiceEnum!
-
-  """
-  true if the token configuration should be used
-  """
-  isActive: Boolean!
-
-  """
-  The provider strategy this token connects to
-  """
-  provider: IntegrationProviderWebhook!
 }
 
 """
@@ -5935,29 +5684,6 @@ type Mutation {
   ): CreatePollPayload!
 
   """
-  Add an integration authorization for a specific team member
-  """
-  addTeamMemberIntegrationAuth(
-    providerId: ID!
-    teamId: ID!
-
-    """
-    The OAuth2 code or personal access token. Null for webhook auth
-    """
-    oauthCodeOrPat: ID
-
-    """
-    OAuth1 token verifier
-    """
-    oauthVerifier: ID
-
-    """
-    The URL the OAuth2 token will be sent to. Null for webhook auth
-    """
-    redirectUri: URL
-  ): AddTeamMemberIntegrationAuthPayload!
-
-  """
   Adds a new Integration Provider configuration
   """
   addIntegrationProvider(
@@ -5987,20 +5713,6 @@ type Mutation {
     providerId: ID!
   ): RemoveIntegrationProviderPayload!
 
-  """
-  Remove the integrated auth for a given team member
-  """
-  removeTeamMemberIntegrationAuth(
-    """
-    The Integration Provider service name related to the token
-    """
-    service: IntegrationProviderServiceEnum!
-
-    """
-    The team id related to the token
-    """
-    teamId: ID!
-  ): RemoveTeamMemberIntegrationAuthPayload!
 }
 
 type AddAgendaItemPayload {
@@ -8133,33 +7845,6 @@ input PollOptionInput {
 }
 
 """
-Return object for AddTeamMemberIntegrationAuthPayload
-"""
-union AddTeamMemberIntegrationAuthPayload = ErrorPayload | AddTeamMemberIntegrationAuthSuccess
-
-type AddTeamMemberIntegrationAuthSuccess {
-  """
-  The auth that was just added
-  """
-  integrationAuth: TeamMemberIntegrationAuth!
-
-  """
-  The service this provider is associated with
-  """
-  service: IntegrationProviderServiceEnum!
-
-  """
-  The team member with the updated auth
-  """
-  teamMember: TeamMember!
-
-  """
-  The user who updated TeamMemberIntegrationAuth object
-  """
-  user: User!
-}
-
-"""
 Return object for AddIntegrationProviderPayload
 """
 union AddIntegrationProviderPayload = ErrorPayload | AddIntegrationProviderSuccess
@@ -8325,40 +8010,6 @@ input UpdateIntegrationProviderInput {
   OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
   """
   oAuth2ProviderMetadataInput: IntegrationProviderMetadataInputOAuth2
-}
-
-"""
-Return object for RemoveIntegrationProviderPayload
-"""
-union RemoveIntegrationProviderPayload = ErrorPayload | RemoveIntegrationProviderSuccess
-
-type RemoveIntegrationProviderSuccess {
-  """
-  The team member with the updated auth
-  """
-  teamMember: TeamMember!
-
-  """
-  The user who updated TeamMemberIntegrationAuth object
-  """
-  user: User!
-}
-
-"""
-Return object for RemoveTeamMemberIntegrationAuthPayload
-"""
-union RemoveTeamMemberIntegrationAuthPayload = ErrorPayload | RemoveTeamMemberIntegrationAuthSuccess
-
-type RemoveTeamMemberIntegrationAuthSuccess {
-  """
-  The team member with the updated auth
-  """
-  teamMember: TeamMember!
-
-  """
-  The user who updated TeamMemberIntegrationAuth object
-  """
-  user: User!
 }
 
 type AddReactjiToReflectionSuccess {
