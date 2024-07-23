@@ -35,23 +35,25 @@ const OrgTeamsRow = (props: Props) => {
   const teamMembersCount = teamMembers.length
 
   return (
-    <div className='flex items-center p-4 hover:bg-slate-100'>
-      <div className='flex flex-1 flex-col py-1'>
-        <Link
-          to={`teams/${teamId}`}
-          className='text-lg font-bold text-sky-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset'
-        >
+    <div className='flex items-center justify-between p-4 hover:bg-slate-100'>
+      <div className='flex flex-col'>
+        <Link to={`teams/${teamId}`} className='inline-block text-lg font-bold text-sky-500'>
           {name}
         </Link>
-        <div className='flex items-center justify-between'>
-          <div className='text-gray-600'>
-            {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}
-          </div>
+        <div className='text-gray-600'>
+          {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}
         </div>
       </div>
-      <IconButton onClick={() => onArchiveTeam(teamId)} aria-label='Archive team'>
-        <DeleteOutline />
-      </IconButton>
+      <div className='flex items-center'>
+        <IconButton
+          onClick={() => onArchiveTeam(teamId)}
+          aria-label='Archive team'
+          className='text-tomato-500 hover:text-tomato-600'
+        >
+          <DeleteOutline />
+        </IconButton>
+        <span className='ml-2 text-sm text-slate-600'>Archive Team</span>
+      </div>
     </div>
   )
 }
