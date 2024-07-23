@@ -1,10 +1,7 @@
 import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import getRethink from '../../../database/rethinkDriver'
-import OrganizationUser from '../../../database/types/OrganizationUser'
 import getKysely from '../../../postgres/getKysely'
-import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {Logger} from '../../../utils/Logger'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
@@ -17,16 +14,15 @@ const removeFromOrg = async (
   evictorUserId: string | undefined,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
-  const orgTeams = await getTeamsByOrgIds([orgId])
+  // TODO consider a teamMembersByOrgId dataloader if this pattern pops up more
+  const [orgTeams, allTeamMembers] = await Promise.all([
+    dataLoader.get('teamsByOrgIds').load(orgId),
+    dataLoader.get('teamMembersByUserId').load(userId)
+  ])
   const teamIds = orgTeams.map((team) => team.id)
-  const teamMemberIds = (await r
-    .table('TeamMember')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({userId, isNotRemoved: true})('id')
-    .run()) as string[]
+  const teamMembers = allTeamMembers.filter((teamMember) => teamIds.includes(teamMember.teamId))
+  const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
 
   const perTeamRes = await Promise.all(
     teamMemberIds.map((teamMemberId) => {
@@ -44,26 +40,18 @@ const removeFromOrg = async (
     return arr
   }, [])
 
-  const [_pgOrgUser, organizationUser, user] = await Promise.all([
+  const [organizationUser, user] = await Promise.all([
     pg
       .updateTable('OrganizationUser')
       .set({removedAt: sql`CURRENT_TIMESTAMP`})
       .where('userId', '=', userId)
       .where('orgId', '=', orgId)
       .where('removedAt', 'is', null)
-      .returning('role')
+      .returning(['id', 'role'])
       .executeTakeFirstOrThrow(),
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({orgId, removedAt: null})
-      .nth(0)
-      .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
-      .default(null)
-      .run() as unknown as OrganizationUser,
     dataLoader.get('users').loadNonNull(userId)
   ])
-
+  dataLoader.clearAll('organizationUsers')
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
   if (role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)) {
@@ -83,13 +71,6 @@ const removeFromOrg = async (
           .set({role: 'BILLING_LEADER'})
           .where('id', '=', nextInLine.id)
           .execute()
-        await r
-          .table('OrganizationUser')
-          .get(nextInLine.id)
-          .update({
-            role: 'BILLING_LEADER'
-          })
-          .run()
       } else if (organization.tier !== 'starter') {
         await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, user, dataLoader)
       }

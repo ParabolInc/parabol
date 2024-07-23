@@ -103,6 +103,8 @@ export interface AzureDevOpsWorkItem {
   type: string
   descriptionHTML: string
   service: 'azureDevOps'
+  teamId: string
+  userId: string
 }
 
 export interface AzureUserInfo {
@@ -123,7 +125,7 @@ export interface AzureAccountProject extends TeamProjectReference {
   service: 'azureDevOps'
 }
 
-interface AzureProject extends ProjectRes {
+export interface AzureProject extends ProjectRes {
   userId: string
   teamId: string
   service: 'azureDevOps'

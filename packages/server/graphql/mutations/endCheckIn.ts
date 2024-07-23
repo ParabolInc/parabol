@@ -248,12 +248,9 @@ export default {
     const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
     if (team.isOnboardTeam) {
-      const teamLeadUserId = await r
-        .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isLead: true})
-        .nth(0)('userId')
-        .run()
+      const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+      const teamLeader = teamMembers.find(({isLead}) => isLead)!
+      const {userId: teamLeadUserId} = teamLeader
 
       const removedSuggestedActionId = await removeSuggestedAction(
         teamLeadUserId,

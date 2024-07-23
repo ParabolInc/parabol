@@ -1,0 +1,44 @@
+"""
+The auth credentials for a token, specific to a team member
+"""
+interface TeamMemberIntegrationAuth {
+  """
+  The token's unique identifier
+  """
+  id: ID!
+
+  """
+  The team that the token is linked to
+  """
+  teamId: ID!
+
+  """
+  The timestamp the token was created
+  """
+  createdAt: DateTime!
+
+  """
+  The timestamp the token was updated at
+  """
+  updatedAt: DateTime!
+
+  """
+  The GQL GUID of the DB providerId foreign key
+  """
+  providerId: ID!
+
+  """
+  The service this token is associated with, denormalized from the provider
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  true if the token configuration should be used
+  """
+  isActive: Boolean!
+
+  """
+  The provider to connect to
+  """
+  provider: IntegrationProvider!
+}

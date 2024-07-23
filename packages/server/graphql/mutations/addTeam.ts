@@ -3,7 +3,6 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import generateUID from '../../generateUID'
-import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
@@ -54,7 +53,7 @@ export default {
 
       // VALIDATION
       const [orgTeams, organization, viewer] = await Promise.all([
-        getTeamsByOrgIds([orgId], {isArchived: false}),
+        dataLoader.get('teamsByOrgIds').load(orgId),
         dataLoader.get('organizations').loadNonNull(orgId),
         dataLoader.get('users').loadNonNull(viewerId)
       ])

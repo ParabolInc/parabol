@@ -56,7 +56,7 @@ class OpenAIServerManager {
     """`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
@@ -91,7 +91,7 @@ class OpenAIServerManager {
     """`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
@@ -141,7 +141,7 @@ class OpenAIServerManager {
       .join('\n')}`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
@@ -213,7 +213,7 @@ class OpenAIServerManager {
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo-0125',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',

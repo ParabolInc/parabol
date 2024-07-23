@@ -116,32 +116,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const organizationUsersByOrgId = new RethinkForeignKeyLoaderMaker(
-  'organizationUsers',
-  'orgId',
-  async (orgIds) => {
-    const r = await getRethink()
-    return r
-      .table('OrganizationUser')
-      .getAll(r.args(orgIds), {index: 'orgId'})
-      .filter({removedAt: null})
-      .run()
-  }
-)
-
-export const organizationUsersByUserId = new RethinkForeignKeyLoaderMaker(
-  'organizationUsers',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r
-      .table('OrganizationUser')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .filter({removedAt: null})
-      .run()
-  }
-)
-
 export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
   'templateScales',
   'teamId',

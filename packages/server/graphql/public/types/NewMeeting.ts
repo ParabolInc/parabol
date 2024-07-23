@@ -15,6 +15,7 @@ const NewMeeting: NewMeetingResolvers = {
     return resolveTypeLookup[meetingType as keyof typeof resolveTypeLookup]
   },
   createdByUser: ({createdBy}, _args, {dataLoader}) => {
+    if (!createdBy) return null
     return dataLoader.get('users').loadNonNull(createdBy)
   },
   facilitator: ({facilitatorUserId, teamId}, _args, {dataLoader}) => {

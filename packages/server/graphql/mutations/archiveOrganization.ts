@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../database/rethinkDriver'
 import Team from '../../database/types/Team'
 import User from '../../database/types/User'
 import getKysely from '../../postgres/getKysely'
@@ -29,10 +28,8 @@ export default {
     {orgId}: {orgId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const now = new Date()
 
     // AUTH
     const viewerId = getUserId(authToken)
@@ -89,14 +86,6 @@ export default {
         .where('orgId', '=', orgId)
         .where('removedAt', 'is', null)
         .execute(),
-      r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null})
-        .update({
-          removedAt: now
-        })
-        .run(),
       removeTeamsLimitObjects(orgId, dataLoader)
     ])
 

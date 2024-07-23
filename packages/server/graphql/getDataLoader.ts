@@ -3,7 +3,7 @@ import numToBase64 from '../utils/numToBase64'
 import DataLoaderCache from './DataLoaderCache'
 import getNodeId from './getNodeId'
 
-const dataLoaderCache = new DataLoaderCache()
+const dataLoaderCache = new DataLoaderCache(RootDataLoader)
 const NODE_ID = getNodeId()
 let nextId = 0
 
@@ -18,7 +18,7 @@ const getDataLoader = (did?: string) => {
   // if the viewer is logged in, give them their own dataloader that they can quickly reuse for subsequent requests or share with others
   // if not logged in, just make a new anonymous loader.
   const id = did || `${NODE_ID}:${numToBase64(nextId++)}`
-  return dataLoaderCache.use(id) || dataLoaderCache.add(id, new RootDataLoader())
+  return dataLoaderCache.use(id) || dataLoaderCache.add(id)
 }
 
 export default getDataLoader

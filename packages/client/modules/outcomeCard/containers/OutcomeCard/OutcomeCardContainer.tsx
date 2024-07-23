@@ -85,7 +85,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       const editorEl = editorRef.current
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
-      if (!value && !isFocused) {
+      if (!value.trim() && !isFocused) {
         DeleteTaskMutation(atmosphere, {taskId})
       } else {
         const initialContentState = editorState.getCurrentContent()
@@ -100,7 +100,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       return
     }
     const nextContentState = editorState.getCurrentContent()
-    const hasText = nextContentState.hasText()
+    const hasText = nextContentState.getPlainText().trim().length > 0
     if (!hasText && !isFocused) {
       DeleteTaskMutation(atmosphere, {taskId})
     } else {

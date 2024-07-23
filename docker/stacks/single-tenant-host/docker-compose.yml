@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   rethinkdb:
     container_name: rethinkdb
@@ -17,7 +15,7 @@ services:
   postgres:
     container_name: postgres
     profiles: ["databases"]
-    image: pgvector/pgvector:0.7.0-pg15
+    image: pgvector/pgvector:0.7.0-pg16
     restart: always
     env_file: .env
     environment:

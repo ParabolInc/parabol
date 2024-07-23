@@ -13,7 +13,7 @@ const SetOrgUserRoleSuccess: SetOrgUserRoleSuccessResolvers = {
     return dataLoader.get('organizations').loadNonNull(orgId)
   },
   updatedOrgMember: async ({organizationUserId}, _args, {dataLoader}) => {
-    return dataLoader.get('organizationUsers').load(organizationUserId)
+    return dataLoader.get('organizationUsers').loadNonNull(organizationUserId)
   },
   notificationsAdded: async ({notificationIdsAdded}, _args, {authToken, dataLoader}) => {
     if (!notificationIdsAdded.length) return []

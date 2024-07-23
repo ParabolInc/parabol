@@ -1,8 +1,8 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
-import {OrgUserRole} from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'
+import {OrganizationUser} from '../postgres/types'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
@@ -21,17 +21,6 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
   const {tms} = authToken
   return Array.isArray(tms) && tms.includes(teamId)
 }
-
-// export const isPastOrPresentTeamMember = async (viewerId: string, teamId: string) => {
-//   const r = await getRethink()
-//   return r
-//     .table('TeamMember')
-//     .getAll(teamId, {index: 'teamId'})
-//     .filter({userId: viewerId})
-//     .count()
-//     .ge(1)
-//     .run()
-// }
 
 export const isTeamLead = async (userId: string, teamId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
@@ -55,7 +44,7 @@ const isUserAnyRoleIn = async (
   userId: string,
   orgId: string,
   dataLoader: DataLoaderWorker,
-  roles: OrgUserRole[],
+  roles: NonNullable<OrganizationUser['role']>[],
   options?: Options
 ) => {
   const organizationUser = await dataLoader

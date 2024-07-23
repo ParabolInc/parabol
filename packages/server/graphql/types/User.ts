@@ -16,7 +16,6 @@ import {
 } from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import MeetingMemberType from '../../database/types/MeetingMember'
-import OrganizationUserType from '../../database/types/OrganizationUser'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -83,7 +82,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async ({id: userId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
-          (organizationUser: OrganizationUserType) =>
+          (organizationUser) =>
             organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
         )
       }
@@ -379,17 +378,15 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        organizationUsers.sort((a: OrganizationUserType, b: OrganizationUserType) =>
-          a.orgId > b.orgId ? 1 : -1
-        )
+        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsers
         }
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
-        return organizationUsers.filter((organizationUser: OrganizationUserType) =>
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+        return organizationUsers.filter((organizationUser) =>
           viewerOrgIds.includes(organizationUser.orgId)
         )
       }
@@ -430,7 +427,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const isAnyMemberOfPaidOrg = organizationUsers.some(
-          (organizationUser: OrganizationUserType) => organizationUser.tier !== 'starter'
+          (organizationUser) => organizationUser.tier !== 'starter'
         )
         if (isAnyMemberOfPaidOrg) return null
         return overLimitCopy

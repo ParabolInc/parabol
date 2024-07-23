@@ -25,7 +25,6 @@ import NotificationResponseReplied from './types/NotificationResponseReplied'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
@@ -112,10 +111,6 @@ export type RethinkSchema = {
       | NotificationMentioned
     index: 'userId'
   }
-  OrganizationUser: {
-    type: OrganizationUser
-    index: 'orgId' | 'userId'
-  }
   PasswordResetRequest: {
     type: PasswordResetRequest
     index: 'email' | 'ip' | 'token'
@@ -123,10 +118,6 @@ export type RethinkSchema = {
   PushInvitation: {
     type: PushInvitation
     index: 'userId'
-  }
-  QueryMap: {
-    type: any
-    index: ''
   }
   MeetingTemplate: {
     type: MeetingTemplate
@@ -160,10 +151,6 @@ export type RethinkSchema = {
       | 'discussionId'
       | 'userId'
       | 'integrationHash'
-  }
-  TaskHistory: {
-    type: any
-    index: 'taskIdUpdatedAt' | 'teamMemberId'
   }
   TeamInvitation: {
     type: TeamInvitation

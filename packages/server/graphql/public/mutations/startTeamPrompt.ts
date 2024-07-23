@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -61,22 +62,31 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
 
   const {id: meetingId} = meeting
-  if (rrule) {
-    const meetingSeries = await startNewMeetingSeries(meeting, rrule, name)
+  const meetingSeries = rrule && (await startNewMeetingSeries(meeting, rrule, name))
+  if (meetingSeries) {
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)
     analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)
-  const {error} = await createGcalEvent({
+  const {error, gcalSeriesId} = await createGcalEvent({
     name: eventName,
     gcalInput,
     meetingId,
     teamId,
     viewerId,
+    rrule,
     dataLoader
   })
+  if (meetingSeries && gcalSeriesId) {
+    const pg = getKysely()
+    await pg
+      .updateTable('MeetingSeries')
+      .set({gcalSeriesId})
+      .where('id', '=', meetingSeries.id)
+      .execute()
+  }
   const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return data

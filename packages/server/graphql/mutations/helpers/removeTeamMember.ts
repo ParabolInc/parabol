@@ -7,8 +7,7 @@ import EstimateStage from '../../../database/types/EstimateStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
-import removeUserTms from '../../../postgres/queries/removeUserTms'
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import getKysely from '../../../postgres/getKysely'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
@@ -27,10 +26,11 @@ const removeTeamMember = async (
 ) => {
   const {evictorUserId} = options
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
   // see if they were a leader, make a new guy leader so later we can reassign tasks
-  const activeTeamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).run()
+  const activeTeamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
   const {isLead, isNotRemoved} = teamMember ?? {}
   // if the guy being removed is the leader & not the last, pick a new one. else, use him
@@ -40,17 +40,18 @@ const removeTeamMember = async (
   }
 
   if (activeTeamMembers.length === 1) {
-    const updates = {
-      isArchived: true,
-      updatedAt: new Date()
-    }
     await Promise.all([
       // archive single-person teams
-      updateTeamByTeamId(updates, teamId),
+      pg.updateTable('Team').set({isArchived: true}).where('id', '=', teamId).execute(),
       // delete all tasks belonging to a 1-person team
       r.table('Task').getAll(teamId, {index: 'teamId'}).delete()
     ])
   } else if (isLead) {
+    await pg
+      .updateTable('TeamMember')
+      .set(({not}) => ({isLead: not('isLead')}))
+      .where('id', 'in', [teamMemberId, teamLeader.id])
+      .execute()
     // assign new leader, remove old leader flag
     await r({
       newTeamLead: r.table('TeamMember').get(teamLeader.id).update({
@@ -60,6 +61,11 @@ const removeTeamMember = async (
     }).run()
   }
 
+  await pg
+    .updateTable('TeamMember')
+    .set({isNotRemoved: false})
+    .where('id', '=', teamMemberId)
+    .execute()
   // assign active tasks to the team lead
   const {integratedTasksToArchive, reassignedTasks} = await r({
     teamMember: r.table('TeamMember').get(teamMemberId).update({
@@ -92,8 +98,12 @@ const removeTeamMember = async (
       )('changes')('new_val')
       .default([]) as unknown as Task[]
   }).run()
-
-  await removeUserTms(teamId, userId)
+  await pg
+    .updateTable('User')
+    .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
+    .where('id', '=', userId)
+    .execute()
+  dataLoader.clearAll(['users', 'teamMembers'])
   const user = await dataLoader.get('users').load(userId)
 
   let notificationId: string | undefined

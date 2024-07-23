@@ -1,0 +1,29 @@
+"""
+An Azure DevOps search query including all filters selected when the query was executed
+"""
+type AzureDevOpsSearchQuery {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The query string, either simple or WIQL depending on the isWIQL flag
+  """
+  queryString: String!
+
+  """
+  A list of projects to restrict the search to
+  """
+  projectKeyFilters: [String!]!
+
+  """
+  true if the queryString is WIQL, else false
+  """
+  isWIQL: Boolean!
+
+  """
+  the time the search query was last used. Used for sorting
+  """
+  lastUsedAt: DateTime!
+}
