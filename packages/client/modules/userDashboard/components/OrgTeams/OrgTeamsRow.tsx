@@ -33,6 +33,9 @@ const OrgTeamsRow = (props: Props) => {
   )
   const {id: teamId, teamMembers, name} = team
   const teamMembersCount = teamMembers.length
+  const viewerTeamMember = teamMembers.find((m) => m.isSelf)
+  if (!viewerTeamMember) return null
+  const {isLead: viewerIsLead, isOrgAdmin: viewerIsOrgAdmin} = viewerTeamMember
   const {togglePortal, modalPortal} = useModal()
 
   return (
@@ -46,16 +49,18 @@ const OrgTeamsRow = (props: Props) => {
             {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}
           </div>
         </div>
-        <div className='flex items-center'>
-          <IconButton
-            onClick={togglePortal}
-            aria-label='Archive team'
-            className='text-tomato-500 hover:text-tomato-600'
-          >
-            <DeleteOutline />
-          </IconButton>
-          <span className='ml-2 text-sm text-slate-600'>Archive Team</span>
-        </div>
+        {(viewerIsLead || viewerIsOrgAdmin) && (
+          <div className='flex items-center'>
+            <IconButton
+              onClick={togglePortal}
+              aria-label='Archive team'
+              className='text-tomato-500 hover:text-tomato-600'
+            >
+              <DeleteOutline />
+            </IconButton>
+            <span className='ml-2 text-sm text-slate-600'>Archive Team</span>
+          </div>
+        )}
       </div>
       {modalPortal(<ArchiveTeamModal closeModal={togglePortal} teamId={teamId} teamName={name} />)}
     </>
