@@ -14,11 +14,12 @@ const prod = async (isDeploy, noDeps) => {
     await generateGraphQLArtifacts()
   } catch (e) {
     console.log('ERR generating artifacts', e)
+    process.exit(1)
   }
 
   console.log('starting webpack build')
   try {
-    await Promise.all([
+    const webpacks = await Promise.all([
       runChild(
         `yarn webpack --config ./scripts/webpack/prod.servers.config.js --no-stats --env=noDeps=${noDeps}`
       ),
@@ -26,8 +27,15 @@ const prod = async (isDeploy, noDeps) => {
         `yarn webpack --config ./scripts/webpack/prod.client.config.js --no-stats --env=minimize=${isDeploy}`
       )
     ])
+    webpacks.forEach(
+      function (exitCode) {
+        if (exitCode > 0)
+          throw new Error(`Error during one of the webpack build processes. Webpacks error codes ${webpacks}`)
+      }
+    )
   } catch (e) {
     console.log('error webpackifying', e)
+    process.exit(1)
   }
 }
 
