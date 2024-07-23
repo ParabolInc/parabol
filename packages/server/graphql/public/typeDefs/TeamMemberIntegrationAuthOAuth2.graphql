@@ -1,0 +1,54 @@
+"""
+An integration token that connects via OAuth2
+"""
+type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
+  """
+  The token's unique identifier
+  """
+  id: ID!
+
+  """
+  The team that the token is linked to
+  """
+  teamId: ID!
+
+  """
+  The timestamp the token was created
+  """
+  createdAt: DateTime!
+
+  """
+  The timestamp the token was updated at
+  """
+  updatedAt: DateTime!
+
+  """
+  The GQL GUID of the DB providerId foreign key
+  """
+  providerId: ID!
+
+  """
+  The service this token is associated with, denormalized from the provider
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  true if the token configuration should be used
+  """
+  isActive: Boolean!
+
+  """
+  The provider strategy this token connects to
+  """
+  provider: IntegrationProviderOAuth2!
+
+  """
+  The token used to connect to the provider
+  """
+  accessToken: ID!
+
+  """
+  The scopes allowed on the provider
+  """
+  scopes: String!
+}

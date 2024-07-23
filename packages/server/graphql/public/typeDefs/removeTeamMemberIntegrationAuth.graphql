@@ -1,0 +1,50 @@
+extend type Mutation {
+  """
+  Remove the integrated auth for a given team member
+  """
+  removeTeamMemberIntegrationAuth(
+    """
+    The Integration Provider service name related to the token
+    """
+    service: IntegrationProviderServiceEnum!
+
+    """
+    The team id related to the token
+    """
+    teamId: ID!
+  ): RemoveTeamMemberIntegrationAuthPayload!
+}
+
+"""
+Return object for RemoveIntegrationProviderPayload
+"""
+union RemoveIntegrationProviderPayload = ErrorPayload | RemoveIntegrationProviderSuccess
+
+type RemoveIntegrationProviderSuccess {
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember!
+
+  """
+  The user who updated TeamMemberIntegrationAuth object
+  """
+  user: User!
+}
+
+"""
+Return object for RemoveTeamMemberIntegrationAuthPayload
+"""
+union RemoveTeamMemberIntegrationAuthPayload = ErrorPayload | RemoveTeamMemberIntegrationAuthSuccess
+
+type RemoveTeamMemberIntegrationAuthSuccess {
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember!
+
+  """
+  The user who updated TeamMemberIntegrationAuth object
+  """
+  user: User!
+}
