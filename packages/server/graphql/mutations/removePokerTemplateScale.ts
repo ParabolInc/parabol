@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
@@ -40,7 +41,11 @@ const removePokerTemplateScale = {
     }
 
     // RESOLUTION
-    await r.table('TemplateScale').get(scaleId).update({removedAt: now, updatedAt: now}).run()
+    await pg
+      .updateTable('TemplateScale')
+      .set({removedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', scaleId)
+      .execute()
 
     const nextDefaultScaleId = SprintPokerDefaults.DEFAULT_SCALE_ID
     const dimensions = await r

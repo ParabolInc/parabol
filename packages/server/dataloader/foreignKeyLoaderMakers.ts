@@ -1,4 +1,5 @@
 import getKysely from '../postgres/getKysely'
+import {selectTemplateScale} from '../postgres/select'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
 import {selectOrganizations, selectRetroReflections, selectTeams} from './primaryKeyLoaderMakers'
 
@@ -124,3 +125,7 @@ export const organizationUsersByOrgId = foreignKeyLoaderMaker(
       .execute()
   }
 )
+
+export const scalesByTeamId = foreignKeyLoaderMaker('templateScales', 'teamId', async (teamIds) => {
+  return selectTemplateScale().where('teamId', 'in', teamIds).execute()
+})

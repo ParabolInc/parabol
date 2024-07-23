@@ -42,7 +42,7 @@ const updatePokerTemplateDimensionScale = {
     }
 
     // VALIDATION
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const scale = await dataLoader.get('templateScales').load(scaleId)
     if (!scale || scale.removedAt || (!scale.isStarter && scale.teamId !== teamId)) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }

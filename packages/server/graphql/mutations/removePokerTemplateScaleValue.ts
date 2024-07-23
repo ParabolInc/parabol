@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -33,7 +32,7 @@ const removePokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const scale = await dataLoader.get('templateScales').load(scaleId)
     if (!scale || scale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -51,15 +50,12 @@ const removePokerTemplateScaleValue = {
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update((row: RValue) => ({
-        values: row('values').deleteAt(row('values').offsetsOf(oldScaleValue).nth(0)),
-        updatedAt: now
-      }))
-      .run()
-
+    await pg
+      .deleteFrom('TemplateScaleValue')
+      .where('templateScaleId', '=', scaleId)
+      .where('label', '=', label)
+      .execute()
+    dataLoader.clearAll('templateScales')
     // mark all templates using this scale as updated
     const updatedDimensions = await r
       .table('TemplateDimension')
