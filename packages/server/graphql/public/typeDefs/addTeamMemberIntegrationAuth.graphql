@@ -1,0 +1,51 @@
+extend type Mutation {
+  """
+  Add an integration authorization for a specific team member
+  """
+  addTeamMemberIntegrationAuth(
+    providerId: ID!
+    teamId: ID!
+
+    """
+    The OAuth2 code or personal access token. Null for webhook auth
+    """
+    oauthCodeOrPat: ID
+
+    """
+    OAuth1 token verifier
+    """
+    oauthVerifier: ID
+
+    """
+    The URL the OAuth2 token will be sent to. Null for webhook auth
+    """
+    redirectUri: URL
+  ): AddTeamMemberIntegrationAuthPayload!
+}
+
+"""
+Return object for AddTeamMemberIntegrationAuthPayload
+"""
+union AddTeamMemberIntegrationAuthPayload = ErrorPayload | AddTeamMemberIntegrationAuthSuccess
+
+type AddTeamMemberIntegrationAuthSuccess {
+  """
+  The auth that was just added
+  """
+  integrationAuth: TeamMemberIntegrationAuth!
+
+  """
+  The service this provider is associated with
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember!
+
+  """
+  The user who updated TeamMemberIntegrationAuth object
+  """
+  user: User!
+}
