@@ -9,15 +9,13 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   {teamId, startDate, endDate, useSummaries = true},
   {dataLoader}
 ) => {
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
     return standardError(
       new Error('Invalid date format. Please use ISO 8601 format (e.g., 2024-01-01T00:00:00Z).')
     )
   }
   const oneWeekInMs = 7 * 24 * 60 * 60 * 1000
-  if (end.getTime() - start.getTime() < oneWeekInMs) {
+  if (endDate.getTime() - startDate.getTime() < oneWeekInMs) {
     return standardError(new Error('The end date must be at least one week after the start date.'))
   }
 
@@ -36,8 +34,8 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
       teamId,
       wins,
       challenges,
-      startDate,
-      endDate
+      startDateTime: startDate,
+      endDateTime: endDate
     })
     .execute()
 
