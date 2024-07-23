@@ -345,26 +345,45 @@ class OpenAIServerManager {
     }
   }
 
-  async generateInsight(yamlData: string): Promise<InsightResponse | null> {
+  async generateInsight(yamlData: string, useSummaries: boolean): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
-    // Below is a list of reflection topics in YAML format from meetings over the past months.
-    // The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    const prompt = `
+    const defaultPrompt = `
     You are a management consultant who needs to discover behavioral trends for a given team.
-    Below is a list of meeting summaries in YAML format from meetings over the past months.
-    You should describe the situation in two sections with exactly 3 bullet points each.
-    The first section should describe the team's positive behavior in bullet points.
-    The second section should pick out one or two examples of the team's negative behavior.
-    Try to cite direct quotes from the meeting, attributing it to the person who wrote it, if they're included in the summary. Include the discussion link in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
-    The most important topics are usually at the beginning of the summary, so prioritize them. If the link is ${meetingURL}[meetingId]/discuss/1, that means it was the first discussion in the meeting, got the most votes, and is the most important.
+    Below is a list of reflection topics in YAML format from meetings over recent months.
+    You should describe the situation in two sections with no more than 3 bullet points each.
+    The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
+    The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
+    When citing the quote, include the meetingId in the format of https://action.parabol.co/meet/[meetingId].
+    Prioritize topics with more votes.
+    Be sure that each author is only mentioned once.
+    Your tone should be kind and professional. No yapping.
     Return the output as a JSON object with the following structure:
     {
       "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
-      "challenges": ["bullet point 1", "bullet point 2", "bullet point 3"]
+      "challenges": ["bullet point 1", "bullet point 2"]
+    }
+    `
+
+    const promptForSummaries = `
+    You are a management consultant who needs to discover behavioral trends for a given team.
+    Below is a list of meeting summaries in YAML format from meetings over recent months.
+    You should describe the situation in two sections with exactly 3 bullet points each.
+    The first section should describe the team's positive behavior in bullet points.
+    The second section should pick out one or two examples of the team's negative behavior.
+    Try to cite direct quotes from the meeting, attributing it to the person who wrote it, if they're included in the summary.
+    Include discussion links included in the summaries. They must be in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
+    Try to spot trends. If a topic comes up in several summaries, prioritize it.
+    The most important topics are usually at the beginning of each summary, so prioritize them.
+    Return the output as a JSON object with the following structure:
+    {
+      "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
+      "challenges": ["bullet point 1", "bullet point 2"]
     }
     Your tone should be kind and professional. No yapping.
     `
+
+    const prompt = useSummaries ? promptForSummaries : defaultPrompt
 
     try {
       const response = await this.openAIApi.chat.completions.create({
@@ -403,6 +422,7 @@ class OpenAIServerManager {
     }
   }
 
+  // if we keep generateSummary, we'll need to merge it with getSummary. This will require a UI change as we're returning links in markdown format here
   async generateSummary(yamlData: string): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
@@ -416,8 +436,9 @@ class OpenAIServerManager {
     Be sure that each author is only mentioned once.
     Your output must be a string.
     The most important topics are the ones that got the most votes.
+    Start the summary with the most important topic.
     You do not need to mention everything. Just mention the most important points, and ensure the summary is concise.
-    Your tone should be kind and concise. Write in plain English. No jargon.
+    Your tone should be kind. Write in plain English. No jargon.
     `
 
     try {

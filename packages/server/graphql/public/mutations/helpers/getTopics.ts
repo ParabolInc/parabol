@@ -1,6 +1,10 @@
+import yaml from 'js-yaml'
 import getRethink from '../../../../database/rethinkDriver'
 import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import getKysely from '../../../../postgres/getKysely'
+import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
+import sendToSentry from '../../../../utils/sendToSentry'
+import standardError from '../../../../utils/standardError'
 import {DataLoaderWorker} from '../../../graphql'
 
 const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWorker) => {
@@ -41,18 +45,63 @@ const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWork
             }
           })
       )
-      const res = {
-        text: plaintextContent,
-        author: commentAuthor,
-        replies: commentReplies
-      }
-      if (res.replies.length === 0) {
-        delete (res as any).commentReplies
-      }
-      return res
+      return commentReplies.length === 0
+        ? {
+            text: plaintextContent,
+            author: commentAuthor
+          }
+        : {
+            text: plaintextContent,
+            author: commentAuthor,
+            replies: commentReplies
+          }
     })
   )
   return comments
+}
+
+type MeetingLookup = Record<string, string | Date>
+const meetingLookup: MeetingLookup = {}
+
+const processLines = (lines: string[]): string[] => {
+  const meetingURL = 'https://action.parabol.co/meet/'
+  return lines
+    .map((line) => {
+      if (line.includes(meetingURL)) {
+        let processedLine = line
+        const regex = new RegExp(`${meetingURL}\\S+`, 'g')
+        const matches = processedLine.match(regex) || []
+
+        let isValid = true
+        matches.forEach((match) => {
+          let shortMeetingId = match.split(meetingURL)[1]?.split(/[),\s]/)[0] // Split by closing parenthesis, comma, or space
+          const actualMeetingId = shortMeetingId && (meetingLookup[shortMeetingId] as string)
+          console.log('🚀 ~ ________:', {actualMeetingId, meetingLookup})
+
+          if (shortMeetingId && actualMeetingId) {
+            processedLine = processedLine.replace(shortMeetingId, actualMeetingId)
+          } else {
+            const error = new Error(
+              `AI hallucinated. Unable to find meetingId for ${shortMeetingId}. Line: ${line}`
+            )
+            sendToSentry(error)
+            isValid = false
+          }
+        })
+        return isValid ? processedLine : ''
+      }
+      return line
+    })
+    .filter((line) => line.trim() !== '')
+}
+
+const processSection = (section: string[]): string[] => {
+  return section
+    .flatMap((item) => {
+      const lines = item.split('\n')
+      return processLines(lines)
+    })
+    .filter((processedItem) => processedItem.trim() !== '')
 }
 
 export const getTopics = async (
@@ -140,27 +189,41 @@ export const getTopics = async (
     .filter((t) => t.voteCount > 2)
     .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
 
-  type IDLookup = Record<string, string | Date>
-  const idLookup = {
-    meeting: {} as IDLookup,
-    date: {} as IDLookup
-  }
-
   const idGenerator = {
     meeting: 1
   }
 
-  const shortTokenedTopics = hotTopics.map((t) => {
-    const {date, meetingId} = t
-    const shortMeetingId = `m${idGenerator.meeting++}`
-    const shortMeetingDate = new Date(date).toISOString().split('T')[0]
-    idLookup.meeting[shortMeetingId] = meetingId
-    idLookup.date[shortMeetingId] = date
-    return {
-      ...t,
-      date: shortMeetingDate,
-      meetingId: shortMeetingId
-    }
+  const shortTokenedTopics = hotTopics
+    .map((t) => {
+      const {date, meetingId} = t
+      const shortMeetingId = `m${idGenerator.meeting++}`
+      const shortMeetingDate = new Date(date).toISOString().split('T')[0]
+      meetingLookup[shortMeetingId] = meetingId
+      return {
+        ...t,
+        date: shortMeetingDate,
+        meetingId: shortMeetingId
+      }
+    })
+    .filter((t) => t)
+
+  if (shortTokenedTopics.length === 0) {
+    return standardError(new Error('No meeting content found for the specified date range.'))
+  }
+
+  const yamlData = yaml.dump(shortTokenedTopics, {
+    noCompatMode: true
   })
-  return shortTokenedTopics
+  // fs.writeFileSync('summaryMeetingContent.yaml', yamlData, 'utf8')
+
+  const openAI = new OpenAIServerManager()
+  const rawInsight = await openAI.generateInsight(yamlData, false)
+  if (!rawInsight) {
+    return standardError(new Error('Unable to generate insight.'))
+  }
+
+  const wins = processSection(rawInsight.wins)
+  const challenges = processSection(rawInsight.challenges)
+
+  return {wins, challenges}
 }

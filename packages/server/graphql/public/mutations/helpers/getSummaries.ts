@@ -1,10 +1,10 @@
-import fs from 'fs'
 import yaml from 'js-yaml'
 import getRethink from '../../../../database/rethinkDriver'
 import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import getPhase from '../../../../utils/getPhase'
+import standardError from '../../../../utils/standardError'
 import {DataLoaderWorker} from '../../../graphql'
 
 const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWorker) => {
@@ -127,7 +127,6 @@ const getMeetingsContent = async (meeting: MeetingRetrospective, dataLoader: Dat
         return res
       })
   )
-  console.log('🚀 ~ reflectionGroups:', reflectionGroups)
 
   return reflectionGroups
 }
@@ -145,54 +144,49 @@ export const getSummaries = async (
   const rawMeetings = (await r
     .table('NewMeeting')
     .getAll(teamId, {index: 'teamId'})
-    .filter(
-      (row: any) =>
-        row('meetingType')
-          .eq('retrospective')
-          .and(row('createdAt').ge(startDate))
-          .and(row('createdAt').le(endDate))
-          // .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-          .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-      // .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
+    .filter((row: any) =>
+      row('meetingType')
+        .eq('retrospective')
+        .and(row('createdAt').ge(startDate))
+        .and(row('createdAt').le(endDate))
+        .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
+        .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
+        .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
     .run()) as MeetingRetrospective[]
-  // console.log('🚀 ~ rawMeetings:', rawMeetings)
-  const meetingsCount = rawMeetings.length
-  console.log('🚀 ~ meetingsCount:', meetingsCount)
 
   const summaries = await Promise.all(
     rawMeetings.map(async (meeting) => {
-      console.log('🚀 ~ meeting.summary____:', meeting.summary)
+      // this is temporary, just to see what it looks like when we create summaries on the fly
+      // if we go with a summary of summaries approach, remove this and create a separate mutation that generates new meeting summaries which include links to discussions
       const newlyGeneratedSummariesDate = new Date('2024-07-22T00:00:00Z')
       if (meeting.summary && meeting.updatedAt > newlyGeneratedSummariesDate) {
-        console.log('returnnining__')
-        return meeting.summary
+        return {
+          meetingName: meeting.name,
+          date: meeting.createdAt,
+          summary: meeting.summary
+        }
       }
       const meetingsContent = await getMeetingsContent(meeting, dataLoader)
-      const now = new Date()
-      await r.table('NewMeeting').get(meeting.id).update({summary: undefined, updatedAt: now}).run()
       if (!meetingsContent || meetingsContent.length === 0) {
-        console.log('🚀 ~ meetingsContent:', {meetingsContent, meeting})
         return null
       }
       const yamlData = yaml.dump(meetingsContent, {
         noCompatMode: true
       })
-      fs.writeFileSync('meetingSummary.yaml', yamlData, 'utf8')
+      // fs.writeFileSync('meetingSummary.yaml', yamlData, 'utf8')
 
       const manager = new OpenAIServerManager()
       const newSummary = await manager.generateSummary(yamlData)
-      console.log('🚀 ~ newSummary:', newSummary)
+      if (!newSummary) return null
 
-      if (newSummary) {
-        const now = new Date()
-        await r
-          .table('NewMeeting')
-          .get(meeting.id)
-          .update({summary: newSummary, updatedAt: now})
-          .run()
-        meeting.summary = newSummary
-      }
+      const now = new Date()
+      await r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({summary: newSummary, updatedAt: now})
+        .run()
+      meeting.summary = newSummary
       return {
         meetingName: meeting.name,
         date: meeting.createdAt,
@@ -201,38 +195,20 @@ export const getSummaries = async (
     })
   )
 
-  return summaries
+  const meetingsContent = summaries.filter((summary) => summary)
+  const yamlData = yaml.dump(meetingsContent, {
+    noCompatMode: true
+  })
+  // fs.writeFileSync('summaryMeetingContent.yaml', yamlData, 'utf8')
+
+  const openAI = new OpenAIServerManager()
+  const rawInsight = await openAI.generateInsight(yamlData, true)
+  if (!rawInsight) {
+    return standardError(new Error('No insights generated'))
+  }
+
+  return {
+    wins: rawInsight.wins,
+    challenges: rawInsight.challenges
+  }
 }
-
-// import getRethink from '../../../../database/rethinkDriver'
-
-// export const getSummaries = async (teamId: string, startDate: Date, endDate: Date) => {
-//   const r = await getRethink()
-//   const MIN_MILLISECONDS = 60 * 1000 // 1 minute
-//   const MIN_REFLECTION_COUNT = 3
-
-//   const rawMeetings = await r
-//     .table('NewMeeting')
-//     .getAll(teamId, {index: 'teamId'})
-//     .filter((row: any) =>
-//       row('meetingType')
-//         .eq('retrospective')
-//         .and(row('createdAt').ge(startDate))
-//         .and(row('createdAt').le(endDate))
-//         .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-//         .and(row('summary').eq(null))
-//         .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-//         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
-//     )
-//     .run()
-
-//   console.log('🚀 ~ rawMeetings:', rawMeetings)
-//   const summaries = rawMeetings.map((meeting) => ({
-//     meetingId: meeting.id,
-//     date: meeting.createdAt,
-//     summary: meeting.summary
-//   }))
-//   console.log('🚀 ~ summaries____:', summaries)
-
-//   return summaries
-// }

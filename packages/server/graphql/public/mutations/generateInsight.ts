@@ -1,8 +1,4 @@
-import fs from 'fs'
-import yaml from 'js-yaml'
 import getKysely from '../../../postgres/getKysely'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import {getSummaries} from './helpers/getSummaries'
@@ -24,106 +20,28 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   if (end.getTime() - start.getTime() < oneWeekInMs) {
     return standardError(new Error('The end date must be at least one week after the start date.'))
   }
-  const pg = getKysely()
 
-  // const existingInsight = await pg
-  //   .selectFrom('Insight')
-  //   .selectAll()
-  //   .where('teamId', '=', teamId)
-  //   .where('startDateTime', '=', start)
-  //   .where('endDateTime', '=', end)
-  //   .limit(1)
-  //   .executeTakeFirst()
-
-  // if (existingInsight) {
-  //   return {
-  //     wins: existingInsight.wins,
-  //     challenges: existingInsight.challenges
-  //   }
-  // }
-
-  const meetingsContent = useSummaries
+  const response = useSummaries
     ? await getSummaries(teamId, startDate, endDate, dataLoader)
     : await getTopics(teamId, startDate, endDate, dataLoader)
 
-  if (meetingsContent.length === 0) {
-    return standardError(new Error('No meeting content found for the specified date range.'))
+  if ('error' in response) {
+    return response
   }
+  const {wins, challenges} = response
+  const pg = getKysely()
+  await pg
+    .insertInto('Insight')
+    .values({
+      teamId,
+      wins,
+      challenges,
+      startDate,
+      endDate
+    })
+    .execute()
 
-  const yamlData = yaml.dump(meetingsContent, {
-    noCompatMode: true
-  })
-  fs.writeFileSync('summaryMeetingContent.yaml', yamlData, 'utf8')
-
-  const openAI = new OpenAIServerManager()
-  const rawInsight = await openAI.generateInsight(yamlData)
-  if (!rawInsight) {
-    return standardError(new Error('Unable to generate insight.'))
-  }
-
-  const meetingURL = 'https://action.parabol.co/meet/'
-
-  const processLines = (lines: string[]): string => {
-    return lines
-      .map((line) => {
-        if (line.includes(meetingURL)) {
-          let processedLine = line
-          const regex = new RegExp(`${meetingURL}\\S+`, 'g')
-          const matches = processedLine.match(regex) || []
-
-          let isValid = true
-          matches.forEach((match) => {
-            let shortMeetingId = match.split(meetingURL)[1]?.split(/[),\s]/)[0] // Split by closing parenthesis, comma, or space
-            const actualMeetingId = shortMeetingId && (idLookup.meeting[shortMeetingId] as string)
-
-            if (shortMeetingId && actualMeetingId) {
-              processedLine = processedLine.replace(shortMeetingId, actualMeetingId)
-            } else {
-              const error = new Error(
-                `AI hallucinated. Unable to find meetingId for ${shortMeetingId}. Line: ${line}`
-              )
-              sendToSentry(error)
-              isValid = false
-            }
-          })
-          return isValid ? processedLine : '' // Return empty string if invalid
-        }
-        return line
-      })
-      .filter((line) => line.trim() !== '')
-      .join('\n')
-  }
-
-  const processSection = (section: string[]): string => {
-    return section
-      .map((item) => {
-        const lines = item.split('\n')
-        return processLines(lines)
-      })
-      .filter((processedItem) => processedItem.trim() !== '')
-      .join('\n')
-  }
-
-  console.log('🚀 ~ batch.wins:', rawInsight.wins)
-  // const wins = processSection(rawInsight.wins)
-  // console.log('🚀 ~ wins:', wins)
-
-  // const challenges = processSection(rawInsight.challenges)
-  console.log('🚀 ~ rawInsight.challenges:', rawInsight.challenges)
-  // console.log('🚀 ~ challenges:', challenges)
-  // await pg
-  //   .insertInto('Insight')
-  //   .values({
-  //     teamId,
-  //     wins,
-  //     challenges,
-  //     startDate,
-  //     endDate
-  //   })
-  //   .execute()
-
-  const data = {wins: rawInsight.wins, challenges: rawInsight.challenges}
-  return data
+  return response
 }
 
 export default generateInsight
