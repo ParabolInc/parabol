@@ -12,7 +12,6 @@ import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
 import addTeam from './mutations/addTeam'
-import addTeamMemberIntegrationAuth from './mutations/addTeamMemberIntegrationAuth'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
@@ -79,7 +78,6 @@ import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt
 import removeReflection from './mutations/removeReflection'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
-import removeTeamMemberIntegrationAuth from './mutations/removeTeamMemberIntegrationAuth'
 import renameMeeting from './mutations/renameMeeting'
 import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
@@ -236,11 +234,9 @@ export default new GraphQLObjectType<any, GQLContext>({
       toggleTeamDrawer,
       updateGitHubDimensionField,
       createPoll,
-      addTeamMemberIntegrationAuth,
       addIntegrationProvider,
       updateIntegrationProvider,
       removeIntegrationProvider,
-      removeTeamMemberIntegrationAuth,
       endTeamPrompt,
       updateAzureDevOpsDimensionField
     }) as any
