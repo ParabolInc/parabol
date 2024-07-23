@@ -2,6 +2,7 @@ import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateWholeMeetingSummary = async (
   discussionIds: string[],
@@ -10,26 +11,22 @@ const generateWholeMeetingSummary = async (
   facilitatorUserId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  console.log('🚀 ~ discussionIds:', {dataLoader})
-  // const [facilitator, team] = await Promise.all([
-  //   dataLoader.get('users').loadNonNull(facilitatorUserId),
-  //   dataLoader.get('teams').loadNonNull(teamId)
-  // ])
-  // console.log('heee', {facilitator, team})
-  // const isAISummaryAccessible = await canAccessAISummary(
-  //   team,
-  //   facilitator.featureFlags,
-  //   dataLoader,
-  //   'retrospective'
-  // )
-  // console.log('🚀 ~ isAISummaryAccessible:', isAISummaryAccessible)
-  // if (!isAISummaryAccessible) return
+  const [facilitator, team] = await Promise.all([
+    dataLoader.get('users').loadNonNull(facilitatorUserId),
+    dataLoader.get('teams').loadNonNull(teamId)
+  ])
+  const isAISummaryAccessible = await canAccessAISummary(
+    team,
+    facilitator.featureFlags,
+    dataLoader,
+    'retrospective'
+  )
+  if (!isAISummaryAccessible) return
   const [commentsByDiscussions, tasksByDiscussions, reflections] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
     dataLoader.get('tasksByDiscussionId').loadMany(discussionIds),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
-  console.log('🚀 ~ commentsByDiscussions:', commentsByDiscussions)
   const manager = new OpenAIServerManager()
   const reflectionsContent = reflections.map((reflection) => reflection.plaintextContent)
   const commentsContent = commentsByDiscussions
