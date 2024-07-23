@@ -27,6 +27,7 @@ const OrgTeamsRow = (props: Props) => {
           isOrgAdmin
           isSelf
           email
+          preferredName
         }
       }
     `,
@@ -37,6 +38,8 @@ const OrgTeamsRow = (props: Props) => {
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   if (!viewerTeamMember && !isOrgAdmin) return null
   const {isLead: viewerIsLead} = viewerTeamMember ?? {isLead: false}
+  const teamLead = teamMembers.find((m) => m.isLead)
+  const teamLeadName = teamLead && !viewerTeamMember?.isLead ? teamLead.preferredName : null
   const {togglePortal, modalPortal} = useModal()
 
   return (
@@ -75,7 +78,14 @@ const OrgTeamsRow = (props: Props) => {
           </div>
         )}
       </div>
-      {modalPortal(<ArchiveTeamModal closeModal={togglePortal} teamId={teamId} teamName={name} />)}
+      {modalPortal(
+        <ArchiveTeamModal
+          closeModal={togglePortal}
+          teamId={teamId}
+          teamName={name}
+          teamLeadName={teamLeadName}
+        />
+      )}
     </>
   )
 }

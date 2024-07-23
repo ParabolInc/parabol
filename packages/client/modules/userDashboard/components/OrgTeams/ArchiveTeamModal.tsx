@@ -10,11 +10,12 @@ import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
 type Props = {
   teamId: string
   teamName: string
+  teamLeadName: string | null
   closeModal: () => void
 }
 
 const ArchiveTeamModal = (props: Props) => {
-  const {teamId, teamName, closeModal} = props
+  const {teamId, teamName, teamLeadName, closeModal} = props
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -30,15 +31,22 @@ const ArchiveTeamModal = (props: Props) => {
     closeModal()
   }
 
+  const confirmationText = teamLeadName ? (
+    <span>
+      Are you sure you want to archive{' '}
+      <span className='font-bold text-tomato-500'>{teamLeadName}'s</span> team "{teamName}"?
+    </span>
+  ) : (
+    `Are you sure you want to archive your team "${teamName}"?`
+  )
+
   return (
     <div className='flex h-auto w-auto flex-col items-center rounded-lg bg-white'>
       <div className='title-wrapper flex w-full items-center justify-between pr-6'>
         <DialogTitle className='px-6 pt-6 pb-4 text-slate-700'>{'Archive team'}</DialogTitle>
         <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
       </div>
-      <div className='px-6 pb-8 text-base text-slate-700'>
-        Are you sure you want to archive the team "{teamName}"?
-      </div>
+      <div className='px-6 pb-8 text-base text-slate-700'>{confirmationText}</div>
       <div className='flex w-full justify-end'>
         <FlatButton
           onClick={handleClose}
