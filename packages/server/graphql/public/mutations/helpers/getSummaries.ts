@@ -59,10 +59,7 @@ const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWork
   return comments
 }
 
-const generateMeetingSummary = async (
-  meeting: MeetingRetrospective,
-  dataLoader: DataLoaderWorker
-) => {
+const getMeetingsContent = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
   const pg = getKysely()
   const {id: meetingId, disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting
   const rawReflectionGroups = await dataLoader
@@ -107,13 +104,19 @@ const generateMeetingSummary = async (
             }
           })
         )
+        const shortDate = meetingDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        })
+        console.log('🚀 ~ shortDate:', shortDate)
         const res = {
           voteCount: voterIds.length,
           title: title,
           comments,
           reflections,
           meetingName,
-          date: meetingDate,
+          date: shortDate,
           meetingId,
           discussionId: discussionIdx
         }
@@ -142,34 +145,37 @@ export const getSummaries = async (
   const rawMeetings = (await r
     .table('NewMeeting')
     .getAll(teamId, {index: 'teamId'})
-    .filter((row: any) =>
-      row('meetingType')
-        .eq('retrospective')
-        .and(row('createdAt').ge(startDate))
-        .and(row('createdAt').le(endDate))
-        .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-        .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-        .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
+    .filter(
+      (row: any) =>
+        row('meetingType')
+          .eq('retrospective')
+          .and(row('createdAt').ge(startDate))
+          .and(row('createdAt').le(endDate))
+          // .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
+          .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
+      // .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
     .run()) as MeetingRetrospective[]
   // console.log('🚀 ~ rawMeetings:', rawMeetings)
+  const meetingsCount = rawMeetings.length
+  console.log('🚀 ~ meetingsCount:', meetingsCount)
 
   const summaries = await Promise.all(
     rawMeetings.map(async (meeting) => {
       console.log('🚀 ~ meeting.summary____:', meeting.summary)
-      // if (!meeting.summary) {
-      const discussPhase = getPhase(meeting.phases, 'discuss')
-      const {stages} = discussPhase
-      const discussionIds = stages.map((stage) => stage.discussionId)
-      // const newSummary = await generateWholeMeetingSummary(
-      //   discussionIds,
-      //   meeting.id,
-      //   teamId,
-      //   meeting.facilitatorUserId,
-      //   dataLoader
-      // )
-      const res = await generateMeetingSummary(meeting, dataLoader)
-      const yamlData = yaml.dump(res, {
+      const newlyGeneratedSummariesDate = new Date('2024-07-22T00:00:00Z')
+      if (meeting.summary && meeting.updatedAt > newlyGeneratedSummariesDate) {
+        console.log('returnnining__')
+        return meeting.summary
+      }
+      const meetingsContent = await getMeetingsContent(meeting, dataLoader)
+      const now = new Date()
+      await r.table('NewMeeting').get(meeting.id).update({summary: undefined, updatedAt: now}).run()
+      if (!meetingsContent || meetingsContent.length === 0) {
+        console.log('🚀 ~ meetingsContent:', {meetingsContent, meeting})
+        return null
+      }
+      const yamlData = yaml.dump(meetingsContent, {
         noCompatMode: true
       })
       fs.writeFileSync('meetingSummary.yaml', yamlData, 'utf8')
@@ -178,16 +184,17 @@ export const getSummaries = async (
       const newSummary = await manager.generateSummary(yamlData)
       console.log('🚀 ~ newSummary:', newSummary)
 
-      console.log('🚀 ~ res_____:', res)
-
       if (newSummary) {
-        // Update the meeting with the new summary
-        await r.table('NewMeeting').get(meeting.id).update({summary: newSummary}).run()
+        const now = new Date()
+        await r
+          .table('NewMeeting')
+          .get(meeting.id)
+          .update({summary: newSummary, updatedAt: now})
+          .run()
         meeting.summary = newSummary
       }
-      // }
       return {
-        meetingId: meeting.id,
+        meetingName: meeting.name,
         date: meeting.createdAt,
         summary: meeting.summary
       }

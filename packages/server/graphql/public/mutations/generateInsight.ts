@@ -122,7 +122,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   //   })
   //   .execute()
 
-  const data = {wins: rawInsight.wins[0], challenges: rawInsight.challenges[0]}
+  const data = {wins: rawInsight.wins, challenges: rawInsight.challenges}
   return data
 }
 

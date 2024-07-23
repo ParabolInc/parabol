@@ -1,4 +1,4 @@
 export type GenerateInsightSuccessSource = {
-  wins: string
-  challenges: string
+  wins: string[]
+  challenges: string[]
 }

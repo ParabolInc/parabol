@@ -19,10 +19,10 @@ type GenerateInsightSuccess {
   """
   The insights generated focusing on the wins of the team
   """
-  wins: String!
+  wins: [String]
 
   """
   The insights generated focusing on the challenges team are facing
   """
-  challenges: String!
+  challenges: [String]
 }

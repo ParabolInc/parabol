@@ -348,15 +348,16 @@ class OpenAIServerManager {
   async generateInsight(yamlData: string): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
+    // Below is a list of reflection topics in YAML format from meetings over the past months.
+    // The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
     const prompt = `
     You are a management consultant who needs to discover behavioral trends for a given team.
-    Below is a list of reflection topics in YAML format from meetings over the past months.
+    Below is a list of meeting summaries in YAML format from meetings over the past months.
     You should describe the situation in two sections with exactly 3 bullet points each.
-    The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    When citing the quote, include the meetingId in the format of ${meetingURL}[meetingId] or if the meeting summary already includes a link, use that link.
-    For each topic, mention how many votes it has.
-    Be sure that each author is only mentioned once.
+    The first section should describe the team's positive behavior in bullet points.
+    The second section should pick out one or two examples of the team's negative behavior.
+    Try to cite direct quotes from the meeting, attributing it to the person who wrote it, if they're included in the summary. Include the discussion link in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
+    The most important topics are usually at the beginning of the summary, so prioritize them. If the link is ${meetingURL}[meetingId]/discuss/1, that means it was the first discussion in the meeting, got the most votes, and is the most important.
     Return the output as a JSON object with the following structure:
     {
       "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
@@ -406,15 +407,17 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
     const prompt = `
-    You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a few sentences.
+    You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
     Below is a list of reflection topics and comments in YAML format from the meeting.
-    When citing the quote, link directly to the discussion in the format of ${meetingURL}[meetingId]/discuss/[discussionId].
+    Include quotes from the meeting, and mention the author.
+    Link directly to the discussion in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
     Don't mention the name of the meeting.
     Prioritise the topics that got the most votes.
     Be sure that each author is only mentioned once.
     Your output must be a string.
+    The most important topics are the ones that got the most votes.
     You do not need to mention everything. Just mention the most important points, and ensure the summary is concise.
-    Your tone should be kind, professional, and concise.
+    Your tone should be kind and concise. Write in plain English. No jargon.
     `
 
     try {
@@ -432,12 +435,9 @@ class OpenAIServerManager {
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      console.log('🚀 ~ response:', response)
 
-      const completionContent = response.choices[0]?.message.content as string
-      console.log('🚀 ~ completionContent:', completionContent)
-
-      return completionContent
+      const content = response.choices[0]?.message.content as string
+      return content
     } catch (e) {
       const error = e instanceof Error ? e : new Error('Error in generateInsight')
       sendToSentry(error)
