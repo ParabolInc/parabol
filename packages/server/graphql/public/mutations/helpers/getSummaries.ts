@@ -104,19 +104,14 @@ const getMeetingsContent = async (meeting: MeetingRetrospective, dataLoader: Dat
             }
           })
         )
-        const shortDate = meetingDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        })
-        console.log('🚀 ~ shortDate:', shortDate)
+        const shortMeetingDate = new Date(meetingDate).toISOString().split('T')[0]
         const res = {
           voteCount: voterIds.length,
           title: title,
           comments,
           reflections,
           meetingName,
-          date: shortDate,
+          date: shortMeetingDate,
           meetingId,
           discussionId: discussionIdx
         }

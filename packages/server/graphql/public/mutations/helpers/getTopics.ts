@@ -74,9 +74,8 @@ const processLines = (lines: string[]): string[] => {
 
         let isValid = true
         matches.forEach((match) => {
-          let shortMeetingId = match.split(meetingURL)[1]?.split(/[),\s]/)[0] // Split by closing parenthesis, comma, or space
+          const shortMeetingId = match.split(meetingURL)[1]?.split(/[),\s]/)[0] // Split by closing parenthesis, comma, or space
           const actualMeetingId = shortMeetingId && (meetingLookup[shortMeetingId] as string)
-          console.log('🚀 ~ ________:', {actualMeetingId, meetingLookup})
 
           if (shortMeetingId && actualMeetingId) {
             processedLine = processedLine.replace(shortMeetingId, actualMeetingId)
