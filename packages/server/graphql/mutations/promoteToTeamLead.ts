@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -27,7 +26,6 @@ export default {
     {teamId, userId}: {teamId: string; userId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -61,14 +59,6 @@ export default {
       .where('id', 'in', [oldLeadTeamMemberId, promoteeOnTeam.id])
       .execute()
     dataLoader.clearAll('teamMembers')
-    await r({
-      teamLead: r.table('TeamMember').get(oldLeadTeamMemberId).update({
-        isLead: false
-      }),
-      promotee: r.table('TeamMember').get(promoteeOnTeam.id).update({
-        isLead: true
-      })
-    }).run()
 
     const data = {teamId, oldLeaderId: oldLeadTeamMemberId, newLeaderId: promoteeOnTeam.id}
     publish(SubscriptionChannel.TEAM, teamId, 'PromoteToTeamLeadPayload', data, subOptions)

@@ -37,7 +37,7 @@ const Team: TeamResolvers = {
     const viewerId = getUserId(authToken)
     if (!viewerId) return null
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     return teamMember
   },
   isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),

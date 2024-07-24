@@ -163,7 +163,7 @@ export default {
     }
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const {isSpectatingPoker} = teamMember
     const updates = {
       lastMeetingType: meetingType
