@@ -48,7 +48,7 @@ const OrgNav = (props: Props) => {
     `,
     organizationRef
   )
-  const {name} = organization
+  const {name: orgName} = organization
 
   return (
     <Wrapper>
@@ -60,7 +60,7 @@ const OrgNav = (props: Props) => {
       <StyledIcon>
         <NavigateNextIcon />
       </StyledIcon>
-      <NavItemLabel isCurrent>{`${name}'s Org`}</NavItemLabel>
+      <NavItemLabel isCurrent>{orgName}</NavItemLabel>
     </Wrapper>
   )
 }
