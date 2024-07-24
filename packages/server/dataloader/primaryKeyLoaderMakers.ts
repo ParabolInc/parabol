@@ -153,5 +153,5 @@ export const teamMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
 })
 
 export const templateScales = primaryKeyLoaderMaker((ids: readonly string[]) => {
-  return selectTemplateScale().where('id', 'in', ids).execute()
+  return selectTemplateScale().where('TemplateScale.id', 'in', ids).execute()
 })

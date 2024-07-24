@@ -13,7 +13,6 @@ import FailedAuthRequest from './types/FailedAuthRequest'
 import Invoice from './types/Invoice'
 import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
-import MeetingTemplate from './types/MeetingTemplate'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
 import NotificationMentioned from './types/NotificationMentioned'
@@ -116,10 +115,6 @@ export type RethinkSchema = {
   PushInvitation: {
     type: PushInvitation
     index: 'userId'
-  }
-  MeetingTemplate: {
-    type: MeetingTemplate
-    index: 'teamId' | 'orgId'
   }
   ScheduledJob: {
     type: ScheduledJobUnion

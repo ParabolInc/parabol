@@ -65,12 +65,13 @@ const removePokerTemplateScale = {
       .run()
     // mark templates as updated
     const updatedTemplateIds = dimensions.map(({templateId}: any) => templateId)
-    await pg
-      .updateTable('MeetingTemplate')
-      .set({updatedAt: now})
-      .where('id', 'in', updatedTemplateIds)
-      .execute()
-
+    if (updatedTemplateIds.length) {
+      await pg
+        .updateTable('MeetingTemplate')
+        .set({updatedAt: now})
+        .where('id', 'in', updatedTemplateIds)
+        .execute()
+    }
     const data = {scaleId, dimensions}
     publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
     return data

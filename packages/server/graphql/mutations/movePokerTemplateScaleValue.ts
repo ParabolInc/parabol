@@ -74,12 +74,13 @@ const movePokerTemplateScaleValue = {
       .getAll(scaleId, {index: 'scaleId'})
       .run()
     const updatedTemplateIds = updatedDimensions.map(({templateId}) => templateId)
-    await pg
-      .updateTable('MeetingTemplate')
-      .set({updatedAt: now})
-      .where('id', 'in', updatedTemplateIds)
-      .execute()
-
+    if (updatedTemplateIds.length) {
+      await pg
+        .updateTable('MeetingTemplate')
+        .set({updatedAt: now})
+        .where('id', 'in', updatedTemplateIds)
+        .execute()
+    }
     const data = {scaleId}
     publish(
       SubscriptionChannel.TEAM,
