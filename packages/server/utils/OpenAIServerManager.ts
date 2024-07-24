@@ -349,7 +349,7 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
     const defaultPrompt = `
-    You are a management consultant who needs to discover behavioral trends for a given team.
+    You work at a start-up and you need to discover behavioral trends for a given team.
     Below is a list of reflection topics in YAML format from meetings over recent months.
     You should describe the situation in two sections with no more than 3 bullet points each.
     The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
@@ -357,7 +357,7 @@ class OpenAIServerManager {
     When citing the quote, include the meetingId in the format of https://action.parabol.co/meet/[meetingId].
     Prioritize topics with more votes.
     Be sure that each author is only mentioned once.
-    Your tone should be kind and professional. No yapping.
+    Your tone should be kind and straight forward. Use plain English. No yapping.
     Return the output as a JSON object with the following structure:
     {
       "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
@@ -366,7 +366,7 @@ class OpenAIServerManager {
     `
 
     const promptForSummaries = `
-    You are a management consultant who needs to discover behavioral trends for a given team.
+    You work at a start-up and you need to discover behavioral trends for a given team.
     Below is a list of meeting summaries in YAML format from meetings over recent months.
     You should describe the situation in two sections with exactly 3 bullet points each.
     The first section should describe the team's positive behavior in bullet points.
@@ -380,7 +380,7 @@ class OpenAIServerManager {
       "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
       "challenges": ["bullet point 1", "bullet point 2"]
     }
-    Your tone should be kind and professional. No yapping.
+    Your tone should be kind and straight forward. Use plain English. No yapping.
     `
 
     const prompt = useSummaries ? promptForSummaries : defaultPrompt

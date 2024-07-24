@@ -150,6 +150,10 @@ export const getSummaries = async (
     )
     .run()) as MeetingRetrospective[]
 
+  if (!rawMeetings.length) {
+    return standardError(new Error('No meetings found'))
+  }
+
   const summaries = await Promise.all(
     rawMeetings.map(async (meeting) => {
       // newlyGeneratedSummariesDate is temporary, just to see what it looks like when we create summaries on the fly
