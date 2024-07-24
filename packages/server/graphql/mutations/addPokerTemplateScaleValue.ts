@@ -53,10 +53,7 @@ const addPokerTemplateScaleValue = {
     }
     const {values} = existingScale
     const endCardIdx = values.findIndex(({label}) => ['?', 'Pass'].includes(label))
-    const endCardSortOrder = values[endCardIdx]?.sortOrder
-    const startCardSortOrder = values[endCardIdx - 1]?.sortOrder
-
-    const sortOrder = getSortOrder(startCardSortOrder, endCardSortOrder)
+    const sortOrder = getSortOrder(values, endCardIdx + 1, endCardIdx)
     try {
       await pg
         .insertInto('TemplateScaleValue')

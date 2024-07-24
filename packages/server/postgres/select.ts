@@ -4,6 +4,7 @@ import getKysely from './getKysely'
 export const selectTemplateScale = () => {
   return getKysely()
     .selectFrom('TemplateScale')
+    .where('removedAt', 'is', null)
     .leftJoin('TemplateScaleValue', 'TemplateScale.id', 'TemplateScaleValue.templateScaleId')
     .groupBy('TemplateScale.id')
     .selectAll('TemplateScale')
@@ -14,5 +15,4 @@ export const selectTemplateScale = () => {
         'values'
       )
     ])
-    .orderBy('sortOrder')
 }

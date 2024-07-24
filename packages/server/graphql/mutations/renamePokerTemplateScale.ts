@@ -51,13 +51,11 @@ const renamePokerTemplateScale = {
     }
 
     // RESOLUTION
-    console.log('try resolve')
     await pg
       .updateTable('TemplateScale')
       .set({name: normalizedName})
       .where('id', '=', scaleId)
       .execute()
-    console.log('yay')
     dataLoader.clearAll('templateScales')
     // mark all templates using this scale as updated
     const updatedDimensions = await r

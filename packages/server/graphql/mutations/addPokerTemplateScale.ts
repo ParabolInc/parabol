@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {PokerCards, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import dndNoise from 'parabol-client/utils/dndNoise'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
@@ -50,7 +49,7 @@ const addPokerTemplateScale = {
     // RESOLUTION
     let newScaleId: string | undefined
     let newScaleName: string
-    const sortOrder = Math.max(0, ...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
+
     if (parentScaleId) {
       const parentScale = await dataLoader.get('templateScales').load(parentScaleId)
       if (!parentScale) {
@@ -72,7 +71,6 @@ const addPokerTemplateScale = {
             .insertInto('TemplateScale')
             .values({
               id: generateUID(),
-              sortOrder,
               name: newScaleName,
               teamId,
               parentScaleId
@@ -106,7 +104,6 @@ const addPokerTemplateScale = {
             .insertInto('TemplateScale')
             .values({
               id: generateUID(),
-              sortOrder,
               name: newScaleName,
               teamId
             })

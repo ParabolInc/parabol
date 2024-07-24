@@ -47,27 +47,25 @@ const movePokerTemplateScaleValue = {
     }
 
     // VALIDATION
-    const secondPosItem = scale.values[index]
-    if (index < 0 || index >= scale.values.length - 2 || !secondPosItem) {
-      return standardError(new Error('Invalid index to move to'), {userId: viewerId})
-    }
-    const firstPosItem = scale.values[index - 1]
-    const item = scale.values.find((scaleValue) => scaleValue.label === label)
-    if (!item) {
+    const itemIdx = scale.values.findIndex((scaleValue) => scaleValue.label === label)
+    if (itemIdx === -1) {
       return standardError(new Error('Did not find an existing scale value to move'), {
         userId: viewerId
       })
     }
+    if (index < 0 || index >= scale.values.length - 2) {
+      return standardError(new Error('Invalid index to move to'), {userId: viewerId})
+    }
 
     // RESOLUTION
-    const sortOrder = getSortOrder(firstPosItem?.sortOrder, secondPosItem.sortOrder)
+    const sortOrder = getSortOrder(scale.values, itemIdx, index)
     await pg
       .updateTable('TemplateScaleValue')
       .set({sortOrder})
       .where('templateScaleId', '=', scale.id)
       .where('label', '=', label)
       .execute()
-
+    dataLoader.clearAll('templateScales')
     // mark all templates using this scale as updated
     const updatedDimensions = await r
       .table('TemplateDimension')
