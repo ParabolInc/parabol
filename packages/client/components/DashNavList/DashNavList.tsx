@@ -4,6 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
+import {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
@@ -43,11 +44,11 @@ const DashNavList = (props: Props) => {
     organizationsRef
   )
 
-  const tiers = ['enterprise', 'team', 'starter']
+  const TierEnumValues: TierEnum[] = ['enterprise', 'team', 'starter']
 
   const sortedOrgs = organizations.toSorted((a, b) => {
-    const aTier = tiers.indexOf(a.tier)
-    const bTier = tiers.indexOf(b.tier)
+    const aTier = TierEnumValues.indexOf(a.tier)
+    const bTier = TierEnumValues.indexOf(b.tier)
     return aTier < bTier ? -1 : aTier > bTier ? 1 : a.name.localeCompare(b.name)
   })
 
