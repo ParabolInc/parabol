@@ -371,7 +371,7 @@ class OpenAIServerManager {
     You should describe the situation in two sections with exactly 3 bullet points each.
     The first section should describe the team's positive behavior in bullet points.
     The second section should pick out one or two examples of the team's negative behavior.
-    Try to cite direct quotes from the meeting, attributing it to the person who wrote it, if they're included in the summary.
+    Cite direct quotes from the meeting, attributing it to the person who wrote it, if they're included in the summary.
     Include discussion links included in the summaries. They must be in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
     Try to spot trends. If a topic comes up in several summaries, prioritize it.
     The most important topics are usually at the beginning of each summary, so prioritize them.

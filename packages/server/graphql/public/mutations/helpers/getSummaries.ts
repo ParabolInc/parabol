@@ -152,7 +152,7 @@ export const getSummaries = async (
 
   const summaries = await Promise.all(
     rawMeetings.map(async (meeting) => {
-      // this is temporary, just to see what it looks like when we create summaries on the fly
+      // newlyGeneratedSummariesDate is temporary, just to see what it looks like when we create summaries on the fly
       // if we go with a summary of summaries approach, remove this and create a separate mutation that generates new meeting summaries which include links to discussions
       const newlyGeneratedSummariesDate = new Date('2024-07-22T00:00:00Z')
       if (meeting.summary && meeting.updatedAt > newlyGeneratedSummariesDate) {
@@ -173,6 +173,7 @@ export const getSummaries = async (
 
       const manager = new OpenAIServerManager()
       const newSummary = await manager.generateSummary(yamlData)
+      console.log('🚀 ~ newSummary:', newSummary)
       if (!newSummary) return null
 
       const now = new Date()

@@ -10,8 +10,8 @@ export async function up() {
       "teamId" VARCHAR(100) NOT NULL,
       "startDateTime" TIMESTAMP WITH TIME ZONE NOT NULL,
       "endDateTime" TIMESTAMP WITH TIME ZONE NOT NULL,
-      "wins" JSONB,
-      "challenges" JSONB,
+      "wins" TEXT[],
+      "challenges" TEXT[],
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
