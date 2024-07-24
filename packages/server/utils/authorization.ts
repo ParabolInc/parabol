@@ -1,5 +1,3 @@
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
 import {DataLoaderWorker} from '../graphql/graphql'
 import {OrganizationUser} from '../postgres/types'
@@ -20,20 +18,6 @@ export const isSuperUser = (authToken: AuthToken) => {
 export const isTeamMember = (authToken: AuthToken, teamId: string) => {
   const {tms} = authToken
   return Array.isArray(tms) && tms.includes(teamId)
-}
-
-export const isTeamLead = async (userId: string, teamId: string, dataLoader: DataLoaderWorker) => {
-  const r = await getRethink()
-  const teamMemberId = toTeamMemberId(teamId, userId)
-  if (await r.table('TeamMember').get(teamMemberId)('isLead').default(false).run()) {
-    return true
-  }
-
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const organizationUser = await dataLoader
-    .get('organizationUsersByUserIdOrgId')
-    .load({userId, orgId: team.orgId})
-  return organizationUser?.role === 'ORG_ADMIN'
 }
 
 interface Options {

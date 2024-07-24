@@ -47,18 +47,12 @@ const removeTeamMember = async (
       r.table('Task').getAll(teamId, {index: 'teamId'}).delete()
     ])
   } else if (isLead) {
+    // assign new leader, remove old leader flag
     await pg
       .updateTable('TeamMember')
       .set(({not}) => ({isLead: not('isLead')}))
       .where('id', 'in', [teamMemberId, teamLeader.id])
       .execute()
-    // assign new leader, remove old leader flag
-    await r({
-      newTeamLead: r.table('TeamMember').get(teamLeader.id).update({
-        isLead: true
-      }),
-      oldTeamLead: r.table('TeamMember').get(teamMemberId).update({isLead: false})
-    }).run()
   }
 
   await pg
@@ -68,10 +62,6 @@ const removeTeamMember = async (
     .execute()
   // assign active tasks to the team lead
   const {integratedTasksToArchive, reassignedTasks} = await r({
-    teamMember: r.table('TeamMember').get(teamMemberId).update({
-      isNotRemoved: false,
-      updatedAt: now
-    }),
     integratedTasksToArchive: r
       .table('Task')
       .getAll(userId, {index: 'userId'})

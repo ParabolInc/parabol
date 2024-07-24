@@ -32,7 +32,6 @@ const setPokerSpectate = {
     const r = await getRethink()
     const pg = getKysely()
     const viewerId = getUserId(authToken)
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -68,11 +67,7 @@ const setPokerSpectate = {
       .where('id', '=', teamMemberId)
       .execute()
     await r({
-      meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating}),
-      teamMember: r
-        .table('TeamMember')
-        .get(teamMemberId)
-        .update({isSpectatingPoker: isSpectating, updatedAt: now})
+      meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating})
     }).run()
     dataLoader.clearAll('teamMembers')
     // mutate the dataLoader cache

@@ -995,23 +995,6 @@ enum MeetingTypeEnum {
 }
 
 """
-The details associated with the possible repo and project integrations
-"""
-type RepoIntegrationQueryPayload {
-  error: StandardMutationError
-
-  """
-  true if the items returned are a subset of all the possible integration, else false (all possible integrations)
-  """
-  hasMore: Boolean!
-
-  """
-  All the integrations that are likely to be integrated
-  """
-  items: [RepoIntegration!]
-}
-
-"""
 An invitation and expiration
 """
 type MassInvitation {

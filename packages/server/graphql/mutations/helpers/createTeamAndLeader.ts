@@ -9,7 +9,6 @@ import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreat
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import IUser from '../../../postgres/types/IUser'
-import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 
 interface ValidNewTeam {
   id: string
@@ -68,9 +67,7 @@ export default async function createTeamAndLeader(
       .values(timelineEvent)
       .execute(),
     // add meeting settings
-    r.table('MeetingSettings').insert(meetingSettings).run(),
-    // denormalize common fields to team member
-    insertNewTeamMember(user, teamId, dataLoader)
+    r.table('MeetingSettings').insert(meetingSettings).run()
   ])
   dataLoader.clearAll(['teams', 'users', 'teamMembers', 'timelineEvents', 'meetingSettings'])
 }

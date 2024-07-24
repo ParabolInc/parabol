@@ -146,3 +146,7 @@ export const saml = primaryKeyLoaderMaker((ids: readonly string[]) => {
 export const organizationUsers = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return getKysely().selectFrom('OrganizationUser').selectAll().where('id', 'in', ids).execute()
 })
+
+export const teamMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('TeamMember').selectAll().where('id', 'in', ids).execute()
+})

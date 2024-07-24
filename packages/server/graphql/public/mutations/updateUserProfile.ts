@@ -1,7 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
-import getRethink from '../../../database/rethinkDriver'
-import TeamMember from '../../../database/types/TeamMember'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
@@ -14,7 +12,6 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
   {updatedUser},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
@@ -47,28 +44,17 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
 
   // RESOLUTION
   // propagate denormalized changes to TeamMember
-  const updateObj = {
-    preferredName: normalizedPreferredName
-  }
-  await Promise.all([
-    pg
-      .with('TeamMemberUpdate', (qc) =>
-        qc
-          .updateTable('TeamMember')
-          .set({preferredName: normalizedPreferredName})
-          .where('userId', '=', userId)
-      )
-      .updateTable('User')
-      .set({preferredName: normalizedPreferredName})
-      .where('id', '=', userId)
-      .execute(),
-    r
-      .table('TeamMember')
-      .getAll(userId, {index: 'userId'})
-      .update(updateObj, {returnChanges: true})('changes')('new_val')
-      .default([])
-      .run() as unknown as TeamMember[]
-  ])
+  await pg
+    .with('TeamMemberUpdate', (qc) =>
+      qc
+        .updateTable('TeamMember')
+        .set({preferredName: normalizedPreferredName})
+        .where('userId', '=', userId)
+    )
+    .updateTable('User')
+    .set({preferredName: normalizedPreferredName})
+    .where('id', '=', userId)
+    .execute()
   dataLoader.clearAll(['users', 'teamMembers'])
 
   const [user, teamMembers] = await Promise.all([

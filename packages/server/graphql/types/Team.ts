@@ -153,7 +153,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         if (!isTeamMember(authToken, teamId)) return false
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
-        const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+        const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
         return !!teamMember.isLead
       }
     },
