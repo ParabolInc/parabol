@@ -1286,7 +1286,7 @@ type TemplateDimension {
   """
   the order of the dimensions in the template
   """
-  sortOrder: Float!
+  sortOrder: String!
 
   """
   FK for template
@@ -4922,7 +4922,7 @@ type Mutation {
   """
   movePokerTemplateDimension(
     dimensionId: ID!
-    sortOrder: Float!
+    sortOrder: String!
   ): MovePokerTemplateDimensionPayload!
 
   """
@@ -5695,7 +5695,6 @@ type Mutation {
     """
     providerId: ID!
   ): RemoveIntegrationProviderPayload!
-
 }
 
 type AddAgendaItemPayload {

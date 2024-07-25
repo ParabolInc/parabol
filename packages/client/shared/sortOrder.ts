@@ -5,6 +5,8 @@
 // WARNING: the lexicographical sort assumes a C collation (i.e. compare strings via ASCII code)
 // CloudSQL assumes a utf-8 (byte-code) comparision by default, so make sure the column is collated correctly!
 
+import {MaybeReadonly} from '../types/generics'
+
 const START_CHAR_CODE = 32
 const END_CHAR_CODE = 126
 
@@ -57,7 +59,11 @@ function positionBetween(firstPos: string, secondPos: string) {
   return position + String.fromCharCode(avg(START_CHAR_CODE, END_CHAR_CODE))
 }
 
-export function getSortOrder(arr: {sortOrder: string}[], fromIdx: number, toIdx: number) {
+export function getSortOrder(
+  arr: MaybeReadonly<{sortOrder: string}[]>,
+  fromIdx: number,
+  toIdx: number
+) {
   const secondPosIdx = fromIdx < toIdx ? toIdx + 1 : toIdx
   const firstPos = arr[secondPosIdx - 1]?.sortOrder
   const secondPos = arr[secondPosIdx]?.sortOrder

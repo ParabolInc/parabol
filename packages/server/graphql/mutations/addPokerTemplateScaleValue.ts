@@ -1,10 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import {getSortOrder} from '../../../client/shared/sortOrder'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {getSortOrder} from '../../utils/sortOrder'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
@@ -27,9 +26,7 @@ const addPokerTemplateScaleValue = {
     {scaleId, scaleValue}: {scaleId: string; scaleValue: AddTemplateScaleInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -71,19 +68,6 @@ const addPokerTemplateScaleValue = {
       return {error: {message: 'Could not add scale value'}}
     }
     dataLoader.clearAll('templateScales')
-    // mark all templates using this scale as updated
-    const updatedDimensions = await r
-      .table('TemplateDimension')
-      .getAll(scaleId, {index: 'scaleId'})
-      .run()
-    const updatedTemplateIds = updatedDimensions.map(({templateId}) => templateId)
-    if (updatedTemplateIds.length) {
-      await pg
-        .updateTable('MeetingTemplate')
-        .set({updatedAt: now})
-        .where('id', 'in', updatedTemplateIds)
-        .execute()
-    }
     const data = {scaleId}
     publish(
       SubscriptionChannel.TEAM,
