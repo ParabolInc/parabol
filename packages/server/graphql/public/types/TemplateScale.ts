@@ -1,5 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import {TemplateScaleResolvers} from '../resolverTypes'
 
 const TemplateScale: TemplateScaleResolvers = {
@@ -8,15 +6,8 @@ const TemplateScale: TemplateScaleResolvers = {
     return dataLoader.get('teams').loadNonNull(teamId)
   },
 
-  dimensions: async ({id: scaleId, teamId}) => {
-    const r = await getRethink()
-    return r
-      .table('TemplateDimension')
-      .getAll(teamId, {index: 'teamId'})
-      .filter((row: RDatum) =>
-        row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId))
-      )
-      .run()
+  dimensions: async ({id: scaleId}, _args, {dataLoader}) => {
+    return dataLoader.get('templateDimensionsByScaleId').load(scaleId)
   },
 
   values: ({id, values}) => {

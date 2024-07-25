@@ -2,7 +2,6 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
 import connectRethinkDB from '../../database/connectRethinkDB'
-import TemplateDimension from '../../database/types/TemplateDimension'
 import getPgConfig from '../getPgConfig'
 import getPgp from '../getPgp'
 
@@ -133,7 +132,7 @@ type DimensionInfo = {
   templateId: string
 }
 
-const makeDimension = (dimensionInfo: DimensionInfo): TemplateDimension => {
+const makeDimension = (dimensionInfo: DimensionInfo) => {
   const {id, name, scaleId, sortOrder, templateId} = dimensionInfo
   return {
     createdAt,

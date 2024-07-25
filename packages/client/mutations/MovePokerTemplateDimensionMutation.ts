@@ -15,7 +15,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation MovePokerTemplateDimensionMutation($dimensionId: ID!, $sortOrder: Float!) {
+  mutation MovePokerTemplateDimensionMutation($dimensionId: ID!, $sortOrder: String!) {
     movePokerTemplateDimension(dimensionId: $dimensionId, sortOrder: $sortOrder) {
       error {
         message

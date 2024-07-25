@@ -32,7 +32,7 @@ type TemplateDimension {
   """
   the order of the dimensions in the template
   """
-  sortOrder: Float!
+  sortOrder: String!
 
   """
   FK for template

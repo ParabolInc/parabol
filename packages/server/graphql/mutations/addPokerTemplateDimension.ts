@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import dndNoise from 'parabol-client/utils/dndNoise'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
-import TemplateDimension from '../../database/types/TemplateDimension'
+import {positionAfter} from '../../../client/shared/sortOrder'
+import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -24,11 +22,13 @@ const addPokerTemplateDimension = {
     {templateId}: {templateId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await dataLoader.get('meetingTemplates').load(templateId)
+    const [template, activeDimensions] = await Promise.all([
+      dataLoader.get('meetingTemplates').load(templateId),
+      dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+    ])
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -41,45 +41,31 @@ const addPokerTemplateDimension = {
 
     // VALIDATION
     const {teamId} = template
-    const activeDimensions = await r
-      .table('TemplateDimension')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({templateId})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .run()
     if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLATE_DIMENSIONS) {
       return standardError(new Error('Too many dimensions'), {userId: viewerId})
     }
 
     // RESOLUTION
-    const sortOrder =
-      Math.max(0, ...activeDimensions.map((dimension) => dimension.sortOrder)) + 1 + dndNoise()
+    const lastSortOrder = activeDimensions.at(-1)?.sortOrder ?? ''
+    const sortOrder = positionAfter(lastSortOrder)
     const rawAvailableScales = await dataLoader.get('scalesByTeamId').load(teamId)
     const availableScales = rawAvailableScales.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1))
-    const defaultScaleId =
-      availableScales.length > 0
-        ? availableScales.map((teamScale) => teamScale.id)[0]
-        : SprintPokerDefaults.DEFAULT_SCALE_ID
+    const defaultScaleId = availableScales[0]?.id ?? SprintPokerDefaults.DEFAULT_SCALE_ID
 
-    const newDimension = new TemplateDimension({
-      scaleId: defaultScaleId as string,
-      description: '',
-      sortOrder: sortOrder,
-      name: `*New Dimension #${activeDimensions.length + 1}`,
-      teamId,
-      templateId
-    })
-
-    await Promise.all([
-      r.table('TemplateDimension').insert(newDimension).run(),
-      pg
-        .updateTable('MeetingTemplate')
-        .set({updatedAt: new Date()})
-        .where('id', '=', templateId)
-        .execute()
-    ])
-
-    const dimensionId = newDimension.id
+    const res = await pg
+      .insertInto('TemplateDimension')
+      .values({
+        id: generateUID(),
+        scaleId: defaultScaleId as string,
+        sortOrder,
+        name: `*New Dimension #${activeDimensions.length + 1}`,
+        teamId,
+        templateId
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    dataLoader.clearAll('templateDimensions')
+    const dimensionId = res.id
     const data = {dimensionId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateDimensionPayload', data, subOptions)
     return data
