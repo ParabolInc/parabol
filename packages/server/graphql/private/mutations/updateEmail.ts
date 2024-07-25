@@ -1,10 +1,8 @@
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {MutationResolvers} from '../resolverTypes'
 
 const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail, newEmail}) => {
-  const r = await getRethink()
   const pg = getKysely()
 
   // VALIDATION
@@ -19,23 +17,14 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
 
   // RESOLUTION
   const {id: userId} = user
-  await Promise.all([
-    pg
-      .with('TeamMemberUpdate', (qc) =>
-        qc.updateTable('TeamMember').set({email: newEmail}).where('userId', '=', userId)
-      )
-      .updateTable('User')
-      .set({email: newEmail})
-      .where('id', '=', userId)
-      .execute(),
-    r
-      .table('TeamMember')
-      .getAll(userId, {index: 'userId'})
-      .update({
-        email: newEmail
-      })
-      .run()
-  ])
+  await pg
+    .with('TeamMemberUpdate', (qc) =>
+      qc.updateTable('TeamMember').set({email: newEmail}).where('userId', '=', userId)
+    )
+    .updateTable('User')
+    .set({email: newEmail})
+    .where('id', '=', userId)
+    .execute()
 
   return true
 }

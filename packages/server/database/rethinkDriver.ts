@@ -2,7 +2,6 @@ import {MasterPool, r} from 'rethinkdb-ts'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
-import TeamMember from '../database/types/TeamMember'
 import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import {ScheduledJobUnion} from '../types/custom'
 import getRethinkConfig from './getRethinkConfig'
@@ -14,7 +13,6 @@ import FailedAuthRequest from './types/FailedAuthRequest'
 import Invoice from './types/Invoice'
 import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
-import MeetingTemplate from './types/MeetingTemplate'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
 import NotificationMentioned from './types/NotificationMentioned'
@@ -33,7 +31,6 @@ import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import Task from './types/Task'
 import TemplateDimension from './types/TemplateDimension'
-import TemplateScale from './types/TemplateScale'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -119,10 +116,6 @@ export type RethinkSchema = {
     type: PushInvitation
     index: 'userId'
   }
-  MeetingTemplate: {
-    type: MeetingTemplate
-    index: 'teamId' | 'orgId'
-  }
   ScheduledJob: {
     type: ScheduledJobUnion
     index: 'runAt' | 'type'
@@ -156,17 +149,9 @@ export type RethinkSchema = {
     type: TeamInvitation
     index: 'email' | 'teamId' | 'token'
   }
-  TeamMember: {
-    type: TeamMember
-    index: 'teamId' | 'userId'
-  }
   TemplateDimension: {
     type: TemplateDimension
     index: 'teamId' | 'templateId' | 'scaleId'
-  }
-  TemplateScale: {
-    type: TemplateScale
-    index: 'teamId'
   }
 }
 

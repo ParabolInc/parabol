@@ -72,6 +72,7 @@ afterEach(async () => {
 afterAll(async () => {
   await getKysely().destroy()
   getRedis().quit()
+  console.log('request to join destroy')
 })
 
 test('Only the biggest org with verified emails qualify', async () => {

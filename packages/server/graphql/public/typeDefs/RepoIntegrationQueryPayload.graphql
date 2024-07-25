@@ -7,7 +7,7 @@ type RepoIntegrationQueryPayload {
   """
   true if the items returned are a subset of all the possible integration, else false (all possible integrations)
   """
-  hasMore: Boolean!
+  hasMore: Boolean
 
   """
   All the integrations that are likely to be integrated

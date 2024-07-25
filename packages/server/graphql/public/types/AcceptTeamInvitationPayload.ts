@@ -19,7 +19,7 @@ const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
     return teamId ? dataLoader.get('teams').loadNonNull(teamId) : null
   },
   teamMember: async ({teamMemberId}, _args, {dataLoader}: GQLContext) => {
-    return teamMemberId ? dataLoader.get('teamMembers').load(teamMemberId) : null
+    return teamMemberId ? dataLoader.get('teamMembers').loadNonNull(teamMemberId) : null
   },
   meeting: async ({meetingId}, _args, {dataLoader, authToken}) => {
     if (!meetingId) {

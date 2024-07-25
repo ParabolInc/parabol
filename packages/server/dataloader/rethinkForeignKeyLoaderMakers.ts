@@ -116,20 +116,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
-  'templateScales',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('TemplateScale')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
 export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
   'templateDimensions',
   'templateId',
@@ -218,34 +204,6 @@ export const teamInvitationsByTeamId = new RethinkForeignKeyLoaderMaker(
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({acceptedAt: null})
       .filter((row: RDatum) => row('expiresAt').ge(now))
-      .run()
-  }
-)
-
-export const teamMembersByTeamId = new RethinkForeignKeyLoaderMaker(
-  'teamMembers',
-  'teamId',
-  async (teamIds) => {
-    // tasksByUserId is expensive since we have to look up each team to check the team archive status
-    const r = await getRethink()
-    return r
-      .table('TeamMember')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isNotRemoved: true})
-      .run()
-  }
-)
-
-export const teamMembersByUserId = new RethinkForeignKeyLoaderMaker(
-  'teamMembers',
-  'userId',
-  async (userIds) => {
-    // tasksByUserId is expensive since we have to look up each team to check the team archive status
-    const r = await getRethink()
-    return r
-      .table('TeamMember')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .filter({isNotRemoved: true})
       .run()
   }
 )

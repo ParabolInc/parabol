@@ -83,13 +83,6 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       .returning('id')
       .execute(),
     r
-      .table('TeamMember')
-      .filter((row: RDatum) => row('email').match(`@${normalizedOldDomain}$`))
-      .update((row: RDatum) => ({
-        email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)
-      }))
-      .run(),
-    r
       .table('Invoice')
       .filter((row: RDatum) =>
         row('billingLeaderEmails').contains((email: RValue) =>

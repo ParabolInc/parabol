@@ -10,11 +10,11 @@ import Meeting from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
-import TeamMember from '../../database/types/TeamMember'
 import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
 import insertDiscussions from '../../postgres/queries/insertDiscussions'
+import {TeamMember} from '../../postgres/types'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -82,7 +82,7 @@ const joinMeeting = {
       return {error: {message: 'Not on the team'}}
     }
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
     const {errors} = await r.table('MeetingMember').insert(meetingMember).run()
     // if this is called concurrently, only 1 will be error free

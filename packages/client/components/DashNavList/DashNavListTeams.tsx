@@ -12,7 +12,7 @@ const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isPublicTeams?: boolean}>
   ({isPublicTeams}) => ({
     color: isPublicTeams ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
     borderRadius: 44,
-    paddingLeft: 15
+    paddingLeft: 16
   })
 )
 
@@ -61,7 +61,7 @@ const DashNavListTeams = (props: Props) => {
 
   if (!viewerTeams.length) return null
   return (
-    <div className='p-2'>
+    <div>
       {viewerTeams.map((team) => {
         return (
           <StyledLeftDashNavItem
@@ -75,7 +75,7 @@ const DashNavListTeams = (props: Props) => {
       })}
       {publicTeamsCount > 0 && (
         <StyledLeftDashNavItem
-          className='bg-white pl-11 lg:bg-slate-200'
+          className='bg-white pl-[46px] lg:bg-slate-200'
           onClick={handleClick}
           isPublicTeams
           label={`View ${publicTeamsCount} ${plural(publicTeamsCount, 'Public Team', 'Public Teams')}`}
