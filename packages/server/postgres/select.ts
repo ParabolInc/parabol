@@ -20,3 +20,7 @@ export const selectTemplateScale = () => {
 export const selectTemplateDimension = () => {
   return getKysely().selectFrom('TemplateDimension').selectAll().where('removedAt', 'is', null)
 }
+
+export const selectSuggestedAction = () => {
+  return getKysely().selectFrom('SuggestedAction').selectAll().where('removedAt', 'is', null)
+}
