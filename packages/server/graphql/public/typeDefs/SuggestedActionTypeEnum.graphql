@@ -1,0 +1,10 @@
+"""
+The specific type of the suggested action
+"""
+enum SuggestedActionTypeEnum {
+  inviteYourTeam
+  tryTheDemo
+  tryRetroMeeting
+  createNewTeam
+  tryActionMeeting
+}

@@ -51,34 +51,3 @@ type GitLabIntegration {
     state: String!
   ): GitLabIntegrationConnection!
 }
-
-"""
-A connection to a list of items.
-"""
-type GitLabIntegrationConnection {
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-
-  """
-  A list of edges.
-  """
-  edges: [GitLabIntegrationEdge!]!
-
-  """
-  An error with the connection, if any
-  """
-  error: StandardMutationError
-}
-
-"""
-An edge in a connection.
-"""
-type GitLabIntegrationEdge {
-  """
-  The item at the end of the edge
-  """
-  node: TaskIntegration!
-  cursor: String
-}

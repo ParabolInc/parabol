@@ -1,0 +1,28 @@
+"""
+All the meeting specifics for a user in a team prompt meeting
+"""
+type TeamPromptMeetingMember implements MeetingMember {
+  """
+  A composite of userId::meetingId
+  """
+  id: ID!
+
+  """
+  true if present, false if absent, else null
+  """
+  isCheckedIn: Boolean
+    @deprecated(
+      reason: "Members are checked in when they enter the meeting now & not created beforehand"
+    )
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """
+  The last time a meeting was updated (stage completed, finished, etc)
+  """
+  updatedAt: DateTime!
+}

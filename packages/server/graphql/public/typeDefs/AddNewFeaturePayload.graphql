@@ -1,0 +1,6 @@
+type AddNewFeaturePayload {
+  """
+  the new feature broadcast
+  """
+  newFeature: NewFeatureBroadcast
+}

@@ -1,0 +1,11 @@
+type SignupsPayload {
+  """
+  the total number of signups for the given time range
+  """
+  total: Int!
+
+  """
+  The total broken down by email domain
+  """
+  byDomain: [DomainCountPayload!]!
+}

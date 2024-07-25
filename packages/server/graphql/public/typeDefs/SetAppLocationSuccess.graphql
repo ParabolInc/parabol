@@ -1,0 +1,6 @@
+type SetAppLocationSuccess {
+  """
+  the user with the updated location
+  """
+  user: User!
+}

@@ -1,0 +1,4 @@
+"""
+Return object for EndTeamPromptPayload
+"""
+union EndTeamPromptPayload = ErrorPayload | EndTeamPromptSuccess

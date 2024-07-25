@@ -1,0 +1,11 @@
+type AddPokerTemplateSuccess {
+  """
+  The poker template that was created
+  """
+  pokerTemplate: PokerTemplate!
+
+  """
+  The user that created the template
+  """
+  user: User!
+}

@@ -1,0 +1,13 @@
+type OldUpdateCreditCardPayload {
+  error: StandardMutationError
+
+  """
+  The organization that received the updated credit card
+  """
+  organization: Organization
+
+  """
+  The teams that are now paid up
+  """
+  teamsUpdated: [Team]
+}

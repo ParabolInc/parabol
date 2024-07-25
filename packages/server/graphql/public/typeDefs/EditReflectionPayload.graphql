@@ -1,0 +1,14 @@
+type EditReflectionPayload {
+  error: StandardMutationError
+  promptId: ID
+
+  """
+  The socketId of the client editing the card (uses socketId to maintain anonymity)
+  """
+  editorId: ID
+
+  """
+  true if the reflection is being edited, else false
+  """
+  isEditing: Boolean
+}

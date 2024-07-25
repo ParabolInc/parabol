@@ -1,0 +1,11 @@
+type EndTrialSuccess {
+  """
+  The updated organization
+  """
+  organization: Organization!
+
+  """
+  The start time of the ended trial
+  """
+  trialStartDate: DateTime
+}

@@ -1,0 +1,14 @@
+"""
+A suggested reflection group created by OpenAI'
+"""
+type AutogroupReflectionGroup {
+  """
+  The smart title for the reflection group created by OpenAI
+  """
+  groupTitle: String!
+
+  """
+  The ids of the reflections in the group
+  """
+  reflectionIds: [ID!]!
+}

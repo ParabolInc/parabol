@@ -1,0 +1,11 @@
+"""
+Authorization URL constructed after creating a new request token
+"""
+type CreateOAuth1AuthorizationURLPayload {
+  error: StandardMutationError
+
+  """
+  Authorization URL including oauth_token to start authorization flow
+  """
+  url: String
+}

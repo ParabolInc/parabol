@@ -3,6 +3,42 @@ A Poker meeting
 """
 type PokerMeeting implements NewMeeting {
   """
+  The number of comments generated in the meeting
+  """
+  commentCount: Int!
+
+  """
+  The team members that were active during the time of the meeting
+  """
+  meetingMembers: [PokerMeetingMember!]!
+
+  """
+  The number of stories scored during a meeting
+  """
+  storyCount: Int!
+
+  """
+  A single story created in a Sprint Poker meeting
+  """
+  story(storyId: ID!): Task
+  teamId: ID!
+
+  """
+  The ID of the template used for the meeting. Note the underlying template could have changed!
+  """
+  templateId: ID! @deprecated(reason: "The underlying template could be mutated. Use templateRefId")
+
+  """
+  The ID of the immutable templateRef used for the meeting
+  """
+  templateRefId: ID!
+
+  """
+  The Poker meeting member of the viewer
+  """
+  viewerMeetingMember: PokerMeetingMember
+
+  """
   The unique meeting id. shortid.
   """
   id: ID!
@@ -48,11 +84,6 @@ type PokerMeeting implements NewMeeting {
   locked: Boolean!
 
   """
-  The team members that were active during the time of the meeting
-  """
-  meetingMembers: [PokerMeetingMember!]!
-
-  """
   The auto-incrementing meeting number for the team
   """
   meetingNumber: Int!
@@ -66,7 +97,6 @@ type PokerMeeting implements NewMeeting {
   The meeting series this meeting is associated with if the meeting is recurring
   """
   meetingSeries: MeetingSeries
-
   meetingType: MeetingTypeEnum!
 
   """
@@ -103,7 +133,6 @@ type PokerMeeting implements NewMeeting {
   The time the meeting summary was emailed to the team
   """
   summarySentAt: DateTime
-  teamId: ID!
 
   """
   The team that ran the meeting
@@ -114,34 +143,4 @@ type PokerMeeting implements NewMeeting {
   The last time a meeting was updated (stage completed, finished, etc)
   """
   updatedAt: DateTime
-
-  """
-  The Poker meeting member of the viewer
-  """
-  viewerMeetingMember: PokerMeetingMember
-
-  """
-  The number of comments generated in the meeting
-  """
-  commentCount: Int!
-
-  """
-  The number of stories scored during a meeting
-  """
-  storyCount: Int!
-
-  """
-  A single story created in a Sprint Poker meeting
-  """
-  story(storyId: ID!): Task
-
-  """
-  The ID of the template used for the meeting. Note the underlying template could have changed!
-  """
-  templateId: ID! @deprecated(reason: "The underlying template could be mutated. Use templateRefId")
-
-  """
-  The ID of the immutable templateRef used for the meeting
-  """
-  templateRefId: ID!
 }

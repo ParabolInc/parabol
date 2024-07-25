@@ -1,0 +1,5 @@
+type RevealTeamHealthVotesSuccess {
+  meetingId: ID!
+  stageId: ID!
+  stage: TeamHealthStage!
+}

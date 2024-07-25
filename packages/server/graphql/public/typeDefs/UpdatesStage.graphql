@@ -1,0 +1,110 @@
+"""
+A stage that focuses on a single team member
+"""
+type UpdatesStage implements NewMeetingStage & NewMeetingTeamMemberStage {
+  """
+  stageId, shortid
+  """
+  id: ID!
+
+  """
+  The datetime the stage was completed
+  """
+  endAt: DateTime
+
+  """
+  foreign key. try using meeting
+  """
+  meetingId: ID!
+
+  """
+  The meeting this stage belongs to
+  """
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """
+  true if any meeting participant can navigate to this stage
+  """
+  isNavigable: Boolean!
+
+  """
+  true if the facilitator can navigate to this stage
+  """
+  isNavigableByFacilitator: Boolean!
+
+  """
+  The phase this stage belongs to
+  """
+  phase: NewMeetingPhase
+
+  """
+  The type of the phase
+  """
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """
+  The datetime the stage was started
+  """
+  startAt: DateTime
+
+  """
+  Number of times the facilitator has visited this stage
+  """
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """
+  true if the viewer is ready to advance, else false
+  """
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """
+  The meeting member that is the focus for this phase item
+  """
+  meetingMember: MeetingMember!
+
+  """
+  foreign key. use teamMember
+  """
+  teamMemberId: ID!
+
+  """
+  The team member that is the focus for this phase item
+  """
+  teamMember: TeamMember!
+}

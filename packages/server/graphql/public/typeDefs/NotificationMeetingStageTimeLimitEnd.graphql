@@ -1,0 +1,35 @@
+"""
+A notification sent to a facilitator that the stage time limit has ended
+"""
+type NotificationMeetingStageTimeLimitEnd implements Notification & TeamNotification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  *The userId that should see this notification
+  """
+  userId: ID!
+
+  """
+  FK
+  """
+  meetingId: ID!
+
+  """
+  The meeting that had the time limit expire
+  """
+  meeting: NewMeeting!
+}

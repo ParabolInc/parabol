@@ -1,0 +1,6 @@
+type VerifyDomainSuccess {
+  """
+  Describe the first return field here
+  """
+  saml: SAML!
+}

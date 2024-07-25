@@ -1,0 +1,19 @@
+"""
+An instance of a meeting phase item. On the client, this usually represents a single view
+"""
+interface NewMeetingTeamMemberStage {
+  """
+  The meeting member that is the focus for this phase item
+  """
+  meetingMember: MeetingMember!
+
+  """
+  foreign key. use teamMember
+  """
+  teamMemberId: ID!
+
+  """
+  The team member that is the focus for this phase item
+  """
+  teamMember: TeamMember!
+}

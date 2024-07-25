@@ -1,0 +1,4 @@
+"""
+Return value for updateCreditCard, which could be an error
+"""
+union UpdateCreditCardPayload = ErrorPayload | UpdateCreditCardSuccess
