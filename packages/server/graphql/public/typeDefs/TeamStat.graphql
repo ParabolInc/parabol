@@ -1,0 +1,4 @@
+type TeamStat {
+  id: ID!
+  createdAt: DateTime!
+}

@@ -1,0 +1,4 @@
+"""
+Return value for updateMeetingTemplate, which could be an error
+"""
+union UpdateMeetingTemplatePayload = ErrorPayload | UpdateMeetingTemplateSuccess

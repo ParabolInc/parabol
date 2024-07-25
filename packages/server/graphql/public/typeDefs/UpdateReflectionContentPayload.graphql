@@ -1,0 +1,5 @@
+type UpdateReflectionContentPayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+  reflection: RetroReflection
+}

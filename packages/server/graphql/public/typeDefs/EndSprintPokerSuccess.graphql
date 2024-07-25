@@ -1,0 +1,11 @@
+type EndSprintPokerSuccess {
+  """
+  true if the meeting was killed (ended before reaching last stage)
+  """
+  isKill: Boolean!
+  meetingId: ID!
+  meeting: PokerMeeting!
+  removedTaskIds: [ID!]!
+  team: Team!
+  teamId: ID!
+}

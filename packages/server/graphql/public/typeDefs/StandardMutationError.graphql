@@ -1,0 +1,11 @@
+type StandardMutationError {
+  """
+  The title of the error
+  """
+  title: String
+
+  """
+  The full error
+  """
+  message: String!
+}

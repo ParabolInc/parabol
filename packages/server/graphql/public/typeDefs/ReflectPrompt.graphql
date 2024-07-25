@@ -1,0 +1,56 @@
+"""
+A team-specific reflection prompt. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
+"""
+type ReflectPrompt {
+  """
+  shortid
+  """
+  id: ID!
+  createdAt: DateTime!
+
+  """
+  foreign key. use the team field
+  """
+  teamId: ID!
+
+  """
+  The team that owns this reflectPrompt
+  """
+  team: Team
+  updatedAt: DateTime!
+
+  """
+  the order of the items in the template
+  """
+  sortOrder: Float!
+
+  """
+  FK for template
+  """
+  templateId: ID!
+
+  """
+  The template that this prompt belongs to
+  """
+  template: ReflectTemplate!
+
+  """
+  The question to answer during the phase of the retrospective (eg What went well?)
+  """
+  question: String!
+
+  """
+  The description to the question for further context. A long version of the question.
+  """
+  description: String!
+
+  """
+  The color used to visually group a phase item.
+  """
+  groupColor: String!
+
+  """
+  The datetime that the prompt was removed. Null if it has not been removed.
+  """
+  removedAt: DateTime
+}

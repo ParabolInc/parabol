@@ -1,0 +1,4 @@
+"""
+Return object for ArchiveTimelineEventPayload
+"""
+union ArchiveTimelineEventPayload = ErrorPayload | ArchiveTimelineEventSuccess

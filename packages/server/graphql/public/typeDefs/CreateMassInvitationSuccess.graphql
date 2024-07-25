@@ -1,0 +1,6 @@
+type CreateMassInvitationSuccess {
+  """
+  the team with the updated mass inivtation
+  """
+  team: Team!
+}

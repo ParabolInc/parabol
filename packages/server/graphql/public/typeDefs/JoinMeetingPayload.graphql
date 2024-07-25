@@ -1,0 +1,4 @@
+"""
+Return object for JoinMeetingPayload
+"""
+union JoinMeetingPayload = ErrorPayload | JoinMeetingSuccess

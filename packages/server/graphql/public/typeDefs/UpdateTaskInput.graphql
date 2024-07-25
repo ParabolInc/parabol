@@ -1,0 +1,14 @@
+input UpdateTaskInput {
+  """
+  The task id
+  """
+  id: ID!
+  content: String
+  sortOrder: Float
+  status: TaskStatusEnum
+
+  """
+  userId, the owner of the task. This can be null if the task is not assigned to anyone.
+  """
+  userId: ID
+}

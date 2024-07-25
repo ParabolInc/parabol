@@ -1,0 +1,16 @@
+type StartTeamPromptSuccess {
+  """
+  The started meeting
+  """
+  meeting: TeamPromptMeeting!
+
+  """
+  The team that started the meeting
+  """
+  team: Team!
+
+  """
+  True if there was an error creating the Google Calendar event. False if there was no error or no gcalInput was provided.
+  """
+  hasGcalError: Boolean
+}

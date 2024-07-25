@@ -1,0 +1,5 @@
+type SetTeamHealthVoteSuccess {
+  meetingId: ID!
+  stageId: ID!
+  stage: TeamHealthStage!
+}

@@ -1,0 +1,14 @@
+input TaskEstimateInput {
+  taskId: ID!
+
+  """
+  The new estimate value
+  """
+  value: String!
+
+  """
+  The name of the estimate, e.g. Story Points
+  """
+  dimensionName: String!
+  meetingId: ID!
+}

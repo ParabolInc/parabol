@@ -1,0 +1,5 @@
+enum CanAccessEntity {
+  Team
+  Meeting
+  Organization
+}

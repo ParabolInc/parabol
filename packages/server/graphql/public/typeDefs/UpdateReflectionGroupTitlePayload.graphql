@@ -1,0 +1,5 @@
+type UpdateReflectionGroupTitlePayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+  reflectionGroup: RetroReflectionGroup
+}

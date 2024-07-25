@@ -1,0 +1,11 @@
+type OrgUserCount {
+  """
+  The number of orgUsers who have an inactive flag
+  """
+  inactiveUserCount: Int!
+
+  """
+  The number of orgUsers who do not have an inactive flag
+  """
+  activeUserCount: Int!
+}

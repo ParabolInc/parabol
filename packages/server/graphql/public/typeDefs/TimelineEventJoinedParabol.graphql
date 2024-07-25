@@ -1,0 +1,64 @@
+"""
+An event for joining the app
+"""
+type TimelineEventJoinedParabol implements TimelineEvent {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  * The timestamp the event was created at
+  """
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """
+  true if the timeline event is active, false if archived
+  """
+  isActive: Boolean!
+
+  """
+  The orgId this event is associated with. Null if not traceable to one org
+  """
+  orgId: ID
+
+  """
+  The organization this event is associated with
+  """
+  organization: Organization
+
+  """
+  the number of times the user has seen this event
+  """
+  seenCount: Int!
+
+  """
+  The teamId this event is associated with. Null if not traceable to one team
+  """
+  teamId: ID
+
+  """
+  The team that can see this event
+  """
+  team: Team
+
+  """
+  The specific type of event
+  """
+  type: TimelineEventEnum!
+
+  """
+  * The userId that can see this event
+  """
+  userId: ID!
+
+  """
+  The user than can see this event
+  """
+  user: User!
+}

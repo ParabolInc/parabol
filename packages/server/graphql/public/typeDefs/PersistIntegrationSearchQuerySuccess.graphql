@@ -1,0 +1,5 @@
+type PersistIntegrationSearchQuerySuccess {
+  userId: ID
+  teamId: ID
+  jiraServerIntegration: JiraServerIntegration
+}

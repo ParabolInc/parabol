@@ -3,6 +3,11 @@ A request placeholder that will likely turn into 1 or more tasks
 """
 type AgendaItem {
   """
+  The team member that created the agenda item
+  """
+  teamMember: TeamMember!
+
+  """
   The unique agenda item id teamId::shortid
   """
   id: ID!
@@ -56,9 +61,4 @@ type AgendaItem {
   The timestamp the agenda item was updated
   """
   updatedAt: DateTime
-
-  """
-  The team member that created the agenda item
-  """
-  teamMember: TeamMember!
 }

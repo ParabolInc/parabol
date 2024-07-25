@@ -1,0 +1,4 @@
+"""
+Return object for CreatePollPayload
+"""
+union CreatePollPayload = ErrorPayload | CreatePollSuccess

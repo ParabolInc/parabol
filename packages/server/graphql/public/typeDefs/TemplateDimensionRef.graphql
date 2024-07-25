@@ -1,0 +1,26 @@
+"""
+An immutable TemplateDimension
+"""
+type TemplateDimensionRef {
+  id: ID!
+
+  """
+  the order of the dimensions in the template
+  """
+  sortOrder: Float!
+
+  """
+  The name of the dimension
+  """
+  name: String!
+
+  """
+  The md5 hash to resolve the immutable selected scale ref
+  """
+  scaleRefId: ID!
+
+  """
+  scale used in this dimension
+  """
+  scale: TemplateScaleRef!
+}

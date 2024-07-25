@@ -1,0 +1,18 @@
+type AddGitHubAuthPayload {
+  error: StandardMutationError
+
+  """
+  The newly created auth
+  """
+  githubIntegration: GitHubIntegration
+
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember
+
+  """
+  The user with updated githubAuth
+  """
+  user: User
+}

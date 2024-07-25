@@ -1,5 +1,4 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddPokerTemplateScale = (
   newNode: RecordProxy | null,
@@ -9,7 +8,8 @@ const handleAddPokerTemplateScale = (
   const teamId = newNode.getValue('teamId') as string
   const team = store.get(teamId)
   if (!team) return
-  addNodeToArray(newNode, team, 'scales', 'teamId')
+  const existingScales = team.getLinkedRecords('scales') || []
+  team.setLinkedRecords([newNode, ...existingScales], 'scales')
 }
 
 export default handleAddPokerTemplateScale

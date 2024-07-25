@@ -1,9 +1,9 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
+import {positionAfter} from '../../../../client/shared/sortOrder'
 import PokerTemplate from '../../../database/types/PokerTemplate'
-import TemplateDimension from '../../../database/types/TemplateDimension'
+import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
-import insertMeetingTemplate from '../../../postgres/queries/insertMeetingTemplate'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -17,7 +17,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   {teamId, parentTemplateId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
@@ -78,23 +77,24 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       illustrationUrl: parentTemplate.illustrationUrl
     })
 
-    const dimensions = await dataLoader
+    const activeDimensions = await dataLoader
       .get('templateDimensionsByTemplateId')
       .load(parentTemplate.id)
-    const activeDimensions = dimensions.filter(({removedAt}: TemplateDimension) => !removedAt)
-    const newTemplateDimensions = activeDimensions.map((dimension: TemplateDimension) => {
-      return new TemplateDimension({
-        ...dimension,
-        teamId,
-        templateId: newTemplate.id
-      })
-    })
-
+    const newTemplateDimensions = activeDimensions.map((dimension) => ({
+      ...dimension,
+      id: generateUID(),
+      teamId,
+      templateId: newTemplate.id
+    }))
     await Promise.all([
-      r.table('TemplateDimension').insert(newTemplateDimensions).run(),
-      insertMeetingTemplate(newTemplate),
+      getKysely()
+        .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
+        .insertInto('TemplateDimension')
+        .values(newTemplateDimensions)
+        .execute(),
       decrementFreeTemplatesRemaining(viewerId, 'poker')
     ])
+    dataLoader.clearAll(['users', 'meetingTemplates', 'templateDimensions'])
     viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
     analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
     data = {templateId: newTemplate.id}
@@ -110,20 +110,24 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       illustrationUrl: getTemplateIllustrationUrl('estimatedEffortTemplate.png')
     })
     const templateId = newTemplate.id
-    const newDimension = new TemplateDimension({
-      scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
-      description: '',
-      sortOrder: 0,
-      name: '*New Dimension',
-      teamId,
-      templateId
-    })
 
     await Promise.all([
-      r.table('TemplateDimension').insert(newDimension).run(),
-      insertMeetingTemplate(newTemplate),
+      getKysely()
+        .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
+        .insertInto('TemplateDimension')
+        .values({
+          id: generateUID(),
+          scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
+          description: '',
+          sortOrder: positionAfter(''),
+          name: '*New Dimension',
+          teamId,
+          templateId
+        })
+        .execute(),
       decrementFreeTemplatesRemaining(viewerId, 'poker')
     ])
+    dataLoader.clearAll(['users', 'meetingTemplates', 'templateDimensions'])
     viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
     analytics.templateMetrics(viewer, newTemplate, 'Template Created')
     data = {templateId}
