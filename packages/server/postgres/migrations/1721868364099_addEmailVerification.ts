@@ -39,6 +39,7 @@ export async function up() {
       pseudoId
     }
   })
+  if (insertData.length === 0) return
   await pg.insertInto('EmailVerification').values(insertData).execute()
 }
 
