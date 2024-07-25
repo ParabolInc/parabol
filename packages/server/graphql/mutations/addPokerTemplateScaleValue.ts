@@ -1,20 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
-import TemplateScale from '../../database/types/TemplateScale'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import {getSortOrder} from '../../utils/sortOrder'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
 import AddTemplateScaleInput, {AddTemplateScaleInputType} from '../types/AddTemplateScaleInput'
-import {
-  validateColorValue,
-  validateScaleLabel,
-  validateScaleLabelValueUniqueness
-} from './helpers/validateScaleValue'
+import {validateColorValue, validateScaleLabel} from './helpers/validateScaleValue'
 
 const addPokerTemplateScaleValue = {
   description: 'Add a new scale value for a scale in a poker template',
@@ -40,7 +35,7 @@ const addPokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const existingScale = await r.table('TemplateScale').get(scaleId).run()
+    const existingScale = await dataLoader.get('templateScales').load(scaleId)
     if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -56,48 +51,39 @@ const addPokerTemplateScaleValue = {
     if (!validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
     }
-
-    const updatedScale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update(
-        (row: RDatum<TemplateScale>) => ({
-          // Append at the end of the sub-array (minus ? and Pass)
-          values: row('values').insertAt(row('values').count().sub(2), scaleValue),
-          updatedAt: now
-        }),
-        {returnChanges: true}
-      )('changes')(0)('new_val')
-      .default(null)
-      .run()
-
-    if (updatedScale && !validateScaleLabelValueUniqueness(updatedScale.values)) {
-      // updated values and/or labels are not unique, rolling back
-      await r
-        .table('TemplateScale')
-        .get(scaleId)
-        .update({
-          values: existingScale.values,
-          updatedAt: existingScale.updatedAt
+    const {values} = existingScale
+    const endCardIdx = values.findIndex(({label}) => ['?', 'Pass'].includes(label))
+    const sortOrder = getSortOrder(values, endCardIdx + 1, endCardIdx)
+    try {
+      await pg
+        .insertInto('TemplateScaleValue')
+        .values({
+          templateScaleId: scaleId,
+          color,
+          label,
+          sortOrder
         })
-        .run()
-      return standardError(new Error('Scale labels and/or numerical values are not unique'), {
-        userId: viewerId
-      })
+        .execute()
+    } catch (e) {
+      if ((e as any).constraint === 'TemplateScaleValue_templateScaleId_label_key') {
+        return {error: {message: 'Scale labels and/or numerical values are not unique'}}
+      }
+      return {error: {message: 'Could not add scale value'}}
     }
-
+    dataLoader.clearAll('templateScales')
     // mark all templates using this scale as updated
     const updatedDimensions = await r
       .table('TemplateDimension')
       .getAll(scaleId, {index: 'scaleId'})
       .run()
     const updatedTemplateIds = updatedDimensions.map(({templateId}) => templateId)
-    await pg
-      .updateTable('MeetingTemplate')
-      .set({updatedAt: now})
-      .where('id', 'in', updatedTemplateIds)
-      .execute()
-
+    if (updatedTemplateIds.length) {
+      await pg
+        .updateTable('MeetingTemplate')
+        .set({updatedAt: now})
+        .where('id', 'in', updatedTemplateIds)
+        .execute()
+    }
     const data = {scaleId}
     publish(
       SubscriptionChannel.TEAM,

@@ -59,6 +59,7 @@ const SelectScaleDropdown = (props: Props) => {
           scales {
             id
             isStarter
+            name
             ...ScaleDropdownMenuItem_scale
           }
         }
@@ -70,8 +71,11 @@ const SelectScaleDropdown = (props: Props) => {
   const {selectedScale, team} = dimension
   const {id: seletedScaleId} = selectedScale
   const {id: teamId, scales} = team
+  const sortedScales = scales.toSorted((a, b) => {
+    return a.isStarter !== b.isStarter ? (a.isStarter ? 1 : -1) : a.name.localeCompare(b.name)
+  })
   const defaultActiveIdx = useMemo(
-    () => scales.findIndex(({id}) => id === seletedScaleId),
+    () => sortedScales.findIndex(({id}) => id === seletedScaleId),
     [dimension]
   )
 
@@ -98,17 +102,17 @@ const SelectScaleDropdown = (props: Props) => {
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      {scales.map((scale) => (
+      {sortedScales.map((scale) => (
         <ScaleDropdownMenuItem
           key={scale.id}
           scale={scale}
           dimension={dimension}
-          scaleCount={scales.length}
+          scaleCount={sortedScales.length}
           closePortal={closePortal}
         />
       ))}
       <MenuItemHR key='HR1' />
-      {scales.length < Threshold.MAX_POKER_TEMPLATE_SCALES && (
+      {sortedScales.length < Threshold.MAX_POKER_TEMPLATE_SCALES && (
         <MenuItem
           key='create'
           label={

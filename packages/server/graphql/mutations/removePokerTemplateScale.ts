@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
@@ -40,7 +41,11 @@ const removePokerTemplateScale = {
     }
 
     // RESOLUTION
-    await r.table('TemplateScale').get(scaleId).update({removedAt: now, updatedAt: now}).run()
+    await pg
+      .updateTable('TemplateScale')
+      .set({removedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', scaleId)
+      .execute()
 
     const nextDefaultScaleId = SprintPokerDefaults.DEFAULT_SCALE_ID
     const dimensions = await r
@@ -60,12 +65,13 @@ const removePokerTemplateScale = {
       .run()
     // mark templates as updated
     const updatedTemplateIds = dimensions.map(({templateId}: any) => templateId)
-    await pg
-      .updateTable('MeetingTemplate')
-      .set({updatedAt: now})
-      .where('id', 'in', updatedTemplateIds)
-      .execute()
-
+    if (updatedTemplateIds.length) {
+      await pg
+        .updateTable('MeetingTemplate')
+        .set({updatedAt: now})
+        .where('id', 'in', updatedTemplateIds)
+        .execute()
+    }
     const data = {scaleId, dimensions}
     publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
     return data

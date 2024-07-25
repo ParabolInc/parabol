@@ -11,9 +11,9 @@ graphql`
       ...ScaleDropdownMenuItem_scale
       id
       teamId
-    }
-    dimensions {
-      ...PokerTemplateScalePicker_dimension
+      dimensions {
+        ...PokerTemplateScalePicker_dimension
+      }
     }
   }
 `

@@ -54,13 +54,8 @@ const addPokerTemplateDimension = {
     // RESOLUTION
     const sortOrder =
       Math.max(0, ...activeDimensions.map((dimension) => dimension.sortOrder)) + 1 + dndNoise()
-
-    const availableScales = await r
-      .table('TemplateScale')
-      .filter({teamId})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .orderBy(r.desc('updatedAt'))
-      .run()
+    const rawAvailableScales = await dataLoader.get('scalesByTeamId').load(teamId)
+    const availableScales = rawAvailableScales.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1))
     const defaultScaleId =
       availableScales.length > 0
         ? availableScales.map((teamScale) => teamScale.id)[0]
