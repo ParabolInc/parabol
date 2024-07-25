@@ -8,7 +8,6 @@ import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
-import updateMeetingTemplateScope from '../../postgres/queries/updateMeetingTemplateScope'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -108,6 +107,7 @@ const updateTemplateScope = {
         r.table('ReflectPrompt').insert(clonedPrompts).run(),
         r.table('ReflectPrompt').getAll(r.args(promptIds)).update({removedAt: now}).run()
       ])
+      dataLoader.clearAll(['reflectPrompts', 'meetingTemplates'])
     }
 
     const clonePokerTemplate = async () => {
@@ -156,7 +156,11 @@ const updateTemplateScope = {
         clonePokerTemplate()
       }
     } else {
-      await updateMeetingTemplateScope(templateId, newScope)
+      await getKysely()
+        .updateTable('MeetingTemplate')
+        .set({scope: newScope})
+        .where('id', '=', templateId)
+        .execute()
     }
     const data = {templateId, teamId, clonedTemplateId}
 

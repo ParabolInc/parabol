@@ -49,7 +49,7 @@ const removePokerTemplateDimension = {
       .set({removedAt: now})
       .where('id', '=', dimensionId)
       .execute()
-
+    dataLoader.clearAll('templateDimensions')
     const data = {dimensionId, templateId}
     publish(
       SubscriptionChannel.TEAM,

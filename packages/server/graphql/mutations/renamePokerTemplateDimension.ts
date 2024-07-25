@@ -50,12 +50,12 @@ const renamePokerTemplateDimension = {
         .execute()
     } catch (e) {
       const error =
-        (e as any).constraint === 'TemplateDimension_teamId_name_key'
+        (e as any).constraint === 'TemplateDimension_teamId_name_removedAt_key'
           ? 'Duplicate name dimension'
           : (e as any).message
       return {error: {message: error}}
     }
-
+    dataLoader.clearAll('templateDimensions')
     const data = {dimensionId}
     publish(
       SubscriptionChannel.TEAM,

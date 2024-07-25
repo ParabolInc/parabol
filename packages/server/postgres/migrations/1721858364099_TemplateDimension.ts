@@ -39,7 +39,7 @@ export async function up() {
       "scaleId" VARCHAR(100) NOT NULL,
       "sortOrder" VARCHAR(64) NOT NULL COLLATE "C",
       "removedAt" TIMESTAMP WITH TIME ZONE,
-      UNIQUE ("teamId","name"),
+      UNIQUE ("teamId","name","removedAt"),
       CONSTRAINT "fk_teamId"
         FOREIGN KEY("teamId")
           REFERENCES "Team"("id")

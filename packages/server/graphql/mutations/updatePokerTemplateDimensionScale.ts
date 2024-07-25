@@ -45,7 +45,7 @@ const updatePokerTemplateDimensionScale = {
     }
 
     await pg.updateTable('TemplateDimension').set({scaleId}).where('id', '=', dimensionId).execute()
-
+    dataLoader.get('templateDimensions').clear(dimensionId)
     const data = {dimensionId}
     publish(
       SubscriptionChannel.TEAM,

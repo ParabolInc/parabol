@@ -86,7 +86,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       teamId,
       templateId: newTemplate.id
     }))
-
     await Promise.all([
       getKysely()
         .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
