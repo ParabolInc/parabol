@@ -1,10 +1,10 @@
-import {DeleteOutline} from '@mui/icons-material'
-import IconButton from '@mui/material/IconButton'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
+import IconLabel from '../../../../components/IconLabel'
+import LinkButton from '../../../../components/LinkButton'
 import useModal from '../../../../hooks/useModal'
 import plural from '../../../../utils/plural'
 import ArchiveTeamModal from './ArchiveTeamModal'
@@ -67,14 +67,18 @@ const OrgTeamsRow = (props: Props) => {
         </div>
         {(viewerIsLead || isOrgAdmin) && (
           <div className='flex items-center'>
-            <IconButton
-              onClick={togglePortal}
-              aria-label='Archive team'
-              className='text-tomato-500 hover:text-tomato-600'
-            >
-              <DeleteOutline />
-            </IconButton>
-            <span className='ml-2 text-sm text-slate-600'>Archive Team</span>
+            <div>
+              <LinkButton
+                aria-label='Click to permanently delete this team.'
+                palette='red'
+                onClick={togglePortal}
+              >
+                <IconLabel icon='remove_circle' label='Delete Team' />
+              </LinkButton>
+              <span className='mt-2 block text-sm text-slate-600'>
+                <b>Note</b>: {'This can’t be undone.'}
+              </span>
+            </div>
           </div>
         )}
       </div>

@@ -31,13 +31,14 @@ const ArchiveTeamModal = (props: Props) => {
     closeModal()
   }
 
-  const confirmationText = teamLeadName ? (
+  const confirmationText = (
     <span>
-      Are you sure you want to archive{' '}
-      <span className='font-bold text-tomato-500'>{teamLeadName}'s</span> team "{teamName}"?
+      {`Are you sure you want to delete ${teamLeadName ? `${teamLeadName}'s team` : 'your team'} "${teamName}"?`}
+      <br />
+      <span className='mt-2 block text-sm text-slate-600'>
+        <b>Note</b>: This can’t be undone.
+      </span>
     </span>
-  ) : (
-    `Are you sure you want to archive your team "${teamName}"?`
   )
 
   return (
