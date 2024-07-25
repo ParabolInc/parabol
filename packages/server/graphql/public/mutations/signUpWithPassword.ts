@@ -47,13 +47,12 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   }
   const verificationRequired = await isEmailVerificationRequired(email, dataLoader)
   if (verificationRequired) {
-    const existingVerification =
-      (await pg
-        .selectFrom('EmailVerification')
-        .selectAll()
-        .where('email', '=', email)
-        .where('expiration', '>', new Date())
-        .executeTakeFirst()) || null
+    const existingVerification = await pg
+      .selectFrom('EmailVerification')
+      .selectAll()
+      .where('email', '=', email)
+      .where('expiration', '>', new Date())
+      .executeTakeFirst()
     if (existingVerification) {
       return {error: {message: 'Verification email already sent'}}
     }

@@ -1,9 +1,9 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
-import getKysely from '../postgres/getKysely'
+import {Threshold} from 'parabol-client/types/constEnums'
 import AuthIdentityLocal from '../database/types/AuthIdentityLocal'
-import EmailVerification from '../database/types/EmailVerification'
 import {DataLoaderWorker} from '../graphql/graphql'
+import getKysely from '../postgres/getKysely'
 import emailVerificationEmailCreator from './emailVerificationEmailCreator'
 import getMailManager from './getMailManager'
 
@@ -34,15 +34,18 @@ const createEmailVerficationForExistingUser = async (
   if (!success) {
     return new Error('Unable to send verification email')
   }
-  const emailVerification = new EmailVerification({
-    email,
-    token: verifiedEmailToken,
-    hashedPassword,
-    pseudoId,
-    invitationToken
-  })
   const pg = getKysely()
-  await pg.insertInto('EmailVerification').values(emailVerification).execute()
+  await pg
+    .insertInto('EmailVerification')
+    .values({
+      email,
+      token: verifiedEmailToken,
+      hashedPassword,
+      pseudoId,
+      invitationToken,
+      expiration: new Date(Date.now() + Threshold.EMAIL_VERIFICATION_LIFESPAN)
+    })
+    .execute()
   return undefined
 }
 

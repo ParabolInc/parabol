@@ -1,7 +1,6 @@
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
-import EmailVerification from '../../../database/types/EmailVerification'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
@@ -18,12 +17,11 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   const {dataLoader} = context
   const pg = getKysely()
   const now = new Date()
-  const emailVerification =
-    ((await pg
-      .selectFrom('EmailVerification')
-      .selectAll()
-      .where('token', '=', verificationToken)
-      .executeTakeFirst()) as EmailVerification) || null
+  const emailVerification = await pg
+    .selectFrom('EmailVerification')
+    .selectAll()
+    .where('token', '=', verificationToken)
+    .executeTakeFirst()
 
   if (!emailVerification) {
     return {error: {message: 'Invalid verification token'}}
