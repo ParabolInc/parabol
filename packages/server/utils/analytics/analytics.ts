@@ -8,12 +8,12 @@ import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../../database/types/Reactable'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import {TaskServiceEnum} from '../../database/types/Task'
-import TemplateScale from '../../database/types/TemplateScale'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {ModifyType} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
+import {TemplateScale} from '../../postgres/types'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
@@ -413,7 +413,7 @@ class Analytics {
 
   scaleMetrics = (
     user: AnalyticsUser,
-    scale: TemplateScale,
+    scale: Pick<TemplateScale, 'id' | 'name' | 'teamId'>,
     eventName: 'Scale Created' | 'Scale Cloned'
   ) => {
     this.track(user, eventName, {

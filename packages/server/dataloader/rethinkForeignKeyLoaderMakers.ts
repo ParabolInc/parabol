@@ -116,20 +116,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
-  'templateScales',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('TemplateScale')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
 export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
   'templateDimensions',
   'templateId',

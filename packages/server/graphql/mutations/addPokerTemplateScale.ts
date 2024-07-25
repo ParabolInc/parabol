@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import dndNoise from 'parabol-client/utils/dndNoise'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
-import TemplateScale from '../../database/types/TemplateScale'
+import {PokerCards, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {PALETTE} from '../../../client/styles/paletteV3'
+import generateUID from '../../generateUID'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import {positionAfter} from '../../utils/sortOrder'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplateScalePayload from '../types/AddPokerTemplateScalePayload'
@@ -27,7 +27,7 @@ const addPokerTemplateScale = {
     {parentScaleId, teamId}: {parentScaleId?: string | null; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -39,11 +39,7 @@ const addPokerTemplateScale = {
 
     // VALIDATION
     const [activeScales, viewer] = await Promise.all([
-      r
-        .table('TemplateScale')
-        .getAll(teamId, {index: 'teamId'})
-        .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-        .run(),
+      dataLoader.get('scalesByTeamId').load(teamId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (activeScales.length >= Threshold.MAX_POKER_TEMPLATE_SCALES) {
@@ -51,12 +47,11 @@ const addPokerTemplateScale = {
     }
 
     // RESOLUTION
-    let newScale
-    const sortOrder = Math.max(0, ...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
+    let newScaleId: string | undefined
+    let newScaleName: string
+
     if (parentScaleId) {
-      const parentScale = (await dataLoader
-        .get('templateScales')
-        .load(parentScaleId)) as TemplateScale
+      const parentScale = await dataLoader.get('templateScales').load(parentScaleId)
       if (!parentScale) {
         return standardError(new Error('Parent scale not found'), {userId: viewerId})
       }
@@ -67,34 +62,79 @@ const addPokerTemplateScale = {
       }
       const {name} = parentScale
       const copyName = `${name} Copy`
-      const existingCopyCount = await r
-        .table('TemplateScale')
-        .getAll(teamId, {index: 'teamId'})
-        .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-        .filter((row: RDatum) => row('name').match(`^${copyName}`) as any)
-        .count()
-        .run()
-      const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
-      newScale = new TemplateScale({
-        sortOrder,
-        name: newName,
-        teamId,
-        parentScaleId,
-        values: parentScale.values
-      })
+      const re = new RegExp(`^${copyName}`)
+      const existingCopyCount = activeScales.filter(({name}) => name.match(re)).length
+      newScaleName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
+      const res = await pg
+        .with('TemplateScaleInsert', (qc) =>
+          qc
+            .insertInto('TemplateScale')
+            .values({
+              id: generateUID(),
+              name: newScaleName,
+              teamId,
+              parentScaleId
+            })
+            .returning(['id', 'parentScaleId'])
+        )
+        .insertInto('TemplateScaleValue')
+        .columns(['templateScaleId', 'sortOrder', 'color', 'label'])
+        .expression(({selectFrom}) =>
+          selectFrom('TemplateScaleValue')
+            .innerJoin(
+              'TemplateScaleInsert',
+              'TemplateScaleValue.templateScaleId',
+              'TemplateScaleInsert.parentScaleId'
+            )
+            .select(({ref}) => [
+              ref('TemplateScaleInsert.id').as('templateScaleId'),
+              ref('TemplateScaleValue.sortOrder').as('sortOrder'),
+              ref('TemplateScaleValue.color').as('color'),
+              ref('TemplateScaleValue.label').as('label')
+            ])
+        )
+        .returning('TemplateScaleValue.templateScaleId')
+        .executeTakeFirstOrThrow()
+      newScaleId = res.templateScaleId
     } else {
-      newScale = new TemplateScale({
-        sortOrder,
-        name: `*New Scale #${activeScales.length + 1}`,
-        teamId
-      })
+      newScaleName = `*New Scale #${activeScales.length + 1}`
+      const res = await pg
+        .with('TemplateScaleInsert', (qc) =>
+          qc
+            .insertInto('TemplateScale')
+            .values({
+              id: generateUID(),
+              name: newScaleName,
+              teamId
+            })
+            .returning('id as templateScaleId')
+        )
+        .insertInto('TemplateScaleValue')
+        .values(({selectFrom}) => [
+          {
+            templateScaleId: selectFrom('TemplateScaleInsert').select('templateScaleId'),
+            color: PALETTE.FUSCIA_400,
+            label: PokerCards.QUESTION_CARD as string,
+            sortOrder: positionAfter('')
+          },
+          {
+            templateScaleId: selectFrom('TemplateScaleInsert').select('templateScaleId'),
+            color: PALETTE.GRAPE_500,
+            label: PokerCards.PASS_CARD as string,
+            sortOrder: positionAfter(positionAfter(''))
+          }
+        ])
+        .returning('templateScaleId')
+        .executeTakeFirstOrThrow()
+      newScaleId = res.templateScaleId
     }
-
-    await r.table('TemplateScale').insert(newScale).run()
-
-    const scaleId = newScale.id
-    const data = {scaleId}
-    analytics.scaleMetrics(viewer, newScale, parentScaleId ? 'Scale Cloned' : 'Scale Created')
+    dataLoader.clearAll('templateScales')
+    const data = {scaleId: newScaleId}
+    analytics.scaleMetrics(
+      viewer,
+      {id: newScaleId, name: newScaleName, teamId},
+      parentScaleId ? 'Scale Cloned' : 'Scale Created'
+    )
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScalePayload', data, subOptions)
     return data
   }

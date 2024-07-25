@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -30,7 +29,7 @@ const renamePokerTemplateScale = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const scale = await dataLoader.get('templateScales').load(scaleId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -46,37 +45,31 @@ const renamePokerTemplateScale = {
     const trimmedName = name.trim().slice(0, 50)
     const normalizedName = trimmedName || 'Unnamed Scale'
 
-    const allScales = await r
-      .table('TemplateScale')
-      .getAll(teamId, {index: 'teamId'})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .run()
+    const allScales = await dataLoader.get('scalesByTeamId').load(teamId)
     if (allScales.find((scale) => scale.name === normalizedName)) {
       return standardError(new Error('Duplicate name scale'), {userId: viewerId})
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update({
-        name: normalizedName,
-        updatedAt: now
-      })
-      .run()
-
+    await pg
+      .updateTable('TemplateScale')
+      .set({name: normalizedName})
+      .where('id', '=', scaleId)
+      .execute()
+    dataLoader.clearAll('templateScales')
     // mark all templates using this scale as updated
     const updatedDimensions = await r
       .table('TemplateDimension')
       .getAll(scaleId, {index: 'scaleId'})
       .run()
     const updatedTemplateIds = updatedDimensions.map(({templateId}) => templateId)
-    await pg
-      .updateTable('MeetingTemplate')
-      .set({updatedAt: now})
-      .where('id', 'in', updatedTemplateIds)
-      .execute()
-
+    if (updatedTemplateIds.length) {
+      await pg
+        .updateTable('MeetingTemplate')
+        .set({updatedAt: now})
+        .where('id', 'in', updatedTemplateIds)
+        .execute()
+    }
     const data = {scaleId}
     publish(SubscriptionChannel.TEAM, teamId, 'RenamePokerTemplateScalePayload', data, subOptions)
     return data
