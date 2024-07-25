@@ -5,14 +5,14 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
-import {CategoryID, CATEGORY_THEMES, QUICK_START_CATEGORY_ID} from '../Categories'
+import {CATEGORY_THEMES, CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 
 graphql`
   fragment ActivityDetails_template on MeetingTemplate {
@@ -23,14 +23,11 @@ graphql`
     orgId
     teamId
     illustrationUrl
-    isFree
     scope
     viewerLowestScope
     ...TemplateDetails_activity
     ...ActivityDetailsBadges_template
     ...ActivityDetailsSidebar_template
-    ...ReflectTemplateDetailsTemplate @relay(mask: false)
-    ...PokerTemplateDetailsTemplate @relay(mask: false)
     ...useTemplateDescription_template
   }
 `
@@ -38,7 +35,6 @@ graphql`
 export const query = graphql`
   query ActivityDetailsQuery($activityId: ID!) {
     viewer {
-      ...ActivityDetailsSidebar_viewer
       activityLibrarySearch
       preferredTeamId
       activity(activityId: $activityId) {
@@ -74,12 +70,12 @@ const ActivityDetails = (props: Props) => {
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
+  // eslint-disable react-hooks/rules-of-hooks -- return above violates these rules, but is just a safeguard and not normal usage
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Viewed Template', {
       meetingType: activity.type,
       scope: activity.scope,
       templateName: activity.name,
-      isFree: activity.isFree,
       queryString: activityLibrarySearch
     })
   }, [])
@@ -91,13 +87,12 @@ const ActivityDetails = (props: Props) => {
   }`
 
   const isOwner = viewerLowestScope === 'TEAM'
-  const MOBILE_SETTINGS_HEIGHT = 208
 
   return (
-    <div className='flex h-full flex-col bg-white'>
-      <div className={clsx(`flex grow pb-[${MOBILE_SETTINGS_HEIGHT}px]`)}>
-        <div className='mt-4 grow'>
-          <div className='mb-14 ml-4 flex h-min w-max items-center'>
+    <div className='flex h-full w-full flex-col overflow-auto bg-white'>
+      <div className='flex grow'>
+        <div className='mt-4 w-full grow'>
+          <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
             <div className='mr-4'>
               <Link to={categoryLink}>
                 <IconLabel icon={'arrow_back'} iconLarge />
@@ -105,61 +100,51 @@ const ActivityDetails = (props: Props) => {
             </div>
             <div className='w-max text-xl font-semibold'>Start Activity</div>
           </div>
-          <div className='mx-auto w-min'>
-            <div
-              className={clsx(
-                'flex w-full flex-col justify-start pl-4 pr-14 xl:flex-row xl:justify-center xl:pl-14',
-                isEditing && 'lg:flex-row lg:justify-center lg:pl-14'
-              )}
-            >
-              <ActivityCard
-                className='ml-14 mb-8 max-h-[200px] w-80 xl:ml-0 xl:mb-0'
-                theme={CATEGORY_THEMES[category as CategoryID]}
-                badge={null}
-                type={type}
-              >
-                <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
-              </ActivityCard>
-              <div className='pb-20'>
-                <div className='mb-10 space-y-2 pl-14'>
-                  <div className='flex min-h-[40px] items-center'>
-                    <EditableTemplateName
-                      className='text-[32px] leading-9'
-                      name={activity.name}
-                      templateId={activity.id}
-                      isOwner={isOwner && isEditing}
-                    />
-                  </div>
-                  <TemplateDetails
-                    activityRef={activity}
-                    viewerRef={viewer}
-                    isEditing={isEditing}
-                    setIsEditing={setIsEditing}
+          <div className='mx-auto'>
+            <div className='flex flex-col justify-start pl-4 pr-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>
+              <div>
+                <ActivityCard
+                  className='mb-8 w-80 max-md:hidden sm:ml-14 xl:ml-0 xl:mb-0'
+                  theme={CATEGORY_THEMES[category as CategoryID]}
+                  type={type}
+                >
+                  <ActivityCardImage src={illustrationUrl} category={category as CategoryID} />
+                </ActivityCard>
+              </div>
+              <div className='mb-10 space-y-2 sm:pl-14'>
+                <div className='flex min-h-[40px] items-center'>
+                  <EditableTemplateName
+                    className='text-[32px] leading-9'
+                    name={activity.name}
+                    templateId={activity.id}
+                    isOwner={isOwner && isEditing}
                   />
                 </div>
+                <TemplateDetails
+                  activityRef={activity}
+                  viewerRef={viewer}
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing}
+                />
               </div>
             </div>
           </div>
         </div>
-        <div className='hidden lg:block'>
+        <div className='hidden w-[385px] shrink-0 lg:flex lg:flex-col'>
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}
-            isOpen={!isEditing}
             type={activity.type}
             preferredTeamId={preferredTeamId}
-            viewerRef={viewer}
           />
         </div>
       </div>
-      <div className={`fixed min-h-[${MOBILE_SETTINGS_HEIGHT}px] bottom-0 w-full lg:hidden`}>
+      <div className={clsx('lg:hidden', isEditing && 'hidden')}>
         <ActivityDetailsSidebar
           selectedTemplateRef={activity}
           teamsRef={teams}
-          isOpen={!isEditing}
           type={activity.type}
           preferredTeamId={preferredTeamId}
-          viewerRef={viewer}
         />
       </div>
     </div>

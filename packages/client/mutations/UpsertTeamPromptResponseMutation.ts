@@ -1,10 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import clientTempId from '~/utils/relay/clientTempId'
 import {UpsertTeamPromptResponseMutation_meeting$data} from '~/__generated__/UpsertTeamPromptResponseMutation_meeting.graphql'
-import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import clientTempId from '~/utils/relay/clientTempId'
 import {UpsertTeamPromptResponseMutation as TUpsertTeamPromptResponseMutation} from '../__generated__/UpsertTeamPromptResponseMutation.graphql'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
+import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpsertTeamPromptResponseMutation_meeting on UpsertTeamPromptResponseSuccess {
@@ -17,12 +16,6 @@ graphql`
       updatedAt
       createdAt
       ...TeamPromptResponseEmojis_response
-    }
-    addedKudoses {
-      receiverUser {
-        preferredName
-      }
-      emojiUnicode
     }
   }
 `
@@ -104,30 +97,7 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
       const payload = store.getRootField('upsertTeamPromptResponse')
       upsertTeamPromptResponseUpdater(payload as any, {atmosphere, store})
     },
-    onCompleted: (res, errors) => {
-      const addedKudoses = res.upsertTeamPromptResponse.addedKudoses
-      if (addedKudoses?.length && addedKudoses[0]) {
-        const {emojiUnicode} = addedKudoses[0]
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          key: 'youGaveKudos',
-          message: `You gave kudos to ${addedKudoses
-            .map((kudos) => kudos.receiverUser.preferredName)
-            .join(', ')} ${emojiUnicode}`,
-          autoDismiss: 5,
-          onShow: () => {
-            SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
-              snackbarType: 'kudosSent'
-            })
-          },
-          onManualDismiss: () => {
-            SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
-              snackbarType: 'kudosSent'
-            })
-          }
-        })
-      }
-      onCompleted?.(res, errors)
-    },
+    onCompleted,
     onError
   })
 }

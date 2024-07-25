@@ -3,12 +3,12 @@ import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
+import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {

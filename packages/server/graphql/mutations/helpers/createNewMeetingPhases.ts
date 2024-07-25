@@ -26,8 +26,8 @@ import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {DataLoaderWorker} from '../../graphql'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
+import {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {

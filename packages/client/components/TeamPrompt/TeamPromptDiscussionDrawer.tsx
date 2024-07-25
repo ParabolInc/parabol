@@ -4,18 +4,18 @@ import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TeamPromptDiscussionDrawer_meeting$key} from '~/__generated__/TeamPromptDiscussionDrawer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import findStageById from '~/utils/meetings/findStageById'
-import {TeamPromptDiscussionDrawer_meeting$key} from '~/__generated__/TeamPromptDiscussionDrawer_meeting.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import Avatar from '../Avatar/Avatar'
 import DiscussionThreadRoot from '../DiscussionThreadRoot'
 import PlainButton from '../PlainButton/PlainButton'
-import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
+import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 
 const ThreadColumn = styled('div')({
@@ -157,7 +157,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, onToggleDrawer}: Props) => {
       <DiscussionResponseCard>
         <Header>
           <div className='flex items-center'>
-            <Avatar picture={teamMember.picture} size={48} />
+            <Avatar picture={teamMember.picture} className={'h-12 w-12'} />
             <TeamMemberName>
               {teamMember.preferredName}
               {response && (

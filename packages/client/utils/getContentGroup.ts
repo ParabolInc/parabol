@@ -2,7 +2,7 @@ const CONTENT_GROUP_PREFIX = `App |`
 export default function getContentGroup(pathname: string) {
   let contentGroup
   // ^action\.parabol\.co/(meet|new-meeting|retro)(/|$|\?)
-  if (pathname.match(/^\/(meet|meetings|new-meeting|retro)(\/|$\?)/)) {
+  if (pathname.match(/^\/(meet|meetings|retro)(\/|$\?)/)) {
     contentGroup = 'Meetings'
   } else if (pathname.match(/^\/(team|new-summary)(\/|$|\?)/)) {
     contentGroup = 'Team'

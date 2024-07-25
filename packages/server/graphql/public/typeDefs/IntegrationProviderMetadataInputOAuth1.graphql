@@ -1,0 +1,19 @@
+"""
+OAuth1 provider metadata
+"""
+input IntegrationProviderMetadataInputOAuth1 {
+  """
+  The base URL used to access the provider
+  """
+  serverBaseUrl: URL!
+
+  """
+  The client key to give to the provider
+  """
+  consumerKey: ID!
+
+  """
+  Secret or Private key of the generate private/public key pair
+  """
+  consumerSecret: String!
+}

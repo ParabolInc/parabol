@@ -1,14 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
+import {mapMentionedToToast_notification$data} from '../../__generated__/mapMentionedToToast_notification.graphql'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import {mapMentionedToToast_notification$data} from '../../__generated__/mapMentionedToToast_notification.graphql'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
   fragment mapMentionedToToast_notification on NotifyMentioned {
     id
-    kudosEmojiUnicode
     senderName
     meetingId
     meetingName
@@ -28,7 +27,6 @@ const mapMentionedToToast = (
     id: notificationId,
     senderName,
     meetingName,
-    kudosEmojiUnicode,
     retroReflection,
     retroDiscussStageIdx,
     meetingId
@@ -51,9 +49,7 @@ const mapMentionedToToast = (
     }
   }
 
-  const message = !kudosEmojiUnicode
-    ? `${authorName} mentioned you in ${locationType} in ${meetingName}`
-    : `${kudosEmojiUnicode} ${authorName} gave you kudos in ${locationType} in ${meetingName}`
+  const message = `${authorName} mentioned you in ${locationType} in ${meetingName}`
 
   const goThere = () => {
     history.push(actionUrl)
@@ -69,14 +65,12 @@ const mapMentionedToToast = (
     },
     onShow: () => {
       SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
-        snackbarType,
-        kudosEmojiUnicode
+        snackbarType
       })
     },
     onManualDismiss: () => {
       SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
-        snackbarType,
-        kudosEmojiUnicode
+        snackbarType
       })
     }
   }

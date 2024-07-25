@@ -1,8 +1,8 @@
 import React, {Suspense} from 'react'
-import {useQueryLoaderNowWithRetry} from '../../../../hooks/useQueryLoaderNow'
 import providerListQuery, {
   ProviderListQuery
 } from '../../../../__generated__/ProviderListQuery.graphql'
+import {useQueryLoaderNowWithRetry} from '../../../../hooks/useQueryLoaderNow'
 import ProviderList from '../../components/ProviderList/ProviderList'
 
 interface Props {

@@ -1,6 +1,5 @@
 import {CHECKIN} from '../../../client/utils/constants'
 import Meeting from '../../database/types/Meeting'
-import {Team} from '../../postgres/queries/getTeamsByIds'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
@@ -8,8 +7,7 @@ import MeetingTemplate from '../../database/types/MeetingTemplate'
 export const createMeetingProperties = (
   meeting: Meeting,
   meetingMembers?: MeetingMember[],
-  template?: MeetingTemplate,
-  team?: Team
+  template?: MeetingTemplate
 ) => {
   const {id: meetingId, teamId, facilitatorUserId, meetingType, phases} = meeting
   const hasIcebreaker = phases.some(({phaseType}) => phaseType === CHECKIN)
@@ -32,7 +30,6 @@ export const createMeetingProperties = (
     disableAnonymity:
       meetingType === 'retrospective'
         ? (meeting as MeetingRetrospective).disableAnonymity ?? false
-        : undefined,
-    isOneOnOneTeam: team?.isOneOnOneTeam
+        : undefined
   }
 }

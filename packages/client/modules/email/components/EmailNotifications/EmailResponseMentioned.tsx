@@ -28,12 +28,11 @@ const EmailResponseMentioned = (props: Props) => {
           id
           name
         }
-        kudosEmojiUnicode
       }
     `,
     notificationRef
   )
-  const {meeting, response, kudosEmojiUnicode} = notification
+  const {meeting, response} = notification
   const {rasterPicture: authorPicture, preferredName: authorName} = response.user
 
   const {id: meetingId, name: meetingName} = meeting
@@ -47,9 +46,7 @@ const EmailResponseMentioned = (props: Props) => {
     }
   })
 
-  const message = kudosEmojiUnicode
-    ? `${kudosEmojiUnicode} ${authorName} mentioned you and gave kudos in their response in ${meetingName}.`
-    : `${authorName} mentioned you in their response in ${meetingName}.`
+  const message = `${authorName} mentioned you in their response in ${meetingName}.`
 
   // :TODO: (jmtaber129): Show mention preview.
   return (

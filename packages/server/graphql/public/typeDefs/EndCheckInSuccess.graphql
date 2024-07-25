@@ -1,0 +1,25 @@
+type EndCheckInSuccess {
+  """
+  true if the meeting was killed (ended before reaching last stage)
+  """
+  isKill: Boolean!
+  team: Team!
+  meeting: ActionMeeting!
+
+  """
+  The ID of the suggestion to try a check-in meeting, if tried
+  """
+  removedSuggestedActionId: ID
+  removedTaskIds: [ID!]
+
+  """
+  An event that is important to the viewer, e.g. an ended meeting
+  """
+  timelineEvent: TimelineEvent!
+  updatedTaskIds: [ID!]
+
+  """
+  Any tasks that were updated during the meeting
+  """
+  updatedTasks: [Task!]
+}

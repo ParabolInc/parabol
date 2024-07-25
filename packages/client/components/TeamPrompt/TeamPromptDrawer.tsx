@@ -2,18 +2,26 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import {TeamPromptDrawer_meeting$key} from '~/__generated__/TeamPromptDrawer_meeting.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useBreakpoint from '../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../styles/elevation'
-import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
+import {
+  BezierCurve,
+  Breakpoint,
+  DiscussionThreadEnum,
+  GlobalBanner,
+  ZIndex
+} from '../../types/constEnums'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import findStageById from '../../utils/meetings/findStageById'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import findStageById from '../../utils/meetings/findStageById'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
-const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+
+export const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boolean}>(
   ({isDesktop, isMobile, isOpen}) => ({
     boxShadow: isDesktop ? desktopSidebarShadow : undefined,
     backgroundColor: '#FFFFFF',
@@ -22,6 +30,7 @@ const Drawer = styled('div')<{isDesktop: boolean; isMobile: boolean; isOpen: boo
     flexDirection: 'column',
     justifyContent: 'stretch',
     overflow: 'hidden',
+    paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
     position: isDesktop ? 'fixed' : 'static',
     bottom: 0,
     top: 0,

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
 import {RemovePokerTemplateScaleMutation_scale$data} from '../__generated__/RemovePokerTemplateScaleMutation_scale.graphql'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemovePokerTemplateScale from './handlers/handleRemovePokerTemplateScale'
 
 graphql`
@@ -11,9 +11,9 @@ graphql`
       ...ScaleDropdownMenuItem_scale
       id
       teamId
-    }
-    dimensions {
-      ...PokerTemplateScalePicker_dimension
+      dimensions {
+        ...PokerTemplateScalePicker_dimension
+      }
     }
   }
 `

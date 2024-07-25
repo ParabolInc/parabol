@@ -14,9 +14,7 @@ const Organization = lazy(
       /* webpackChunkName: 'OrganizationRoot' */ '../../containers/Organization/OrganizationRoot'
     )
 )
-const UserDashMain = lazy(
-  () => import(/* webpackChunkName: 'UserDashMain' */ '../UserDashMain/UserDashMainRoot')
-)
+const UserDashMain = lazy(() => import(/* webpackChunkName: 'UserDashMain' */ '../UserDashMain'))
 const UserProfile = lazy(
   () => import(/* webpackChunkName: 'UserProfileRoot' */ '../UserProfileRoot')
 )

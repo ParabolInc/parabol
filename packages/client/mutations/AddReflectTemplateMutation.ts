@@ -1,17 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {AddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
+import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
-import {AddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
-import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
-  fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
+  fragment AddReflectTemplateMutation_team on AddReflectTemplateSuccess {
+    user {
+      freeCustomRetroTemplatesRemaining
+    }
     reflectTemplate {
       ...TemplateSharing_template
-      ...ReflectTemplateDetailsTemplate
       ...ActivityDetails_template
       id
       teamId
@@ -22,6 +24,11 @@ graphql`
 const mutation = graphql`
   mutation AddReflectTemplateMutation($teamId: ID!, $parentTemplateId: ID) {
     addReflectTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
       ...AddReflectTemplateMutation_team @relay(mask: false)
     }
   }
@@ -54,7 +61,7 @@ const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> 
     updater: (store) => {
       const payload = store.getRootField('addReflectTemplate')
       if (!payload) return
-      addReflectTemplateTeamUpdater(payload, {atmosphere, store})
+      addReflectTemplateTeamUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {parentTemplateId, teamId} = variables

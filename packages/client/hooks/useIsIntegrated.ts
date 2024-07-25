@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 
-import {useIsIntegrated_integrations$key} from '../__generated__/useIsIntegrated_integrations.graphql'
 import {useFragment} from 'react-relay'
+import {useIsIntegrated_integrations$key} from '../__generated__/useIsIntegrated_integrations.graphql'
 
 type IntegrationLookup = {
   hasGitHub: boolean

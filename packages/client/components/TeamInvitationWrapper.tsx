@@ -1,28 +1,5 @@
-import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
-import {PALETTE} from '../styles/paletteV3'
 import Header from './AuthPage/Header'
-
-const PageContainer = styled('div')({
-  alignItems: 'center',
-  backgroundColor: PALETTE.SLATE_200,
-  color: PALETTE.SLATE_700,
-  display: 'flex',
-  flexDirection: 'column',
-  maxWidth: '100%',
-  minHeight: '100vh'
-})
-
-const CenteredBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  flex: 1,
-  justifyContent: 'center',
-  maxWidth: '100%',
-  padding: '2rem 1rem',
-  width: '100%'
-})
 
 interface Props {
   children: ReactNode
@@ -31,10 +8,10 @@ interface Props {
 function TeamInvitationWrapper(props: Props) {
   const {children} = props
   return (
-    <PageContainer>
+    <div className='min-h-100 flex max-w-full flex-1 flex-col items-center overflow-auto bg-slate-200 text-slate-700'>
       <Header />
-      <CenteredBlock>{children}</CenteredBlock>
-    </PageContainer>
+      <div className='maxw-full flex w-full flex-1 flex-col items-center py-8 px-4'>{children}</div>
+    </div>
   )
 }
 

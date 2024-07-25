@@ -161,6 +161,10 @@ export const enum Filter {
   BENEATH_DIALOG = 'blur(1.5px)'
 }
 
+export const enum GlobalBanner {
+  HEIGHT = 24
+}
+
 export const enum Gutters {
   COLUMN_INNER_GUTTER = '12px',
   DASH_GUTTER = '20px',
@@ -274,9 +278,9 @@ export const enum MeetingTypes {
 export const enum NavSidebar {
   FONT_SIZE = 14,
   LEFT_BORDER_WIDTH = '3px',
-  LINE_HEIGHT = '24px',
+  LINE_HEIGHT = '22px',
   SUB_FONT_SIZE = 14,
-  SUB_LINE_HEIGHT = '24px',
+  SUB_LINE_HEIGHT = '22px',
   WIDTH = 256
 }
 

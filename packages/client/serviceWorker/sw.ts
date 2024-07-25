@@ -18,7 +18,7 @@ const DYNAMIC_CACHE = `parabol-dynamic-${__APP_VERSION__}`
 const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
 
 // this gets built in applyEnvVarToClientAssets
-const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/\/{2,}/, 'https://')
+const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/^\/{2,}/, 'https://')
 const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => {
   e.waitUntil(cb(e))
 }
@@ -79,8 +79,10 @@ const onFetch = async (event: FetchEvent) => {
       // request.mode could be 'no-cors'
       // By fetching the URL without specifying the mode the response will not be opaque
       const isParabolHosted = url.startsWith(PUBLIC_PATH) || url.startsWith(self.origin)
-      const req = isParabolHosted ? request.url : request
-      const networkRes = await fetch(req)
+      // if one of our assets is not in the service worker cache, then it's either fetched via network or served from the broswer cache.
+      // The browser cache most likely has incorrect CORS headers set, so we better always fetch from the network.
+      const req = isParabolHosted ? fetch(request.url, {cache: 'no-store'}) : fetch(request)
+      const networkRes = await req
       const cache = await caches.open(DYNAMIC_CACHE)
       // cloning here because I'm not sure if we must clone before reading the body
       cache.put(request.url, networkRes.clone()).catch(console.error)

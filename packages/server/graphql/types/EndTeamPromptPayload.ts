@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import {resolveNewMeeting, resolveTeam} from '../resolvers'
-import makeMutationPayload from './makeMutationPayload'
 import Team from './Team'
 import TeamPromptMeeting from './TeamPromptMeeting'
 import TimelineEvent from './TimelineEvent'
+import makeMutationPayload from './makeMutationPayload'
 
 export const EndTeamPromptSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndTeamPromptSuccess',

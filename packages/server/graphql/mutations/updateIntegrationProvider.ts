@@ -9,8 +9,8 @@ import UpdateIntegrationProviderInput, {
   IUpdateIntegrationProviderInput
 } from '../types/UpdateIntegrationProviderInput'
 import UpdateIntegrationProviderPayload from '../types/UpdateIntegrationProviderPayload'
-import {MattermostNotifier} from './helpers/notifications/MattermostNotifier'
 import {MSTeamsNotifier} from './helpers/notifications/MSTeamsNotifier'
+import {MattermostNotifier} from './helpers/notifications/MattermostNotifier'
 
 const updateIntegrationProvider = {
   name: 'UpdateIntegrationProvider',

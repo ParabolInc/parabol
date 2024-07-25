@@ -1,0 +1,6 @@
+type UpdateTemplateCategorySuccess {
+  """
+  The template with the updated mainCategory
+  """
+  template: MeetingTemplate!
+}

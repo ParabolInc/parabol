@@ -1,0 +1,14 @@
+"""
+Integration Auth and shared providers available to the team member
+"""
+type MattermostIntegration {
+  """
+  The OAuth2 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthWebhook
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderWebhook!]!
+}

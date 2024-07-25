@@ -50,9 +50,10 @@ jobs:
         run: |
           docker cp temp-container:/home/node/parabol/dist ./dist
           docker cp temp-container:/home/node/parabol/build ./build
+          docker cp temp-container:/home/node/tools/ip-to-server_id ./ip-to-server_id
 
       - name: Zip the files
-        run: zip -r ${{ github.event.inputs.version_number }}.zip dist build
+        run: zip -r ${{ github.event.inputs.version_number }}.zip dist build ip-to-server_id
 
       - name: Set up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4

@@ -2,11 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
-import useRouter from '../hooks/useRouter'
-import {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
-import NotificationTemplate from './NotificationTemplate'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
+import useRouter from '../hooks/useRouter'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
+import NotificationTemplate from './NotificationTemplate'
 
 interface Props {
   notification: ResponseMentioned_notification$key
@@ -31,21 +31,19 @@ const ResponseMentioned = (props: Props) => {
         }
         type
         status
-        kudosEmojiUnicode
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
-  const {meeting, response, kudosEmojiUnicode, type, status} = notification
+  const {meeting, response, type, status} = notification
   const {picture: authorPicture, preferredName: authorName} = response.user
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Notification Viewed', {
       notificationType: type,
-      notificationStatus: status,
-      kudosEmojiUnicode
+      notificationStatus: status
     })
   }, [])
 
@@ -54,9 +52,7 @@ const ResponseMentioned = (props: Props) => {
     history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
-  const message = kudosEmojiUnicode
-    ? `${kudosEmojiUnicode} ${authorName} mentioned you and gave kudos in their response in ${meetingName}.`
-    : `${authorName} mentioned you in their response in ${meetingName}.`
+  const message = `${authorName} mentioned you in their response in ${meetingName}.`
 
   // :TODO: (jmtaber129): Show mention preview.
   return (

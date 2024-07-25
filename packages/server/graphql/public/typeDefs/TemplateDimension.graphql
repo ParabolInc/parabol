@@ -1,0 +1,66 @@
+"""
+A team-specific template dimension: e.g., effort, importance etc.
+"""
+type TemplateDimension {
+  """
+  shortid
+  """
+  id: ID!
+  createdAt: DateTime!
+
+  """
+  true if the dimension is currently used by the team, else false
+  """
+  isActive: Boolean!
+
+  """
+  The datetime that the dimension was removed. Null if it has not been removed.
+  """
+  removedAt: DateTime
+
+  """
+  foreign key. use the team field
+  """
+  teamId: ID!
+
+  """
+  The team that owns this dimension
+  """
+  team: Team!
+  updatedAt: DateTime!
+
+  """
+  the order of the dimensions in the template
+  """
+  sortOrder: String!
+
+  """
+  FK for template
+  """
+  templateId: ID!
+
+  """
+  The template that this dimension belongs to
+  """
+  template: PokerTemplate!
+
+  """
+  The name of the dimension
+  """
+  name: String!
+
+  """
+  The description to the dimension name for further context. A long version of the dimension name.
+  """
+  description: String!
+
+  """
+  The scaleId to resolve the selected scale
+  """
+  scaleId: ID!
+
+  """
+  scale used in this dimension
+  """
+  selectedScale: TemplateScale!
+}

@@ -8,7 +8,7 @@ export type DraftEnterpriseInvoicePayloadSource =
 
 const DraftEnterpriseInvoicePayload: DraftEnterpriseInvoicePayloadResolvers = {
   organization: (source, _args, {dataLoader}) => {
-    return 'orgId' in source ? dataLoader.get('organizations').load(source.orgId) : null
+    return 'orgId' in source ? dataLoader.get('organizations').loadNonNull(source.orgId) : null
   }
 }
 

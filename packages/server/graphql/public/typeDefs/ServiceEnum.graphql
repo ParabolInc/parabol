@@ -1,0 +1,10 @@
+enum ServiceEnum {
+  PARABOL
+  github
+  jira
+  gitlab
+  mattermost
+  jiraServer
+  gcal
+  azureDevOps
+}

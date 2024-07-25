@@ -1,6 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -11,7 +12,6 @@ import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
-import getKysely from '../../../postgres/getKysely'
 
 // included here to codegen has access to it
 export type UpgradeToTeamTierSuccessSource = {
@@ -28,8 +28,10 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const userId = getUserId(authToken)
   const manager = getStripeManager()
   const invoice = await manager.retrieveInvoice(invoiceId)
-  const customerId = invoice.customer as string
-  const customer = await manager.retrieveCustomer(customerId)
+  const stripeId = invoice.customer as string
+  const stripeSubscriptionId = invoice.subscription as string
+  const customer = await manager.retrieveCustomer(stripeId)
+
   if (customer.deleted) {
     return standardError(new Error('Customer has been deleted'), {userId})
   }
@@ -38,60 +40,46 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     return standardError(new Error('Customer does not have an orgId'), {userId})
   }
 
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const now = new Date()
 
   // AUTH
   const viewerId = getUserId(authToken)
   const [organization, viewer] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('organizations').loadNonNull(orgId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
 
-  const {
-    stripeId,
-    tier,
-    activeDomain,
-    name: orgName,
-    stripeSubscriptionId,
-    trialStartDate
-  } = organization
+  const {tier, activeDomain, name: orgName, trialStartDate} = organization
 
-  if (!stripeId) {
-    return standardError(new Error('Organization does not have a stripe id'), {
+  if (tier === 'enterprise') {
+    return standardError(new Error("Can not change an org's plan from enterprise to team"), {
       userId: viewerId
     })
-  }
-
-  if (!stripeSubscriptionId) {
-    return standardError(new Error('Organization does not have a subscription'), {userId: viewerId})
-  }
-
-  if (tier !== 'starter') {
-    return standardError(new Error('Organization is not on the starter tier'), {
+  } else if (tier === 'team') {
+    return standardError(new Error('Org is already on team tier'), {
       userId: viewerId
     })
   }
 
   // RESOLUTION
+  const creditCard = await getCCFromCustomer(customer)
   await Promise.all([
-    r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          creditCard: await getCCFromCustomer(customer),
-          tier: 'team',
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: now,
-          trialStartDate: null
-        })
-    }).run(),
+    pg
+      .updateTable('Organization')
+      .set({
+        creditCard: toCreditCard(creditCard),
+        tier: 'team',
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null,
+        trialStartDate: null,
+        stripeId,
+        stripeSubscriptionId
+      })
+      .where('id', '=', orgId)
+      .execute(),
     pg
       .updateTable('Team')
       .set({
@@ -110,18 +98,19 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const activeMeetings = await hideConversionModal(orgId, dataLoader)
   const meetingIds = activeMeetings.map(({id}) => id)
 
-  await r
-    .table('OrganizationUser')
-    .getAll(viewerId, {index: 'userId'})
-    .filter({removedAt: null, orgId})
-    .update({role: 'BILLING_LEADER'})
-    .run()
+  await pg
+    .updateTable('OrganizationUser')
+    .set({role: 'BILLING_LEADER'})
+    .where('userId', '=', viewerId)
+    .where('orgId', '=', orgId)
+    .where('removedAt', 'is', null)
+    .execute()
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
   analytics.organizationUpgraded(viewer, {
     orgId,
-    domain: activeDomain,
+    domain: activeDomain || undefined,
     isTrial: !!trialStartDate,
     orgName,
     oldTier: 'starter',
@@ -130,10 +119,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const data = {orgId, teamIds, meetingIds}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierSuccess', data, subOptions)
 
-  teamIds.forEach((teamId) => {
-    const teamData = {orgId, teamIds: [teamId]}
-    publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToTeamTierSuccess', teamData, subOptions)
-  })
   return data
 }
 

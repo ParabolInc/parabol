@@ -3,12 +3,12 @@ import {Forum} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
+import {NewMeetingActionsCurrentMeetings_team$key} from '~/__generated__/NewMeetingActionsCurrentMeetings_team.graphql'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {PALETTE} from '~/styles/paletteV3'
 import plural from '~/utils/plural'
-import {NewMeetingActionsCurrentMeetings_team$key} from '~/__generated__/NewMeetingActionsCurrentMeetings_team.graphql'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import FlatButton from './FlatButton'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
 
@@ -43,30 +43,24 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
     `,
     teamRef
   )
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLButtonElement>(
-    MenuPosition.LOWER_RIGHT,
-    {
-      isDropdown: true
-    }
-  )
   const {activeMeetings} = team
   useSnacksForNewMeetings(activeMeetings as any)
   const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   if (!meetingCount) return null
   return (
-    <>
-      <CurrentButton
-        onClick={togglePortal}
-        ref={originRef}
-        hasMeetings={meetingCount > 0}
-        size={'large'}
-      >
-        <ForumIcon />
-        {label}
-      </CurrentButton>
-      {menuPortal(<SelectMeetingDropdown menuProps={menuProps} meetings={activeMeetings!} />)}
-    </>
+    <Menu
+      trigger={
+        <CurrentButton hasMeetings={meetingCount > 0} size={'large'}>
+          <ForumIcon />
+          {label}
+        </CurrentButton>
+      }
+    >
+      <MenuContent className='w-[var(--radix-dropdown-menu-trigger-width)]'>
+        <SelectMeetingDropdown meetings={activeMeetings!} />
+      </MenuContent>
+    </Menu>
   )
 }
 

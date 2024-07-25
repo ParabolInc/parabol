@@ -11,12 +11,13 @@ import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import generateUID from '../../generateUID'
+import getKysely from '../../postgres/getKysely'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {Logger} from '../../utils/Logger'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
-import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -230,7 +231,7 @@ export default {
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
 
-    analytics.checkInEnd(completedCheckIn, meetingMembers, team, dataLoader)
+    analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader)
     sendNewMeetingSummary(completedCheckIn, context).catch(Logger.log)
     checkTeamsLimit(team.orgId, dataLoader)
 
@@ -244,14 +245,12 @@ export default {
         })
     )
     const timelineEventId = events[0]!.id
-    await r.table('TimelineEvent').insert(events).run()
+    const pg = getKysely()
+    await pg.insertInto('TimelineEvent').values(events).execute()
     if (team.isOnboardTeam) {
-      const teamLeadUserId = await r
-        .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isLead: true})
-        .nth(0)('userId')
-        .run()
+      const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+      const teamLeader = teamMembers.find(({isLead}) => isLead)!
+      const {userId: teamLeadUserId} = teamLeader
 
       const removedSuggestedActionId = await removeSuggestedAction(
         teamLeadUserId,

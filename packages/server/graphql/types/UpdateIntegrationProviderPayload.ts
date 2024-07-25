@@ -2,9 +2,9 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {GQLContext} from '../graphql'
 import IntegrationProvider from './IntegrationProvider'
-import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
+import makeMutationPayload from './makeMutationPayload'
 
 export const UpdateIntegrationProviderSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateIntegrationProviderSuccess',

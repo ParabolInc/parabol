@@ -1,6 +1,6 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
-import {r, RValue} from 'rethinkdb-ts'
+import {RValue, r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import {insertGitHubAuthsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'

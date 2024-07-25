@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SimpleMutation} from '../types/relayMutations'
 import {RemoveJiraServerSearchQueryMutation as TRemoveJiraServerSearchQueryMutation} from '../__generated__/RemoveJiraServerSearchQueryMutation.graphql'
+import {SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment RemoveJiraServerSearchQueryMutation_notification on RemoveIntegrationSearchQuerySuccess {

@@ -1,1 +1,4 @@
+"""
+A custom scalar type for representing RRule strings
+"""
 scalar RRule

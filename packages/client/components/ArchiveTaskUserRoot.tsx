@@ -1,8 +1,8 @@
 import React, {Suspense} from 'react'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import teamArchiveQuery, {TeamArchiveQuery} from '../__generated__/TeamArchiveQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 
 interface Props {
   teamIds?: string[] | null

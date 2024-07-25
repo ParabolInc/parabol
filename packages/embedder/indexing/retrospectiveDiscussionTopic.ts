@@ -1,26 +1,9 @@
-import {Selectable} from 'kysely'
-import prettier from 'prettier'
-
-import getRethink, {RethinkSchema} from 'parabol-server/database/rethinkDriver'
-import {DataLoaderWorker} from 'parabol-server/graphql/graphql'
-import getKysely from 'parabol-server/postgres/getKysely'
-import {DB} from 'parabol-server/postgres/pg'
-
 import Comment from 'parabol-server/database/types/Comment'
-import DiscussStage from 'parabol-server/database/types/DiscussStage'
-import MeetingRetrospective, {
-  isMeetingRetrospective
-} from 'parabol-server/database/types/MeetingRetrospective'
-
-import {upsertEmbeddingsMetaRows} from './embeddingsTablesOps'
-import {AnyMeeting} from 'parabol-server/postgres/types/Meeting'
-
-const BATCH_SIZE = 1000
-
-export interface EmbeddingsJobQueueRetrospectiveDiscussionTopic
-  extends Omit<DB['EmbeddingsJobQueue'], 'objectType'> {
-  objectType: 'retrospectiveDiscussionTopic'
-}
+import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
+import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
+import prettier from 'prettier'
+import {inferLanguage} from '../inferLanguage'
+import {ISO6391} from '../iso6393To1'
 
 // Here's a generic reprentation of the text generated here:
 
@@ -38,110 +21,15 @@ export interface EmbeddingsJobQueueRetrospectiveDiscussionTopic
 // </END IF DISCUSSION>
 
 const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
-
-const pg = getKysely()
-
-export async function refreshRetroDiscussionTopicsMeta(dataLoader: DataLoaderWorker) {
-  const r = await getRethink()
-  const {createdAt: newestMeetingDate} = (await r
-    .table('NewMeeting')
-    .max({index: 'createdAt'})
-    .run()) as unknown as RethinkSchema['NewMeeting']['type']
-  const {createdAt: oldestMeetingDate} = (await r
-    .table('NewMeeting')
-    .min({index: 'createdAt'})
-    .run()) as unknown as RethinkSchema['NewMeeting']['type']
-
-  const {newestMetaDate} = (await pg
-    .selectFrom('EmbeddingsMetadata')
-    .select(pg.fn.max('refUpdatedAt').as('newestMetaDate'))
-    .where('objectType', '=', 'retrospectiveDiscussionTopic')
-    .executeTakeFirst()) ?? {newestMetaDate: null}
-  let startDateTime = newestMetaDate || oldestMeetingDate
-
-  if (startDateTime.getTime() === newestMeetingDate.getTime()) return
-
-  console.log(
-    `refreshRetroDiscussionTopicsMeta(): ` +
-      `will consider adding items from ${startDateTime.toISOString()} to ` +
-      `${newestMeetingDate.toISOString()}`
-  )
-
-  let totalAdded = 0
-  do {
-    // Process history in batches.
-    //
-    // N.B. We add historical meetings to the EmbeddingsMetadata table here.
-    // This query will intentionally miss meetings that haven't been completed
-    // (`summarySentAt` is null). These meetings will need to be added to the
-    // EmbeddingsMetadata table by a hook that runs when the meetings complete.
-    const {maxCreatedAt, completedNewMeetings} = await r
-      .table('NewMeeting')
-      .between(startDateTime, newestMeetingDate, {rightBound: 'closed', index: 'createdAt'})
-      .orderBy({index: 'createdAt'})
-      .limit(BATCH_SIZE)
-      .coerceTo('array')
-      .do((rows: any) => ({
-        maxCreatedAt: r.expr(rows).max('createdAt')('createdAt'), // Then find the max createdAt value
-        completedNewMeetings: r.expr(rows).filter((r: any) =>
-          r('meetingType')
-            .eq('retrospective')
-            .and(
-              r('endedAt').gt(0),
-              r
-                .hasFields('phases')
-                .and(r('phases').count().gt(0))
-                .and(
-                  r('phases')
-                    .filter((phase: any) => phase('phaseType').eq('discuss'))
-                    .filter((phase: any) =>
-                      phase.hasFields('stages').and(phase('stages').count().gt(0))
-                    )
-                    .count()
-                    .gt(0)
-                )
-            )
-        )
-      }))
-      .run()
-    const embeddingsMetaRows = (
-      await Promise.all(
-        completedNewMeetings.map((m: AnyMeeting) =>
-          newRetroDiscussionTopicsFromNewMeeting(m, dataLoader)
-        )
-      )
-    ).flat()
-    if (embeddingsMetaRows.length > 0) {
-      await upsertEmbeddingsMetaRows(embeddingsMetaRows)
-      totalAdded += embeddingsMetaRows.length
-      console.log(
-        `refreshRetroDiscussionTopicsMeta(): synced to ${maxCreatedAt.toISOString()}, added` +
-          ` ${embeddingsMetaRows.length} retrospectiveDiscussionTopics`
-      )
-    }
-
-    // N.B. In the unlikely event that we have >=BATCH_SIZE meetings that end at _exactly_
-    // the same timetsamp, this will loop forever.
-    if (
-      startDateTime.getTime() === newestMeetingDate.getTime() &&
-      completedNewMeetings.length < BATCH_SIZE
-    )
-      break
-    startDateTime = maxCreatedAt
-  } while (true)
-
-  console.log(
-    `refreshRetroDiscussionTopicsMeta(): added ${totalAdded} total retrospectiveDiscussionTopics`
-  )
-}
-
-async function getPreferredNameByUserId(userId: string, dataLoader: DataLoaderWorker) {
+const MAX_TEXT_LENGTH = 10000
+async function getPreferredNameByUserId(userId: string | null, dataLoader: DataLoaderInstance) {
+  if (!userId) return 'Unknown'
   const user = await dataLoader.get('users').load(userId)
   return !user ? 'Unknown' : user.preferredName
 }
 
 async function formatThread(
-  dataLoader: DataLoaderWorker,
+  dataLoader: DataLoaderInstance,
   comments: Comment[],
   parentId: string | null = null,
   depth = 0
@@ -156,11 +44,10 @@ async function formatThread(
     const indent = '   '.repeat(depth + 1)
     const author = comment.isAnonymous
       ? 'Anonymous'
-      : comment.createdBy
-      ? await getPreferredNameByUserId(comment.createdBy, dataLoader)
-      : 'Unknown'
+      : await getPreferredNameByUserId(comment.createdBy, dataLoader)
     const how = depth === 0 ? 'wrote' : 'replied'
-    const content = comment.plaintextContent
+    const content = comment.plaintextContent?.slice(0, MAX_TEXT_LENGTH)
+    if (!content) return ''
     const formattedPost = `${indent}- ${author} ${how}, "${content}"\n`
 
     // Recursively format child threads
@@ -173,60 +60,53 @@ async function formatThread(
   return formattedComments.join('')
 }
 
-export const createTextFromNewMeetingDiscussionStage = async (
-  newMeeting: MeetingRetrospective,
-  stageId: string,
-  dataLoader: DataLoaderWorker,
+export const createTextFromRetrospectiveDiscussionTopic = async (
+  discussionId: string,
+  dataLoader: DataLoaderInstance,
   textForReranking: boolean = false
 ) => {
-  if (!newMeeting) throw 'newMeeting is undefined'
-  if (!isMeetingRetrospective(newMeeting)) throw 'newMeeting is not retrospective'
-  if (!newMeeting.templateId) throw 'template is undefined'
-  const template = await dataLoader.get('meetingTemplates').load(newMeeting.templateId)
-  if (!template) throw 'template is undefined'
-  const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
-  if (!discussPhase) throw 'newMeeting discuss phase is undefined'
-  if (!discussPhase.stages) throw 'newMeeting discuss phase has no stages'
-  const discussStage = discussPhase.stages.find((stage) => stage.id === stageId) as DiscussStage
-  if (!discussStage) throw 'newMeeting discuss stage not found'
-  const {summary: discussionSummary} = discussStage.discussionId
-    ? (await dataLoader.get('discussions').load(discussStage.discussionId)) ?? {summary: null}
-    : {summary: null}
-  const r = await getRethink()
-  if (!discussStage.reflectionGroupId) throw 'newMeeting discuss stage has no reflectionGroupId'
-  const reflectionGroup = await r
-    .table('RetroReflectionGroup')
-    .get(discussStage.reflectionGroupId)
-    .run()
-  if (!reflectionGroup.id) throw 'newMeeting reflectionGroup has no id'
-  const reflections = await r
-    .table('RetroReflection')
-    .getAll(reflectionGroup.id, {index: 'reflectionGroupId'})
-    .run()
+  const discussion = await dataLoader.get('discussions').load(discussionId)
+  if (!discussion) throw new Error(`Discussion not found: ${discussionId}`)
+  const {discussionTopicId: reflectionGroupId, meetingId, summary: discussionSummary} = discussion
+  const [newMeeting, reflectionGroup, reflections] = await Promise.all([
+    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
+    dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId)
+  ])
+  if (!isMeetingRetrospective(newMeeting)) throw new Error('Meeting is not a retro')
+  // It should never be undefined, but our data integrity in RethinkDB is bad
+  const templateId = newMeeting?.templateId ?? ''
+
   const promptIds = [...new Set(reflections.map((r) => r.promptId))]
+  const [template, ...prompts] = await Promise.all([
+    dataLoader.get('meetingTemplates').load(templateId),
+    ...promptIds.map((promptId) => dataLoader.get('reflectPrompts').load(promptId))
+  ])
+
   let markdown = ''
-  if (!textForReranking)
+  const templateName = template?.name ?? 'Unknown'
+  if (!textForReranking) {
     markdown =
-      `A topic "${reflectionGroup.title}" was discussed during ` +
-      `the meeting "${newMeeting.name}" that followed the "${template.name}" template.\n` +
+      `A topic "${reflectionGroup?.title ?? ''}" was discussed during ` +
+      `the meeting "${newMeeting.name}" that followed the "${templateName}" template.\n` +
       `\n`
-  const prompts = await dataLoader.get('reflectPrompts').loadMany(promptIds)
+  }
+
   for (const prompt of prompts) {
-    if (!prompt || prompt instanceof Error) continue
+    if (!prompt) continue // RethinkDB bad data integrity
     if (!textForReranking) {
       markdown += `Participants were prompted with, "${prompt.question}`
       if (prompt.description) markdown += `: ${prompt.description}`
       markdown += `".\n`
     }
-    if (newMeeting.disableAnonymity) {
-      for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
-        const author = await getPreferredNameByUserId(reflection.creatorId, dataLoader)
-        markdown += `   - ${author} wrote, "${reflection.plaintextContent}"\n`
-      }
-    } else {
-      for (const reflection of reflections.filter((r) => r.promptId === prompt.id)) {
-        markdown += `   - Anonymous wrote, "${reflection.plaintextContent}"\n`
-      }
+    const matchingReflections = reflections.filter((r) => r.promptId === prompt.id)
+    for (const reflection of matchingReflections) {
+      const content = reflection.plaintextContent?.slice(0, MAX_TEXT_LENGTH)
+      if (!content) continue
+      const author = newMeeting.disableAnonymity
+        ? await getPreferredNameByUserId(reflection.creatorId, dataLoader)
+        : 'Anonymous'
+      markdown += `   - ${author} wrote, "${content}"\n`
     }
     markdown += `\n`
   }
@@ -248,10 +128,11 @@ export const createTextFromNewMeetingDiscussionStage = async (
    * objectType: 'retrospectiveDiscussionNoSummary' or something and do a bit of testing.
    */
 
+  let language: ISO6391 | undefined = undefined
   if (discussionSummary) {
     markdown += `Further discussion was made. ` + ` ${discussionSummary}`
   } else {
-    const comments = await dataLoader.get('commentsByDiscussionId').load(stageId)
+    const comments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
 
     const sortedComments = comments
       .map((comment) => {
@@ -267,8 +148,8 @@ export const createTextFromNewMeetingDiscussionStage = async (
         if (a.threadParentId === b.threadParentId) {
           return a.threadSortOrder - b.threadSortOrder
         }
-        if (a.threadParentId == null) return 1
-        if (b.threadParentId == null) return -1
+        if (!a.threadParentId) return 1
+        if (!b.threadParentId) return -1
         return a.threadParentId > b.threadParentId ? 1 : -1
       }) as Comment[]
 
@@ -276,51 +157,20 @@ export const createTextFromNewMeetingDiscussionStage = async (
       (c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy)
     )
     if (filteredComments.length) {
-      markdown += `Futher discussion was made:\n`
+      markdown += `Further discussion was made:\n`
       markdown += await formatThread(dataLoader, filteredComments)
-      // TODO: if the discussion threads are too long, summarize them
+      const commentBlob = filteredComments.map((c) => c.plaintextContent).join(' ')
+      // it's common to reflect in english and comment in a native tongue
+      language = inferLanguage(commentBlob)
     }
   }
 
-  markdown = prettier.format(markdown, {
+  const body = await prettier.format(markdown, {
     parser: 'markdown',
     proseWrap: 'always',
     printWidth: 72
   })
 
-  return markdown
-}
-
-export const createText = async (
-  item: Selectable<EmbeddingsJobQueueRetrospectiveDiscussionTopic>,
-  dataLoader: DataLoaderWorker
-): Promise<string> => {
-  if (!item.refId) throw 'refId is undefined'
-  const [newMeetingId, discussionId] = item.refId.split(':')
-  if (!newMeetingId) throw new Error('newMeetingId cannot be undefined')
-  if (!discussionId) throw new Error('discussionId cannot be undefined')
-  const newMeeting = await dataLoader.get('newMeetings').load(newMeetingId)
-  return createTextFromNewMeetingDiscussionStage(
-    newMeeting as MeetingRetrospective,
-    discussionId,
-    dataLoader
-  )
-}
-
-export const newRetroDiscussionTopicsFromNewMeeting = async (
-  newMeeting: RethinkSchema['NewMeeting']['type'],
-  dataLoader: DataLoaderWorker
-) => {
-  const discussPhase = newMeeting.phases.find((phase) => phase.phaseType === 'discuss')
-  const orgId = (await dataLoader.get('teams').load(newMeeting.teamId))?.orgId
-  if (orgId && discussPhase && discussPhase.stages) {
-    return discussPhase.stages.map((stage) => ({
-      objectType: 'retrospectiveDiscussionTopic' as const,
-      teamId: newMeeting.teamId,
-      refId: `${newMeeting.id}:${stage.id}`,
-      refUpdatedAt: newMeeting.createdAt
-    }))
-  } else {
-    return []
-  }
+  language = language || inferLanguage(reflections.map((r) => r.plaintextContent).join(' '))
+  return {body, language}
 }

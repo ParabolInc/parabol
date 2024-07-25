@@ -1,0 +1,11 @@
+input CreateTaskIntegrationInput {
+  """
+  The service to push this new task to
+  """
+  service: TaskServiceEnum!
+
+  """
+  The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
+  """
+  serviceProjectHash: String!
+}

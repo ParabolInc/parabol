@@ -1,16 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {AddPokerTemplateScaleMutation as TAddPokerTemplateScaleMutation} from '../__generated__/AddPokerTemplateScaleMutation.graphql'
+import {AddPokerTemplateScaleMutation_scale$data} from '../__generated__/AddPokerTemplateScaleMutation_scale.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerCards} from '../types/constEnums'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {AddPokerTemplateScaleMutation as TAddPokerTemplateScaleMutation} from '../__generated__/AddPokerTemplateScaleMutation.graphql'
-import {AddPokerTemplateScaleMutation_scale$data} from '../__generated__/AddPokerTemplateScaleMutation_scale.graphql'
 import handleAddPokerTemplateScale from './handlers/handleAddPokerTemplateScale'
 
 graphql`
   fragment AddPokerTemplateScaleMutation_scale on AddPokerTemplateScalePayload {
     scale {
+      ...ScaleDropdownMenuItem_scale
       id
       name
       values {

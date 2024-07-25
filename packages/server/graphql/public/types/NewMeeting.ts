@@ -15,11 +15,12 @@ const NewMeeting: NewMeetingResolvers = {
     return resolveTypeLookup[meetingType as keyof typeof resolveTypeLookup]
   },
   createdByUser: ({createdBy}, _args, {dataLoader}) => {
+    if (!createdBy) return null
     return dataLoader.get('users').loadNonNull(createdBy)
   },
   facilitator: ({facilitatorUserId, teamId}, _args, {dataLoader}) => {
     const teamMemberId = toTeamMemberId(teamId, facilitatorUserId)
-    return dataLoader.get('teamMembers').load(teamMemberId)
+    return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
   locked: async ({endedAt, teamId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
@@ -48,7 +49,7 @@ const NewMeeting: NewMeetingResolvers = {
   organization: async ({teamId}, _args, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    return dataLoader.get('organizations').load(orgId)
+    return dataLoader.get('organizations').loadNonNull(orgId)
   },
   phases: async ({phases, id: meetingId, teamId, endedAt}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

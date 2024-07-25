@@ -78,8 +78,8 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightDrawer: boolean)
         ? swipingRight
         : swipingLeft
       : isRightDrawer
-      ? swipingLeft
-      : swipingRight
+        ? swipingLeft
+        : swipingRight
   }
 }
 

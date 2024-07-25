@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
-import createProxyRecord from '../utils/relay/createProxyRecord'
 import {PokerAnnounceDeckHoverMutation as TPokerAnnounceDeckHoverMutation} from '../__generated__/PokerAnnounceDeckHoverMutation.graphql'
 import {PokerAnnounceDeckHoverMutation_meeting$data} from '../__generated__/PokerAnnounceDeckHoverMutation_meeting.graphql'
 import {PokerMeeting_meeting$data} from '../__generated__/PokerMeeting_meeting.graphql'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 
 // asking for the correct hoveringUsers array would be fine, except we know a user can existing in exactly 1 hoveringUsers array at a time
 // which means we have to iterate over each stage & remove it from all others (because mouseEnter/mouseLeave are not always reliable)

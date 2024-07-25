@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   ArrowForward as ArrowForwardIcon,
   ChangeHistory,
@@ -9,55 +8,11 @@ import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
 import useRouter from '~/hooks/useRouter'
-import {PALETTE} from '~/styles/paletteV3'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
-import {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%'
-})
-
-const MeetingIcon = styled('div')({
-  color: PALETTE.SLATE_600,
-  height: 24,
-  width: 24,
-  margin: 16
-})
-
-const MeetingSVG = styled('div')({
-  padding: 16
-})
-
-const MeetingInfo = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
-})
-
-const Title = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  lineHeight: '24px',
-  fontWeight: 600
-})
-
-const Subtitle = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 12
-})
-
-const Action = styled('div')({
-  flex: 1,
-  display: 'flex',
-  justifyContent: 'end',
-  alignItems: 'center',
-  height: 24,
-  marginRight: 16,
-  width: 24
-})
+import {MenuItem} from '../ui/Menu/MenuItem'
 
 interface Props {
   meeting: SelectMeetingDropdownItem_meeting$key
@@ -100,14 +55,14 @@ const SelectMeetingDropdownItem = (props: Props) => {
     history.push(`/meet/${meetingId}`)
   }
   //FIXME 6062: change to React.ComponentType
-  const IconOrSVG = meetingTypeToIcon[meetingType]
+  const IconOrSVG = meetingTypeToIcon[meetingType]!
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
   return (
-    <Wrapper onClick={gotoMeeting}>
+    <MenuItem onClick={gotoMeeting}>
       {typeof IconOrSVG === 'string' ? (
-        <MeetingIcon>
+        <div className='size-6 m-2 text-slate-600'>
           {
             {
               group_work: <GroupWork />,
@@ -115,22 +70,22 @@ const SelectMeetingDropdownItem = (props: Props) => {
               history: <History />
             }[IconOrSVG]
           }
-        </MeetingIcon>
+        </div>
       ) : (
-        <MeetingSVG>
+        <div className='p-2'>
           <IconOrSVG />
-        </MeetingSVG>
+        </div>
       )}
-      <MeetingInfo>
-        <Title>{name}</Title>
-        <Subtitle>
+      <div className='flex flex-col px-2'>
+        <div className='text-base font-semibold text-slate-700'>{name}</div>
+        <div className='text-xs text-slate-600'>
           {meetingPhaseLabel} • {teamName}
-        </Subtitle>
-      </MeetingInfo>
-      <Action>
+        </div>
+      </div>
+      <div className='size-6 flex flex-grow items-center justify-end'>
         <ArrowForwardIcon />
-      </Action>
-    </Wrapper>
+      </div>
+    </MenuItem>
   )
 }
 

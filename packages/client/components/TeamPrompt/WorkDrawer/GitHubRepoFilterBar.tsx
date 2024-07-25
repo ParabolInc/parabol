@@ -1,15 +1,14 @@
-import React from 'react'
+import {ExpandMore, FilterList} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {FilterList} from '@mui/icons-material'
-import useMenu from '../../../hooks/useMenu'
-import {MenuPosition} from '../../../hooks/useCoords'
-import GitHubRepoSearchFilterMenu from '../../GitHubRepoSearchFilterMenu'
+import clsx from 'clsx'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import {GitHubRepoFilterBar_teamMember$key} from '../../../__generated__/GitHubRepoFilterBar_teamMember.graphql'
-import {ExpandMore} from '@mui/icons-material'
+import {MenuPosition} from '../../../hooks/useCoords'
+import useMenu from '../../../hooks/useMenu'
 import {PortalStatus} from '../../../hooks/usePortal'
-import clsx from 'clsx'
 import plural from '../../../utils/plural'
+import GitHubRepoSearchFilterMenu from '../../GitHubRepoSearchFilterMenu'
 
 interface Props {
   teamMemberRef: GitHubRepoFilterBar_teamMember$key

@@ -1,0 +1,7 @@
+type Subscription {
+  meetingSubscription(meetingId: ID!): MeetingSubscriptionPayload!
+  notificationSubscription: NotificationSubscriptionPayload!
+  organizationSubscription: OrganizationSubscriptionPayload!
+  taskSubscription: TaskSubscriptionPayload!
+  teamSubscription: TeamSubscriptionPayload!
+}

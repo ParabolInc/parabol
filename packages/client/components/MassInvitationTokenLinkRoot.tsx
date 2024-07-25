@@ -1,8 +1,8 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import massInvitationTokenLinkQuery, {
   MassInvitationTokenLinkQuery
 } from '../__generated__/MassInvitationTokenLinkQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MassInvitationTokenLink from './MassInvitationTokenLink'
 
 interface Props {

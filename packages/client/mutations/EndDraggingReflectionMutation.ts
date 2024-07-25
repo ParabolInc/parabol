@@ -179,8 +179,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           meetingId: reflection.getValue('meetingId') as string,
           isActive: true,
           sortOrder: 0,
-          updatedAt: nowISO,
-          voterIds: []
+          updatedAt: nowISO
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})

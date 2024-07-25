@@ -1,5 +1,5 @@
-import React from 'react'
 import * as RadixDialog from '@radix-ui/react-dialog'
+import React from 'react'
 import {twMerge} from 'tailwind-merge'
 
 export const DialogDescription = React.forwardRef<

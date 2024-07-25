@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import React, {useCallback} from 'react'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import pokerTutorialThumb from '../../../static/images/illustrations/pokerTutorialThumb.jpg'
+import retroTutorialThumb from '../../../static/images/illustrations/retroTutorialThumb.png'
 import standupTutorialThumb from '../../../static/images/illustrations/standupTutorialThumb.jpg'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -100,14 +101,19 @@ const TopLine = styled('div')({
 })
 
 interface Props {
-  type: 'poker' | 'standup'
+  type: 'retro' | 'poker' | 'standup'
 }
 
 const TUTORIAL_MAP = {
+  retro: {
+    label: 'Starting a Retrospective Meeting',
+    thumbnail: retroTutorialThumb,
+    url: 'https://www.youtube.com/embed/C96fNtypaww?modestbranding=1&rel=0'
+  },
   poker: {
     label: 'Starting a Sprint Poker Meeting',
     thumbnail: pokerTutorialThumb,
-    url: 'https://www.youtube.com/embed/X_i60AMxPBU?modestbranding=1&rel=0'
+    url: 'https://www.youtube.com/embed/RJGnNXvvShY?modestbranding=1&rel=0'
   },
   standup: {
     label: 'Starting a Standup Meeting',

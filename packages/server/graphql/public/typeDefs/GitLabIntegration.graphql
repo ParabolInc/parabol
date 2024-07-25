@@ -1,0 +1,53 @@
+"""
+Gitlab integration data for a given team member
+"""
+type GitLabIntegration {
+  """
+  The OAuth2 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthOAuth2
+
+  """
+  The cloud provider the team member may choose to integrate with. Nullable based on env vars
+  """
+  cloudProvider: IntegrationProviderOAuth2
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderOAuth2!]!
+  gitlabSearchQueries: [GitLabSearchQuery!]!
+
+  """
+  A list of projects accessible by this team member
+  """
+  projects: [RepoIntegration!]!
+  projectsIssues(
+    first: Int!
+
+    """
+    the stringified cursors for pagination
+    """
+    after: String
+
+    """
+    the ids of the projects selected as filters
+    """
+    projectsIds: [String]
+
+    """
+    the search query that the user enters to filter issues
+    """
+    searchQuery: String!
+
+    """
+    the sort string that defines the order of the returned issues
+    """
+    sort: String!
+
+    """
+    the state of issues, e.g. opened or closed
+    """
+    state: String!
+  ): GitLabIntegrationConnection!
+}

@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {LocalStorageKey} from '~/types/constEnums'
 import Atmosphere from '../Atmosphere'
+import {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
 import {SimpleMutation} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
-import {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {

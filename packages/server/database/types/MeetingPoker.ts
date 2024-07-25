@@ -8,7 +8,7 @@ interface Input {
   id: string
   teamId: string
   meetingCount: number
-  name?: string
+  name: string
   phases: [PokerPhase, ...PokerPhase[]]
   facilitatorUserId: string
   templateId: string
@@ -35,7 +35,7 @@ export default class MeetingPoker extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'poker',
-      name: name ?? `Sprint Poker #${meetingCount + 1}`
+      name
     })
     this.templateId = templateId
     this.templateRefId = templateRefId

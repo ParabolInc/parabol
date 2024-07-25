@@ -4,8 +4,8 @@ import {Logger} from '../Logger'
 import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
-  static PARABOL_TEAM_600 = 'parabol-pro-600' // $6/seat/mo
-  static PARABOL_ENTERPRISE_2021_LOW = 'plan_2021_ann_low'
+  static TEAM_PRICE_APP_ID = 'parabol-pro-800' // $8/seat/mo
+  static ENTERPRISE_PRICE_APP_ID = 'plan_2021_ann_low'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2020-08-27',
@@ -90,14 +90,29 @@ export default class StripeManager {
     }
   }
 
-  async createCustomer(orgId: string, email: string, source?: string) {
-    return this.stripe.customers.create({
-      email,
-      source,
-      metadata: {
-        orgId
-      }
-    })
+  async createCustomer(
+    orgId: string,
+    email: string,
+    paymentMethodId?: string | undefined,
+    source?: string
+  ) {
+    try {
+      return await this.stripe.customers.create({
+        email,
+        source,
+        payment_method: paymentMethodId,
+        invoice_settings: paymentMethodId
+          ? {
+              default_payment_method: paymentMethodId
+            }
+          : undefined,
+        metadata: {
+          orgId
+        }
+      })
+    } catch (e) {
+      return e as Error
+    }
   }
 
   async createEnterpriseSubscription(
@@ -116,7 +131,7 @@ export default class StripeManager {
       proration_behavior: 'none',
       items: [
         {
-          plan: plan || StripeManager.PARABOL_ENTERPRISE_2021_LOW,
+          plan: plan || StripeManager.ENTERPRISE_PRICE_APP_ID,
           quantity
         }
       ]
@@ -141,7 +156,7 @@ export default class StripeManager {
       },
       items: [
         {
-          plan: StripeManager.PARABOL_TEAM_600,
+          plan: StripeManager.TEAM_PRICE_APP_ID,
           quantity
         }
       ]
@@ -164,7 +179,7 @@ export default class StripeManager {
       },
       items: [
         {
-          plan: StripeManager.PARABOL_TEAM_600,
+          plan: StripeManager.TEAM_PRICE_APP_ID,
           quantity
         }
       ]

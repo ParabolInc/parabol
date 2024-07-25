@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import OrgAvatarInput from '../../../../components/OrgAvatarInput'
-import useModal from '../../../../hooks/useModal'
 import {OrgDetails_organization$key} from '../../../../__generated__/OrgDetails_organization.graphql'
-import OrgBillingDangerZone from './OrgBillingDangerZone'
-import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import EditableOrgName from '../../../../components/EditableOrgName'
-import OrganizationDetails from '../Organization/OrganizationDetails'
 import Avatar from '../../../../components/Avatar/Avatar'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
+import EditableOrgName from '../../../../components/EditableOrgName'
+import OrgAvatarInput from '../../../../components/OrgAvatarInput'
+import useModal from '../../../../hooks/useModal'
+import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
+import OrganizationDetails from '../Organization/OrganizationDetails'
+import OrgBillingDangerZone from './OrgBillingDangerZone'
 
 type Props = {
   organizationRef: OrgDetails_organization$key
@@ -51,15 +51,13 @@ const OrgDetails = (props: Props) => {
       <div className='mb-4 flex w-full items-center'>
         {modalPortal(<OrgAvatarInput picture={pictureOrDefault} orgId={orgId} />)}
         {isBillingLeader ? (
-          <div onClick={togglePortal} className='mr-2'>
-            <EditableAvatar hasPanel picture={pictureOrDefault} size={64} unstyled />
-          </div>
+          <EditableAvatar onClick={togglePortal} picture={pictureOrDefault} className='h-16 w-16' />
         ) : (
-          <div className='mr-4 w-16'>
-            <Avatar picture={pictureOrDefault} size={64} sansRadius sansShadow />
+          <div className='w-16'>
+            <Avatar picture={pictureOrDefault} />
           </div>
         )}
-        <div className='text-gray-600 ml-2 flex flex-grow flex-col items-start'>
+        <div className='text-gray-600 ml-6 flex flex-grow flex-col items-start'>
           {isBillingLeader ? (
             <EditableOrgName organization={organization} />
           ) : (

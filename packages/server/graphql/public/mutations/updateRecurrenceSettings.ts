@@ -1,18 +1,18 @@
+import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getRRuleDateFromJSDate, getJSDateFromRRuleDate} from 'parabol-client/shared/rruleUtil'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
 import updateMeetingSeriesQuery from '../../../postgres/queries/updateMeetingSeries'
+import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
+import {MutationResolvers} from '../resolverTypes'
 
 export const startNewMeetingSeries = async (
   meeting: {
@@ -124,7 +124,7 @@ const updateGCalRecurrenceRule = (oldRule: RRule, newRule: RRule | null | undefi
 
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
   _source,
-  {meetingId, recurrenceSettings},
+  {meetingId, name, rrule},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
@@ -139,58 +139,52 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
-  const {teamId, meetingSeriesId} = meeting
-  if (!meetingSeriesId) {
-    return standardError(new Error('Meeting is not recurring'), {userId: viewerId})
-  }
+  const {teamId, meetingType, meetingSeriesId} = meeting
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 
-  if (meeting.meetingSeriesId) {
-    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
+  if (meetingType !== 'teamPrompt' && meetingType !== 'retrospective') {
+    return standardError(new Error('Recurring meeting type is not implemented'), {userId: viewerId})
+  }
+
+  if (meetingSeriesId) {
+    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
     const {gcalSeriesId, teamId, facilitatorId, recurrenceRule} = meetingSeries
 
-    if (!recurrenceSettings.rrule) {
+    if (!rrule) {
       await stopMeetingSeries(meetingSeries)
       analytics.recurrenceStopped(viewer, meetingSeries)
     } else {
-      await updateMeetingSeries(meetingSeries, recurrenceSettings.rrule)
+      await updateMeetingSeries(meetingSeries, rrule)
       analytics.recurrenceStarted(viewer, meetingSeries)
     }
     if (gcalSeriesId) {
-      const rrule = updateGCalRecurrenceRule(
-        RRule.fromString(recurrenceRule),
-        recurrenceSettings.rrule
-      )
+      const newRrule = updateGCalRecurrenceRule(RRule.fromString(recurrenceRule), rrule)
       await updateGcalSeries({
         gcalSeriesId,
-        title: recurrenceSettings.name ?? undefined,
-        rrule,
+        name: name ?? undefined,
+        rrule: newRrule,
         teamId,
         userId: facilitatorId,
         dataLoader
       })
     }
 
-    if (recurrenceSettings.name) {
-      await updateMeetingSeriesQuery({title: recurrenceSettings.name}, meetingSeries.id)
+    if (name) {
+      await updateMeetingSeriesQuery({title: name}, meetingSeries.id)
     }
 
     dataLoader.get('meetingSeries').clear(meetingSeries.id)
   } else {
-    if (!recurrenceSettings.rrule) {
+    if (!rrule) {
       return standardError(
         new Error('When meeting is not recurring, recurrence rule has to be provided'),
         {userId: viewerId}
       )
     }
 
-    const newMeetingSeries = await startNewMeetingSeries(
-      meeting,
-      recurrenceSettings.rrule,
-      recurrenceSettings.name
-    )
+    const newMeetingSeries = await startNewMeetingSeries(meeting, rrule, name)
     analytics.recurrenceStarted(viewer, newMeetingSeries)
   }
 

@@ -31,16 +31,25 @@ jobs:
           command: |
             RES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}/play" \
               --request POST \
-              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_API_TOKEN }}')
+              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
             echo $RES
             JOB_ID_DONE=$(echo $RES | jq '.id // empty')
             [ -z "$JOB_ID_DONE" ] && exit 1 || exit 0
       - name: Poll Production Release
         uses: artiz/poll-endpoint@1.0.2
         with:
-          url: https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}?access_token=${{ secrets.GITLAB_API_TOKEN }}
+          url: https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}?access_token=${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}
           method: GET
           expect-status: 200
           expect-response-regex: '"status":"success"'
           timeout: 120000
           interval: 3000
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

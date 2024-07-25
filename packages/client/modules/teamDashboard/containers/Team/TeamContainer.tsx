@@ -4,8 +4,8 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import ErrorBoundary from '~/components/ErrorBoundary'
-import useRouter from '../../../../hooks/useRouter'
 import {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
+import useRouter from '../../../../hooks/useRouter'
 import Team from '../../components/Team/Team'
 
 const TeamDashMain = lazy(

@@ -1,10 +1,10 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {GetRepositoriesQuery} from '../../../types/githubTypes'
+import {Logger} from '../../../utils/Logger'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
 import {DataLoaderWorker} from '../../graphql'
 import {GQLContext} from './../../graphql'
-import {Logger} from '../../../utils/Logger'
 
 export interface GitHubRepo {
   id: string

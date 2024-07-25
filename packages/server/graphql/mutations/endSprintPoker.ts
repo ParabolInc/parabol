@@ -7,6 +7,8 @@ import getRethink from '../../database/rethinkDriver'
 import Meeting from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
+import getKysely from '../../postgres/getKysely'
+import {Logger} from '../../utils/Logger'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -15,12 +17,11 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
-import gatherInsights from './helpers/gatherInsights'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import gatherInsights from './helpers/gatherInsights'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateTeamInsights from './helpers/updateTeamInsights'
-import {Logger} from '../../utils/Logger'
 
 export default {
   type: new GraphQLNonNull(EndSprintPokerPayload),
@@ -127,7 +128,8 @@ export default {
           meetingId
         })
     )
-    await r.table('TimelineEvent').insert(events).run()
+    const pg = getKysely()
+    await pg.insertInto('TimelineEvent').values(events).execute()
 
     const data = {
       meetingId,

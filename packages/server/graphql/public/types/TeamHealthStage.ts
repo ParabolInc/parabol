@@ -1,8 +1,8 @@
-import {TeamHealthStageResolvers} from '../resolverTypes'
-import {getUserId} from '../../../utils/authorization'
 import TeamHealthStageDB from '../../../database/types/TeamHealthStage'
-import isValid from '../../isValid'
 import {Logger} from '../../../utils/Logger'
+import {getUserId} from '../../../utils/authorization'
+import isValid from '../../isValid'
+import {TeamHealthStageResolvers} from '../resolverTypes'
 
 export type TeamHealthStageSource = TeamHealthStageDB & {
   meetingId: string

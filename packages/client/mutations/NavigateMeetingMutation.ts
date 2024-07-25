@@ -6,6 +6,7 @@ import {
 } from '~/__generated__/NavigateMeetingMutation_meeting.graphql'
 import {NavigateMeetingMutation_team$data} from '~/__generated__/NavigateMeetingMutation_team.graphql'
 import {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {NavigateMeetingMutation as TNavigateMeetingMutation} from '../__generated__/NavigateMeetingMutation.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
@@ -13,7 +14,6 @@ import getBaseRecord from '../utils/relay/getBaseRecord'
 import safeProxy from '../utils/relay/safeProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import {isViewerTypingInComment, isViewerTypingInTask} from '../utils/viewerTypingUtils'
-import {NavigateMeetingMutation as TNavigateMeetingMutation} from '../__generated__/NavigateMeetingMutation.graphql'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 
 graphql`

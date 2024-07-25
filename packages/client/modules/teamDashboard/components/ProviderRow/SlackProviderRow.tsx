@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {SlackProviderRow_viewer$key} from '../../../../__generated__/SlackProviderRow_viewer.graphql'
 import SlackConfigMenu from '../../../../components/SlackConfigMenu'
 import SlackProviderLogo from '../../../../components/SlackProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -9,7 +10,6 @@ import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import SlackClientManager from '../../../../utils/SlackClientManager'
-import {SlackProviderRow_viewer$key} from '../../../../__generated__/SlackProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
 import SlackNotificationList from './SlackNotificationList'
 
@@ -39,6 +39,8 @@ const SlackProviderRow = (props: Props) => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+
+  if (!SlackClientManager.isAvailable) return null
 
   return (
     <>

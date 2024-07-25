@@ -1,0 +1,16 @@
+input UpdatePokerScopeItemInput {
+  """
+  The location of the single source of truth (e.g. a jira-integrated parabol task would be "jira")
+  """
+  service: TaskServiceEnum!
+
+  """
+  If vanilla parabol task, taskId. If integrated parabol task, integrationHash
+  """
+  serviceTaskId: ID!
+
+  """
+  The action to perform
+  """
+  action: AddOrDeleteEnum!
+}

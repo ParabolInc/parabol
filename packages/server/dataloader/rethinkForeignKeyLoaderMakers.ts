@@ -1,5 +1,3 @@
-import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
-import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
@@ -118,109 +116,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const organizationsByActiveDomain = new RethinkForeignKeyLoaderMaker(
-  'organizations',
-  'activeDomain',
-  async (activeDomains) => {
-    const r = await getRethink()
-    return r.table('Organization').getAll(r.args(activeDomains), {index: 'activeDomain'}).run()
-  }
-)
-export const organizationUsersByOrgId = new RethinkForeignKeyLoaderMaker(
-  'organizationUsers',
-  'orgId',
-  async (orgIds) => {
-    const r = await getRethink()
-    return r
-      .table('OrganizationUser')
-      .getAll(r.args(orgIds), {index: 'orgId'})
-      .filter({removedAt: null})
-      .run()
-  }
-)
-
-export const organizationUsersByUserId = new RethinkForeignKeyLoaderMaker(
-  'organizationUsers',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r
-      .table('OrganizationUser')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .filter({removedAt: null})
-      .run()
-  }
-)
-
-export const retroReflectionGroupsByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'retroReflectionGroups',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r
-      .table('RetroReflectionGroup')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .filter({isActive: true})
-      .run()
-  }
-)
-
-export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
-  'templateScales',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('TemplateScale')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
-export const retroReflectionsByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'retroReflections',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r
-      .table('RetroReflection')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .filter({isActive: true})
-      .run()
-  }
-)
-
-export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
-  'templateDimensions',
-  'templateId',
-  async (templateIds) => {
-    const r = await getRethink()
-    return (
-      r
-        .table('TemplateDimension')
-        .getAll(r.args(templateIds), {index: 'templateId'})
-        // NOTE: isActive must be false so we can see meetings in the past that use a now-inactive template
-        // .filter({isActive: true})
-        .orderBy('sortOrder')
-        .run()
-    )
-  }
-)
-export const timelineEventsByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'timelineEvents',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r
-      .table('TimelineEvent')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .filter({isActive: true})
-      .run() as Promise<TimelineEventCheckinComplete[] | TimelineEventRetroComplete[]>
-  }
-)
-
 export const slackAuthByUserId = new RethinkForeignKeyLoaderMaker(
   'slackAuths',
   'userId',
@@ -292,34 +187,6 @@ export const teamInvitationsByTeamId = new RethinkForeignKeyLoaderMaker(
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({acceptedAt: null})
       .filter((row: RDatum) => row('expiresAt').ge(now))
-      .run()
-  }
-)
-
-export const teamMembersByTeamId = new RethinkForeignKeyLoaderMaker(
-  'teamMembers',
-  'teamId',
-  async (teamIds) => {
-    // tasksByUserId is expensive since we have to look up each team to check the team archive status
-    const r = await getRethink()
-    return r
-      .table('TeamMember')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isNotRemoved: true})
-      .run()
-  }
-)
-
-export const teamMembersByUserId = new RethinkForeignKeyLoaderMaker(
-  'teamMembers',
-  'userId',
-  async (userIds) => {
-    // tasksByUserId is expensive since we have to look up each team to check the team archive status
-    const r = await getRethink()
-    return r
-      .table('TeamMember')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .filter({isNotRemoved: true})
       .run()
   }
 )

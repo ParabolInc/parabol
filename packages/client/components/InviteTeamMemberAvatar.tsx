@@ -4,8 +4,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import useModal from '../hooks/useModal'
 import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
+import useModal from '../hooks/useModal'
 import AddTeamMemberModal from './AddTeamMemberModal'
 
 const Label = styled('div')({

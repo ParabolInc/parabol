@@ -96,7 +96,10 @@ const Invoice = new GraphQLObjectType<any, GQLContext>({
     },
     picture: {
       type: GraphQLURLType,
-      description: 'The picture of the organization'
+      description: 'The picture of the organization',
+      resolve: async ({picture}, _args, {dataLoader}) => {
+        return dataLoader.get('fileStoreAsset').load(picture)
+      }
     },
     startAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),

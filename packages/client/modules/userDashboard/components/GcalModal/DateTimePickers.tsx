@@ -1,8 +1,8 @@
-import React from 'react'
-import {Dayjs} from 'dayjs'
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {DatePicker, TimePicker} from '@mui/x-date-pickers'
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
+import {Dayjs} from 'dayjs'
+import React from 'react'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const customStyles = {
@@ -42,38 +42,17 @@ const timePickerStyles = {
 
 type Props = {
   startValue: Dayjs
-  setStart: (newValue: Dayjs) => void
   endValue: Dayjs
-  setEnd: (newValue: Dayjs) => void
+  handleChangeStart: (date: Dayjs | null, time: Dayjs | null) => void
+  handleChangeEnd: (date: Dayjs | null, time: Dayjs | null) => void
 }
 
 const DateTimePickers = (props: Props) => {
-  const {startValue, setStart, endValue, setEnd} = props
+  const {startValue, endValue, handleChangeStart, handleChangeEnd} = props
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const date = new Date()
   const dateTimeString = date.toLocaleString('en-US', {timeZone: timeZone, timeZoneName: 'short'})
   const timeZoneShort = dateTimeString.split(' ').pop()
-
-  const handleChangeStart = (date: Dayjs | null, time: Dayjs | null) => {
-    if (date && time) {
-      const newValue = date.hour(time.hour()).minute(time.minute())
-      setStart(newValue)
-      setEnd(newValue.add(1, 'hour'))
-    }
-  }
-
-  const handleChangeEnd = (date: Dayjs | null, time: Dayjs | null) => {
-    if (date && time) {
-      const newValue = date.hour(time.hour()).minute(time.minute())
-      if (newValue.isAfter(startValue)) {
-        setEnd(newValue)
-      } else {
-        const newStartValue = newValue.subtract(1, 'hour')
-        setStart(newStartValue)
-        setEnd(newValue)
-      }
-    }
-  }
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     // prevent gcal modal from closing when clicking datetime pickers

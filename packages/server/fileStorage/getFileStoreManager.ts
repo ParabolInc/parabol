@@ -1,13 +1,13 @@
 import FileStoreManager from './FileStoreManager'
-import LocalFileSystemManager from './LocalFileStoreManager'
-import S3Manager from './S3FileStoreManager'
 import GCSManager from './GCSManager'
+import LocalFileStoreManager from './LocalFileStoreManager'
+import S3Manager from './S3FileStoreManager'
 
 let fileStoreManager: FileStoreManager
 const managers = {
   s3: S3Manager,
   gcs: GCSManager,
-  local: LocalFileSystemManager
+  local: LocalFileStoreManager
 }
 
 type ManagersKey = keyof typeof managers

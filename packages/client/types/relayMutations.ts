@@ -61,8 +61,8 @@ export type OnNextHandler<TSubResponse, C = OnNextBaseContext> = (
   payload: null extends TSubResponse
     ? Omit<NonNullable<TSubResponse>, ' $fragmentType'> | null
     : undefined extends TSubResponse
-    ? Omit<NonNullable<TSubResponse>, ' $fragmentType'> | undefined
-    : Omit<TSubResponse, ' $fragmentType'>,
+      ? Omit<NonNullable<TSubResponse>, ' $fragmentType'> | undefined
+      : Omit<TSubResponse, ' $fragmentType'>,
   context: C
 ) => void
 
@@ -70,9 +70,11 @@ export type SimpleMutation<T extends MutationParameters> = {
   (atmosphere: Atmosphere, variables: T['variables']): ReturnType<typeof commitMutation> | undefined
 }
 export type StandardMutation<T extends MutationParameters, C = BaseLocalHandlers> = {
-  (atmosphere: Atmosphere, variables: T['variables'], localHandlers: C): ReturnType<
-    typeof commitMutation
-  >
+  (
+    atmosphere: Atmosphere,
+    variables: T['variables'],
+    localHandlers: C
+  ): ReturnType<typeof commitMutation>
 }
 
 export type RelayDateHack<T extends {variables: any}, P> = Omit<T, 'variables'> & {

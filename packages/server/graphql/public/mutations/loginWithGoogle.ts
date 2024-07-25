@@ -11,11 +11,12 @@ import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import GoogleServerManager from '../../../utils/GoogleServerManager'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
+import {generateIdenticon} from '../../private/mutations/helpers/generateIdenticon'
 import {MutationResolvers} from '../resolverTypes'
 
 const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   _source,
-  {code, invitationToken, pseudoId, params},
+  {code, invitationToken, pseudoId},
   context
 ) => {
   const {dataLoader} = context
@@ -93,12 +94,12 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   const newUser = new User({
     id: userId,
     preferredName,
-    picture,
+    picture: picture || (await generateIdenticon(userId, preferredName)),
     email,
     identities: [identity],
     pseudoId
   })
-  context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader, params)
+  context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader)
   return {
     userId,
     authToken: encodeAuthToken(context.authToken),

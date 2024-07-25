@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import DashSidebar from '../../../components/Dashboard/DashSidebar'
+import {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import DashTopBar from '../../../components/DashTopBar'
+import DashSidebar from '../../../components/Dashboard/DashSidebar'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
@@ -12,7 +13,6 @@ import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
 import makeHref from '../../../utils/makeHref'
-import {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import {demoTeamId} from '../../demo/initDB'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 
@@ -60,10 +60,10 @@ const NewMeetingSummary = (props: Props) => {
   if (!newMeeting) {
     return null
   }
+  // eslint-disable react-hooks/rules-of-hooks -- return above violates these rules, but is just a safeguard and not normal usage
   const {id: meetingId, name: meetingName, team} = newMeeting
   const {id: teamId, name: teamName} = team
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`
@@ -80,13 +80,13 @@ const NewMeetingSummary = (props: Props) => {
           <DashTopBar queryRef={data} toggle={toggle} />
         </div>
       )}
-      <div className='flex min-h-screen bg-slate-200'>
+      <div className='h-100 flex flex-1 overflow-auto bg-slate-200'>
         {!isDemoRoute() && (
           <div className='hidden print:hidden lg:block'>
             <DashSidebar viewerRef={viewer} isOpen={isOpen} />
           </div>
         )}
-        <div className='w-full'>
+        <div className='h-full w-full overflow-auto'>
           <MeetingSummaryEmail
             appOrigin={window.location.origin}
             urlAction={urlAction}

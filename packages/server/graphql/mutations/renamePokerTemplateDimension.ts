@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -24,11 +23,10 @@ const renamePokerTemplateDimension = {
     {dimensionId, name}: {dimensionId: string; name: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
+    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -40,30 +38,24 @@ const renamePokerTemplateDimension = {
     }
 
     // VALIDATION
-    const {teamId, templateId} = dimension
+    const {teamId} = dimension
     const trimmedName = name.trim().slice(0, Threshold.MAX_POKER_DIMENSION_NAME)
     const normalizedName = trimmedName || 'Unnamed Dimension'
 
-    const allDimensions = await r
-      .table('TemplateDimension')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({templateId})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .run()
-    if (allDimensions.find((dimension) => dimension.name === normalizedName)) {
-      return standardError(new Error('Duplicate name dimension'), {userId: viewerId})
+    try {
+      await pg
+        .updateTable('TemplateDimension')
+        .set({name: normalizedName})
+        .where('id', '=', dimensionId)
+        .execute()
+    } catch (e) {
+      const error =
+        (e as any).constraint === 'TemplateDimension_teamId_name_removedAt_key'
+          ? 'Duplicate name dimension'
+          : (e as any).message
+      return {error: {message: error}}
     }
-
-    // RESOLUTION
-    await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .update({
-        name: normalizedName,
-        updatedAt: now
-      })
-      .run()
-
+    dataLoader.clearAll('templateDimensions')
     const data = {dimensionId}
     publish(
       SubscriptionChannel.TEAM,

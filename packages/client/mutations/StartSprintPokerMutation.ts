@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {StartSprintPokerMutation as TStartSprintPokerMutation} from '../__generated__/StartSprintPokerMutation.graphql'
+import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartSprintPokerMutation_team on StartSprintPokerSuccess {

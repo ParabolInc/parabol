@@ -1,0 +1,6 @@
+type ShareTopicSuccess {
+  """
+  Meeting
+  """
+  meeting: NewMeeting
+}

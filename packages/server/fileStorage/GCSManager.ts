@@ -2,7 +2,7 @@ import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import path from 'path'
 import {Logger} from '../utils/Logger'
-import FileStoreManager from './FileStoreManager'
+import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 
 interface CloudKey {
   clientEmail: string
@@ -19,7 +19,7 @@ export default class GCSManager extends FileStoreManager {
   private accessToken: string | undefined
 
   // The CDN_BASE_URL without the env, e.g. storage.google.com/:bucket
-  private baseUrl: string
+  baseUrl: string
   private cloudKey: CloudKey
   constructor() {
     super()
@@ -64,9 +64,12 @@ export default class GCSManager extends FileStoreManager {
     // refresh the token every hour
     // do this on an interval vs. on demand to reduce request latency
     // unref it so things like pushToCDN can exit
-    setInterval(async () => {
-      this.accessToken = await this.getFreshAccessToken()
-    }, (GCSManager.GOOGLE_EXPIRY - 100) * 1000).unref()
+    setInterval(
+      async () => {
+        this.accessToken = await this.getFreshAccessToken()
+      },
+      (GCSManager.GOOGLE_EXPIRY - 100) * 1000
+    ).unref()
   }
 
   private async getFreshAccessToken() {
@@ -109,12 +112,12 @@ export default class GCSManager extends FileStoreManager {
     return this.accessToken
   }
 
-  protected async putUserFile(file: Buffer, partialPath: string) {
+  protected async putUserFile(file: ArrayBufferLike, partialPath: string) {
     const fullPath = this.prependPath(partialPath)
     return this.putFile(file, fullPath)
   }
 
-  protected async putFile(file: Buffer, fullPath: string) {
+  protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const url = new URL(`https://storage.googleapis.com/upload/storage/v1/b/${this.bucket}/o`)
     url.searchParams.append('uploadType', 'media')
     url.searchParams.append('name', fullPath)
@@ -140,21 +143,25 @@ export default class GCSManager extends FileStoreManager {
     return this.getPublicFileLocation(fullPath)
   }
 
-  putBuildFile(file: Buffer, partialPath: string): Promise<string> {
-    const fullPath = path.join(this.envSubDir, 'build', partialPath)
+  putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
+    const fullPath = this.prependPath(partialPath, 'build')
     return this.putFile(file, fullPath)
   }
 
-  prependPath(partialPath: string) {
-    return path.join(this.envSubDir, 'store', partialPath)
+  prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
+    return path.join(this.envSubDir, assetDir, partialPath)
   }
   getPublicFileLocation(fullPath: string) {
     return encodeURI(`${this.baseUrl}${fullPath}`)
   }
-  async checkExists(partialPath: string) {
-    const fullPath = encodeURIComponent(this.prependPath(partialPath))
+  async checkExists(partialPath: string, assetDir?: FileAssetDir) {
+    const fullPath = encodeURIComponent(this.prependPath(partialPath, assetDir))
     const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}`
     const res = await fetch(url)
     return res.status !== 404
+  }
+  async presignUrl(url: string): Promise<string> {
+    // not implemented yet!
+    return url
   }
 }

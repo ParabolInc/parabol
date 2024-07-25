@@ -11,10 +11,10 @@ import {
   GraphQLNamedType,
   GraphQLResolveInfo,
   GraphQLSchema,
-  isObjectType,
-  OperationDefinitionNode
+  OperationDefinitionNode,
+  isObjectType
 } from 'graphql'
-import {CompiledQuery, compileQuery, CompilerOptions, isCompiledQuery} from 'graphql-jit'
+import {CompiledQuery, CompilerOptions, compileQuery, isCompiledQuery} from 'graphql-jit'
 import {Path} from 'graphql/jsutils/Path'
 
 interface ExecutionArgs {

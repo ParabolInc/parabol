@@ -1,12 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {DowngradeToStarterMutation as TDowngradeToStarterMutation} from '../__generated__/DowngradeToStarterMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment DowngradeToStarterMutation_organization on DowngradeToStarterPayload {
     organization {
       tier
+      billingTier
     }
   }
 `

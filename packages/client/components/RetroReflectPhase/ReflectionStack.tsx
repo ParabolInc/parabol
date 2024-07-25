@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {ReflectionStack_meeting$key} from '~/__generated__/ReflectionStack_meeting.graphql'
+import {PhaseItemColumn_meeting$data} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {
   Breakpoint,
@@ -10,7 +11,6 @@ import {
   ElementWidth,
   ReflectionStackPerspective
 } from '../../types/constEnums'
-import {PhaseItemColumn_meeting$data} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'

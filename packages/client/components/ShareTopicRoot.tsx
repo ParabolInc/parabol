@@ -1,10 +1,10 @@
 import React, {Suspense} from 'react'
 import ShareTopicModal from '~/components/ShareTopicModal'
-import {Loader} from '../utils/relay/renderLoader'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import shareTopicModalQuery, {
   ShareTopicModalQuery
 } from '../__generated__/ShareTopicModalQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {Loader} from '../utils/relay/renderLoader'
 
 interface Props {
   onClose: () => void

@@ -1,9 +1,9 @@
-import OpenAI from 'openai'
 import JSON5 from 'json5'
-import sendToSentry from './sendToSentry'
-import Reflection from '../database/types/Reflection'
+import OpenAI from 'openai'
 import {ModifyType} from '../graphql/public/resolverTypes'
+import {RetroReflectionSource} from '../graphql/public/types/RetroReflection'
 import {Logger} from './Logger'
+import sendToSentry from './sendToSentry'
 
 type Prompt = {
   question: string
@@ -51,7 +51,7 @@ class OpenAIServerManager {
     """`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
@@ -86,7 +86,7 @@ class OpenAIServerManager {
     """`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
@@ -107,7 +107,7 @@ class OpenAIServerManager {
     }
   }
 
-  async getDiscussionPromptQuestion(topic: string, reflections: Reflection[]) {
+  async getDiscussionPromptQuestion(topic: string, reflections: RetroReflectionSource[]) {
     if (!this.openAIApi) return null
     const prompt = `As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:
 
@@ -136,7 +136,7 @@ class OpenAIServerManager {
       .join('\n')}`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
@@ -208,7 +208,7 @@ class OpenAIServerManager {
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo-0125',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',

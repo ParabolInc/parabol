@@ -1,15 +1,14 @@
 import bcrypt from 'bcryptjs'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
-import getKysely from '../../../postgres/getKysely'
 import createEmailVerification from '../../../email/createEmailVerification'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
+import getKysely from '../../../postgres/getKysely'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import isEmailVerificationRequired from '../../../utils/isEmailVerificationRequired'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {MutationResolvers} from '../resolverTypes'
-import {URLSearchParams} from 'url'
 
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,
@@ -62,9 +61,14 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
     return createEmailVerification({invitationToken, password, pseudoId, email, redirectTo})
   }
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
-  const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, pseudoId})
+  const newUser = await createNewLocalUser({
+    email,
+    hashedPassword,
+    isEmailVerified: false,
+    pseudoId
+  })
   // MUTATIVE
-  context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader, params)
+  context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader)
   return {
     userId: newUser.id,
     authToken: encodeAuthToken(context.authToken),

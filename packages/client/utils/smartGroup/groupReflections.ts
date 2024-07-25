@@ -1,4 +1,3 @@
-import Reflection from '~/../server/database/types/Reflection'
 import computeDistanceMatrix from './computeDistanceMatrix'
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import getGroupMatrix from './getGroupMatrix'
@@ -28,7 +27,7 @@ export type GroupingOptions = {
   maxReductionPercent?: number
 }
 
-const groupReflections = <T extends Reflection>(
+const groupReflections = <T extends {entities: any[]; reflectionGroupId: string; id: string}>(
   reflections: T[],
   groupingOptions: GroupingOptions
 ) => {

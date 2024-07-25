@@ -1,0 +1,24 @@
+type NavigateMeetingPayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+
+  """
+  The stage that the facilitator is now on
+  """
+  facilitatorStage: NewMeetingStage
+
+  """
+  The stage that the facilitator left
+  """
+  oldFacilitatorStage: NewMeetingStage
+
+  """
+  Additional details triggered by completing certain phases
+  """
+  phaseComplete: PhaseCompletePayload
+
+  """
+  The stages that were unlocked by navigating
+  """
+  unlockedStages: [NewMeetingStage!]
+}

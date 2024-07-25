@@ -1,10 +1,10 @@
 import React from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
+import useMutationProps from '../hooks/useMutationProps'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import useMutationProps from '../hooks/useMutationProps'
 
 type Props = {
   menuProps: MenuProps

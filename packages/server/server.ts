@@ -1,6 +1,7 @@
 import tracer from 'dd-trace'
 import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
+import sleep from '../client/utils/sleep'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
 import activeClients from './activeClients'
@@ -37,14 +38,19 @@ if (!__PRODUCTION__) {
   })
 }
 
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async (signal) => {
+  console.log(
+    `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
+  )
   const RECONNECT_WINDOW = 60_000 // ms
-  Object.values(activeClients.store).forEach((connectionContext) => {
-    const disconnectIn = ~~(Math.random() * RECONNECT_WINDOW)
-    setTimeout(() => {
+  await Promise.allSettled(
+    Object.values(activeClients.store).map(async (connectionContext) => {
+      const disconnectIn = Math.floor(Math.random() * RECONNECT_WINDOW)
+      await sleep(disconnectIn)
       handleDisconnect(connectionContext)
-    }, disconnectIn)
-  })
+    })
+  )
+  console.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
 })
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)

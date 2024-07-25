@@ -1,0 +1,11 @@
+type EditCommentingSuccess {
+  """
+  The discussion the comment was created in
+  """
+  discussionId: ID!
+
+  """
+  The discussion where the commenting state changed
+  """
+  discussion: Discussion!
+}

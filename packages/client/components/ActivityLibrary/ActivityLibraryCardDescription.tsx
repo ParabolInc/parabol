@@ -1,10 +1,10 @@
+import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import * as ScrollArea from '@radix-ui/react-scroll-area'
 import React from 'react'
 import {
-  ActivityLibraryCardDescription_template$key,
-  ActivityLibraryCardDescription_template$data
+  ActivityLibraryCardDescription_template$data,
+  ActivityLibraryCardDescription_template$key
 } from '~/__generated__/ActivityLibraryCardDescription_template.graphql'
 
 import {Comment, LinearScale, Update} from '@mui/icons-material'

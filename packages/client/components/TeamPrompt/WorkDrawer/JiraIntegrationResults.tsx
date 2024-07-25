@@ -1,14 +1,14 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {Link} from 'react-router-dom'
+import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {JiraIntegrationResultsQuery} from '../../../__generated__/JiraIntegrationResultsQuery.graphql'
 import {JiraIntegrationResultsSearchPaginationQuery} from '../../../__generated__/JiraIntegrationResultsSearchPaginationQuery.graphql'
 import {JiraIntegrationResults_search$key} from '../../../__generated__/JiraIntegrationResults_search.graphql'
-import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import JiraObjectCard from './JiraObjectCard'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
-import {Link} from 'react-router-dom'
+import JiraObjectCard from './JiraObjectCard'
 
 interface Props {
   queryRef: PreloadedQuery<JiraIntegrationResultsQuery>

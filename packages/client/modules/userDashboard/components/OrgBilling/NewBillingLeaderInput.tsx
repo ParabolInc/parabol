@@ -3,15 +3,15 @@ import {Person} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
-import {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
 import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
 import {PortalStatus} from '../../../../hooks/usePortal'
-import NewBillingLeaderMenu from './NewBillingLeaderMenu'
 import {ElementWidth} from '../../../../types/constEnums'
+import NewBillingLeaderMenu from './NewBillingLeaderMenu'
 
 const StyledIcon = styled(Person)({
   color: PALETTE.SKY_500,

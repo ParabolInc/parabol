@@ -3,11 +3,12 @@ import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent} from 'react'
 import {useFragment} from 'react-relay'
+import {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
 import useTooltip from '~/hooks/useTooltip'
 import linkify from '~/utils/linkify'
-import {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
+import {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 import FlatButton from '../../../../components/FlatButton'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
@@ -20,7 +21,6 @@ import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateInteg
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
-import {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key

@@ -1,22 +1,29 @@
-import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {
-  CardNumberElement,
-  CardExpiryElement,
   CardCvcElement,
-  useStripe,
-  useElements
+  CardExpiryElement,
+  CardNumberElement,
+  useElements,
+  useStripe
 } from '@stripe/react-stripe-js'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import {PALETTE} from '../../../../styles/paletteV3'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import StyledError from '../../../../components/StyledError'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
-import {StripeElementChangeEvent} from '@stripe/stripe-js'
-import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
+import {
+  StripeCardNumberElement,
+  StripeCardNumberElementOptions,
+  StripeElementChangeEvent
+} from '@stripe/stripe-js'
+import React, {MutableRefObject, useState} from 'react'
+import {commitLocalUpdate} from 'relay-runtime'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import StyledError from '../../../../components/StyledError'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
+import upgradeToTeamTierSuccessUpdater from '../../../../mutations/handlers/upgradeToTeamTierSuccessUpdater'
+import {PALETTE} from '../../../../styles/paletteV3'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
+import createProxyRecord from '../../../../utils/relay/createProxyRecord'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -45,7 +52,8 @@ const ErrorMsg = styled(StyledError)({
   textTransform: 'none'
 })
 
-const CARD_ELEMENT_OPTIONS = {
+const CARD_ELEMENT_OPTIONS: StripeCardNumberElementOptions = {
+  disableLink: true,
   style: {
     base: {
       color: PALETTE.SLATE_800,
@@ -61,16 +69,15 @@ const CARD_ELEMENT_OPTIONS = {
 
 type Props = {
   orgId: string
+  cardNumberRef: MutableRefObject<StripeCardNumberElement | null>
 }
 
 const BillingForm = (props: Props) => {
-  const {orgId} = props
+  const {cardNumberRef, orgId} = props
   const stripe = useStripe()
   const elements = useElements()
-  const [isLoading, setIsLoading] = useState(false)
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
-  const [errorMsg, setErrorMsg] = useState<null | string>()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const [hasStarted, setHasStarted] = useState(false)
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
@@ -85,22 +92,16 @@ const BillingForm = (props: Props) => {
     !cardNumberError &&
     !expiryDateError &&
     !cvcError
-  const isUpgradeDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
+  const isUpgradeDisabled = submitting || !stripe || !elements || !hasValidCCDetails
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!stripe || !elements) return
-    setIsLoading(true)
-    if (errorMsg) {
-      setIsLoading(false)
-      setErrorMsg(null)
-      return
-    }
+    submitMutation()
+
     const cardElement = elements.getElement(CardNumberElement)
     if (!cardElement) {
-      setIsLoading(false)
-      const newErrorMsg = 'Something went wrong. Please try again.'
-      setErrorMsg(newErrorMsg)
+      onError(new Error('Something went wrong. Please try again.'))
       return
     }
     const {paymentMethod, error} = await stripe.createPaymentMethod({
@@ -108,8 +109,7 @@ const BillingForm = (props: Props) => {
       card: cardElement
     })
     if (error) {
-      setErrorMsg(error.message)
-      setIsLoading(false)
+      onError(new Error(error.message))
       return
     }
 
@@ -121,16 +121,19 @@ const BillingForm = (props: Props) => {
         const newErrMsg =
           createStripeSubscription.error?.message ??
           'Something went wrong. Please try again or contact support.'
-        setIsLoading(false)
-        setErrorMsg(newErrMsg)
+        onError(new Error(newErrMsg))
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)
       if (error) {
-        setErrorMsg(error.message)
-        setIsLoading(false)
+        onError(new Error(error.message))
         return
       }
+      commitLocalUpdate(atmosphere, (store) => {
+        const payload = createProxyRecord(store, 'payload', {})
+        payload.setLinkedRecord(store.get(orgId)!, 'organization')
+        upgradeToTeamTierSuccessUpdater(payload)
+      })
       onCompleted()
     }
 
@@ -143,7 +146,7 @@ const BillingForm = (props: Props) => {
 
   const handleChange =
     (type: 'CardNumber' | 'ExpiryDate' | 'CVC') => (event: StripeElementChangeEvent) => {
-      if (errorMsg) setErrorMsg(null)
+      if (error) onCompleted()
       if (!hasStarted && !event.empty) {
         SendClientSideEvent(atmosphere, 'Payment Details Started', {orgId})
         setHasStarted(true)
@@ -183,6 +186,9 @@ const BillingForm = (props: Props) => {
 
         <div className='mt-1'>
           <CardNumberElement
+            onReady={(e) => {
+              cardNumberRef.current = e
+            }}
             className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
             options={CARD_ELEMENT_OPTIONS}
             onChange={handleChange('CardNumber')}
@@ -220,14 +226,14 @@ const BillingForm = (props: Props) => {
         </div>
       </div>
       <ButtonBlock>
-        {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
+        {error && <ErrorMsg>{error.message}</ErrorMsg>}
         <UpgradeButton
           size='medium'
           disabled={isUpgradeDisabled}
           isDisabled={isUpgradeDisabled}
           type={'submit'}
         >
-          {isLoading ? (
+          {submitting ? (
             <>
               Upgrading <Ellipsis />
             </>

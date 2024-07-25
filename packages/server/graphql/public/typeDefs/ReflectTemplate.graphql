@@ -1,0 +1,87 @@
+"""
+The team-specific templates for the reflection prompts
+"""
+type ReflectTemplate implements MeetingTemplate {
+  """
+  shortid
+  """
+  id: ID!
+  createdAt: DateTime!
+
+  """
+  True if template can be used, else false
+  """
+  isActive: Boolean!
+
+  """
+  True if template is available to all teams including non-paying teams, else false
+  """
+  isFree: Boolean!
+
+  """
+  The time of the meeting the template was last used
+  """
+  lastUsedAt: DateTime
+
+  """
+  The name of the template
+  """
+  name: String!
+
+  """
+  *Foreign key. The organization that owns the team that created the template
+  """
+  orgId: ID!
+
+  """
+  Who can see this template
+  """
+  scope: SharingScopeEnum!
+
+  """
+  *Foreign key. The team this template belongs to
+  """
+  teamId: ID!
+
+  """
+  The team this template belongs to
+  """
+  team: Team!
+
+  """
+  The type of the template
+  """
+  type: MeetingTypeEnum!
+  updatedAt: DateTime!
+
+  """
+  The prompts that are part of this template
+  """
+  prompts: [ReflectPrompt!]!
+
+  """
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  """
+  category: String!
+
+  """
+  Whether this template should be in the recommended/quick start sections in the UI.
+  """
+  isRecommended: Boolean!
+
+  """
+  The url to the illustration used by the template
+  """
+  illustrationUrl: String!
+
+  """
+  The lowest scope of the permissions available to the viewer
+  """
+  viewerLowestScope: SharingScopeEnum!
+
+  """
+  Experimental: sub-categories that this template is in (e.g. "popular", "recentlyUsed", "unused",
+  etc.)
+  """
+  subCategories: [String!]!
+}

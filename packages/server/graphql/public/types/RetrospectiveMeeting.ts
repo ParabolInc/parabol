@@ -6,7 +6,6 @@ import getPhase from '../../../utils/getPhase'
 import {GQLContext} from '../../graphql'
 import {resolveForSU} from '../../resolvers'
 import {RetrospectiveMeetingResolvers} from '../resolverTypes'
-import ReflectionGroupType from '../../../database/types/ReflectionGroup'
 
 const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   autoGroupThreshold: resolveForSU('autoGroupThreshold'),
@@ -20,7 +19,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   reflectionCount: ({reflectionCount}) => reflectionCount || 0,
   reflectionGroup: async ({id: meetingId}, {reflectionGroupId}, {dataLoader}) => {
     const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
-    if (reflectionGroup.meetingId !== meetingId) return null
+    if (reflectionGroup?.meetingId !== meetingId) return null
     return reflectionGroup
   },
   reflectionGroups: async ({id: meetingId}, {sortBy}, {dataLoader}) => {
@@ -28,9 +27,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       .get('retroReflectionGroupsByMeetingId')
       .load(meetingId)
     if (sortBy === 'voteCount') {
-      reflectionGroups.sort((a: ReflectionGroupType, b: ReflectionGroupType) =>
-        a.voterIds.length < b.voterIds.length ? 1 : -1
-      )
+      reflectionGroups.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
       return reflectionGroups
     } else if (sortBy === 'stageOrder') {
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
@@ -40,18 +37,16 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       const {stages} = discussPhase
       // for early terminations the stages may not exist
       const sortLookup = {} as {[reflectionGroupId: string]: number}
-      reflectionGroups.forEach((group: ReflectionGroupType) => {
+      reflectionGroups.forEach((group) => {
         const idx = stages.findIndex((stage) => stage.reflectionGroupId === group.id)
         sortLookup[group.id] = idx
       })
-      reflectionGroups.sort((a: ReflectionGroupType, b: ReflectionGroupType) => {
+      reflectionGroups.sort((a, b) => {
         return sortLookup[a.id]! < sortLookup[b.id]! ? -1 : 1
       })
       return reflectionGroups
     }
-    reflectionGroups.sort((a: ReflectionGroupType, b: ReflectionGroupType) =>
-      a.sortOrder < b.sortOrder ? -1 : 1
-    )
+    reflectionGroups.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
     return reflectionGroups
   },
   taskCount: ({taskCount}) => taskCount || 0,

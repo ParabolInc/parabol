@@ -15,17 +15,13 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
-import getRethink from '../../database/rethinkDriver'
 import MeetingMemberType from '../../database/types/MeetingMember'
-import OrganizationType from '../../database/types/Organization'
-import OrganizationUserType from '../../database/types/OrganizationUser'
-import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
 import standardError from '../../utils/standardError'
-import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
 import invoices from '../queries/invoices'
@@ -34,7 +30,6 @@ import AuthIdentity from './AuthIdentity'
 import Discussion from './Discussion'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import GraphQLURLType from './GraphQLURLType'
 import MeetingMember from './MeetingMember'
 import NewFeatureBroadcast from './NewFeatureBroadcast'
 import Organization from './Organization'
@@ -46,8 +41,6 @@ import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import {TimelineEventConnection} from './TimelineEvent'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
-import TimelineEvent from '../../database/types/TimelineEvent'
-import {RDatum} from '../../database/stricterR'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -89,7 +82,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async ({id: userId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
-          (organizationUser: OrganizationUserType) =>
+          (organizationUser) =>
             organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
         )
       }
@@ -219,7 +212,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         {after, first, teamIds, eventTypes},
         {authToken, dataLoader}: GQLContext
       ) => {
-        const r = await getRethink()
         const viewerId = getUserId(authToken)
 
         // VALIDATE
@@ -246,21 +238,21 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           : accessibleTeamIds
 
         if (viewerId !== id && !isSuperUser(authToken)) return null
-        const dbAfter = after ? new Date(after) : r.maxval
-        const events = await r
-          .table('TimelineEvent')
-          .between([viewerId, r.minval], [viewerId, dbAfter], {
-            index: 'userIdCreatedAt'
-          })
-          .filter({isActive: true})
-          .filter((t: RDatum<TimelineEvent>) =>
-            eventTypes ? r.expr(eventTypes).contains(t('type')) : true
-          )
-          .filter((t: RDatum) => r.expr(validTeamIds).contains(t('teamId')))
-          .orderBy(r.desc('createdAt'))
+        const dbAfter = after ? new Date(after) : new Date('3000-01-01')
+        const minVal = new Date(0)
+
+        const pg = getKysely()
+        const events = await pg
+          .selectFrom('TimelineEvent')
+          .selectAll()
+          .where('userId', '=', viewerId)
+          .where((eb) => eb.between('createdAt', minVal, dbAfter))
+          .where('isActive', '=', true)
+          .where('teamId', 'in', validTeamIds)
+          .$if(!!eventTypes, (db) => db.where('type', 'in', eventTypes))
+          .orderBy('createdAt', 'desc')
           .limit(first + 1)
-          .coerceTo('array')
-          .run()
+          .execute()
         const edges = events.slice(0, first).map((node) => ({
           cursor: node.createdAt,
           node
@@ -312,23 +304,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
       }
     },
-    picture: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'url of user’s profile picture'
-    },
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The application-specific name, defaults to email before the tld',
       resolve: ({preferredName, name}: {preferredName: string; name: string}) => {
         return preferredName || name
-      }
-    },
-    rasterPicture: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description:
-        'url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)',
-      resolve: ({picture}: {picture: string}) => {
-        return picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
       }
     },
     lastSeenAt: {
@@ -398,17 +378,15 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        organizationUsers.sort((a: OrganizationUserType, b: OrganizationUserType) =>
-          a.orgId > b.orgId ? 1 : -1
-        )
+        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsers
         }
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
-        return organizationUsers.filter((organizationUser: OrganizationUserType) =>
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+        return organizationUsers.filter((organizationUser) =>
           viewerOrgIds.includes(organizationUser.orgId)
         )
       }
@@ -422,11 +400,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         {authToken, dataLoader}: GQLContext
       ) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        const orgIds = organizationUsers.map(({orgId}: OrganizationUserType) => orgId)
+        const orgIds = organizationUsers.map(({orgId}) => orgId)
         const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(
-          errorFilter
+          isValid
         )
-        organizations.sort((a: OrganizationType, b: OrganizationType) => (a.name > b.name ? 1 : -1))
+        organizations.sort((a, b) => (a.name > b.name ? 1 : -1))
         const viewerId = getUserId(authToken)
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizations
@@ -434,10 +412,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
-        return organizations.filter((organization: OrganizationType) =>
-          viewerOrgIds.includes(organization.id)
-        )
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+        return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
       }
     },
     overLimitCopy: {
@@ -451,7 +427,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const isAnyMemberOfPaidOrg = organizationUsers.some(
-          (organizationUser: OrganizationUserType) => organizationUser.tier !== 'starter'
+          (organizationUser) => organizationUser.tier !== 'starter'
         )
         if (isAnyMemberOfPaidOrg) return null
         return overLimitCopy
@@ -491,7 +467,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const meetingMemberId = MeetingMemberId.join(meetingId, userId)
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
-          dataLoader.get('retroReflectionsByMeetingId').load(meetingId) as Promise<Reflection[]>
+          dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         ])
         if (!viewerMeetingMember) {
           return standardError(new Error('Not on team'), {userId})
@@ -502,7 +478,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             plaintextContent.toLowerCase().includes(searchQuery)
           )
           const relatedReflections = matchedReflections.filter(
-            ({reflectionGroupId: groupId}: Reflection) => groupId !== reflectionGroupId
+            ({reflectionGroupId: groupId}) => groupId !== reflectionGroupId
           )
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))

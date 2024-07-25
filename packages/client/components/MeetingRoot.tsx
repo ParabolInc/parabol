@@ -1,9 +1,9 @@
 import React, {Suspense, useEffect} from 'react'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import useRouter from '../hooks/useRouter'
 import meetingSelectorQuery, {
   MeetingSelectorQuery
 } from '../__generated__/MeetingSelectorQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import useRouter from '../hooks/useRouter'
 import MeetingSelector from './MeetingSelector'
 
 const MeetingRoot = () => {

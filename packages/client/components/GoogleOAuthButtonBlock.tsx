@@ -1,19 +1,20 @@
 import styled from '@emotion/styled'
+import clsx from 'clsx'
 import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
+import logo from '../styles/theme/images/graphics/google.svg'
 import GoogleClientManager from '../utils/GoogleClientManager'
+import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
-import logo from '../styles/theme/images/graphics/google.svg'
-import RaisedButton from './RaisedButton'
-import clsx from 'clsx'
 
 interface Props {
   invitationToken?: string
   isCreate?: boolean
   loginHint?: string
+  getOffsetTop?: () => number
 }
 
 const helpText = {
@@ -30,7 +31,7 @@ const HelpMessage = styled(StyledTip)({
 })
 
 const GoogleOAuthButtonBlock = (props: Props) => {
-  const {invitationToken, isCreate, loginHint} = props
+  const {invitationToken, isCreate, loginHint, getOffsetTop} = props
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history, location} = useRouter()
@@ -43,7 +44,8 @@ const GoogleOAuthButtonBlock = (props: Props) => {
       history,
       location.search,
       invitationToken,
-      loginHint
+      loginHint,
+      getOffsetTop
     )
   }
   return (

@@ -1,39 +1,29 @@
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
-import Organization from '../../database/types/Organization'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import {OrganizationSource} from '../../graphql/public/types/Organization'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 
 const sendEnterpriseOverageEvent = async (
-  organization: Organization,
+  organization: OrganizationSource,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const manager = getStripeManager()
   const {id: orgId, stripeSubscriptionId} = organization
   if (!stripeSubscriptionId) return
-  const [orgUserCount, subscriptionItem] = await Promise.all([
-    r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, inactive: false})
-      .count()
-      .run(),
+  const [orgUsers, subscriptionItem] = await Promise.all([
+    dataLoader.get('organizationUsersByOrgId').load(orgId),
     manager.getSubscriptionItem(stripeSubscriptionId)
   ])
+  const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+  const orgUserCount = activeOrgUsers.length
   if (!subscriptionItem) return
 
   const quantity = subscriptionItem.quantity
   if (!quantity) return
   if (orgUserCount > quantity) {
-    const billingLeaderOrgUser = await r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null})
-      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-      .nth(0)
-      .run()
+    const billingLeaderOrgUser = orgUsers.find(
+      ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+    )!
     const {id: userId} = billingLeaderOrgUser
     const user = await dataLoader.get('users').loadNonNull(userId)
     analytics.enterpriseOverUserLimit(user, orgId)
@@ -41,7 +31,7 @@ const sendEnterpriseOverageEvent = async (
 }
 
 const handleEnterpriseOrgQuantityChanges = async (
-  paidOrgs: Organization[],
+  paidOrgs: OrganizationSource[],
   dataLoader: DataLoaderWorker
 ) => {
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')

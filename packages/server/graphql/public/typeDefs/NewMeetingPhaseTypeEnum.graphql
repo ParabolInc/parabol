@@ -1,0 +1,20 @@
+"""
+The phase of the meeting
+"""
+enum NewMeetingPhaseTypeEnum {
+  lobby
+  checkin
+  updates
+  firstcall
+  agendaitems
+  lastcall
+  reflect
+  group
+  vote
+  discuss
+  SUMMARY
+  SCOPE
+  ESTIMATE
+  RESPONSES
+  TEAM_HEALTH
+}

@@ -1,0 +1,14 @@
+type SetPokerSpectateSuccess {
+  meetingId: ID!
+  userId: ID!
+
+  """
+  The meeting member with the updated isSpectating value
+  """
+  meetingMember: PokerMeetingMember!
+
+  """
+  The stages that were updated if the viewer voted and then changed to spectating
+  """
+  updatedStages: [EstimateStage!]!
+}

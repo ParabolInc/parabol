@@ -1,10 +1,10 @@
 import React, {lazy} from 'react'
-import TeamSubscription from '../../subscriptions/TeamSubscription'
+import {Route, Switch, useRouteMatch} from 'react-router'
 import useSubscription from '../../hooks/useSubscription'
-import TaskSubscription from '../../subscriptions/TaskSubscription'
 import NotificationSubscription from '../../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../../subscriptions/OrganizationSubscription'
-import {Route, Switch, useRouteMatch} from 'react-router'
+import TaskSubscription from '../../subscriptions/TaskSubscription'
+import TeamSubscription from '../../subscriptions/TeamSubscription'
 
 const ActivityDetailsRoute = lazy(
   () => import(/* webpackChunkName: 'ActivityDetails' */ './ActivityDetails/ActivityDetailsRoute')

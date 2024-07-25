@@ -1,2 +1,0 @@
-CREATE EXTENSION IF NOT EXISTS "postgres-json-schema";
-CREATE EXTENSION IF NOT EXISTS "vector";

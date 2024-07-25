@@ -2,7 +2,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS, PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {RawDraftContentState} from 'draft-js'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
@@ -10,26 +9,23 @@ import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../../postgres/getKysely'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
+import {Logger} from '../../../utils/Logger'
+import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import publishNotification from '../../public/mutations/helpers/publishNotification'
-import RecallAIServerManager from '../../../utils/RecallAIServerManager'
-import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
-import updateTeamInsights from './updateTeamInsights'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
+import gatherInsights from './gatherInsights'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
 import generateWholeMeetingSummary from './generateWholeMeetingSummary'
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
-import gatherInsights from './gatherInsights'
-import NotificationMentioned from '../../../database/types/NotificationMentioned'
-import {Logger} from '../../../utils/Logger'
+import updateTeamInsights from './updateTeamInsights'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -37,150 +33,8 @@ const getTranscription = async (recallBotId?: string | null) => {
   return await manager.getBotTranscript(recallBotId)
 }
 
-const sendKudos = async (
-  meeting: MeetingRetrospective,
-  teamId: string,
-  context: InternalContext
-) => {
-  const {dataLoader, socketId: mutatorId} = context
-  const operationId = dataLoader.share()
-  const subOptions = {mutatorId, operationId}
-  const {id: meetingId, disableAnonymity} = meeting
-  const isAnonymous = !disableAnonymity
-  const pg = getKysely()
-  const r = await getRethink()
-
-  const [reflections, team, meetingMembers] = await Promise.all([
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-  ])
-
-  const {phases} = meeting
-  const discussPhase = getPhase(phases, 'discuss')
-  if (!discussPhase) {
-    return
-  }
-  const {stages} = discussPhase
-
-  const {giveKudosWithEmoji, kudosEmojiUnicode, kudosEmoji} = team
-
-  if (!giveKudosWithEmoji || !kudosEmojiUnicode) {
-    return
-  }
-
-  const kudosToInsert: {
-    senderUserId: string
-    receiverUserId: any
-    teamId: string
-    emoji: string
-    emojiUnicode: string
-    isAnonymous: boolean
-    reflectionId: string
-  }[] = []
-
-  const notificationsToInsert: NotificationMentioned[] = []
-
-  for (const reflection of reflections) {
-    const {id: reflectionId, content, plaintextContent, creatorId} = reflection
-    const senderUser = await dataLoader.get('users').loadNonNull(creatorId)
-
-    const contentJson = JSON.parse(content) as RawDraftContentState
-
-    const mentions = contentJson.entityMap
-      ? Object.values(contentJson.entityMap).filter((entity) => entity.type === 'MENTION')
-      : []
-
-    if (mentions.length) {
-      const userIds = [...new Set(mentions.map((mention) => mention.data.userId))].filter(
-        (userId) => userId !== creatorId
-      )
-
-      if (userIds.length) {
-        const retroDiscussStageIdx =
-          stages.findIndex((stage) => stage.reflectionGroupId === reflection.reflectionGroupId) + 1
-
-        if (plaintextContent.includes(kudosEmojiUnicode)) {
-          userIds.forEach((userId) => {
-            kudosToInsert.push({
-              senderUserId: creatorId,
-              receiverUserId: userId,
-              teamId,
-              emoji: kudosEmoji,
-              emojiUnicode: kudosEmojiUnicode,
-              isAnonymous,
-              reflectionId
-            })
-            notificationsToInsert.push(
-              new NotificationMentioned({
-                userId,
-                senderUserId: creatorId,
-                meetingId,
-                retroDiscussStageIdx,
-                retroReflectionId: reflectionId,
-                kudosEmoji: team.kudosEmoji,
-                kudosEmojiUnicode: team.kudosEmojiUnicode,
-                meetingName: meeting.name,
-                senderName: isAnonymous ? null : senderUser.preferredName,
-                senderPicture: isAnonymous ? null : senderUser.picture
-              })
-            )
-          })
-        } else {
-          const absentUserIds = userIds.filter(
-            (userId) => !meetingMembers.find((member) => member.userId === userId)
-          )
-
-          absentUserIds.forEach((userId) => {
-            notificationsToInsert.push(
-              new NotificationMentioned({
-                userId,
-                senderUserId: creatorId,
-                meetingId,
-                retroDiscussStageIdx,
-                retroReflectionId: reflectionId,
-                meetingName: meeting.name,
-                senderName: isAnonymous ? null : senderUser.preferredName,
-                senderPicture: isAnonymous ? null : senderUser.picture
-              })
-            )
-          })
-        }
-      }
-    }
-  }
-
-  if (kudosToInsert.length) {
-    const insertedKudoses = await pg
-      .insertInto('Kudos')
-      .values(kudosToInsert)
-      .returning(['id', 'senderUserId', 'receiverUserId', 'emoji', 'emojiUnicode'])
-      .execute()
-
-    insertedKudoses.forEach((kudos) => {
-      analytics.kudosSent(
-        {id: kudos.senderUserId},
-        teamId,
-        kudos.id,
-        kudos.receiverUserId,
-        'mention',
-        'retrospective',
-        isAnonymous
-      )
-    })
-  }
-
-  if (notificationsToInsert.length) {
-    await r.table('Notification').insert(notificationsToInsert).run()
-    notificationsToInsert.forEach((notification) => {
-      IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
-      publishNotification(notification, subOptions)
-    })
-  }
-}
-
 const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: InternalContext) => {
-  const {dataLoader, authToken} = context
+  const {dataLoader} = context
   const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
@@ -193,24 +47,6 @@ const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: Int
   const discussionIds = stages.map((stage) => stage.discussionId)
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
-  const hasTopicSummary = reflectionGroups.some((group) => group.summary)
-  if (hasTopicSummary) {
-    const groupsWithMissingTopicSummaries = reflectionGroups.filter((group) => {
-      const reflectionsInGroup = reflections.filter(
-        (reflection) => reflection.reflectionGroupId === group.id
-      )
-      return reflectionsInGroup.length > 1 && !group.summary
-    })
-    if (groupsWithMissingTopicSummaries.length > 0) {
-      const missingGroupIds = groupsWithMissingTopicSummaries.map(({id}) => id).join(', ')
-      const error = new Error('Missing AI topic summary')
-      const viewerId = getUserId(authToken)
-      sendToSentry(error, {
-        userId: viewerId,
-        tags: {missingGroupIds, meetingId}
-      })
-    }
-  }
   const [summary, transcription] = await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     getTranscription(recallBotId)
@@ -268,7 +104,6 @@ const safeEndRetrospective = async ({
   const {authToken, socketId: mutatorId, dataLoader} = context
   const {id: meetingId, phases, facilitatorStageId, teamId} = meeting
   const r = await getRethink()
-  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -312,19 +147,7 @@ const safeEndRetrospective = async ({
     dataLoader.get('teamMembersByTeamId').load(teamId),
     removeEmptyTasks(meetingId),
     dataLoader.get('meetingTemplates').loadNonNull(templateId),
-    pg
-      .deleteFrom('RetroReflectionGroup')
-      .where('meetingId', '=', meetingId)
-      .where('isActive', '=', false)
-      .execute(),
-    r
-      .table('RetroReflectionGroup')
-      .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: false})
-      .delete()
-      .run(),
-    updateTeamInsights(teamId, dataLoader),
-    sendKudos(completedRetrospective, teamId, context)
+    updateTeamInsights(teamId, dataLoader)
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
@@ -341,15 +164,13 @@ const safeEndRetrospective = async ({
       })
   )
   const timelineEventId = events[0]!.id
-  await r.table('TimelineEvent').insert(events).run()
+  const pg = getKysely()
+  await pg.insertInto('TimelineEvent').values(events).execute()
 
   if (team.isOnboardTeam) {
-    const teamLeadUserId = await r
-      .table('TeamMember')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isLead: true})
-      .nth(0)('userId')
-      .run()
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const teamLead = teamMembers.find((teamMember) => teamMember.isLead)!
+    const teamLeadUserId = teamLead.userId
 
     const removedSuggestedActionId = await removeSuggestedAction(teamLeadUserId, 'tryRetroMeeting')
     if (removedSuggestedActionId) {

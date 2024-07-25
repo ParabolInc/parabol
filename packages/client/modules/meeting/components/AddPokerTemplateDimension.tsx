@@ -4,12 +4,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
+import {AddPokerTemplateDimension_dimensions$key} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'
 import LinkButton from '../../../components/LinkButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimensionMutation from '../../../mutations/AddPokerTemplateDimensionMutation'
-import dndNoise from '../../../utils/dndNoise'
-import {AddPokerTemplateDimension_dimensions$key} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'
+import {positionAfter} from '../../../shared/sortOrder'
 
 const AddDimensionLink = styled(LinkButton)({
   alignItems: 'center',
@@ -49,8 +49,8 @@ const AddPokerTemplateDimension = (props: Props) => {
   const addDimension = () => {
     if (submitting) return
     submitMutation()
-    const sortOrders = dimensions.map(({sortOrder}) => sortOrder)
-    const sortOrder = Math.max(0, ...sortOrders) + 1 + dndNoise()
+    const lastSortOrder = dimensions.at(-1)?.sortOrder ?? ''
+    const sortOrder = positionAfter(lastSortOrder)
     const dimensionCount = dimensions.length
     AddPokerTemplateDimensionMutation(
       atmosphere,

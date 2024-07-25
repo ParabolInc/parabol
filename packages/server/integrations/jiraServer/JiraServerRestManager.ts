@@ -57,7 +57,9 @@ export interface JiraServerIssue {
       id: string
       key: string
       name: string
+      self: string
     }
+    updated: string
   }
   renderedFields: {
     description: string

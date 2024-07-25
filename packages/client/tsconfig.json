@@ -3,15 +3,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["*"],
-      "static/*": ["../../static/*"]
+      "~/*": ["*"]
     },
     "outDir": "lib",
-    "lib": ["esnext", "dom"],
-    "types": ["node"]
+    "lib": ["esnext", "dom"]
   },
-  "files": [
-    "client.tsx",
-  ],
   "exclude": ["serviceWorker", "**/node_modules"]
 }

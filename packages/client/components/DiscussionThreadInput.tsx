@@ -3,6 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw, EditorState} from 'draft-js'
 import React, {forwardRef, RefObject, useEffect, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
+import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
@@ -13,8 +15,6 @@ import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import {convertStateToRaw} from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
-import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import {useBeforeUnload} from '../hooks/useBeforeUnload'
 import useInitialLocalState from '../hooks/useInitialLocalState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
@@ -29,8 +29,6 @@ import {createLocalPoll} from './Poll/local/newPoll'
 import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import AddActivityButton from '~/components/AddActivityButton'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -49,11 +47,6 @@ const CommentContainer = styled('div')({
   display: 'flex',
   flex: 1,
   padding: 4
-})
-
-const CommentAvatar = styled(Avatar)({
-  margin: 8,
-  transition: 'all 150ms'
 })
 
 const EditorWrap = styled('div')({
@@ -106,9 +99,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     graphql`
       fragment DiscussionThreadInput_viewer on User {
         picture
-        featureFlags {
-          retrosInDisguise
-        }
       }
     `,
     viewerRef
@@ -127,7 +117,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     `,
     discussionRef
   )
-  const {picture, featureFlags} = viewer
+  const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: discussionId, meetingId, isAnonymousComment, team, discussionTopicType} = discussion
@@ -298,15 +288,14 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
-  const allowAddActivity = featureFlags.retrosInDisguise
-  const isActionsContainerVisible = allowTasks || allowPolls || allowAddActivity
+  const isActionsContainerVisible = allowTasks || allowPolls
   const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
 
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentContainer>
-        <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
+        <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
         <EditorWrap>
           <CommentEditor
             dataCy={`${dataCy}`}
@@ -342,15 +331,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             <AddPollButton
               dataCy={`${dataCy}-poll`}
               onClick={addPoll}
-              disabled={isActionsContainerDisabled}
-            />
-          )}
-          {allowAddActivity && (
-            <AddActivityButton
-              onClick={() => {
-                window.open(`/activity-library/category/recommended`, '_blank', 'noreferrer')
-                SendClientSideEvent(atmosphere, 'Add Activity Button Clicked')
-              }}
               disabled={isActionsContainerDisabled}
             />
           )}

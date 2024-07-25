@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useEffect, useState} from 'react'
 import {readInlineData} from 'relay-runtime'
+import {useSnacksForNewMeetings_meetings$key} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
-import {useSnacksForNewMeetings_meetings$key} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
 
 const useSnacksForNewMeetings = (meetingsRef: readonly useSnacksForNewMeetings_meetings$key[]) => {
   const [dismissedMeetingIds] = useState(() => new Set<string>())
@@ -43,7 +43,7 @@ const useSnacksForNewMeetings = (meetingsRef: readonly useSnacksForNewMeetings_m
     const [snackedMeeting] = sortedMeetings
     if (!snackedMeeting) return
     const {id: meetingId, createdBy, createdByUser, name: meetingName} = snackedMeeting
-    const {preferredName} = createdByUser
+    const preferredName = createdByUser?.preferredName ?? 'Unknown'
     const isInit = createdBy === viewerId
     const name = isInit ? 'You' : preferredName
     atmosphere.eventEmitter.emit('addSnackbar', {

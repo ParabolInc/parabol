@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import {Loader} from '~/utils/relay/renderLoader'
 import jiraIntegrationResultsQuery, {
   JiraIntegrationResultsQuery
 } from '../../../__generated__/JiraIntegrationResultsQuery.graphql'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import ErrorBoundary from '../../ErrorBoundary'
 import JiraIntegrationResults from './JiraIntegrationResults'
-import {Loader} from '~/utils/relay/renderLoader'
 
 interface Props {
   teamId: string

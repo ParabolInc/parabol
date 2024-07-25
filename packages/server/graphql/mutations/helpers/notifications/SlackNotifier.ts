@@ -3,28 +3,28 @@ import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
+import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import appOrigin from '../../../../appOrigin'
 import getRethink, {RethinkSchema} from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
+import SlackAuth from '../../../../database/types/SlackAuth'
 import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
-import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
+import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import User from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import SlackServerManager from '../../../../utils/SlackServerManager'
+import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
-import SlackServerManager from '../../../../utils/SlackServerManager'
+import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import {DataLoaderWorker} from '../../../graphql'
-import getSummaryText from './getSummaryText'
-import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
+import {TeamSource} from '../../../public/types/Team'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
-import SlackAuth from '../../../../database/types/SlackAuth'
-import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
-import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
-import User from '../../../../postgres/types/IUser'
-import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
-import {analytics} from '../../../../utils/analytics/analytics'
+import getSummaryText from './getSummaryText'
+import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
 
 type SlackNotification = {
   title: string
@@ -137,12 +137,12 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
   }
 }
 
-const createTeamSectionContent = (team: Team) => `*Team:*\n${team.name}`
+const createTeamSectionContent = (team: TeamSource) => `*Team:*\n${team.name}`
 
 const createMeetingSectionContent = (meeting: Meeting) => `*Meeting:*\n${meeting.name}`
 
 const makeTeamPromptStartMeetingNotification = (
-  team: Team,
+  team: TeamSource,
   meeting: Meeting,
   meetingUrl: string
 ): SlackNotification => {
@@ -157,7 +157,7 @@ const makeTeamPromptStartMeetingNotification = (
 }
 
 const makeGenericStartMeetingNotification = (
-  team: Team,
+  team: TeamSource,
   meeting: Meeting,
   meetingUrl: string
 ): SlackNotification => {
@@ -173,7 +173,7 @@ const makeGenericStartMeetingNotification = (
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: Team, meeting: Meeting, meetingUrl: string) => SlackNotification
+  (team: TeamSource, meeting: Meeting, meetingUrl: string) => SlackNotification
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
@@ -184,7 +184,7 @@ const makeStartMeetingNotificationLookup: Record<
 const addStandupResponsesToThread = async (
   res: PostMessageResponse,
   standupResponses: Array<{user: User; response: TeamPromptResponse}> | null,
-  team: Team,
+  team: TeamSource,
   user: User,
   meeting: Meeting,
   notificationChannel: NotificationChannel
@@ -284,9 +284,7 @@ const getSlackMessageForNotification = async (
     const responseId = notification.responseId
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
     const author = await dataLoader.get('users').loadNonNull(response.userId)
-    const title = notification.kudosEmojiUnicode
-      ? `${notification.kudosEmojiUnicode} *${author.preferredName}* mentioned you and gave kudos in their response in *${meeting.name}*`
-      : `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
+    const title = `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
 
     const options = {
       searchParams: {
@@ -331,9 +329,7 @@ const getSlackMessageForNotification = async (
       )
     }
 
-    const title = notification.kudosEmojiUnicode
-      ? `${notification.kudosEmojiUnicode} *${authorName}* mentioned you and gave kudos in their ${location} in *${meeting.name}*`
-      : `*${authorName}* mentioned you in their ${location} in *${meeting.name}*`
+    const title = `*${authorName}* mentioned you in their ${location} in *${meeting.name}*`
 
     return {
       buttonUrl,
@@ -356,7 +352,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const {title, blocks} = makeStartMeetingNotificationLookup[meeting.meetingType](
+    const {title, blocks} = makeStartMeetingNotificationLookup[meeting.meetingType]!(
       team,
       meeting,
       meetingUrl
@@ -392,7 +388,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const {blocks} = makeStartMeetingNotificationLookup[meeting.meetingType](
+    const {blocks} = makeStartMeetingNotificationLookup[meeting.meetingType]!(
       team,
       meeting,
       meetingUrl
@@ -601,8 +597,8 @@ export const SlackNotifier = {
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('users').loadNonNull(userId),
       dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
-      r.table('RetroReflection').getAll(reflectionGroupId, {index: 'reflectionGroupId'}).run(),
+      dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
+      dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId),
       r
         .table('SlackAuth')
         .getAll(userId, {index: 'userId'})
@@ -661,10 +657,6 @@ export const SlackNotifier = {
       makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n<${meetingUrl}|${meeting.name}>`]),
       makeSection(`*Topic:*\n<${discussionUrl}|${topic}>`)
     ]
-
-    if (reflectionGroup.summary) {
-      slackBlocks.push(makeSection(`*Summary:*\n${reflectionGroup.summary}`))
-    }
 
     slackBlocks.push(makeSection(`*Reflections:* \n${reflectionsText}`))
 

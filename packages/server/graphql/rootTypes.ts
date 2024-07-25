@@ -3,7 +3,7 @@ import ActionMeetingSettings from './types/ActionMeetingSettings'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
-import AzureDevOpsWorkItem from './types/AzureDevOpsWorkItem'
+import AuthIdentityMicrosoft from './types/AuthIdentityMicrosoft'
 import CheckInPhase from './types/CheckInPhase'
 import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
@@ -40,6 +40,7 @@ const rootTypes = [
   IntegrationProviderOAuth2,
   IntegrationProviderWebhook,
   AuthIdentityGoogle,
+  AuthIdentityMicrosoft,
   AuthIdentityLocal,
   CheckInPhase,
   ReflectPhase,
@@ -69,7 +70,6 @@ const rootTypes = [
   TeamPromptMeetingMember,
   TeamPromptMeetingSettings,
   Comment,
-  AzureDevOpsWorkItem,
   JiraDimensionField,
   RenamePokerTemplatePayload,
   UserTiersCount

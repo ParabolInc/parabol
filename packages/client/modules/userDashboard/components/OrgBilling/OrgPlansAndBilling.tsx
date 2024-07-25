@@ -1,17 +1,18 @@
+import {StripeCardNumberElement} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useState} from 'react'
+import React, {Suspense, useRef, useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
-import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
-import PaymentDetails from './PaymentDetails'
-import BillingLeaders from './BillingLeaders'
-import OrgPlans from './OrgPlans'
-import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
-import OrgPlanDrawer from './OrgPlanDrawer'
-import OrgBillingInvoices from './OrgBillingInvoices'
 import {OrgPlansAndBillingQuery} from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
 import {OrgPlansAndBillingRefetchQuery} from '../../../../__generated__/OrgPlansAndBillingRefetchQuery.graphql'
+import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
 import {OrgPlansAndBilling_query$key} from '../../../../__generated__/OrgPlansAndBilling_query.graphql'
+import BillingLeaders from './BillingLeaders'
 import OrgBillingCreditCardInfo from './OrgBillingCreditCardInfo'
+import OrgBillingInvoices from './OrgBillingInvoices'
+import OrgPlanDrawer from './OrgPlanDrawer'
+import OrgPlans from './OrgPlans'
+import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
+import PaymentDetails from './PaymentDetails'
 
 type Props = {
   organizationRef: OrgPlansAndBilling_organization$key
@@ -57,9 +58,10 @@ const OrgPlansAndBilling = (props: Props) => {
   )
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
   const {billingTier, isBillingLeader} = organization
-
+  const cardNumberRef = useRef<StripeCardNumberElement>(null)
   const handleSelectTeamPlan = () => {
     setHasSelectedTeamPlan(true)
+    cardNumberRef.current?.focus()
   }
 
   if (billingTier === 'starter') {
@@ -72,10 +74,7 @@ const OrgPlansAndBilling = (props: Props) => {
             handleSelectTeamPlan={handleSelectTeamPlan}
             hasSelectedTeamPlan={hasSelectedTeamPlan}
           />
-          <PaymentDetails
-            organizationRef={organization}
-            hasSelectedTeamPlan={hasSelectedTeamPlan}
-          />
+          <PaymentDetails organizationRef={organization} cardNumberRef={cardNumberRef} />
           <BillingLeaders organizationRef={organization} />
           <OrgPlanDrawer organizationRef={organization} />
         </div>

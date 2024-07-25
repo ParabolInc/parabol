@@ -6,7 +6,10 @@ export default class ReflectPhase extends GenericMeetingPhase {
   stages: [GenericMeetingStage, ...GenericMeetingStage[]]
   focusedPromptId?: string
 
-  constructor(public teamId: string, durations: number[] | undefined) {
+  constructor(
+    public teamId: string,
+    durations: number[] | undefined
+  ) {
     super('reflect')
     this.stages = [
       new GenericMeetingStage({

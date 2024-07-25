@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {StartCheckInMutation as TStartCheckInMutation} from '../__generated__/StartCheckInMutation.graphql'
+import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartCheckInMutation_team on StartCheckInSuccess {
@@ -16,12 +16,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartCheckInMutation(
-    $teamId: ID
-    $gcalInput: CreateGcalEventInput
-    $oneOnOneTeamInput: CreateOneOnOneTeamInput
-  ) {
-    startCheckIn(teamId: $teamId, gcalInput: $gcalInput, oneOnOneTeamInput: $oneOnOneTeamInput) {
+  mutation StartCheckInMutation($teamId: ID!, $gcalInput: CreateGcalEventInput) {
+    startCheckIn(teamId: $teamId, gcalInput: $gcalInput) {
       ... on ErrorPayload {
         error {
           message

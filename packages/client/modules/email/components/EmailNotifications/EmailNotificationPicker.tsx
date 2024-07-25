@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import typedLookup from 'parabol-client/types/typedLookup'
 import {EmailNotificationPicker_notification$key} from 'parabol-client/__generated__/EmailNotificationPicker_notification.graphql'
+import typedLookup from 'parabol-client/types/typedLookup'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import EmailDiscussionMentioned from './EmailDiscussionMentioned'

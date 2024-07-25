@@ -1,0 +1,9 @@
+"""
+The status of the task
+"""
+enum TaskStatusEnum {
+  active
+  stuck
+  done
+  future
+}

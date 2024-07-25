@@ -1,8 +1,8 @@
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
+import connectRethinkDB from '../../database/connectRethinkDB'
 import {backupTeamQuery, backupUserQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
-import connectRethinkDB from '../../database/connectRethinkDB'
 
 export async function up() {
   const client = new Client(getPgConfig())

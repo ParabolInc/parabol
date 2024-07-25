@@ -133,7 +133,7 @@ const addSuccessSourceToCodegen = async (camelMutationName: string) => {
   // stable stringify first to sort
   const stableString = stringify(codegenJSON)
   const options = await prettier.resolveConfig(codegenPath)
-  const prettyStableString = prettier.format(stableString, {...options, parser: 'json'})
+  const prettyStableString = await prettier.format(stableString, {...options, parser: 'json'})
   fs.writeFileSync(codegenPath, prettyStableString)
 }
 

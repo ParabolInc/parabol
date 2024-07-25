@@ -1,8 +1,8 @@
 import {
   down as faultyDown,
+  up as faultyUp,
   reflectPrompts,
-  templates,
-  up as faultyUp
+  templates
 } from './20220124600507-addMoreRetroTemplates'
 
 const fixedReflectPrompts = reflectPrompts.map((prompt) => ({

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {GetTemplateSuggestionMutation as TGetTemplateSuggestionMutation} from '../__generated__/GetTemplateSuggestionMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment GetTemplateSuggestionMutation_viewer on GetTemplateSuggestionSuccess {

@@ -1,8 +1,12 @@
+import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import fromTeamMemberId from '../../utils/relay/fromTeamMemberId'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import pluralizeHandler from './pluralizeHandler'
 
-const handleUpdateTeamMember = (updatedTeamMember, store) => {
+const handleUpdateTeamMember = (
+  updatedTeamMember: RecordProxy<{id: string}>,
+  store: RecordSourceSelectorProxy
+) => {
   if (!updatedTeamMember) return
   const {teamId} = fromTeamMemberId(updatedTeamMember.getValue('id'))
   const isNotRemoved = updatedTeamMember.getValue('isNotRemoved')
@@ -11,7 +15,7 @@ const handleUpdateTeamMember = (updatedTeamMember, store) => {
   const sorts = ['preferredName']
   if (isNotRemoved) {
     sorts.forEach((sortBy) => {
-      const teamMembers = team.getLinkedRecords('teamMembers', {sortBy})
+      const teamMembers = team.getLinkedRecords<[]>('teamMembers', {sortBy})
       if (!teamMembers) return
       teamMembers.sort((a, b) => (a.getValue(sortBy) > b.getValue(sortBy) ? 1 : -1))
       team.setLinkedRecords(teamMembers, 'teamMembers', {sortBy})
@@ -19,8 +23,7 @@ const handleUpdateTeamMember = (updatedTeamMember, store) => {
   } else {
     const teamMemberId = updatedTeamMember.getValue('id')
     sorts.forEach((sortBy) => {
-      const teamMembers = team.getLinkedRecords('teamMembers', {sortBy})
-      safeRemoveNodeFromArray(teamMemberId, teamMembers, 'teamMembers', {
+      safeRemoveNodeFromArray(teamMemberId, team, 'teamMembers', {
         storageKeyArgs: {sortBy}
       })
     })

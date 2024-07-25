@@ -13,9 +13,9 @@ import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import Task from '../../database/types/Task'
 import ITeam from '../../database/types/Team'
-import db from '../../db'
 import {getUserId, isSuperUser, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import isValid from '../isValid'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import {GQLContext} from './../graphql'
 import AgendaItem from './AgendaItem'
@@ -153,7 +153,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         if (!isTeamMember(authToken, teamId)) return false
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
-        const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+        const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
         return !!teamMember.isLead
       }
     },
@@ -204,13 +204,10 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
       description: 'The list of scales this team can use',
       resolve: async ({id: teamId}: {id: string}, {}, {dataLoader}: GQLContext) => {
-        const activeTeamScales = await dataLoader.get('scalesByTeamId').load(teamId)
-        const publicScales = await db.read('starterScales', 'aGhostTeam')
-        const activeScales = [...activeTeamScales, ...publicScales]
-        const uniqueScales = activeScales.filter(
-          (scale, index) => index === activeScales.findIndex((obj) => obj.id === scale.id)
-        )
-        return uniqueScales
+        const availableScales = await dataLoader
+          .get('scalesByTeamId')
+          .loadMany([teamId, 'aGhostTeam'])
+        return availableScales.filter(isValid).flat()
       }
     },
     activeMeetings: {
@@ -259,7 +256,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         _args: unknown,
         {authToken, dataLoader}: GQLContext
       ) => {
-        const organization = await dataLoader.get('organizations').load(orgId)
+        const organization = await dataLoader.get('organizations').loadNonNull(orgId)
         // TODO this is bad, we should probably just put the perms on each field in the org
         if (!isTeamMember(authToken, teamId)) {
           return {

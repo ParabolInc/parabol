@@ -1,155 +1,98 @@
-import {Kysely, sql} from 'kysely'
-
-import {
-  AbstractEmbeddingsModel,
-  AbstractGenerationModel,
-  EmbeddingModelConfig,
-  GenerationModelConfig,
-  ModelConfig
-} from './AbstractModel'
+import {AbstractEmbeddingsModel, EmbeddingsTableName} from './AbstractEmbeddingsModel'
+import {AbstractGenerationModel} from './AbstractGenerationModel'
 import OpenAIGeneration from './OpenAIGeneration'
 import TextEmbeddingsInference from './TextEmbeddingsInference'
 import TextGenerationInference from './TextGenerationInference'
 
-interface ModelManagerConfig {
-  embeddingModels: EmbeddingModelConfig[]
-  generationModels: GenerationModelConfig[]
+type EmbeddingsModelType = 'text-embeddings-inference'
+type GenerationModelType = 'openai' | 'text-generation-inference'
+
+export interface ModelConfig {
+  model: `${EmbeddingsModelType | GenerationModelType}:${string}`
+  url: string
 }
 
-export type EmbeddingsModelType = 'text-embeddings-inference'
-export type GenerationModelType = 'openai' | 'text-generation-inference'
-
 export class ModelManager {
-  embeddingModels: AbstractEmbeddingsModel[]
-  embeddingModelsMapByTable: {[key: string]: AbstractEmbeddingsModel}
-  generationModels: AbstractGenerationModel[]
-
-  private isValidConfig(
-    maybeConfig: Partial<ModelManagerConfig>
-  ): maybeConfig is ModelManagerConfig {
-    if (!maybeConfig.embeddingModels || !Array.isArray(maybeConfig.embeddingModels)) {
-      throw new Error('Invalid configuration: embedding_models is missing or not an array')
-    }
-    if (!maybeConfig.generationModels || !Array.isArray(maybeConfig.generationModels)) {
-      throw new Error('Invalid configuration: summarization_models is missing or not an array')
-    }
-
-    maybeConfig.embeddingModels.forEach((model: ModelConfig) => {
-      this.isValidModelConfig(model)
-    })
-
-    maybeConfig.generationModels.forEach((model: ModelConfig) => {
-      this.isValidModelConfig(model)
-    })
-
-    return true
+  embeddingModels: Map<EmbeddingsTableName, AbstractEmbeddingsModel>
+  generationModels: Map<string, AbstractGenerationModel>
+  getEmbedder(tableName?: EmbeddingsTableName): AbstractEmbeddingsModel {
+    return tableName
+      ? this.embeddingModels.get(tableName)
+      : this.embeddingModels.values().next().value
   }
 
-  private isValidModelConfig(model: ModelConfig): model is ModelConfig {
-    if (typeof model.model !== 'string') {
-      throw new Error('Invalid ModelConfig: model field should be a string')
-    }
-    if (model.url !== undefined && typeof model.url !== 'string') {
-      throw new Error('Invalid ModelConfig: url field should be a string')
+  private parseModelEnvVars(envVar: 'AI_EMBEDDING_MODELS' | 'AI_GENERATION_MODELS'): ModelConfig[] {
+    const envValue = process.env[envVar]
+    if (!envValue) return []
+    let models
+    try {
+      models = JSON.parse(envValue)
+    } catch (e) {
+      throw new Error(`Invalid Env Var: ${envVar}. Must be a valid JSON`)
     }
 
-    return true
+    if (!Array.isArray(models)) {
+      throw new Error(`Invalid Env Var: ${envVar}. Must be an array`)
+    }
+    const properties = ['model', 'url']
+    models.forEach((model, idx) => {
+      properties.forEach((prop) => {
+        if (typeof model[prop] !== 'string') {
+          throw new Error(`Invalid Env Var: ${envVar}. Invalid "${prop}" at index ${idx}`)
+        }
+      })
+    })
+    return models
   }
 
-  constructor(config: ModelManagerConfig) {
-    // Validate configuration
-    this.isValidConfig(config)
-
+  constructor() {
     // Initialize embeddings models
-    this.embeddingModelsMapByTable = {}
-    this.embeddingModels = config.embeddingModels.map((modelConfig) => {
-      const [modelType] = modelConfig.model.split(':') as [EmbeddingsModelType, string]
-
-      switch (modelType) {
-        case 'text-embeddings-inference': {
-          const embeddingsModel = new TextEmbeddingsInference(modelConfig)
-          this.embeddingModelsMapByTable[embeddingsModel.tableName] = embeddingsModel
-          return embeddingsModel
+    const embeddingConfig = this.parseModelEnvVars('AI_EMBEDDING_MODELS')
+    this.embeddingModels = new Map(
+      embeddingConfig.map((modelConfig) => {
+        const {model, url} = modelConfig
+        const [modelType, modelId] = model.split(':') as [EmbeddingsModelType, string]
+        switch (modelType) {
+          case 'text-embeddings-inference': {
+            const embeddingsModel = new TextEmbeddingsInference(modelId, url)
+            return [embeddingsModel.tableName, embeddingsModel]
+          }
+          default:
+            throw new Error(`unsupported embeddings model '${modelType}'`)
         }
-        default:
-          throw new Error(`unsupported embeddings model '${modelType}'`)
-      }
-    })
+      })
+    )
 
-    // Initialize summarization models
-    this.generationModels = config.generationModels.map((modelConfig) => {
-      const [modelType, _] = modelConfig.model.split(':') as [GenerationModelType, string]
-
-      switch (modelType) {
-        case 'openai': {
-          return new OpenAIGeneration(modelConfig)
+    // Initialize generation models
+    const generationConfig = this.parseModelEnvVars('AI_GENERATION_MODELS')
+    this.generationModels = new Map<string, AbstractGenerationModel>(
+      generationConfig.map((modelConfig) => {
+        const {model, url} = modelConfig
+        const [modelType, modelId] = model.split(':') as [GenerationModelType, string]
+        switch (modelType) {
+          case 'openai': {
+            return [modelId, new OpenAIGeneration(modelId, url)]
+          }
+          case 'text-generation-inference': {
+            return [modelId, new TextGenerationInference(modelId, url)]
+          }
+          default:
+            throw new Error(`unsupported generation model '${modelType}'`)
         }
-        case 'text-generation-inference': {
-          return new TextGenerationInference(modelConfig)
-        }
-        default:
-          throw new Error(`unsupported summarization model '${modelType}'`)
-      }
-    })
+      })
+    )
   }
 
-  async maybeCreateTables(pg: Kysely<any>) {
-    const maybePromises = this.embeddingModels.map(async (embeddingsModel) => {
-      const tableName = embeddingsModel.tableName
-      const hasTable =
-        (
-          await sql<number[]>`SELECT 1 FROM ${sql.id('pg_catalog', 'pg_tables')} WHERE ${sql.id(
-            'tablename'
-          )} = ${tableName}`.execute(pg)
-        ).rows.length > 0
-      if (hasTable) return undefined
-      const vectorDimensions = embeddingsModel.embeddingDimensions
-      console.log(`ModelManager: creating ${tableName} with ${vectorDimensions} dimensions`)
-      const query = sql`
-      DO $$
-  BEGIN
-  CREATE TABLE IF NOT EXISTS ${sql.id(tableName)} (
-    "id" INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    "embedText" TEXT,
-    "embedding" vector(${sql.raw(vectorDimensions.toString())}),
-    "embeddingsMetadataId" INTEGER NOT NULL,
-    FOREIGN KEY ("embeddingsMetadataId")
-      REFERENCES "EmbeddingsMetadata"("id")
-      ON DELETE CASCADE
-  );
-  CREATE INDEX IF NOT EXISTS "idx_${sql.raw(tableName)}_embedding_vector_cosign_ops"
-    ON ${sql.id(tableName)}
-    USING hnsw ("embedding" vector_cosine_ops);
-  END $$;
-
-      `
-      return query.execute(pg)
-    })
-    Promise.all(maybePromises)
+  async maybeCreateTables() {
+    return Promise.all([...this.embeddingModels].map(([, model]) => model.createTable()))
   }
 }
 
 let modelManager: ModelManager | undefined
 export function getModelManager() {
-  if (modelManager) return modelManager
-  const {AI_EMBEDDING_MODELS, AI_GENERATION_MODELS} = process.env
-  const config: ModelManagerConfig = {
-    embeddingModels: [],
-    generationModels: []
+  if (!modelManager) {
+    modelManager = new ModelManager()
   }
-  try {
-    config.embeddingModels = AI_EMBEDDING_MODELS && JSON.parse(AI_EMBEDDING_MODELS)
-  } catch (e) {
-    throw new Error(`Invalid AI_EMBEDDING_MODELS .env JSON: ${e}`)
-  }
-  try {
-    config.generationModels = AI_GENERATION_MODELS && JSON.parse(AI_GENERATION_MODELS)
-  } catch (e) {
-    throw new Error(`Invalid AI_GENERATION_MODELS .env JSON: ${e}`)
-  }
-
-  modelManager = new ModelManager(config)
-
   return modelManager
 }
 

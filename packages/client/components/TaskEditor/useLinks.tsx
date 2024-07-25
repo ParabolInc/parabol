@@ -314,8 +314,8 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     renderModal: linkViewerData
       ? renderViewerModal
       : linkChangerData
-      ? renderChangerModal
-      : renderModal,
+        ? renderChangerModal
+        : renderModal,
     removeModal: linkViewerData || linkChangerData ? onRemoveModal : removeModal
   }
 }

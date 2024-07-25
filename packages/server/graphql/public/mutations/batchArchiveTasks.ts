@@ -3,10 +3,10 @@ import {getUserId} from '../../../utils/authorization'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import publish from '../../../utils/publish'
 
-import {MutationResolvers} from '../resolverTypes'
-import isValid from '../../isValid'
-import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import Task from '../../../database/types/Task'
+import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import isValid from '../../isValid'
+import {MutationResolvers} from '../resolverTypes'
 
 const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
   _source,

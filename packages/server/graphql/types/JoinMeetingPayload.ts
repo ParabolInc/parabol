@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import NewMeeting from './NewMeeting'
+import makeMutationPayload from './makeMutationPayload'
 
 export const JoinMeetingSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'JoinMeetingSuccess',

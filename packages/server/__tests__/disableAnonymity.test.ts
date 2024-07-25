@@ -89,8 +89,12 @@ const startRetro = async (teamId: string, authToken: string) => {
     },
     authToken
   })
-
-  const meeting = startRetroQuery.data.startRetrospective.meeting
+  const meeting = startRetroQuery.data.startRetrospective.meeting as {
+    id: string
+    phases: {
+      reflectPrompts: [{id: string}]
+    }[]
+  }
   return meeting
 }
 
@@ -126,6 +130,10 @@ const addReflection = async (meetingId: string, promptId: string, authToken: str
   return reflection
 }
 
+afterAll(async () => {
+  await closePg()
+})
+
 test('By default all reflections are anonymous', async () => {
   const {userId, authToken} = await signUp()
   const teamId = (await getUserTeams(userId))[0].id
@@ -134,7 +142,7 @@ test('By default all reflections are anonymous', async () => {
   expect(meetingSettings.disableAnonymity).toEqual(false)
 
   const meeting = await startRetro(teamId, authToken)
-  const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts).reflectPrompts
+  const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts)!.reflectPrompts
   const reflection = await addReflection(meeting.id, reflectPrompts[0].id, authToken)
 
   expect(reflection).toEqual({
@@ -153,7 +161,7 @@ test('Creator is visible when disableAnonymity is set', async () => {
   expect(updatedMeetingSettings.disableAnonymity).toEqual(true)
 
   const meeting = await startRetro(teamId, authToken)
-  const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts).reflectPrompts
+  const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts)!.reflectPrompts
   const reflection = await addReflection(meeting.id, reflectPrompts[0].id, authToken)
 
   expect(reflection).toEqual({
@@ -172,13 +180,12 @@ test('Super user can always read creatorId of a reflection', async () => {
   expect(meetingSettings.disableAnonymity).toEqual(false)
 
   const meeting = await startRetro(teamId, authToken)
-  const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts).reflectPrompts
+  const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts)!.reflectPrompts
 
   await addReflection(meeting.id, reflectPrompts[0].id, authToken)
 
   const pg = getPg()
   await pg.query(`UPDATE "User" SET rol='su' WHERE id='${userId}'`)
-  await closePg()
 
   const login = await sendPublic({
     query: `

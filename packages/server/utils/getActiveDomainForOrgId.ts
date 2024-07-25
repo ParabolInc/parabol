@@ -1,18 +1,13 @@
-import getRethink from '../database/rethinkDriver'
+import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import getKysely from '../postgres/getKysely'
-
 /**
  * Most used company domain for a given orgId
  */
-const getActiveDomainForOrgId = async (orgId: string) => {
-  const r = await getRethink()
-  const pg = getKysely()
 
-  const userIds = await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null})('userId')
-    .run()
+const getActiveDomainForOrgId = async (orgId: string, dataLoader: DataLoaderInstance) => {
+  const pg = getKysely()
+  const orgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+  const userIds = orgUsers.map(({userId}) => userId)
 
   const activeDomain = await pg
     .selectFrom('User')

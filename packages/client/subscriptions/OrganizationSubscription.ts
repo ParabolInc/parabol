@@ -2,13 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
 import {
+  OrganizationSubscription$variables,
+  OrganizationSubscription as TOrganizationSubscription
+} from '~/__generated__/OrganizationSubscription.graphql'
+import {
   archiveOrganizationOrganizationOnNext,
   archiveOrganizationOrganizationUpdater
 } from '~/mutations/ArchiveOrganizationMutation'
-import {
-  OrganizationSubscription as TOrganizationSubscription,
-  OrganizationSubscription$variables
-} from '~/__generated__/OrganizationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
 import {
@@ -20,9 +20,9 @@ import {
   setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
 import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
+import upgradeToTeamTierSuccessUpdater from '../mutations/handlers/upgradeToTeamTierSuccessUpdater'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
-import upgradeToTeamTierSuccessUpdater from '../mutations/handlers/upgradeToTeamTierSuccessUpdater'
 
 const subscription = graphql`
   subscription OrganizationSubscription {

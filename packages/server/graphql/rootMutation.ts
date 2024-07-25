@@ -6,15 +6,12 @@ import addComment from './mutations/addComment'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addOrg from './mutations/addOrg'
-import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
 import addTeam from './mutations/addTeam'
-import addTeamMemberIntegrationAuth from './mutations/addTeamMemberIntegrationAuth'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
@@ -76,12 +73,11 @@ import removePokerTemplate from './mutations/removePokerTemplate'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
-import removeReflection from './mutations/removeReflection'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
+import removeReflection from './mutations/removeReflection'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
-import removeTeamMemberIntegrationAuth from './mutations/removeTeamMemberIntegrationAuth'
 import renameMeeting from './mutations/renameMeeting'
 import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
@@ -129,11 +125,9 @@ export default new GraphQLObjectType<any, GQLContext>({
       addAgendaItem,
       addAtlassianAuth,
       addComment,
-      addPokerTemplate,
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReflectTemplate,
       addReflectTemplatePrompt,
       addSlackAuth,
       addGitHubAuth,
@@ -240,12 +234,10 @@ export default new GraphQLObjectType<any, GQLContext>({
       toggleTeamDrawer,
       updateGitHubDimensionField,
       createPoll,
-      addTeamMemberIntegrationAuth,
       addIntegrationProvider,
       updateIntegrationProvider,
       removeIntegrationProvider,
-      removeTeamMemberIntegrationAuth,
       endTeamPrompt,
       updateAzureDevOpsDimensionField
-    } as any)
+    }) as any
 })

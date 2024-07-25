@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
+import {AzureDevOpsScopingSelectAllIssues_workItems$key} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
@@ -11,7 +12,6 @@ import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {AzureDevOpsScopingSelectAllIssues_workItems$key} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -42,7 +42,7 @@ interface Props {
 }
 
 const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, workItems: workItemsRef, providerId} = props
+  const {meetingId, usedServiceTaskIds, workItems: workItemsRef} = props
   const workItems = useFragment(
     graphql`
       fragment AzureDevOpsScopingSelectAllIssues_workItems on AzureDevOpsWorkItemEdge
@@ -57,7 +57,7 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
     workItemsRef
   )
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
+  const {onCompleted, onError, submitMutation, error} = useMutationProps()
   const getProjectId = (url: URL) => {
     const firstIndex = url.pathname.indexOf('/', 1)
     const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
@@ -86,7 +86,7 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
           service: 'azureDevOps',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
 
     const variables = {

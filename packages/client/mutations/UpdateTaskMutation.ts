@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import ITask from '../../server/database/types/Task'
+import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
+import {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {
   OnNextHandler,
   OnNextHistoryContext,
@@ -11,8 +13,6 @@ import {
 import extractTextFromDraftString from '../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
-import {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'

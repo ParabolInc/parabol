@@ -1,0 +1,34 @@
+type AcceptTeamInvitationPayload {
+  error: StandardMutationError
+
+  """
+  The new auth token sent to the mutator
+  """
+  authToken: ID
+
+  """
+  the meetingId to redirect to
+  """
+  meetingId: ID
+
+  """
+  The requested meeting
+  """
+  meeting: NewMeeting
+
+  """
+  The team that the invitee will be joining
+  """
+  team: Team
+
+  """
+  The new team member on the team
+  """
+  teamMember: TeamMember
+  notifications: [NotificationTeamInvitation!]
+
+  """
+  For payloads going to the team leader that got new suggested actions
+  """
+  teamLead: User
+}

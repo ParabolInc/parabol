@@ -4,15 +4,15 @@ import React, {useEffect, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
+import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
+import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
 import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
-import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 
 interface Props {
   menuProps: MenuProps

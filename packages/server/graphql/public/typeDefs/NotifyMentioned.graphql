@@ -49,14 +49,4 @@ type NotifyMentioned implements Notification {
   Linked discussion stage number
   """
   retroDiscussStageIdx: Int
-
-  """
-  Kudos emoji if mention includes kudos
-  """
-  kudosEmoji: String
-
-  """
-  Kudos emoji unicode character
-  """
-  kudosEmojiUnicode: String
 }

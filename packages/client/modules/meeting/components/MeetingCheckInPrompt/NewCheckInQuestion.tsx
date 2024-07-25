@@ -1,27 +1,27 @@
 import styled from '@emotion/styled'
 import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {ContentState, convertToRaw, EditorState, SelectionState} from 'draft-js'
+import {ContentState, EditorState, SelectionState, convertToRaw} from 'draft-js'
 import React, {useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
+import {
+  ModifyType,
+  useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data
+} from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import '../../../../components/TaskEditor/Draft.css'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useEditorState from '../../../../hooks/useEditorState'
+import useMutationProps from '../../../../hooks/useMutationProps'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import {
-  useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data,
-  ModifyType
-} from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'
-import {Button} from '../../../../ui/Button/Button'
 import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Button} from '../../../../ui/Button/Button'
+import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 
 const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
@@ -60,6 +60,7 @@ const QuestionBlock = styled('div')({
     }
   }
 })
+
 interface Props {
   meeting: NewCheckInQuestion_meeting$key
 }
@@ -87,7 +88,7 @@ const NewCheckInQuestion = (props: Props) => {
         team {
           organization {
             featureFlags {
-              aiIcebreakers
+              noAISummary
             }
           }
         }
@@ -227,7 +228,8 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const shouldShowAiIcebreakers = featureFlags?.aiIcebreakers && isFacilitating
+  const showAiIcebreaker =
+    !featureFlags.noAISummary && isFacilitating && window.__ACTION__.hasOpenAI
 
   return (
     <>
@@ -269,8 +271,8 @@ const NewCheckInQuestion = (props: Props) => {
           </div>
         )}
       </QuestionBlock>
-      {shouldShowAiIcebreakers && (
-        <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-3'>
+      {showAiIcebreaker && (
+        <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>
               <div className='font-semibold'>Modify current icebreaker with AI</div>
@@ -298,7 +300,7 @@ const NewCheckInQuestion = (props: Props) => {
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('FUNNY')}
             >
-              More funny
+              Funnier
             </Button>
             <Button
               variant='outline'

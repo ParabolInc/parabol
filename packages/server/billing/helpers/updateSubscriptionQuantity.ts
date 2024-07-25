@@ -1,18 +1,22 @@
-import getRethink from '../../database/rethinkDriver'
-import {getStripeManager} from '../../utils/stripe'
+import getKysely from '../../postgres/getKysely'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
-import sendToSentry from '../../utils/sendToSentry'
 import RedisLockQueue from '../../utils/RedisLockQueue'
+import sendToSentry from '../../utils/sendToSentry'
+import {getStripeManager} from '../../utils/stripe'
 
 /**
  * Check and update if necessary the subscription quantity
  * @param logMismatch Pass true if a quantity mismatch should be logged
  */
 const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const manager = getStripeManager()
 
-  const org = await r.table('Organization').get(orgId).run()
+  const org = await pg
+    .selectFrom('Organization')
+    .selectAll()
+    .where('id', '=', orgId)
+    .executeTakeFirst()
 
   if (!org) throw new Error(`org not found for invoice`)
   const {stripeSubscriptionId, tier} = org
@@ -29,15 +33,17 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
       return
     }
 
-    const [orgUserCount, teamSubscription] = await Promise.all([
-      r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null, inactive: false})
-        .count()
-        .run(),
-      await manager.getSubscriptionItem(stripeSubscriptionId)
+    const [orgUserCountRes, teamSubscription] = await Promise.all([
+      pg
+        .selectFrom('OrganizationUser')
+        .select(({fn}) => fn.count<number>('id').as('count'))
+        .where('orgId', '=', orgId)
+        .where('removedAt', 'is', null)
+        .where('inactive', '=', false)
+        .executeTakeFirstOrThrow(),
+      manager.getSubscriptionItem(stripeSubscriptionId)
     ])
+    const {count: orgUserCount} = orgUserCountRes
     if (
       teamSubscription &&
       teamSubscription.quantity !== undefined &&

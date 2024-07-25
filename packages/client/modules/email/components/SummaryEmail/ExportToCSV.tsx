@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
+import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
-import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
@@ -351,21 +351,19 @@ const ExportToCSV = (props: Props) => {
 
   const {emailCSVUrl, referrer, corsOptions} = props
   return (
-    <>
-      <tr>
-        <td align='center' style={iconLinkLabel} width='100%'>
-          <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
-            <img
-              alt={label}
-              src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
-              style={imageStyle}
-              {...corsOptions}
-            />
-            <span style={labelStyle}>{label}</span>
-          </AnchorIfEmail>
-        </td>
-      </tr>
-    </>
+    <tr className='print:hidden'>
+      <td align='center' style={iconLinkLabel} width='100%'>
+        <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
+          <img
+            alt={label}
+            src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
+            style={imageStyle}
+            {...corsOptions}
+          />
+          <span style={labelStyle}>{label}</span>
+        </AnchorIfEmail>
+      </td>
+    </tr>
   )
 }
 

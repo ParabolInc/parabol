@@ -6,16 +6,16 @@ import appOrigin from '../../../../appOrigin'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
-import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
+import {analytics} from '../../../../utils/analytics/analytics'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
-import getSummaryText from './getSummaryText'
+import {TeamSource} from '../../../public/types/Team'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
-import {analytics} from '../../../../utils/analytics/analytics'
-import IUser from '../../../../postgres/types/IUser'
+import getSummaryText from './getSummaryText'
 
 const notifyMSTeams = async (
   event: EventEnum,
@@ -92,7 +92,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const card = new AdaptiveCards.AdaptiveCard()
     card.version = new AdaptiveCards.Version(1.2, 0)
 
-    const meetingTitle = meetingTypeTitleLookup[meeting.meetingType](meeting.name)
+    const meetingTitle = meetingTypeTitleLookup[meeting.meetingType]!(meeting.name)
     const titleTextBlock = GenerateACMeetingTitle(meetingTitle)
     card.addItem(titleTextBlock)
 
@@ -104,7 +104,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const meetingLinkColumn = new AdaptiveCards.Column()
     meetingLinkColumn.width = 'stretch'
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
-    const joinMeetingAction = MeetingActionLookup[meeting.meetingType](meetingUrl)
+    const joinMeetingAction = MeetingActionLookup[meeting.meetingType]!(meetingUrl)
     joinMeetingActionSet.addAction(joinMeetingAction)
     meetingLinkColumn.addItem(joinMeetingActionSet)
     meetingLinkColumnSet.addColumn(meetingLinkColumn)
@@ -359,7 +359,7 @@ function GenerateACMeetingTitle(meetingTitle: string) {
   return titleTextBlock
 }
 
-function GenerateACMeetingAndTeamsDetails(team: Team, meeting: Meeting) {
+function GenerateACMeetingAndTeamsDetails(team: TeamSource, meeting: Meeting) {
   const meetingDetailColumnSet = new AdaptiveCards.ColumnSet()
   const teamDetailColumn = new AdaptiveCards.Column()
   teamDetailColumn.width = 'stretch'

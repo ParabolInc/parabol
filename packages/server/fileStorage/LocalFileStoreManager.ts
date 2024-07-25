@@ -3,7 +3,8 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import FileStoreManager from './FileStoreManager'
-export default class LocalFileSystemManager extends FileStoreManager {
+export default class LocalFileStoreManager extends FileStoreManager {
+  baseUrl = makeAppURL(appOrigin, 'self-hosted')
   constructor() {
     super()
     const {PROTO, HOST} = process.env
@@ -12,14 +13,14 @@ export default class LocalFileSystemManager extends FileStoreManager {
     }
   }
 
-  protected async putUserFile(file: Buffer, partialPath: string) {
+  protected async putUserFile(file: ArrayBufferLike, partialPath: string) {
     const fullPath = this.prependPath(partialPath)
     return this.putFile(file, fullPath)
   }
-  protected async putFile(file: Buffer, fullPath: string) {
+  protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const fsAbsLocation = path.join(process.cwd(), fullPath)
     await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
-    await fs.promises.writeFile(fsAbsLocation, file)
+    await fs.promises.writeFile(fsAbsLocation, Buffer.from(file))
     return this.getPublicFileLocation(fullPath)
   }
 
@@ -46,5 +47,8 @@ export default class LocalFileSystemManager extends FileStoreManager {
     } catch (e) {
       return false
     }
+  }
+  async presignUrl(url: string) {
+    return url
   }
 }

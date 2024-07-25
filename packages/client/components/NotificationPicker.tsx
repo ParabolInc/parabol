@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import lazyPreload, {LazyExoticPreload} from '~/utils/lazyPreload'
 import {
   NotificationEnum,
   NotificationPicker_notification$key
 } from '~/__generated__/NotificationPicker_notification.graphql'
+import lazyPreload, {LazyExoticPreload} from '~/utils/lazyPreload'
 
 const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
   DISCUSSION_MENTIONED: lazyPreload(
@@ -54,9 +54,6 @@ const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
   MENTIONED: lazyPreload(() => import(/* webpackChunkName: 'Mentioned' */ './Mentioned')),
   RESPONSE_REPLIED: lazyPreload(
     () => import(/* webpackChunkName: 'ResponseReplied' */ './ResponseReplied')
-  ),
-  KUDOS_RECEIVED: lazyPreload(
-    () => import(/* webpackChunkName: 'KudosReceivedNotification' */ './KudosReceivedNotification')
   )
 }
 
@@ -86,7 +83,6 @@ const NotificationPicker = (props: Props) => {
         ...TeamsLimitReminderNotification_notification
         ...PromptToJoinOrgNotification_notification
         ...RequestToJoinOrgNotification_notification
-        ...KudosReceivedNotification_notification
       }
     `,
     notificationRef

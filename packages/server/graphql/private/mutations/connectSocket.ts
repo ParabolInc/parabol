@@ -1,13 +1,13 @@
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import getRethink from '../../../database/rethinkDriver'
 import updateUser from '../../../postgres/queries/updateUser'
+import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
-import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
+import {DataLoaderWorker} from '../../graphql'
 import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
@@ -16,12 +16,18 @@ export interface UserPresence {
   socketId: string
 }
 
+const handleInactive = async (userId: string, dataLoader: DataLoaderWorker) => {
+  const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+  const orgIds = orgUsers.map(({orgId}) => orgId)
+  await adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER, dataLoader).catch(Logger.log)
+  // TODO: re-identify
+}
+
 const connectSocket: MutationResolvers['connectSocket'] = async (
   _source,
   {socketInstanceId},
   {authToken, dataLoader, socketId}
 ) => {
-  const r = await getRethink()
   const redis = getRedis()
   const now = new Date()
 
@@ -40,13 +46,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
 
   // no need to wait for this, it's just for billing
   if (inactive) {
-    const orgIds = await r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null, inactive: true})('orgId')
-      .run()
-    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER, dataLoader).catch(Logger.log)
-    // TODO: re-identify
+    handleInactive(userId, dataLoader)
   }
   const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
   if (!datesAreOnSameDay) {

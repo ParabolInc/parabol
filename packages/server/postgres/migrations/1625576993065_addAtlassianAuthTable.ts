@@ -2,11 +2,11 @@ import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
+import connectRethinkDB from '../../database/connectRethinkDB'
 import {RDatum} from '../../database/stricterR'
 import {insertAtlassianAuthsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
-import connectRethinkDB from '../../database/connectRethinkDB'
 
 export async function up(): Promise<void> {
   await connectRethinkDB()

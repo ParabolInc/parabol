@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {NewTeamOrgPicker_organizations$key} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import TierTag from '../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import lazyPreload from '../../../utils/lazyPreload'
 import sortByTier from '../../../utils/sortByTier'
-import {NewTeamOrgPicker_organizations$key} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',

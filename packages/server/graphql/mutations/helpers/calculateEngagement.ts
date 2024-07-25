@@ -46,6 +46,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   if (getPhase(phases, 'reflect')) {
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     reflections.forEach(({creatorId, reactjis}) => {
+      if (!creatorId) return
       passiveMembers.delete(creatorId)
       reactjis.forEach(({userId}) => {
         passiveMembers.delete(userId)

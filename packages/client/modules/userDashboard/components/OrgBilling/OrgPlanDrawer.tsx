@@ -1,20 +1,28 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {OrgPlanDrawer_organization$key} from '../../../../__generated__/OrgPlanDrawer_organization.graphql'
-import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
-import {Close} from '@mui/icons-material'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../../../../types/constEnums'
-import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
-import {desktopSidebarShadow} from '../../../../styles/elevation'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
-import PlainButton from '../../../../components/PlainButton/PlainButton'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
-import OrgPlanDrawerContent from './OrgPlanDrawerContent'
 import Confetti from '../../../../components/Confetti'
+import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
+import PlainButton from '../../../../components/PlainButton/PlainButton'
+import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
+import {desktopSidebarShadow} from '../../../../styles/elevation'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
+import {
+  BezierCurve,
+  Breakpoint,
+  DiscussionThreadEnum,
+  GlobalBanner,
+  ZIndex
+} from '../../../../types/constEnums'
+import OrgPlanDrawerContent from './OrgPlanDrawerContent'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -32,6 +40,7 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   flexDirection: 'column',
   justifyContent: 'stretch',
   overflow: 'hidden',
+  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   position: isDesktop ? 'fixed' : 'static',
   bottom: 0,
   top: 0,

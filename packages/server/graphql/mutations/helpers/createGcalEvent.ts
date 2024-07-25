@@ -1,11 +1,11 @@
 import {google} from 'googleapis'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../../../appOrigin'
-import {DataLoaderWorker} from '../../graphql'
-import standardError from '../../../utils/standardError'
-import {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
-import {RRule} from 'rrule'
 import {pick} from 'lodash'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {RRule} from 'rrule'
+import appOrigin from '../../../appOrigin'
+import standardError from '../../../utils/standardError'
+import {DataLoaderWorker} from '../../graphql'
+import {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
 
 const emailRemindMinsBeforeMeeting = 24 * 60
 const popupRemindMinsBeforeMeeting = 10
@@ -24,6 +24,7 @@ const convertRruleToGcal = (rrule: RRule | null | undefined) => {
 }
 
 type Input = {
+  name: string
   gcalInput?: CreateGcalEventInput | null
   meetingId: string
   viewerId: string
@@ -35,12 +36,12 @@ type Input = {
 const createGcalEvent = async (
   input: Input
 ): Promise<{gcalSeriesId?: string; error?: StandardMutationError}> => {
-  const {gcalInput, meetingId, viewerId, dataLoader, teamId, rrule} = input
+  const {name, gcalInput, meetingId, viewerId, dataLoader, teamId, rrule} = input
   if (!gcalInput) {
     return {}
   }
 
-  const {startTimestamp, endTimestamp, title, timeZone, invitees, videoType} = gcalInput
+  const {startTimestamp, endTimestamp, timeZone, invitees, videoType} = gcalInput
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
   if (!gcalAuth) {
@@ -78,7 +79,7 @@ const createGcalEvent = async (
   const recurrence = convertRruleToGcal(rrule)
 
   const eventInput = {
-    summary: title,
+    summary: name,
     description,
     start: {
       dateTime: startDateTime,
@@ -115,14 +116,14 @@ const createGcalEvent = async (
 
 export type UpdateGcalSeriesInput = {
   gcalSeriesId: string
-  title?: string
+  name?: string
   rrule: RRule | null
   userId: string
   teamId: string
   dataLoader: DataLoaderWorker
 }
 export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
-  const {gcalSeriesId, title, rrule, userId, teamId, dataLoader} = input
+  const {gcalSeriesId, name, rrule, userId, teamId, dataLoader} = input
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
   if (!gcalAuth) {
@@ -146,7 +147,7 @@ export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
       eventId: gcalSeriesId,
       requestBody: {
         recurrence,
-        summary: title
+        summary: name
       },
       conferenceDataVersion: 1
     })

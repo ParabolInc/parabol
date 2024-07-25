@@ -1,15 +1,16 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {maybeRemoveRestrictions} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
 import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
-import {getUserId, isSuperUser, isTeamLead} from '../../utils/authorization'
+import {analytics} from '../../utils/analytics/analytics'
+import {getUserId, isSuperUser, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(
@@ -35,12 +36,15 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const [teamLead, viewer] = await Promise.all([
-      isTeamLead(viewerId, teamId, dataLoader),
-      dataLoader.get('users').loadNonNull(viewerId)
+    const [teamMember, viewer, teamToArchive] = await Promise.all([
+      dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId)),
+      dataLoader.get('users').loadNonNull(viewerId),
+      dataLoader.get('teams').loadNonNull(teamId)
     ])
-    if (!teamLead && !isSuperUser(authToken)) {
-      return standardError(new Error('Not team lead'), {userId: viewerId})
+    const isTeamLead = teamMember?.isLead
+    const isOrgAdmin = await isUserOrgAdmin(viewerId, teamToArchive.orgId, dataLoader)
+    if (!isTeamLead && !isSuperUser(authToken) && !isOrgAdmin) {
+      return standardError(new Error('Not team lead or org admin'), {userId: viewerId})
     }
 
     // RESOLUTION

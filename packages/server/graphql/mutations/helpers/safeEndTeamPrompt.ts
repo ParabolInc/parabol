@@ -3,18 +3,19 @@ import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
+import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
-import {IntegrationNotifier} from './notifications/IntegrationNotifier'
-import updateTeamInsights from './updateTeamInsights'
-import generateStandupMeetingSummary from './generateStandupMeetingSummary'
-import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import gatherInsights from './gatherInsights'
-import {Logger} from '../../../utils/Logger'
+import generateStandupMeetingSummary from './generateStandupMeetingSummary'
+import {IntegrationNotifier} from './notifications/IntegrationNotifier'
+import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
+import updateTeamInsights from './updateTeamInsights'
 
 const summarizeTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
   const {dataLoader} = context
@@ -102,7 +103,8 @@ const safeEndTeamPrompt = async ({
       })
   )
   const timelineEventId = events[0]!.id
-  await r.table('TimelineEvent').insert(events).run()
+  const pg = getKysely()
+  await pg.insertInto('TimelineEvent').values(events).execute()
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   checkTeamsLimit(team.orgId, dataLoader)

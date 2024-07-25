@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
+import makeMutationPayload from './makeMutationPayload'
 
 export const RemoveIntegrationProviderSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveIntegrationProviderSuccess',

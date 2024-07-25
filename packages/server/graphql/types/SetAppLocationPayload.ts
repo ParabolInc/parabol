@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import User from './User'
+import makeMutationPayload from './makeMutationPayload'
 
 export const SetAppLocationSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetAppLocationSuccess',

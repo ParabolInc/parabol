@@ -1,8 +1,8 @@
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
-import getKysely from '../../../postgres/getKysely'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
 import EmailVerification from '../../../database/types/EmailVerification'
+import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
@@ -60,7 +60,7 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
     return {error: {message: 'Invalid hash for email. Please reverify'}}
   }
   // user does not exist, create them bootstrap
-  const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: true, pseudoId})
+  const newUser = await createNewLocalUser({email, hashedPassword, isEmailVerified: true, pseudoId})
   // it's possible that the invitationToken is no good.
   // if that happens, then they'll get into the app & won't be on any team
   // edge case because that requires the invitation token to have expired

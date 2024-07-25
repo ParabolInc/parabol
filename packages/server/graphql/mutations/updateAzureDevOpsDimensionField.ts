@@ -4,8 +4,8 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import upsertAzureDevOpsDimensionFieldMap, {
   AzureDevOpsFieldMapProps
 } from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
-import {isTeamMember} from '../../utils/authorization'
 import {Logger} from '../../utils/Logger'
+import {isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateAzureDevOpsDimensionFieldPayload from '../types/UpdateAzureDevOpsDimensionFieldPayload'

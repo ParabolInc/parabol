@@ -3,6 +3,14 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, Ref} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {
+  OrgMemberRow_organization$data,
+  OrgMemberRow_organization$key
+} from '../../../../__generated__/OrgMemberRow_organization.graphql'
+import {
+  OrgMemberRow_organizationUser$data,
+  OrgMemberRow_organizationUser$key
+} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton, {FlatButtonProps} from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -12,20 +20,16 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import RowInfoLink from '../../../../components/Row/RowInfoLink'
-import EmphasisTag from '../../../../components/Tag/EmphasisTag'
+import BaseTag from '../../../../components/Tag/BaseTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
-import useTooltip from '../../../../hooks/useTooltip'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {OrgMemberRow_organization$key} from '../../../../__generated__/OrgMemberRow_organization.graphql'
-import {OrgMemberRow_organizationUser$key} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
-import BaseTag from '../../../../components/Tag/BaseTag'
 
 const AvatarBlock = styled('div')({
   display: 'none',
@@ -59,6 +63,7 @@ const MenuToggleBlock = styled('div')({
 
 interface Props extends WithMutationProps {
   billingLeaderCount: number
+  orgAdminCount: number
   organizationUser: OrgMemberRow_organizationUser$key
   organization: OrgMemberRow_organization$key
 }
@@ -90,29 +95,154 @@ const BillingLeaderActionMenu = lazyPreload(
       /* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu'
     )
 )
+const OrgAdminActionMenu = lazyPreload(
+  () =>
+    import(/* webpackChunkName: 'OrgAdminActionMenu' */ '../../../../components/OrgAdminActionMenu')
+)
 
 const RemoveFromOrgModal = lazyPreload(
   () =>
     import(/* webpackChunkName: 'RemoveFromOrgModal' */ '../RemoveFromOrgModal/RemoveFromOrgModal')
 )
 
+interface UserAvatarProps {
+  picture?: string
+}
+
+const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
+  <AvatarBlock>
+    {picture ? (
+      <Avatar picture={picture} className='h-11 w-11' />
+    ) : (
+      <img alt='default avatar' src={defaultUserAvatar} />
+    )}
+  </AvatarBlock>
+)
+
+interface UserInfoProps {
+  preferredName: string
+  email: string
+  isBillingLeader: boolean
+  isOrgAdmin: boolean
+  inactive: boolean | null
+}
+
+const UserInfo: React.FC<UserInfoProps> = ({
+  preferredName,
+  email,
+  isBillingLeader,
+  isOrgAdmin,
+  inactive
+}) => (
+  <StyledRowInfo>
+    <RowInfoHeader>
+      <RowInfoHeading>{preferredName}</RowInfoHeading>
+      {isBillingLeader && <RoleTag>Billing Leader</RoleTag>}
+      {isOrgAdmin && <BaseTag className='bg-gold-500 text-white'>Org Admin</BaseTag>}
+      {inactive && !isBillingLeader && !isOrgAdmin && <InactiveTag>Inactive</InactiveTag>}
+    </RowInfoHeader>
+    <RowInfoLink href={`mailto:${email}`} title='Send an email'>
+      {email}
+    </RowInfoLink>
+  </StyledRowInfo>
+)
+
+interface UserActionsProps {
+  isViewerOrgAdmin: boolean
+  isViewerBillingLeader: boolean
+  isViewerLastOrgAdmin: boolean
+  isViewerLastBillingLeader: boolean
+  organization: OrgMemberRow_organization$data
+  organizationUser: OrgMemberRow_organizationUser$data
+  preferredName: string
+  viewerId: string
+}
+
+const UserActions: React.FC<UserActionsProps> = ({
+  isViewerOrgAdmin,
+  isViewerBillingLeader,
+  isViewerLastOrgAdmin,
+  isViewerLastBillingLeader,
+  organizationUser,
+  organization,
+  preferredName,
+  viewerId
+}) => {
+  const {orgId} = organization
+  const {
+    user: {userId}
+  } = organizationUser
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
+  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
+  const actionMenuProps = {
+    menuProps,
+    originRef,
+    togglePortal,
+    toggleLeave,
+    toggleRemove,
+    isViewerLastOrgAdmin,
+    isViewerLastBillingLeader,
+    organization,
+    organizationUser
+  }
+
+  const showLeaveButton = !isViewerOrgAdmin && !isViewerBillingLeader && viewerId === userId
+
+  return (
+    <RowActions>
+      <ActionsBlock>
+        {showLeaveButton && (
+          <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
+            Leave Organization
+          </StyledFlatButton>
+        )}
+        {(isViewerOrgAdmin || (isViewerBillingLeader && !isViewerLastBillingLeader)) && (
+          <MenuToggleBlock>
+            <MenuButton
+              onClick={togglePortal}
+              onMouseEnter={
+                isViewerOrgAdmin ? OrgAdminActionMenu.preload : BillingLeaderActionMenu.preload
+              }
+              ref={originRef}
+            />
+          </MenuToggleBlock>
+        )}
+        {isViewerOrgAdmin && menuPortal(<OrgAdminActionMenu {...actionMenuProps} />)}
+        {!isViewerOrgAdmin &&
+          isViewerBillingLeader &&
+          menuPortal(<BillingLeaderActionMenu {...actionMenuProps} />)}
+        {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+        {removeModal(
+          <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
+        )}
+      </ActionsBlock>
+    </RowActions>
+  )
+}
+
 const OrgMemberRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {
     billingLeaderCount,
+    orgAdminCount,
     organizationUser: organizationUserRef,
     organization: organizationRef
   } = props
+
   const organization = useFragment(
     graphql`
       fragment OrgMemberRow_organization on Organization {
         isViewerBillingLeader: isBillingLeader
+        isViewerOrgAdmin: isOrgAdmin
         orgId: id
         ...BillingLeaderActionMenu_organization
+        ...OrgAdminActionMenu_organization
       }
     `,
     organizationRef
   )
+
   const organizationUser = useFragment(
     graphql`
       fragment OrgMemberRow_organizationUser on OrganizationUser {
@@ -124,105 +254,48 @@ const OrgMemberRow = (props: Props) => {
           preferredName
         }
         role
-        newUserUntil
         ...BillingLeaderActionMenu_organizationUser
+        ...OrgAdminActionMenu_organizationUser
       }
     `,
     organizationUserRef
   )
-  const {orgId, isViewerBillingLeader} = organization
-  const {newUserUntil, user, role} = organizationUser
+
+  const {isViewerBillingLeader, isViewerOrgAdmin} = organization
+
+  const {
+    user: {email, inactive, picture, preferredName},
+    role
+  } = organizationUser
+
+  const {viewerId} = atmosphere
+
   const isBillingLeader = role === 'BILLING_LEADER'
   const isOrgAdmin = role === 'ORG_ADMIN'
-  const {email, inactive, picture, preferredName, userId} = user
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
-  const {viewerId} = atmosphere
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
-  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_RIGHT)
-  const canViewMenu = !isViewerLastBillingLeader && organizationUser.role !== 'ORG_ADMIN'
+  const isViewerLastOrgAdmin = isViewerOrgAdmin && isOrgAdmin && orgAdminCount === 1
 
   return (
     <StyledRow>
-      <AvatarBlock>
-        {picture ? (
-          <Avatar hasBadge={false} picture={picture} size={44} />
-        ) : (
-          <img alt='' src={defaultUserAvatar} />
-        )}
-      </AvatarBlock>
-      <StyledRowInfo>
-        <RowInfoHeader>
-          <RowInfoHeading>{preferredName}</RowInfoHeading>
-          {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>}
-          {isOrgAdmin && <BaseTag className='bg-gold-500 text-white'>{'Org Admin'}</BaseTag>}
-          {inactive && !isBillingLeader && !isOrgAdmin && <InactiveTag>{'Inactive'}</InactiveTag>}
-          {new Date(newUserUntil) > new Date() && <EmphasisTag>{'New'}</EmphasisTag>}
-        </RowInfoHeader>
-        <RowInfoLink href={`mailto:${email}`} title='Send an email'>
-          {email}
-        </RowInfoLink>
-      </StyledRowInfo>
-      <RowActions>
-        <ActionsBlock>
-          {!isBillingLeader && !isOrgAdmin && viewerId === userId && (
-            <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
-              Leave Organization
-            </StyledFlatButton>
-          )}
-          {!canViewMenu && (
-            <MenuToggleBlock
-              onClick={closeTooltip}
-              onMouseOver={openTooltip}
-              onMouseOut={closeTooltip}
-              ref={tooltipRef}
-            >
-              {tooltipPortal(
-                isViewerLastBillingLeader ? (
-                  <div>
-                    {'You need to promote another Billing Leader'}
-                    <br />
-                    {'before you can remove this role.'}
-                  </div>
-                ) : (
-                  <div>Contact support (love@parabol.co) to remove the Org Admin role</div>
-                )
-              )}
-              <MenuButton disabled />
-            </MenuToggleBlock>
-          )}
-          {isViewerBillingLeader && canViewMenu && (
-            <MenuToggleBlock>
-              <MenuButton
-                onClick={togglePortal}
-                onMouseEnter={BillingLeaderActionMenu.preload}
-                ref={originRef}
-              />
-            </MenuToggleBlock>
-          )}
-          {menuPortal(
-            <BillingLeaderActionMenu
-              menuProps={menuProps}
-              isViewerLastBillingLeader={isViewerLastBillingLeader}
-              organizationUser={organizationUser}
-              organization={organization}
-              toggleLeave={toggleLeave}
-              toggleRemove={toggleRemove}
-            />
-          )}
-          {leaveModal(<LeaveOrgModal orgId={orgId} />)}
-          {removeModal(
-            <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
-          )}
-        </ActionsBlock>
-      </RowActions>
+      <UserAvatar picture={picture} />
+      <UserInfo
+        preferredName={preferredName}
+        email={email}
+        isBillingLeader={isBillingLeader}
+        isOrgAdmin={isOrgAdmin}
+        inactive={inactive}
+      />
+      <UserActions
+        isViewerOrgAdmin={isViewerOrgAdmin}
+        isViewerBillingLeader={isViewerBillingLeader}
+        isViewerLastOrgAdmin={isViewerLastOrgAdmin}
+        isViewerLastBillingLeader={isViewerLastBillingLeader}
+        organizationUser={organizationUser}
+        organization={organization}
+        preferredName={preferredName}
+        viewerId={viewerId}
+      />
     </StyledRow>
   )
 }

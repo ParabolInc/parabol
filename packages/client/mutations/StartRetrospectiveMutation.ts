@@ -25,14 +25,11 @@ graphql`
 const mutation = graphql`
   mutation StartRetrospectiveMutation(
     $teamId: ID!
-    $recurrenceSettings: RecurrenceSettingsInput
+    $name: String
+    $rrule: RRule
     $gcalInput: CreateGcalEventInput
   ) {
-    startRetrospective(
-      teamId: $teamId
-      recurrenceSettings: $recurrenceSettings
-      gcalInput: $gcalInput
-    ) {
+    startRetrospective(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
       ... on ErrorPayload {
         error {
           message

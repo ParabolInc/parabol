@@ -2,8 +2,8 @@ import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
 import {brotliCompressSync} from 'zlib'
-import isCompressible from './isCompressible'
 import {Logger} from './Logger'
+import isCompressible from './isCompressible'
 class StaticFileMeta {
   mtime: string
   size: number

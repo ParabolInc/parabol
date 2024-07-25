@@ -4,13 +4,13 @@ import {Editor} from 'draft-js'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
+import {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
 import useEditorState from '../hooks/useEditorState'
 import useRouter from '../hooks/useRouter'
 import {cardShadow} from '../styles/elevation'
-import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
-import {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
-import NotificationTemplate from './NotificationTemplate'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
+import NotificationTemplate from './NotificationTemplate'
 
 const EditorWrapper = styled('div')({
   backgroundColor: '#fff',

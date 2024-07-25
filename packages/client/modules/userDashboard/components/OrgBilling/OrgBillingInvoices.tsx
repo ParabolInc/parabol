@@ -3,10 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {usePaginationFragment} from 'react-relay'
 import {OrgBillingInvoices_query$key} from '~/__generated__/OrgBillingInvoices_query.graphql'
+import {OrgBillingInvoicesPaginationQuery} from '../../../../__generated__/OrgBillingInvoicesPaginationQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {ElementWidth, Layout} from '../../../../types/constEnums'
-import {OrgBillingInvoicesPaginationQuery} from '../../../../__generated__/OrgBillingInvoicesPaginationQuery.graphql'
 import InvoiceRow from '../InvoiceRow/InvoiceRow'
 
 const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({

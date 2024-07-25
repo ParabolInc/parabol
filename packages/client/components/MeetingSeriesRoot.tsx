@@ -1,10 +1,10 @@
 import React, {Suspense} from 'react'
 import {Redirect} from 'react-router'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import useRouter from '../hooks/useRouter'
 import meetingSeriesRedirectorQuery, {
   MeetingSeriesRedirectorQuery
 } from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import useRouter from '../hooks/useRouter'
 import MeetingSeriesRedirector from './MeetingSeriesRedirector'
 
 const MeetingRoot = () => {

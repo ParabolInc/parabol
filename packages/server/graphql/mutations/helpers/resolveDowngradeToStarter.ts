@@ -1,5 +1,4 @@
-import getRethink from '../../../database/rethinkDriver'
-import Organization from '../../../database/types/Organization'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -13,12 +12,12 @@ const resolveDowngradeToStarter = async (
   orgId: string,
   stripeSubscriptionId: string,
   user: {id: string; email: string},
+  dataLoader: DataLoaderInstance,
   reasonsForLeaving?: ReasonToDowngradeEnum[],
   otherTool?: string
 ) => {
   const now = new Date()
   const manager = getStripeManager()
-  const r = await getRethink()
   const pg = getKysely()
   try {
     await manager.deleteSubscription(stripeSubscriptionId)
@@ -27,20 +26,21 @@ const resolveDowngradeToStarter = async (
   }
 
   const [org] = await Promise.all([
-    r.table('Organization').get(orgId).run() as unknown as Organization,
+    dataLoader.get('organizations').loadNonNull(orgId),
     pg
-      .updateTable('SAML')
-      .set({metadata: null, lastUpdatedBy: user.id})
-      .where('orgId', '=', orgId)
-      .execute(),
-    r({
-      orgUpdate: r.table('Organization').get(orgId).update({
+      .updateTable('Organization')
+      .set({
         tier: 'starter',
         periodEnd: now,
-        stripeSubscriptionId: null,
-        updatedAt: now
+        stripeSubscriptionId: null
       })
-    }).run(),
+      .where('id', '=', orgId)
+      .execute(),
+    pg
+      .updateTable('SAML')
+      .set({metadata: null, url: null, lastUpdatedBy: user.id})
+      .where('orgId', '=', orgId)
+      .execute(),
     updateTeamByOrgId(
       {
         tier: 'starter',
@@ -49,11 +49,11 @@ const resolveDowngradeToStarter = async (
       orgId
     )
   ])
-
+  dataLoader.get('organizations').clear(orgId)
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   analytics.organizationDowngraded(user, {
     orgId,
-    domain: org.activeDomain,
+    domain: org.activeDomain || undefined,
     orgName: org.name,
     oldTier: 'team',
     newTier: 'starter',

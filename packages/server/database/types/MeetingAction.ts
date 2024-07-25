@@ -9,7 +9,7 @@ interface Input {
   id?: string
   teamId: string
   meetingCount: number
-  name?: string
+  name: string
   phases: [CheckInMeetingPhase, ...CheckInMeetingPhase[]]
   facilitatorUserId: string
 }
@@ -32,7 +32,7 @@ export default class MeetingAction extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'action',
-      name: name ?? `Check-in #${meetingCount + 1}`
+      name
     })
   }
 }

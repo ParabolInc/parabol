@@ -58,7 +58,6 @@ export default abstract class AtlassianManager {
     'write:jira-work',
     'offline_access'
   ]
-  static MANAGE_SCOPE: JiraPermissionScope[] = [...AtlassianManager.SCOPE, 'manage:jira-project']
   accessToken: string
   protected headers = {
     Authorization: '',

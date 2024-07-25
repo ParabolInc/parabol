@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
-import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndTeamPromptMutation_team$data} from '~/__generated__/EndTeamPromptMutation_team.graphql'
+import onMeetingRoute from '~/utils/onMeetingRoute'
+import {EndTeamPromptMutation as TEndTeamPromptMutation} from '../__generated__/EndTeamPromptMutation.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -10,7 +11,6 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import {EndTeamPromptMutation as TEndTeamPromptMutation} from '../__generated__/EndTeamPromptMutation.graphql'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 
 graphql`

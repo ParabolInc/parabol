@@ -1,6 +1,1 @@
-type AddReactjiToReactableSuccess {
-  reactable: Reactable!
-  addedKudos: Kudos
-}
-
 union AddReactjiToReactablePayload = AddReactjiToReactableSuccess | ErrorPayload

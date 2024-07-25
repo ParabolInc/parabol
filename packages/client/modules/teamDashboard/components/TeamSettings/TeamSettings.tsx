@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
@@ -9,7 +10,6 @@ import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, TierLabel} from '../../../../types/constEnums'
-import {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 
 const TeamSettingsLayout = styled('div')({
@@ -89,7 +89,7 @@ const TeamSettings = (props: Props) => {
                   : 'This team is currently on a starter plan.'}
               </div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
-                {`Upgrade Team to ${TierLabel.TEAM}`}
+                {`Upgrade to ${TierLabel.TEAM} Plan`}
               </PrimaryButton>
             </StyledRow>
           </Panel>

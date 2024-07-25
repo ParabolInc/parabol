@@ -4,6 +4,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import generateUID from '../../generateUID'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
@@ -16,7 +17,6 @@ import addOrgValidation from './helpers/addOrgValidation'
 import createNewOrg from './helpers/createNewOrg'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
@@ -62,7 +62,11 @@ export default {
     const teamId = generateUID()
     const {email} = viewer
     await createNewOrg(orgId, orgName, viewerId, email, dataLoader)
-    await createTeamAndLeader(viewer, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
+    await createTeamAndLeader(
+      viewer,
+      {id: teamId, orgId, isOnboardTeam: false, ...newTeam},
+      dataLoader
+    )
 
     const {tms} = authToken
     // MUTATIVE

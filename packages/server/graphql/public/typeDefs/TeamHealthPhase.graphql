@@ -3,15 +3,12 @@ type TeamHealthPhase implements NewMeetingPhase {
   shortid
   """
   id: ID!
-
   meetingId: ID!
-
   teamId: ID!
 
   """
   The type of phase
   """
   phaseType: NewMeetingPhaseTypeEnum!
-
   stages: [TeamHealthStage!]!
 }

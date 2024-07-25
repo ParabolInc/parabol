@@ -1,7 +1,7 @@
-import {LocalStorageKey} from '~/types/constEnums'
-import safeIdentify from './safeIdentify'
-import {handleSuccessfulLogin_UserLogInPayload$data} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
 import ReactGA from 'react-ga4'
+import {LocalStorageKey} from '~/types/constEnums'
+import {handleSuccessfulLogin_UserLogInPayload$data} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
+import safeIdentify from './safeIdentify'
 
 import graphql from 'babel-plugin-relay/macro'
 graphql`

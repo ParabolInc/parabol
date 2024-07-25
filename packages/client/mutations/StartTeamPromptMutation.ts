@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {StartTeamPromptMutation as TStartTeamPromptMutation} from '../__generated__/StartTeamPromptMutation.graphql'
+import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartTeamPromptMutation_team on StartTeamPromptSuccess {
@@ -19,14 +19,11 @@ graphql`
 const mutation = graphql`
   mutation StartTeamPromptMutation(
     $teamId: ID!
-    $recurrenceSettings: RecurrenceSettingsInput
+    $name: String
+    $rrule: RRule
     $gcalInput: CreateGcalEventInput
   ) {
-    startTeamPrompt(
-      teamId: $teamId
-      recurrenceSettings: $recurrenceSettings
-      gcalInput: $gcalInput
-    ) {
+    startTeamPrompt(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
       ... on ErrorPayload {
         error {
           message

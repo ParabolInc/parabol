@@ -21,11 +21,7 @@ export const mapToTeamPromptResponse = (
   return results.map((teamPromptResponse: any) => {
     return {
       ...teamPromptResponse,
-      id: TeamPromptResponseId.join(teamPromptResponse.id),
-      reactjis: teamPromptResponse.reactjis.map(
-        (reactji: {shortname: string; userid: string}) =>
-          new Reactji({id: reactji.shortname, userId: reactji.userid})
-      )
+      id: TeamPromptResponseId.join(teamPromptResponse.id)
     } as TeamPromptResponse
   })
 }

@@ -6,21 +6,20 @@ import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTit
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
-import Reflection from '../../database/types/Reflection'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
+import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
-import {analytics} from '../../utils/analytics/analytics'
-import {getFeatureTier} from '../types/helpers/getFeatureTier'
-import {RawDraftContentState} from 'draft-js'
 
 export default {
   type: CreateReflectionPayload,
@@ -38,7 +37,6 @@ export default {
     const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
-    const now = new Date()
     const subOptions = {operationId, mutatorId}
     const {content, sortOrder, meetingId, promptId} = input
     // AUTH
@@ -64,40 +62,12 @@ export default {
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
+    if (normalizedContent.length > 2000) {
+      return {error: {message: 'Reflection content is too long'}}
+    }
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
-    const contentJson = JSON.parse(normalizedContent) as RawDraftContentState
-    const draftKudoses: {
-      id: string
-      receiverUserId: string
-      emoji: string
-      emojiUnicode: string
-    }[] = []
-
-    const {giveKudosWithEmoji, kudosEmojiUnicode, kudosEmoji} = team
-    if (
-      giveKudosWithEmoji &&
-      kudosEmojiUnicode &&
-      plaintextContent.includes(kudosEmojiUnicode) &&
-      contentJson.entityMap
-    ) {
-      const mentions = Object.values(contentJson.entityMap).filter(
-        (entity) => entity.type === 'MENTION'
-      )
-      const userIds = [...new Set(mentions.map((mention) => mention.data.userId))].filter(
-        (userId) => userId !== viewerId
-      )
-
-      userIds.forEach((userId) => {
-        draftKudoses.push({
-          id: 'DRAFT_KUDOS_' + generateUID(),
-          receiverUserId: userId,
-          emoji: kudosEmoji,
-          emojiUnicode: kudosEmojiUnicode
-        })
-      })
-    }
 
     const [entities, sentimentScore] = await Promise.all([
       getReflectionEntities(plaintextContent),
@@ -107,7 +77,8 @@ export default {
     ])
     const reflectionGroupId = generateUID()
 
-    const reflection = new Reflection({
+    const reflection = {
+      id: generateUID(),
       creatorId: viewerId,
       content: normalizedContent,
       plaintextContent,
@@ -115,9 +86,8 @@ export default {
       sentimentScore,
       meetingId,
       promptId,
-      reflectionGroupId,
-      updatedAt: now
-    })
+      reflectionGroupId
+    }
 
     const smartTitle = getGroupSmartTitle([reflection])
     const reflectionGroup = new ReflectionGroup({
@@ -129,11 +99,11 @@ export default {
       sortOrder
     })
 
-    await Promise.all([
-      pg.insertInto('RetroReflectionGroup').values(reflectionGroup).execute(),
-      r.table('RetroReflectionGroup').insert(reflectionGroup).run(),
-      r.table('RetroReflection').insert(reflection).run()
-    ])
+    await pg
+      .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
+      .insertInto('RetroReflection')
+      .values({...reflection, entities: toGoogleAnalyzedEntity(entities)})
+      .execute()
 
     const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
     const {stages} = groupPhase
@@ -155,8 +125,7 @@ export default {
       meetingId,
       reflectionId: reflection.id,
       reflectionGroupId,
-      unlockedStageIds,
-      draftKudoses
+      unlockedStageIds
     }
     publish(SubscriptionChannel.MEETING, meetingId, 'CreateReflectionPayload', data, subOptions)
     return data

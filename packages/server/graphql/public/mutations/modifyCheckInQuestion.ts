@@ -3,11 +3,11 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import publish from '../../../utils/publish'
 
-import {MutationResolvers} from '../resolverTypes'
 import getRethink from '../../../database/rethinkDriver'
-import standardError from '../../../utils/standardError'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
+import standardError from '../../../utils/standardError'
+import {MutationResolvers} from '../resolverTypes'
 
 const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async (
   _source,

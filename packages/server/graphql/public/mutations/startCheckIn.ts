@@ -12,13 +12,12 @@ import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
-import maybeCreateOneOnOneTeam from '../../mutations/helpers/maybeCreateOneOnOneTeam'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
   _source,
-  {teamId: existingTeamId, gcalInput, oneOnOneTeamInput},
+  {teamId, name, gcalInput},
   context
 ) => {
   const r = await getRethink()
@@ -28,31 +27,13 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
 
-  if (existingTeamId && oneOnOneTeamInput) {
-    return standardError(
-      new Error('Please provide either "teamId" or "oneOnOneTeamInput", but not both'),
-      {
-        userId: viewerId
-      }
-    )
+  if (!isTeamMember(authToken, teamId)) {
+    return standardError(new Error('Team not found'), {userId: viewerId})
   }
+  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
-  if (existingTeamId) {
-    if (!isTeamMember(authToken, existingTeamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
-    }
-    const unpaidError = await isStartMeetingLocked(existingTeamId, dataLoader)
-    if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
-  }
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  const teamId = oneOnOneTeamInput
-    ? await maybeCreateOneOnOneTeam(viewer, oneOnOneTeamInput, context)
-    : existingTeamId
-  if (!teamId) {
-    return standardError(new Error('Must provide teamId or oneOnOneTeamInput'), {
-      userId: viewerId
-    })
-  }
 
   const meetingType: MeetingTypeEnum = 'action'
 
@@ -78,8 +59,8 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const meeting = new MeetingAction({
     id: meetingId,
     teamId,
+    name: name ?? `Check-in #${meetingCount + 1}`,
     meetingCount,
-    name: oneOnOneTeamInput ? `One on One #${meetingCount + 1}` : undefined,
     phases,
     facilitatorUserId: viewerId
   })
@@ -111,9 +92,15 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
-  analytics.meetingStarted(viewer, meeting, undefined, team)
-  const {error} = await createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
+  analytics.meetingStarted(viewer, meeting)
+  const {error} = await createGcalEvent({
+    name: meeting.name,
+    gcalInput,
+    teamId,
+    meetingId,
+    viewerId,
+    dataLoader
+  })
   const data = {teamId, meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
   return data

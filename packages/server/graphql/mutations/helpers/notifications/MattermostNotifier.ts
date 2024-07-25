@@ -7,12 +7,16 @@ import appOrigin from '../../../../appOrigin'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
-import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {toEpochSeconds} from '../../../../utils/epochTime'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
+import {analytics} from '../../../../utils/analytics/analytics'
+import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
+import {TeamSource} from '../../../public/types/Team'
+import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
+import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
 import {
   Field,
@@ -20,10 +24,6 @@ import {
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
-import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
-import {createNotifier} from './Notifier'
-import {analytics} from '../../../../utils/analytics/analytics'
-import IUser from '../../../../postgres/types/IUser'
 
 const notifyMattermost = async (
   event: EventEnum,
@@ -92,7 +92,7 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
 type MattermostNotificationAuth = IntegrationProviderMattermost & {userId: string}
 
 const makeTeamPromptStartMeetingNotification = (
-  team: Team,
+  team: TeamSource,
   meeting: Meeting,
   meetingUrl: string
 ) => {
@@ -118,7 +118,11 @@ const makeTeamPromptStartMeetingNotification = (
   ]
 }
 
-const makeGenericStartMeetingNotification = (team: Team, meeting: Meeting, meetingUrl: string) => {
+const makeGenericStartMeetingNotification = (
+  team: TeamSource,
+  meeting: Meeting,
+  meetingUrl: string
+) => {
   return [
     makeFieldsAttachment(
       [
@@ -148,7 +152,11 @@ const makeGenericStartMeetingNotification = (team: Team, meeting: Meeting, meeti
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: Team, meeting: Meeting, meetingUrl: string) => ReturnType<typeof makeFieldsAttachment>[]
+  (
+    team: TeamSource,
+    meeting: Meeting,
+    meetingUrl: string
+  ) => ReturnType<typeof makeFieldsAttachment>[]
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
@@ -169,7 +177,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const notification = makeStartMeetingNotificationLookup[meeting.meetingType](
+    const notification = makeStartMeetingNotificationLookup[meeting.meetingType]!(
       team,
       meeting,
       meetingUrl

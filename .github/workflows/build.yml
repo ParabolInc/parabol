@@ -7,12 +7,13 @@ on:
   push:
     branches:
       - "release-please--**"
+  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 env:
-  PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/basic.dockerfile
-  PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
+  PARABOL_DOCKERFILE: ./docker/images/parabol-ubi/dockerfiles/basic.dockerfile
+  PARABOL_BUILD_ENV_PATH: docker/images/parabol-ubi/environments/pipeline
 jobs:
   build:
     runs-on: ubuntu-8cores
@@ -21,8 +22,7 @@ jobs:
       id-token: "write"
     services:
       postgres:
-        # Image is pinned to v15, OK since it's just for testing
-        image: ankane/pgvector
+        image: pgvector/pgvector:0.7.0-pg16
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
@@ -137,3 +137,12 @@ jobs:
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
             --minified-path-prefix=${{env.CDN_BUILD_URL}}
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

@@ -1,16 +1,16 @@
+import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
+import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
+import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AtlassianManager, {
   AtlassianError,
   RateLimitError
 } from 'parabol-client/utils/AtlassianManager'
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import composeJQL from 'parabol-client/utils/composeJQL'
-import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
-import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {Logger} from './Logger'
 
 export interface JiraUser {

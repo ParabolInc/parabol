@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -21,8 +21,7 @@ const removePokerTemplateScale = {
     {scaleId}: {scaleId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const scale = await dataLoader.get('templateScales').load(scaleId)
@@ -38,24 +37,22 @@ const removePokerTemplateScale = {
     }
 
     // RESOLUTION
-    await r.table('TemplateScale').get(scaleId).update({removedAt: now, updatedAt: now}).run()
+    await pg
+      .updateTable('TemplateScale')
+      .set({removedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', scaleId)
+      .execute()
 
     const nextDefaultScaleId = SprintPokerDefaults.DEFAULT_SCALE_ID
-    const dimensions = await r
-      .table('TemplateDimension')
-      .getAll(teamId, {index: 'teamId'})
-      .filter((row: RDatum) =>
-        row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId))
-      )
-      .update(
-        {
-          scaleId: nextDefaultScaleId,
-          updatedAt: now
-        },
-        {returnChanges: true}
-      )('changes')('new_val')
-      .default([])
-      .run()
+
+    await pg
+      .updateTable('TemplateDimension')
+      .set({scaleId: nextDefaultScaleId})
+      .where('scaleId', '=', scaleId)
+      .where('removedAt', 'is', null)
+      .execute()
+    dataLoader.clearAll(['templateDimensions', 'templateScales'])
+    const dimensions = await dataLoader.get('templateDimensionsByScaleId').load(scaleId)
 
     const data = {scaleId, dimensions}
     publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)

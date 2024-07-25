@@ -127,7 +127,7 @@ const OrganizationRow = (props: Props) => {
   return (
     <Row>
       <OrgAvatar onClick={onRowClick}>
-        <Avatar size={44} picture={orgAvatar} />
+        <Avatar className='h-11 w-11' picture={orgAvatar} />
       </OrgAvatar>
       <RowInner>
         <StyledRowInfo>

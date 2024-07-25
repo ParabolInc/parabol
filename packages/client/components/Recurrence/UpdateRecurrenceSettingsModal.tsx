@@ -1,18 +1,21 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useState} from 'react'
+import React, {ChangeEvent, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
-import UpdateRecurrenceSettingsMutation from '~/mutations/UpdateRecurrenceSettingsMutation'
 import {UpdateRecurrenceSettingsModal_meeting$key} from '~/__generated__/UpdateRecurrenceSettingsModal_meeting.graphql'
+import UpdateRecurrenceSettingsMutation from '~/mutations/UpdateRecurrenceSettingsMutation'
+import {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutation} from '../../__generated__/UpdateRecurrenceSettingsMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useForm from '../../hooks/useForm'
 import useMutationProps, {getOnCompletedError} from '../../hooks/useMutationProps'
 import {PALETTE} from '../../styles/paletteV3'
 import {CompletedHandler} from '../../types/relayMutations'
-import {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutation} from '../../__generated__/UpdateRecurrenceSettingsMutation.graphql'
+import Legitity from '../../validation/Legitity'
 import DialogContainer from '../DialogContainer'
 import PlainButton from '../PlainButton/PlainButton'
+import StyledError from '../StyledError'
 import {RecurrenceSettings} from './RecurrenceSettings'
 
 const UpdateRecurrenceSettingsModalRoot = styled(DialogContainer)({
@@ -80,6 +83,9 @@ const ErrorContainer = styled('div')({
   padding: '0px 16px 16px 16px'
 })
 
+const validateTitle = (title: string) =>
+  new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
+
 interface Props {
   meeting: UpdateRecurrenceSettingsModal_meeting$key
   closeModal: () => void
@@ -109,19 +115,15 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
     meetingType === 'teamPrompt'
       ? 'Standup'
       : meetingType === 'retrospective'
-      ? 'Retrospective'
-      : 'Meeting'
+        ? 'Retrospective'
+        : 'Meeting'
   const currentRecurrenceRule = meeting.meetingSeries?.recurrenceRule
   const atmosphere = useAtmosphere()
   const isMeetingSeriesActive = meeting.meetingSeries?.cancelledAt === null
-  const [newRecurrenceSettings, setNewRecurrenceSettings] = useState<RecurrenceSettings>(() => ({
-    name: meeting.meetingSeries?.title || '',
-    rrule:
-      isMeetingSeriesActive && currentRecurrenceRule
-        ? RRule.fromString(currentRecurrenceRule)
-        : null
-  }))
-  const [validationErrors, setValidationErrors] = useState<string[] | undefined>(undefined)
+
+  const [rrule, setRrule] = useState<RRule | null>(
+    isMeetingSeriesActive && currentRecurrenceRule ? RRule.fromString(currentRecurrenceRule) : null
+  )
 
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const onRecurrenceSettingsUpdated: CompletedHandler<
@@ -142,18 +144,39 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
     closeModal()
   }
 
+  const {fields, onChange} = useForm({
+    title: {
+      getDefault: () => meeting.meetingSeries?.title || ''
+    }
+  })
+  const title = fields.title.value
+  const titleErr = fields.title.error
+
+  const onNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (titleErr) {
+      fields.title.setError('')
+    }
+    onChange(event)
+  }
+
   const onUpdateRecurrenceClicked = () => {
     if (submitting) return
+
+    const title = fields.title.value || placeholder
+    const titleRes = validateTitle(title)
+    if (titleRes.error) {
+      fields.title.setError(titleRes.error)
+      return
+    }
+
     submitMutation()
 
     UpdateRecurrenceSettingsMutation(
       atmosphere,
       {
         meetingId: meeting.id,
-        recurrenceSettings: {
-          rrule: newRecurrenceSettings.rrule?.toString(),
-          name: newRecurrenceSettings.name
-        }
+        rrule: rrule?.toString(),
+        name: title
       },
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
@@ -165,42 +188,46 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
 
     UpdateRecurrenceSettingsMutation(
       atmosphere,
-      {meetingId: meeting.id, recurrenceSettings: {rrule: null}},
+      {meetingId: meeting.id, rrule: null},
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
   }
 
-  const handleNewRecurrenceSettings = (
-    newRecurrenceSettings: RecurrenceSettings,
-    errors: string[] | undefined
-  ) => {
-    setNewRecurrenceSettings(newRecurrenceSettings)
-    setValidationErrors(errors)
-  }
-
   const canUpdate = useMemo(() => {
-    if (validationErrors?.length) return false
-    const isRecurrenceReenabled = !isMeetingSeriesActive && newRecurrenceSettings.rrule
+    const title = fields.title.value || placeholder
+    const titleRes = validateTitle(title)
+    if (titleRes.error) {
+      fields.title.setError(titleRes.error)
+      return
+    }
+
+    const isRecurrenceReenabled = !isMeetingSeriesActive && rrule
     if (isRecurrenceReenabled) return true
 
     const hasRecurrenceSettingsChanged =
-      isMeetingSeriesActive && currentRecurrenceRule !== newRecurrenceSettings.rrule?.toString()
+      isMeetingSeriesActive && currentRecurrenceRule !== rrule?.toString()
     if (hasRecurrenceSettingsChanged) return true
 
-    const hasNameChanged =
-      isMeetingSeriesActive && meeting.meetingSeries?.title !== newRecurrenceSettings.name
+    const hasNameChanged = isMeetingSeriesActive && meeting.meetingSeries?.title !== title
     if (hasNameChanged) return true
 
     return false
-  }, [meeting, newRecurrenceSettings, currentRecurrenceRule, isMeetingSeriesActive])
+  }, [meeting, title, rrule, currentRecurrenceRule, isMeetingSeriesActive])
 
   return (
     <UpdateRecurrenceSettingsModalRoot>
-      <RecurrenceSettings
-        recurrenceSettings={newRecurrenceSettings}
-        onRecurrenceSettingsUpdated={handleNewRecurrenceSettings}
+      <input
+        className='form-input rounded border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-600'
+        type='text'
+        name='title'
         placeholder={placeholder}
+        value={title}
+        onChange={onNameChange}
+        min={1}
+        max={50}
       />
+      {titleErr && <StyledError>{titleErr}</StyledError>}
+      <RecurrenceSettings title={title} rrule={rrule} onRruleUpdated={setRrule} />
       <StyledCloseButton onClick={closeModal}>
         <CloseIcon />
       </StyledCloseButton>

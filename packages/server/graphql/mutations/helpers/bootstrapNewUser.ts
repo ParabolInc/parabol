@@ -6,25 +6,23 @@ import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTr
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
-import insertUser from '../../../postgres/queries/insertUser'
+import getKysely from '../../../postgres/getKysely'
+import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import IUser from '../../../postgres/types/IUser'
+import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
+import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
+import {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
-import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
-import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
-import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
-import {DataLoaderWorker} from '../../graphql'
-import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
-import isValid from '../../isValid'
-import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 
 const bootstrapNewUser = async (
   newUser: User,
   isOrganic: boolean,
-  dataLoader: DataLoaderWorker,
-  searchParams?: string
+  dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
   const {
@@ -50,43 +48,30 @@ const bootstrapNewUser = async (
 
   const experimentalFlags = [...featureFlags]
 
-  // Retros in disguise
-  const domainUserHasRidFlag = usersWithDomain.some((user) =>
-    user.featureFlags.includes('retrosInDisguise')
-  )
-  const params = new URLSearchParams(searchParams)
-  if (Boolean(params.get('rid')) || domainUserHasRidFlag) {
-    experimentalFlags.push('retrosInDisguise')
-  } else if (usersWithDomain.length === 0) {
-    experimentalFlags.push('retrosInDisguise')
-  }
-
   // Add signUpDestinationTeam feature flag to 50% of new accounts
   if (Math.random() < 0.5) {
     experimentalFlags.push('signUpDestinationTeam')
-  }
-
-  // No template limit
-  const domainUserHasNoTemplateLimitFlag = usersWithDomain.some((user) =>
-    user.featureFlags.includes('noTemplateLimit')
-  )
-  if (domainUserHasNoTemplateLimitFlag) {
-    experimentalFlags.push('noTemplateLimit')
-  } else if (Math.random() < 0.5) {
-    experimentalFlags.push('noTemplateLimit')
   }
 
   const isVerified = identities.some((identity) => identity.isEmailVerified)
   const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
   const isQualifiedForAutoJoin = (isVerified || hasSAMLURL) && isCompanyDomain
   const orgIds = organizations.map(({id}) => id)
-
+  const pg = getKysely()
   const [teamsWithAutoJoinRes] = await Promise.all([
     isQualifiedForAutoJoin ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
-    insertUser({...newUser, isPatient0, featureFlags: experimentalFlags}),
-    r({
-      event: r.table('TimelineEvent').insert(joinEvent)
-    }).run()
+    pg
+      .with('User', (qc) =>
+        qc.insertInto('User').values({
+          ...newUser,
+          isPatient0,
+          featureFlags: experimentalFlags,
+          identities: newUser.identities.map((identity) => JSON.stringify(identity))
+        })
+      )
+      .insertInto('TimelineEvent')
+      .values(joinEvent)
+      .execute()
   ])
 
   // Identify the user so user properties are set before any events are sent
@@ -137,13 +122,13 @@ const bootstrapNewUser = async (
     const validNewTeam = {
       id: teamId,
       orgId,
-      name: makeDefaultTeamName(teamId),
+      name: `${preferredName}’s Team`,
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`
     await createNewOrg(orgId, orgName, userId, email, dataLoader)
     await Promise.all([
-      createTeamAndLeader(newUser as IUser, validNewTeam),
+      createTeamAndLeader(newUser as IUser, validNewTeam, dataLoader),
       addSeedTasks(userId, teamId),
       r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run(),
       sendPromptToJoinOrg(newUser, dataLoader)

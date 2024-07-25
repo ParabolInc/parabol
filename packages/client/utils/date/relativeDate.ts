@@ -3,8 +3,8 @@
 // capitalized J in just now
 // set my own defaults
 
-import plural from '../plural'
 import humanizeDuration from 'humanize-duration'
+import plural from '../plural'
 
 const SECOND = 1000
 const MIN = SECOND * 60

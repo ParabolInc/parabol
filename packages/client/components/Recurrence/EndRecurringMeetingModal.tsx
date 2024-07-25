@@ -1,8 +1,10 @@
+import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import React, {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import {RRule} from 'rrule'
+import {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'
+import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import useRouter from '../../hooks/useRouter'
@@ -11,14 +13,12 @@ import EndRetrospectiveMutation from '../../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../../mutations/EndSprintPokerMutation'
 import EndTeamPromptMutation from '../../mutations/EndTeamPromptMutation'
 import UpdateRecurrenceSettingsMutation from '../../mutations/UpdateRecurrenceSettingsMutation'
-import {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'
 import {
   CompletedHandler,
   HistoryMaybeLocalHandler,
   StandardMutation
 } from '../../types/relayMutations'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
-import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
 import DialogContainer from '../DialogContainer'
 
 export const EndMeetingMutationLookup = {
@@ -86,7 +86,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
-        {meetingId, recurrenceSettings: {name: null, rrule: null}},
+        {meetingId, name: null, rrule: null},
         {onError, onCompleted}
       )
     } else {

@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Editor} from 'draft-js'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
-import useRouter from '../hooks/useRouter'
-import {Mentioned_notification$key} from '../__generated__/Mentioned_notification.graphql'
-import NotificationTemplate from './NotificationTemplate'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import anonymousAvatar from '~/styles/theme/images/anonymous-avatar.svg'
+import {Mentioned_notification$key} from '../__generated__/Mentioned_notification.graphql'
 import useEditorState from '../hooks/useEditorState'
-import {Editor} from 'draft-js'
+import useRouter from '../hooks/useRouter'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
+import NotificationTemplate from './NotificationTemplate'
 
 interface Props {
   notification: Mentioned_notification$key
@@ -25,7 +25,6 @@ const Mentioned = (props: Props) => {
         status
         senderName
         senderPicture
-        kudosEmojiUnicode
         createdAt
         meetingId
         meetingName
@@ -45,7 +44,6 @@ const Mentioned = (props: Props) => {
     senderPicture,
     meetingId,
     meetingName,
-    kudosEmojiUnicode,
     type,
     status,
     retroReflection,
@@ -58,8 +56,7 @@ const Mentioned = (props: Props) => {
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Notification Viewed', {
       notificationType: type,
-      notificationStatus: status,
-      kudosEmojiUnicode
+      notificationStatus: status
     })
   }, [])
 
@@ -77,9 +74,7 @@ const Mentioned = (props: Props) => {
     }
   }
 
-  const message = !kudosEmojiUnicode
-    ? `${authorName} mentioned you in ${locationType} in ${meetingName}`
-    : `${kudosEmojiUnicode} ${authorName} gave you kudos in ${locationType} in ${meetingName}`
+  const message = `${authorName} mentioned you in ${locationType} in ${meetingName}`
 
   const goThere = () => {
     history.push(actionUrl)

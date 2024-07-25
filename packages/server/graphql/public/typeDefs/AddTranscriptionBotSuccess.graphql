@@ -1,0 +1,6 @@
+type AddTranscriptionBotSuccess {
+  """
+  The Parabol meeting where the videoMeetingURL and recallBotId were added
+  """
+  meeting: RetrospectiveMeeting!
+}

@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
-import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import {TeamDrawer_viewer$key} from '~/__generated__/TeamDrawer_viewer.graphql'
 import {TeamDrawer as TeamDrawerType} from '~/__generated__/ToggleTeamDrawerMutation.graphql'
+import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import MassInvitationTokenLinkRoot from '../../../../components/MassInvitationTokenLinkRoot'
 import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -12,10 +12,14 @@ import useBreakpoint from '../../../../hooks/useBreakpoint'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint, RightSidebar} from '../../../../types/constEnums'
+import {AppBar, Breakpoint, GlobalBanner, RightSidebar} from '../../../../types/constEnums'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import CloseDrawer from '../CloseDrawer/CloseDrawer'
 import ManageTeamList from '../ManageTeam/ManageTeamList'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+
+const bottomPadding = isGlobalBannerEnabled ? AppBar.HEIGHT + GlobalBanner.HEIGHT : AppBar.HEIGHT
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -28,7 +32,8 @@ const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
-  padding: `0 0 ${isDesktop ? 58 : 0}px`,
+  padding: `0 0 ${isDesktop ? bottomPadding : 0}px`,
+  paddingTop: !isDesktop && isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   height: '100vh',
   flexDirection: 'column',
   justifyContent: 'space-between',

@@ -10,3 +10,4 @@ graphql/public/schema.graphql
 _legacy.graphql
 migrationTemplate.ts
 billing/debug.ts
+pg.d.ts

@@ -1,5 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
+import {AddOrgMutation_notification$data} from '../__generated__/AddOrgMutation_notification.graphql'
+import {AddOrgMutation_organization$data} from '../__generated__/AddOrgMutation_organization.graphql'
 import {
   HistoryLocalHandler,
   OnNextHandler,
@@ -7,9 +10,6 @@ import {
   StandardMutation
 } from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
-import {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
-import {AddOrgMutation_notification$data} from '../__generated__/AddOrgMutation_notification.graphql'
-import {AddOrgMutation_organization$data} from '../__generated__/AddOrgMutation_organization.graphql'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -26,6 +26,7 @@ graphql`
       }
       picture
       tier
+      billingTier
     }
     team {
       id

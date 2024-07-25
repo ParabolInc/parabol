@@ -3,20 +3,20 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingsDash_viewer$key} from '~/__generated__/MeetingsDash_viewer.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useTransition from '../hooks/useTransition'
 import {Breakpoint, EmptyMeetingViewMessage, Layout} from '../types/constEnums'
 import getSafeRegex from '../utils/getSafeRegex'
+import {useQueryParameterParser} from '../utils/useQueryParameterParser'
 import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import MeetingsDashHeader from './MeetingsDashHeader'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
-import {useQueryParameterParser} from '../utils/useQueryParameterParser'
-import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -48,9 +48,6 @@ const MeetingsDash = (props: Props) => {
         id
         dashSearch
         preferredName
-        featureFlags {
-          retrosInDisguise
-        }
         teams {
           ...MeetingsDashActiveMeetings @relay(mask: false)
         }
@@ -61,12 +58,7 @@ const MeetingsDash = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {teamIds: teamFilterIds} = useQueryParameterParser(atmosphere.viewerId)
-  const {
-    teams = [],
-    preferredName = '',
-    dashSearch,
-    featureFlags = {retrosInDisguise: false}
-  } = viewer ?? {}
+  const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
   const activeMeetings = useMemo(
     () =>
       teams
@@ -145,13 +137,14 @@ const MeetingsDash = (props: Props) => {
           {!teamFilterIds ? (
             <Wrapper maybeTabletPlus={maybeTabletPlus}>
               <DemoMeetingCard />
+              <TutorialMeetingCard type='retro' />
               <TutorialMeetingCard type='standup' />
               <TutorialMeetingCard type='poker' />
             </Wrapper>
           ) : null}
         </EmptyContainer>
       )}
-      <StartMeetingFAB hasRid={featureFlags.retrosInDisguise} />
+      <StartMeetingFAB />
     </>
   )
 }

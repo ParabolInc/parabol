@@ -5,8 +5,8 @@ import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import Atmosphere from '../Atmosphere'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {AzureDevOpsScopingSearchInput_meeting$key} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 const Wrapper = styled('div')({
   alignItems: 'center',

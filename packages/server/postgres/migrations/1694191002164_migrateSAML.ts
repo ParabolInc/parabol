@@ -1,6 +1,6 @@
 import {Kysely, PostgresDialect, sql} from 'kysely'
 import {Client} from 'pg'
-import {r} from 'rethinkdb-ts'
+import {RDatum, r} from 'rethinkdb-ts'
 import getPg from '../getPg'
 import getPgConfig from '../getPgConfig'
 
@@ -57,7 +57,7 @@ export async function up() {
   await r
     .table('SAML')
     .update(
-      (saml) => ({
+      (saml: RDatum) => ({
         orgId: r
           .table('Organization')
           .getAll(r.args(saml('domains')), {index: 'activeDomain'})
@@ -78,7 +78,7 @@ export async function up() {
 
   const nextSAMLDomains = [] as {domain: string; samlId: string}[]
   existingSAMLs.forEach((saml) => {
-    saml.domains.forEach((domain) => {
+    saml.domains.forEach((domain: any) => {
       nextSAMLDomains.push({domain, samlId: saml.id})
     })
   })

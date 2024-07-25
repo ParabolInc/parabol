@@ -30,6 +30,8 @@ import RaisedButton from './RaisedButton'
 import StyledTip from './StyledTip'
 
 interface Props {
+  // used to determine the coordinates of the auth popup
+  getOffsetTop?: () => number
   email: string
   invitationToken: string | undefined | null
   // is the primary login action (not secondary to Google Oauth)
@@ -38,9 +40,6 @@ interface Props {
   goToPage?: (page: AuthPageSlug, params: string) => void
 }
 
-const FieldGroup = styled('div')({
-  margin: '16px 0'
-})
 const FieldBlock = styled('div')<{isSSO?: boolean}>(({isSSO}) => ({
   margin: '0 0 1.25rem',
   visibility: isSSO ? 'hidden' : undefined
@@ -90,7 +89,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   const isSSOAuthEnabled = window.__ACTION__.AUTH_SSO_ENABLED
 
-  const {isPrimary, isSignin, invitationToken, email, goToPage} = props
+  const {getOffsetTop, isPrimary, isSignin, invitationToken, email, goToPage} = props
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
   const isSSODefault = isSSOAuthEnabled && Boolean(params.get('sso'))
@@ -105,7 +104,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const {fields, onChange, setDirtyField, validateField} = useForm({
     email: {
       getDefault: () => email,
-      validate: validateEmail
+      validate: signInWithSSOOnly ? undefined : validateEmail
     },
     password: {
       getDefault: () => '',
@@ -150,6 +149,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     const domain = getSSODomainFromEmail(email)!
     const validSSOURL = domain === ssoDomain && ssoURL
     const isProbablySSO = isSSO || !fields.password.value || validSSOURL
+    const top = getOffsetTop?.() || 56
     let optimisticPopup
     if (isProbablySSO) {
       // Safari blocks all calls to window.open that are not triggered SYNCHRONOUSLY from an event
@@ -164,7 +164,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       optimisticPopup = window.open(
         '',
         'SSO',
-        getOAuthPopupFeatures({width: 385, height: 550, top: 64})
+        getOAuthPopupFeatures({width: 385, height: 576, top})
       )
     }
     const url = validSSOURL || (await getSSOUrl(atmosphere, email))
@@ -173,7 +173,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       return false
     }
     submitMutation()
-    const response = await getTokenFromSSO(url)
+    const response = await getTokenFromSSO(url, top)
     if ('error' in response) {
       onError(new Error(response.error || 'Error logging in'))
       return true
@@ -198,6 +198,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (submitting) return
+    onCompleted()
     setDirtyField()
     const {email: emailRes, password: passwordRes} = validateField()
     if (emailRes.error) return
@@ -244,8 +245,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       <Form onSubmit={onSubmit}>
         {error && <ErrorAlert message={error.message} />}
         {isSSO && submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
-        <FieldGroup>
-          <FieldBlock>
+        <div className={signInWithSSOOnly ? 'hidden' : 'mt-4 mb-4'}>
+          <FieldBlock isSSO={signInWithSSOOnly}>
             <EmailInputField
               autoFocus={!hasEmail}
               {...fields.email}
@@ -263,7 +264,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
               />
             </FieldBlock>
           )}
-        </FieldGroup>
+        </div>
         <Button size='medium' disabled={false} waiting={submitting}>
           {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
           {signInWithSSOOnly ? ' with SSO' : ''}

@@ -1,18 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SprintPokerDefaults} from '~/types/constEnums'
+import {AddPokerTemplateMutation as TAddPokerTemplateMutation} from '../__generated__/AddPokerTemplateMutation.graphql'
+import {AddPokerTemplateMutation_team$data} from '../__generated__/AddPokerTemplateMutation_team.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
-import {AddPokerTemplateMutation as TAddPokerTemplateMutation} from '../__generated__/AddPokerTemplateMutation.graphql'
-import {AddPokerTemplateMutation_team$data} from '../__generated__/AddPokerTemplateMutation_team.graphql'
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 
 graphql`
-  fragment AddPokerTemplateMutation_team on AddPokerTemplatePayload {
+  fragment AddPokerTemplateMutation_team on AddPokerTemplateSuccess {
+    user {
+      freeCustomPokerTemplatesRemaining
+    }
     pokerTemplate {
       ...TemplateSharing_template
-      ...PokerTemplateDetailsTemplate
       ...ActivityDetails_template
       id
       teamId
@@ -23,6 +25,11 @@ graphql`
 const mutation = graphql`
   mutation AddPokerTemplateMutation($teamId: ID!, $parentTemplateId: ID) {
     addPokerTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
       ...AddPokerTemplateMutation_team @relay(mask: false)
     }
   }
@@ -55,7 +62,7 @@ const AddPokerTemplateMutation: StandardMutation<TAddPokerTemplateMutation> = (
     updater: (store) => {
       const payload = store.getRootField('addPokerTemplate')
       if (!payload) return
-      addPokerTemplateTeamUpdater(payload, {atmosphere, store})
+      addPokerTemplateTeamUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {parentTemplateId, teamId} = variables

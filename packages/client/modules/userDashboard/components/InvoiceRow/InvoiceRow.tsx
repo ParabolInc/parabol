@@ -9,7 +9,6 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import {PALETTE} from '../../../../styles/paletteV3'
 import makeDateString from '../../../../utils/makeDateString'
-import makeMonthString from '../../../../utils/makeMonthString'
 import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
 
 const InvoiceAmount = styled('span')({
@@ -70,6 +69,9 @@ const InvoiceRow = (props: Props) => {
           brand
         }
         endAt
+        nextPeriodCharges {
+          nextPeriodEnd
+        }
         paidAt
         payUrl
         status
@@ -77,7 +79,17 @@ const InvoiceRow = (props: Props) => {
     `,
     invoiceRef
   )
-  const {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status} = invoice
+  const {
+    id: invoiceId,
+    amountDue,
+    creditCard,
+    endAt,
+    nextPeriodCharges,
+    paidAt,
+    payUrl,
+    status
+  } = invoice
+  const {nextPeriodEnd} = nextPeriodCharges
   const isEstimate = status === 'UPCOMING'
 
   return (
@@ -91,7 +103,11 @@ const InvoiceRow = (props: Props) => {
         <FileIcon isEstimate={isEstimate} />
         <InvoiceInfo>
           <InfoRow>
-            <InvoiceTitle>{makeMonthString(endAt)}</InvoiceTitle>
+            <InvoiceTitle>
+              {status === 'UPCOMING'
+                ? `Due on ${makeDateString(endAt)}`
+                : `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`}
+            </InvoiceTitle>
             <InfoRowRight>
               <InvoiceAmount>
                 {isEstimate && '*'}

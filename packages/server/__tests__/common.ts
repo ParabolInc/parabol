@@ -1,8 +1,10 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
 import faker from 'faker'
+import {sql} from 'kysely'
 import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
+import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
 const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
@@ -47,14 +49,18 @@ const persistFunction = (text: string) => {
 }
 
 const persistQuery = async (query: string) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const id = persistFunction(query.trim())
   const record = {
     id,
     query,
     createdAt: new Date()
   }
-  await r.table('QueryMap').insert(record, {conflict: 'replace'}).run()
+  await pg
+    .insertInto('QueryMap')
+    .values(record)
+    .onConflict((oc) => oc.doNothing())
+    .execute()
   return id
 }
 
@@ -199,5 +205,27 @@ export const getUserTeams = async (userId: string) => {
       }
     }
   })
-  return user.data.user.teams
+  return user.data.user.teams as [{id: string}, ...{id: string}[]]
+}
+
+export const createPGTables = async (...tables: string[]) => {
+  const pg = getKysely()
+  await Promise.all(
+    tables.map(async (table) => {
+      return sql`
+      CREATE TABLE IF NOT EXISTS ${sql.table(table)} (like "public".${sql.table(table)} including ALL)`.execute(
+        pg
+      )
+    })
+  )
+  await truncatePGTables(...tables)
+}
+
+export const truncatePGTables = async (...tables: string[]) => {
+  const pg = getKysely()
+  await Promise.all(
+    tables.map(async (table) => {
+      return sql`TRUNCATE TABLE ${sql.table(table)} CASCADE`.execute(pg)
+    })
+  )
 }

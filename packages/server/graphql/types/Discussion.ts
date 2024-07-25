@@ -21,9 +21,9 @@ import resolveThreadableConnection from '../resolvers/resolveThreadableConnectio
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NewMeetingStage from './NewMeetingStage'
+import Team from './Team'
 import {ThreadableConnection} from './Threadable'
 import User from './User'
-import Team from './Team'
 
 const Discussion = new GraphQLObjectType<any, GQLContext>({
   name: 'Discussion',
@@ -155,7 +155,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
     },
     summary: {
       type: GraphQLString,
-      description: `The GPT-3 generated summary of the discussion. Undefined if the user doesnt have access to the feature or the stage isn't completed`
+      description: `The AI generated summary of the discussion. Undefined if the user doesnt have access to the feature or the stage isn't completed`
     }
   })
 })

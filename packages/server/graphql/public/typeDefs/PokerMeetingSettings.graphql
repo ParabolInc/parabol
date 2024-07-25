@@ -1,0 +1,65 @@
+"""
+The retro-specific meeting settings
+"""
+type PokerMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """
+  The type of meeting these settings apply to
+  """
+  meetingType: MeetingTypeEnum!
+
+  """
+  The broad phase types that will be addressed during the meeting
+  """
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """
+  FK
+  """
+  teamId: ID!
+
+  """
+  The team these settings belong to
+  """
+  team: Team!
+
+  """
+  FK. The template that will be used to start the poker meeting
+  """
+  selectedTemplateId: ID!
+
+  """
+  The template that will be used to start the Poker meeting
+  """
+  selectedTemplate: PokerTemplate!
+
+  """
+  The list of templates used to start a Poker meeting
+  """
+  teamTemplates: [PokerTemplate!]!
+
+  """
+  The list of templates shared across the organization to start a Poker meeting
+  """
+  organizationTemplates(
+    first: Int!
+
+    """
+    The cursor, which is the templateId
+    """
+    after: ID
+  ): PokerTemplateConnection!
+
+  """
+  The list of templates shared across the organization to start a Poker meeting
+  """
+  publicTemplates(
+    first: Int!
+
+    """
+    The cursor, which is the templateId
+    """
+    after: ID
+  ): PokerTemplateConnection!
+}

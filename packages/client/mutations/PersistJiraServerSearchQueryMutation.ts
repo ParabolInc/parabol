@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SimpleMutation} from '../types/relayMutations'
 import {PersistJiraServerSearchQueryMutation as TPersistJiraServerSearchQueryMutation} from '../__generated__/PersistJiraServerSearchQueryMutation.graphql'
+import {SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment PersistJiraServerSearchQueryMutation_notification on PersistIntegrationSearchQuerySuccess {

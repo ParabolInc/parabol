@@ -4,6 +4,7 @@ import React, {KeyboardEvent, RefObject, useEffect, useMemo, useRef, useState} f
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
+import {PokerCardDeck_meeting$key} from '../__generated__/PokerCardDeck_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import useHotkey from '../hooks/useHotkey'
@@ -13,7 +14,6 @@ import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
 import VoteForPokerStoryMutation from '../mutations/VoteForPokerStoryMutation'
 import {BezierCurve, PokerCards} from '../types/constEnums'
-import {PokerCardDeck_meeting$key} from '../__generated__/PokerCardDeck_meeting.graphql'
 import PokerCard from './PokerCard'
 
 const Deck = styled('div')<{left: number; isSpectating: boolean}>(({left, isSpectating}) => ({

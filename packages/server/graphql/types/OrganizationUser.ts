@@ -3,8 +3,8 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import {resolveOrganization} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import Organization from './Organization'
 import OrgUserRole from './OrgUserRole'
+import Organization from './Organization'
 import User from './User'
 
 const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
@@ -23,11 +23,6 @@ const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
     joinedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the datetime the user first joined the org'
-    },
-    newUserUntil: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description:
-        'The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),

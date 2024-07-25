@@ -4,8 +4,8 @@ import EstimateStageDB from '../../database/types/EstimateStage'
 import {GQLContext} from '../graphql'
 import {augmentDBStage} from '../resolvers'
 import EstimateStage from './EstimateStage'
-import makeMutationPayload from './makeMutationPayload'
 import PokerMeetingMember from './PokerMeetingMember'
+import makeMutationPayload from './makeMutationPayload'
 
 export const SetPokerSpectateSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetPokerSpectateSuccess',

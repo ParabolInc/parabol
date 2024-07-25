@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import {mapDiscussionMentionedToToast_notification$data} from '../../__generated__/mapDiscussionMentionedToToast_notification.graphql'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import fromStageIdToUrl from '../../utils/meetings/fromStageIdToUrl'
-import {mapDiscussionMentionedToToast_notification$data} from '../../__generated__/mapDiscussionMentionedToToast_notification.graphql'
-import makeNotificationToastKey from './makeNotificationToastKey'
-import getMeetingPathParams from '../../utils/meetings/getMeetingPathParams'
 import findStageById from '../../utils/meetings/findStageById'
+import fromStageIdToUrl from '../../utils/meetings/fromStageIdToUrl'
+import getMeetingPathParams from '../../utils/meetings/getMeetingPathParams'
+import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
   fragment mapDiscussionMentionedToToast_notification on NotifyDiscussionMentioned {

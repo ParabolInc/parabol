@@ -5,12 +5,12 @@ import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
+import {InsightsDomainNudge_domain$key} from '../__generated__/InsightsDomainNudge_domain.graphql'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
-import {InsightsDomainNudge_domain$key} from '../__generated__/InsightsDomainNudge_domain.graphql'
-import PrimaryButton from './PrimaryButton'
 import LimitExceededWarning from './LimitExceededWarning'
+import PrimaryButton from './PrimaryButton'
 
 const NudgeBlock = styled('div')({
   display: 'flex',

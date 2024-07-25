@@ -1,5 +1,5 @@
 import {EditorProps, EditorState} from 'draft-js'
-import React, {lazy, Suspense, useState} from 'react'
+import React, {Suspense, lazy, useState} from 'react'
 import useForceUpdate from '../../hooks/useForceUpdate'
 import {SetEditorState} from '../../types/draft'
 import completeEntity from '../../utils/draftjs/completeEntity'

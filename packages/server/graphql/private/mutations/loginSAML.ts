@@ -9,14 +9,15 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
+import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
-import {SSORelayState} from '../../queries/SAMLIdP'
+import {SSORelayState} from '../../public/queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
-import standardError from '../../../utils/standardError'
-import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
+import {generateIdenticon} from './helpers/generateIdenticon'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -135,10 +136,12 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
 
   const userId = `sso|${generateUID()}`
+  const picture = await generateIdenticon(userId, preferredName)
   const tempUser = new User({
     id: userId,
     email,
     preferredName,
+    picture,
     tier: 'enterprise'
   })
 

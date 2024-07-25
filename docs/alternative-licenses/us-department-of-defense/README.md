@@ -82,7 +82,7 @@ $ yarn && yarn build && yarn start
 - Click "Add New Server" and fill out the forms with your `.env` values
 
   - General.name = POSTGRES_DB
-  - Connection.host = 'postgres' (hardcoded from docker-compose dev.yml, not from .env!)
+  - Connection.host = 'postgres' (hardcoded from docker-compose `docker/stacks/development/docker-compose.yml`, not from .env!)
   - Connection.username = POSTGRES_USER
   - Connection.password = POSTGRES_PASSWORD
   - Connection.maintenanceDatabase = POSTGRES_DB

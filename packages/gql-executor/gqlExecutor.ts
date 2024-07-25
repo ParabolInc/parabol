@@ -2,9 +2,10 @@ import tracer from 'dd-trace'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
 import SocketServerChannelId from '../client/shared/gqlIds/SocketServerChannelId'
-import executeGraphQL, {GQLRequest} from '../server/graphql/executeGraphQL'
+import executeGraphQL from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
 import '../server/monkeyPatchFetch'
+import {GQLRequest} from '../server/types/custom'
 import RedisInstance from '../server/utils/RedisInstance'
 import RedisStream from './RedisStream'
 
@@ -16,7 +17,7 @@ tracer.init({
 })
 tracer.use('ioredis').use('http').use('pg')
 
-const {REDIS_URL, SERVER_ID} = process.env
+const {SERVER_ID} = process.env
 interface PubSubPromiseMessage {
   jobId: string
   socketServerId: string
@@ -26,16 +27,18 @@ interface PubSubPromiseMessage {
 const run = async () => {
   const publisher = new RedisInstance('gql_pub')
   const subscriber = new RedisInstance('gql_sub')
-  const executorChannel = GQLExecutorChannelId.join(SERVER_ID)
+  const executorChannel = GQLExecutorChannelId.join(SERVER_ID!)
 
   // on shutdown, remove consumer from the group
-  process.on('SIGTERM', async () => {
+  process.on('SIGTERM', async (signal) => {
+    console.log(`Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`)
     await publisher.xgroup(
       'DELCONSUMER',
       ServerChannel.GQL_EXECUTOR_STREAM,
       ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
       executorChannel
     )
+    console.log(`Server ID: ${SERVER_ID}. Graceful shutdown complete, exiting.`)
     process.exit()
   })
 

@@ -13,7 +13,7 @@ interface Input {
   coupon?: Coupon | null
   total: number
   billingLeaderEmails: string[]
-  creditCard?: CreditCard
+  creditCard?: CreditCard | null
   endAt: Date
   invoiceDate: Date
   lines: InvoiceLineItem[]
@@ -36,7 +36,7 @@ export default class Invoice {
   coupon?: Coupon | null
   total: number
   billingLeaderEmails: string[]
-  creditCard?: CreditCard
+  creditCard?: CreditCard | null
   endAt: Date
   invoiceDate: Date
   lines: InvoiceLineItem[]

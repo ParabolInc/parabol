@@ -57,7 +57,10 @@ class SlackServerManager extends SlackManager {
     return new SlackServerManager(tokenJson.access_token, tokenJson) as Required<SlackServerManager>
   }
 
-  constructor(botAccessToken: string, public response?: OAuth2Response) {
+  constructor(
+    botAccessToken: string,
+    public response?: OAuth2Response
+  ) {
     super(botAccessToken)
   }
 }

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {AutogroupMutation as TAutogroupMutation} from '../__generated__/AutogroupMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment AutogroupMutation_meeting on AutogroupSuccess {
@@ -13,7 +13,6 @@ graphql`
       reflectionGroups {
         id
         title
-        smartTitle
         reflections {
           id
           plaintextContent

@@ -1,27 +1,26 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import Avatar from '../../../../components/Avatar/Avatar'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import {BillingLeader_orgUser$key} from '../../../../__generated__/BillingLeader_orgUser.graphql'
 import {BillingLeader_organization$key} from '../../../../__generated__/BillingLeader_organization.graphql'
-import Row from '../../../../components/Row/Row'
-import {ElementWidth} from '../../../../types/constEnums'
-import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
-import RowActions from '../../../../components/Row/RowActions'
-import FlatButton from '../../../../components/FlatButton'
-import RowInfo from '../../../../components/Row/RowInfo'
-import {useFragment} from 'react-relay'
-import IconLabel from '../../../../components/IconLabel'
-import lazyPreload from '../../../../utils/lazyPreload'
-import useMenu from '../../../../hooks/useMenu'
+import Avatar from '../../../../components/Avatar/Avatar'
 import BillingLeaderMenu from '../../../../components/BillingLeaderMenu'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useTooltip from '../../../../hooks/useTooltip'
-import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
-import useModal from '../../../../hooks/useModal'
-import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
+import FlatButton from '../../../../components/FlatButton'
+import IconLabel from '../../../../components/IconLabel'
+import Row from '../../../../components/Row/Row'
+import RowActions from '../../../../components/Row/RowActions'
+import RowInfo from '../../../../components/Row/RowInfo'
+import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
+import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import BaseTag from '../../../../components/Tag/BaseTag'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useMenu from '../../../../hooks/useMenu'
+import useModal from '../../../../hooks/useModal'
+import useTooltip from '../../../../hooks/useTooltip'
+import lazyPreload from '../../../../utils/lazyPreload'
+import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
+import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
 
 const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
   padding: '12px 16px',
@@ -112,7 +111,7 @@ const BillingLeader = (props: Props) => {
 
   return (
     <StyledRow isFirstRow={isFirstRow}>
-      <Avatar hasBadge={false} picture={picture} size={ElementWidth.BILLING_AVATAR} />
+      <Avatar picture={picture} className='h-11 w-11' />
       <RowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>

@@ -4,11 +4,9 @@ import * as crypto from 'crypto'
 import * as _stringify from 'fast-json-stable-stringify'
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
-import {r, RValue} from 'rethinkdb-ts'
+import {RValue, r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import TemplateDimension from '../../database/types/TemplateDimension'
-import TemplateScale from '../../database/types/TemplateScale'
 import {insertTemplateRefQuery, insertTemplateScaleRefQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
 
@@ -58,11 +56,11 @@ export async function up(): Promise<void> {
     .run()) as {
     id: string
     name: string
-    dimensions: (TemplateDimension & {scale: TemplateScale})[]
+    dimensions: (any & {scale: any})[]
   }[]
 
   const uniqueScaleIdSet = new Set<string>()
-  const uniqueScales = [] as TemplateScale[]
+  const uniqueScales = [] as any[]
   dimensionsByTemplateId.forEach((group) => {
     const {dimensions} = group
     dimensions.forEach((dimension) => {

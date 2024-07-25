@@ -1,13 +1,12 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
 import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
 import ReasonToDowngradeEnum from '../types/ReasonToDowngrade'
-import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
 import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
 
 export default {
@@ -37,7 +36,6 @@ export default {
     }: {orgId: string; reasonsForLeaving?: TReasonToDowngradeEnum[]; otherTool?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -56,7 +54,8 @@ export default {
       return standardError(new Error('Other tool name is too long'), {userId: viewerId})
     }
 
-    const {stripeSubscriptionId, tier} = await r.table('Organization').get(orgId).run()
+    const {stripeSubscriptionId, tier} = await dataLoader.get('organizations').loadNonNull(orgId)
+    dataLoader.get('organizations').clear(orgId)
 
     if (tier === 'starter') {
       return standardError(new Error('Already on free tier'), {userId: viewerId})
@@ -68,6 +67,7 @@ export default {
       orgId,
       stripeSubscriptionId!,
       viewer,
+      dataLoader,
       reasonsForLeaving,
       otherTool
     )

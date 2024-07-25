@@ -2,7 +2,6 @@ import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/util
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import getRethink from '../../../database/rethinkDriver'
 import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
@@ -10,13 +9,14 @@ import getKysely from '../../../postgres/getKysely'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
-import addDiscussionTopics from './addDiscussionTopics'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
+import addDiscussionTopics from './addDiscussionTopics'
+import addRecallBot from './addRecallBot'
+import generateDiscussionPrompt from './generateDiscussionPrompt'
 import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroups from './generateGroups'
-import generateGroupSummaries from './generateGroupSummaries'
+import {publishToEmbedder} from './publishToEmbedder'
 import removeEmptyReflections from './removeEmptyReflections'
-import addRecallBot from './addRecallBot'
 
 /*
  * handle side effects when a stage is completed
@@ -29,23 +29,16 @@ const handleCompletedRetrospectiveStage = async (
   dataLoader: DataLoaderWorker
 ) => {
   if (stage.phaseType === REFLECT || stage.phaseType === GROUP) {
-    const data: Record<string, any> = await removeEmptyReflections(meeting)
+    const data: Record<string, any> = await removeEmptyReflections(meeting, dataLoader)
 
     if (stage.phaseType === REFLECT) {
-      const r = await getRethink()
       const pg = getKysely()
-      const now = new Date()
 
-      const [reflectionGroups, reflections] = await Promise.all([
+      const [reflectionGroups, unsortedReflections] = await Promise.all([
         dataLoader.get('retroReflectionGroupsByMeetingId').load(meeting.id),
-        r
-          .table('RetroReflection')
-          .getAll(meeting.id, {index: 'meetingId'})
-          .filter({isActive: true})
-          .orderBy('createdAt')
-          .run()
+        dataLoader.get('retroReflectionsByMeetingId').load(meeting.id)
       ])
-
+      const reflections = unsortedReflections.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
       const {reflectionGroupMapping} = groupReflections(reflections.slice(), {
         groupingThreshold: AUTO_GROUPING_THRESHOLD
       })
@@ -59,21 +52,11 @@ const handleCompletedRetrospectiveStage = async (
       await Promise.all(
         sortedReflectionGroups.map((group, index) => {
           group.sortOrder = index
-          return Promise.all([
-            pg
-              .updateTable('RetroReflectionGroup')
-              .set({sortOrder: index})
-              .where('id', '=', group.id)
-              .execute(),
-            r
-              .table('RetroReflectionGroup')
-              .get(group.id)
-              .update({
-                sortOrder: index,
-                updatedAt: now
-              } as any)
-              .run()
-          ])
+          return pg
+            .updateTable('RetroReflectionGroup')
+            .set({sortOrder: index})
+            .where('id', '=', group.id)
+            .execute()
         })
       )
 
@@ -91,7 +74,7 @@ const handleCompletedRetrospectiveStage = async (
         .run()
       data.meeting = meeting
       // dont await for the OpenAI API response
-      generateGroupSummaries(meeting.id, teamId, dataLoader, facilitatorUserId)
+      generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId)
     }
 
     return {[stage.phaseType]: data}
@@ -111,7 +94,8 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
+      addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
+      publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})
     ])
     if (videoMeetingURL) {
       addRecallBot(meetingId, videoMeetingURL)
@@ -119,7 +103,7 @@ const handleCompletedRetrospectiveStage = async (
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
     const {discussionId} = stage as DiscussStage
-    // dont await for the OpenAI API response
+    // don't await for the OpenAI API response
     generateDiscussionSummary(discussionId, meeting, dataLoader)
   }
   return {}

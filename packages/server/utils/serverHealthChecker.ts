@@ -2,9 +2,9 @@ import sleep from '../../client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
 import {disconnectQuery} from '../socketHandlers/handleDisconnect'
+import RedisInstance from './RedisInstance'
 import publishInternalGQL from './publishInternalGQL'
 import sendToSentry from './sendToSentry'
-import RedisInstance from './RedisInstance'
 
 const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`

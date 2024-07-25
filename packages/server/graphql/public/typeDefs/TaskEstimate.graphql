@@ -1,0 +1,59 @@
+"""
+An estimate for a Task that was voted on and scored in a poker meeting
+"""
+type TaskEstimate {
+  """
+  The ID of the estimate
+  """
+  id: ID!
+
+  """
+  The timestamp the estimate was created
+  """
+  createdAt: DateTime!
+
+  """
+  The source that a change came in through
+  """
+  changeSource: ChangeSourceEnum!
+
+  """
+  The name of the estimate dimension
+  """
+  name: String!
+
+  """
+  The human-readable label for the estimate
+  """
+  label: String!
+
+  """
+  *The taskId that the estimate refers to
+  """
+  taskId: ID!
+
+  """
+  The userId that added the estimate
+  """
+  userId: ID!
+
+  """
+  *The meetingId that the estimate occured in, if any
+  """
+  meetingId: ID
+
+  """
+  The meeting stageId the estimate occurred in, if any
+  """
+  stageId: ID
+
+  """
+  The discussionId where the estimated was discussed
+  """
+  discussionId: ID
+
+  """
+  If the task comes from jira, this is the jira field that the estimate refers to
+  """
+  jiraFieldId: ID
+}

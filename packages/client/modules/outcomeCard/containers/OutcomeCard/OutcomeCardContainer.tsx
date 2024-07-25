@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw} from 'draft-js'
 import React, {memo, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
-import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEditorState from '../../../../hooks/useEditorState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
@@ -85,7 +85,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       const editorEl = editorRef.current
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
-      if (!value && !isFocused) {
+      if (!value.trim() && !isFocused) {
         DeleteTaskMutation(atmosphere, {taskId})
       } else {
         const initialContentState = editorState.getCurrentContent()
@@ -100,7 +100,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       return
     }
     const nextContentState = editorState.getCurrentContent()
-    const hasText = nextContentState.hasText()
+    const hasText = nextContentState.getPlainText().trim().length > 0
     if (!hasText && !isFocused) {
       DeleteTaskMutation(atmosphere, {taskId})
     } else {

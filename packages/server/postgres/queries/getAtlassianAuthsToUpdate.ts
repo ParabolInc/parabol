@@ -12,7 +12,7 @@ const getAtlassianAuthsToUpdate = async (updatedAtThreshold: Date) => {
           ...jsq,
           lastUsedAt: new Date(jsq.lastUsedAt)
         }))
-      } as AtlassianAuth)
+      }) as AtlassianAuth
   )
 }
 

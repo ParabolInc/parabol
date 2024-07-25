@@ -8,9 +8,9 @@ import fs from 'fs'
 import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
+import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 import privateSchema from '../graphql/private/rootSchema'
 import publicSchema from '../graphql/public/rootSchema'
-import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 
 const writeIfChanged = async (dataPath: string, data: string) => {
   const write = promisify(fs.writeFile)

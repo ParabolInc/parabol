@@ -1,5 +1,6 @@
+import UploadFileIcon from '@mui/icons-material/UploadFile'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import orgAuthenticationMetadataQuery, {
   OrgAuthenticationMetadataQuery
@@ -9,6 +10,8 @@ import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import {useUploadIdPMetadata} from '../../../../mutations/useUploadIdPMetadataMutation'
+import {Button} from '../../../../ui/Button/Button'
 import getOAuthPopupFeatures from '../../../../utils/getOAuthPopupFeatures'
 import getTokenFromSSO from '../../../../utils/getTokenFromSSO'
 
@@ -40,6 +43,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
       fragment OrgAuthenticationMetadata_saml on SAML {
         id
         metadataURL
+        orgId
       }
     `,
     samlRef
@@ -49,7 +53,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
   const isMetadataURLSaved = saml ? saml.metadataURL === metadataURL : false
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const submitMetadataURL = async () => {
-    if (submitting) return
+    if (submitting || !metadataURL) return
     submitMutation()
     const domain = saml?.id
     if (!domain) {
@@ -60,7 +64,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
     const optimisticPopup = window.open(
       '',
       'SSO',
-      getOAuthPopupFeatures({width: 385, height: 550, top: 64})
+      getOAuthPopupFeatures({width: 385, height: 576, top: 64})
     )
 
     // Get the Sign-on URL, which includes metadataURL in the RelayState
@@ -99,6 +103,36 @@ const OrgAuthenticationMetadata = (props: Props) => {
       key: 'submitMetadata'
     })
   }
+
+  const uploadInputRef = useRef<HTMLInputElement>(null)
+  const onUploadClick = () => {
+    uploadInputRef.current?.click()
+  }
+  const [commit] = useUploadIdPMetadata()
+  const uploadXML = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {files} = e.currentTarget
+    const file = files?.[0]
+    if (!file || !saml?.orgId) return
+    commit({
+      variables: {orgId: saml.orgId},
+      uploadables: {file: file},
+      onCompleted: (res) => {
+        const {uploadIdPMetadata} = res
+        const {error, url} = uploadIdPMetadata
+        const message = error?.message
+        if (message) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'errorUploadIdPtMetadata',
+            message,
+            autoDismiss: 5
+          })
+          return
+        }
+        setMetadataURL(url!)
+      }
+    })
+  }
+
   return (
     <>
       <div className='px-6 pb-3'>
@@ -114,6 +148,17 @@ const OrgAuthenticationMetadata = (props: Props) => {
           value={metadataURL}
           onChange={(e) => setMetadataURL(e.target.value)}
           error={undefined}
+        />
+        <Button className='px-0' variant='ghost' shape='pill' size='sm' onClick={onUploadClick}>
+          <UploadFileIcon className={'text-xl'} />
+          Click to upload XML File
+        </Button>
+        <input
+          className='hidden'
+          accept='.xml'
+          onChange={uploadXML}
+          type='file'
+          ref={uploadInputRef}
         />
       </div>
       <div className={'px-6 text-tomato-500 empty:hidden'}>{error?.message}</div>

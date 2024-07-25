@@ -6,7 +6,6 @@ import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
@@ -15,6 +14,7 @@ import {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../integrations/TaskIntegrationManagerFactory'
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
@@ -266,7 +266,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       grant_type: 'authorization_code',
       code: code,
       code_verifier: codeVerifier,
-      redirect_uri: makeAppURL(appOrigin, 'auth/ado')
+      redirect_uri: makeAppURL(appOrigin, 'auth/ado2')
     })
   }
 
@@ -702,16 +702,14 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
     const body = {
       ...params,
-      client_id: this.provider.clientId
+      client_id: this.provider.clientId,
+      client_secret: this.provider.clientSecret
     }
 
-    const additonalHeaders = {
-      Origin: appOrigin
-    }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
     const contentType = 'application/x-www-form-urlencoded'
-    const oAuthRes = await authorizeOAuth2({authUrl, body, additonalHeaders, contentType})
+    const oAuthRes = await authorizeOAuth2({authUrl, body, contentType})
     if (!isError(oAuthRes)) {
       this.accessToken = oAuthRes.accessToken
     }

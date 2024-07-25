@@ -1,0 +1,7 @@
+"""
+The possible places a reflection can be dropped
+"""
+enum DragReflectionDropTargetTypeEnum {
+  REFLECTION_GROUP
+  REFLECTION_GRID
+}

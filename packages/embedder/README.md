@@ -3,27 +3,14 @@
 This service builds embedding vectors for semantic search and for other AI/ML
 use cases. It does so by:
 
-1.  Updating a list of all possible items to create embedding vectors for and
-    storing that list in the `EmbeddingsMetadata` table
-2.  Adding these items in batches to the `EmbeddingsJobQueue` table and a redis
-    priority queue called `embedder:queue`
-3.  Allowing one or more parallel embedding services to calculate embedding
-    vectors (EmbeddingJobQueue states transistion from `queued` -> `embedding`,
-    then `embedding` -> [deleting the `EmbeddingJobQueue` row]
-
-    In addition to deleteing the `EmbeddingJobQueue` row, when a job completes
-    successfully:
-
-    - A row is added to the model table with the embedding vector; the
-      `EmbeddingMetadataId` field on this row points the appropriate
-      metadata row on `EmbeddingsMetadata`
-    - The `EmbeddingsMetadata.models` array is updated with the name of the
-      table that the embedding has been generated for
-
-4.  This process repeats forever using a silly polling loop
-
-In the future, it would be wonderful to enhance this service such that it were
-event driven.
+1. Homogenizes different types of data into a single `EmbeddingsMetadata` table
+2. Each new row in `EmbeddingsMetadata` creates a new row in `EmbeddingsJobQueue` for each model
+3. Uses PG to pick a job from the queue and sets the job from `queued` -> `embedding`,
+   then `embedding` -> [deleting the `EmbeddingJobQueue` row]
+4. Embedding involves creating a `fullText` from the work item and then a vector from that `fullText`
+5. New jobs to add metadata are sent via redis streams from the GQL Executor
+6. If embedding fails, the application increments the `retryCount` and increases the `retryAfter` if a retry is desired
+7. If a job gets stalled, a process that runs every 5 minutes will look for jobs older than 5 minutes and reset them to `queued`
 
 ## Prerequisites
 
@@ -37,10 +24,9 @@ The predeploy script checks for an environment variable
 The Embedder service takes no arguments and is controlled by the following
 environment variables, here given with example configuration:
 
-- `AI_EMBEDDER_ENABLE`: enable/disable the embedder service from
-  performing work, or sleeping indefinitely
+- `AI_EMBEDDER_WORKERS`: How many workers should simultaneously pick jobs from the queue. If less than 1, disabled.
 
-`AI_EMBEDDER_ENABLED='true'`
+`AI_EMBEDDER_WORKERS='1'`
 
 - `AI_EMBEDDING_MODELS`: JSON configuration for which embedding models
   are enabled. Each model in the array will be instantiated by
@@ -69,3 +55,10 @@ environment variables, here given with example configuration:
 The Embedder service is stateless and takes no arguments. Multiple instances
 of the service may be started in order to match embedding load, or to
 catch up on history more quickly.
+
+## Resources
+
+### PG as a Job Queue
+
+- https://leontrolski.github.io/postgres-as-queue.html
+- https://www.2ndquadrant.com/en/blog/what-is-select-skip-locked-for-in-postgresql-9-5/

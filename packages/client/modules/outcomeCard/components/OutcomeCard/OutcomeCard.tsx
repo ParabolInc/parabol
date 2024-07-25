@@ -3,14 +3,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React, {memo, RefObject} from 'react'
 import {useFragment} from 'react-relay'
-import EditingStatus from '~/components/EditingStatus/EditingStatus'
-import {PALETTE} from '~/styles/paletteV3'
 import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import EditingStatus from '~/components/EditingStatus/EditingStatus'
+import {PALETTE} from '~/styles/paletteV3'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -21,7 +22,6 @@ import isTempId from '../../../../utils/relay/isTempId'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const RootCard = styled('div')<{
   isTaskHovered: boolean
@@ -38,12 +38,12 @@ const RootCard = styled('div')<{
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
     : isTaskHighlighted
-    ? cardHoverShadow
-    : isTaskFocused
-    ? cardFocusShadow
-    : isTaskHovered
-    ? cardHoverShadow
-    : cardShadow
+      ? cardHoverShadow
+      : isTaskFocused
+        ? cardFocusShadow
+        : isTaskHovered
+          ? cardHoverShadow
+          : cardShadow
 }))
 
 const ContentBlock = styled('div')({

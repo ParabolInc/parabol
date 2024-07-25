@@ -1,5 +1,5 @@
-import {PALETTE} from '~/styles/paletteV3'
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import {PALETTE} from '~/styles/paletteV3'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
@@ -303,8 +303,6 @@ const initDemoOrg = () => {
       suggestGroups: false,
       teamsLimit: false,
       noPromptToJoinOrg: false,
-      AIGeneratedDiscussionPrompt: false,
-      meetingInception: false,
       publicTeams: false
     },
     showConversionModal: false

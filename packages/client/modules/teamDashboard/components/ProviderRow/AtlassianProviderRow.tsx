@@ -3,6 +3,7 @@ import jwtDecode from 'jwt-decode'
 import React, {useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
+import {AtlassianProviderRow_viewer$key} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -11,7 +12,6 @@ import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutation
 import {AuthToken} from '../../../../types/AuthToken'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../../../utils/AtlassianClientManager'
-import {AtlassianProviderRow_viewer$key} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
 
 interface Props {
@@ -85,6 +85,8 @@ const AtlassianProviderRow = (props: Props) => {
     }
     return message
   }, [error])
+
+  if (!AtlassianClientManager.isAvailable) return null
 
   return (
     <>

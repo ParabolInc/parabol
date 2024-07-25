@@ -5,11 +5,11 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Threshold} from '~/types/constEnums'
+import {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
 import LinkButton from '../../../components/LinkButton'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import dndNoise from '../../../utils/dndNoise'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
 
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',

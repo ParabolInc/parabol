@@ -4,7 +4,7 @@ import React, {PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {twMerge} from 'tailwind-merge'
 import {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
-import {MeetingTypeEnum} from '../../__generated__/NewMeetingQuery.graphql'
+import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
@@ -35,10 +35,10 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         'relative flex h-full w-full items-center justify-center overflow-hidden',
         className
       )}
-      style={{backgroundImage: `url(${backgroundSrc})`, backgroundSize: 'cover'}}
     >
+      <img className='object-contain' src={backgroundSrc} alt='' />
       <img
-        className='absolute top-0 left-0 z-10 h-full w-full object-contain p-10'
+        className='absolute top-0 left-0 h-full w-full object-contain p-10'
         src={src}
         alt='Card Illustration'
       />
@@ -50,14 +50,13 @@ export interface ActivityCardProps {
   className?: string
   theme: CardTheme
   title?: string
-  badge?: React.ReactNode
   children?: React.ReactNode
   type?: MeetingTypeEnum
   templateRef?: ActivityCard_template$key
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, theme, title, children, type, badge, templateRef} = props
+  const {className, theme, title, children, type, templateRef} = props
   const category = type && MEETING_TYPE_TO_CATEGORY[type]
   const [showTooltip, setShowTooltip] = useState(false)
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null)
@@ -94,7 +93,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
 
   return (
     <div
-      className='flex w-full flex-col'
+      className='flex w-full flex-col rounded-xl p-2'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -105,10 +104,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
           className
         )}
       >
-        <div className='flex-1'>
-          {children}
-          <div className='absolute bottom-0 right-0'>{badge}</div>
-        </div>
+        <div className='flex-1'>{children}</div>
         {template && (
           <Tooltip open={showTooltip}>
             <TooltipTrigger asChild>

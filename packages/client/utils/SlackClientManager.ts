@@ -6,6 +6,7 @@ import SlackManager from './SlackManager'
 
 class SlackClientManager extends SlackManager {
   fetch = window.fetch.bind(window)
+  static isAvailable = typeof window !== 'undefined' && !!window.__ACTION__.slack
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const hash = Math.random().toString(36).substring(5)

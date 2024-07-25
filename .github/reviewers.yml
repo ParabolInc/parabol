@@ -1,19 +1,16 @@
 reviewers:
   groups:
     reviewers:
-      - igorlesnenko
       - nickoferrall
     maintainers:
       - mattkrick
       - Dschoordsch
     data:
       - tianrunhe
-      - tghanken
     designers:
       - ackernaut
     devops:
       - rafaelromcar-parabol
-      - adaniels-parabol
       - dbumblis-parabol
     none:
 
@@ -37,7 +34,11 @@ files:
     - data
   "**/analytics/**":
     - data
+  "docker/**":
+    - devops
   ".env.example":
+    - devops
+  "release-please-config.json":
     - devops
 options:
   ignore_draft: true

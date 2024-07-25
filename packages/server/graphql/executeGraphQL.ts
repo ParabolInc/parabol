@@ -7,29 +7,12 @@
 import tracer from 'dd-trace'
 import {graphql} from 'graphql'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
-import AuthToken from '../database/types/AuthToken'
+import type {GQLRequest} from '../types/custom'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
 import privateSchema from './private/rootSchema'
 import publicSchema from './public/rootSchema'
-
-export interface GQLRequest {
-  authToken: AuthToken
-  ip?: string
-  socketId?: string
-  variables?: {[key: string]: any}
-  docId?: string
-  query?: string
-  rootValue?: {[key: string]: any}
-  dataLoaderId?: string
-  // true if the query is on the private schema
-  isPrivate?: boolean
-  // true if the query is ad-hoc (e.g. GraphiQL, CLI)
-  isAdHoc?: boolean
-  // Datadog opentracing span of the calling server
-  carrier?: any
-}
 
 const queryCache = new CompiledQueryCache()
 

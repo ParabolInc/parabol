@@ -4,9 +4,13 @@ import getPgConfig from '../getPgConfig'
 export async function up() {
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`
+  try {
+    await client.query(`
     ALTER TABLE "EmbeddingsMetadata" RENAME COLUMN "embedText" TO "fullText";
   `)
+  } catch {
+    // noop
+  }
   await client.end()
 }
 

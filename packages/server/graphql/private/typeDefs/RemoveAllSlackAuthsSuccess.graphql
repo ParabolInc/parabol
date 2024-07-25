@@ -1,0 +1,11 @@
+type RemoveAllSlackAuthsSuccess {
+  """
+  Response from removing all Slack auths
+  """
+  slackAuthRes: String!
+
+  """
+  Response from removing all Slack notifications
+  """
+  slackNotificationRes: String!
+}

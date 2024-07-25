@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
 import {upperFirst} from '../../../../utils/upperFirst'
-import {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 
 const List = styled('div')({
   display: 'flex',
@@ -16,10 +16,9 @@ const List = styled('div')({
 const DrawerContent = styled('div')({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
+  flexDirection: 'column',
   overflowY: 'auto',
-  padding: 16,
-  height: '100vh',
-  flexDirection: 'column'
+  padding: 16
 })
 
 const Title = styled('span')({

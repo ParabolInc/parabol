@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import {getUserId, isTeamMember} from '../../utils/authorization'
 import SlackServerManager from '../../utils/SlackServerManager'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SetDefaultSlackChannelPayload from '../types/SetDefaultSlackChannelPayload'

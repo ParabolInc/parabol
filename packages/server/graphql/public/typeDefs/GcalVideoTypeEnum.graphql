@@ -1,0 +1,7 @@
+"""
+The type of video conferencing used in the gcal event
+"""
+enum GcalVideoTypeEnum {
+  meet
+  zoom
+}

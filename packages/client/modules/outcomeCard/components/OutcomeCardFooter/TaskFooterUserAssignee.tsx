@@ -4,6 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
+import {TaskFooterUserAssignee_task$key} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
 import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
@@ -12,7 +13,6 @@ import textOverflow from '../../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../../styles/paletteV3'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
-import {TaskFooterUserAssignee_task$key} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
 
 const label = {
   ...textOverflow,

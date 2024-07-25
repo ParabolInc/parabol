@@ -1,27 +1,27 @@
-import appOrigin from '../../../appOrigin'
+import crypto from 'crypto'
+import util from 'util'
 import {SubscriptionChannel, Threshold} from '../../../../client/types/constEnums'
+import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
+import makeAppURL from '../../../../client/utils/makeAppURL'
 import {isNotNull} from '../../../../client/utils/predicates'
+import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../../database/types/NotificationTeamInvitation'
 import TeamInvitation from '../../../database/types/TeamInvitation'
+import getMailManager from '../../../email/getMailManager'
 import teamInviteEmailCreator from '../../../email/teamInviteEmailCreator'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getBestInvitationMeeting from '../../../utils/getBestInvitationMeeting'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
-import standardError from '../../../utils/standardError'
-import {GQLContext} from '../../graphql'
-import getIsEmailApprovedByOrg from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
-import makeAppURL from '../../../../client/utils/makeAppURL'
-import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
-import getMailManager from '../../../email/getMailManager'
-import {analytics} from '../../../utils/analytics/analytics'
-import util from 'util'
-import crypto from 'crypto'
 import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
+import standardError from '../../../utils/standardError'
+import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
+import getIsEmailApprovedByOrg from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -87,7 +87,7 @@ const inviteToTeamHelper = async (
   }
 
   const {name: teamName, createdAt, isOnboardTeam, orgId} = team
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, name: orgName} = organization
   const uniqueInvitees = Array.from(new Set(validInvitees))
   // filter out emails already on team

@@ -1,0 +1,200 @@
+services:
+  rethinkdb:
+    container_name: rethinkdb
+    profiles: ["databases"]
+    image: rethinkdb:2.4.2
+    restart: always
+    ports:
+      - "8080:8080"
+      - "29015:29015"
+      - "28015:28015"
+    volumes:
+      - ./data/rethink:/data
+    networks:
+      - parabol-network
+  postgres:
+    container_name: postgres
+    profiles: ["databases"]
+    image: pgvector/pgvector:0.7.0-pg16
+    restart: always
+    env_file: .env
+    environment:
+      - PGUSER=$POSTGRES_USER
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./data/postgres/pgdata:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "$POSTGRES_DB", "-U", "$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - parabol-network
+  pgadmin:
+    profiles: ["database-debug"]
+    container_name: pgadmin
+    image: dpage/pgadmin4:8.3
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    ports:
+      - "5050:80"
+    networks:
+      - parabol-network
+  redis:
+    container_name: redis
+    profiles: ["databases"]
+    image: redis:7.0-alpine
+    healthcheck:
+      test: "[ $$(redis-cli ping) = 'PONG' ]"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - parabol-network
+  redis-commander:
+    profiles: ["database-debug"]
+    container_name: redis-commander
+    image: ghcr.io/joeferner/redis-commander:0.8.1
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - parabol-network
+  text-embeddings-inference:
+    profiles: ["text-embeddings"]
+    container_name: text-embeddings-inference
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2.2
+    command:
+      - "--model-id=llmrails/ember-v1"
+    platform: linux/x86_64
+    restart: always
+    ports:
+      - "3040:80"
+    volumes:
+      - ./data/text-embeddings-inference:/data
+    networks:
+      - parabol-network
+  pre-deploy:
+    container_name: pre-deploy
+    profiles: ["parabol"]
+    image: #image:tag
+    command: bash -c "node dist/preDeploy.js"
+    env_file: .env
+    environment:
+      - SERVER_ID=0
+    volumes:
+      - "./.env:/parabol/.env"
+    depends_on:
+      rethinkdb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parabol-network
+  chronos:
+    container_name: chronos
+    profiles: ["chronos"]
+    image: #image:tag
+    restart: always
+    command: bash -c "node dist/chronos.js"
+    env_file: .env
+    environment:
+      - SERVER_ID=1
+    volumes:
+      - "./.env:/parabol/.env"
+    depends_on:
+      pre-deploy:
+        condition: service_completed_successfully
+      rethinkdb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parabol-network
+  web-server:
+    container_name: web-server
+    profiles: ["parabol"]
+    image: #image:tag
+    restart: always
+    command: bash -c "node dist/web.js"
+    env_file: .env
+    environment:
+      - SERVER_ID=5
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./.env:/parabol/.env"
+    depends_on:
+      pre-deploy:
+        condition: service_completed_successfully
+      rethinkdb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parabol-network
+  gql-executor:
+    container_name: gql-executor
+    profiles: ["parabol"]
+    image: #image:tag
+    restart: always
+    command: bash -c "node dist/gqlExecutor.js"
+    env_file: .env
+    environment:
+      - SERVER_ID=10
+    volumes:
+      - "./.env:/parabol/.env"
+    depends_on:
+      pre-deploy:
+        condition: service_completed_successfully
+      rethinkdb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parabol-network
+  embedder:
+    container_name: embedder
+    profiles: ["embedder"]
+    image: #image:tag
+    restart: always
+    command: bash -c "node dist/embedder.js"
+    env_file: .env
+    environment:
+      - SERVER_ID=15
+    volumes:
+      - "./.env:/parabol/.env"
+    depends_on:
+      pre-deploy:
+        condition: service_completed_successfully
+      rethinkdb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parabol-network
+networks:
+  parabol-network:

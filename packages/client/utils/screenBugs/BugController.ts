@@ -131,7 +131,7 @@ class BugDispatch {
     this.spawnDelay = []
     for (let i = 0; i < numBugs; i++) {
       const delay = this.random(this.options.minDelay, this.options.maxDelay, true)
-      const thebug = this.bugs[i]
+      const thebug = this.bugs[i]!
       // fly the bug onto the page:
       this.spawnDelay[i] = window.setTimeout(() => {
         this.options.canFly ? thebug.flyIn() : thebug.walkIn()
@@ -152,30 +152,30 @@ class BugDispatch {
   stop = () => {
     for (let i = 0; i < this.bugs.length; i++) {
       if (this.spawnDelay[i]) clearTimeout(this.spawnDelay[i])
-      this.bugs[i].stop()
+      this.bugs[i]!.stop()
     }
   }
 
   end = () => {
     for (let i = 0; i < this.bugs.length; i++) {
       if (this.spawnDelay[i]) clearTimeout(this.spawnDelay[i])
-      this.bugs[i].stop()
-      this.bugs[i].remove()
+      this.bugs[i]!.stop()
+      this.bugs[i]!.remove()
     }
   }
 
   reset = () => {
     this.stop()
     for (let i = 0; i < this.bugs.length; i++) {
-      this.bugs[i].reset()
-      this.bugs[i].walkIn()
+      this.bugs[i]!.reset()
+      this.bugs[i]!.walkIn()
     }
   }
 
   killAll = () => {
     for (let i = 0; i < this.bugs.length; i++) {
       if (this.spawnDelay[i]) clearTimeout(this.spawnDelay[i])
-      this.bugs[i].die()
+      this.bugs[i]!.die()
     }
   }
 
@@ -209,13 +209,13 @@ class BugDispatch {
     }
     const numBugs = this.bugs.length
     for (let i = 0; i < numBugs; i++) {
-      const pos = this.bugs[i].getPos()
+      const pos = this.bugs[i]!.getPos()
       if (pos) {
         if (
           Math.abs(pos.top - posy) + Math.abs(pos.left - posx) < this.options.eventDistanceToBug &&
-          !this.bugs[i].flyperiodical
+          !this.bugs[i]!.flyperiodical
         ) {
-          this.near_bug(this.bugs[i])
+          this.near_bug(this.bugs[i]!)
         }
       }
     }
@@ -233,7 +233,7 @@ class BugDispatch {
     let mode = this.options.mouseOver
 
     if (mode === 'random') {
-      mode = this.modes[this.random(0, this.modes.length - 1, true)]
+      mode = this.modes[this.random(0, this.modes.length - 1, true)]!
     }
 
     if (mode === 'fly') {

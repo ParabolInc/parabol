@@ -1,0 +1,4 @@
+"""
+Return value for batchArchiveTasks, which could be an error
+"""
+union BatchArchiveTasksPayload = ErrorPayload | BatchArchiveTasksSuccess

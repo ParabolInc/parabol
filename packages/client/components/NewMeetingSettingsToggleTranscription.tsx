@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import StyledError from './StyledError'
 import DeleteIcon from '@mui/icons-material/Delete'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
@@ -15,6 +14,7 @@ import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import FlatButton from './FlatButton'
 import PlainButton from './PlainButton/PlainButton'
+import StyledError from './StyledError'
 
 const ButtonRow = styled(PlainButton)({
   background: PALETTE.SLATE_200,

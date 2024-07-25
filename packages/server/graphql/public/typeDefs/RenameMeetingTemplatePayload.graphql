@@ -1,0 +1,4 @@
+type RenameMeetingTemplatePayload {
+  error: StandardMutationError
+  meetingTemplate: MeetingTemplate
+}

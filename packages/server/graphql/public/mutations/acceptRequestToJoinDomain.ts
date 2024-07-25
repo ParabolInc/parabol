@@ -1,20 +1,19 @@
-import {getUserId} from '../../../utils/authorization'
-import {MutationResolvers} from '../resolverTypes'
-import getKysely from '../../../postgres/getKysely'
-import standardError from '../../../utils/standardError'
-import getRethink from '../../../database/rethinkDriver'
-import getTeamsByIds from '../../../postgres/queries/getTeamsByIds'
-import RedisLock from '../../../utils/RedisLock'
-import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
-import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
-import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
-import publish from '../../../utils/publish'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {sql} from 'kysely'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
+import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
+import adjustUserCount from '../../../billing/helpers/adjustUserCount'
+import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {Logger} from '../../../utils/Logger'
+import RedisLock from '../../../utils/RedisLock'
+import {getUserId} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
+import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
+import standardError from '../../../utils/standardError'
+import isValid from '../../isValid'
+import {MutationResolvers} from '../resolverTypes'
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
@@ -27,7 +26,6 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const viewerId = getUserId(authToken)
   const now = new Date()
   const pg = getKysely()
-  const r = await getRethink()
 
   // Fetch the request that is not expired
   const request = await pg
@@ -44,23 +42,21 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const {createdBy, domain} = request
 
   // Viewer must be a lead of the provided teamIds
-  const validTeamMembers = await r
-    .table('TeamMember')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({isLead: true, userId: viewerId})
-    .run()
+  const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+  const validTeamMembers = viewerTeamMembers.filter(
+    ({isLead, teamId}) => isLead && teamIds.includes(teamId)
+  )
 
   if (!validTeamMembers.length) {
     return standardError(new Error('Not a team leader'))
   }
 
   // Provided request domain should match team's organizations activeDomain
-  const leadTeams = await getTeamsByIds(validTeamMembers.map((teamMember) => teamMember.teamId))
-  const validOrgIds = await r
-    .table('Organization')
-    .getAll(r.args(leadTeams.map((team) => team.orgId)))
-    .filter({activeDomain: domain})('id')
-    .run()
+  const leadTeams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+  const orgIds = leadTeams.map((team) => team.orgId)
+  const teamOrgs = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
+
+  const validOrgIds = teamOrgs.filter((org) => org.activeDomain === domain).map(({id}) => id)
 
   if (!validOrgIds.length) {
     return standardError(new Error('Invalid organizations'))
@@ -87,20 +83,31 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     return standardError(new Error('User not found'))
   }
 
-  const {id: userId} = user
+  const {id: userId, picture, preferredName, email} = user
 
   for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
     const [organizationUser] = await Promise.all([
-      r
-        .table('OrganizationUser')
-        .getAll(userId, {index: 'userId'})
-        .filter({orgId, removedAt: null})
-        .nth(0)
-        .default(null)
-        .run(),
-      insertNewTeamMember(user, teamId),
-      addTeamIdToTMS(userId, teamId)
+      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
+      pg
+        .with('UserUpdate', (qc) =>
+          qc
+            .updateTable('User')
+            .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
+            .where('id', '=', userId)
+        )
+        .insertInto('TeamMember')
+        .values({
+          id: TeamMemberId.join(teamId, userId),
+          teamId,
+          userId,
+          picture,
+          preferredName,
+          email,
+          openDrawer: 'manageTeam'
+        })
+        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true}))
+        .execute()
     ])
 
     if (!organizationUser) {
@@ -112,7 +119,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       await setUserTierForUserIds([userId])
     }
   }
-
+  dataLoader.clearAll(['users', 'teamMembers'])
   await redisLock.unlock()
 
   // Send the new team member a welcome & a new token

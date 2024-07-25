@@ -1,44 +1,8 @@
-import {
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType
-} from 'graphql'
-import {GQLContext} from '../graphql'
+import {GraphQLObjectType} from 'graphql'
 
-export type ReactjiType = {
-  id: string
-  userIds: string[]
-  count: number
-  isViewerReactji: boolean
-}
-
-const Reactji = new GraphQLObjectType<ReactjiType, GQLContext>({
+const Reactji = new GraphQLObjectType({
   name: 'Reactji',
-  description: 'An aggregate of reactji metadata',
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'composite of entity:reactjiId'
-    },
-    count: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The number of users who have added this reactji'
-    },
-    users: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(require('./User').default))),
-      description: 'The users who added a reactji',
-      resolve: ({userIds}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('users').loadMany(userIds)
-      }
-    },
-    isViewerReactji: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the viewer is included in the count, else false'
-    }
-  })
+  fields: {}
 })
 
 export default Reactji

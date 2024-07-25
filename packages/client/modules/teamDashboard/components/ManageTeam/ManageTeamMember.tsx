@@ -134,7 +134,7 @@ const ManageTeamMember = (props: Props) => {
 
   return (
     <StyledRow ref={ref}>
-      <Avatar size={24} picture={picture} />
+      <Avatar className='h-6 w-6' picture={picture} />
       <Content>
         <Name>{preferredName}</Name>
         <TeamLeadLabel isLead={isLead || isOrgAdmin}>

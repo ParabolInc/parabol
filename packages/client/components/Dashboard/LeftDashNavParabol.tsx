@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import parabolLogo from 'static/images/brand/mark-color.svg'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {PALETTE} from '~/styles/paletteV3'
 import {NavSidebar} from '~/types/constEnums'
+import parabolLogo from '../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
 
 const Parabol = styled(PlainButton)({
   alignItems: 'center',
@@ -17,15 +17,10 @@ const Parabol = styled(PlainButton)({
   width: '100%'
 })
 
-const Label = styled('div')({
-  paddingLeft: 8
-})
-
 const LeftDashParabol = () => {
   return (
     <Parabol>
-      <img crossOrigin='' alt='Parabol' src={parabolLogo} />
-      <Label>{'PARABOL'}</Label>
+      <img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
     </Parabol>
   )
 }

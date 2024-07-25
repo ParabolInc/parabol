@@ -1,8 +1,8 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {gitlabIssueArgs} from '~/components/GitLabScopingSearchResultsRoot'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
-import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getGitLabProjectsIssuesConn from '../connections/getGitLabProjectsIssuesConn'
 
 const handleGitLabCreateIssue = (

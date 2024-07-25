@@ -1,0 +1,56 @@
+"""
+A notification sent to someone who was just added to a team
+"""
+type NotifyTaskInvolves implements Notification & TeamNotification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  *The userId that should see this notification
+  """
+  userId: ID!
+
+  """
+  How the user is affiliated with the task
+  """
+  involvement: TaskInvolvementType!
+
+  """
+  The taskId that now involves the userId
+  """
+  taskId: ID!
+
+  """
+  The task that now involves the userId
+  """
+  task: Task
+
+  """
+  The teamMemberId of the person that made the change
+  """
+  changeAuthorId: ID
+
+  """
+  The TeamMember of the person that made the change
+  """
+  changeAuthor: TeamMember!
+  teamId: ID!
+
+  """
+  The team the task is on
+  """
+  team: Team!
+}

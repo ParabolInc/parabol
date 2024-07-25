@@ -1,11 +1,11 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
-import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import GCalEventCard from './GCalEventCard'
 import {OpenInNew} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
+import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
+import GCalEventCard from './GCalEventCard'
 
 interface Props {
   queryRef: PreloadedQuery<GCalIntegrationResultsQuery>

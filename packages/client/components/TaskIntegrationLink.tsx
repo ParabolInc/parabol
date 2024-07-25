@@ -3,9 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {parseWebPath} from '~/utils/parseWebPath'
+import {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
-import {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import JiraIssueLink from './JiraIssueLink'
 
 const StyledLink = styled('a')({

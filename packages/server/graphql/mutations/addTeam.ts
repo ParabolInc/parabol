@@ -3,8 +3,8 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import generateUID from '../../generateUID'
-import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
@@ -14,11 +14,10 @@ import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
-import {analytics} from '../../utils/analytics/analytics'
-import {getFeatureTier} from '../types/helpers/getFeatureTier'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -54,8 +53,8 @@ export default {
 
       // VALIDATION
       const [orgTeams, organization, viewer] = await Promise.all([
-        getTeamsByOrgIds([orgId], {isArchived: false}),
-        dataLoader.get('organizations').load(orgId),
+        dataLoader.get('teamsByOrgIds').load(orgId),
+        dataLoader.get('organizations').loadNonNull(orgId),
         dataLoader.get('users').loadNonNull(viewerId)
       ])
       const orgTeamNames = orgTeams.map((team) => team.name)
@@ -74,7 +73,7 @@ export default {
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
-        const organization = await dataLoader.get('organizations').load(orgId)
+        const organization = await dataLoader.get('organizations').loadNonNull(orgId)
         if (getFeatureTier(organization) === 'starter') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
@@ -85,7 +84,7 @@ export default {
 
       // RESOLUTION
       const teamId = generateUID()
-      await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, ...newTeam})
+      await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, ...newTeam}, dataLoader)
 
       const {tms} = authToken
       // MUTATIVE

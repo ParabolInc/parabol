@@ -17,10 +17,12 @@ import {
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
+import {addPokerTemplateTeamUpdater} from '../mutations/AddPokerTemplateMutation'
 import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
 import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
 import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
+import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 import {
   endSprintPokerTeamOnNext,
@@ -39,7 +41,6 @@ import {
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
-import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -66,8 +67,11 @@ const subscription = graphql`
       AddAtlassianAuthPayload {
         ...AddAtlassianAuthMutation_team @relay(mask: false)
       }
-      AddReflectTemplatePayload {
+      AddReflectTemplateSuccess {
         ...AddReflectTemplateMutation_team @relay(mask: false)
+      }
+      AddPokerTemplateSuccess {
+        ...AddPokerTemplateMutation_team @relay(mask: false)
       }
       AddReflectTemplatePromptPayload {
         ...AddReflectTemplatePromptMutation_team @relay(mask: false)
@@ -177,9 +181,6 @@ const subscription = graphql`
       OldUpgradeToTeamTierPayload {
         ...OldUpgradeToTeamTierMutation_team @relay(mask: false)
       }
-      UpgradeToTeamTierSuccess {
-        ...UpgradeToTeamTierFrag_team @relay(mask: false)
-      }
       UpdateIntegrationProviderSuccess {
         ...UpdateIntegrationProviderMutation_team @relay(mask: false)
       }
@@ -207,7 +208,8 @@ const updateHandlers = {
   RemoveAgendaItemPayload: removeAgendaItemUpdater,
   UpdateAgendaItemPayload: updateAgendaItemUpdater,
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
-  AddReflectTemplatePayload: addReflectTemplateTeamUpdater,
+  AddReflectTemplateSuccess: addReflectTemplateTeamUpdater,
+  AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
   AddReflectTemplatePromptPayload: addReflectTemplatePromptTeamUpdater,
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,

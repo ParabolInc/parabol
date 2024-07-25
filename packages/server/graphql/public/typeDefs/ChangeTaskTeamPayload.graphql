@@ -1,0 +1,9 @@
+type ChangeTaskTeamPayload {
+  error: StandardMutationError
+  task: Task
+
+  """
+  the taskId sent to a user who is not on the new team so they can remove it from their client
+  """
+  removedTaskId: ID
+}

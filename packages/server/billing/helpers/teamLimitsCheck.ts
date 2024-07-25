@@ -2,36 +2,41 @@ import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
 // Uncomment for easier testing
 // import { ThresholdTest as Threshold } from "~/types/constEnums";
+import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
-import Organization from '../../database/types/Organization'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
+import {OrganizationSource} from '../../graphql/public/types/Organization'
+import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
+import {getFeatureTier} from '../../graphql/types/helpers/getFeatureTier'
 import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
-import getPg from '../../postgres/getPg'
-import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import getKysely from '../../postgres/getKysely'
+import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
+import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 import sendToSentry from '../../utils/sendToSentry'
 import removeTeamsLimitObjects from './removeTeamsLimitObjects'
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
-import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
-import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
-import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
-import {getFeatureTier} from '../../graphql/types/helpers/getFeatureTier'
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
-  await r
-    .table('OrganizationUser')
-    .getAll(r.args(userIds), {index: 'userId'})
-    .filter({orgId})
-    .update({suggestedTier: 'team'})
-    .run()
-
-  await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
+  const pg = getKysely()
+  await pg
+    .updateTable('OrganizationUser')
+    .set({suggestedTier: 'team'})
+    .where('orgId', '=', orgId)
+    .where('userId', 'in', userIds)
+    .where('removedAt', 'is', null)
+    .execute()
+  await pg
+    .updateTable('User')
+    .set({featureFlags: sql`arr_append_uniq("featureFlags", 'insights')`})
+    .where('id', 'in', userIds)
+    .execute()
 }
 
 const sendWebsiteNotifications = async (
-  organization: Organization,
+  organization: OrganizationSource,
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {
@@ -68,7 +73,7 @@ const isLimitExceeded = async (orgId: string) => {
 
 // Warning: the function might be expensive
 export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
 
   if (!organization.tierLimitExceededAt) {
     return
@@ -76,23 +81,20 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 
   if (!(await isLimitExceeded(orgId))) {
     const billingLeadersIds = await dataLoader.get('billingLeadersIdsByOrgId').load(orgId)
+    const pg = getKysely()
     await Promise.all([
-      r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          tierLimitExceededAt: null,
-          scheduledLockAt: null,
-          lockedAt: null,
-          updatedAt: new Date()
-        })
-        .run(),
-      r
-        .table('OrganizationUser')
-        .getAll(r.args(billingLeadersIds), {index: 'userId'})
-        .filter({orgId})
-        .update({suggestedTier: 'starter'})
-        .run(),
+      pg
+        .updateTable('Organization')
+        .set({tierLimitExceededAt: null, scheduledLockAt: null, lockedAt: null})
+        .where('id', '=', orgId)
+        .execute(),
+      pg
+        .updateTable('OrganizationUser')
+        .set({suggestedTier: 'starter'})
+        .where('orgId', '=', orgId)
+        .where('userId', 'in', billingLeadersIds)
+        .where('removedAt', 'is', null)
+        .execute(),
       removeTeamsLimitObjects(orgId, dataLoader)
     ])
     dataLoader.get('organizations').clear(orgId)
@@ -101,7 +103,7 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 
 // Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const organization = await dataLoader.get('organizations').load(orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tierLimitExceededAt, tier, trialStartDate, featureFlags, name: orgName} = organization
 
   if (!featureFlags?.includes('teamsLimit')) return
@@ -125,16 +127,17 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   const now = new Date()
   const scheduledLockAt = new Date(now.getTime() + ms(`${Threshold.STARTER_TIER_LOCK_AFTER_DAYS}d`))
-
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      tierLimitExceededAt: now,
-      scheduledLockAt,
-      updatedAt: now
-    })
-    .run()
+  const pg = getKysely()
+  await Promise.all([
+    pg
+      .updateTable('Organization')
+      .set({
+        tierLimitExceededAt: now,
+        scheduledLockAt
+      })
+      .where('id', '=', orgId)
+      .execute()
+  ])
   dataLoader.get('organizations').clear(orgId)
 
   const billingLeaders = await getBillingLeadersByOrgId(orgId, dataLoader)

@@ -2,6 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
+import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
@@ -9,18 +10,17 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import {startNewMeetingSeries} from './updateRecurrenceSettings'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
-import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
-import getKysely from '../../../postgres/getKysely'
+import {MutationResolvers} from '../resolverTypes'
+import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
-  {teamId, recurrenceSettings, gcalInput},
+  {teamId, name, rrule, gcalInput},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const r = await getRethink()
@@ -36,12 +36,14 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
   // RESOLUTION
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-
   const meetingType: MeetingTypeEnum = 'retrospective'
-  const meetingSettings = (await dataLoader
-    .get('meetingSettingsByType')
-    .load({teamId, meetingType})) as MeetingSettingsRetrospective
+  const [viewer, meetingSettings, meetingCount] = await Promise.all([
+    dataLoader.get('users').loadNonNull(viewerId),
+    dataLoader
+      .get('meetingSettingsByType')
+      .load({teamId, meetingType}) as Promise<MeetingSettingsRetrospective>,
+    dataLoader.get('meetingCount').load({teamId, meetingType})
+  ])
 
   const {
     id: meetingSettingsId,
@@ -52,9 +54,12 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     videoMeetingURL
   } = meetingSettings
 
-  const name = recurrenceSettings?.name
-    ? createMeetingSeriesTitle(recurrenceSettings.name, new Date(), 'UTC')
-    : undefined
+  const meetingName = !name
+    ? `Retro #${meetingCount + 1}`
+    : rrule
+      ? createMeetingSeriesTitle(name, new Date(), 'UTC')
+      : name
+  const meetingSeriesName = name || meetingName
 
   const meeting = await safeCreateRetrospective(
     {
@@ -65,7 +70,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       disableAnonymity,
       templateId: selectedTemplateId,
       videoMeetingURL: videoMeetingURL ?? undefined,
-      name
+      name: meetingName
     },
     dataLoader
   )
@@ -93,8 +98,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     lastMeetingType: meetingType
   }
   const [meetingSeries] = await Promise.all([
-    recurrenceSettings?.rrule &&
-      startNewMeetingSeries(meeting, recurrenceSettings.rrule, recurrenceSettings.name),
+    rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
     r
       .table('MeetingMember')
       .insert(
@@ -120,11 +124,12 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting, template)
   const {error, gcalSeriesId} = await createGcalEvent({
+    name: meetingSeriesName,
     gcalInput,
     meetingId,
     teamId,
     viewerId,
-    rrule: recurrenceSettings?.rrule,
+    rrule,
     dataLoader
   })
   if (meetingSeries && gcalSeriesId) {

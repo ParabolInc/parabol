@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {ActionSidebarAgendaItemsSection_meeting$key} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
 import useGotoStageId from '../hooks/useGotoStageId'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
-import {ActionSidebarAgendaItemsSection_meeting$key} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 const StyledRoot = styled(MeetingSidebarPhaseItemChild)({

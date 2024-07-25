@@ -1,9 +1,9 @@
 import areEqual from 'fbjs/lib/areEqual'
 import {useCallback, useEffect, useRef} from 'react'
 import {
-  fetchQuery,
-  PreloadableConcreteRequest,
   PreloadFetchPolicy,
+  PreloadableConcreteRequest,
+  fetchQuery,
   useQueryLoader
 } from 'react-relay'
 import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'

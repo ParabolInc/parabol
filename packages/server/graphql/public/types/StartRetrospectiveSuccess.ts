@@ -13,8 +13,7 @@ const StartRetrospectiveSuccess: StartRetrospectiveSuccessResolvers = {
   },
   team: ({teamId}, _args: unknown, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
-  },
-  hasGcalError: ({hasGcalError}) => !!hasGcalError
+  }
 }
 
 export default StartRetrospectiveSuccess

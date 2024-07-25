@@ -1,14 +1,14 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {Link} from 'react-router-dom'
+import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {GitHubIntegrationResultsQuery} from '../../../__generated__/GitHubIntegrationResultsQuery.graphql'
 import {GitHubIntegrationResultsSearchPaginationQuery} from '../../../__generated__/GitHubIntegrationResultsSearchPaginationQuery.graphql'
 import {GitHubIntegrationResults_search$key} from '../../../__generated__/GitHubIntegrationResults_search.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
-import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import GitHubObjectCard from './GitHubObjectCard'
 import Ellipsis from '../../Ellipsis/Ellipsis'
-import {Link} from 'react-router-dom'
+import GitHubObjectCard from './GitHubObjectCard'
 
 interface Props {
   queryRef: PreloadedQuery<GitHubIntegrationResultsQuery>

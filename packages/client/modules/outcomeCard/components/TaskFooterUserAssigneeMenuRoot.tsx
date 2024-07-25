@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {MenuProps} from '../../../hooks/useMenu'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
-import {Loader} from '../../../utils/relay/renderLoader'
 import taskFooterUserAssigneeMenuQuery, {
   TaskFooterUserAssigneeMenuQuery
 } from '../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
 import {TaskFooterUserAssigneeMenuRoot_task$key} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
 import {AreaEnum} from '../../../__generated__/UpdateTaskMutation.graphql'
+import {MenuProps} from '../../../hooks/useMenu'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
+import {Loader} from '../../../utils/relay/renderLoader'
 import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
 
 interface Props {
