@@ -1,0 +1,4 @@
+"""
+Return object for StartSprintPokerPayload
+"""
+union StartSprintPokerPayload = ErrorPayload | StartSprintPokerSuccess

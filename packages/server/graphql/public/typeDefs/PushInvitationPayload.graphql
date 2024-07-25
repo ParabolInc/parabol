@@ -1,0 +1,6 @@
+type PushInvitationPayload {
+  error: StandardMutationError
+  user: User
+  meetingId: ID
+  team: Team
+}

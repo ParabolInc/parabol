@@ -1,0 +1,11 @@
+type VoteForReflectionGroupPayload {
+  error: StandardMutationError
+  meeting: RetrospectiveMeeting
+  meetingMember: RetrospectiveMeetingMember
+  reflectionGroup: RetroReflectionGroup
+
+  """
+  The stages that were locked or unlocked by having at least 1 vote
+  """
+  unlockedStages: [NewMeetingStage!]
+}

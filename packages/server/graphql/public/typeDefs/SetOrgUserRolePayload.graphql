@@ -1,0 +1,4 @@
+"""
+Return value for setOrgUserRole, which could be an error
+"""
+union SetOrgUserRolePayload = ErrorPayload | SetOrgUserRoleSuccess

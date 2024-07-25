@@ -1,0 +1,8 @@
+type SetNotificationStatusPayload {
+  error: StandardMutationError
+
+  """
+  The updated notification
+  """
+  notification: Notification
+}

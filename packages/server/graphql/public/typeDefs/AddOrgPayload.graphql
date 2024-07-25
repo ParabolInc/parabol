@@ -1,0 +1,20 @@
+type AddOrgPayload {
+  organization: Organization
+  error: StandardMutationError
+
+  """
+  The new auth token sent to the mutator
+  """
+  authToken: ID
+  team: Team
+
+  """
+  The teamMember that just created the new team, if this is a creation
+  """
+  teamMember: TeamMember
+
+  """
+  The ID of the suggestion to create a new team
+  """
+  removedSuggestedActionId: ID
+}

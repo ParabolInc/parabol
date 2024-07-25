@@ -1,0 +1,6 @@
+type ToggleAllowInsightsSuccess {
+  """
+  How many records were updated
+  """
+  organizationUsersAffected: Int!
+}

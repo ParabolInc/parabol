@@ -1,0 +1,4 @@
+"""
+Return object for AddIntegrationProviderPayload
+"""
+union AddIntegrationProviderPayload = ErrorPayload | AddIntegrationProviderSuccess

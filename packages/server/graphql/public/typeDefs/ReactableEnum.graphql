@@ -1,0 +1,8 @@
+"""
+The type of reactable
+"""
+enum ReactableEnum {
+  COMMENT
+  REFLECTION
+  RESPONSE
+}

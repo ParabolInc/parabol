@@ -1,0 +1,4 @@
+"""
+Return value for autogroup, which could be an error
+"""
+union AutogroupPayload = ErrorPayload | AutogroupSuccess

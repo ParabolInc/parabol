@@ -1,0 +1,21 @@
+type AddTeamMemberIntegrationAuthSuccess {
+  """
+  The auth that was just added
+  """
+  integrationAuth: TeamMemberIntegrationAuth!
+
+  """
+  The service this provider is associated with
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember!
+
+  """
+  The user who updated TeamMemberIntegrationAuth object
+  """
+  user: User!
+}

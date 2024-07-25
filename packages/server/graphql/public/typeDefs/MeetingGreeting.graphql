@@ -1,0 +1,11 @@
+type MeetingGreeting {
+  """
+  The foreign-language greeting
+  """
+  content: String!
+
+  """
+  The source language for the greeting
+  """
+  language: String!
+}

@@ -1,0 +1,14 @@
+"""
+A connection to a list of items.
+"""
+type OrganizationUserConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [OrganizationUserEdge!]!
+}

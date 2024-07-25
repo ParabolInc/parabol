@@ -1,0 +1,21 @@
+input JiraSearchQueryInput {
+  """
+  The query string, either simple or JQL depending on the isJQL flag
+  """
+  queryString: String!
+
+  """
+  true if the queryString is JQL, else false
+  """
+  isJQL: Boolean!
+
+  """
+  The list of project keys selected as a filter. null if not set
+  """
+  projectKeyFilters: [ID!]
+
+  """
+  true if this query should be deleted
+  """
+  isRemove: Boolean
+}

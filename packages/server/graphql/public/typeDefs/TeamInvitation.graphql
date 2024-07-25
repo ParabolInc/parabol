@@ -1,0 +1,59 @@
+"""
+An invitation to become a team member
+"""
+type TeamInvitation {
+  """
+  The unique invitation Id
+  """
+  id: ID!
+
+  """
+  null if not accepted, else the datetime the invitation was accepted
+  """
+  acceptedAt: DateTime
+
+  """
+  null if not accepted, else the userId that accepted the invitation
+  """
+  acceptedBy: ID
+
+  """
+  The datetime the invitation was created
+  """
+  createdAt: DateTime!
+
+  """
+  The email of the invitee
+  """
+  email: Email!
+
+  """
+  The datetime the invitation expires. Changes when team is archived.
+  """
+  expiresAt: DateTime!
+
+  """
+  The userId of the person that sent the invitation
+  """
+  invitedBy: ID!
+
+  """
+  The userId of the person that sent the invitation
+  """
+  inviter: User!
+
+  """
+  the meetingId that the invite was generated for
+  """
+  meetingId: ID
+
+  """
+  The team invited to
+  """
+  teamId: ID!
+
+  """
+  48-byte hex encoded random string
+  """
+  token: ID!
+}

@@ -1,0 +1,4 @@
+"""
+Return value for updateRecurrenceSettings, which could be an error
+"""
+union StartTeamPromptPayload = StartTeamPromptSuccess | ErrorPayload

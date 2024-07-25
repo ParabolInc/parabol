@@ -1,0 +1,91 @@
+"""
+The team-specific templates for sprint poker meeting
+"""
+type PokerTemplate implements MeetingTemplate {
+  """
+  shortid
+  """
+  id: ID!
+  createdAt: DateTime!
+
+  """
+  True if template can be used, else false
+  """
+  isActive: Boolean!
+
+  """
+  True if template is available to all teams including non-paying teams, else false
+  """
+  isFree: Boolean!
+
+  """
+  The time of the meeting the template was last used
+  """
+  lastUsedAt: DateTime
+
+  """
+  The name of the template
+  """
+  name: String!
+
+  """
+  *Foreign key. The organization that owns the team that created the template
+  """
+  orgId: ID!
+
+  """
+  Who can see this template
+  """
+  scope: SharingScopeEnum!
+
+  """
+  *Foreign key. The team this template belongs to
+  """
+  teamId: ID!
+
+  """
+  The team this template belongs to
+  """
+  team: Team!
+
+  """
+  The type of the template
+  """
+  type: MeetingTypeEnum!
+  updatedAt: DateTime!
+
+  """
+  The dimensions that are part of this template
+  """
+  dimensions: [TemplateDimension!]!
+
+  """
+  A query for the dimension
+  """
+  dimension(
+    """
+    The dimension ID for the desired dimension
+    """
+    dimensionId: ID!
+  ): TemplateDimension!
+
+  """
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  """
+  category: String!
+
+  """
+  Whether this template should be in the recommended/quick start sections in the UI.
+  """
+  isRecommended: Boolean!
+
+  """
+  The url to the illustration used by the template
+  """
+  illustrationUrl: String!
+
+  """
+  The lowest scope of the permissions available to the viewer
+  """
+  viewerLowestScope: SharingScopeEnum!
+}

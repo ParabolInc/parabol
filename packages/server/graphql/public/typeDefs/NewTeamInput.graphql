@@ -1,0 +1,11 @@
+input NewTeamInput {
+  """
+  The name of the team
+  """
+  name: String!
+
+  """
+  The unique orginization ID that pays for the team
+  """
+  orgId: ID
+}

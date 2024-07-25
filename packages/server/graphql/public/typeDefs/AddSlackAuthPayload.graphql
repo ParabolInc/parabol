@@ -1,0 +1,13 @@
+type AddSlackAuthPayload {
+  error: StandardMutationError
+
+  """
+  The newly created auth
+  """
+  slackIntegration: SlackIntegration
+
+  """
+  The user with updated slackAuth
+  """
+  user: User
+}

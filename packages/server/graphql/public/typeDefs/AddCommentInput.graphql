@@ -1,0 +1,18 @@
+input AddCommentInput {
+  """
+  A stringified draft-js document containing thoughts
+  """
+  content: String!
+
+  """
+  true if the comment should be anonymous
+  """
+  isAnonymous: Boolean
+
+  """
+  foreign key for the discussion this was created in
+  """
+  discussionId: ID!
+  threadSortOrder: Float!
+  threadParentId: ID
+}

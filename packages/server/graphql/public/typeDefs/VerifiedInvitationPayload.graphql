@@ -1,0 +1,46 @@
+type VerifiedInvitationPayload {
+  errorType: TeamInvitationErrorEnum
+
+  """
+  The name of the person that sent the invitation, present if errorType is expired
+  """
+  inviterName: String
+
+  """
+  The email of the person that send the invitation, present if errorType is expired
+  """
+  inviterEmail: String
+
+  """
+  true if the mx record is hosted by google, else falsy
+  """
+  isGoogle: Boolean
+
+  """
+  a string to redirect to the sso IdP, else null
+  """
+  ssoURL: String
+
+  """
+  The valid invitation, if any
+  """
+  teamInvitation: TeamInvitation
+
+  """
+  name of the inviting team, present if invitation exists
+  """
+  teamName: String
+  meetingId: ID
+  meetingName: String
+  meetingType: MeetingTypeEnum
+
+  """
+  The userId of the invitee, if already a parabol user
+  """
+  userId: ID
+
+  """
+  The invitee, if already a parabol user, present if errorType is null
+  """
+  user: User
+}

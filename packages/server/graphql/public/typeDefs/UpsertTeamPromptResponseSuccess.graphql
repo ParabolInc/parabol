@@ -1,0 +1,14 @@
+type UpsertTeamPromptResponseSuccess {
+  teamPromptResponseId: ID!
+  meetingId: ID!
+
+  """
+  the created/updated team prompt response
+  """
+  teamPromptResponse: TeamPromptResponse
+
+  """
+  the updated meeting
+  """
+  meeting: NewMeeting
+}

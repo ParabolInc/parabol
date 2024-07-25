@@ -1,0 +1,9 @@
+"""
+A project category fetched from a JiraRemoteProject
+"""
+type JiraRemoteProjectCategory {
+  self: String!
+  id: String!
+  name: String!
+  description: String!
+}

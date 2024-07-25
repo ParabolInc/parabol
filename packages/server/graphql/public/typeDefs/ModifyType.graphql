@@ -1,0 +1,5 @@
+enum ModifyType {
+  SERIOUS
+  FUNNY
+  EXCITING
+}

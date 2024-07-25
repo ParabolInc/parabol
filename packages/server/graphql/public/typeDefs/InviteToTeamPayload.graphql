@@ -1,0 +1,28 @@
+type InviteToTeamPayload {
+  error: StandardMutationError
+
+  """
+  The team the inviter is inviting the invitee to
+  """
+  team: Team
+
+  """
+  A list of email addresses the invitations were sent to
+  """
+  invitees: [Email!]
+
+  """
+  the notification ID if this payload is sent to a subscriber, else null
+  """
+  teamInvitationNotificationId: ID
+
+  """
+  The notification sent to the invitee if they are a parabol user
+  """
+  teamInvitationNotification: NotificationTeamInvitation
+
+  """
+  the `invite your team` suggested action that was removed, if any
+  """
+  removedSuggestedActionId: ID
+}

@@ -1,0 +1,11 @@
+type LoginsPayload {
+  """
+  the total number of records
+  """
+  total: Int!
+
+  """
+  The total broken down by email domain
+  """
+  byDomain: [DomainCountPayload!]!
+}

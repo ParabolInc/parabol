@@ -1,0 +1,9 @@
+"""
+The URLs for avatars. NOTE: If they are custom, an Authorization header is required!
+"""
+type JiraRemoteAvatarUrls {
+  x48: ID!
+  x24: ID!
+  x16: ID!
+  x32: ID!
+}

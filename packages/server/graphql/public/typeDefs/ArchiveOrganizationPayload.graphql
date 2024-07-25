@@ -1,0 +1,10 @@
+type ArchiveOrganizationPayload {
+  error: StandardMutationError
+  orgId: ID
+  teams: [Team!]
+
+  """
+  all the suggested actions that never happened
+  """
+  removedSuggestedActionIds: [ID]
+}

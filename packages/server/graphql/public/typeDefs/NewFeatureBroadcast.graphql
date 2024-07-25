@@ -1,0 +1,21 @@
+"""
+The latest feature released by Parabol
+"""
+type NewFeatureBroadcast {
+  id: ID!
+
+  """
+  The text of the action button in the snackbar
+  """
+  actionButtonCopy: String!
+
+  """
+  The description of the new feature
+  """
+  snackbarMessage: String!
+
+  """
+  The permalink to the blog post describing the new feature
+  """
+  url: String!
+}

@@ -1,0 +1,11 @@
+"""
+An error from sending a message to a Slack user
+"""
+type MessageSlackUserError {
+  userId: ID!
+
+  """
+  The error message received from Slack
+  """
+  error: String!
+}

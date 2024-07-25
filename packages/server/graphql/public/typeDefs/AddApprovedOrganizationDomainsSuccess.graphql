@@ -1,0 +1,8 @@
+type AddApprovedOrganizationDomainsSuccess {
+  orgId: ID!
+
+  """
+  Organization with the updated approvals
+  """
+  organization: Organization!
+}
