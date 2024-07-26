@@ -29,16 +29,16 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const {wins, challenges} = response
   const pg = getKysely()
 
-  // await pg
-  //   .insertInto('Insight')
-  //   .values({
-  //     teamId,
-  //     wins,
-  //     challenges,
-  //     startDateTime: startDate,
-  //     endDateTime: endDate
-  //   })
-  //   .execute()
+  await pg
+    .insertInto('Insight')
+    .values({
+      teamId,
+      wins,
+      challenges,
+      startDateTime: startDate,
+      endDateTime: endDate
+    })
+    .execute()
 
   return response
 }
