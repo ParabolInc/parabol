@@ -55,12 +55,12 @@ export interface ReactablesKey {
 
 export interface UserTasksKey {
   first: number
-  after?: Date
+  after?: Date | null
   userIds: string[]
   teamIds: string[]
   archived?: boolean
-  statusFilters: TaskStatusEnum[]
-  filterQuery?: string
+  statusFilters?: TaskStatusEnum[] | null
+  filterQuery?: string | null
   includeUnassigned?: boolean
 }
 

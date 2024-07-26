@@ -4,12 +4,14 @@ import {
   TeamMember as TeamMemberPG,
   TemplateScaleRef as TemplateScaleRefPG
 } from '../pg.d'
-import {selectTemplateScale} from '../select'
+import {selectSuggestedAction, selectTemplateScale} from '../select'
 
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<infer _A, infer _B, infer X> ? X : never
 
 export type OrganizationUser = Selectable<OrganizationUserPG>
+
+export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSuggestedAction>
 
 export type TeamMember = Selectable<TeamMemberPG>
 

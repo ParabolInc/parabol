@@ -23,7 +23,7 @@ interface Props extends WithMutationProps {
 const query = graphql`
   query ExportToCSVQuery($meetingId: ID!) {
     viewer {
-      newMeeting(meetingId: $meetingId) {
+      meeting(meetingId: $meetingId) {
         meetingType
         team {
           name
@@ -116,7 +116,7 @@ const query = graphql`
   }
 `
 
-type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['newMeeting']>
+type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['meeting']>
 type ExportableTypeName = 'Task' | 'Reflection' | 'Comment' | 'Reply'
 
 interface CSVPokerRow {
@@ -326,7 +326,7 @@ const ExportToCSV = (props: Props) => {
     onCompleted()
     if (!data) return
     const {viewer} = data
-    const {newMeeting} = viewer
+    const {meeting: newMeeting} = viewer
     if (!newMeeting) return
     const rows = getRows(newMeeting)
     if (rows.length === 0) return

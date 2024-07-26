@@ -164,6 +164,6 @@ export const templateDimensions = primaryKeyLoaderMaker((ids: readonly string[])
   return selectTemplateDimension().where('id', 'in', ids).execute()
 })
 
-export const _suggestedActions = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const suggestedActions = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectSuggestedAction().where('id', 'in', ids).execute()
 })

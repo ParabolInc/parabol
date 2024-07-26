@@ -156,8 +156,8 @@ export const templateDimensionsByScaleId = foreignKeyLoaderMaker(
   }
 )
 
-export const _suggestedActionsByUserId = foreignKeyLoaderMaker(
-  '_suggestedActions',
+export const suggestedActionsByUserId = foreignKeyLoaderMaker(
+  'suggestedActions',
   'userId',
   async (userIds) => {
     return selectSuggestedAction().where('userId', 'in', userIds).execute()

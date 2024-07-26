@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
@@ -21,7 +20,6 @@ const bootstrapNewUser = async (
   isOrganic: boolean,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const {
     id: userId,
     createdAt,
@@ -115,14 +113,9 @@ const bootstrapNewUser = async (
         return Promise.all([
           acceptTeamInvitation(team, userId, dataLoader),
           isOrganic
-            ? Promise.all([
-                pg.insertInto('SuggestedAction').values(inviteYourTeam).execute(),
-                r.table('SuggestedAction').insert(inviteYourTeam).run()
-              ])
-            : Promise.all([
-                pg.insertInto('SuggestedAction').values(actions).execute(),
-                r.table('SuggestedAction').insert(actions).run()
-              ]),
+            ? pg.insertInto('SuggestedAction').values(inviteYourTeam).execute()
+            : pg.insertInto('SuggestedAction').values(actions).execute(),
+          ,
           analytics.autoJoined(newUser, teamId)
         ])
       })
@@ -150,13 +143,11 @@ const bootstrapNewUser = async (
       createTeamAndLeader(newUser as IUser, validNewTeam, dataLoader),
       addSeedTasks(userId, teamId),
       pg.insertInto('SuggestedAction').values(inviteYourTeam).execute(),
-      r.table('SuggestedAction').insert(inviteYourTeam).run(),
       sendPromptToJoinOrg(newUser, dataLoader)
     ])
     analytics.newOrg(newUser, orgId, teamId, true)
   } else {
     await pg.insertInto('SuggestedAction').values(actions).execute()
-    await r.table('SuggestedAction').insert(actions).run()
   }
 
   analytics.accountCreated(newUser, !isOrganic, isPatient0)

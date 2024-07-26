@@ -19,11 +19,6 @@ import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
 import SetMeetingSettingsPayload from './types/SetMeetingSettingsPayload'
-import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
-import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
-import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
-import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
-import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import TeamPromptMeetingMember from './types/TeamPromptMeetingMember'
 import TeamPromptMeetingSettings from './types/TeamPromptMeetingSettings'
 import TeamPromptResponsesPhase from './types/TeamPromptResponsesPhase'
@@ -56,11 +51,6 @@ const rootTypes = [
   RetrospectiveMeetingMember,
   RetrospectiveMeetingSettings,
   SetMeetingSettingsPayload,
-  SuggestedActionInviteYourTeam,
-  SuggestedActionTryRetroMeeting,
-  SuggestedActionTryActionMeeting,
-  SuggestedActionCreateNewTeam,
-  SuggestedActionTryTheDemo,
   TimelineEventTeamCreated,
   TimelineEventJoinedParabol,
   TimelineEventCompletedRetroMeeting,

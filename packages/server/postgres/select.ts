@@ -22,5 +22,15 @@ export const selectTemplateDimension = () => {
 }
 
 export const selectSuggestedAction = () => {
-  return getKysely().selectFrom('SuggestedAction').selectAll().where('removedAt', 'is', null)
+  return getKysely()
+    .selectFrom('SuggestedAction')
+    .selectAll()
+    .where('removedAt', 'is', null)
+    .$narrowType<
+      | {type: 'createNewTeam' | 'tryTheDemo'}
+      | {
+          type: 'inviteYourTeam' | 'tryRetroMeeting' | 'tryActionMeeting'
+          teamId: string
+        }
+    >()
 }
