@@ -7,6 +7,7 @@ extend type Mutation {
     startDate: DateTime!
     endDate: DateTime!
     useSummaries: Boolean
+    prompt: String
   ): GenerateInsightPayload!
 }
 
@@ -19,10 +20,15 @@ type GenerateInsightSuccess {
   """
   The insights generated focusing on the wins of the team
   """
-  wins: [String]
+  wins: [String!]!
 
   """
   The insights generated focusing on the challenges team are facing
   """
-  challenges: [String]
+  challenges: [String!]!
+
+  """
+  The meetings that were used to generate the insights
+  """
+  meetings: [RetrospectiveMeeting!]!
 }

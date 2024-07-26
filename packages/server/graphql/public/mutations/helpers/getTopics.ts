@@ -107,7 +107,8 @@ export const getTopics = async (
   teamId: string,
   startDate: Date,
   endDate: Date,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  prompt?: string
 ) => {
   const r = await getRethink()
   const MIN_REFLECTION_COUNT = 3
@@ -213,16 +214,16 @@ export const getTopics = async (
   const yamlData = yaml.dump(shortTokenedTopics, {
     noCompatMode: true
   })
-  // fs.writeFileSync('summaryMeetingContent.yaml', yamlData, 'utf8')
 
   const openAI = new OpenAIServerManager()
-  const rawInsight = await openAI.generateInsight(yamlData, false)
+  const rawInsight = await openAI.generateInsight(yamlData, false, prompt)
   if (!rawInsight) {
     return standardError(new Error('Unable to generate insight.'))
   }
 
   const wins = processSection(rawInsight.wins)
   const challenges = processSection(rawInsight.challenges)
+  const meetingIds = rawMeetings.map((meeting) => meeting.id)
 
-  return {wins, challenges}
+  return {wins, challenges, meetingIds}
 }

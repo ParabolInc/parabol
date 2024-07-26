@@ -345,10 +345,14 @@ class OpenAIServerManager {
     }
   }
 
-  async generateInsight(yamlData: string, useSummaries: boolean): Promise<InsightResponse | null> {
+  async generateInsight(
+    yamlData: string,
+    useSummaries: boolean,
+    userPrompt?: string
+  ): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
-    const defaultPrompt = `
+    const promptForMeetingData = `
     You work at a start-up and you need to discover behavioral trends for a given team.
     Below is a list of reflection topics in YAML format from meetings over recent months.
     You should describe the situation in two sections with no more than 3 bullet points each.
@@ -371,10 +375,11 @@ class OpenAIServerManager {
     You should describe the situation in two sections with exactly 3 bullet points each.
     The first section should describe the team's positive behavior in bullet points.
     The second section should pick out one or two examples of the team's negative behavior.
-    Cite direct quotes from the meeting, attributing it to the person who wrote it, if they're included in the summary.
+    Cite direct quotes from the meeting, attributing them to the person who wrote it, if they're included in the summary.
     Include discussion links included in the summaries. They must be in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
     Try to spot trends. If a topic comes up in several summaries, prioritize it.
     The most important topics are usually at the beginning of each summary, so prioritize them.
+    Don't repeat the same points in both the wins and challenges.
     Return the output as a JSON object with the following structure:
     {
       "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
@@ -383,7 +388,8 @@ class OpenAIServerManager {
     Your tone should be kind and straight forward. Use plain English. No yapping.
     `
 
-    const prompt = useSummaries ? promptForSummaries : defaultPrompt
+    const defaultPrompt = useSummaries ? promptForSummaries : promptForMeetingData
+    const prompt = userPrompt ? userPrompt : defaultPrompt
 
     try {
       const response = await this.openAIApi.chat.completions.create({

@@ -7,6 +7,9 @@ graphql`
   fragment GenerateInsightMutation_team on GenerateInsightSuccess {
     wins
     challenges
+    meetings {
+      id
+    }
   }
 `
 
@@ -16,12 +19,14 @@ const mutation = graphql`
     $startDate: DateTime!
     $endDate: DateTime!
     $useSummaries: Boolean
+    $prompt: String
   ) {
     generateInsight(
       teamId: $teamId
       startDate: $startDate
       endDate: $endDate
       useSummaries: $useSummaries
+      prompt: $prompt
     ) {
       ... on ErrorPayload {
         error {
