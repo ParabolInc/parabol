@@ -9,7 +9,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   {teamId, startDate, endDate, useSummaries = true, prompt},
   {dataLoader}
 ) => {
-  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
     return standardError(
       new Error('Invalid date format. Please use ISO 8601 format (e.g., 2024-01-01T00:00:00Z).')
     )
