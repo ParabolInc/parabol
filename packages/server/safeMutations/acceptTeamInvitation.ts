@@ -32,7 +32,7 @@ const handleFirstAcceptedInvitation = async (
       priority: 3,
       removedAt: null,
       teamId,
-      type: 'tryRetroMeeting',
+      type: 'tryRetroMeeting' as const,
       userId
     },
     {
@@ -40,7 +40,7 @@ const handleFirstAcceptedInvitation = async (
       createdAt: now,
       priority: 4,
       removedAt: null,
-      type: 'createNewTeam',
+      type: 'createNewTeam' as const,
       userId
     },
     {
@@ -49,7 +49,7 @@ const handleFirstAcceptedInvitation = async (
       priority: 5,
       removedAt: null,
       teamId,
-      type: 'tryActionMeeting',
+      type: 'tryActionMeeting' as const,
       userId
     }
   ]
