@@ -7,9 +7,6 @@ graphql`
   fragment GenerateInsightMutation_team on GenerateInsightSuccess {
     wins
     challenges
-    meetings {
-      id
-    }
   }
 `
 
