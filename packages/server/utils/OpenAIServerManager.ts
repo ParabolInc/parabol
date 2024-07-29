@@ -431,6 +431,7 @@ class OpenAIServerManager {
   // if we keep generateSummary, we'll need to merge it with getSummary. This will require a UI change as we're returning links in markdown format here
   async generateSummary(yamlData: string): Promise<string | null> {
     if (!this.openAIApi) return null
+    console.log('in generateSummary')
     const meetingURL = 'https://action.parabol.co/meet/'
     const prompt = `
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
