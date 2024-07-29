@@ -33,6 +33,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     createImposterToken: isSuperUser,
     generateInsight: isSuperUser,
+    generateMeetingSummary: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})

@@ -3,25 +3,22 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import {MutationResolvers} from '../resolverTypes'
 
 const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = async (
   _source,
   {teamIds},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader}
 ) => {
-  const viewerId = getUserId(authToken)
-  const now = new Date()
   const r = await getRethink()
   const pg = getKysely()
   const MIN_MILLISECONDS = 60 * 1000 // 1 minute
   const MIN_REFLECTION_COUNT = 3
 
   const endDate = new Date()
-  const startDate = new Date()
-  startDate.setFullYear(endDate.getFullYear() - 1)
+  const twoYearsAgo = new Date()
+  twoYearsAgo.setFullYear(endDate.getFullYear() - 2)
 
   const rawMeetings = (await r
     .table('NewMeeting')
@@ -29,21 +26,13 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
     .filter((row: any) =>
       row('meetingType')
         .eq('retrospective')
-        .and(row('createdAt').ge(startDate))
+        .and(row('createdAt').ge(twoYearsAgo))
         .and(row('createdAt').le(endDate))
         .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
         .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
-        .and(row.hasFields('summary'))
     )
     .run()) as MeetingRetrospective[]
-
-  // const summaries = rawMeetings.map((meeting) => ({
-  //   meetingName: meeting.name,
-  //   date: meeting.createdAt,
-  //   summary: meeting.summary
-  // }))
-  console.log('🚀 ~ summaries:', rawMeetings.length)
 
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
@@ -99,11 +88,9 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
   const getMeetingsContent = async (meeting: MeetingRetrospective) => {
     const pg = getKysely()
     const {id: meetingId, disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting
-    console.log('🚀 ~ getMeetingsContent:', meetingId)
     const rawReflectionGroups = await dataLoader
       .get('retroReflectionGroupsByMeetingId')
       .load(meetingId)
-    console.log('🚀 ~ rawReflectionGroups:', rawReflectionGroups.length)
     const reflectionGroups = Promise.all(
       rawReflectionGroups
         .filter((g) => g.voterIds.length > 1)
@@ -161,57 +148,37 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
           return res
         })
     )
-    console.log('🚀 ~ reflectionGroups:', reflectionGroups)
 
     return reflectionGroups
   }
+  const manager = new OpenAIServerManager()
 
-  const summaries = await Promise.all(
+  const updatedMeetingIds = await Promise.all(
     rawMeetings.map(async (meeting) => {
-      // newlyGeneratedSummariesDate is temporary, just to see what it looks like when we create summaries on the fly
-      // if we go with a summary of summaries approach, remove this and create a separate mutation that generates new meeting summaries which include links to discussions
-      // const newlyGeneratedSummariesDate = new Date('2024-07-22T00:00:00Z')
-      // if (meeting.summary && meeting.updatedAt > newlyGeneratedSummariesDate) {
-      //   return {
-      //     meetingName: meeting.name,
-      //     date: meeting.createdAt,
-      //     summary: meeting.summary
-      //   }
-      // }
       const meetingsContent = await getMeetingsContent(meeting)
-      console.log('🚀 ~ meetingsContent:', meetingsContent)
       if (!meetingsContent || meetingsContent.length === 0) {
         return null
       }
       const yamlData = yaml.dump(meetingsContent, {
         noCompatMode: true
       })
-
-      const manager = new OpenAIServerManager()
-      console.log('gen sum', meeting.id)
       const newSummary = await manager.generateSummary(yamlData)
-      console.log('🚀 ~ newSummary:', newSummary)
       if (!newSummary) return null
 
       const now = new Date()
-      // await r
-      //   .table('NewMeeting')
-      //   .get(meeting.id)
-      //   .update({summary: newSummary, updatedAt: now})
-      //   .run()
-      // meeting.summary = newSummary
-      return {
-        meetingName: meeting.name,
-        date: meeting.createdAt,
-        summary: newSummary
-        // summary: meeting.summary
-      }
+      await r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({summary: newSummary, updatedAt: now})
+        .run()
+      meeting.summary = newSummary
+      return meeting.id
     })
   )
-  console.log('🚀 ~ summaries:', summaries)
-
-  // RESOLUTION
-  const data = {meetingIds: rawMeetings.map((meeting) => meeting.id)}
+  const filteredMeetingIds = updatedMeetingIds.filter(
+    (meetingId): meetingId is string => meetingId !== null
+  )
+  const data = {meetingIds: filteredMeetingIds}
   return data
 }
 
