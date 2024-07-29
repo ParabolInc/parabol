@@ -75,7 +75,10 @@ const updateIntegrationProvider = {
       return {error: {message: 'Provided 0 metadata types, expected 1'}}
     }
 
+    const resolvedOrgId =
+      orgId || (teamId ? (await dataLoader.get('teams').loadNonNull(teamId)).orgId : null)
     const scope = newScope || oldScope
+
     // RESOLUTION
     await upsertIntegrationProvider({
       ...oAuth2ProviderMetadataInput,
@@ -106,11 +109,11 @@ const updateIntegrationProvider = {
         await MSTeamsNotifier.integrationUpdated(dataLoader, teamId, viewerId)
       }
     }
-    const data = {userId: viewerId, teamId, providerId: providerDbId}
-    if (teamId) {
+    const data = {userId: viewerId, providerId: providerDbId}
+    if (resolvedOrgId) {
       publish(
-        SubscriptionChannel.TEAM,
-        teamId,
+        SubscriptionChannel.ORGANIZATION,
+        resolvedOrgId,
         'UpdateIntegrationProviderSuccess',
         data,
         subOptions

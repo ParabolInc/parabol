@@ -5,12 +5,7 @@ type AddIntegrationProviderSuccess {
   provider: IntegrationProvider!
 
   """
-  Id of the team with the updated Integration Provider
+  The user who updated IntegrationProvider object
   """
-  teamId: ID!
-
-  """
-  The team with the updated Integration Provider
-  """
-  team: Team!
+  user: User!
 }

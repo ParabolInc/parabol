@@ -5,12 +5,7 @@ type UpdateIntegrationProviderSuccess {
   provider: IntegrationProvider!
 
   """
-  The team member with the updated auth
-  """
-  teamMember: TeamMember!
-
-  """
-  The user who updated TeamMemberIntegrationAuth object
+  The user who updated IntegrationProvider object
   """
   user: User!
 }

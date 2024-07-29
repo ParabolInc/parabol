@@ -91,6 +91,9 @@ const addIntegrationProvider = {
       return {error: {message: 'Exactly 1 metadata provider is expected'}}
     }
 
+    const resolvedOrgId =
+      orgId || (teamId ? (await dataLoader.get('teams').loadNonNull(teamId)).orgId : null)
+
     // RESOLUTION
     const providerId = await upsertIntegrationProvider({
       authStrategy,
@@ -105,10 +108,15 @@ const addIntegrationProvider = {
           : {orgId: null, teamId})
     })
 
-    //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
-    const data = {teamId, orgId, providerId}
-    if (teamId) {
-      publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProviderSuccess', data, subOptions)
+    const data = {providerId, userId: viewerId}
+    if (resolvedOrgId) {
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        resolvedOrgId,
+        'AddIntegrationProviderSuccess',
+        data,
+        subOptions
+      )
     }
     return data
   }

@@ -1,8 +1,6 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {GQLContext} from '../graphql'
 import IntegrationProvider from './IntegrationProvider'
-import TeamMember from './TeamMember'
 import User from './User'
 import makeMutationPayload from './makeMutationPayload'
 
@@ -14,14 +12,6 @@ export const UpdateIntegrationProviderSuccess = new GraphQLObjectType<any, GQLCo
       description: 'The provider that was updated',
       resolve: async ({providerId}, _args, {dataLoader}) => {
         return dataLoader.get('integrationProviders').load(providerId)
-      }
-    },
-    teamMember: {
-      type: new GraphQLNonNull(TeamMember),
-      description: 'The team member with the updated auth',
-      resolve: ({teamId, userId}, _args, {dataLoader}) => {
-        const teamMemberId = TeamMemberId.join(teamId, userId)
-        return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },
     user: {
