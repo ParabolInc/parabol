@@ -1,5 +1,5 @@
 import getKysely from '../postgres/getKysely'
-import {selectTemplateScale} from '../postgres/select'
+import {selectTemplateDimension, selectTemplateScale} from '../postgres/select'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
 import {selectOrganizations, selectRetroReflections, selectTeams} from './primaryKeyLoaderMakers'
 
@@ -132,3 +132,22 @@ export const scalesByTeamId = foreignKeyLoaderMaker('templateScales', 'teamId', 
     .orderBy(['isStarter', 'name'])
     .execute()
 })
+
+export const templateDimensionsByTemplateId = foreignKeyLoaderMaker(
+  'templateDimensions',
+  'templateId',
+  async (templateIds) => {
+    return selectTemplateDimension()
+      .where('templateId', 'in', templateIds)
+      .orderBy('sortOrder')
+      .execute()
+  }
+)
+
+export const templateDimensionsByScaleId = foreignKeyLoaderMaker(
+  'templateDimensions',
+  'scaleId',
+  async (scaleIds) => {
+    return selectTemplateDimension().where('scaleId', 'in', scaleIds).orderBy('sortOrder').execute()
+  }
+)

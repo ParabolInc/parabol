@@ -1,3 +1,52 @@
-extend type OrganizationUser {
+"""
+organization-specific details about a user
+"""
+type OrganizationUser {
+  """
+  orgId::userId
+  """
+  id: ID!
+
+  """
+  true if the user is paused and the orgs are not being billed, else false
+  """
+  inactive: Boolean!
+
+  """
+  the datetime the user first joined the org
+  """
+  joinedAt: DateTime!
+
+  """
+  FK
+  """
+  orgId: ID!
+
+  """
+  The user attached to the organization
+  """
+  organization: Organization!
+
+  """
+  if not a member, the datetime the user was removed from the org
+  """
+  removedAt: DateTime
+
+  """
+  role of the user in the org
+  """
+  role: OrgUserRole
+
+  """
+  FK
+  """
+  userId: ID!
+
+  """
+  The user attached to the organization
+  """
+  user: User!
   suggestedTier: TierEnum
+  tier: TierEnum
+  billingTier: TierEnum
 }

@@ -1,0 +1,7 @@
+type UpdateDragLocationPayload {
+  """
+  The drag as sent from the team member
+  """
+  remoteDrag: RemoteReflectionDrag
+  userId: ID!
+}

@@ -1,0 +1,6 @@
+type VoteForPokerStorySuccess {
+  """
+  The stage that holds the updated scores
+  """
+  stage: EstimateStage!
+}

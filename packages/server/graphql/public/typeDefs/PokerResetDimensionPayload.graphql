@@ -1,0 +1,4 @@
+"""
+Return object for PokerResetDimensionPayload
+"""
+union PokerResetDimensionPayload = ErrorPayload | PokerResetDimensionSuccess

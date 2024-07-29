@@ -7,7 +7,6 @@ import {Client} from 'pg'
 import {RValue, r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import TemplateDimension from '../../database/types/TemplateDimension'
 import {insertTemplateRefQuery, insertTemplateScaleRefQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
 
@@ -57,7 +56,7 @@ export async function up(): Promise<void> {
     .run()) as {
     id: string
     name: string
-    dimensions: (TemplateDimension & {scale: any})[]
+    dimensions: (any & {scale: any})[]
   }[]
 
   const uniqueScaleIdSet = new Set<string>()

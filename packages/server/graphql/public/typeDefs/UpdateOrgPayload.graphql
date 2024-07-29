@@ -1,0 +1,8 @@
+type UpdateOrgPayload {
+  error: StandardMutationError
+
+  """
+  The updated org
+  """
+  organization: Organization
+}

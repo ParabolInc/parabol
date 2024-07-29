@@ -1,0 +1,4 @@
+"""
+Return object for UpdateRetroMaxVotesPayload
+"""
+union UpdateRetroMaxVotesPayload = ErrorPayload | UpdateRetroMaxVotesSuccess

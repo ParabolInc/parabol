@@ -1,0 +1,4 @@
+"""
+Return object for UpdateWatchlistPayload
+"""
+union UpdateWatchlistPayload = ErrorPayload | UpdateWatchlistSuccess

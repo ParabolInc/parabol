@@ -1,0 +1,4 @@
+"""
+Return value for addPokerTemplate, which could be an error
+"""
+union AddPokerTemplatePayload = ErrorPayload | AddPokerTemplateSuccess

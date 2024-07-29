@@ -1,0 +1,4 @@
+"""
+Return value for getTemplateSuggestion, which could be an error
+"""
+union GetTemplateSuggestionPayload = ErrorPayload | GetTemplateSuggestionSuccess

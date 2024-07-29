@@ -1,0 +1,17 @@
+"""
+A flag to give an individual organization super powers
+"""
+enum OrganizationFeatureFlagsEnum {
+  noAISummary
+  standupAISummary
+  noPromptToJoinOrg
+  suggestGroups
+  zoomTranscription
+  shareSummary
+  teamsLimit
+  noTeamInsights
+  singleColumnStandups
+  publicTeams
+  aiTemplate
+  relatedDiscussions
+}

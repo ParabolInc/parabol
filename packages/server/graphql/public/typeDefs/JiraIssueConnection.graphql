@@ -1,0 +1,19 @@
+"""
+A connection to a list of items.
+"""
+type JiraIssueConnection {
+  """
+  Page info with cursors
+  """
+  pageInfo: PageInfo
+
+  """
+  A list of edges.
+  """
+  edges: [JiraIssueEdge!]!
+
+  """
+  An error with the connection, if any
+  """
+  error: StandardMutationError
+}

@@ -1,0 +1,29 @@
+"""
+A single line item for the charges for next month
+"""
+type NextPeriodCharges {
+  """
+  The amount for the line item (in USD)
+  """
+  amount: Float!
+
+  """
+  The datetime the next period will end
+  """
+  nextPeriodEnd: DateTime!
+
+  """
+  The total number of days that all org users have been inactive during the billing cycle
+  """
+  quantity: Int!
+
+  """
+  The per-seat monthly price of the subscription (in dollars), null if invoice is not per-seat
+  """
+  unitPrice: Float
+
+  """
+  "year" if enterprise, else "month" for pro
+  """
+  interval: String
+}

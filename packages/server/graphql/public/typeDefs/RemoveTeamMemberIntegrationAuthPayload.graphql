@@ -1,0 +1,4 @@
+"""
+Return object for RemoveTeamMemberIntegrationAuthPayload
+"""
+union RemoveTeamMemberIntegrationAuthPayload = ErrorPayload | RemoveTeamMemberIntegrationAuthSuccess

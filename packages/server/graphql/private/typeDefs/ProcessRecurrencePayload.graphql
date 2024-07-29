@@ -1,0 +1,4 @@
+"""
+Return value for processRecurrence, which could be an error
+"""
+union ProcessRecurrencePayload = ErrorPayload | ProcessRecurrenceSuccess

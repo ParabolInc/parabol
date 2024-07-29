@@ -1,0 +1,6 @@
+type UpdateWatchlistSuccess {
+  """
+  true if the mutation was successfully executed
+  """
+  success: Boolean
+}

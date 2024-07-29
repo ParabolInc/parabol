@@ -1,0 +1,16 @@
+type GroupPhaseCompletePayload {
+  """
+  a list of empty reflection groups to remove
+  """
+  emptyReflectionGroupIds: [ID!]!
+
+  """
+  the current meeting
+  """
+  meeting: RetrospectiveMeeting!
+
+  """
+  a list of updated reflection groups
+  """
+  reflectionGroups: [RetroReflectionGroup]
+}

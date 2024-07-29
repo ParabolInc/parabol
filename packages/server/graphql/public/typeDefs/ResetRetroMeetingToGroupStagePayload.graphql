@@ -1,0 +1,4 @@
+type ResetRetroMeetingToGroupStagePayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+}

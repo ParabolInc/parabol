@@ -1,0 +1,104 @@
+"""
+A monthly billing invoice for an organization
+"""
+type Invoice {
+  """
+  A shortid for the invoice
+  """
+  id: ID!
+
+  """
+  The tier this invoice pays for
+  """
+  tier: TierEnum!
+
+  """
+  The amount the card will be charged (total + startingBalance with a min value of 0)
+  """
+  amountDue: Float!
+
+  """
+  The datetime the invoice was first generated
+  """
+  createdAt: DateTime!
+
+  """
+  The discount coupon information from Stripe, if any discount applied
+  """
+  coupon: Coupon
+
+  """
+  The total amount for the invoice (in USD)
+  """
+  total: Float!
+
+  """
+  The emails the invoice was sent to
+  """
+  billingLeaderEmails: [Email!]!
+
+  """
+  the card used to pay the invoice
+  """
+  creditCard: CreditCard
+
+  """
+  The timestamp for the end of the billing cycle
+  """
+  endAt: DateTime!
+
+  """
+  The date the invoice was created
+  """
+  invoiceDate: DateTime!
+
+  """
+  An invoice line item for previous month adjustments
+  """
+  lines: [InvoiceLineItem!]!
+
+  """
+  The details that comprise the charges for next month
+  """
+  nextPeriodCharges: NextPeriodCharges!
+
+  """
+  *The organization id to charge
+  """
+  orgId: ID!
+
+  """
+  The persisted name of the org as it was when invoiced
+  """
+  orgName: String!
+
+  """
+  the datetime the invoice was successfully paid
+  """
+  paidAt: DateTime
+
+  """
+  The URL to pay via stripe if payment was not collected in app
+  """
+  payUrl: String
+
+  """
+  The picture of the organization
+  """
+  picture: URL
+
+  """
+  The timestamp for the beginning of the billing cycle
+  """
+  startAt: DateTime!
+
+  """
+  The balance on the customer account (in cents)
+  """
+  startingBalance: Float!
+
+  """
+  the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded
+  """
+  status: InvoiceStatusEnum!
+}

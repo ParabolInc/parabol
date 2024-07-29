@@ -1,0 +1,11 @@
+type CreatePollSuccess {
+  """
+  Poll id in a format of `poll:idGeneratedByDatabase`
+  """
+  pollId: ID!
+
+  """
+  the poll just created
+  """
+  poll: Poll!
+}

@@ -1,0 +1,4 @@
+type AddPokerTemplateScalePayload {
+  error: StandardMutationError
+  scale: TemplateScale
+}
