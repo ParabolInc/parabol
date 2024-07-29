@@ -139,18 +139,9 @@ const bootstrapNewUser = async (
     }
     const orgName = `${newUser.preferredName}’s Org`
     await createNewOrg(orgId, orgName, userId, email, dataLoader)
-    const inviteYourTeam = {
-      id: generateUID(),
-      userId,
-      teamId,
-      type: 'inviteYourTeam' as const,
-      priority: 2
-    }
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam, dataLoader),
       addSeedTasks(userId, teamId),
-      pg.insertInto('SuggestedAction').values(inviteYourTeam).execute(),
-      r.table('SuggestedAction').insert(inviteYourTeam).run(),
       sendPromptToJoinOrg(newUser, dataLoader)
     ])
     analytics.newOrg(newUser, orgId, teamId, true)
