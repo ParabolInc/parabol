@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.40.0](https://github.com/ParabolInc/parabol/compare/v7.39.3...v7.40.0) (2024-07-26)
+
+
+### Added
+
+* nav updates ([#9973](https://github.com/ParabolInc/parabol/issues/9973)) ([2dd490a](https://github.com/ParabolInc/parabol/commit/2dd490ac75578f73d7a7b3e1f8ccfb1cd2164884))
+
+
+### Fixed
+
+* Disable SAML on downgrade to starter ([#10026](https://github.com/ParabolInc/parabol/issues/10026)) ([fa52c46](https://github.com/ParabolInc/parabol/commit/fa52c4638629fcf9c5c3453798d1320b9d8da2dd))
+
+
+### Changed
+
+* **deps:** bump braces from 3.0.2 to 3.0.3 ([#9843](https://github.com/ParabolInc/parabol/issues/9843)) ([0f6d8a4](https://github.com/ParabolInc/parabol/commit/0f6d8a40ad7e8490ba9503b56c5bc9e9a20620c2))
+* migrate EmailVerification to pg ([#9492](https://github.com/ParabolInc/parabol/issues/9492)) ([a653a61](https://github.com/ParabolInc/parabol/commit/a653a61b279631aa66d461ebd2012c4136358bd0))
+* **rethinkdb:** TemplateDimension: One-shot ([#10033](https://github.com/ParabolInc/parabol/issues/10033)) ([77e163a](https://github.com/ParabolInc/parabol/commit/77e163add65765641936bd56b83aa91f58e5b21a))
+* **SDL:** refactor _legacy.graphql into individual typeDefs ([#10019](https://github.com/ParabolInc/parabol/issues/10019)) ([f8b029d](https://github.com/ParabolInc/parabol/commit/f8b029d60b78e50e8afa5f0a0f44c863afce753a))
+
 ## [7.39.3](https://github.com/ParabolInc/parabol/compare/v7.39.2...v7.39.3) (2024-07-25)
 
 
