@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateIntegrationProviderInput, {
@@ -37,7 +37,7 @@ const updateIntegrationProvider = {
       id: providerId,
       webhookProviderMetadataInput,
       oAuth2ProviderMetadataInput,
-      scope
+      scope: newScope
     } = provider
     const providerDbId = IntegrationProviderId.split(providerId)
     const currentProvider = await dataLoader.get('integrationProviders').load(providerDbId)
@@ -45,13 +45,26 @@ const updateIntegrationProvider = {
     if (!currentProvider) {
       return {error: {message: 'Invalid provider ID'}}
     }
-    const {teamId, service, authStrategy} = currentProvider
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: 'Must be on the team that owns the provider'}}
-    }
-    const orgId = (await dataLoader.get('teams').load(teamId))?.orgId
-    if (!orgId) {
-      return {error: {message: 'Organization does not exist'}}
+    const {teamId, orgId, scope: oldScope, service, authStrategy} = currentProvider
+
+    if (!isSuperUser(authToken)) {
+      if (oldScope === 'global' || newScope === 'global') {
+        return {error: {message: 'Must be a super user to add a global provider'}}
+      }
+      if (
+        (oldScope === 'org' || newScope === 'org') &&
+        !isUserOrgAdmin(viewerId, orgId!, dataLoader)
+      ) {
+        return {
+          error: {
+            message:
+              'Must be an organization admin to add an integration provider on organization level'
+          }
+        }
+      }
+      if (oldScope === 'team' && newScope === 'team' && !isTeamMember(authToken, teamId!)) {
+        return {error: {message: 'Must be on the team for the integration provider'}}
+      }
     }
 
     // VALIDATION
@@ -62,20 +75,25 @@ const updateIntegrationProvider = {
       return {error: {message: 'Provided 0 metadata types, expected 1'}}
     }
 
+    const scope = newScope || oldScope
     // RESOLUTION
     await upsertIntegrationProvider({
       ...oAuth2ProviderMetadataInput,
       ...webhookProviderMetadataInput,
       service,
       authStrategy,
-      scope,
-      ...(scope === 'org' ? {orgId, teamId: null} : {orgId: null, teamId})
+      scope: newScope,
+      ...(scope === 'global'
+        ? {orgId: null, teamId: null}
+        : scope === 'org'
+          ? {orgId, teamId: null}
+          : {orgId: null, teamId})
     })
 
     if (currentProvider.service === 'mattermost') {
       const {webhookUrl} = currentProvider
       const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
-      if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
+      if (teamId && newWebhookUrl && newWebhookUrl !== webhookUrl) {
         Object.assign(currentProvider, webhookProviderMetadataInput)
         await MattermostNotifier.integrationUpdated(dataLoader, teamId, viewerId)
       }
@@ -83,13 +101,21 @@ const updateIntegrationProvider = {
     if (currentProvider.service === 'msTeams') {
       const {webhookUrl} = currentProvider
       const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
-      if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
+      if (teamId && newWebhookUrl && newWebhookUrl !== webhookUrl) {
         Object.assign(currentProvider, webhookProviderMetadataInput)
         await MSTeamsNotifier.integrationUpdated(dataLoader, teamId, viewerId)
       }
     }
     const data = {userId: viewerId, teamId, providerId: providerDbId}
-    publish(SubscriptionChannel.TEAM, teamId, 'UpdateIntegrationProviderSuccess', data, subOptions)
+    if (teamId) {
+      publish(
+        SubscriptionChannel.TEAM,
+        teamId,
+        'UpdateIntegrationProviderSuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }
