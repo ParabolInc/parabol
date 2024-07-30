@@ -1,8 +1,12 @@
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import TeamPromptMeetingMember from '../../../database/types/TeamPromptMeetingMember'
+import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
+import getPhase from '../../../utils/getPhase'
 import {TeamPromptMeetingResolvers} from '../resolverTypes'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
@@ -52,6 +56,64 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     const {teamId} = meeting
     const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
+  },
+
+  settings: async ({teamId}, _args, {dataLoader}) => {
+    return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
+  },
+
+  responses: ({id: meetingId}, _args, {}) => {
+    return getTeamPromptResponsesByMeetingId(meetingId)
+  },
+
+  viewerMeetingMember: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+    const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+    return (meetingMember as TeamPromptMeetingMember) || null
+  },
+
+  responseCount: async ({id: meetingId}) => {
+    return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
+      (response) => !!response.plaintextContent
+    ).length
+  },
+
+  taskCount: async ({id: meetingId}, _args, {dataLoader}) => {
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (meeting.meetingType !== 'teamPrompt') {
+      return 0
+    }
+    const {phases} = meeting
+    const discussPhase = getPhase(phases, 'RESPONSES')
+    const {stages} = discussPhase
+    const discussionIds = stages.map((stage) => stage.discussionId)
+    const r = await getRethink()
+    return r
+      .table('Task')
+      .getAll(r.args(discussionIds), {index: 'discussionId'})
+      .count()
+      .default(0)
+      .run()
+  },
+
+  commentCount: async ({id: meetingId}, _args, {dataLoader}) => {
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (meeting.meetingType !== 'teamPrompt') {
+      return 0
+    }
+    const {phases} = meeting
+    const discussPhase = getPhase(phases, 'RESPONSES')
+    const {stages} = discussPhase
+    const discussionIds = stages.map((stage) => stage.discussionId)
+    const r = await getRethink()
+    return r
+      .table('Comment')
+      .getAll(r.args(discussionIds), {index: 'discussionId'})
+      .filter({isActive: true})
+      .count()
+      .default(0)
+      .run()
   }
 }
 

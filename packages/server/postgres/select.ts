@@ -1,6 +1,17 @@
-import {sql} from 'kysely'
+import {NotNull, sql} from 'kysely'
 import getKysely from './getKysely'
 
+export const selectTimelineEvent = () => {
+  return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
+    | {
+        type: 'actionComplete' | 'POKER_COMPLETE' | 'TEAM_PROMPT_COMPLETE' | 'retroComplete'
+        teamId: NotNull
+        orgId: NotNull
+        meetingId: NotNull
+      }
+    | {type: 'createdTeam'; teamId: NotNull; orgId: NotNull}
+  >()
+}
 export const selectTemplateScale = () => {
   return getKysely()
     .selectFrom('TemplateScale')

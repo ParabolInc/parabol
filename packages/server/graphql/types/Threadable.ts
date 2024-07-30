@@ -72,14 +72,14 @@ const Threadable: GraphQLInterfaceType = new GraphQLInterfaceType({
   fields: threadableFields,
   resolveType: (threadable: ThreadableDB) => {
     if ('status' in threadable) {
-      return Task
+      return Task.name
     }
 
     if ('title' in threadable) {
-      return Poll
+      return Poll.name
     }
 
-    return Comment
+    return Comment.name
   }
 })
 

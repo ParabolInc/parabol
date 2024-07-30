@@ -1,5 +1,6 @@
 import {SelectQueryBuilder, Selectable} from 'kysely'
 import {
+  Discussion as DiscussionPG,
   OrganizationUser as OrganizationUserPG,
   TeamMember as TeamMemberPG,
   TemplateScaleRef as TemplateScaleRefPG
@@ -9,6 +10,7 @@ import {selectTemplateScale} from '../select'
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<infer _A, infer _B, infer X> ? X : never
 
+export type Discussion = Selectable<DiscussionPG>
 export type OrganizationUser = Selectable<OrganizationUserPG>
 
 export type TeamMember = Selectable<TeamMemberPG>

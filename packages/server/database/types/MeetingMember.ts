@@ -1,5 +1,5 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingTypeEnum} from '../../graphql/public/resolverTypes'
 
 interface MeetingMemberInput {
   id?: string

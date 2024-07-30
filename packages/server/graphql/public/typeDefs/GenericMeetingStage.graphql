@@ -45,7 +45,7 @@ type GenericMeetingStage implements NewMeetingStage {
   """
   The type of the phase
   """
-  phaseType: NewMeetingPhaseTypeEnum
+  phaseType: NewMeetingPhaseTypeEnum!
 
   """
   The datetime the stage was started
