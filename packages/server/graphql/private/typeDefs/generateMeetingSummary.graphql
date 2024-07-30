@@ -7,6 +7,11 @@ extend type Mutation {
     The ids of the teams to generate the meeting summary for
     """
     teamIds: [ID!]!
+
+    """
+    The optional user prompt that will be used to generate the meeting summary
+    """
+    prompt: String
   ): GenerateMeetingSummaryPayload!
 }
 

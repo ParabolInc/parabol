@@ -8,7 +8,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = async (
   _source,
-  {teamIds},
+  {teamIds, prompt},
   {dataLoader}
 ) => {
   const r = await getRethink()
@@ -162,7 +162,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
       const yamlData = yaml.dump(meetingsContent, {
         noCompatMode: true
       })
-      const newSummary = await manager.generateSummary(yamlData)
+      const newSummary = await manager.generateSummary(yamlData, prompt as string)
       if (!newSummary) return null
 
       const now = new Date()

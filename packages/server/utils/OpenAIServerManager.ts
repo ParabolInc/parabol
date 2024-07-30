@@ -430,10 +430,10 @@ class OpenAIServerManager {
   }
 
   // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
-  async generateSummary(yamlData: string): Promise<string | null> {
+  async generateSummary(yamlData: string, userPrompt?: string): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
-    const prompt = `
+    const defaultPrompt = `
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
     Below is a list of reflection topics and comments in YAML format from the meeting.
     Include quotes from the meeting, and mention the author.
@@ -447,6 +447,7 @@ class OpenAIServerManager {
     You do not need to mention everything. Just mention the most important points, and ensure the summary is concise.
     Your tone should be kind. Write in plain English. No jargon.
     `
+    const prompt = userPrompt ? userPrompt : defaultPrompt
 
     try {
       const response = await this.openAIApi.chat.completions.create({
