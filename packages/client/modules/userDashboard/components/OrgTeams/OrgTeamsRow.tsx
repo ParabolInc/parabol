@@ -48,7 +48,7 @@ const OrgTeamsRow = (props: Props) => {
         <div className='flex flex-col'>
           <div className='inline-flex items-center items-center gap-x-2'>
             <Link to={`teams/${teamId}`} className='inline-block text-lg font-bold text-sky-500'>
-              {name}
+              {`${name} >`}
             </Link>
             {viewerIsLead && (
               <span className='rounded-full bg-sky-700 px-2 py-0.5 text-xs text-white'>
